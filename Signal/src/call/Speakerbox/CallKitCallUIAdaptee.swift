@@ -91,10 +91,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         update.hasVideo = call.hasLocalVideo
-        update.supportsHolding = false
-        update.supportsGrouping = false
-        update.supportsUngrouping = false
-        update.supportsDTMF = false
+        disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
         provider.reportNewIncomingCall(with: call.localId, update: update) { error in
@@ -138,8 +135,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        // no - op
-        // TODO provider update call connected?
+        self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
+
+        let update = CXCallUpdate()
+        disableUnsupportedFeatures(callUpdate: update)
+
+        provider.reportCall(with: call.localId, updated: update)
     }
 
     func localHangupCall(_ call: SignalCall) {
@@ -213,27 +214,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         CallService.signalingQueue.async {
-            self.callService.handleOutgoingCall(call).then {
+            self.callService.handleOutgoingCall(call).then { () -> Void in
                 action.fulfill()
+                self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
             }.catch { error in
                 Logger.error("\(self.TAG) error \(error) in \(#function)")
                 self.callManager.removeCall(call)
                 action.fail()
             }
         }
-
-        // TODO FIXME
-        //        /*
-        //            Set callback blocks for significant events in the call's lifecycle, so that the CXProvider may be updated
-        //            to reflect the updated state.
-        //         */
-        //        call.hasStartedConnectingDidChange = { [weak self] in
-        //            self?.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
-        //        }
-        //        call.hasConnectedDidChange = { [weak self] in
-        //            self?.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectDate)
-        //        }
-
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
@@ -298,20 +287,19 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             action.fail()
             return
         }
-        Logger.warn("TODO, unimplemented set held call: \(call)")
 
-        // TODO FIXME
-        //        // Update the SpeakerboxCall's underlying hold state.
-        //        call.isOnHold = action.isOnHold
-        //
-        //        // Stop or start audio in response to holding or unholding the call.
-        //        if call.isOnHold {
-        //            // stopAudio() <-- SpeakerBox
-        //            PeerConnectionClient.stopAudioSession()
-        //        } else {
-        //            // startAudio() <-- SpeakerBox
-        //            PeerConnectionClient.startAudioSession()
-        //        }
+        // Update the SignalCall's underlying hold state.
+        call.isOnHold = action.isOnHold
+
+        // Stop or start audio in response to holding or unholding the call.
+        if call.isOnHold {
+            // stopAudio() <-- SpeakerBox
+            PeerConnectionClient.stopAudioSession()
+        } else {
+            // startAudio() <-- SpeakerBox
+            // This is redundant with what happens in `provider(_:didActivate:)`
+            //PeerConnectionClient.startAudioSession()
+        }
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -371,5 +359,20 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
          Restart any non-call related audio now that the app's audio session has been
          de-activated after having its priority restored to normal.
          */
+    }
+
+    // MARK: - Util
+
+    private func disableUnsupportedFeatures(callUpdate: CXCallUpdate) {
+        // Call Holding is failing to restart audio when "swapping" calls on the CallKit screen
+        // until user returns to in-app call screen.
+        callUpdate.supportsHolding = false
+
+        // Not yet supported
+        callUpdate.supportsGrouping = false
+        callUpdate.supportsUngrouping = false
+
+        // Is there any reason to support this?
+        callUpdate.supportsDTMF = false
     }
 }
