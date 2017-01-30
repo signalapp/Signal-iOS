@@ -73,6 +73,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
+    var areRemoteVideoControlsHidden = false {
+        didSet {
+            updateCallUI(callState: call.state)
+        }
+    }
+
     // MARK: Initializers
 
     required init?(coder aDecoder: NSCoder) {
@@ -138,9 +144,14 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     // MARK: - Create Views
 
     func createViews() {
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(OWSAnyTouchGestureRecognizer(target:self,
+                                                                    action:#selector(didTouchRootView)))
+
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
         blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
         // Create the video views first, as they are under the other views.
@@ -151,9 +162,16 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         createIncomingCallControls()
     }
 
+    func didTouchRootView(sender: UIGestureRecognizer) {
+        if !remoteVideoView.isHidden {
+            areRemoteVideoControlsHidden = !areRemoteVideoControlsHidden
+        }
+    }
+
     func createVideoViews() {
         remoteVideoView = RTCEAGLVideoView()
         remoteVideoView.delegate = self
+        remoteVideoView.isUserInteractionEnabled = false
         localVideoView = RTCCameraPreviewView()
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true
@@ -535,6 +553,16 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         audioModeVideoButton.isHidden = !remoteVideoView.isHidden
         videoModeVideoButton.isHidden = remoteVideoView.isHidden
 
+        // Also hide other controls if user has tapped to hide them.
+        if areRemoteVideoControlsHidden && !remoteVideoView.isHidden {
+            contactNameLabel.isHidden = true
+            callStatusLabel.isHidden = true
+            ongoingCallView.isHidden = true
+        } else {
+            contactNameLabel.isHidden = false
+            callStatusLabel.isHidden = false
+        }
+
         // Dismiss Handling
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
@@ -708,6 +736,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         remoteVideoView.renderFrame(nil)
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
+        areRemoteVideoControlsHidden = false
 
         if remoteVideoTrack == nil {
             remoteVideoSize = CGSize.zero
