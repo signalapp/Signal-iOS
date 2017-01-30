@@ -1114,6 +1114,10 @@ protocol CallServiceObserver: class {
                 }
             }
         }
+        
+        // Prevent screen from dimming during video call.
+        let hasLocalOrRemoteVideo = localVideoTrack != nil || remoteVideoTrack != nil
+        UIApplication.shared.isIdleTimerDisabled = hasLocalOrRemoteVideo
     }
 }
 
