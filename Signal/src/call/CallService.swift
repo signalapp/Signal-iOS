@@ -309,7 +309,9 @@ protocol CallServiceObserver: class {
                                 in: thread)
         callRecord.save()
 
-        self.callUIAdapter.reportMissedCall(call)
+        DispatchQueue.main.async {
+            self.callUIAdapter.reportMissedCall(call)
+        }
     }
 
     /**
@@ -514,7 +516,9 @@ protocol CallServiceObserver: class {
             call.state = .remoteRinging
         case .answering:
             call.state = .localRinging
-            self.callUIAdapter.reportIncomingCall(call, thread: thread)
+            DispatchQueue.main.async {
+                self.callUIAdapter.reportIncomingCall(call, thread: thread)
+            }
             // cancel connection timeout
             self.fulfillCallConnectedPromise?()
         case .remoteRinging:
@@ -552,7 +556,9 @@ protocol CallServiceObserver: class {
 
         call.state = .remoteHangup
         // Notify UI
-        callUIAdapter.remoteDidHangupCall(call)
+        DispatchQueue.main.async {
+            self.callUIAdapter.remoteDidHangupCall(call)
+        }
 
         // self.call is nil'd in `terminateCall`, so it's important we update it's state *before* calling `terminateCall`
         terminateCall()
@@ -821,7 +827,9 @@ protocol CallServiceObserver: class {
                 return
             }
 
-            callUIAdapter.recipientAcceptedCall(call)
+            DispatchQueue.main.async {
+                self.callUIAdapter.recipientAcceptedCall(call)
+            }
             handleConnectedCall(call)
 
         } else if message.hasHangup() {
@@ -958,7 +966,9 @@ protocol CallServiceObserver: class {
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             call.error = error
             call.state = .localFailure
-            callUIAdapter.failCall(call, error: error)
+            DispatchQueue.main.async {
+                self.callUIAdapter.failCall(call, error: error)
+            }
         } else {
             // This can happen when we receive an out of band signaling message (e.g. IceUpdate)
             // after the call has ended
@@ -1114,7 +1124,7 @@ protocol CallServiceObserver: class {
                 }
             }
         }
-        
+
         // Prevent screen from dimming during video call.
         let hasLocalOrRemoteVideo = localVideoTrack != nil || remoteVideoTrack != nil
         UIApplication.shared.isIdleTimerDisabled = hasLocalOrRemoteVideo

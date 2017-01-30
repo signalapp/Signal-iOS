@@ -63,6 +63,8 @@ extension CallUIAdaptee {
     private let audioService: CallAudioService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
+        AssertIsOnMainThread()
+
         self.contactsManager = contactsManager
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
@@ -82,6 +84,8 @@ extension CallUIAdaptee {
     }
 
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
+        AssertIsOnMainThread()
+
         call.addObserverAndSyncState(observer: audioService)
 
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
@@ -89,11 +93,15 @@ extension CallUIAdaptee {
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
     internal func startOutgoingCall(handle: String) -> SignalCall {
+        AssertIsOnMainThread()
+
         let call = adaptee.startOutgoingCall(handle: handle)
         call.addObserverAndSyncState(observer: audioService)
 
@@ -101,56 +109,82 @@ extension CallUIAdaptee {
     }
 
     internal func answerCall(localId: UUID) {
+        AssertIsOnMainThread()
+
         adaptee.answerCall(localId: localId)
     }
 
     internal func answerCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.answerCall(call)
     }
 
     internal func declineCall(localId: UUID) {
+        AssertIsOnMainThread()
+
         adaptee.declineCall(localId: localId)
     }
 
     internal func declineCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.declineCall(call)
     }
 
     internal func callBack(recipientId: String) {
+        AssertIsOnMainThread()
+
         adaptee.callBack(recipientId: recipientId)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.recipientAcceptedCall(call)
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.remoteDidHangupCall(call)
     }
 
     internal func localHangupCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.localHangupCall(call)
     }
 
     internal func failCall(_ call: SignalCall, error: CallError) {
+        AssertIsOnMainThread()
+
         adaptee.failCall(call, error: error)
     }
 
     internal func showCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         adaptee.showCall(call)
     }
 
     internal func setIsMuted(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+
         // With CallKit, muting is handled by a CXAction, so it must go through the adaptee
         adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
     internal func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
+        AssertIsOnMainThread()
+
         adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
     internal func setIsSpeakerphoneEnabled(call: SignalCall, isEnabled: Bool) {
-        // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the 
+        AssertIsOnMainThread()
+
+        // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
         // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's 
         // assigned property.
         CallService.signalingQueue.async {
@@ -160,6 +194,8 @@ extension CallUIAdaptee {
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.
     internal var hasManualRinger: Bool {
+        AssertIsOnMainThread()
+
         return adaptee.hasManualRinger
     }
 }
