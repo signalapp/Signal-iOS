@@ -662,8 +662,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         let hasLocalVideo = !sender.isSelected
-        audioModeVideoButton.isSelected = hasLocalVideo
-        videoModeVideoButton.isSelected = hasLocalVideo
         if let call = self.call {
             callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
         } else {

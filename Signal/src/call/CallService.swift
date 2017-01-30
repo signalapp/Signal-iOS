@@ -795,8 +795,9 @@ protocol CallServiceObserver: class {
             break
         }
 
-        // TODO: We could also check this whenever the app returns from the background,
-        //       since the user could disable this priviledge at all times.
+        // We don't need to worry about the user granting or remotinv this permission
+        // during a call while the app is in the background, because changing this
+        // permission kills the app.
         if authStatus != .authorized {
             DispatchQueue.main.async {
                 let title = NSLocalizedString("CAMERA_PERMISSION_MISSING_TITLE", comment: "Alert title when camera is not authorized")
