@@ -23,6 +23,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func startOutgoingCall(handle: String) -> SignalCall {
+        AssertIsOnMainThread()
+
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
         CallService.signalingQueue.async {
@@ -37,6 +39,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
+        AssertIsOnMainThread()
+
         Logger.debug("\(TAG) \(#function)")
 
         // present Call View controller
@@ -52,10 +56,14 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func reportMissedCall(_ call: SignalCall, callerName: String) {
+        AssertIsOnMainThread()
+
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
     func answerCall(localId: UUID) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard let call = self.callService.call else {
                 assertionFailure("\(self.TAG) in \(#function) No current call.")
@@ -72,6 +80,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func answerCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
@@ -84,6 +94,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func declineCall(localId: UUID) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard let call = self.callService.call else {
                 assertionFailure("\(self.TAG) in \(#function) No current call.")
@@ -100,6 +112,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func declineCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
@@ -111,10 +125,14 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func recipientAcceptedCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         PeerConnectionClient.startAudioSession()
     }
 
     func localHangupCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             // If both parties hang up at the same moment,
             // call might already be nil.
@@ -128,14 +146,20 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
     internal func failCall(_ call: SignalCall, error: CallError) {
+        AssertIsOnMainThread()
+
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
@@ -147,6 +171,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
+        AssertIsOnMainThread()
+
         CallService.signalingQueue.async {
             guard call.localId == self.callService.call?.localId else {
                 assertionFailure("\(self.TAG) in \(#function) localId does not match current call")

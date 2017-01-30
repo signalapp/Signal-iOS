@@ -68,7 +68,7 @@
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can restore the permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
@@ -449,10 +449,12 @@
    notification title */
 "MISSED_CALL" = "Missed call";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
 /* notification body
