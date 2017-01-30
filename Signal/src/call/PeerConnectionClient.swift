@@ -147,15 +147,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             return
         }
 
-        // TODO: What are the best values to use here?
-        let mediaConstraintsDictionary = [
-            kMediaConstraintsMinWidth: "240",
-            kMediaConstraintsMinHeight: "320",
-            kMediaConstraintsMaxWidth: "240",
-            kMediaConstraintsMaxHeight: "320"
-        ]
+        // TODO: We could cap the maximum video size.
         let cameraConstraints = RTCMediaConstraints(mandatoryConstraints:nil,
-                                                    optionalConstraints:mediaConstraintsDictionary)
+                                                    optionalConstraints:nil)
 
         // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
