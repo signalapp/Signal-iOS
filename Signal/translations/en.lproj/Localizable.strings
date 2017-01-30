@@ -68,13 +68,19 @@
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can restore the permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call back";
+
+/* Alert body when camera is not authorized */
+"CAMERA_PERMISSION_MISSING_BODY" = "Signal requires access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+
+/* Alert title when camera is not authorized */
+"CAMERA_PERMISSION_MISSING_TITLE" = "Error";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";

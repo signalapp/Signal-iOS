@@ -779,6 +779,37 @@ protocol CallServiceObserver: class {
     func setHasLocalVideo(hasLocalVideo: Bool) {
         assertOnSignalingQueue()
 
+        let authStatus = AVCaptureDevice.authorizationStatus(forMediaType:AVMediaTypeVideo)
+        switch authStatus {
+        case .notDetermined:
+            Logger.debug("\(TAG) authStatus: AVAuthorizationStatusNotDetermined")
+            break
+        case .restricted:
+            Logger.debug("\(TAG) authStatus: AVAuthorizationStatusRestricted")
+            break
+        case .denied:
+            Logger.debug("\(TAG) authStatus: AVAuthorizationStatusDenied")
+            break
+        case .authorized:
+            Logger.debug("\(TAG) authStatus: AVAuthorizationStatusAuthorized")
+            break
+        }
+
+        // TODO: We could also check this whenever the app returns from the background,
+        //       since the user could disable this priviledge at all times.
+        if authStatus != .authorized {
+            DispatchQueue.main.async {
+                let title = NSLocalizedString("CAMERA_PERMISSION_MISSING_TITLE", comment: "Alert title when camera is not authorized")
+                let message = NSLocalizedString("CAMERA_PERMISSION_MISSING_BODY", comment: "Alert body when camera is not authorized")
+                let okButton = NSLocalizedString("OK", comment:"")
+
+                let alert = UIAlertView(title:title, message:message, delegate:nil, cancelButtonTitle:okButton)
+                alert.show()
+            }
+
+            return
+        }
+
         guard let peerConnectionClient = self.peerConnectionClient else {
             handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
