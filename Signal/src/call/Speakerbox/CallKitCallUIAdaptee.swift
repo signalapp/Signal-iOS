@@ -138,8 +138,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        // no - op
-        // TODO provider update call connected?
+        self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
     }
 
     func localHangupCall(_ call: SignalCall) {
@@ -213,27 +212,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         CallService.signalingQueue.async {
-            self.callService.handleOutgoingCall(call).then {
+            self.callService.handleOutgoingCall(call).then { () -> Void in
                 action.fulfill()
+                self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
             }.catch { error in
                 Logger.error("\(self.TAG) error \(error) in \(#function)")
                 self.callManager.removeCall(call)
                 action.fail()
             }
         }
-
-        // TODO FIXME
-        //        /*
-        //            Set callback blocks for significant events in the call's lifecycle, so that the CXProvider may be updated
-        //            to reflect the updated state.
-        //         */
-        //        call.hasStartedConnectingDidChange = { [weak self] in
-        //            self?.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
-        //        }
-        //        call.hasConnectedDidChange = { [weak self] in
-        //            self?.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectDate)
-        //        }
-
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
