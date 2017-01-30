@@ -73,7 +73,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
-    var areRemoteVideoControlsHidden = false {
+    var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI(callState: call.state)
         }
@@ -164,7 +164,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     func didTouchRootView(sender: UIGestureRecognizer) {
         if !remoteVideoView.isHidden {
-            areRemoteVideoControlsHidden = !areRemoteVideoControlsHidden
+            shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
     }
 
@@ -458,6 +458,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         self.localVideoConstraints = constraints
+        updateCallUI(callState: call.state)
     }
 
     // MARK: - Methods
@@ -546,15 +547,20 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         ongoingCallView.isUserInteractionEnabled = !isRinging
 
         // Rework control state if remote video is available.
-        contactAvatarView.isHidden = !remoteVideoView.isHidden
-        speakerPhoneButton.isHidden = !remoteVideoView.isHidden
-        audioModeMuteButton.isHidden = !remoteVideoView.isHidden
-        videoModeMuteButton.isHidden = remoteVideoView.isHidden
-        audioModeVideoButton.isHidden = !remoteVideoView.isHidden
-        videoModeVideoButton.isHidden = remoteVideoView.isHidden
+        let hasRemoteVideo = !remoteVideoView.isHidden
+        contactAvatarView.isHidden = hasRemoteVideo
+
+        // Rework control state if local video is available.
+        let hasLocalVideo = !localVideoView.isHidden
+        for subview in [speakerPhoneButton, audioModeMuteButton, audioModeVideoButton] {
+            subview?.isHidden = hasLocalVideo
+        }
+        for subview in [videoModeMuteButton, videoModeVideoButton] {
+            subview?.isHidden = !hasLocalVideo
+        }
 
         // Also hide other controls if user has tapped to hide them.
-        if areRemoteVideoControlsHidden && !remoteVideoView.isHidden {
+        if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
             ongoingCallView.isHidden = true
@@ -736,7 +742,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         remoteVideoView.renderFrame(nil)
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
-        areRemoteVideoControlsHidden = false
+        shouldRemoteVideoControlsBeHidden = false
 
         if remoteVideoTrack == nil {
             remoteVideoSize = CGSize.zero
