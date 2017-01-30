@@ -183,11 +183,17 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         contactNameLabel = UILabel()
         contactNameLabel.font = UIFont.ows_lightFont(withSize:ScaleFromIPhone5To7Plus(32, 40))
         contactNameLabel.textColor = UIColor.white
+        contactNameLabel.layer.shadowOffset = CGSize(width: 0, height: 0)
+        contactNameLabel.layer.shadowOpacity = 0.35
+        contactNameLabel.layer.shadowRadius = 4
         self.view.addSubview(contactNameLabel)
 
         callStatusLabel = UILabel()
         callStatusLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(19, 25))
         callStatusLabel.textColor = UIColor.white
+        callStatusLabel.layer.shadowOffset = CGSize(width: 0, height: 0)
+        callStatusLabel.layer.shadowOpacity = 0.35
+        callStatusLabel.layer.shadowRadius = 4
         self.view.addSubview(callStatusLabel)
 
         contactAvatarView = AvatarImageView()
