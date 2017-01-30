@@ -250,8 +250,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         declineIncomingButton = createButton(imageName:"hangup-active-wide",
                                              action:#selector(didPressDeclineCall))
 
+        let spacerView = UIView(frame: CGRect(x: 0, y: 0, width: buttonSize(), height: 0))
+        spacerView.autoSetDimension(.width, toSize:buttonSize())
+        spacerView.autoSetDimension(.height, toSize:buttonSize())
+
         incomingCallView = createContainerForCallControls(controlGroups : [
-            [acceptIncomingButton, declineIncomingButton ]
+            [acceptIncomingButton, spacerView, declineIncomingButton ]
             ])
     }
 
