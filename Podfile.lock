@@ -121,7 +121,7 @@ DEPENDENCIES:
   - OpenSSL
   - PastelogKit (~> 1.3)
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/fix-crash-on-messaging-unregistered`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -130,6 +130,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/session-corruption
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
+    :branch: mkirk/fix-crash-on-messaging-unregistered
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -139,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 55630ef62403de7eee31ac42b8827e390b6194f3
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: fe3ec457fa286ac7c74420232d14f5cd36b01a1f
+    :commit: 104645f97bfb76f1b1bbb6234c2b95df5ec4e6cf
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -170,6 +171,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 0b9f2a480586a683632948584eb8eba8ab0f4283
+PODFILE CHECKSUM: 47e61affdbde1999575244a885da19e5d4f98a42
 
 COCOAPODS: 1.0.1
