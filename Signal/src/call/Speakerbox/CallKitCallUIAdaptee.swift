@@ -171,9 +171,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // Update the CallKit UI.
         provider.reportCall(with: call.localId, updated: update)
 
-        CallService.signalingQueue.async {
-            self.callService.setHasLocalVideo(hasLocalVideo: hasLocalVideo)
-        }
+        self.callService.setHasLocalVideo(hasLocalVideo: hasLocalVideo)
     }
 
     // MARK: CXProviderDelegate
@@ -213,15 +211,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        CallService.signalingQueue.async {
-            self.callService.handleOutgoingCall(call).then { () -> Void in
-                action.fulfill()
-                self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
+        self.callService.handleOutgoingCall(call).then { () -> Void in
+            action.fulfill()
+            self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
             }.catch { error in
                 Logger.error("\(self.TAG) error \(error) in \(#function)")
                 self.callManager.removeCall(call)
                 action.fail()
-            }
         }
     }
 
@@ -245,11 +241,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //        // Trigger the call to be answered via the underlying network service.
         //        call.answerSpeakerboxCall()
 
-        CallService.signalingQueue.async {
-            self.callService.handleAnswerCall(call)
-            self.showCall(call)
-            action.fulfill()
-        }
+        self.callService.handleAnswerCall(call)
+        self.showCall(call)
+        action.fulfill()
     }
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
@@ -268,16 +262,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //        call.endSpeakerboxCall()
 
         // Synchronous to ensure call is terminated before call is displayed as "ended"
-        CallService.signalingQueue.async {
-            self.callService.handleLocalHungupCall(call)
+        self.callService.handleLocalHungupCall(call)
 
-            DispatchQueue.main.async {
-                // Signal to the system that the action has been successfully performed.
-                action.fulfill()
+        DispatchQueue.main.async {
+            // Signal to the system that the action has been successfully performed.
+            action.fulfill()
 
-                // Remove the ended call from the app's list of calls.
-                self.callManager.removeCall(call)
-            }
+            // Remove the ended call from the app's list of calls.
+            self.callManager.removeCall(call)
         }
     }
 
@@ -317,10 +309,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        CallService.signalingQueue.async {
-            self.callService.setIsMuted(isMuted: action.isMuted)
-            action.fulfill()
-        }
+        self.callService.setIsMuted(isMuted: action.isMuted)
+        action.fulfill()
     }
 
     public func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
