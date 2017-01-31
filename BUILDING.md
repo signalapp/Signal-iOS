@@ -19,7 +19,7 @@ sudo gem update
 
 3) Some dependencies are added via carthage. Run:
 ```
-carthage update
+carthage checkout
 ```
 If you don't have carthage, here are install instructions:
 ```
