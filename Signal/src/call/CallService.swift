@@ -244,29 +244,21 @@ protocol CallServiceObserver: class {
         return getIceServers().then(on: DispatchQueue.main) { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let time0 = DispatchTime.now()
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
-            Logger.debug("\(self.TAG) \(#function) time0  \(Double(DispatchTime.now().uptimeNanoseconds - time0.uptimeNanoseconds) / 1_000_000_000)")
 
             // When placing an outgoing call, it's our responsibility to create the DataChannel. Recipient will not have
             // to do this explicitly.
-            let time1 = DispatchTime.now()
             peerConnectionClient.createSignalingDataChannel()
-            Logger.debug("\(self.TAG) \(#function) time1  \(Double(DispatchTime.now().uptimeNanoseconds - time1.uptimeNanoseconds) / 1_000_000_000)")
 
             self.peerConnectionClient = peerConnectionClient
 
-            let time2 = DispatchTime.now()
             let sessionDescription = self.peerConnectionClient!.createOffer()
-            Logger.debug("\(self.TAG) \(#function) time2  \(Double(DispatchTime.now().uptimeNanoseconds - time2.uptimeNanoseconds) / 1_000_000_000)")
             return sessionDescription
             }.then(on: DispatchQueue.main) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
                 return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then(on: DispatchQueue.main) {
-                    let time3 = DispatchTime.now()
                     let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                     let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                     let result = self.messageSender.sendCallMessage(callMessage)
-                    Logger.debug("\(self.TAG) \(#function) time3  \(Double(DispatchTime.now().uptimeNanoseconds - time3.uptimeNanoseconds) / 1_000_000_000)")
                     return result
                 }
             }.catch(on: DispatchQueue.main) { error in
