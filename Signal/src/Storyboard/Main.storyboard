@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -230,19 +230,22 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RX6-CJ-FV1">
-                                        <rect key="frame" x="117" y="207" width="141" height="70"/>
+                                        <rect key="frame" x="143" y="207" width="89" height="70"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="g0E-XL-o8K"/>
                                         </constraints>
-                                        <inset key="titleEdgeInsets" minX="-50" minY="44" maxX="0.0" maxY="0.0"/>
+                                        <inset key="titleEdgeInsets" minX="0.0" minY="44" maxX="0.0" maxY="0.0"/>
                                         <inset key="imageEdgeInsets" minX="43" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="Scan Code" image="btnCamera--white">
+                                        <state key="normal" title="Scan Code">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
                                             <action selector="didTouchUpInsideScanButton:" destination="urv-62-RsD" eventType="touchUpInside" id="YJi-1a-Pg7"/>
                                         </connections>
                                     </button>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="btnCamera--white" translatesAutoresizingMaskIntoConstraints="NO" id="bwn-WS-pPa">
+                                        <rect key="frame" x="161" y="207" width="52" height="40"/>
+                                    </imageView>
                                 </subviews>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -254,6 +257,8 @@
                                     <constraint firstItem="RX6-CJ-FV1" firstAttribute="top" secondItem="DV4-GV-ZPf" secondAttribute="bottom" constant="20" id="XN2-Ok-U7y"/>
                                     <constraint firstAttribute="trailing" secondItem="DV4-GV-ZPf" secondAttribute="trailing" constant="16" id="dFu-ak-X2j"/>
                                     <constraint firstAttribute="trailing" secondItem="e7E-iS-3Oc" secondAttribute="trailing" constant="36" id="daW-7v-6MP"/>
+                                    <constraint firstItem="bwn-WS-pPa" firstAttribute="top" secondItem="RX6-CJ-FV1" secondAttribute="top" id="kP9-ti-KFk"/>
+                                    <constraint firstItem="bwn-WS-pPa" firstAttribute="centerX" secondItem="RX6-CJ-FV1" secondAttribute="centerX" id="rzB-mc-mHJ"/>
                                     <constraint firstItem="DV4-GV-ZPf" firstAttribute="leading" secondItem="B4o-Rc-z68" secondAttribute="leading" constant="16" id="sZ7-tO-0jJ"/>
                                 </constraints>
                             </view>
