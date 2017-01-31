@@ -15,7 +15,7 @@ import WebRTC
  * ## Signaling
  *
  * Signaling refers to the setup and tear down of the connection. Before the connection is established, this must happen
- * out of band (using Signal Service), but once the connection is established it's possible to publish updates
+ * out of band (using Signal Service), but once the connection is established it's possible to publish updates 
  * (like hangup) via the established channel.
  *
  * Signaling state is synchronized on the main thread and only mutated in the handleXXX family of methods.
@@ -34,7 +34,7 @@ import WebRTC
  * |          Caller            |          Callee         |
  * +----------------------------+-------------------------+
  * Start outgoing call: `handleOutgoingCall`...
- --[SS.CallOffer]-->
+                        --[SS.CallOffer]-->
  * ...and start generating ICE updates.
  * As ICE candidates are generated, `handleLocalAddedIceCandidate` is called.
  * and we *store* the ICE updates for later.
@@ -44,7 +44,7 @@ import WebRTC
  *                     <--[SS.CallAnswer]--
  *                          Start generating ICE updates.
  *                          As they are generated `handleLocalAddedIceCandidate` is called
- which immediately sends the ICE updates to the Caller.
+                            which immediately sends the ICE updates to the Caller.
  *                     <--[SS.ICEUpdate]-- (sent multiple times)
  *
  * Received CallAnswer: `handleReceivedAnswer`
@@ -126,10 +126,10 @@ protocol CallServiceObserver: class {
 
     /**
      * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
-     * Because this happens via Signal Service it's possible the callee user has not accepted any change in the caller's
+     * Because this happens via Signal Service it's possible the callee user has not accepted any change in the caller's 
      * identity. In which case *each* ICE update would cause an "identity change" warning on the callee's device. Since
-     * this could be several messages, the caller stores all ICE updates until receiving positive confirmation that the
-     * callee has received a message from us. This positive confirmation comes in the form of the callees `CallAnswer`
+     * this could be several messages, the caller stores all ICE updates until receiving positive confirmation that the 
+     * callee has received a message from us. This positive confirmation comes in the form of the callees `CallAnswer` 
      * message.
      */
     var sendIceUpdatesImmediately = true
@@ -252,24 +252,22 @@ protocol CallServiceObserver: class {
 
             self.peerConnectionClient = peerConnectionClient
 
-            let sessionDescription = self.peerConnectionClient!.createOffer()
-            return sessionDescription
-            }.then(on: DispatchQueue.main) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
-                return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then(on: DispatchQueue.main) {
-                    let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
-                    let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
-                    let result = self.messageSender.sendCallMessage(callMessage)
-                    return result
-                }
-            }.catch(on: DispatchQueue.main) { error in
-                Logger.error("\(self.TAG) placing call failed with error: \(error)")
+            return self.peerConnectionClient!.createOffer()
+        }.then(on: DispatchQueue.main) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
+            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then(on: DispatchQueue.main) {
+                let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
+                let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
+                return self.messageSender.sendCallMessage(callMessage)
+            }
+        }.catch(on: DispatchQueue.main) { error in
+            Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
-                if let callError = error as? CallError {
-                    self.handleFailedCall(error: callError)
-                } else {
-                    let externalError = CallError.externalError(underlyingError: error)
-                    self.handleFailedCall(error: externalError)
-                }
+            if let callError = error as? CallError {
+                self.handleFailedCall(error: callError)
+            } else {
+                let externalError = CallError.externalError(underlyingError: error)
+                self.handleFailedCall(error: externalError)
+            }
         }
     }
 
@@ -309,13 +307,13 @@ protocol CallServiceObserver: class {
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
         _ = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
             Logger.debug("\(self.TAG) successfully set remote description")
-            }.catch(on: DispatchQueue.main) { error in
-                if let callError = error as? CallError {
-                    self.handleFailedCall(error: callError)
-                } else {
-                    let externalError = CallError.externalError(underlyingError: error)
-                    self.handleFailedCall(error: externalError)
-                }
+        }.catch(on: DispatchQueue.main) { error in
+            if let callError = error as? CallError {
+                self.handleFailedCall(error: callError)
+            } else {
+                let externalError = CallError.externalError(underlyingError: error)
+                self.handleFailedCall(error: externalError)
+            }
         }
     }
 
@@ -394,47 +392,47 @@ protocol CallServiceObserver: class {
 
         incomingCallPromise = firstly {
             return getIceServers()
-            }.then(on: DispatchQueue.main) { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
-                // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
-                // even though, from the users perspective, no incoming call is yet visible.
-                self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
+        }.then(on: DispatchQueue.main) { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
+            // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
+            // even though, from the users perspective, no incoming call is yet visible.
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
 
-                let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
-                let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
+            let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
+            let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
-                // Find a sessionDescription compatible with my constraints and the remote sessionDescription
-                return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
-            }.then(on: DispatchQueue.main) { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
-                Logger.debug("\(self.TAG) set the remote description")
+            // Find a sessionDescription compatible with my constraints and the remote sessionDescription
+            return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
+        }.then(on: DispatchQueue.main) { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+            Logger.debug("\(self.TAG) set the remote description")
 
-                let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
-                let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+            let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
+            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
-                return self.messageSender.sendCallMessage(callAnswerMessage)
-            }.then(on: DispatchQueue.main) {
-                Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
+            return self.messageSender.sendCallMessage(callAnswerMessage)
+        }.then(on: DispatchQueue.main) {
+            Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
-                let (promise, fulfill, _) = Promise<Void>.pending()
+            let (promise, fulfill, _) = Promise<Void>.pending()
 
-                let timeout: Promise<Void> = after(interval: TimeInterval(timeoutSeconds)).then { () -> Void in
-                    // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                    throw CallError.timeout(description: "timed out waiting for call to connect")
-                }
+            let timeout: Promise<Void> = after(interval: TimeInterval(timeoutSeconds)).then { () -> Void in
+                // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                throw CallError.timeout(description: "timed out waiting for call to connect")
+            }
 
-                // This will be fulfilled (potentially) by the RTCDataChannel delegate method
-                self.fulfillCallConnectedPromise = fulfill
+            // This will be fulfilled (potentially) by the RTCDataChannel delegate method
+            self.fulfillCallConnectedPromise = fulfill
 
-                return race(promise, timeout)
-            }.catch(on: DispatchQueue.main) { error in
-                if let callError = error as? CallError {
-                    self.handleFailedCall(error: callError)
-                } else {
-                    let externalError = CallError.externalError(underlyingError: error)
-                    self.handleFailedCall(error: externalError)
-                }
-            }.always {
-                Logger.debug("\(self.TAG) ending background task awaiting inbound call connection")
-                UIApplication.shared.endBackgroundTask(backgroundTask)
+            return race(promise, timeout)
+        }.catch(on: DispatchQueue.main) { error in
+            if let callError = error as? CallError {
+                self.handleFailedCall(error: callError)
+            } else {
+                let externalError = CallError.externalError(underlyingError: error)
+                self.handleFailedCall(error: externalError)
+            }
+        }.always {
+            Logger.debug("\(self.TAG) ending background task awaiting inbound call connection")
+            UIApplication.shared.endBackgroundTask(backgroundTask)
         }
     }
 
@@ -474,7 +472,7 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * Local client (could be caller or callee) generated some connectivity information that we should send to the
+     * Local client (could be caller or callee) generated some connectivity information that we should send to the 
      * remote client.
      */
     private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate) {
@@ -513,7 +511,7 @@ protocol CallServiceObserver: class {
     /**
      * The clients can now communicate via WebRTC.
      *
-     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote
+     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote 
      * client.
      */
     private func handleIceConnected() {
@@ -750,8 +748,8 @@ protocol CallServiceObserver: class {
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
         _  = self.messageSender.sendCallMessage(callMessage).then(on: DispatchQueue.main) {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
-            }.catch(on: DispatchQueue.main) { error in
-                Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
+        }.catch(on: DispatchQueue.main) { error in
+            Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
         }
 
         terminateCall()
@@ -838,11 +836,11 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * Local client received a message on the WebRTC data channel.
+     * Local client received a message on the WebRTC data channel. 
      *
-     * The WebRTC data channel is a faster signaling channel than out of band Signal Service messages. Once it's
-     * established we use it to communicate further signaling information. The one sort-of exception is that with
-     * hangup messages we redundantly send a Signal Service hangup message, which is more reliable, and since the hangup
+     * The WebRTC data channel is a faster signaling channel than out of band Signal Service messages. Once it's 
+     * established we use it to communicate further signaling information. The one sort-of exception is that with 
+     * hangup messages we redundantly send a Signal Service hangup message, which is more reliable, and since the hangup 
      * action is idemptotent, there's no harm done.
      *
      * Used by both Incoming and Outgoing calls.
@@ -956,24 +954,24 @@ protocol CallServiceObserver: class {
 
         return firstly {
             return accountManager.getTurnServerInfo()
-            }.then(on: DispatchQueue.main) { turnServerInfo -> [RTCIceServer] in
-                Logger.debug("\(self.TAG) got turn server urls: \(turnServerInfo.urls)")
+        }.then(on: DispatchQueue.main) { turnServerInfo -> [RTCIceServer] in
+            Logger.debug("\(self.TAG) got turn server urls: \(turnServerInfo.urls)")
 
-                return turnServerInfo.urls.map { url in
-                    if url.hasPrefix("turn") {
-                        // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
-                        // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
-                        // e.g. we use a public fallback STUN server.
-                        return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
-                    } else {
-                        return RTCIceServer(urlStrings: [url])
-                    }
-                    } + [CallService.fallbackIceServer]
-            }.recover { error -> [RTCIceServer] in
-                Logger.error("\(self.TAG) fetching ICE servers failed with error: \(error)")
-                Logger.warn("\(self.TAG) using fallback ICE Servers")
+            return turnServerInfo.urls.map { url in
+                if url.hasPrefix("turn") {
+                    // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
+                    // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
+                    // e.g. we use a public fallback STUN server.
+                    return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
+                } else {
+                    return RTCIceServer(urlStrings: [url])
+                }
+            } + [CallService.fallbackIceServer]
+        }.recover { error -> [RTCIceServer] in
+            Logger.error("\(self.TAG) fetching ICE servers failed with error: \(error)")
+            Logger.warn("\(self.TAG) using fallback ICE Servers")
 
-                return [CallService.fallbackIceServer]
+            return [CallService.fallbackIceServer]
         }
     }
 
