@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/4/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
@@ -30,7 +31,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         Logger.verbose("\(TAG) handling offer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        CallService.signalingQueue.async {
+        DispatchQueue.main.async {
             _ = self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
         }
     }
@@ -39,7 +40,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         Logger.verbose("\(TAG) handling answer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        CallService.signalingQueue.async {
+        DispatchQueue.main.async {
             self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
         }
     }
@@ -53,7 +54,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         // while the RTC iOS API requires a signed int.
         let lineIndex = Int32(iceUpdate.sdpMlineIndex)
 
-        CallService.signalingQueue.async {
+        DispatchQueue.main.async {
             self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
         }
     }
@@ -63,7 +64,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
 
-        CallService.signalingQueue.async {
+        DispatchQueue.main.async {
             self.callService.handleRemoteHangup(thread: thread)
         }
     }
@@ -73,7 +74,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
 
-        CallService.signalingQueue.async {
+        DispatchQueue.main.async {
             self.callService.handleRemoteBusy(thread: thread)
         }
     }

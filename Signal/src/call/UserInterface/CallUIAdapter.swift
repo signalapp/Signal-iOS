@@ -30,24 +30,29 @@ protocol CallUIAdaptee {
 // Shared default implementations
 extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
         let callNotificationName = CallService.callServiceActiveCallNotificationName()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
+        AssertIsOnMainThread()
+
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
+    // TODO: who calls this?
     internal func callBack(recipientId: String) {
-        CallService.signalingQueue.async {
-            guard self.callService.call == nil else {
-                assertionFailure("unexpectedly found an existing call when trying to call back: \(recipientId)")
-                return
-            }
+        AssertIsOnMainThread()
 
-            let call = self.startOutgoingCall(handle: recipientId)
-            self.showCall(call)
+        guard self.callService.call == nil else {
+            assertionFailure("unexpectedly found an existing call when trying to call back: \(recipientId)")
+            return
         }
+
+        let call = self.startOutgoingCall(handle: recipientId)
+        self.showCall(call)
     }
 }
 
@@ -187,9 +192,7 @@ extension CallUIAdaptee {
         // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
         // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's 
         // assigned property.
-        CallService.signalingQueue.async {
-            call.isSpeakerphoneEnabled = isEnabled
-        }
+        call.isSpeakerphoneEnabled = isEnabled
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.
