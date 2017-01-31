@@ -32,7 +32,7 @@ import Foundation
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        self.handleState(state)
+        self.handleState(call:call)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
@@ -63,18 +63,18 @@ import Foundation
 
     // MARK: - Service action handlers
 
-    public func handleState(_ state: CallState) {
+    public func handleState(call: SignalCall) {
         assert(Thread.isMainThread)
 
-        Logger.verbose("\(TAG) in \(#function) new state: \(state)")
+        Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
 
-        switch state {
+        switch call.state {
         case .idle: handleIdle()
         case .dialing: handleDialing()
         case .answering: handleAnswering()
         case .remoteRinging: handleRemoteRinging()
         case .localRinging: handleLocalRinging()
-        case .connected: handleConnected()
+        case .connected: handleConnected(call:call)
         case .localFailure: handleLocalFailure()
         case .localHangup: handleLocalHangup()
         case .remoteHangup: handleRemoteHangup()
@@ -104,12 +104,12 @@ import Foundation
         startRinging()
     }
 
-    private func handleConnected() {
+    private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         stopRinging()
 
         // disable start recording to transmit call audio.
-        setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
+        ensureIsEnabled(call: call)
     }
 
     private func handleLocalFailure() {
