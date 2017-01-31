@@ -255,7 +255,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         spacerView.autoSetDimension(.height, toSize:buttonSize())
 
         incomingCallView = createContainerForCallControls(controlGroups : [
-            [acceptIncomingButton, spacerView, declineIncomingButton ]
+            [acceptIncomingButton, declineIncomingButton ]
             ])
     }
 
@@ -322,7 +322,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                     spacer.autoPinEdge(.right, to:.left, of:subview)
                     spacer.setContentHuggingHorizontalLow()
                     spacer.autoVCenterInSuperview()
-                    if lastSpacer != nil {
+
+                    if subviews.count == 2 {
+                        // special case to hardcode the spacer's size when there is only 1 spacer.
+                        spacer.autoSetDimension(.width, toSize: ScaleFromIPhone5To7Plus(46, 60))
+                    } else if lastSpacer != nil {
+                        // else there is more than one spacer, and this isn't the first one.
                         spacer.autoMatch(.width, to:.width, of:lastSpacer!)
                     }
                     lastSpacer = spacer
