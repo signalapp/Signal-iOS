@@ -28,7 +28,7 @@ protocol CallObserver: class {
 /**
  * Data model for a WebRTC backed voice/video call.
  *
- * This class' state should only be accessed on the signaling queue.
+ * This class' state should only be accessed on the main queue.
  */
 @objc class SignalCall: NSObject {
 
@@ -45,27 +45,17 @@ protocol CallObserver: class {
 
     var hasLocalVideo = false {
         didSet {
-            // This should only occur on the signaling queue.
-            objc_sync_enter(self)
+            AssertIsOnMainThread()
 
-            let observers = self.observers
-            let call = self
-            let hasLocalVideo = self.hasLocalVideo
-
-            objc_sync_exit(self)
-
-            DispatchQueue.main.async {
-                for observer in observers {
-                    observer.value?.hasLocalVideoDidChange(call: call, hasLocalVideo: hasLocalVideo)
-                }
+            for observer in observers {
+                observer.value?.hasLocalVideoDidChange(call: self, hasLocalVideo: hasLocalVideo)
             }
         }
     }
 
     var state: CallState {
         didSet {
-            // This should only occur on the signaling queue.
-            objc_sync_enter(self)
+            AssertIsOnMainThread()
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state)")
 
             // Update connectedDate
@@ -77,58 +67,32 @@ protocol CallObserver: class {
                 connectedDate = nil
             }
 
-            let observers = self.observers
-            let call = self
-            let state = self.state
-
-            objc_sync_exit(self)
-
-            DispatchQueue.main.async {
-                for observer in observers {
-                    observer.value?.stateDidChange(call: call, state: state)
-                }
+            for observer in observers {
+                observer.value?.stateDidChange(call: self, state: state)
             }
         }
     }
 
     var isMuted = false {
         didSet {
-            // This should only occur on the signaling queue.
-            objc_sync_enter(self)
+            AssertIsOnMainThread()
 
             Logger.debug("\(TAG) muted changed: \(oldValue) -> \(self.isMuted)")
 
-            let observers = self.observers
-            let call = self
-            let isMuted = self.isMuted
-
-            objc_sync_exit(self)
-
-            DispatchQueue.main.async {
-                for observer in observers {
-                    observer.value?.muteDidChange(call: call, isMuted: isMuted)
-                }
+            for observer in observers {
+                observer.value?.muteDidChange(call: self, isMuted: isMuted)
             }
         }
     }
 
     var isSpeakerphoneEnabled = false {
         didSet {
-            // This should only occur on the signaling queue.
-            objc_sync_enter(self)
+            AssertIsOnMainThread()
 
             Logger.debug("\(TAG) isSpeakerphoneEnabled changed: \(oldValue) -> \(self.isSpeakerphoneEnabled)")
 
-            let observers = self.observers
-            let call = self
-            let isSpeakerphoneEnabled = self.isSpeakerphoneEnabled
-
-            objc_sync_exit(self)
-
-            DispatchQueue.main.async {
-                for observer in observers {
-                    observer.value?.speakerphoneDidChange(call: call, isEnabled: isSpeakerphoneEnabled)
-                }
+            for observer in observers {
+                observer.value?.speakerphoneDidChange(call: self, isEnabled: isSpeakerphoneEnabled)
             }
         }
     }
@@ -159,37 +123,26 @@ protocol CallObserver: class {
     // -
 
     func addObserverAndSyncState(observer: CallObserver) {
-        objc_sync_enter(self)
+        AssertIsOnMainThread()
 
         observers.append(Weak(value: observer))
 
-        let call = self
-        let state = self.state
-
-        objc_sync_exit(self)
-
-        DispatchQueue.main.async {
-            // Synchronize observer with current call state
-            observer.stateDidChange(call: call, state: state)
-        }
+        // Synchronize observer with current call state
+        observer.stateDidChange(call: self, state: state)
     }
 
     func removeObserver(_ observer: CallObserver) {
-        objc_sync_enter(self)
+        AssertIsOnMainThread()
 
         while let index = observers.index(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
-
-        objc_sync_exit(self)
     }
 
     func removeAllObservers() {
-        objc_sync_enter(self)
+        AssertIsOnMainThread()
 
         observers = []
-
-        objc_sync_exit(self)
     }
 
     // MARK: Equatable

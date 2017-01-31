@@ -18,7 +18,7 @@ import WebRTC
  * out of band (using Signal Service), but once the connection is established it's possible to publish updates
  * (like hangup) via the established channel.
  *
- * Signaling state is synchronized on the `signalingQueue` and only mutated in the handleXXX family of methods.
+ * Signaling state is synchronized on the main thread and only mutated in the handleXXX family of methods.
  *
  * Following is a high level process of the exchange of messages that takes place during call signaling.
  *
@@ -89,8 +89,7 @@ protocol CallServiceObserver: class {
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
-// This class' state should only be accessed on the signaling queue, _except_
-// the observer-related state which only be accessed on the main thread.
+// This class' state should only be accessed on the main queue.
 @objc class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
 
     // MARK: - Properties
@@ -217,9 +216,6 @@ protocol CallServiceObserver: class {
     }
 
     // MARK: - Service Actions
-
-    // Unless otherwise documented, these `handleXXX` methods expect to be called on the SignalingQueue to coordinate
-    // state across calls.
 
     /**
      * Initiate an outgoing call.
@@ -610,8 +606,6 @@ protocol CallServiceObserver: class {
             return
         }
 
-        // Because we may not be on signalingQueue (because this method is called from Objc which doesn't have
-        // access to signalingQueue (that I can find). FIXME?
         self.handleAnswerCall(call)
     }
 
@@ -698,8 +692,6 @@ protocol CallServiceObserver: class {
             return
         }
 
-        // Because we may not be on signalingQueue (because this method is called from Objc which doesn't have
-        // access to signalingQueue (that I can find). FIXME?
         self.handleDeclineCall(call)
     }
 
