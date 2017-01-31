@@ -119,6 +119,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [self.navigationController.navigationBar setTranslucent:NO];
     [self useOWSBackButton];
     
+    self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
+        @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
+
     self.tableView.estimatedRowHeight = (CGFloat)60.0;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
