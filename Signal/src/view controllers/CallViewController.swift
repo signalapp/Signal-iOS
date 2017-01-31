@@ -304,7 +304,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // If there's more than one subview in the row,
             // space them evenly within the row.
             var lastSubview: UIView?
-            var lastSpacer: UIView?
             for subview in subviews {
                 row.addSubview(subview)
                 subview.setContentHuggingHorizontalHigh()
@@ -322,11 +321,9 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                     if subviews.count == 2 {
                         // special case to hardcode the spacer's size when there is only 1 spacer.
                         spacer.autoSetDimension(.width, toSize: ScaleFromIPhone5To7Plus(46, 60))
-                    } else if lastSpacer != nil {
-                        // else there is more than one spacer, and this isn't the first one.
-                        spacer.autoMatch(.width, to:.width, of:lastSpacer!)
+                    } else {
+                        spacer.autoSetDimension(.width, toSize: ScaleFromIPhone5To7Plus(3, 5))
                     }
-                    lastSpacer = spacer
                 }
 
                 lastSubview = subview
