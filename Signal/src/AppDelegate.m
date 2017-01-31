@@ -17,6 +17,7 @@
 #import "Release.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
+#import "TouchIDManager.h"
 #import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
@@ -257,21 +258,33 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (getenv("runningTests_dontStartApp")) {
         return;
     }
-
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               // We're double checking that the app is active, to be sure since we
-                                               // can't verify in production env due to code
-                                               // signing.
-                                               [TSSocketManager becomeActiveFromForeground];
-                                               [[Environment getCurrent].contactsManager verifyABPermission];
-                                               
-                                               // This will fetch new messages, if we're using domain
-                                               // fronting.
-                                               [[PushManager sharedManager] applicationDidBecomeActive];
-                                           }];
     
-    [self removeScreenProtection];
+    if (Environment.preferences.touchIDIsEnabled && !TouchIDManager.shared.isTouchIDUnlocked) {
+		// If the user has canceled the TouchID prompt, we want to display the 
+		// screen protection until they exit/re-enter the app, or else
+		// their home button will be hijacked and they'll be unable to switch apps.
+		if (!TouchIDManager.shared.userDidCancel) {
+			[self presentTouchID];
+		} else {
+			[self protectScreen];
+		}
+    } else {
+        // This path will be hit after TouchID authentication, as the TouchID prompt
+        // triggers a `resignActive`/`becomeActive`.
+        [[TSAccountManager sharedInstance] ifRegistered:YES
+                                               runAsync:^{
+                                                   // We're double checking that the app is active, to be sure since we
+                                                   // can't verify in production env due to code
+                                                   // signing.
+                                                   [TSSocketManager becomeActiveFromForeground];
+                                                   [[Environment getCurrent].contactsManager verifyABPermission];
+                                                   
+                                                   // This will fetch new messages, if we're using domain
+                                                   // fronting.
+                                                   [[PushManager sharedManager] applicationDidBecomeActive];
+                                               }];
+        [self removeScreenProtection];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -322,6 +335,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 }
 
+#pragma mark - Screen Protection
+
 /**
  * Screen protection obscures the app screen shown in the app switcher.
  */
@@ -343,6 +358,32 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = NO;
     }
+}
+
+- (void)presentTouchID {
+    [self protectScreen];
+    [TouchIDManager.shared authenticateViaTouchIDCompletion:^(TouchIDAuthResult result) {
+        switch (result) {
+            case TouchIDAuthResultSuccess:
+                [self removeScreenProtection];
+                break;
+                
+            case TouchIDAuthResultUnavailable:
+                // We shouldn't be able to reach this state, as a user won't be able to 
+                // enable TouchID in the first place if it was never available.
+                break;
+                
+            case TouchIDAuthResultFailed:
+                // TouchID failed; don't unlock.
+                break;
+                
+            case TouchIDAuthResultUserCanceled:
+                // User canceled; we don't want to unlock the phone, but we want to avoid an endless cycle of 
+                // TouchID prompts, which hijacks the homebutton and prevents the user from switching apps,
+                // so just show the security screen until the user backgrounds and foregrounds the app.
+                break;
+        }
+    }];
 }
 
 - (void)removeScreenProtection {

@@ -769,6 +769,12 @@
 /* Section header */
 "SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Safety Numbers Approval";
 
+/* The text on the Touch ID prompt */
+"TOUCHID_SECURITY_PROMPT" = "Unlock with Touch ID";
+
+/* The TouchID row text, in the settings screen. */
+"SETTINGS_TOUCHID_SECURITY" = "Touch ID";
+
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 
