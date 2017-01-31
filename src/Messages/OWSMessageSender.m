@@ -630,15 +630,24 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             BOOL isLegacyMessage = ![message isKindOfClass:[OWSOutgoingSyncMessage class]];
 
             __block NSDictionary *messageDict;
+            __block NSException *encryptionException;
             // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
             // operations.
             dispatch_sync([OWSDispatch sessionCipher], ^{
-                messageDict = [self encryptedMessageWithPlaintext:plainText
-                                                      toRecipient:recipient.uniqueId
-                                                         deviceId:deviceNumber
-                                                    keyingStorage:[TSStorageManager sharedManager]
-                                                           legacy:isLegacyMessage];
+                @try {
+                    messageDict = [self encryptedMessageWithPlaintext:plainText
+                                                          toRecipient:recipient.uniqueId
+                                                             deviceId:deviceNumber
+                                                        keyingStorage:[TSStorageManager sharedManager]
+                                                               legacy:isLegacyMessage];
+                } @catch (NSException *exception) {
+                    encryptionException = exception;
+                }
             });
+            if (encryptionException) {
+                DDLogInfo(@"%@ Exception during encryption: %@", self.tag, encryptionException);
+                @throw encryptionException;
+            }
 
             if (messageDict) {
                 [messagesArray addObject:messageDict];
