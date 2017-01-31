@@ -267,7 +267,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                              style:UIBarButtonItemStylePlain
                                             target:self
                                             action:@selector(refreshContacts)];
-        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8, 8, 8, 8);
+        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8, 6.5, 8, 6.5);
 
 
         self.inviteCell.hidden = YES;
