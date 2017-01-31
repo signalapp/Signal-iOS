@@ -550,6 +550,8 @@ protocol CallServiceObserver: class {
             self.fulfillCallConnectedPromise?()
         case .remoteRinging:
             Logger.info("\(TAG) call alreading ringing. Ignoring \(#function)")
+        case .connected:
+            Logger.info("\(TAG) Call reconnected \(#function)")
         default:
             Logger.debug("\(TAG) unexpected call state for \(#function): \(call.state)")
         }
