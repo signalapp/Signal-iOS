@@ -342,7 +342,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         DDLogInfo(@"%@ got start audio call intent", self.tag);
 
-        // hoooooooooooly moly.
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
@@ -357,23 +356,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        CallUIAdapter *callUIAdapter = [Environment getCurrent].callService.callUIAdapter;
-        OWSAssert(callUIAdapter);
-
-        ContactsUpdater *contactsUpdater = [Environment getCurrent].contactsUpdater;
-        OWSAssert(contactsUpdater);
-
-        OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
-        OWSAssert(contactsManager);
-
-        PhoneManager *phoneManager = [Environment getCurrent].phoneManager;
-        OWSAssert(phoneManager);
-
-        OutboundCallInitiator *outboundCallInitiator =
-            [[OutboundCallInitiator alloc] initWithRedphoneManager:phoneManager
-                                                     callUIAdapter:callUIAdapter
-                                                   contactsManager:contactsManager
-                                                   contactsUpdater:contactsUpdater];
+        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OWSAssert(outboundCallInitiator);
         return [outboundCallInitiator initiateCallWithHandle:handle];
     } else {
         DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",

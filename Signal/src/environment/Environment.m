@@ -23,11 +23,12 @@ static Environment *environment = nil;
 
 @implementation Environment
 
-@synthesize accountManager = _accountManager;
-@synthesize callMessageHandler = _callMessageHandler;
-@synthesize callService = _callService;
-@synthesize notificationsManager = _notificationsManager;
-@synthesize preferences = _preferences;
+@synthesize accountManager = _accountManager,
+            callMessageHandler = _callMessageHandler,
+            callService = _callService,
+            notificationsManager = _notificationsManager,
+            preferences = _preferences,
+            outboundCallInitiator = _outboundCallInitiator;
 
 + (Environment *)getCurrent {
     NSAssert((environment != nil), @"Environment is not defined.");
@@ -159,6 +160,9 @@ static Environment *environment = nil;
 {
     @synchronized (self) {
         if (!_callService) {
+            OWSAssert(self.accountManager);
+            OWSAssert(self.contactsManager);
+            OWSAssert(self.messageSender);
             _callService = [[CallService alloc] initWithAccountManager:self.accountManager
                                                        contactsManager:self.contactsManager
                                                          messageSender:self.messageSender
@@ -167,6 +171,29 @@ static Environment *environment = nil;
     }
 
     return _callService;
+}
+
+- (CallUIAdapter *)callUIAdapter
+{
+    return self.callService.callUIAdapter;
+}
+
+- (OutboundCallInitiator *)outboundCallInitiator
+{
+    @synchronized (self) {
+        if (!_outboundCallInitiator) {
+            OWSAssert(self.phoneManager);
+            OWSAssert(self.callUIAdapter);
+            OWSAssert(self.contactsManager);
+            OWSAssert(self.contactsUpdater);
+            _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithRedphoneManager:self.phoneManager
+                                                                              callUIAdapter:self.callUIAdapter
+                                                                            contactsManager:self.contactsManager
+                                                                            contactsUpdater:self.contactsUpdater];
+        }
+    }
+
+    return _outboundCallInitiator;
 }
 
 + (PhoneManager *)phoneManager {
