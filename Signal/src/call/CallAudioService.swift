@@ -54,8 +54,14 @@ import Foundation
 
     private func ensureIsEnabled(call: SignalCall) {
         // Auto-enable speakerphone when local video is enabled.
-        if call.isSpeakerphoneEnabled || call.hasLocalVideo {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord, options: .defaultToSpeaker)
+        if call.hasLocalVideo {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
+                            mode: AVAudioSessionModeVideoChat,
+                            options: .defaultToSpeaker)
+        } else if call.isSpeakerphoneEnabled {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
+                            mode: AVAudioSessionModeVoiceChat,
+                            options: .defaultToSpeaker)
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
         }
@@ -178,11 +184,17 @@ import Foundation
         }
     }
 
-    // MARK: - AVAudioSession Helpers
-
-    private func setAudioSession(category: String, options: AVAudioSessionCategoryOptions) {
+    private func setAudioSession(category: String,
+                                 mode: String,
+                                 options: AVAudioSessionCategoryOptions) {
         do {
-            try AVAudioSession.sharedInstance().setCategory(category, with: options)
+            if #available(iOS 10.0, *) {
+                try
+                    AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
+            } else {
+                try
+                    AVAudioSession.sharedInstance().setCategory(category, with: options)
+            }
             Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
         } catch {
             let message = "\(self.TAG) in \(#function) failed to set category: \(category) with error: \(error)"
@@ -192,13 +204,8 @@ import Foundation
     }
 
     private func setAudioSession(category: String) {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(category)
-            Logger.debug("\(self.TAG) set category: \(category)")
-        } catch {
-            let message = "\(self.TAG) in \(#function) failed to set category: \(category) with error: \(error)"
-            assertionFailure(message)
-            Logger.error(message)
-        }
+        setAudioSession(category:category,
+                        mode:AVAudioSessionModeVoiceChat,
+                        options:AVAudioSessionCategoryOptions(rawValue: 0))
     }
 }
