@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 1/11/17.
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import XCTest
 import WebRTC
@@ -32,6 +33,14 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
     internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
         dataChannelMessages.append(dataChannelMessage)
     }
+
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
+
+    }
+
+    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
+
+    }
 }
 
 class PeerConnectionClientTest: XCTestCase {
@@ -47,9 +56,9 @@ class PeerConnectionClientTest: XCTestCase {
         let iceServers = [RTCIceServer]()
         clientDelegate = FakePeerConnectionClientDelegate()
         client = PeerConnectionClient(iceServers: iceServers, delegate: clientDelegate)
-        peerConnection = client.peerConnection
+        peerConnection = client.peerConnectionForTests()
         client.createSignalingDataChannel()
-        dataChannel = client.dataChannel!
+        dataChannel = client.dataChannelForTests()
     }
 
     override func tearDown() {
@@ -62,12 +71,15 @@ class PeerConnectionClientTest: XCTestCase {
         XCTAssertNil(clientDelegate.connectionState)
 
         client.peerConnection(peerConnection, didChange: RTCIceConnectionState.connected)
+        waitForPeerConnectionClient()
         XCTAssertEqual(FakePeerConnectionClientDelegate.ConnectionState.connected, clientDelegate.connectionState)
 
         client.peerConnection(peerConnection, didChange: RTCIceConnectionState.completed)
+        waitForPeerConnectionClient()
         XCTAssertEqual(FakePeerConnectionClientDelegate.ConnectionState.connected, clientDelegate.connectionState)
 
         client.peerConnection(peerConnection, didChange: RTCIceConnectionState.failed)
+        waitForPeerConnectionClient()
         XCTAssertEqual(FakePeerConnectionClientDelegate.ConnectionState.failed, clientDelegate.connectionState)
     }
 
@@ -82,7 +94,20 @@ class PeerConnectionClientTest: XCTestCase {
         client.peerConnection(peerConnection, didGenerate: candidate2)
         client.peerConnection(peerConnection, didGenerate: candidate3)
 
+        waitForPeerConnectionClient()
+
         XCTAssertEqual(3, clientDelegate.localIceCandidates.count)
+    }
+
+    func waitForPeerConnectionClient() {
+        // PeerConnectionClient processes RTCPeerConnectionDelegate invocations first on the signaling queue...
+        client.flushSignalingQueueForTests()
+        // ...then on the main queue.
+        let expectation = self.expectation(description: "Wait for PeerConnectionClient to call delegate method on main queue")
+        DispatchQueue.main.async {
+            expectation.fulfill()
+        }
+        self.waitForExpectations(timeout: 1.0, handler: nil)
     }
 
     func testDataChannelMessage() {
@@ -91,6 +116,8 @@ class PeerConnectionClientTest: XCTestCase {
         let hangup = DataChannelMessage.forHangup(callId: 123)
         let hangupBuffer = RTCDataBuffer(data: hangup.asData(), isBinary: false)
         client.dataChannel(dataChannel, didReceiveMessageWith: hangupBuffer)
+
+        waitForPeerConnectionClient()
 
         XCTAssertEqual(1, clientDelegate.dataChannelMessages.count)
 
