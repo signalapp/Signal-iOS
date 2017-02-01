@@ -19,7 +19,6 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToEncryptMessage = 110,
     OWSErrorCodeSignalServiceFailure = 1001,
     OWSErrorCodeSignalServiceRateLimited = 1010,
-    OWSErrorCodeWebRTCMissingDataChannel = 1011,
     OWSErrorCodeUserError = 2001,
 };
 
@@ -28,6 +27,5 @@ extern NSError *OWSErrorMakeUnableToProcessServerResponseError();
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError();
 extern NSError *OWSErrorMakeAssertionError();
-extern NSError *OWSErrorMakeWebRTCMissingDataChannelError();
 
 NS_ASSUME_NONNULL_END
