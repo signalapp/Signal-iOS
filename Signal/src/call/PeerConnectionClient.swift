@@ -577,6 +577,38 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             // Skipping check on <iOS10, since syntax is different and it's just a development convenience.
         }
     }
+
+    // MARK: Test-only accessors
+
+    internal func peerConnectionForTests() -> RTCPeerConnection {
+        AssertIsOnMainThread()
+
+        var result: RTCPeerConnection? = nil
+        PeerConnectionClient.signalingQueue.sync {
+            result = peerConnection
+            Logger.info("\(self.TAG) called \(#function)")
+        }
+        return result!
+    }
+
+    internal func dataChannelForTests() -> RTCDataChannel {
+        AssertIsOnMainThread()
+
+        var result: RTCDataChannel? = nil
+        PeerConnectionClient.signalingQueue.sync {
+            result = dataChannel
+            Logger.info("\(self.TAG) called \(#function)")
+        }
+        return result!
+    }
+
+    internal func flushSignalingQueueForTests() {
+        AssertIsOnMainThread()
+
+        PeerConnectionClient.signalingQueue.sync {
+            // Noop.
+        }
+    }
 }
 
 /**

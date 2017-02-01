@@ -241,7 +241,7 @@ protocol CallServiceObserver: class {
             return Promise(error: CallError.assertionError(description: errorDescription))
         }
 
-        return getIceServers().then(on: DispatchQueue.main) { iceServers -> Promise<HardenedRTCSessionDescription> in
+        return getIceServers().then() { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
@@ -253,13 +253,13 @@ protocol CallServiceObserver: class {
             self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
-        }.then(on: DispatchQueue.main) { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
-            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then(on: DispatchQueue.main) {
+        }.then() { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
+            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then() {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                 return self.messageSender.sendCallMessage(callMessage)
             }
-        }.catch(on: DispatchQueue.main) { error in
+        }.catch() { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
             if let callError = error as? CallError {
@@ -307,7 +307,7 @@ protocol CallServiceObserver: class {
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
         _ = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
             Logger.debug("\(self.TAG) successfully set remote description")
-        }.catch(on: DispatchQueue.main) { error in
+        }.catch() { error in
             if let callError = error as? CallError {
                 self.handleFailedCall(error: callError)
             } else {
@@ -392,7 +392,7 @@ protocol CallServiceObserver: class {
 
         incomingCallPromise = firstly {
             return getIceServers()
-        }.then(on: DispatchQueue.main) { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
+        }.then() { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
@@ -402,14 +402,14 @@ protocol CallServiceObserver: class {
 
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
-        }.then(on: DispatchQueue.main) { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+        }.then() { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             Logger.debug("\(self.TAG) set the remote description")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
             return self.messageSender.sendCallMessage(callAnswerMessage)
-        }.then(on: DispatchQueue.main) {
+        }.then() {
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
             let (promise, fulfill, _) = Promise<Void>.pending()
@@ -423,7 +423,7 @@ protocol CallServiceObserver: class {
             self.fulfillCallConnectedPromise = fulfill
 
             return race(promise, timeout)
-        }.catch(on: DispatchQueue.main) { error in
+        }.catch() { error in
             if let callError = error as? CallError {
                 self.handleFailedCall(error: callError)
             } else {
@@ -738,9 +738,9 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
-        _  = self.messageSender.sendCallMessage(callMessage).then(on: DispatchQueue.main) {
+        _  = self.messageSender.sendCallMessage(callMessage).then() {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
-        }.catch(on: DispatchQueue.main) { error in
+        }.catch() { error in
             Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
         }
 
@@ -946,7 +946,7 @@ protocol CallServiceObserver: class {
 
         return firstly {
             return accountManager.getTurnServerInfo()
-        }.then(on: DispatchQueue.main) { turnServerInfo -> [RTCIceServer] in
+        }.then() { turnServerInfo -> [RTCIceServer] in
             Logger.debug("\(self.TAG) got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
