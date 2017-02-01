@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSError.h"
 
@@ -35,7 +37,13 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
 NSError *OWSErrorMakeAssertionError()
 {
     return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
-        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+                                       NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+}
+
+NSError *OWSErrorMakeWebRTCMissingDataChannelError()
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeWebRTCMissingDataChannel,
+                                       NSLocalizedString(@"ERROR_DESCRIPTION_WEBRTC_MISSING_DATA_CHANNEL", @"Missing data channel while trying to sending message"));
 }
 
 NS_ASSUME_NONNULL_END
