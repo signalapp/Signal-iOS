@@ -18,6 +18,8 @@ let kMediaConstraintsMaxHeight = kRTCMediaConstraintsMaxHeight
 
 /**
  * The PeerConnectionClient notifies it's delegate (the CallService) of key events in the call signaling life cycle
+ *
+ * The delegate's methods will always be called on the main thread.
  */
 protocol PeerConnectionClientDelegate: class {
 
@@ -143,7 +145,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func createSignalingDataChannel() {
         AssertIsOnMainThread()
-        
+
         PeerConnectionClient.signalingQueue.sync {
             let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
                                                          configuration: RTCDataChannelConfiguration())
@@ -404,24 +406,24 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data) -> Promise<Bool> {
+    public func sendDataChannelMessage(data: Data) {
         AssertIsOnMainThread()
-        
-        return Promise { fulfill, reject in
-            AssertIsOnMainThread()
-            
-            PeerConnectionClient.signalingQueue.async {
-                self.assertOnSignalingQueue()
 
-                guard let dataChannel = self.dataChannel else {
-                    Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
-                    reject(OWSErrorMakeWebRTCMissingDataChannelError())
-                    return
-                }
-                
-                let buffer = RTCDataBuffer(data: data, isBinary: false)
-                let result = dataChannel.sendData(buffer)
-                fulfill(result)
+        PeerConnectionClient.signalingQueue.async {
+            self.assertOnSignalingQueue()
+
+            guard let dataChannel = self.dataChannel else {
+                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
+                return
+            }
+
+            let buffer = RTCDataBuffer(data: data, isBinary: false)
+            let result = dataChannel.sendData(buffer)
+
+            if result {
+                Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+            } else {
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
             }
         }
     }

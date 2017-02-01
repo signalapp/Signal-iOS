@@ -635,11 +635,7 @@ protocol CallServiceObserver: class {
         callRecord.save()
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
-            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
-            }.catch(on: DispatchQueue.main) { _ in
-                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
-        }
+        peerConnectionClient.sendDataChannelMessage(data: message.asData())
 
         handleConnectedCall(call)
     }
@@ -737,11 +733,7 @@ protocol CallServiceObserver: class {
 
         // If the call is connected, we can send the hangup via the data channel.
         let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
-            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
-            }.catch(on: DispatchQueue.main) { _ in
-                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
-        }
+        peerConnectionClient.sendDataChannelMessage(data: message.asData())
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
@@ -1075,11 +1067,7 @@ protocol CallServiceObserver: class {
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
         let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled:shouldHaveLocalVideoTrack)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
-            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
-            }.catch(on: DispatchQueue.main) { _ in
-                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
-        }
+        peerConnectionClient.sendDataChannelMessage(data: message.asData())
     }
 
     // MARK: - Observers
