@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "Environment.h"
 #import "Constraints.h"
 #import "DH3KKeyAgreementProtocol.h"

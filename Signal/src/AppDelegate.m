@@ -31,6 +31,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 
 @import WebRTC;
+@import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 NSString *const AppDelegateStoryboardRegistration = @"Registration";
@@ -333,10 +334,52 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+        DDLogInfo(@"%@ got start video call intent", self.tag);
         [[Environment getCurrent].callService handleCallKitStartVideo];
+    } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
+
+        // TODO guard if less than iOS10.
+
+        DDLogInfo(@"%@ got start audio call intent", self.tag);
+
+        // hoooooooooooly moly.
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
+            DDLogError(@"%@ unexpected class for start call audio: %@", self.tag, intent);
+            return NO;
+        }
+        INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
+        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
+        if (!handle) {
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            return NO;
+        }
+
+        CallUIAdapter *callUIAdapter = [Environment getCurrent].callService.callUIAdapter;
+        OWSAssert(callUIAdapter);
+
+        ContactsUpdater *contactsUpdater = [Environment getCurrent].contactsUpdater;
+        OWSAssert(contactsUpdater);
+
+        OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+        OWSAssert(contactsManager);
+
+        PhoneManager *phoneManager = [Environment getCurrent].phoneManager;
+        OWSAssert(phoneManager);
+
+        OutboundCallInitiator *outboundCallInitiator =
+            [[OutboundCallInitiator alloc] initWithRedphoneManager:phoneManager
+                                                     callUIAdapter:callUIAdapter
+                                                   contactsManager:contactsManager
+                                                   contactsUpdater:contactsUpdater];
+        return [outboundCallInitiator initiateCallWithHandle:handle];
     } else {
-        DDLogWarn(
-            @"%@ called %s with userActivity: %@, but not yet supported.", self.tag, __PRETTY_FUNCTION__, userActivity);
+        DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
+            self.tag,
+            __PRETTY_FUNCTION__,
+            userActivity.activityType);
     }
 
     // TODO Something like...
