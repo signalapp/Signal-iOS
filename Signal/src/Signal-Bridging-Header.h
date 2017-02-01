@@ -13,6 +13,7 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "OWSDispatch.h"
+#import "OWSError.h"
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PhoneNumber.h"

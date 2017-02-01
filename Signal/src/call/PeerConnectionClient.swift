@@ -80,7 +80,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private weak var delegate: PeerConnectionClientDelegate!
 
     func setDelegate(delegate: PeerConnectionClientDelegate?) {
-        PeerConnectionClient.signalingQueue.sync {
+        PeerConnectionClient.signalingQueue.async {
             self.delegate = delegate
         }
     }
@@ -112,6 +112,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var cameraConstraints: RTCMediaConstraints
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate) {
+        AssertIsOnMainThread()
+
         self.iceServers = iceServers
         self.delegate = delegate
 
@@ -140,6 +142,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: - Media Streams
 
     public func createSignalingDataChannel() {
+        AssertIsOnMainThread()
+        
         PeerConnectionClient.signalingQueue.sync {
             let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
                                                          configuration: RTCDataChannelConfiguration())
@@ -400,23 +404,26 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data) -> Bool {
+    public func sendDataChannelMessage(data: Data) -> Promise<Bool> {
         AssertIsOnMainThread()
+        
+        return Promise { fulfill, reject in
+            AssertIsOnMainThread()
+            
+            PeerConnectionClient.signalingQueue.async {
+                self.assertOnSignalingQueue()
 
-        var result = false
-        PeerConnectionClient.signalingQueue.sync {
-            assertOnSignalingQueue()
-
-            guard let dataChannel = self.dataChannel else {
-                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
-                result = false
-                return
+                guard let dataChannel = self.dataChannel else {
+                    Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
+                    reject(OWSErrorMakeWebRTCMissingDataChannelError())
+                    return
+                }
+                
+                let buffer = RTCDataBuffer(data: data, isBinary: false)
+                let result = dataChannel.sendData(buffer)
+                fulfill(result)
             }
-
-            let buffer = RTCDataBuffer(data: data, isBinary: false)
-            result = dataChannel.sendData(buffer)
         }
-        return result
     }
 
     // MARK: RTCDataChannelDelegate

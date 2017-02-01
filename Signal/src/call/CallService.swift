@@ -635,10 +635,10 @@ protocol CallServiceObserver: class {
         callRecord.save()
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
-            Logger.debug("\(TAG) sendDataChannelMessage returned true")
-        } else {
-            Logger.warn("\(TAG) sendDataChannelMessage returned false")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
+            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+            }.catch(on: DispatchQueue.main) { _ in
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
         }
 
         handleConnectedCall(call)
@@ -737,10 +737,10 @@ protocol CallServiceObserver: class {
 
         // If the call is connected, we can send the hangup via the data channel.
         let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
-            Logger.debug("\(TAG) sendDataChannelMessage returned true")
-        } else {
-            Logger.warn("\(TAG) sendDataChannelMessage returned false")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
+            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+            }.catch(on: DispatchQueue.main) { _ in
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
         }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
@@ -1075,10 +1075,10 @@ protocol CallServiceObserver: class {
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
         let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled:shouldHaveLocalVideoTrack)
-        if peerConnectionClient.sendDataChannelMessage(data: message.asData()) {
-            Logger.debug("\(self.TAG) sendDataChannelMessage returned true")
-        } else {
-            Logger.warn("\(self.TAG) sendDataChannelMessage returned false")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData()).then { _ in
+            Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+            }.catch(on: DispatchQueue.main) { _ in
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
         }
     }
 

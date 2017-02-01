@@ -250,6 +250,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Recipient is no longer a Signal user.";
 
+/* Missing data channel while trying to sending message */
+"ERROR_DESCRIPTION_WEBRTC_MISSING_DATA_CHANNEL" = "Missing connection";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicated message.";
 
