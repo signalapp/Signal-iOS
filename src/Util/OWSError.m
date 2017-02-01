@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSError.h"
 
@@ -35,7 +37,7 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
 NSError *OWSErrorMakeAssertionError()
 {
     return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
-        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+                                       NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }
 
 NS_ASSUME_NONNULL_END
