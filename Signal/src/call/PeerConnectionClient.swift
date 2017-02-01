@@ -32,8 +32,8 @@ protocol PeerConnectionClientDelegate: class {
     func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient)
 
     /**
-     * During the Signaling process each client generates IceCandidates locally, which contain information about how to
-     * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client
+     * During the Signaling process each client generates IceCandidates locally, which contain information about how to 
+     * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client 
      * out of band, as part of establishing a connection over WebRTC.
      */
     func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate)
@@ -57,7 +57,7 @@ protocol PeerConnectionClientDelegate: class {
 /**
  * `PeerConnectionClient` is our interface to WebRTC.
  *
- * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data
+ * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data 
  * including audio, video, and some post-connected signaling (hangup, add video)
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
@@ -65,9 +65,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
-        videoTrack = "ARDAMSv0",
-        audioTrack = "ARDAMSa0",
-        dataChannelSignaling = "signaling"
+             videoTrack = "ARDAMSv0",
+             audioTrack = "ARDAMSa0",
+             dataChannelSignaling = "signaling"
     }
 
     // A state in this class should only be accessed on this queue in order to
@@ -155,11 +155,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     fileprivate func createVideoSender() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.TAG) in \(#function)")
+        Logger.debug("\(TAG) in \(#function)")
         assert(self.videoSender == nil, "\(#function) should only be called once.")
 
         guard !Platform.isSimulator else {
-            Logger.warn("\(self.TAG) Refusing to create local video track on simulator which has no capture device.")
+            Logger.warn("\(TAG) Refusing to create local video track on simulator which has no capture device.")
             return
         }
 
@@ -209,7 +209,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     fileprivate func createAudioSender() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.TAG) in \(#function)")
+        Logger.debug("\(TAG) in \(#function)")
         assert(self.audioSender == nil, "\(#function) should only be called once.")
 
         let audioSource = factory.audioSource(with: self.audioConstraints)
@@ -253,10 +253,15 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
-        var result: Promise<HardenedRTCSessionDescription>? = nil
-        PeerConnectionClient.signalingQueue.sync {
-            result = Promise { fulfill, reject in
-                peerConnection.offer(for: self.defaultOfferConstraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
+        AssertIsOnMainThread()
+
+        return Promise { fulfill, reject in
+            AssertIsOnMainThread()
+
+            PeerConnectionClient.signalingQueue.async {
+                self.assertOnSignalingQueue()
+
+                self.peerConnection.offer(for: self.defaultOfferConstraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
                     PeerConnectionClient.signalingQueue.async {
                         guard error == nil else {
                             reject(error!)
@@ -275,63 +280,55 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 })
             }
         }
-        // TODO: Propagate exception
-        return result!
     }
 
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
-        assertOnSignalingQueue()
-
-        return PromiseKit.wrap {
+        return PromiseKit.wrap { resolve in
+            self.assertOnSignalingQueue()
             Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
-            peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler: $0)
+            self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler:resolve)
         }
     }
 
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
-        var result: Promise<Void>? = nil
-        PeerConnectionClient.signalingQueue.sync {
-            result = setLocalSessionDescriptionInternal(sessionDescription)
+        AssertIsOnMainThread()
+
+        return PromiseKit.wrap { resolve in
+            PeerConnectionClient.signalingQueue.async {
+                self.assertOnSignalingQueue()
+                Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
+                self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler:resolve)
+            }
         }
-        // TODO: Propagate exception
-        return result!
     }
 
     public func negotiateSessionDescription(remoteDescription: RTCSessionDescription, constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
-        var result: Promise<HardenedRTCSessionDescription>? = nil
-        PeerConnectionClient.signalingQueue.sync {
-            result = firstly {
-                return self.setRemoteSessionDescriptionInternal(remoteDescription)
-                }.then(on: PeerConnectionClient.signalingQueue) {
-                    return self.negotiateAnswerSessionDescription(constraints: constraints)
-            }
-        }
-        // TODO: Propagate exception
-        return result!
-    }
+        AssertIsOnMainThread()
 
-    private func setRemoteSessionDescriptionInternal(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
-        assertOnSignalingQueue()
-
-        return PromiseKit.wrap {
-            Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
-            peerConnection.setRemoteDescription(sessionDescription, completionHandler: $0)
+        return setRemoteSessionDescription(remoteDescription)
+            .then(on: PeerConnectionClient.signalingQueue) {
+                return self.negotiateAnswerSessionDescription(constraints: constraints)
         }
     }
 
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
-        var result: Promise<Void>? = nil
-        PeerConnectionClient.signalingQueue.sync {
-            result = setRemoteSessionDescriptionInternal(sessionDescription)
+        AssertIsOnMainThread()
+
+        return PromiseKit.wrap { resolve in
+            PeerConnectionClient.signalingQueue.async {
+                self.assertOnSignalingQueue()
+                Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
+                self.peerConnection.setRemoteDescription(sessionDescription, completionHandler: resolve)
+            }
         }
-        // TODO: Propagate exception
-        return result!
     }
 
     private func negotiateAnswerSessionDescription(constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
         assertOnSignalingQueue()
 
         return Promise { fulfill, reject in
+            assertOnSignalingQueue()
+
             Logger.debug("\(self.TAG) negotiating answer session.")
 
             peerConnection.answer(for: constraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
@@ -370,36 +367,46 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func terminate() {
         PeerConnectionClient.signalingQueue.async {
-            //        Some notes on preventing crashes while disposing of peerConnection for video calls
-            //        from: https://groups.google.com/forum/#!searchin/discuss-webrtc/objc$20crash$20dealloc%7Csort:relevance/discuss-webrtc/7D-vk5yLjn8/rBW2D6EW4GYJ
-            //        The sequence to make it work appears to be
-            //
-            //        [capturer stop]; // I had to add this as a method to RTCVideoCapturer
-            //        [localRenderer stop];
-            //        [remoteRenderer stop];
-            //        [peerConnection close];
-
-            // audioTrack is a strong property because we need access to it to mute/unmute, but I was seeing it
-            // become nil when it was only a weak property. So we retain it and manually nil the reference here, because
-            // we are likely to crash if we retain any peer connection properties when the peerconnection is released
-            Logger.debug("\(self.TAG) in \(#function)")
-            self.audioTrack = nil
-            self.localVideoTrack = nil
-            self.remoteVideoTrack = nil
-            self.dataChannel = nil
-            self.audioSender = nil
-            self.videoSender = nil
-
-            self.peerConnection.delegate = nil
-            self.peerConnection.close()
+            self.terminateInternal()
         }
+    }
+
+    private func terminateInternal() {
+        assertOnSignalingQueue()
+
+        //        Some notes on preventing crashes while disposing of peerConnection for video calls
+        //        from: https://groups.google.com/forum/#!searchin/discuss-webrtc/objc$20crash$20dealloc%7Csort:relevance/discuss-webrtc/7D-vk5yLjn8/rBW2D6EW4GYJ
+        //        The sequence to make it work appears to be
+        //
+        //        [capturer stop]; // I had to add this as a method to RTCVideoCapturer
+        //        [localRenderer stop];
+        //        [remoteRenderer stop];
+        //        [peerConnection close];
+
+        // audioTrack is a strong property because we need access to it to mute/unmute, but I was seeing it
+        // become nil when it was only a weak property. So we retain it and manually nil the reference here, because
+        // we are likely to crash if we retain any peer connection properties when the peerconnection is released
+        Logger.debug("\(TAG) in \(#function)")
+        audioTrack = nil
+        localVideoTrack = nil
+        remoteVideoTrack = nil
+        dataChannel = nil
+        audioSender = nil
+        videoSender = nil
+
+        peerConnection.delegate = nil
+        peerConnection.close()
     }
 
     // MARK: - Data Channel
 
     public func sendDataChannelMessage(data: Data) -> Bool {
+        AssertIsOnMainThread()
+
         var result = false
         PeerConnectionClient.signalingQueue.sync {
+            assertOnSignalingQueue()
+
             guard let dataChannel = self.dataChannel else {
                 Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
                 result = false
@@ -416,7 +423,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** The data channel state changed. */
     internal func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        Logger.debug("\(self.TAG) dataChannelDidChangeState: \(dataChannel)")
+        Logger.debug("\(TAG) dataChannelDidChangeState: \(dataChannel)")
     }
 
     /** The data channel successfully received a data buffer. */
@@ -440,14 +447,14 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** The data channel's |bufferedAmount| changed. */
     internal func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
-        Logger.debug("\(self.TAG) didChangeBufferedAmount: \(amount)")
+        Logger.debug("\(TAG) didChangeBufferedAmount: \(amount)")
     }
 
     // MARK: - RTCPeerConnectionDelegate
 
     /** Called when the SignalingState changed. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-        Logger.debug("\(self.TAG) didChange signalingState:\(stateChanged.debugDescription)")
+        Logger.debug("\(TAG) didChange signalingState:\(stateChanged.debugDescription)")
     }
 
     /** Called when media is received on a new stream from remote peer. */
@@ -469,12 +476,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when a remote peer closes a stream. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        Logger.debug("\(self.TAG) didRemove Stream:\(stream)")
+        Logger.debug("\(TAG) didRemove Stream:\(stream)")
     }
 
     /** Called when negotiation is needed, for example ICE has restarted. */
     internal func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        Logger.debug("\(self.TAG) shouldNegotiate")
+        Logger.debug("\(TAG) shouldNegotiate")
     }
 
     /** Called any time the IceConnectionState changes. */
@@ -505,7 +512,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called any time the IceGatheringState changes. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        Logger.debug("\(self.TAG) didChange IceGatheringState:\(newState.debugDescription)")
+        Logger.debug("\(TAG) didChange IceGatheringState:\(newState.debugDescription)")
     }
 
     /** New ice candidate has been found. */
@@ -522,7 +529,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when a group of local Ice candidates have been removed. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        Logger.debug("\(self.TAG) didRemove IceCandidates:\(candidates)")
+        Logger.debug("\(TAG) didRemove IceCandidates:\(candidates)")
     }
 
     /** New data channel has been opened. */
