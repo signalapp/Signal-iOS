@@ -338,7 +338,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[Environment getCurrent].callService handleCallKitStartVideo];
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
-        // TODO guard if less than iOS10.
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+            DDLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.tag);
+            return NO;
+        }
 
         DDLogInfo(@"%@ got start audio call intent", self.tag);
 
