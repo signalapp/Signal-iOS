@@ -250,6 +250,7 @@ protocol CallServiceObserver: class {
             // to do this explicitly.
             peerConnectionClient.createSignalingDataChannel()
 
+            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
@@ -395,6 +396,7 @@ protocol CallServiceObserver: class {
         }.then() { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
+            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
@@ -994,7 +996,6 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) in \(#function)")
 
         PeerConnectionClient.stopAudioSession()
-        peerConnectionClient?.setDelegate(delegate:nil)
         peerConnectionClient?.terminate()
 
         peerConnectionClient = nil
