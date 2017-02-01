@@ -277,6 +277,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
                     return
                 }
 
@@ -284,6 +285,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                     PeerConnectionClient.signalingQueue.async {
                         guard self.peerConnection != nil else {
                             Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                            reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
                             return
                         }
                         guard error == nil else {
@@ -316,14 +318,18 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        return PromiseKit.wrap { resolve in
+        return Promise { fulfill, reject in
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
                     return
                 }
                 Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
-                self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler:resolve)
+                self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription,
+                                                        completionHandler: { _ in
+                                                            fulfill()
+                })
             }
         }
     }
@@ -341,14 +347,18 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        return PromiseKit.wrap { resolve in
+        return Promise { fulfill, reject in
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
                     return
                 }
                 Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
-                self.peerConnection.setRemoteDescription(sessionDescription, completionHandler: resolve)
+                self.peerConnection.setRemoteDescription(sessionDescription,
+                                                         completionHandler: { _ in
+                                                            fulfill()
+                })
             }
         }
     }
@@ -365,6 +375,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 PeerConnectionClient.signalingQueue.async {
                     guard self.peerConnection != nil else {
                         Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                        reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
                         return
                     }
                     guard error == nil else {
