@@ -28,24 +28,23 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     // MARK: - Call Handlers
 
     public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) handling offer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        DispatchQueue.main.async {
-            _ = self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
-        }
+        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
     }
 
     public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) handling answer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        DispatchQueue.main.async {
-            self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
-        }
+        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
 
     public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) handling iceUpdates from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
@@ -54,29 +53,25 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         // while the RTC iOS API requires a signed int.
         let lineIndex = Int32(iceUpdate.sdpMlineIndex)
 
-        DispatchQueue.main.async {
-            self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
-        }
+        self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
     }
 
     public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) handling 'hangup' from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
 
-        DispatchQueue.main.async {
-            self.callService.handleRemoteHangup(thread: thread)
-        }
+        self.callService.handleRemoteHangup(thread: thread)
     }
 
     public func receivedBusy(_ busy: OWSSignalServiceProtosCallMessageBusy, from callerId: String) {
+        AssertIsOnMainThread()
         Logger.verbose("\(TAG) handling 'busy' from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
 
-        DispatchQueue.main.async {
-            self.callService.handleRemoteBusy(thread: thread)
-        }
+        self.callService.handleRemoteBusy(thread: thread)
     }
 
 }

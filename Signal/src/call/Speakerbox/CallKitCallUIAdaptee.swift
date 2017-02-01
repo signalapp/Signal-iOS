@@ -261,16 +261,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         //        // Trigger the call to be ended via the underlying network service.
         //        call.endSpeakerboxCall()
 
-        // Synchronous to ensure call is terminated before call is displayed as "ended"
         self.callService.handleLocalHungupCall(call)
 
-        DispatchQueue.main.async {
-            // Signal to the system that the action has been successfully performed.
-            action.fulfill()
+        // Signal to the system that the action has been successfully performed.
+        action.fulfill()
 
-            // Remove the ended call from the app's list of calls.
-            self.callManager.removeCall(call)
-        }
+        // Remove the ended call from the app's list of calls.
+        self.callManager.removeCall(call)
     }
 
     public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {

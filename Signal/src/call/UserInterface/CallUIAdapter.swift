@@ -42,7 +42,6 @@ extension CallUIAdaptee {
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
-    // TODO: who calls this?
     internal func callBack(recipientId: String) {
         AssertIsOnMainThread()
 
