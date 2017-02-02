@@ -139,6 +139,12 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
+    internal func remoteBusy(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(TAG) in \(#function) is no-op")
+    }
+
     internal func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
 
