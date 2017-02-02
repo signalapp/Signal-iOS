@@ -1,9 +1,5 @@
 //
-//  SignalsViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsViewController.h"
@@ -156,6 +152,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)handleActiveCallNotifciation:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     if (![notification.object isKindOfClass:[SignalCall class]]) {
         DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
             self.tag,
@@ -163,10 +161,15 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         return;
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        SignalCall *call = (SignalCall *)notification.object;
+    SignalCall *call = (SignalCall *)notification.object;
+    // Dismiss any other modals so we can present call modal.
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+        }];
+    } else {
         [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
-    });
+    }
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
