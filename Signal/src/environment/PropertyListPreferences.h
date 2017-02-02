@@ -64,8 +64,17 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
 
+#pragma mark - Calling
+
+#pragma mark WebRTC
+
 - (BOOL)isWebRTCEnabled;
 - (void)setIsWebRTCEnabled:(BOOL)flag;
+
+#pragma mark Callkit
+
+- (BOOL)isCallKitEnabled;
+- (void)setIsCallKitEnabled:(BOOL)flag;
 
 #pragma mark - Block on Identity Change
 
