@@ -118,7 +118,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         OWSAnalyticsCritical(@"Could not load database");
 
         // Try to reset app by deleting database.
-        [self resetSignalStorage];
+        // Disabled resetting storage until we have better data on why this happens.
+        // [self resetSignalStorage];
 
         if (![self tryToLoadDatabase]) {
             OWSAnalyticsCritical(@"Could not load database (second attempt)");
