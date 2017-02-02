@@ -18,7 +18,7 @@ enum PushNotificationRequestResult : String {
 class FailingTSAccountManager : TSAccountManager {
     let phoneNumberAwaitingVerification = "+13235555555"
 
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
+    override func verifyAccount(withCode: String, isWebRTCEnabled: Bool, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
         failure(VerificationFailedError())
     }
 
@@ -32,7 +32,7 @@ class FailingTSAccountManager : TSAccountManager {
 }
 
 class VerifyingTSAccountManager : FailingTSAccountManager {
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
+    override func verifyAccount(withCode: String, isWebRTCEnabled: Bool, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
         success()
     }
 

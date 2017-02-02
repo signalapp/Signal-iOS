@@ -1,9 +1,5 @@
 //
-//  MessagesViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 28/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -51,6 +47,7 @@
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -64,7 +61,6 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-
 @import Photos;
 
 #define kYapDatabaseRangeLength 50
@@ -75,9 +71,12 @@
 #define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+
+static NSString *const OWSMessagesViewControllerSegueInitiateCall = @"initiateCallSegue";
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
 static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
     @"OWSMessagesViewControllerSeguePushConversationSettings";
+
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
 typedef enum : NSUInteger {
@@ -126,6 +125,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
 @property NSCache *messageAdapterCache;
 
@@ -167,6 +167,7 @@ typedef enum : NSUInteger {
     _contactsManager = [Environment getCurrent].contactsManager;
     _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _messageSender = [Environment getCurrent].messageSender;
+    _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
@@ -624,32 +625,15 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (SignalRecipient *)signalRecipient {
-    __block SignalRecipient *recipient;
-    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      recipient = [SignalRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164
-                                                     withTransaction:transaction];
-    }];
-    return recipient;
-}
-
-- (BOOL)isTextSecureReachable {
-    return isGroupConversation || [self signalRecipient];
-}
-
-- (PhoneNumber *)phoneNumberForThread {
-    NSString *contactId = [(TSContactThread *)self.thread contactIdentifier];
-    return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-}
-
 - (void)callAction {
-    if ([self canCall]) {
-        PhoneNumber *number = [self phoneNumberForThread];
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-    } else {
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
+    if (![self canCall]) {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
+        return;
     }
+
+    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
 - (BOOL)canCall {
@@ -1615,8 +1599,21 @@ typedef enum : NSUInteger {
         OWSConversationSettingsTableViewController *controller
             = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
         [controller configureWithThread:self.thread];
-    }
+    } else if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueInitiateCall]) {
+        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
+            DDLogError(@"%@ Expected CallViewController but got: %@", self.tag, segue.destinationViewController);
+            return;
+        }
 
+        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
+
+        if (![self.thread isKindOfClass:[TSContactThread class]]) {
+            DDLogError(@"%@ Unexpectedly trying to call in group thread:%@. This isn't supported.", self.thread, self.tag);
+            return;
+        }
+        callViewController.thread = (TSContactThread *)self.thread;
+        [callViewController setOutgoingCallDirection];
+    }
 }
 
 

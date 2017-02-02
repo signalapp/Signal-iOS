@@ -14,6 +14,7 @@ NS_SWIFT_NAME(Logger)
 + (void)info:(NSString *)logString;
 + (void)warn:(NSString *)logString;
 + (void)error:(NSString *)logString;
++ (void)flush;
 
 @end
 
