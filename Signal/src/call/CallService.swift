@@ -367,6 +367,7 @@ protocol CallServiceObserver: class {
         }
 
         call.state = .remoteBusy
+        callUIAdapter.remoteBusy(call)
         terminateCall()
     }
 
