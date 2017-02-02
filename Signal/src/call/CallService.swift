@@ -230,6 +230,13 @@ protocol CallServiceObserver: class {
     public func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
 
+        guard self.call == nil else {
+            let errorDescription = "\(TAG) call was unexpectedly already set."
+            Logger.error(errorDescription)
+            call.state = .localFailure
+            return Promise(error: CallError.assertionError(description: errorDescription))
+        }
+
         self.call = call
 
         let thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
