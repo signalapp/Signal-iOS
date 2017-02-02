@@ -342,7 +342,7 @@ typedef NSComparisonResult (^YapDatabaseViewMappingGroupSort)(NSString *group1, 
 **/
 
 - (void)setRangeOptions:(nullable YapDatabaseViewRangeOptions *)rangeOpts forGroup:(NSString *)group;
-- (YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group;
+- (nullable YapDatabaseViewRangeOptions *)rangeOptionsForGroup:(NSString *)group;
 
 - (void)removeRangeOptionsForGroup:(NSString *)group;
 
