@@ -1,9 +1,5 @@
 //
-//  MessageComposeTableViewController.m
-//
-//
-//  Created by Dylan Bourgeois on 02/11/14.
-//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "MessageComposeTableViewController.h"
@@ -24,24 +20,30 @@ NS_ASSUME_NONNULL_BEGIN
                                                  UISearchResultsUpdating,
                                                  MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableViewCell *inviteCell;
-@property (nonatomic, strong) IBOutlet OWSNoSignalContactsView *noSignalContactsView;
+@property (nonatomic) IBOutlet UITableViewCell *inviteCell;
+@property (nonatomic) UITableViewCell *conversationForNonContactCell;
+@property (nonatomic) IBOutlet OWSNoSignalContactsView *noSignalContactsView;
 
 @property (nonatomic) UIButton *sendTextButton;
-@property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
-@property (nonatomic, strong) UIBarButtonItem *addGroup;
-@property (nonatomic, strong) UIView *loadingBackgroundView;
+@property (nonatomic) UISearchController *searchController;
+@property (nonatomic) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) UIBarButtonItem *addGroup;
+@property (nonatomic) UIView *loadingBackgroundView;
 
 @property (nonatomic) NSString *currentSearchTerm;
 @property (copy) NSArray<Contact *> *contacts;
 @property (copy) NSArray<Contact *> *searchResults;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
+@property (nonatomic) BOOL showNewConversationForNonContactButton;
+// This property should be set IFF showNewConversationForNonContactButton is YES.
+@property (nonatomic) NSString *nonContactPhoneNumber;
+
 @end
 
 NSInteger const MessageComposeTableViewControllerSectionInvite = 0;
 NSInteger const MessageComposeTableViewControllerSectionContacts = 1;
+NSInteger const MessageComposeTableViewControllerSectionNewConversationForNonContact = 2;
 
 NSString *const MessageComposeTableViewControllerCellInvite = @"ContactTableInviteCell";
 NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableViewCell";
@@ -87,6 +89,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
     self.inviteCell.textLabel.text = NSLocalizedString(
         @"INVITE_FRIENDS_CONTACT_TABLE_BUTTON", @"Text for button at the top of the contact picker");
+    
+    self.conversationForNonContactCell = [UITableViewCell new];
 
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
@@ -201,6 +205,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 
         self.inviteCell.hidden = YES;
+        self.conversationForNonContactCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
@@ -212,6 +217,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
         self.inviteCell.hidden = NO;
+        self.conversationForNonContactCell.hidden = NO;
     }
 }
 
@@ -296,11 +302,24 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         [self.sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
         self.sendTextButton.hidden = NO;
         self.currentSearchTerm     = formattedNumber;
+        self.showNewConversationForNonContactButton = YES;
+        self.nonContactPhoneNumber = formattedNumber;
     } else {
         self.sendTextButton.hidden = YES;
+        self.showNewConversationForNonContactButton = NO;
+        _nonContactPhoneNumber = nil;
     }
 }
 
+- (void)setShowNewConversationForNonContactButton:(BOOL)showNewConversationForNonContactButton {
+    if (_showNewConversationForNonContactButton == showNewConversationForNonContactButton) {
+        return;
+    }
+    
+    _showNewConversationForNonContactButton = showNewConversationForNonContactButton;
+    
+    [self.tableView reloadData];
+}
 
 #pragma mark - Send Normal Text to Unknown Contact
 
@@ -407,7 +426,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -417,6 +436,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             return 0;
         }
         return 1;
+    } else if (section == MessageComposeTableViewControllerSectionNewConversationForNonContact) {
+        return _showNewConversationForNonContactButton ? 1 : 0;
     } else {
         if (self.searchController.active) {
             return (NSInteger)[self.searchResults count];
@@ -430,6 +451,13 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 {
     if (indexPath.section == MessageComposeTableViewControllerSectionInvite) {
         return self.inviteCell;
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionNewConversationForNonContact) {
+        OWSAssert(self.nonContactPhoneNumber.length > 0);
+        
+        self.conversationForNonContactCell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT",
+                                                                                                         @"Text for button to start a new conversation with a non-contact"),
+                                                             self.nonContactPhoneNumber];
+        return self.conversationForNonContactCell;
     } else {
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
@@ -460,6 +488,15 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             [self dismissViewControllerAnimated:YES completion:showInvite];
         } else {
             showInvite();
+        }
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionNewConversationForNonContact) {
+        OWSAssert(self.nonContactPhoneNumber.length > 0);
+
+        if (self.nonContactPhoneNumber.length > 0) {
+            [self dismissViewControllerAnimated:YES
+                                     completion:^() {
+                                         [Environment messageIdentifier:self.nonContactPhoneNumber withCompose:YES];
+                                     }];
         }
     } else {
         NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];

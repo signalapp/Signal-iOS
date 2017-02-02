@@ -32,6 +32,8 @@
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
+NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallSegue";
+
 @interface SignalsViewController ()
 
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
@@ -41,9 +43,10 @@
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) id previewingContext;
+@property (nonatomic, readonly, strong) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
 
 @end
 
@@ -56,12 +59,7 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messagesManager = [TSMessagesManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
 
     return self;
 }
@@ -73,14 +71,17 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messagesManager = [TSMessagesManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
 
     return self;
+}
+
+- (void)commonInit
+{
+    _accountManager = [Environment getCurrent].accountManager;
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _messagesManager = [TSMessagesManager sharedManager];
+    _messageSender = [Environment getCurrent].messageSender;
 }
 
 - (void)awakeFromNib
@@ -128,6 +129,11 @@
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleActiveCallNotifciation:)
+                                                 name:[CallService callServiceActiveCallNotificationName]
+                                               object:nil];
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -146,6 +152,21 @@
     } else {
         return nil;
     }
+}
+
+- (void)handleActiveCallNotifciation:(NSNotification *)notification
+{
+    if (![notification.object isKindOfClass:[SignalCall class]]) {
+        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
+            self.tag,
+            notification.object);
+        return;
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        SignalCall *call = (SignalCall *)notification.object;
+        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+    });
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -224,13 +245,9 @@
 
 - (void)ensureNotificationsUpToDate
 {
-    OWSAccountManager *accountManager =
-        [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                             redPhoneAccountManager:[RPAccountManager sharedInstance]];
-
     OWSSyncPushTokensJob *syncPushTokensJob =
         [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                           accountManager:accountManager
+                                           accountManager:self.accountManager
                                               preferences:[Environment preferences]];
     [syncPushTokensJob run];
 }
@@ -432,10 +449,27 @@
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:kCallSegue]) {
+    if ([segue.identifier isEqualToString:kRedphoneCallSegue]) {
         InCallViewController *vc = [segue destinationViewController];
         [vc configureWithLatestCall:_latestCall];
         _latestCall = nil;
+    } else if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
+        DDLogDebug(@"%@ preparing for incoming call segue", self.tag);
+        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
+            DDLogError(@"%@ Received unexpected destination view controller: %@", self.tag, segue.destinationViewController);
+            return;
+        }
+        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
+        [callViewController setIncomingCallDirection];
+
+        if (![sender isKindOfClass:[SignalCall class]]) {
+            DDLogError(@"%@ expecting call segueu to be sent by a SignalCall, but found: %@", self.tag, sender);
+            return;
+        }
+        SignalCall *call = (SignalCall *)sender;
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+        callViewController.thread = thread;
+        callViewController.call = call;
     }
 }
 

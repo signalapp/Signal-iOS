@@ -38,7 +38,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 }
 
 - (void)doAfterEnvironmentInitSetup {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         self.contactStore = [[CNContactStore alloc] init];
         [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
                                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
@@ -399,10 +399,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
+- (NSString *)unknownContactName
+{
+    return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
+                             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+}
+
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
-        return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
-            @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+        return self.unknownContactName;
     }
     Contact *contact = [self contactForPhoneIdentifier:identifier];
     
@@ -474,6 +479,21 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
     return nil;
 }
+
+- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier
+{
+    Contact *savedContact = [self contactForPhoneIdentifier:identifier];
+    if (savedContact) {
+        return savedContact;
+    } else {
+        return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
+                                                 andLastName:nil
+                                     andUserTextPhoneNumbers:@[ identifier ]
+                                                    andImage:nil
+                                                andContactID:0];
+    }
+}
+
 
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = [self contactForPhoneIdentifier:identifier];

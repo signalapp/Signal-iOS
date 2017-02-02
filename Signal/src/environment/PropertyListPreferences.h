@@ -1,5 +1,12 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * The users privacy preference for what kind of content to show in lock screen notifications.
+ */
 typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNoNameNoPreview,
     NotificationNameNoPreview,
@@ -56,6 +63,9 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
+
+- (BOOL)isWebRTCEnabled;
+- (void)setIsWebRTCEnabled:(BOOL)flag;
 
 #pragma mark - Block on Identity Change
 
