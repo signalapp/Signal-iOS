@@ -489,17 +489,17 @@
 
 - (UIUserNotificationCategory *)userNotificationsRPCallBackCategory
 {
-    UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
-    action_accept.identifier                       = Signal_CallBack_Identifier;
-    action_accept.title                            = NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"");
-    action_accept.activationMode                   = UIUserNotificationActivationModeForeground;
-    action_accept.destructive                      = NO;
-    action_accept.authenticationRequired           = NO;
+    UIMutableUserNotificationAction *callBackAction = [UIMutableUserNotificationAction new];
+    callBackAction.identifier                       = Signal_CallBack_Identifier;
+    callBackAction.title                            = [CallStrings callBackButtonTitle];
+    callBackAction.activationMode                   = UIUserNotificationActivationModeForeground;
+    callBackAction.destructive                      = NO;
+    callBackAction.authenticationRequired           = NO;
 
     UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
     callCategory.identifier                         = Signal_CallBack_Category;
-    [callCategory setActions:@[ action_accept ] forContext:UIUserNotificationActionContextMinimal];
-    [callCategory setActions:@[ action_accept ] forContext:UIUserNotificationActionContextDefault];
+    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextMinimal];
+    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextDefault];
 
     return callCategory;
 }
@@ -544,7 +544,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 {
     UIMutableUserNotificationAction *callBackAction = [UIMutableUserNotificationAction new];
     callBackAction.identifier = PushManagerActionsCallBack;
-    callBackAction.title = NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"");
+    callBackAction.title = [CallStrings callBackButtonTitle];
     callBackAction.activationMode = UIUserNotificationActivationModeForeground;
     callBackAction.destructive = NO;
     callBackAction.authenticationRequired = YES;

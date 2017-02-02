@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 /**
  * TODO This is currently unused code. I started implenting new notifications as UserNotifications rather than the deprecated
@@ -41,7 +42,7 @@ struct AppNotifications {
         switch type {
         case .callBack:
             return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.callBack",
-                                        title: Strings.Calls.callBackButtonTitle,
+                                        title: CallStrings.callBackButtonTitle,
                                         options: .authenticationRequired)
         }
     }
@@ -100,9 +101,9 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         let notificationBody = { () -> String in
             switch previewType {
             case .noNameNoPreview:
-                return Strings.Calls.missedCallNotificationBody
+                return CallStrings.missedCallNotificationBody
             case .nameNoPreview, .namePreview:
-                let format = Strings.Calls.missedCallNotificationBodyWithCallerName
+                let format = CallStrings.missedCallNotificationBodyWithCallerName
                 return String(format: format, callerName)
         }}()
 

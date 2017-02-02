@@ -445,8 +445,7 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutes";
 
-/* notification body
-   notification title */
+/* notification title */
 "MISSED_CALL" = "Missed call";
 
 /* Alert body
@@ -457,8 +456,7 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* notification body
-   notification title. Embeds {{Caller's Name}} */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Missed call from %@.";
 
 /* No comment provided by engineer. */

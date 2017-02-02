@@ -61,7 +61,7 @@
             notification.soundName            = @"NewMessage.aifc";
             switch (self.notificationPreviewType) {
                 case NotificationNoNameNoPreview: {
-                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"MISSED_CALL", nil)];
+                    notification.alertBody = [CallStrings missedCallNotificationBody];
                     break;
                 }
                 case NotificationNamePreview:
@@ -69,7 +69,7 @@
                     notification.userInfo = @{ Signal_Call_UserInfo_Key : cThread.contactIdentifier };
                     notification.category = Signal_CallBack_Category;
                     notification.alertBody =
-                        [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
+                        [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], [thread name]];
                     break;
                 }
             }
@@ -130,13 +130,13 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [NSString stringWithFormat:NSLocalizedString(@"MISSED_CALL", @"notification body")];
+            alertMessage = [CallStrings missedCallNotificationBody];
             break;
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage =
-                [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", @"notification body"), callerName];
+                [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName];
             break;
         }
     }
