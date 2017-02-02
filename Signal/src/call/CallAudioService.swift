@@ -204,6 +204,7 @@ import Foundation
     }
 
     private func setAudioSession(category: String) {
+        // FIXME Why this default mode? It doesn't work with e.g. "SoloAmbient", causing `AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)` to err
         setAudioSession(category:category,
                         mode:AVAudioSessionModeVoiceChat,
                         options:AVAudioSessionCategoryOptions(rawValue: 0))

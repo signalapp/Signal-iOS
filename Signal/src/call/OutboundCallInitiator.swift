@@ -10,14 +10,12 @@ import Foundation
 @objc class OutboundCallInitiator: NSObject {
     let TAG = "[OutboundCallInitiator]"
 
-    let callUIAdapter: CallUIAdapter
     let redphoneManager: PhoneManager
     let contactsManager: OWSContactsManager
     let contactsUpdater: ContactsUpdater
 
-    init(redphoneManager: PhoneManager, callUIAdapter: CallUIAdapter, contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
+    init(redphoneManager: PhoneManager, contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
         self.redphoneManager = redphoneManager
-        self.callUIAdapter = callUIAdapter
 
         self.contactsManager = contactsManager
         self.contactsUpdater = contactsUpdater
@@ -93,6 +91,14 @@ import Foundation
     }
 
     private func initiateWebRTCAudioCall(recipientId: String) -> Bool {
+        // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment 
+        // because it can change after app launch due to user settings
+        guard let callUIAdapter = Environment.getCurrent().callUIAdapter else {
+            assertionFailure()
+            Logger.error("\(TAG) can't initiate call because callUIAdapter is nil")
+            return false
+        }
+
         callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
         return true
     }
