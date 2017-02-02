@@ -161,9 +161,16 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         return;
     }
 
-
     SignalCall *call = (SignalCall *)notification.object;
-    [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+    
+    // Dismiss any other modals so we can present call modal.
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+        }];
+    } else {
+        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+    }
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
