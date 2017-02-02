@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSOutgoingMessage.h"
 
@@ -13,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
+/**
+ * WebRTC call signaling sent out of band, via the Signal Service
+ */
 @interface OWSOutgoingCallMessage : TSOutgoingMessage
 
 - (instancetype)initWithThread:(TSThread *)thread offerMessage:(OWSCallOfferMessage *)offerMessage;

@@ -1,10 +1,16 @@
-//  Created by Michael Kirk on 12/6/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosCallMessageIceUpdate;
 
+/**
+ * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+ * include network accessability information from the perspective of each client. Once compatible ICEUpdates have been
+ * exchanged, the clients can connect directly.
+ */
 @interface OWSCallIceUpdateMessage : NSObject
 
 - (instancetype)initWithCallId:(UInt64)callId

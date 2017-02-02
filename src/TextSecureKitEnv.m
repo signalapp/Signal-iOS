@@ -1,6 +1,6 @@
-//  Created by Frederic Jacobs on 05/12/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
-
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TextSecureKitEnv.h"
 
@@ -44,10 +44,26 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
     }
 }
 
-- (id<ContactsManagerProtocol>)contactsManager {
+#pragma mark - getters
+
+- (id<OWSCallMessageHandler>)callMessageHandler
+{
+    NSAssert(_callMessageHandler, @"Trying to access the callMessageHandler before it's set.");
+    return _callMessageHandler;
+}
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
     NSAssert(_contactsManager, @"Trying to access the contactsManager before it's set.");
 
     return _contactsManager;
+}
+
+
+- (id<NotificationsProtocol>)notificationsManager
+{
+    NSAssert(_notificationsManager, @"Trying to access the notificationsManager before it's set.");
+    return _notificationsManager;
 }
 
 @end

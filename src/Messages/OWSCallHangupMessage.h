@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/8/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOutgoingCallMessage.h"
 
@@ -7,6 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosCallMessageHangup;
 
+/**
+ * Sent by either party in a call to indicate the user intentionally ended the call.
+ */
 @interface OWSCallHangupMessage : OWSOutgoingCallMessage
 
 - (instancetype)initWithCallId:(UInt64)callId;

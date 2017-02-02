@@ -1,10 +1,14 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosCallMessageAnswer;
 
+/**
+ * Sent by the call recipient upon accepting a CallOffer
+ */
 @interface OWSCallAnswerMessage : NSObject
 
 - (instancetype)initWithCallId:(UInt64)callId sessionDescription:(NSString *)sessionDescription;

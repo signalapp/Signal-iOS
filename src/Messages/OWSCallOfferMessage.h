@@ -1,10 +1,14 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosCallMessageOffer;
 
+/**
+ * Sent by the call initiator to Signal their intention to set up a call with the recipient.
+ */
 @interface OWSCallOfferMessage : NSObject
 
 - (instancetype)initWithCallId:(UInt64)callId sessionDescription:(NSString *)sessionDescription;
