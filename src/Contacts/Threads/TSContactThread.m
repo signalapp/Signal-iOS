@@ -1,8 +1,11 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSContactThread.h"
+#import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
+#import "NotificationsProtocol.h"
 #import "TSStorageManager+identityKeyStore.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -26,19 +29,28 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
                                          relay:(nullable NSString *)relay
 {
+    OWSAssert(contactId);
     SignalRecipient *recipient =
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
     if (!recipient) {
-        recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId relay:relay supportsVoice:YES];
+        // If no recipient record exists for that contactId, create an empty record
+        // for immediate use, then ask ContactsUpdater to try to update it async.
+        recipient =
+            [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId
+                                                            relay:relay
+                                                    supportsVoice:YES
+                                                   // Default to NO; ContactsUpdater will try to update this property.
+                                                   supportsWebRTC:NO];
+        [recipient saveWithTransaction:transaction];
 
+        // Update recipient with Server record async.
         [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
-            success:^(NSSet<NSString *> *matchedIds) {
+            success:^(SignalRecipient *recipient) {
             }
             failure:^(NSError *error) {
                 DDLogWarn(@"Failed to lookup contact with error:%@", error);
             }];
-        [recipient saveWithTransaction:transaction];
     }
 
     return [self getOrCreateThreadWithContactId:contactId transaction:transaction];

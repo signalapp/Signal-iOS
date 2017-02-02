@@ -84,6 +84,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    DDLogDebug(@"%@ sending message: %@", self.tag, message.debugDescription);
     void (^markAndFailureHandler)(NSError *error) = ^(NSError *error) {
         [self saveMessage:message withError:error];
         failureHandler(error);
@@ -285,13 +286,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 recipient = [self.contactsUpdater synchronousLookup:recipientContactId error:&error];
 
                 if (error) {
-                    if (error.code == NOTFOUND_ERROR) {
-                        DDLogWarn(@"recipient contact not found with error: %@", error);
+                    if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                        DDLogWarn(@"%@ recipient contact not found", self.tag);
                         [self unregisteredRecipient:recipient message:message thread:thread];
-                        NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-                        return failureHandler(error);
                     }
-                    DDLogError(@"contact lookup failed with error: %@", error);
+
+                    DDLogError(@"%@ contact lookup failed with error: %@", self.tag, error);
                     return failureHandler(error);
                 }
             }
@@ -435,7 +435,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceRateLimited,
                 NSLocalizedString(@"FAILED_SENDING_BECAUSE_RATE_LIMIT",
                     @"action sheet header when re-sending message which failed because of too many attempts"));
             return failureHandler(error);
@@ -626,9 +626,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
-            // DEPRECATED - Remove after all clients have been upgraded.
-            BOOL isLegacyMessage = ![message isKindOfClass:[OWSOutgoingSyncMessage class]];
-
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
             // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
@@ -639,7 +636,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                           toRecipient:recipient.uniqueId
                                                              deviceId:deviceNumber
                                                         keyingStorage:[TSStorageManager sharedManager]
-                                                               legacy:isLegacyMessage];
+                                                               legacy:message.isLegacyMessage];
                 } @catch (NSException *exception) {
                     encryptionException = exception;
                 }

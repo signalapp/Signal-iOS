@@ -29,6 +29,27 @@ def splitall(path):
     
     
 def process(filepath):
+
+    short_filepath = filepath[len(git_repo_path):]
+    if short_filepath.startswith(os.sep):
+       short_filepath = short_filepath[len(os.sep):] 
+    
+    filename = os.path.basename(filepath)
+    if filename.startswith('.'):
+        return
+    file_ext = os.path.splitext(filename)[1]
+    if file_ext in ('.swift'):
+        env_copy = os.environ.copy()
+        env_copy["SCRIPT_INPUT_FILE_COUNT"] = "1"
+        env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
+        lint_output = subprocess.check_output(['swiftlint', 'autocorrect', '--use-script-input-files'], env=env_copy)
+        print lint_output
+        try:
+            lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
+        except subprocess.CalledProcessError, e:
+            lint_output = e.output
+        print lint_output
+    
     with open(filepath, 'rt') as f:
         text = f.read()
     original_text = text
@@ -51,9 +72,6 @@ def process(filepath):
     if original_text == text:
         return
     
-    short_filepath = filepath[len(git_repo_path):]
-    if short_filepath.startswith(os.sep):
-       short_filepath = short_filepath[len(os.sep):] 
     print 'Updating:', short_filepath
     
     with open(filepath, 'wt') as f:
@@ -118,3 +136,6 @@ if __name__ == "__main__":
         for filepath in filepaths:
             filepath = os.path.abspath(os.path.join(git_repo_path, filepath))
             process_if_appropriate(filepath)
+
+    print 'git clang-format...'
+    print commands.getoutput('git clang-format')

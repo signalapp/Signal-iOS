@@ -3,19 +3,29 @@
 //  Pods
 //
 //  Created by Frederic Jacobs on 05/12/15.
-//
-//
 
-#import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
 
-#import "ContactsManagerProtocol.h"
-#import "NotificationsProtocol.h"
+@protocol ContactsManagerProtocol;
+@protocol NotificationsProtocol;
+@protocol OWSCallMessageHandler;
 
 @interface TextSecureKitEnv : NSObject
 
-@property (nonatomic, retain) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic, retain) id<NotificationsProtocol> notificationsManager;
+- (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
+                           contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                      notificationsManager:(id<NotificationsProtocol>)notificationsManager NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedEnv;
++ (void)setSharedEnv:(TextSecureKitEnv *)env;
+
+@property (nonatomic, readonly, strong) id<OWSCallMessageHandler> callMessageHandler;
+@property (nonatomic, readonly, strong) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly, strong) id<NotificationsProtocol> notificationsManager;
+
 
 @end
+
+NS_ASSUME_NONNULL_END

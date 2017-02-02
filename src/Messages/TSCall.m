@@ -4,13 +4,16 @@
 #import "TSCall.h"
 #import "TSContactThread.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSCall
 
-- (instancetype)initWithTimestamp:(uint64_t)timeStamp
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread {
-    self = [super initWithTimestamp:timeStamp inThread:thread];
+                         inThread:(TSContactThread *)thread
+{
+    self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (self) {
         _callType = callType;
@@ -31,3 +34,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

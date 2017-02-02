@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
                                        relay:(nullable NSString *)relay
                                supportsVoice:(BOOL)voiceCapable
+                              supportsWebRTC:(BOOL)supportsWebRTC
 {
     self = [super initWithUniqueId:textSecureIdentifier];
     if (!self) {
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     _devices = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
     _relay = [relay isEqualToString:@""] ? nil : relay;
     _supportsVoice = voiceCapable;
+    _supportsWebRTC = supportsWebRTC;
 
     return self;
 }
@@ -48,7 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSStorageManager localNumber]];
     if (!myself) {
-        myself = [[self alloc] initWithTextSecureIdentifier:[TSStorageManager localNumber] relay:nil supportsVoice:YES];
+        myself = [[self alloc] initWithTextSecureIdentifier:[TSStorageManager localNumber]
+                                                      relay:nil
+                                              supportsVoice:YES
+                                             // This property may be inaccurate, but it's fine since this will only be
+                                             // sent to the current user's other devices, which will ignore this value.
+                                             supportsWebRTC:YES];
     }
     return myself;
 }

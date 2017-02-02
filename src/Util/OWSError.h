@@ -18,12 +18,15 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToDecryptMessage = 100,
     OWSErrorCodeFailedToEncryptMessage = 110,
     OWSErrorCodeSignalServiceFailure = 1001,
+    OWSErrorCodeSignalServiceRateLimited = 1010,
     OWSErrorCodeUserError = 2001,
+    OWSErrorCodeNoSuchSignalRecipient = 777404,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError();
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError();
+extern NSError *OWSErrorMakeAssertionError();
 
 NS_ASSUME_NONNULL_END

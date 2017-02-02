@@ -1,4 +1,6 @@
-//  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "SignalRecipient.h"
 #import "TSStorageManager+keyingMaterial.h"
@@ -24,7 +26,10 @@
 {
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
-    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber relay:nil supportsVoice:YES] save];
+    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber
+                                                     relay:nil
+                                             supportsVoice:YES
+                                            supportsWebRTC:YES] save];
     XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
     SignalRecipient *me = [SignalRecipient selfRecipient];

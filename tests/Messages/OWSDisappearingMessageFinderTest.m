@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertNil(self.finder.nextExpirationTimestamp);
 }
 
-- (void)testNextExpirationTimestampNilWithUpcomingExpiringMessages
+- (void)testNextExpirationTimestampNotNilWithUpcomingExpiringMessages
 {
     TSMessage *soonToExpireMessage = [[TSMessage alloc] initWithTimestamp:1
                                                                  inThread:self.thread

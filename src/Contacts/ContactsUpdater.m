@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 21/11/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "ContactsUpdater.h"
 
@@ -35,12 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     // retained until our error parameter can take ownership.
     __block NSError *retainedError;
     [self lookupIdentifier:identifier
-        success:^(NSSet<NSString *> *matchedIds) {
-            if (matchedIds.count == 1) {
-                recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier];
-            } else {
-                retainedError = [NSError errorWithDomain:@"contactsmanager.notfound" code:NOTFOUND_ERROR userInfo:nil];
-            }
+        success:^(SignalRecipient *fetchedRecipient) {
+            recipient = fetchedRecipient;
             dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *lookupError) {
@@ -53,17 +50,26 @@ NS_ASSUME_NONNULL_BEGIN
     return recipient;
 }
 
-
 - (void)lookupIdentifier:(NSString *)identifier
-                 success:(void (^)(NSSet<NSString *> *matchedIds))success
+                 success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure
 {
+    // This should never happen according to nullability annotations... but IIRC it does. =/
     if (!identifier) {
+        OWSAssert(NO);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
 
-    [self contactIntersectionWithSet:[NSSet setWithObject:identifier] success:success failure:failure];
+    [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
+                             success:^(NSSet<NSString *> *_Nonnull matchedIds) {
+                                 if (matchedIds.count == 1) {
+                                     success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                 } else {
+                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
+                                 }
+                             }
+                             failure:failure];
 }
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
@@ -147,25 +153,18 @@ NS_ASSUME_NONNULL_BEGIN
                   SignalRecipient *recipient =
                       [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
                   if (!recipient) {
-                      recipient =
-                          [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil supportsVoice:NO];
+                      recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier
+                                                                                  relay:nil
+                                                                          supportsVoice:NO
+                                                                         supportsWebRTC:NO];
                   }
 
                   NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
 
-                  NSString *relay = [attributes objectForKey:@"relay"];
-                  if (relay) {
-                      recipient.relay = relay;
-                  } else {
-                      recipient.relay = nil;
-                  }
-
-                  BOOL supportsVoice = [[attributes objectForKey:@"voice"] boolValue];
-                  if (supportsVoice) {
-                      recipient.supportsVoice = YES;
-                  } else {
-                      recipient.supportsVoice = NO;
-                  }
+                  recipient.relay = attributes[@"relay"];
+                  recipient.supportsVoice = [attributes[@"voice"] boolValue];
+                  // The key for the "supports WebRTC audio/video" property is "video".
+                  recipient.supportsWebRTC = [attributes[@"video"] boolValue];
 
                   [recipient saveWithTransaction:transaction];
               }

@@ -8,7 +8,9 @@
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
+#import "OWSCallMessageHandler.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -39,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessagesManager ()
 
+@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -62,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
+    id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
     OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
                                                                         storageManager:storageManager
@@ -70,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     return [self initWithNetworkManager:networkManager
                          storageManager:storageManager
+                     callMessageHandler:callMessageHandler
                         contactsManager:contactsManager
                         contactsUpdater:contactsUpdater
                           messageSender:messageSender];
@@ -77,6 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
+                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
                          messageSender:(OWSMessageSender *)messageSender
@@ -89,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _storageManager = storageManager;
     _networkManager = networkManager;
+    _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _messageSender = messageSender;
@@ -276,6 +283,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
         } else if (content.hasDataMessage) {
             [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage];
+        } else if (content.hasCallMessage) {
+            [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else {
             DDLogWarn(@"%@ Ignoring envelope.Content with no known payload", self.tag);
         }
@@ -324,6 +333,30 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogVerbose(@"%@ Data message had group avatar attachment", self.tag);
             [self handleReceivedGroupAvatarUpdateWithEnvelope:incomingEnvelope dataMessage:dataMessage];
         }
+    }
+}
+
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
+               withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
+{
+    if (callMessage.hasOffer) {
+        DDLogVerbose(@"%@ Received CallMessage with Offer.", self.tag);
+        [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:incomingEnvelope.source];
+    } else if (callMessage.hasAnswer) {
+        DDLogVerbose(@"%@ Received CallMessage with Answer.", self.tag);
+        [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:incomingEnvelope.source];
+    } else if (callMessage.iceUpdate.count > 0) {
+        DDLogVerbose(@"%@ Received CallMessage with %lu IceUpdates.", self.tag, (unsigned long)callMessage.iceUpdate.count);
+        for (OWSSignalServiceProtosCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
+            [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:incomingEnvelope.source];
+        }
+    } else if (callMessage.hasHangup) {
+        DDLogVerbose(@"%@ Received CallMessage with Hangup.", self.tag);
+        [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:incomingEnvelope.source];
+    } else if (callMessage.hasBusy) {
+        [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:incomingEnvelope.source];
+    } else {
+        DDLogWarn(@"%@ Ignoring Received CallMessage without actionable content: %@", self.tag, callMessage);
     }
 }
 
@@ -642,7 +675,8 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *name = [thread name];
         [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                                    from:name
-                                                                               inThread:thread];
+                                                                               inThread:thread
+                                                                        contactsManager:self.contactsManager];
     }
 
     return incomingMessage;
