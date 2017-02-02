@@ -110,7 +110,14 @@ protocol CallServiceObserver: class {
 
     // MARK: Ivars
 
-    var peerConnectionClient: PeerConnectionClient?
+    var peerConnectionClient: PeerConnectionClient? {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil)")
+        }
+    }
+
     // TODO code cleanup: move thread into SignalCall? Or refactor messageSender to take SignalRecipient identifier.
     var thread: TSContactThread?
     var call: SignalCall? {
