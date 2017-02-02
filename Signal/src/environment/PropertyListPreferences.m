@@ -24,6 +24,7 @@ NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnab
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
 NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
+NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 
 @implementation PropertyListPreferences
 
@@ -79,13 +80,6 @@ NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
     return preference ? [preference boolValue] : YES;
 }
 
-- (BOOL)isWebRTCEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyWebRTCEnabled];
-    // Currently default to NO.
-    return preference ? [preference boolValue] : NO;
-}
-
 - (BOOL)getHasSentAMessage
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasSentAMessage];
@@ -127,10 +121,6 @@ NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];
 }
 
-- (void)setIsWebRTCEnabled:(BOOL)flag
-{
-    [self setValueForKey:PropertyListPreferencesKeyWebRTCEnabled toValue:@(flag)];
-}
 
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled
 {
@@ -177,6 +167,35 @@ NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
                                             forKey:PropertyListPreferencesKeyLastRunSignalVersion];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+#pragma mark - Calling
+
+#pragma mark WebRTC
+
+- (BOOL)isWebRTCEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyWebRTCEnabled];
+    // Currently default to NO.
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setIsWebRTCEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyWebRTCEnabled toValue:@(flag)];
+}
+
+#pragma mark CallKit
+
+- (BOOL)isCallKitEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    return preference ? [preference boolValue] : YES;
+}
+
+- (void)setIsCallKitEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
 }
 
 #pragma mark Notification Preferences

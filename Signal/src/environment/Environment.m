@@ -183,11 +183,9 @@ static Environment *environment = nil;
     @synchronized (self) {
         if (!_outboundCallInitiator) {
             OWSAssert(self.phoneManager);
-            OWSAssert(self.callUIAdapter);
             OWSAssert(self.contactsManager);
             OWSAssert(self.contactsUpdater);
             _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithRedphoneManager:self.phoneManager
-                                                                              callUIAdapter:self.callUIAdapter
                                                                             contactsManager:self.contactsManager
                                                                             contactsUpdater:self.contactsUpdater];
         }

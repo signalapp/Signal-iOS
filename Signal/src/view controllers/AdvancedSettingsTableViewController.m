@@ -17,17 +17,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property NSArray *sectionsArray;
-
 @property (nonatomic) UITableViewCell *enableWebRTCCell;
+@property (nonatomic) UITableViewCell *enableCallKitCell;
 @property (nonatomic) UITableViewCell *enableLogCell;
 @property (nonatomic) UITableViewCell *submitLogCell;
 @property (nonatomic) UITableViewCell *registerPushCell;
 
 @property (nonatomic) UISwitch *enableWebRTCSwitch;
+@property (nonatomic) UISwitch *enableCallKitSwitch;
 @property (nonatomic) UISwitch *enableLogSwitch;
+@property (nonatomic, readonly) BOOL supportsCallKit;
 
 @end
+
+typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
+    AdvancedSettingsTableViewControllerSectionLogging,
+    AdvancedSettingsTableViewControllerSectionCalling,
+    AdvancedSettingsTableViewControllerSectionPushNotifications,
+    AdvancedSettingsTableViewControllerSection_Count // meta section
+};
 
 @implementation AdvancedSettingsTableViewController
 
@@ -37,16 +45,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
-- (instancetype)init {
-    self.sectionsArray = @[
-        NSLocalizedString(@"LOGGING_SECTION", nil),
-        NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts")
-    ];
-
+- (instancetype)init
+{
     return [super initWithStyle:UITableViewStyleGrouped];
 }
 
-- (void)loadView {
+- (void)loadView
+{
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
@@ -62,6 +67,16 @@ NS_ASSUME_NONNULL_BEGIN
                                 action:@selector(didToggleEnableWebRTCSwitch:)
                       forControlEvents:UIControlEventTouchUpInside];
     self.enableWebRTCCell.accessoryView = self.enableWebRTCSwitch;
+
+    // CallKit opt-out
+    self.enableCallKitCell = [UITableViewCell new];
+    self.enableCallKitCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_CALLKIT_TITLE", @"Short table cell label");
+    self.enableCallKitSwitch = [UISwitch new];
+    [self.enableCallKitSwitch setOn:[[Environment getCurrent].preferences isCallKitEnabled]];
+    [self.enableCallKitSwitch addTarget:self
+                                 action:@selector(didToggleEnableCallKitSwitch:)
+                       forControlEvents:UIControlEventTouchUpInside];
+    self.enableCallKitCell.accessoryView = self.enableCallKitSwitch;
     
     // Enable Log
     self.enableLogCell                        = [[UITableViewCell alloc] init];
@@ -85,14 +100,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (NSInteger)[self.sectionsArray count];
+    return AdvancedSettingsTableViewControllerSection_Count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    switch (section) {
-        case 0:
-            return 1 + (self.enableLogSwitch.isOn ? 2 : 1);
-        case 1:
+
+    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
+    switch (settingsSection) {
+        case AdvancedSettingsTableViewControllerSectionLogging:
+            return self.enableLogSwitch.isOn ? 2 : 1;
+        case AdvancedSettingsTableViewControllerSectionCalling:
+            return self.supportsCallKit ? 2 : 1;
+        case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return 1;
         default:
             return 0;
@@ -101,26 +120,61 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return [self.sectionsArray objectAtIndex:(NSUInteger)section];
+    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
+    switch (settingsSection) {
+        case AdvancedSettingsTableViewControllerSectionLogging:
+            return NSLocalizedString(@"LOGGING_SECTION", nil);
+        case AdvancedSettingsTableViewControllerSectionCalling:
+            return NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
+        case AdvancedSettingsTableViewControllerSectionPushNotifications:
+            return NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
+        default:
+            return 0;
+    }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        switch (indexPath.row) {
-            case 0:
-                return self.enableWebRTCCell;
-            case 1:
-                return self.enableLogCell;
-            case 2:
-                return self.enableLogSwitch.isOn ? self.submitLogCell : self.registerPushCell;
-        }
-    } else {
-        return self.registerPushCell;
+- (nullable NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
+    switch (settingsSection) {
+        case AdvancedSettingsTableViewControllerSectionCalling:
+            return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
+        default:
+            return nil;
     }
+}
 
-    NSAssert(false, @"No Cell configured");
-
-    return nil;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)indexPath.section;
+    switch (settingsSection) {
+        case AdvancedSettingsTableViewControllerSectionLogging:
+            switch (indexPath.row) {
+                case 0:
+                    return self.enableLogCell;
+                case 1:
+                    OWSAssert(self.enableLogSwitch.isOn);
+                    return self.submitLogCell;
+            }
+        case AdvancedSettingsTableViewControllerSectionCalling:
+            switch (indexPath.row) {
+                case 0:
+                    return self.enableWebRTCCell;
+                case 1:
+                    OWSAssert(self.supportsCallKit);
+                    return self.enableCallKitCell;
+                default:
+                    // Unknown cell
+                    OWSAssert(NO);
+                    return nil;
+            }
+        case AdvancedSettingsTableViewControllerSectionPushNotifications:
+            return self.registerPushCell;
+        default:
+            // Unknown section
+            OWSAssert(NO);
+            return nil;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -205,6 +259,19 @@ NS_ASSUME_NONNULL_BEGIN
     
     [Environment.preferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
+}
+
+- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
+    DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
+    [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
+    [[Environment getCurrent].callService createCallUIAdapter];
+}
+
+#pragma mark - Util
+
+- (BOOL)supportsCallKit
+{
+    return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0);
 }
 
 #pragma mark - Logging
