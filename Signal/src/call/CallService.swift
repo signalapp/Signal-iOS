@@ -887,6 +887,8 @@ protocol CallServiceObserver: class {
             Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel")
 
             self.isRemoteVideoEnabled = message.videoStreamingStatus.enabled()
+        } else {
+            Logger.info("\(TAG) received unknown or empty DataChannelMessage")
         }
     }
 
