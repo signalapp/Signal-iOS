@@ -66,9 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  if (matchedIds.count == 1) {
                                      success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
                                  } else {
-                                     failure([NSError errorWithDomain:@"contactsmanager.notfound"
-                                                                 code:NOTFOUND_ERROR
-                                                             userInfo:nil]);
+                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }
                              }
                              failure:failure];

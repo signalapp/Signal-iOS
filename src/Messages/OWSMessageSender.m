@@ -286,13 +286,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 recipient = [self.contactsUpdater synchronousLookup:recipientContactId error:&error];
 
                 if (error) {
-                    if (error.code == NOTFOUND_ERROR) {
-                        DDLogWarn(@"recipient contact not found with error: %@", error);
+                    if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                        DDLogWarn(@"%@ recipient contact not found", self.tag);
                         [self unregisteredRecipient:recipient message:message thread:thread];
-                        NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-                        return failureHandler(error);
                     }
-                    DDLogError(@"contact lookup failed with error: %@", error);
+
+                    DDLogError(@"%@ contact lookup failed with error: %@", self.tag, error);
                     return failureHandler(error);
                 }
             }

@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeSignalServiceFailure = 1001,
     OWSErrorCodeSignalServiceRateLimited = 1010,
     OWSErrorCodeUserError = 2001,
+    OWSErrorCodeNoSuchSignalRecipient = 777404,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);

@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsUpdater : NSObject
 
-#define NOTFOUND_ERROR 777404
-
 + (instancetype)sharedUpdater;
 
 - (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
