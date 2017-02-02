@@ -123,7 +123,7 @@ DEPENDENCIES:
   - PastelogKit (~> 1.3)
   - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/webrtc`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -131,7 +131,6 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :branch: mkirk/webrtc
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -141,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 919d541d6b8a8802a94f943026b8f68394e2c0b8
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 80fb58231e60aaa0b5f56ee9e1beba89d04c6539
+    :commit: 4e8ab21c4103fd59ed9d3a5a30e4e7e6e959df66
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -173,6 +172,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 9f2e2cf6d4db276e3d0280343260503d09c72979
+PODFILE CHECKSUM: 48dbf2fb380d626bb799a782dd41b6bf1e466506
 
 COCOAPODS: 1.0.1
