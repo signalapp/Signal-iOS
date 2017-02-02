@@ -453,16 +453,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         localVideoTrack?.isEnabled = false
         remoteVideoTrack?.isEnabled = false
 
-        peerConnection.delegate = nil
-        peerConnection.close()
-        peerConnection = nil
-
         dataChannel = nil
         audioSender = nil
         audioTrack = nil
         videoSender = nil
         localVideoTrack = nil
         remoteVideoTrack = nil
+
+        peerConnection.delegate = nil
+        peerConnection.close()
+        peerConnection = nil
 
         delegate = nil
     }
