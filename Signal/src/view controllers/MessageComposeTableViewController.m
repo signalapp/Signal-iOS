@@ -336,19 +336,15 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     }
 }
 
-- (BOOL)checkIsNonContactPhoneNumberSignalUser:(NSString *)phoneNumber
+- (void)checkIsNonContactPhoneNumberSignalUser:(NSString *)phoneNumber
 {
-    DDLogWarn(@"isNonContactPhoneNumberSignalUser: %@", phoneNumber);
-    
     if ([self.phoneNumberAccountSet containsObject:phoneNumber]) {
-        return YES;
+        return;
     }
     
     __weak MessageComposeTableViewController *weakSelf = self;
     [[ContactsUpdater sharedUpdater] lookupIdentifier:phoneNumber
                                               success:^(SignalRecipient *recipient) {
-                                                  DDLogWarn(@"Lookup contact with recipient: %@ %@", recipient, phoneNumber);
-                                                  
                                                   MessageComposeTableViewController *strongSelf = weakSelf;
                                                   if (!strongSelf) {
                                                       return;
@@ -362,15 +358,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                                   }
                                               }
                                               failure:^(NSError *error) {
-                                                  DDLogWarn(@"Failed to lookup contact with error: %@ %@", error, phoneNumber);
+                                                  // Ignore.
                                               }];
-    
-    return NO;
-
-//    // This dictionary is used to cache the set of known Signal
-//    // accounts that correspond to "non-contact phone numbers."
-//    @property (nonatomic) NSMutableSet *phoneNumberAccountSet;
-
 }
 
 - (void)setSearchPhoneNumber:(NSString *)searchPhoneNumber {
@@ -487,16 +476,18 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 4;
+    return MessageComposeTableViewControllerSectionContacts + 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // This logic will determine which one (if any) of the following special controls
+    // should be shown.  No more than one should be shown at a time.
     BOOL showNonContactConversation = NO;
     BOOL showInviteViaSMS = NO;
     BOOL showInviteFlow = NO;
 
     BOOL hasPhoneNumber = self.searchPhoneNumber.length > 0;
-    BOOL isKnownSignalUser = self.searchPhoneNumber && [self.phoneNumberAccountSet containsObject:self.searchPhoneNumber];
+    BOOL isKnownSignalUser = hasPhoneNumber && [self.phoneNumberAccountSet containsObject:self.searchPhoneNumber];
     BOOL isInviteFlowSupported = floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_0;
     if (hasPhoneNumber && isKnownSignalUser) {
         showNonContactConversation = YES;
@@ -584,6 +575,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             showInvite();
         }
     } else {
+        OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
+
         NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
 
         [self dismissViewControllerAnimated:YES
