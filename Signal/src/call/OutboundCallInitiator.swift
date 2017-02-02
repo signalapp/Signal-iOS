@@ -93,7 +93,7 @@ import Foundation
     }
 
     private func initiateWebRTCAudioCall(recipientId: String) -> Bool {
-        callUIAdapter.callBack(recipientId: recipientId)
+        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
         return true
     }
 
