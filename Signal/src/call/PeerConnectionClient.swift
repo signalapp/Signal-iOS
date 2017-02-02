@@ -339,7 +339,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         return setRemoteSessionDescription(remoteDescription)
             .then(on: PeerConnectionClient.signalingQueue) {
-                assert(self.peerConnection != nil)
                 return self.negotiateAnswerSessionDescription(constraints: constraints)
         }
     }
@@ -368,6 +367,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         return Promise { fulfill, reject in
             assertOnSignalingQueue()
+
+            guard self.peerConnection != nil else {
+                Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                return
+            }
 
             Logger.debug("\(self.TAG) negotiating answer session.")
 
