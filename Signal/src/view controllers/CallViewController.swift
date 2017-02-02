@@ -83,15 +83,13 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     required init?(coder aDecoder: NSCoder) {
         contactsManager = Environment.getCurrent().contactsManager
-        let callService = Environment.getCurrent().callService!
-        callUIAdapter = callService.callUIAdapter
+        callUIAdapter = Environment.getCurrent().callUIAdapter
         super.init(coder: aDecoder)
     }
 
     required init() {
         contactsManager = Environment.getCurrent().contactsManager
-        let callService = Environment.getCurrent().callService!
-        callUIAdapter = callService.callUIAdapter
+        callUIAdapter = Environment.getCurrent().callUIAdapter
         super.init(nibName: nil, bundle: nil)
     }
 

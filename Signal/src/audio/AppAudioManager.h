@@ -14,8 +14,6 @@
 
 @import AVFoundation;
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface AppAudioManager : NSObject <SoundPlayerDelegate>
 
 enum AudioProfile {
@@ -33,9 +31,7 @@ enum AudioProfile {
 - (void)respondToTerminationType:(enum CallTerminationType)terminationType;
 
 - (BOOL)toggleSpeakerPhone;
-- (void)toggleSpeakerPhoneIsEnabled:(BOOL)enabled NS_SWIFT_NAME(toggleSpeakerPhone(isEnabled:));
-
-- (void)cancelAllAudio;
+- (void)cancellAllAudio;
 
 - (void)requestRequiredPermissionsIfNeededWithCompletion:(PermissionBlock)permissionBlock incoming:(BOOL)isIncoming;
 - (BOOL)requestRecordingPrivilege;
@@ -46,9 +42,4 @@ enum AudioProfile {
 
 - (void)didCompleteSoundInstanceOfType:(SoundInstanceType)instanceType;
 
-- (void)handleInboundRing;
-- (void)setDefaultAudioProfile;
-
 @end
-
-NS_ASSUME_NONNULL_END

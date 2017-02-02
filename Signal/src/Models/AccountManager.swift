@@ -129,7 +129,7 @@ class AccountManager: NSObject {
                                                         Logger.debug("\(self.TAG) got valid turnserver info")
                                                         return fulfill(turnServerInfo)
                                                     }
-                                                    Logger.error("\(self.TAG) unexpeted server response:\(responseDictionary)")
+                                                    Logger.error("\(self.TAG) unexpected server response:\(responseDictionary)")
                                                 }
                                                 return reject(OWSErrorMakeUnableToProcessServerResponseError())
             },

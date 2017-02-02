@@ -1,9 +1,5 @@
 //
-//  SignalsViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsViewController.h"
@@ -131,7 +127,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleActiveCallNotifciation:)
+                                             selector:@selector(handleActiveCallNotification:)
                                                  name:[CallService callServiceActiveCallNotificationName]
                                                object:nil];
 }
@@ -154,8 +150,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     }
 }
 
-- (void)handleActiveCallNotifciation:(NSNotification *)notification
+- (void)handleActiveCallNotification:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     if (![notification.object isKindOfClass:[SignalCall class]]) {
         DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
             self.tag,
@@ -163,10 +161,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         return;
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        SignalCall *call = (SignalCall *)notification.object;
-        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
-    });
+
+    SignalCall *call = (SignalCall *)notification.object;
+    [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext

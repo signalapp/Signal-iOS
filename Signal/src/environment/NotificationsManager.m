@@ -1,9 +1,5 @@
 //
-//  NotificationsManager.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 22/12/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationsManager.h"
@@ -22,7 +18,7 @@
 @interface NotificationsManager ()
 
 @property SystemSoundID newMessageSound;
-@property NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @end
@@ -65,7 +61,7 @@
             notification.soundName            = @"NewMessage.aifc";
             switch (self.notificationPreviewType) {
                 case NotificationNoNameNoPreview: {
-                    notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"MISSED_CALL", nil)];
+                    notification.alertBody = [CallStrings missedCallNotificationBody];
                     break;
                 }
                 case NotificationNamePreview:
@@ -73,7 +69,7 @@
                     notification.userInfo = @{ Signal_Call_UserInfo_Key : cThread.contactIdentifier };
                     notification.category = Signal_CallBack_Category;
                     notification.alertBody =
-                        [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), [thread name]];
+                        [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], [thread name]];
                     break;
                 }
             }
@@ -134,13 +130,13 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [NSString stringWithFormat:NSLocalizedString(@"MISSED_CALL", @"notification body")];
+            alertMessage = [CallStrings missedCallNotificationBody];
             break;
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage =
-                [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", @"notification body"), callerName];
+                [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName];
             break;
         }
     }
@@ -248,6 +244,8 @@
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
+    AssertIsOnMainThread();
+
     // Replace any existing notification
     // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
     if (self.currentNotifications[identifier]) {
@@ -262,6 +260,7 @@
 
 - (void)cancelNotificationWithIdentifier:(NSString *)identifier
 {
+    AssertIsOnMainThread();
     UILocalNotification *notification = self.currentNotifications[identifier];
     if (!notification) {
         DDLogWarn(@"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
