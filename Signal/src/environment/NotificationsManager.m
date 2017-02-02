@@ -1,9 +1,5 @@
 //
-//  NotificationsManager.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 22/12/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationsManager.h"
@@ -22,7 +18,7 @@
 @interface NotificationsManager ()
 
 @property SystemSoundID newMessageSound;
-@property NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @end
@@ -248,6 +244,8 @@
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
+    AssertIsOnMainThread();
+
     // Replace any existing notification
     // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
     if (self.currentNotifications[identifier]) {
@@ -262,6 +260,7 @@
 
 - (void)cancelNotificationWithIdentifier:(NSString *)identifier
 {
+    AssertIsOnMainThread();
     UILocalNotification *notification = self.currentNotifications[identifier];
     if (!notification) {
         DDLogWarn(@"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
