@@ -24,7 +24,7 @@ protocol CallUIAdaptee {
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
-    func callBack(recipientId: String)
+    func startAndShowOutgoingCall(recipientId: String)
 }
 
 // Shared default implementations
@@ -42,7 +42,7 @@ extension CallUIAdaptee {
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
-    internal func callBack(recipientId: String) {
+    internal func startAndShowOutgoingCall(recipientId: String) {
         AssertIsOnMainThread()
 
         guard self.callService.call == nil else {
@@ -136,10 +136,10 @@ extension CallUIAdaptee {
         adaptee.declineCall(call)
     }
 
-    internal func callBack(recipientId: String) {
+    internal func startAndShowOutgoingCall(recipientId: String) {
         AssertIsOnMainThread()
 
-        adaptee.callBack(recipientId: recipientId)
+        adaptee.startAndShowOutgoingCall(recipientId: recipientId)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {

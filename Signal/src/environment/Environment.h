@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import "Logging.h"
 #import "PacketHandler.h"
@@ -27,6 +31,7 @@ static NSString *const kRedphoneCallSegue = @"2.0_6.0_Call_Segue";
 @class UINavigationController;
 @class RecentCallManager;
 @class OWSContactsManager;
+@class OutboundCallInitiator;
 @class PhoneManager;
 @class SignalsViewController;
 @class TSGroupThread;
@@ -34,6 +39,7 @@ static NSString *const kRedphoneCallSegue = @"2.0_6.0_Call_Segue";
 @class TSNetworkManager;
 @class AccountManager;
 @class OWSWebRTCCallMessageHandler;
+@class CallUIAdapter;
 @class CallService;
 @class OWSMessageSender;
 @class NotificationsManager;
@@ -74,8 +80,10 @@ static NSString *const kRedphoneCallSegue = @"2.0_6.0_Call_Segue";
 @property (nonatomic, readonly) NSData *zrtpVersionId;
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
+@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
 @property (nonatomic, readonly) CallService *callService;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) NotificationsManager *notificationsManager;

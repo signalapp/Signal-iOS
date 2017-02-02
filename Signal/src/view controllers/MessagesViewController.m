@@ -1,9 +1,5 @@
 //
-//  MessagesViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 28/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -129,6 +125,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
 @property NSCache *messageAdapterCache;
 
@@ -170,6 +167,7 @@ typedef enum : NSUInteger {
     _contactsManager = [Environment getCurrent].contactsManager;
     _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _messageSender = [Environment getCurrent].messageSender;
+    _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
@@ -635,54 +633,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // Since users can toggle this setting, which is only communicated during contact sync, it's easy to imagine the
-    // preference getting stale. Especially as users are toggling the feature to test calls. So here, we opt for a
-    // blocking network request *every* time we place a call to make sure we've got up to date preferences.
-    //
-    // e.g. The following would suffice if we weren't worried about stale preferences.
-    // SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:self.thread.contactIdentifier];
-    BOOL localWantsWebRTC = [Environment preferences].isWebRTCEnabled;
-
-    if (!localWantsWebRTC) {
-        [self placeRedphoneCall];
-        return;
-    }
-
-    [self.contactsUpdater lookupIdentifier:self.thread.contactIdentifier
-        success:^(SignalRecipient *_Nonnull recipient) {
-            BOOL remoteWantsWebRTC = recipient.supportsWebRTC;
-            DDLogDebug(@"%@ localWantsWebRTC?: %@, remoteWantsWebRTC?: %@",
-                self.tag,
-                (localWantsWebRTC ? @"YES" : @"NO"),
-                (remoteWantsWebRTC ? @"YES" : @"NO"));
-            if (localWantsWebRTC && remoteWantsWebRTC) {
-                [self placeWebRTCCall];
-            } else {
-                [self placeRedphoneCall];
-            }
-        }
-        failure:^(NSError *_Nonnull error) {
-            DDLogWarn(@"%@ looking up call recipient: %@ failed with error: %@", self.tag, self.thread, error);
-            SignalAlertView(NSLocalizedString(@"UNABLE_TO_PLACE_CALL", @"Alert Title"), error.localizedDescription);
-        }];
-}
-
-- (void)placeRedphoneCall
-{
-    DDLogInfo(@"%@ Placing redphone call to: %@", self.tag, self.thread);
-    PhoneNumber *number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:self.thread.contactIdentifier];
-    Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-
-    OWSAssert(number != nil);
-    OWSAssert(contact != nil);
-
-    [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-}
-
-- (void)placeWebRTCCall
-{
-    DDLogInfo(@"%@ Placing WebRTC call to: %@", self.tag, self.thread);
-    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueInitiateCall sender:self];
+    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
 - (BOOL)canCall {
