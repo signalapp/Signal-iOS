@@ -1,9 +1,5 @@
 //
-//  PushManager.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "PushManager.h"
@@ -325,7 +321,7 @@
             return;
         }
 
-        [self.callUIAdapter callBackWithRecipientId:recipientId];
+        [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
     } else {
         DDLogDebug(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
 

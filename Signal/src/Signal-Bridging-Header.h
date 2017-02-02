@@ -16,7 +16,7 @@
 #import "OWSError.h"
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
-#import "PhoneNumber.h"
+#import "PhoneManager.h"
 #import "PropertyListPreferences.h"
 #import "PureLayout.h"
 #import "PushManager.h"
@@ -28,6 +28,7 @@
 #import "UIView+OWS.h"
 #import <JSQSystemSoundPlayer.h>
 #import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
@@ -45,6 +46,7 @@
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
+#import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSCall.h>
