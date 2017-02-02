@@ -29,7 +29,7 @@ NSError *OWSErrorMakeFailedToSendOutgoingMessageError()
 
 NSError *OWSErrorMakeNoSuchSignalRecipientError()
 {
-    return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
+    return OWSErrorWithCodeDescription(OWSErrorCodeNoSuchSignalRecipient,
         NSLocalizedString(
             @"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT", @"Error message when attempting to send message"));
 }
