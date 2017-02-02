@@ -201,20 +201,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.debug("\(self.TAG) \(#function)")
 
-        // TODO
-        // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio
-        // session when adding an audiotrack
-//        stopAudio()
+        // Stop any in-progress WebRTC related audio.
+        PeerConnectionClient.stopAudioSession()
 
-        /*
-         End any ongoing calls if the provider resets, and remove them from the app's list of calls,
-         since they are no longer valid.
-         */
-        // This is a little goofy because CallKit assumes multiple calls (maybe some are held, or group calls?)
-        // but CallService currently just has one call at a time.
-        for call in callManager.calls {
-            callService.handleFailedCall(error: .providerReset)
-        }
+        // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
+        // since they are no longer valid.
+        callService.handleFailedCall(error: .providerReset)
 
         // Remove all calls from the app's list of calls.
         callManager.removeAllCalls()
@@ -225,7 +217,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("\(TAG) in \(#function) CXStartCallAction")
 
-        // TODO does this work when `action.handle.value` is not in e164 format, e.g. if called via intent?
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("\(TAG) unable to find call in \(#function)")
             return
@@ -245,21 +236,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
 
         Logger.debug("\(TAG) Received \(#function) CXAnswerCallAction")
-        // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
+        // Retrieve the instance corresponding to the action's call UUID
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
             return
         }
-
-        //         Original Speakerbox implementation
-        //        /*
-        //            Configure the audio session, but do not start call audio here, since it must be done once
-        //            the audio session has been activated by the system after having its priority elevated.
-        //         */
-        //        configureAudioSession()
-        //
-        //        // Trigger the call to be answered via the underlying network service.
-        //        call.answerSpeakerboxCall()
 
         self.callService.handleAnswerCall(call)
         self.showCall(call)
@@ -274,12 +255,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             action.fail()
             return
         }
-
-        // Original Speakerbox implementation
-        //        // Stop call audio whenever ending the call.
-        //        stopAudio()
-        //        // Trigger the call to be ended via the underlying network service.
-        //        call.endSpeakerboxCall()
 
         self.callService.handleLocalHungupCall(call)
 
