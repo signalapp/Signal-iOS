@@ -65,7 +65,13 @@ import Foundation
         },
                                               failure: { error in
                                                 Logger.warn("\(self.TAG) looking up recipientId: \(recipientId) failed with error \(error)")
-                                                // TODO fail with alert. e.g. when someone tries to call a non signal user from their contacts we should inform them.
+
+                                                let alertTitle = NSLocalizedString("UNABLE_TO_PLACE_CALL", comment:"Alert Title")
+                                                let alertController = UIAlertController(title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
+
+                                                let dismissAction = UIAlertAction(title: NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Generic short text for button to dismiss a dialog"), style: .default)
+                                                alertController.addAction(dismissAction)
+                                                UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
         })
 
         // Since we've already dispatched async to make sure we have fresh webrtc preference data
