@@ -63,7 +63,8 @@ import Foundation
                             mode: AVAudioSessionModeVoiceChat,
                             options: .defaultToSpeaker)
         } else {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord)
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
+                            mode: AVAudioSessionModeVoiceChat)
         }
     }
 
@@ -185,28 +186,20 @@ import Foundation
     }
 
     private func setAudioSession(category: String,
-                                 mode: String,
-                                 options: AVAudioSessionCategoryOptions) {
+                                 mode: String? = nil,
+                                 options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
         do {
-            if #available(iOS 10.0, *) {
-                try
-                    AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
+            if #available(iOS 10.0, *), let mode = mode {
+                try AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
+                Logger.debug("\(self.TAG) set category: \(category) mode: \(mode) options: \(options)")
             } else {
-                try
-                    AVAudioSession.sharedInstance().setCategory(category, with: options)
+                try AVAudioSession.sharedInstance().setCategory(category, with: options)
+                Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
             }
-            Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
         } catch {
             let message = "\(self.TAG) in \(#function) failed to set category: \(category) with error: \(error)"
             assertionFailure(message)
             Logger.error(message)
         }
-    }
-
-    private func setAudioSession(category: String) {
-        // FIXME Why this default mode? It doesn't work with e.g. "SoloAmbient", causing `AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)` to err
-        setAudioSession(category:category,
-                        mode:AVAudioSessionModeVoiceChat,
-                        options:AVAudioSessionCategoryOptions(rawValue: 0))
     }
 }
