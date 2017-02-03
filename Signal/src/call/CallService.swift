@@ -1064,22 +1064,10 @@ protocol CallServiceObserver: class {
         remoteVideoTrack = nil
         isRemoteVideoEnabled = false
 
-        // We make a local copy of peerConnectionClient and then clear
-        // the peerConnectionClient property immediately. This class' 
-        // PeerConnectionClientDelegate methods exit early if their 
-        // peerConnectionClient argument doesn't match the peerConnectionClient
-        // property.
-        //
-        // In practice this won't matter, since PeerConnectionClient invokes
-        // its delegate methods asynchronously, but we don't want to bake that
-        // assumption into this logic.
-        var peerConnectionClientCopy = peerConnectionClient
+        PeerConnectionClient.stopAudioSession()
+        peerConnectionClient?.terminate()
         Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
         peerConnectionClient = nil
-
-        PeerConnectionClient.stopAudioSession()
-        peerConnectionClientCopy?.terminate()
-        peerConnectionClientCopy = nil
 
         call?.removeAllObservers()
         call = nil
