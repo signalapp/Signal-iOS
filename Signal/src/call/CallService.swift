@@ -283,11 +283,7 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
-
-            // When placing an outgoing call, it's our responsibility to create the DataChannel. Recipient will not have
-            // to do this explicitly.
-            peerConnectionClient.createSignalingDataChannel()
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .Outgoing)
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
@@ -439,7 +435,7 @@ protocol CallServiceObserver: class {
             // even though, from the users perspective, no incoming call is yet visible.
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .Incoming)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)

@@ -64,6 +64,11 @@ protocol PeerConnectionClientDelegate: class {
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
+    enum CallType {
+        case Incoming
+        case Outgoing
+    }
+
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
@@ -113,7 +118,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
-    init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate) {
+    init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callType: CallType) {
         AssertIsOnMainThread()
 
         self.iceServers = iceServers
@@ -139,21 +144,25 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                 delegate: self)
         createAudioSender()
         createVideoSender()
+
+        if callType == .Outgoing {
+            // When placing an outgoing call, it's our responsibility to create the DataChannel. 
+            // Recipient will not have to do this explicitly.
+            createSignalingDataChannel()
+        }
     }
 
     // MARK: - Media Streams
 
-    public func createSignalingDataChannel() {
+    fileprivate func createSignalingDataChannel() {
         AssertIsOnMainThread()
 
-        PeerConnectionClient.signalingQueue.sync {
-            let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
-                                                         configuration: RTCDataChannelConfiguration())
-            dataChannel.delegate = self
+        let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
+                                                     configuration: RTCDataChannelConfiguration())
+        dataChannel.delegate = self
 
-            assert(self.dataChannel == nil)
-            self.dataChannel = dataChannel
-        }
+        assert(self.dataChannel == nil)
+        self.dataChannel = dataChannel
     }
 
     // MARK: Video
