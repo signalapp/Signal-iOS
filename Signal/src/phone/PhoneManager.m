@@ -93,7 +93,7 @@
     int64_t prevSession   = lastIncomingSessionId;
     lastIncomingSessionId = session.sessionId;
 
-    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete || [self hasOngoingWebRTCCall]) {
+    if ([self hasOngoingRedphoneCall] || [self hasOngoingWebRTCCall]) {
         if (session.sessionId == prevSession) {
             Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
@@ -139,7 +139,7 @@
                                                                               incoming:YES];
 }
 
-- (BOOL)hasOngoingCall
+- (BOOL)hasOngoingRedphoneCall
 {
     if (!self.curCallController) {
         return NO;
