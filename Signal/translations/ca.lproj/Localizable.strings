@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ en el grup %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arxiva";
 
@@ -65,12 +68,12 @@
 "ATTACHMENT_QUEUED" = "El fitxer adjunt s'ha posat en cua per obtindre'l.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "El Signal requereix accés al micròfon per funcionar correctament. Podeu restablir els permisos anant a Configuració >> Privadesa >> Micròfon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Telefona";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Retornar trucada";
 
 /* Activity Sheet label */
@@ -220,14 +223,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra trucada.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "No disponible...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "S'ha perdut la trucada.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "L'aplicació ha fallat.";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "No s'ha pogut enviar el missatge.";
@@ -241,8 +244,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El destinatari ja no és usuari del Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Rebut missatge duplicat.";
@@ -353,12 +359,12 @@
 "IN_CALL_TALKING" = "Assegurat. Actiu.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Fet.";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Trucada entrant";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Trucada entrant de %@";
 
 /* Text for button at the top of the contact picker */
@@ -439,16 +445,18 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuts";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Trucada perduda";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Abans vau impedir que el Signal accedís a la càmera. Canvieu la configuració del sistema per continuar.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "El Signal necessita accedir a la càmera.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Trucada perduda de %@";
 
 /* No comment provided by engineer. */
@@ -534,9 +542,6 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Trucada sortint";
-
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Heu de desbloquejar l'iPhone per a rebre missatges nous.";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %@. Esteu verificant el contacte correcte?";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Quant a";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activa el registre de depuració";
 
@@ -720,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avançada";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Sol·licita la vostra aprovació abans de comunicar-se amb qui tingui números de seguretat nous, habitualment degut a una nova instal·lació del Signal.";
@@ -775,6 +792,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Evita que aparegui la vista prèvia del Signal al selector d'aplicacions.";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Seguretat de pantalla";
 
@@ -825,6 +848,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Elimina";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Restaura";

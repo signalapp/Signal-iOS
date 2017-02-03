@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@の%@：%@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "保管庫に移動";
 
@@ -65,12 +68,12 @@
 "ATTACHMENT_QUEUED" = "添付ファイルが取得予定に追加されました。";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signalを使うにはマイクへのアクセスが必要です。アクセスを許可するには，「設定」>「プライバシー」>「マイク」>「Signal」で設定してください。";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "電話";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
 
 /* Activity Sheet label */
@@ -220,14 +223,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "続けて電話をかけました";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "話し中";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "通話失敗";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "エラー発生";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "メッセージの送信に失敗しました";
@@ -241,8 +244,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "サーバーにエラーが発生しました。少し待って再試行してください。";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "相手がSignalユーザーではないようです。";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複メッセージを受信しました";
@@ -353,12 +359,12 @@
 "IN_CALL_TALKING" = "通信は安全です";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "終了しました";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "着信";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "%@ から着信";
 
 /* Text for button at the top of the contact picker */
@@ -439,16 +445,18 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u分";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "不在着信";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signalがカメラにアクセスできないよう設定されているようです。端末の設定を見直してください。";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "%@ から不在着信";
 
 /* No comment provided by engineer. */
@@ -534,9 +542,6 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "発信";
-
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "新着メッセージを受信するにはデバイスのロックを解除してください";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@との安全番号ではないようです。連絡先が正しいか確認してください。";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Signalについて";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
 
@@ -720,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新規の安全番号を持つ人（例えばSignalを再インストールした人）と通信する前にはあなたに承認を求めます。";
@@ -775,6 +792,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "アプリ切り替え画面でSignalのプレビューを表示しない（ロゴのみ表示）";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "スクリーン・セキュリティ";
 
@@ -825,6 +848,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "削除";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "受信箱に戻す";

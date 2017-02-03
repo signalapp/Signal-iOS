@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arkiv";
 
@@ -65,12 +68,12 @@
 "ATTACHMENT_QUEUED" = "Nytt vedlegg i kø for å hentes.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal trenger tilgang til din mikrofon for å fungere. Du kan endre denne tilgangen i Innstillinger >> Personvern >> Mikrofon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tilbake";
 
 /* Activity Sheet label */
@@ -220,14 +223,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Du ringte på nytt.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Opptatt...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Du gikk glipp av anropet.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Klient feilet!";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mislyktes med å sende melding.";
@@ -241,8 +244,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Mottakeren er ikke lenger Signal-bruker.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottok en duplisert melding.";
@@ -353,12 +359,12 @@
 "IN_CALL_TALKING" = "Sikret. Aktiv.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Utført.";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Innkommende anrop";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Innkommende anrop fra %@";
 
 /* Text for button at the top of the contact picker */
@@ -439,16 +445,18 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutter";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Tapt anrop";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du har tidligere avvist å la Signal få tilgang til kamera. Oppdater systeminnstillinger for å fortsette.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal trenger tilgang til ditt kamera.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Tapt anrop fra %@.";
 
 /* No comment provided by engineer. */
@@ -534,9 +542,6 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Utgående anrop";
-
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Din iPhone må låses opp for å motta nye meldinger.";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ser ikke ut som dine sikkerhetstall som du deler med %@. Er det rett kontakt du forsøker å verifisere?";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Om";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på debug-logging";
 
@@ -720,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avansert";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Det kreves din godkjenning før du kan kommunisere med noen som har endret sikkerhetstall – noe som kan skyldes at de har reinstallert Signal-appen.";
@@ -775,6 +792,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Forhindrer Signal fra å vises i oversikten over nylig brukte apper.";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skjermsikkerhet";
 
@@ -825,6 +848,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Slett";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Hent frem fra arkiv";
