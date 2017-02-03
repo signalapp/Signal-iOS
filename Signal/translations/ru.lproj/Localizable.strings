@@ -68,7 +68,7 @@
 "ATTACHMENT_QUEUED" = "Новое вложение поставлено в очередь для скачивания.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Для правильной работы Signal необходим доступ к микрофону. Вы можете восстановить доступ в Настройках в разделе Конфиденциальность >> Микрофон >> Signal.";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Позвонить";
@@ -224,13 +224,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Вы начали другой звонок.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Занято.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Звонок пропущен.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Звонок не удался.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ошибка отправки сообщения.";
@@ -245,10 +245,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Ошибка работы сервера. Пожалуйста, повторите действие позднее.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Получатель не использует Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Получен дубликат сообщения.";
@@ -359,7 +359,7 @@
 "IN_CALL_TALKING" = "Соединение защищено и активно.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Звонок завершен.";
 
 /* notification body */
 "INCOMING_CALL" = "Входящий звонок";
@@ -450,7 +450,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Для осуществления видео-звонков Signal необходим доступ к камере. Вы можете восстановить доступ в Настройках в разделе Конфиденциальность >> Камера >> Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Вы можете узнать свой сетевой статус по цветной полоске над Входящими.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Добавить фотографию группы";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Добавить пользователей";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Ваше сообщение не отправлено %@ из-за ошибки.";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Приглашение к использованию Signal отправлено!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Отправить SMS";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Пригласить друга через незащищённое SMS?";
@@ -718,7 +724,7 @@
 "SETTINGS_ABOUT" = "О программе";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Использовать CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Включить журнал отладки";
@@ -730,13 +736,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Расширенные";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Разрешить видео-звонки (Beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Не удалось обновить настройки.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Ошибка";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Требуется подтверждение соединения, так как код безопасности собеседника изменился, скорее всего из-за переустановки Signal.";
@@ -793,10 +799,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Запрещает появление превью Signal в переключателе приложений.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit позволяет отвечать на звонки даже когда телефон заблокирован. Имейте ввиду, что при использовании CallKit, Apple синхронизирует некоторые данные о звонке с вашим iCloud-аккаунтом.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Звонки";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Защита экрана";
@@ -850,7 +856,7 @@
 "TXT_DELETE_TITLE" = "Удалить";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Не удалось установить соединение.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Разархивировать";

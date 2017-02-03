@@ -8,19 +8,19 @@
 "AB_PERMISSION_MISSING_TITLE" = "죄송합니다";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "새 안전번호 수락.";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "조치가 필요함";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal requires access to your contacts. Access to contacts is restricted. Signal will close. You can disable the restriction temporarily to let Signal access your contacts by going the Settings app >> General >> Restrictions >> Contacts >> Allow Changes.";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal 은 당신의 연락처에 대한 액세스가 필요합니다.\n연락처에 대한 액세스가 제한되였습니다. Signal 이 종료됩니다.당신은 Settings 앱을 열고 General >> Restrictions >> Contacts >> Allow Changes 을 설정함으로써 Signal 이 당신의 연락처에 액세스하도록 제한을 일시적으로 해제할수 있습니다. ";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "닫기";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "이미 Signal 계정을 가지고있나요?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "응답";
@@ -59,25 +59,25 @@
 "ATTACHMENT_DOWNLOADING" = "첨부파일 다운로드중";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "사진을 선택하거나 찍은 다음 전송하세요.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "첨부";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "정보 검색을 위한 새 첨부파일 대기";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "시그널이 제대로 작동하기 위하여 당신의 마이크로폰에 액세스하여야 합니다. ";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "호출";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "전화하기";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "클립 보드와 비교하세요.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "당신의 메시지들을 삭제하고 서버에 등록 해지하면 이 응용 프로그램이 초기화 될 것입니다. 데이터 삭제 후 앱이 닫힐것입니다.";
@@ -86,13 +86,13 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "당신의 계정을 정말로 삭제하시겠습니까?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "당신은 더 이상 이 그룹에서 메세지를 전송하거나 받을수가 없습니다. ";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "정말로 떠나시렵니까?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Link New Device";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "새 기기 연결";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "확인";
@@ -101,13 +101,13 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "등록되지 않은 전화번호";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "이메일을 찾을수 없습니다.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "폰번호를 찾을수 없습니다.";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Conversation Settings";
+"CONVERSATION_SETTINGS" = "대화 설정";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
@@ -125,40 +125,40 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked: %@";
+"DEVICE_LINKED_AT_LABEL" = "%@ 와 연결되였습니다.";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Failed to update device list.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "기기 목록 업데이트 실패.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Disappearing Messages";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "사용가능되였을때 이 대화에서 주고 받은 메세지들이 그것들을 본후에 사라질것입니다.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "현재 메세지들이 %@ 후에 사라집니다.";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Generic short text for button to dismiss a dialog */
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"DISMISS_BUTTON_TEXT" = "꺼짐.";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "그룹 편집";
 
 /* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Save";
+"EDIT_ITEM_SAVE_ACTION" = "보관";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "안녕하세요,\n요즘 내 아이 폰에서 개인적으로  대화를 유지하기 위해 시그널을  사용해 왔습니다. 당신도 시그널을 사용해주셨으면 합니다, 그래서 오직 당신과 나만이  우리의 메시지를 읽거나 우리의 콜을 듣을수 있다는 확신을 가질 수 있습니다.\n시그널은 아이 폰과 안드로이드에서 사용할 수 있습니다. 여기서 다운하세요 :%@\n시그널은 기존 메시징 앱처럼 작동합니다. 우리는 사진과 비디오 를  전송하고, 전화를 하고 또 그룹으로 채팅할수 있습니다. 가장 좋은 점은  누구도 지어 시그널을 만든 사람들 조차도 그것들중의 아무것도 볼수 없다는것입니다.\n당신은 Open Whisper Systems 과 시그널 제작자들에 대하여  %@ 에서 더 확인할수 있습니다.";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "시그널로  이전합시다.";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Tap on the compose button.";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Compose 버튼을 클릭하세요.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "당신의 첫번째 Signal 대화 시작!";
@@ -170,10 +170,10 @@
 "EMPTY_ARCHIVE_TITLE" = "당신의 대화들을 정리하세요.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "당신의 연락처 지인중 아무도 시그널을 사용하지 않고있습니다.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "왜 다른사람을 초청하지 않습니까?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "팁: 상기시키기 위한 대화 추가!";
@@ -230,25 +230,25 @@
 "END_CALL_STALE_SESSION" = "전화를 받지 못하였습니다.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "전화 실패됨.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "메시지 전송 실패.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "시그널이 인터네트에 접속불가능. 다른 Wifi 네트워크나 모바일 데이터를 사용하세요.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "당신의 기기는 더이상 당신의 폰번호로 등록되지 않습니다.당신은 반드시 시그널을 해제하고 다시 설치해야 합니다.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "써버 오유. 다시 시도하세요.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "연락처인이 시그널 사용자가 아닙니다.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "중복 메시지 받음.";
@@ -257,7 +257,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "수신인 암호가 유효하지 않음.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "받은 메시지가 동기화되지 않았습니다. 당신의 세션을 재설정하기 위하여 탭하세요.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "이 버전과 호환이 되지 않는 메시지 받음.";
@@ -266,7 +266,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "연락 가능한 세션 없음.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "안전번호 가 바뀌였습니다.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "알려지지 않은 오류 발생함.";
@@ -305,16 +305,16 @@
 "GROUP_AVATAR_CHANGED" = "아바타 변경됨.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created.";
+"GROUP_CREATED" = "그룹 창조 완성.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATING" = "Creating new group";
+"GROUP_CREATING" = "새 그룹을 창조하고 있습니다.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATING_FAILED" = "Group creation failed";
+"GROUP_CREATING_FAILED" = "그룹 창조 실패.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Group Management";
+"GROUP_MANAGEMENT_SECTION" = "그룹 관리";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = "%@님이 그룹에 조인함.";
@@ -323,7 +323,7 @@
 "GROUP_MEMBER_LEFT" = "%@님이 그룹을 나감.";
 
 /* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "Group Members";
+"GROUP_MEMBERS_HEADER" = "그룹 멤버들";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Leaving group %@";
@@ -332,7 +332,7 @@
 "GROUP_REMOVING_FAILED" = "Failed to leave group";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "그룹 설정";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "제목은 '%@'";
@@ -359,7 +359,7 @@
 "IN_CALL_TALKING" = "안전함. 활성화됨";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "전화 완료됨";
 
 /* notification body */
 "INCOMING_CALL" = "수신 전화";
@@ -368,13 +368,13 @@
 "INCOMING_CALL_FROM" = "%@으로부터 전화";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "시그널로 친구들을 초청하세요.";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "검색";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "친구들 초대";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
@@ -401,7 +401,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Link this device?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Retry";
+"LINK_DEVICE_RESTART" = "재시도";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code displayed on the device to link.";
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "당신의 메시지함 위 색깔이 있는 바를 보면 당신의 네트워크 상태를 확인할 수 있습니다.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "사람 추가";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "%@님에게 메시지 전송 실패";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "다음과 같은 상대에 문자 보내기:";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "불안전한 SMS를 통해 친구를 초대하겠습니까?";

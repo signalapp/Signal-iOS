@@ -68,7 +68,7 @@
 "ATTACHMENT_QUEUED" = "Nova priponka je v vrsti za prenos.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Aplikacija Signal za nemoteno delovanje zahteva dovoljenje za dostop do mikrofona na vaši napravi. Dovoljenje lahko date v aplikaciji Meni >> Zasebnost >> Mikrofon >> Signal.";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Kliči";
@@ -224,13 +224,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Opravili ste še en klic.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Zasedeno.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Zgrešen klic";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Klic ni uspel.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Napaka pri pošiljanju sporočila.";
@@ -245,10 +245,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Napaka strežnika. Poskusite znova kasneje.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Oseba ni uporabnik aplikacije Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Prejeto je bilo podvojeno sporočilo.";
@@ -359,7 +359,7 @@
 "IN_CALL_TALKING" = "Zavarovano. V teku.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Končan klic.";
 
 /* notification body */
 "INCOMING_CALL" = "Dohodni klic";
@@ -450,7 +450,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Aplikacija Signal za nemoteno delovanje zahteva dovoljenje za dostop do kamere na vaši napravi. Dovoljenje lahko date v aplikaciji Meni >> Zasebnost >> Kamera >> Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Stanje vašega omrežja lahko preverite na barvnem traku nad poštnim nabiralnikom.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Določi fotografijo skipine";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Dodaj ljudi";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Vaše sporočilo za %@ ni moglo biti poslano.";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Prijatelja ste povabili k uporabi aplikacije Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Pošlji sporočilo SMS:";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Povabim prijatelja preko nezaščitenega sporočila SMS?";
@@ -718,7 +724,7 @@
 "SETTINGS_ABOUT" = "O aplikaciji";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Uporabi opremo za klicanje";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Omogoči beleženje za razhroščevanje";
@@ -730,13 +736,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Omogoči video klicanje (Beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Nastavitev ni bilo mogoče posodobiti.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Napaka";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Za nadaljevanje komunikacije z osebo, ki ima novo varnostno število je potrebna vaša potrditev. Razlog za spremembo je največkrat ponovna namestitev aplikacije Signal.";
@@ -793,10 +799,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "To bo preprečilo zajem slike zaslona aplikacije in njen prikaz pri preklapljanju med aplikacijami.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit vam omogoča odzivanje na klic neposredno iz zaslona za zaklepanje. Vedeti morate, da pride pri tem do sinhronizacije nekaterih meta podatkov o vašem klicu z vašim Apple iCloud računom.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Kličem";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Varnost zaslona";
@@ -850,7 +856,7 @@
 "TXT_DELETE_TITLE" = "Izbriši";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Ne morem izvršiti klica.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Premakni v nabiralnik";

@@ -230,7 +230,7 @@
 "END_CALL_STALE_SESSION" = "Missed the Call.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Skambutis nepavyko.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepavyko išsiųsti žinutę.";
@@ -245,10 +245,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverio klaida. Prašome vėliau bandyti dar kartą.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Signal naudotojas.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Gauta dviguba žinutė.";
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "You can check your network status by looking at the colored bar above your inbox.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Pridėti žmones";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Nepavyko išsiųsti jūsų žinutės kontaktui %@.";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Jūs pakvietėte savo draugą naudotis Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Kam siųsti SMS: ";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Pakviesti draugą, naudojant nesaugiąją SMS?";
@@ -733,10 +739,10 @@
 "SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Nepavyko atnaujinti jūsų nuostatų.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Klaida";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Reikalauja jūsų patvirtinimo, prieš susisiekiant su kuo nors, kas turi naują saugumo numerį, dažniausiai, dėl Signal įdiegimo iš naujo.";

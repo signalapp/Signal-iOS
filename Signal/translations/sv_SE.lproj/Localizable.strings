@@ -245,7 +245,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Försök igen senare.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Du kan se din nätverksstatus på den färgade raden ovanför din inkorg.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Välj gruppbild";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Lägg till personer";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Ditt meddelande kunde inte skickas till %@.";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Du har bjudit in din vän att använda Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Skicka SMS till:";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Bjud in en vän via osäkert SMS?";

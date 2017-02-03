@@ -14,7 +14,7 @@
 "ACTION_REQUIRED_TITLE" = "Acción requerida";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal necesita acceso a tus contactos. El acesso a los contactos está restringido y Signal se cerrará. Puedes reestablecer el permiso en Ajustes >> General >> Restricciones >> Contactos >>  Permitir cambios.";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal necesita acceder a tus contactos. Como el acesso a los contactos está restringido, Signal se cerrará. Puedes reestablecer el permiso en la App Ajustes >> General >> Restricciones >> Contactos >>  Permitir cambios.";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Cerrar";
@@ -68,7 +68,7 @@
 "ATTACHMENT_QUEUED" = "Nuevo adjunto listo para descarga.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceder al micrófono para funcionar correctamente. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Micrófono >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Llamada";
@@ -224,13 +224,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Has realizado otra llamada.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Ocupado.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Llamada perdida.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Fallo en la llamada.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Fallo al enviar el mensaje.";
@@ -245,10 +245,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Fallo en el servidor. Por favor, inténtalo más tarde.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacto no es usuario de Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado.";
@@ -359,7 +359,7 @@
 "IN_CALL_TALKING" = "Llamada asegurada y activa";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Llamada finalizada.";
 
 /* notification body */
 "INCOMING_CALL" = "Llamada entrante";
@@ -450,7 +450,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal necesita acceder a la cámara para realizar videollamadas. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Cámara >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -489,6 +489,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Puedes comprobar el estado de la conexión simplemente observando la barra de progreso en la parte superior de la bandeja de entrada.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Seleccionar foto de grupo";
 
@@ -500,6 +503,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Añade contactos";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Fallo al enviar mensaje a %@.";
@@ -586,13 +592,13 @@
 "PUSH_REGISTER_TITLE" = "Notificaciones";
 
 /* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal necesita que sean habilitadas las notificaciones y sonidos para funcionar correctamente. Por favor, cámbialo en Ajustes >> Notificaciones >> Signal";
+"PUSH_SETTINGS_MESSAGE" = "Signal necesita tener activadas las notificaciones y sonidos para funcionar correctamente. Por favor, cámbialo en la App Ajustes >> Notificaciones >> Signal";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Si te gusta utilizar Signal para tener conversaciones privadas, puedes apoyar nuestro proyecto valorándolo en la App Store. No te llevará más de un minuto y ayudará a otros usuarios a asociar la aplicación con privacidad.";
+"RATING_MSG" = "Si te gusta utilizar Signal para tener chats privados, puedes apoyar nuestro proyecto valorándolo en la App Store. No te llevará más de un minuto y ayudará a otros usuarios a asociar Signal con privacidad.";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Valora Signal";
@@ -607,7 +613,7 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Prefijo internacional inválido";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal te permite tener conversaciones privadas con contactos que también usen la aplicación. Para usar Signal, por favor permite el acceso a tus contactos.";
+"REGISTER_CONTACTS_BODY" = "Signal te permite tener chats privados con contactos que también usen la aplicación. Para usar Signal, por favor permite el acceso a tus contactos.";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_CONTINUE" = "Continuar";
@@ -705,8 +711,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "¡Has invitado a tu contacto a usar Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Enviar SMS a:";
+/* Text for button to send a Signal invite via SMS */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "¿Invitar a un contacto vía SMS inseguro? ";
@@ -718,7 +724,7 @@
 "SETTINGS_ABOUT" = "Acerca de Signal";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Aviso de llamada CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activar registro de depuración";
@@ -730,10 +736,10 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Activar vídeollamadas (beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "No se han podido actualizar tus ajustes.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
@@ -793,10 +799,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Evita que aparezcan las capturas de pantalla en el gestor de aplicaciones.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit permite recibir notificaciones de (vídeo)llamadas de Signal a pantalla completa. ATENCIÓN: Al usar CallKit Apple almacena la lista de llamadas de Signal en tu cuenta de iCloud.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Llamando";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Seguridad de pantalla";
@@ -850,7 +856,7 @@
 "TXT_DELETE_TITLE" = "Borrar";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Imposible iniciar llamada.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Desarchivar";
@@ -871,7 +877,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "¿Desenlazar \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha podido desenlazar tu dispositivo";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha podido desenlazar tu dispositivo.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Dispositivo sin nombre";
