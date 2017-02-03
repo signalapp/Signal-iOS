@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AppAudioManager.h"
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
@@ -132,6 +136,12 @@
     }
                                                                               incoming:YES];
 }
+
+- (BOOL)hasOngoingCall
+{
+    return self.curCallController != nil;
+}
+
 - (CallController *)curCallController {
     return currentCallControllerObservable.currentValue;
 }
