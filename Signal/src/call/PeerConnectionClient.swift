@@ -423,10 +423,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         AssertIsOnMainThread()
         Logger.debug("\(TAG) in \(#function)")
 
-        delegate.peerConnectionClient(self, didUpdateLocal: nil)
-        delegate.peerConnectionClient(self, didUpdateRemote: nil)
-
-        PeerConnectionClient.signalingQueue.async {
+        PeerConnectionClient.signalingQueue.sync {
             assert(self.peerConnection != nil)
             self.terminateInternal()
         }

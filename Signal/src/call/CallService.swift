@@ -281,6 +281,7 @@ protocol CallServiceObserver: class {
             peerConnectionClient.createSignalingDataChannel()
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
+            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
@@ -428,6 +429,7 @@ protocol CallServiceObserver: class {
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
+            Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
@@ -921,8 +923,13 @@ protocol CallServiceObserver: class {
     /**
      * The connection has been established. The clients can now communicate.
      */
-    internal func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
+    internal func peerConnectionClientIceConnected(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.handleIceConnected()
     }
@@ -930,8 +937,13 @@ protocol CallServiceObserver: class {
     /**
      * The connection failed to establish. The clients will not be able to communicate.
      */
-    internal func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
+    internal func peerConnectionClientIceFailed(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.handleFailedCall(error: CallError.disconnected)
     }
@@ -941,8 +953,13 @@ protocol CallServiceObserver: class {
      * reach the local client via the internet. The delegate must shuttle these IceCandates to the other (remote) client
      * out of band, as part of establishing a connection over WebRTC.
      */
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.handleLocalAddedIceCandidate(iceCandidate)
     }
@@ -950,21 +967,36 @@ protocol CallServiceObserver: class {
     /**
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.handleDataChannelMessage(dataChannelMessage)
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.localVideoTrack = videoTrack
         self.fireDidUpdateVideoTracks()
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
+
+        if peerConnectionClient != self.peerConnectionClient {
+            Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
 
         self.remoteVideoTrack = videoTrack
         self.fireDidUpdateVideoTracks()
@@ -1028,21 +1060,27 @@ protocol CallServiceObserver: class {
 
         Logger.debug("\(TAG) in \(#function)")
 
-        PeerConnectionClient.stopAudioSession()
-        peerConnectionClient?.terminate()
-
-        peerConnectionClient = nil
+        self.localVideoTrack = nil
+        self.remoteVideoTrack = nil
+        self.fireDidUpdateVideoTracks()
         localVideoTrack = nil
         remoteVideoTrack = nil
         isRemoteVideoEnabled = false
+
+        var peerConnectionClientCopy = peerConnectionClient
+        Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
+        peerConnectionClient = nil
+
+        PeerConnectionClient.stopAudioSession()
+        peerConnectionClientCopy?.terminate()
+        peerConnectionClientCopy = nil
+
         call?.removeAllObservers()
         call = nil
         thread = nil
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
         pendingIceUpdateMessages = []
-
-        fireDidUpdateVideoTracks()
     }
 
     // MARK: - CallObserver
