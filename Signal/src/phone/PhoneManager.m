@@ -139,7 +139,7 @@
 
 - (BOOL)hasOngoingCall
 {
-    return self.curCallController != nil;
+    return [currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete;
 }
 
 - (CallController *)curCallController {
