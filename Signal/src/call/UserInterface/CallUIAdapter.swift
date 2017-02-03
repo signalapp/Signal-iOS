@@ -47,7 +47,7 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard self.callService.call == nil else {
-            assertionFailure("unexpectedly found an existing call when trying to call back: \(recipientId)")
+            Logger.info("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
             return
         }
 
