@@ -52,6 +52,16 @@ import Foundation
         // SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:self.thread.contactIdentifier];
         self.contactsUpdater.lookupIdentifier(recipientId,
                                               success: { recipient in
+
+                                                guard !Environment.getCurrent().phoneManager.hasOngoingCall() else {
+                                                    Logger.error("\(self.TAG) OutboundCallInitiator aborting due to ongoing RedPhone call.")
+                                                    return
+                                                }
+                                                guard Environment.getCurrent().callService.call != nil else {
+                                                    Logger.error("\(self.TAG) OutboundCallInitiator aborting due to ongoing WebRTC call.")
+                                                    return
+                                                }
+
                                                 let remoteWantsWebRTC = recipient.supportsWebRTC
                                                 Logger.debug("\(self.TAG) localWantsWebRTC: \(localWantsWebRTC), remoteWantsWebRTC: \(remoteWantsWebRTC)")
 
