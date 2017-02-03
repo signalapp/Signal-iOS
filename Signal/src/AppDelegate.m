@@ -412,6 +412,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
         if ([Environment getCurrent].callService.call != nil) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
+            return NO;
         }
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
