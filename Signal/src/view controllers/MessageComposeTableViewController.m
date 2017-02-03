@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *searchPhoneNumber;
 // This dictionary is used to cache the set of phone numbers
 // which are known to correspond to Signal accounts.
-@property (nonatomic) NSMutableSet *phoneNumberAccountSet;
+@property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
 
 @property (nonatomic) BOOL isBackgroundViewHidden;
 
@@ -54,10 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
 //    which is not known to correspond to a signal account, or:
 // * "Invite contacts" if the invite flow is available, or:
 // * Nothing, otherwise.
-NSInteger const MessageComposeTableViewControllerSectionInviteNonContactConversation = 0;
-NSInteger const MessageComposeTableViewControllerSectionInviteViaSMS = 1;
-NSInteger const MessageComposeTableViewControllerSectionInviteFlow = 2;
-NSInteger const MessageComposeTableViewControllerSectionContacts = 3;
+typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
+    MessageComposeTableViewControllerSectionInviteNonContactConversation = 0,
+    MessageComposeTableViewControllerSectionInviteViaSMS,
+    MessageComposeTableViewControllerSectionInviteFlow,
+    MessageComposeTableViewControllerSectionContacts,
+    MessageComposeTableViewControllerSection_Count // meta section
+};
 
 NSString *const MessageComposeTableViewControllerCellInvite = @"ContactTableInviteCell";
 NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableViewCell";
@@ -72,7 +75,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     }
 
     _contactsManager = [Environment getCurrent].contactsManager;
-
+    _phoneNumberAccountSet = [NSMutableSet set];
+    
     return self;
 }
 
@@ -349,9 +353,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                                   if (!strongSelf) {
                                                       return;
                                                   }
-                                                  if (!strongSelf.phoneNumberAccountSet) {
-                                                      strongSelf.phoneNumberAccountSet = [NSMutableSet set];
-                                                  }
                                                   if (![strongSelf.phoneNumberAccountSet containsObject:phoneNumber]) {
                                                       [strongSelf.phoneNumberAccountSet addObject:phoneNumber];
                                                       [strongSelf.tableView reloadData];
@@ -476,7 +477,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return MessageComposeTableViewControllerSectionContacts + 1;
+    return MessageComposeTableViewControllerSection_Count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -488,7 +489,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     BOOL hasPhoneNumber = self.searchPhoneNumber.length > 0;
     BOOL isKnownSignalUser = hasPhoneNumber && [self.phoneNumberAccountSet containsObject:self.searchPhoneNumber];
-    BOOL isInviteFlowSupported = floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_0;
+    BOOL isInviteFlowSupported = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0);
     if (hasPhoneNumber && isKnownSignalUser) {
         showNonContactConversation = YES;
     } else if (hasPhoneNumber) {
@@ -522,11 +523,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                                              self.searchPhoneNumber];
         return self.conversationForNonContactCell;
     } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteViaSMS) {
-        // TODO: We should rework this string to be a format, to account for languages where the
-        //       phone number should not appear at the end of the copy.
-        self.inviteViaSMSCell.textLabel.text = [NSLocalizedString(@"SEND_SMS_BUTTON",
-                                                                  @"Text for button to send a Signal invite via SMS")
-                                                stringByAppendingString:self.searchPhoneNumber];
+        self.inviteViaSMSCell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                                                            @"Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number."),
+                                                self.searchPhoneNumber];
         return self.inviteViaSMSCell;
     } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteFlow) {
         return self.inviteCell;
