@@ -57,7 +57,7 @@ import Foundation
                                                     Logger.error("\(self.TAG) OutboundCallInitiator aborting due to ongoing RedPhone call.")
                                                     return
                                                 }
-                                                guard Environment.getCurrent().callService.call != nil else {
+                                                guard Environment.getCurrent().callService.call == nil else {
                                                     Logger.error("\(self.TAG) OutboundCallInitiator aborting due to ongoing WebRTC call.")
                                                     return
                                                 }
