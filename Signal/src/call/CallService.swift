@@ -271,7 +271,7 @@ protocol CallServiceObserver: class {
             return Promise(error: CallError.assertionError(description: errorDescription))
         }
 
-        return getIceServers().then() { iceServers -> Promise<HardenedRTCSessionDescription> in
+        return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
@@ -285,13 +285,13 @@ protocol CallServiceObserver: class {
             self.peerConnectionClient = peerConnectionClient
 
             return self.peerConnectionClient!.createOffer()
-        }.then() { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
-            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then() {
+        }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
+            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                 return self.messageSender.sendCallMessage(callMessage)
             }
-        }.catch() { error in
+        }.catch { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
             if let callError = error as? CallError {
@@ -339,7 +339,7 @@ protocol CallServiceObserver: class {
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
         _ = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
             Logger.debug("\(self.TAG) successfully set remote description")
-        }.catch() { error in
+        }.catch { error in
             if let callError = error as? CallError {
                 self.handleFailedCall(error: callError)
             } else {
@@ -425,7 +425,7 @@ protocol CallServiceObserver: class {
 
         incomingCallPromise = firstly {
             return getIceServers()
-        }.then() { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
+        }.then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
@@ -437,14 +437,14 @@ protocol CallServiceObserver: class {
 
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
-        }.then() { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+        }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             Logger.debug("\(self.TAG) set the remote description")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
             return self.messageSender.sendCallMessage(callAnswerMessage)
-        }.then() {
+        }.then {
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
             let (promise, fulfill, _) = Promise<Void>.pending()
@@ -458,7 +458,7 @@ protocol CallServiceObserver: class {
             self.fulfillCallConnectedPromise = fulfill
 
             return race(promise, timeout)
-        }.catch() { error in
+        }.catch { error in
             if let callError = error as? CallError {
                 self.handleFailedCall(error: callError)
             } else {
@@ -773,9 +773,9 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
-        _  = self.messageSender.sendCallMessage(callMessage).then() {
+        _  = self.messageSender.sendCallMessage(callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
-        }.catch() { error in
+        }.catch { error in
             Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
         }
 
@@ -926,7 +926,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClientIceConnected(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -940,7 +940,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClientIceFailed(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -956,7 +956,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -970,7 +970,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -981,7 +981,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -993,7 +993,7 @@ protocol CallServiceObserver: class {
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 
-        if peerConnectionClient != self.peerConnectionClient {
+        guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.TAG) \(#function) Ignoring event from obsolete peerConnectionClient")
             return
         }
@@ -1013,7 +1013,7 @@ protocol CallServiceObserver: class {
 
         return firstly {
             return accountManager.getTurnServerInfo()
-        }.then() { turnServerInfo -> [RTCIceServer] in
+        }.then { turnServerInfo -> [RTCIceServer] in
             Logger.debug("\(self.TAG) got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
@@ -1060,13 +1060,19 @@ protocol CallServiceObserver: class {
 
         Logger.debug("\(TAG) in \(#function)")
 
-        self.localVideoTrack = nil
-        self.remoteVideoTrack = nil
-        self.fireDidUpdateVideoTracks()
         localVideoTrack = nil
         remoteVideoTrack = nil
         isRemoteVideoEnabled = false
 
+        // We make a local copy of peerConnectionClient and then clear
+        // the peerConnectionClient property immediately. This class' 
+        // PeerConnectionClientDelegate methods exit early if their 
+        // peerConnectionClient argument doesn't match the peerConnectionClient
+        // property.
+        //
+        // In practice this won't matter, since PeerConnectionClient invokes
+        // its delegate methods asynchronously, but we don't want to bake that
+        // assumption into this logic.
         var peerConnectionClientCopy = peerConnectionClient
         Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
         peerConnectionClient = nil
