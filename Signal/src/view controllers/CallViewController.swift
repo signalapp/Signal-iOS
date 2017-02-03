@@ -85,12 +85,29 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         contactsManager = Environment.getCurrent().contactsManager
         callUIAdapter = Environment.getCurrent().callUIAdapter
         super.init(coder: aDecoder)
+        observeNotifications()
     }
 
     required init() {
         contactsManager = Environment.getCurrent().contactsManager
         callUIAdapter = Environment.getCurrent().callUIAdapter
         super.init(nibName: nil, bundle: nil)
+        observeNotifications()
+    }
+
+    func observeNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(didBecomeActive),
+                                               name:NSNotification.Name.UIApplicationDidBecomeActive,
+                                               object:nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func didBecomeActive() {
+        shouldRemoteVideoControlsBeHidden = false
     }
 
     // MARK: View Lifecycle
