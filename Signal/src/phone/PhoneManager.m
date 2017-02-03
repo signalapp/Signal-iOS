@@ -6,6 +6,7 @@
 #import "CallAudioManager.h"
 #import "PhoneManager.h"
 #import "RecentCallManager.h"
+#import "Signal-Swift.h"
 
 @implementation PhoneManager
 
@@ -92,12 +93,13 @@
     int64_t prevSession   = lastIncomingSessionId;
     lastIncomingSessionId = session.sessionId;
 
-    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete) {
+    if ([currentCallControllerObservable.currentValue callState].futureTermination.isIncomplete || [self hasOngoingWebRTCCall]) {
         if (session.sessionId == prevSession) {
             Environment.errorNoter(@"Ignoring duplicate incoming call signal.", session, false);
             return;
         }
 
+        DDLogInfo(@"%@ Missed call due to Busy.", self.tag);
         [Environment.getCurrent.recentCallManager addMissedCallDueToBusy:session];
 
         [[CallConnectUtil asyncSignalTooBusyToAnswerCallWithSessionDescriptor:session] catchDo:^(id error) {
@@ -146,6 +148,11 @@
     return [self.curCallController callState].futureTermination.isIncomplete;
 }
 
+- (BOOL)hasOngoingWebRTCCall
+{
+    return !![Environment getCurrent].callService.call;
+}
+
 - (CallController *)curCallController {
     return currentCallControllerObservable.currentValue;
 }
@@ -170,6 +177,18 @@
     [[self curCallController] terminateWithReason:CallTerminationType_UncategorizedFailure
                                   withFailureInfo:@"PhoneManager terminated"
                                    andRelatedInfo:nil];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
