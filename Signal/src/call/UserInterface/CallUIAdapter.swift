@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 import CallKit
+import WebRTC
 
 protocol CallUIAdaptee {
     var notificationsAdapter: CallNotificationsAdapter { get }
@@ -60,7 +61,7 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-@objc class CallUIAdapter: NSObject {
+@objc class CallUIAdapter: NSObject, CallServiceObserver {
 
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
@@ -86,12 +87,14 @@ extension CallUIAdaptee {
         }
 
         audioService = CallAudioService(handleRinging: adaptee.hasManualRinger)
+
+        super.init()
+
+        callService.addObserverAndSyncState(observer: self)
     }
 
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
-
-        call.addObserverAndSyncState(observer: audioService)
 
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName)
@@ -108,8 +111,6 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         let call = adaptee.startOutgoingCall(handle: handle)
-        call.addObserverAndSyncState(observer: audioService)
-
         return call
     }
 
@@ -207,4 +208,20 @@ extension CallUIAdaptee {
 
         return adaptee.hasManualRinger
     }
+
+    // MARK: - CallServiceObserver
+
+    internal func didUpdateCall(call: SignalCall?) {
+        AssertIsOnMainThread()
+
+        call?.addObserverAndSyncState(observer: audioService)
+    }
+
+    internal func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+                                       remoteVideoTrack: RTCVideoTrack?) {
+        AssertIsOnMainThread()
+
+        // Do nothing.
+    }
+
 }

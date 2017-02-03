@@ -83,6 +83,11 @@ fileprivate let timeoutSeconds = 60
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
     /**
+     * Fired whenever the call changes.
+     */
+    func didUpdateCall(call: SignalCall?)
+
+    /**
      * Fired whenever the local or remote video track become active or inactive.
      */
     func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
@@ -132,6 +137,10 @@ protocol CallServiceObserver: class {
             call?.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
+
+            for observer in observers {
+                observer.value?.didUpdateCall(call:call)
+            }
         }
     }
 
