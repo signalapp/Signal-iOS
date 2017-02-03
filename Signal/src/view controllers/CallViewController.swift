@@ -774,6 +774,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     // MARK: - CallServiceObserver
 
+    internal func didUpdateCall(call: SignalCall?) {
+        // Do nothing.
+    }
+
     internal func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
