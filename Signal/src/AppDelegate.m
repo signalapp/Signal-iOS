@@ -334,8 +334,55 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+            DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.tag);
+            return NO;
+        }
+
         DDLogInfo(@"%@ got start video call intent", self.tag);
-        [[Environment getCurrent].callService handleCallKitStartVideo];
+
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
+            DDLogError(@"%@ unexpected class for start call video: %@", self.tag, intent);
+            return NO;
+        }
+        INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
+        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
+        if (!handle) {
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            return NO;
+        }
+
+        if ([Environment getCurrent].phoneManager.hasOngoingCall) {
+            DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing RedPhone call.", self.tag);
+            return NO;
+        }
+
+        // This intent can be received from more than one user interaction.
+        //
+        // * It can be received if the user taps the "video" button in the CallKit UI for an
+        //   an ongoing call.  If so, the correct response is to try to activate the local
+        //   video for that call.
+        // * It can be received if the user taps the "video" button for a contact in the
+        //   contacts app.  If so, the correct response is to try to initiate a new call
+        //   to that user - unless there already is another call in progress.
+        if ([Environment getCurrent].callService.call != nil) {
+            if ([handle isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
+                DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.tag);
+                [[Environment getCurrent].callService handleCallKitStartVideo];
+                return YES;
+            } else {
+                DDLogWarn(
+                    @"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.", self.tag);
+                return NO;
+            }
+        }
+
+        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OWSAssert(outboundCallInitiator);
+        return [outboundCallInitiator initiateCallWithHandle:handle];
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
@@ -357,6 +404,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         if (!handle) {
             DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
             return NO;
+        }
+
+        if ([Environment getCurrent].phoneManager.hasOngoingCall) {
+            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
+            return NO;
+        }
+        if ([Environment getCurrent].callService.call != nil) {
+            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
         }
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
