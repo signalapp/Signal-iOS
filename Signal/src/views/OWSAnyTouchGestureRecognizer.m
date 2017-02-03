@@ -57,6 +57,16 @@
         return NO;
     }
 
+    // Ignore touches that start near the top or bottom edge of the screen;
+    // they may be a system edge swipe gesture.
+    CGFloat distanceToTopEdge = MAX(0, location.y);
+    CGFloat distanceToBottomEdge = MAX(0, self.view.bounds.size.height - location.y);
+    CGFloat distanceToNearestEdge = MIN(distanceToTopEdge, distanceToBottomEdge);
+    CGFloat kSystemEdgeSwipeTolerance = 50.f;
+    if (distanceToNearestEdge < kSystemEdgeSwipeTolerance) {
+        return NO;
+    }
+
     return YES;
 }
 
