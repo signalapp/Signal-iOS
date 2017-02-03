@@ -355,7 +355,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingCall) {
+        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
             DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing RedPhone call.", self.tag);
             return NO;
         }
@@ -406,7 +406,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingCall) {
+        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
             return NO;
         }

@@ -41,7 +41,7 @@
 - (void)backgroundTimeExpired;
 
 // Returns YES IFF there is an ongoing RedPhone call.
-- (BOOL)hasOngoingCall;
+- (BOOL)hasOngoingRedphoneCall;
 
 - (ObservableValue *)currentCallObservable;
 

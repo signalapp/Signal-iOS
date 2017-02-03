@@ -53,7 +53,7 @@ import Foundation
         self.contactsUpdater.lookupIdentifier(recipientId,
                                               success: { recipient in
 
-                                                guard !Environment.getCurrent().phoneManager.hasOngoingCall() else {
+                                                guard !Environment.getCurrent().phoneManager.hasOngoingRedphoneCall() else {
                                                     Logger.error("\(self.TAG) OutboundCallInitiator aborting due to ongoing RedPhone call.")
                                                     return
                                                 }
