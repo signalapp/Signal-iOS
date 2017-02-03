@@ -139,7 +139,11 @@
 
 - (BOOL)hasOngoingCall
 {
-    return self.curCallController != nil;
+    if (!self.curCallController) {
+        return NO;
+    }
+
+    return [self.curCallController callState].futureTermination.isIncomplete;
 }
 
 - (CallController *)curCallController {
