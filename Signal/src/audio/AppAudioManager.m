@@ -3,6 +3,7 @@
 #import "AudioRouter.h"
 #import "SoundBoard.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 #define DEFAULT_CATEGORY AVAudioSessionCategorySoloAmbient
 #define RECORDING_CATEGORY AVAudioSessionCategoryPlayAndRecord
@@ -34,8 +35,8 @@ AppAudioManager *sharedAppAudioManager;
 #pragma mark AudioState Management
 
 - (void)setAudioProfile:(enum AudioProfile)profile {
-    [self updateAudioRouter];
     _audioProfile = profile;
+    [self updateAudioRouter];
 }
 
 - (void)updateAudioRouter {
@@ -53,17 +54,6 @@ AppAudioManager *sharedAppAudioManager;
                 DDLogError(@"Unhandled AudioProfile");
         }
     }
-}
-
-
-- (void)overrideAudioProfile {
-    isSpeakerphoneActive = YES;
-    [self updateAudioRouter];
-}
-
-- (void)resetOverride {
-    isSpeakerphoneActive = NO;
-    [self updateAudioRouter];
 }
 
 - (enum AudioProfile)getCurrentAudioProfile {
@@ -110,24 +100,33 @@ AppAudioManager *sharedAppAudioManager;
 }
 
 - (void)handleInboundRing {
+    [self setAudioProfile:AudioProfile_ExternalSpeaker];
     [_soundPlayer playSound:[SoundBoard instanceOfInboundRingtone]];
 }
 
 - (void)handleOutboundRing {
-    [self setAudioProfile:AudioProfile_Default];
+    [self setDefaultAudioProfile];
     [_soundPlayer playSound:[SoundBoard instanceOfOutboundRingtone]];
 }
 
 - (void)handleSecuring {
     [_soundPlayer stopAllAudio];
-    [self setAudioProfile:AudioProfile_Default];
+    [self setDefaultAudioProfile];
     [_soundPlayer playSound:[SoundBoard instanceOfHandshakeSound]];
 }
 
 - (void)handleCallEstablished {
     [_soundPlayer stopAllAudio];
-    [self setAudioProfile:AudioProfile_Default];
+    [self setDefaultAudioProfile];
     [_soundPlayer playSound:[SoundBoard instanceOfCompletedSound]];
+}
+
+/**
+ * Route traffic through internal speaker, unless speakerphone is enabled.
+ */
+- (void)setDefaultAudioProfile
+{
+    [self setAudioProfile:AudioProfile_Default];
 }
 
 - (BOOL)toggleSpeakerPhone {
@@ -137,9 +136,17 @@ AppAudioManager *sharedAppAudioManager;
     return isSpeakerphoneActive;
 }
 
+- (void)toggleSpeakerPhoneIsEnabled:(BOOL)enabled
+{
+    DDLogInfo(@"%@ Toggled speaker phone: %@", self.tag, enabled ? @"ON" : @"OFF");
+    isSpeakerphoneActive = enabled;
+    [self updateAudioRouter];
+}
+
 #pragma mark Audio Control
 
-- (void)cancellAllAudio {
+- (void)cancelAllAudio
+{
     [_soundPlayer stopAllAudio];
 }
 
@@ -196,7 +203,8 @@ AppAudioManager *sharedAppAudioManager;
     return (nil != e);
 }
 
-- (void)awake {
+- (void)awake
+{
     [_soundPlayer awake];
 }
 
@@ -209,5 +217,18 @@ AppAudioManager *sharedAppAudioManager;
     }
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
 
 @end
+
+NS_ASSUME_NONNULL_END
