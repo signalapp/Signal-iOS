@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arhiviraj";
 
@@ -65,12 +68,12 @@
 "ATTACHMENT_QUEUED" = "Novi privitak na čekanju za preuzimanje.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal želi koristiti vaš mikrofon kako bi ispravno funkcionirao. Uvijek se možete vratiti na prijašnje postavke u aplikaciji Postavke >> Privatnost >> Mikrofon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Poziv";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Povratni poziv";
 
 /* Activity Sheet label */
@@ -220,14 +223,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Napravili ste dodatni poziv.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Zauzeto...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Propušten poziv.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Klijent nije uspio.";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo.";
@@ -241,8 +244,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška servera. Molimo pokušajte ponovo kasnije.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Primatelj više ne koristi Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena dupla poruka.";
@@ -353,12 +359,12 @@
 "IN_CALL_TALKING" = "Osigurano. Aktivno.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Uredu.";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Dolazni poziv";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Dolazni poziv od %@";
 
 /* Text for button at the top of the contact picker */
@@ -439,16 +445,18 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuta";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Propušten poziv";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Ranije niste dopustili Signalu da pristupi vašoj kameri. Ažurirajte vaše postavke sistema kako bi ste nastavili.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Propušten poziv od %@.";
 
 /* No comment provided by engineer. */
@@ -534,9 +542,6 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Odlazni poziv";
-
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Vaš iPhone treba biti otključan za primanje nove poruke.";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaciji";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Omogućite zapis o neispravnosti";
 
@@ -720,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Zahtjeva vaše odobrenje prije komunikacije sa nekim ko ima novi sigurnosni broj, obično zbog reinstalacije Signala.";
@@ -775,6 +792,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Sigurnost zaslona";
 
@@ -825,6 +848,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Izbriši";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Dearhiviraj";

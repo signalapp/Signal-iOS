@@ -100,9 +100,13 @@ protocol CallServiceObserver: class {
 
     // MARK: Dependencies
 
-    let accountManager: AccountManager
-    let messageSender: MessageSender
-    var callUIAdapter: CallUIAdapter!
+    private let accountManager: AccountManager
+    private let messageSender: MessageSender
+    private let contactsManager: OWSContactsManager
+    private let notificationsAdapter: CallNotificationsAdapter
+
+    // Exposed by environment.m
+    internal var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
 
@@ -179,11 +183,13 @@ protocol CallServiceObserver: class {
 
     required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
+        self.contactsManager = contactsManager
         self.messageSender = messageSender
+        self.notificationsAdapter = notificationsAdapter
 
         super.init()
 
-        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter)
+        self.createCallUIAdapter()
 
         NotificationCenter.default.addObserver(self,
                                                selector:#selector(didEnterBackground),
@@ -213,6 +219,16 @@ protocol CallServiceObserver: class {
         self.updateIsVideoEnabled()
     }
 
+    public func createCallUIAdapter() {
+        AssertIsOnMainThread()
+
+        if self.call != nil {
+            Logger.warn("\(TAG) ending current call in \(#function). Did user toggle callkit preference while in a call?")
+            self.terminateCall()
+        }
+        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationsAdapter: self.notificationsAdapter)
+    }
+
     // MARK: - Class Methods
 
     // MARK: Notifications
@@ -229,6 +245,13 @@ protocol CallServiceObserver: class {
      */
     public func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
+
+        guard self.call == nil else {
+            let errorDescription = "\(TAG) call was unexpectedly already set."
+            Logger.error(errorDescription)
+            call.state = .localFailure
+            return Promise(error: CallError.assertionError(description: errorDescription))
+        }
 
         self.call = call
 
@@ -367,6 +390,7 @@ protocol CallServiceObserver: class {
         }
 
         call.state = .remoteBusy
+        callUIAdapter.remoteBusy(call)
         terminateCall()
     }
 

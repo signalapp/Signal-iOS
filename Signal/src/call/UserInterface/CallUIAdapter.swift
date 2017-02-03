@@ -21,6 +21,7 @@ protocol CallUIAdaptee {
     func recipientAcceptedCall(_ call: SignalCall)
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
+    func remoteBusy(_ call: SignalCall)
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
@@ -76,11 +77,11 @@ extension CallUIAdaptee {
             // So we use the non-CallKit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
-        } else if #available(iOS 10.0, *) {
+        } else if #available(iOS 10.0, *), Environment.getCurrent().preferences.isCallKitEnabled() {
             Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
             adaptee = CallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else {
-            Logger.info("\(TAG) choosing non-callkit adaptee for older iOS")
+            Logger.info("\(TAG) choosing non-callkit adaptee")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         }
 
@@ -152,6 +153,12 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         adaptee.remoteDidHangupCall(call)
+    }
+
+    internal func remoteBusy(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
+        adaptee.remoteBusy(call)
     }
 
     internal func localHangupCall(_ call: SignalCall) {

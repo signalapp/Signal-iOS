@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Özür dileriz!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Yeni güvenlik numarasını kabul et";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Eylem gerekli";
@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Kapat";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Bizimle bir hesabınız var mı?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Yanıtla";
@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ grubundaki %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arşivle";
 
@@ -56,25 +59,25 @@
 "ATTACHMENT_DOWNLOADING" = "Ek indiriliyor";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Resim seçin ya da fotoğraf çekip gönderin";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Ek";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Yeni dosya, geri getirmek için kuyruğa eklendi";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal'in düzgün çalışması için mikrofonuna erişimi gerekir, Ayarlar uygulamasında >> Gizlilik >> Mikrofon >> Signal adımından yetkiyi düzeltebilirsin.";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Arayın";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Geri ara";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile karşılaştır.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Bu işlem mesajlarını silerek ve sunucudan kaydını kaldırarak uygulamayı sıfırlayacaktır. Uygulama, verilerin silinmesinden sonra kapanacaktır.";
@@ -83,13 +86,13 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Hesabını silmek istediğine emin misin?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Bu grupta artık mesaj gönderip alamazsınız.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Gerçekten gitmek istiyor musun?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Link New Device";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yeni Cihaz Bağla";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Onay";
@@ -98,64 +101,64 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Rehberde kayıtlı olmayan numara";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "E-Posta yok.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Telefon numarası yok";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Conversation Settings";
+"CONVERSATION_SETTINGS" = "Konuşma ayarları";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Oturumunuzu sıfırlamak gelecekteki mesajları %@'den almanıza izin verecek, ancak zaten bozulmuş mesajları kurtaramaz.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Ülke Kodu Seç";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u days";
+"DAYS_TIME_AMOUNT" = "%u gün";
 
 /* No comment provided by engineer. */
 "DELIVERED_MESSAGE_TEXT" = "Ulaştırıldı";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "En son aktif: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked: %@";
+"DEVICE_LINKED_AT_LABEL" = "Bağlantı: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Failed to update device list.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Cihaz listesini güncelleyemedi.";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Disappearing Messages";
+"DISAPPEARING_MESSAGES" = "Kaybolan Mesajlar ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Etkinleştirildiğinde, bu konuşmada gönderilen ve alınan mesajlar görüldükten sonra kaybolur.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Şu anda mesajlar %@ sonra kayboluyor";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Kaybolan mesaj ayarları";
 
 /* Generic short text for button to dismiss a dialog */
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"DISMISS_BUTTON_TEXT" = "Kapat";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "Grubu düzenle";
 
 /* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Save";
+"EDIT_ITEM_SAVE_ACTION" = "Kayıt et";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nSon zamanlarda konuşmalarımı iPhone'umda gizli tutmak için Sinyal kullanıyorum. Siz de kurmanızı isterim, bu nedenle yalnızca siz ve ben mesajlarımızı okuyabilir veya aramaları duyabiliriz.\n\nSinyal, iPhone'lar ve Android için kullanılabilir. Buraya alın: %@ \n\nSinyal mevcut mesajlaşma uygulamanızda olduğu gibi çalışır. Resim ve video gönderebilir, arama yapabilir ve grup sohbetlerine başlayabiliriz. En iyi yanı, hiç kimse Signal'i yapanları bile kimseyi göremez!\n\nSignal'ı yapan kişiler olan Open Whisper Systems hakkında daha fazla bilgi için: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Signal'a geçelim.";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Oluştur butonuna dokun";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Oluşturma düğmesine dokun.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "İlk Signal görüşmene başla!";
@@ -167,10 +170,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Görüşmelerini Temizle.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Temasların hiçbirinde Sinyal yok.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Neden birini davet etmiyorsun?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "İpucu: Bir görüşmeyi hatırlatmalara ekle!";
@@ -220,29 +223,32 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Başka Bir Arama Yaptınız.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Meşgul...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Cevapsız Çağrı.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "İstemci hatası!";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mesajı gönderilmedi.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Sinyal internete bağlanamadı. Lütfen başka bir WiFi ağından deneyin veya mobil veri kullanın.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Cihazınız artık telefon numaranız için kayıtlı değil. Signal'ı kaldırıp tekrar kurmalısınız.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server hatası. Lütfen daha sonra tekrar deneyiniz.";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Recipient is no longer a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Tekrarlanan bir ileti alındı.";
@@ -251,7 +257,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Alıcının anahtarı geçersiz.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Alınan mesajın senkronize olmadığı. Güvenli oturumunuzu sıfırlamak için dokunun.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Bu sürümle uyumsuz bir ileti alındı.";
@@ -260,46 +266,46 @@
 "ERROR_MESSAGE_NO_SESSION" = "Kişi için oturum mevcut değil";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Güvenlik numarası değişti";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Bilinmeyen bir hata oluştu.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Güvenlik numarası değişti. Doğrulamak için dokunun";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Kahretsin!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Şu anda Sinyal, bir cihazda yalnızca bir mobil telefon numarası başına etkin olabilir.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Bu %@ etkinleştirilmesi, şu anda bu telefon numarası ile ilişkilendirilmiş başka herhangi bir cihazda Signali devre dışı bırakacaktır.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu irtibatta çok fazla arıza var. Lütfen kısa bir süre sonra tekrar deneyin.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Gönderebilmeniz için önce yeni güvenlik numarasını kabul etmeniz gerekir.";
 
 /* No comment provided by engineer. */
 "FAILED_SENDING_TEXT" = "Gönderim başarısız. Yeniden denemek için dokun.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Güvenlik Numarasını Doğrulamadı!";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Oturumu yenile.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Grup oluşturmayı tamamla";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Profil resmi değişti.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created.";
+"GROUP_CREATED" = "Grup oluşturuldu";
 
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Yeni grup oluşturuluyor";
@@ -308,7 +314,7 @@
 "GROUP_CREATING_FAILED" = "Grup oluşturma başarısız";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Group Management";
+"GROUP_MANAGEMENT_SECTION" = "Grup Yönetimi";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = "%@ gruba katıldı.";
@@ -326,7 +332,7 @@
 "GROUP_REMOVING_FAILED" = "Grubu bırakma başarısız oldu";
 
 /* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
+"GROUP_SETTINGS_LABEL" = "Grup ayarları";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Yeni başlık: '%@'. ";
@@ -338,7 +344,7 @@
 "GROUP_YOU_LEFT" = "Grubu terk ettin.";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u hours";
+"HOURS_TIME_AMOUNT" = "%u saat";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Bağlanıyor...";
@@ -353,67 +359,67 @@
 "IN_CALL_TALKING" = "Güvenli bağlantı. Etkin.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Bitti.";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Gelen çağrı";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "%@ arıyor";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Signal'a arkadaş davet et";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Ara";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Arkadaş davet et";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
+"KEEP_MESSAGES_DURATION" = "Mesaj şu zamandan sonra kayıp oluyor: %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
+"KEEP_MESSAGES_FOREVER" = "Mesajlar kayıp olmuyor.";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Ayrıl";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Leave Group";
+"LEAVE_GROUP_ACTION" = "Grupdan ayrıl";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Bu QR kodu geçerli değil, bağlamak istediğiniz cihazda görüntülenen QR kodunu taradığınızdan emin olun.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Linking Device Failed";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Cıhaz bağlanması başarısız oldu";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, read all your messages, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz, gruplarınızı ve kişilerinizi görebilir, tüm iletilerinizi okuyabilir ve adınıza mesaj gönderebilir.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Link this device?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Bu cihazı bağla?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Retry";
+"LINK_DEVICE_RESTART" = "Yeniden dene";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code displayed on the device to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Bağlanmak istediğin cihazda görüntülenen QR kodunu tara.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code";
+"LINK_NEW_DEVICE_SUBTITLE" = "QR kodunu tara.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Link New Device";
+"LINK_NEW_DEVICE_TITLE" = "Yeni Cihaz Bağlat";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Linked Devices";
+"LINKED_DEVICES_TITLE" = "Bağlı Cihazlar";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
+"LINKING_DEVICE_FAILED_TITLE" = "Cihaz bağlaması başarısız oldu";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "List Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Grup Üyeleri göster";
 
 /* No comment provided by engineer. */
 "LOADING_CONTACTS_LABEL_LINE1" = "Kişilerin yükleniyor.";
@@ -428,27 +434,29 @@
 "ME_STRING" = "Ben";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Fotoğraf kütüphanesi";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Yeni İleti";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u minutes";
+"MINUTES_TIME_AMOUNT" = "%u dakika";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Cevapsız Çağrı.";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You previously declined to let Signal access your camera. Update your system settings to proceed.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+/* Alert title
+   Alert title when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_TITLE" = "Sinyalin kameranıza erişmesi gerekiyor.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "%@ çağrısını kaçırdın.";
 
 /* No comment provided by engineer. */
@@ -482,7 +490,7 @@
 "NETWORK_STATUS_TEXT" = "Gelen kutunun üstündeki renkli çubuğa bakarak ağ durumunu kontrol edebilirsin.";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Grup Fotoğrafını Ayarla";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Yeni Grup";
@@ -524,46 +532,43 @@
 "OK" = "Tamam";
 
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
+"OPEN_SETTINGS_BUTTON" = "Ayarlar";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ kaybolan mesajları devre dışı bıraktı.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ Kaybolan mesaj süresini %@ olarak ayarladı.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Giden çağrı";
 
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Yeni iletileri almak içi iPhone kilidi açılmalı.";
-
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Bu, %@ numaralı güvenlik numaranıza benziyor. Doğru kişiyi doğruluyor musun?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı bu konuşma için doğru güvenlik numarasına benzemiyor.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal, panonuzda herhangi bir güvenlik numarası bulamadı. Doğru şekilde kopyaladın mı?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Sinyal kullanıcılarının her çifti ayrı bir güvenlik numarası paylaşıyor. %@ *sizin* emniyet numaranızı gösterdiğini tekrar kontrol edin.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "You're running an old version of Signal. You need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Eski bir Sinyal sürümünü çalıştırıyorsunuz. Doğrulamadan önce güncellemeniz gerekiyor.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Your partner is running an old version of Signal. They need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Konuşdığınız kişi Signal'in eski bir sürümünü çalıştırıyor. Doğrulamadan önce güncellenmelidirler.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number code. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Taranan kod bir güvenlik numarası kodu gibi görünmüyor. İkiniz de Signal'in güncel bir sürümünü mi kullanıyorsunuz?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Uçtan uca şifrelemenin güvenliğini %@ ile doğrulamak isterseniz, yukarıdaki numaraları kendi cihazlarındaki numaralarla karşılaştırın.\n\nAlternatif olarak, kodunu telefonlarında tarayabilir veya kodunu taramanızı rica edebilirsiniz.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Güvenlik Numarasını Doğrula";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Devam et";
@@ -575,7 +580,7 @@
 "PUSH_MANAGER_REPLY" = "Cevapla";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
+"PUSH_REGISTER_SUCCESS" = "Itme bildirimleri için başarıyla yeniden kayıt oldular.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Anlık Bildirimler";
@@ -617,10 +622,10 @@
 "REGISTER_RATE_LIMITING_BODY" = "Sunucu şu anda yeni kayıtları sınırlıyor, lütfen daha sonra tekrar dene.";
 
 /* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "Registered Number";
+"REGISTERED_NUMBER_TEXT" = "Kayıtlı Numara";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Failed to re-register for push notifications.";
+"REGISTRATION_BODY" = "Itme bildirimleri için yeniden kayıt yaptıramadı.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Ülke Kodu";
@@ -632,7 +637,7 @@
 "REGISTRATION_ERROR" = "Kayıt Hatası";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sizi gönderdiğimiz kodu doğrulayana kadar hesabınızı aktive edemiyoruz.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Bu telefon numarası formatı desteklenmiyor, lütfen destek ile iletişime geç.";
@@ -647,13 +652,13 @@
 "REGISTRATION_TITLE_LABEL" = "Telefon Numaran";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Doğrulama başarısız oldu";
 
 /* Alert body, during registration */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Gönderdiğiniz sayılar gönderdiğimizle eşleşmiyor. Çifte kontrol etmek ister misiniz?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Bu cihazı etkinleştir";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Reddet";
@@ -665,25 +670,25 @@
 "REREGISTER_FOR_PUSH" = "Anlık bildirimler için yeniden kaydol";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Retry";
+"RETRY_BUTTON_TEXT" = "Tekrar dene";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Bizim Signal Emniyet Numarası:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ile güvenlik numaranız değişti. Onaylamak isteyebilirsiniz.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
-"SCAN_CODE_ACTION" = "Scan Code";
+"SCAN_CODE_ACTION" = "QR kodunu tara.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+"SCAN_CODE_INSTRUCTIONS" = "Temas edeceğiniz kişinin cihazındaki QR kodu tarayın.";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "İsim ya da numara bul";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u seconds";
+"SECONDS_TIME_AMOUNT" = "%u saniye";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Güvenli oturum sıfırlandı.";
@@ -695,10 +700,10 @@
 "SEND_BUTTON_TITLE" = "Gönder";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "Davetiye gönderilemedi, lütfen daha sonra tekrar deneyin.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Arkadaşınızı Signal kullanmaya davet ettiniz!";
 
 /* No comment provided by engineer. */
 "SEND_SMS_BUTTON" = "SMS gönderilecek kişi:";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Hakkında";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Hata ayıklama kaydını etkinleştir";
 
@@ -721,11 +729,20 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
 
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Yeni bir güvenlik numarası olan biriyle iletişim kurmadan önce onayınızı gerektirir.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Değişiklik Onayı Gerektirir";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Geçmiş kayıtlarını temizle.";
@@ -752,10 +769,10 @@
 "SETTINGS_INFORMATION_HEADER" = "Bilgi";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı davet etin";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Bana @WhisperSystems'in Signal uygulamasını kullanarak erişebilirsiniz. Siz de edinin.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ayarlar";
@@ -767,13 +784,19 @@
 "SETTINGS_PRIVACY_TITLE" = "Mahremiyet";
 
 /* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Safety Numbers Approval";
+"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Güvenlik Numaraları Onayı";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Ekran Güvenliğini Etkinleştir";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Uygulama değiştiricide Signal öngörünümlerinin görünmesini engeller.";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Ekran Güvenliği";
@@ -785,37 +808,37 @@
 "SETTINGS_VERSION" = "Sürüm";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "Posta";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Mesaj";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Yeni güvenlik numarası göster";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u day";
+"SINGLE_DAY_TIME_AMOUNT" = "%u gün";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u hour";
+"SINGLE_HOUR_TIME_AMOUNT" = "%u saat";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minute";
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u dakika";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u week";
+"SINGLE_WEEK_TIME_AMOUNT" = "%u hafta";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Seni Signal kullanmaya davet ediyorum! İşte link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ile güvenlik numaranız doğrulandı. İletişiminizin gizli olduğunu düşünebilirsiniz.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Güvenlik Numarası Doğrulandı!";
 
 /* No comment provided by engineer. */
 "TIMEOUT_CONTACTS_DETAIL" = "Sunucudan güncel bir kişiler listesi alamadık. Lütfen daha sonra tekrar dene.";
@@ -826,29 +849,32 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Sil";
 
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Arşivden geri al";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Unknown attachment";
+"UNKNOWN_ATTACHMENT_LABEL" = "Bilinmeyen ek";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Unknown Contact";
+"UNKNOWN_CONTACT_NAME" = "Tanınmayan Temas";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Unlink";
+"UNLINK_ACTION" = "Bağlantısını kaldır";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "By unlinking this device, it will no longer be able to send or receive messages.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Bu cihazın bağlantısını keserek artık mesaj gönderip alamayacak.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Unlink \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" bağlantısını kaldır?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal was unable to unlink your device.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal cihazınızın bağlantısını kaldıramadı.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
+"UNNAMED_DEVICE" = "Adsız Cihaz";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal'den kaydınızı kaldırmada hata oluştu";
@@ -863,10 +889,10 @@
 "UPDATE_BUTTON_TITLE" = "Güncelle";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal ...";
+"Upgrading Signal ..." = "Signalı yükselt ...";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploading...";
+"UPLOADING_MESSAGE_TEXT" = "Yükleniyor...";
 
 /* button text during registration to make corrections to your submitted phone number */
 "VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Numarayı Değiştir";
@@ -887,19 +913,19 @@
 "VERIFICATION_HEADER" = "Doğrula";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Verify Safety Number";
+"VERIFY_PRIVACY" = "Güvenlik Numarasını Doğrula";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signalın Masaüstündeki kurulumu bitir.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u weeks";
+"WEEKS_TIME_AMOUNT" = "%u hafta";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Gelen Kutusu";
 
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaybolan mesajları devre dışı bıraktın.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaybolan mesaj süresini %@ olarak ayarladın.";

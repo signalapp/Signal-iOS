@@ -51,6 +51,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
         AssertIsOnMainThread()
 
+        Logger.debug("\(self.TAG) \(#function)")
+
         self.callManager = CallKitCallManager()
         self.callService = callService
         self.notificationsAdapter = notificationsAdapter
@@ -65,6 +67,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func startOutgoingCall(handle: String) -> SignalCall {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
@@ -79,6 +82,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
     func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
         self.callManager.removeCall(call)
@@ -86,6 +90,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
@@ -110,30 +115,35 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func answerCall(localId: UUID) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         assertionFailure("CallKit should answer calls via system call screen, not via notifications.")
     }
 
     func answerCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         callManager.answer(call: call)
     }
 
     func declineCall(localId: UUID) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         assertionFailure("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func declineCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         callManager.localHangup(call: call)
     }
 
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
 
@@ -145,24 +155,35 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func localHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         callManager.localHangup(call: call)
     }
 
     func remoteDidHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
     }
 
+    func remoteBusy(_ call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
+
+        provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
+    }
+
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         callManager.setIsMuted(call: call, isMuted: isMuted)
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
+        Logger.debug("\(self.TAG) \(#function)")
 
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
@@ -178,8 +199,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func providerDidReset(_ provider: CXProvider) {
         AssertIsOnMainThread()
-
-        Logger.debug("\(TAG) in \(#function)")
+        Logger.debug("\(self.TAG) \(#function)")
 
         // TODO
         // copied from Speakerbox, but is there a corallary with peerconnection, since peer connection starts the audio

@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ 在 %@ 群组：%@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "存档";
 
@@ -65,12 +68,12 @@
 "ATTACHMENT_QUEUED" = "新附件正在等待下载。";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal需要访问您的麦克风以正常工作。您可以在 设置 >> 隐私 >> 麦克风 >> Signal 中恢复该权限";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "打电话";
 
-/* No comment provided by engineer. */
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "回拨";
 
 /* Activity Sheet label */
@@ -220,14 +223,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "您重新拨打了电话。";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "忙...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "电话未接到。";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "客户端失败！";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
@@ -241,8 +244,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候再试。";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unkown error occurred.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "收件人已经不再是Signal用户.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一个重复的消息。";
@@ -353,12 +359,12 @@
 "IN_CALL_TALKING" = "安全连接已启用。";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "完成。";
+"IN_CALL_TERMINATED" = "Call Ended.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "来电";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "来自 %@ 的来电";
 
 /* Text for button at the top of the contact picker */
@@ -439,16 +445,18 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u 分钟";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "未接来电";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "你以前拒绝了Signal访问你的相机. 更新系统设置以进行下一步操作.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal需要访问您的摄像头";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "来自 %@ 的未接来电。";
 
 /* No comment provided by engineer. */
@@ -534,9 +542,6 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "去电";
-
-/* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "在您的iPhone解锁后才能收到新信息。";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
@@ -712,6 +717,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "关于";
 
+/* Short table cell label */
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "启用调试日志";
 
@@ -720,6 +728,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "高级";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "在和有新安全码的用户通讯之前需要你的批准, 通常实在重装Signal之后.";
@@ -775,6 +792,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "阻止Signal预览页面出现在应用切换窗口。";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "屏幕安全";
 
@@ -825,6 +848,9 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "删除";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "未存档";
