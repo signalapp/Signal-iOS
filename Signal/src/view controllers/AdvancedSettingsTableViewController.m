@@ -129,7 +129,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
         default:
-            return 0;
+            return nil;
     }
 }
 
