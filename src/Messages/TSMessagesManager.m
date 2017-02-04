@@ -633,6 +633,15 @@ NS_ASSUME_NONNULL_BEGIN
       if (thread && incomingMessage) {
           [incomingMessage saveWithTransaction:transaction];
 
+          // Any messages sent from the current user - from this device or another - should be
+          // automatically marked as read.
+          if ([TSAccountManager isRegistered]) {
+              BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:[TSAccountManager localNumber]];
+              if (shouldMarkMessageAsRead) {
+                  [incomingMessage markAsReadLocallyWithTransaction:transaction];
+              }
+          }
+
           // Android allows attachments to be sent with body.
           if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
               // We want the text to be displayed under the attachment
