@@ -1011,7 +1011,6 @@ protocol CallServiceObserver: class {
         }
 
         self.localVideoTrack = videoTrack
-        self.fireDidUpdateVideoTracks()
     }
 
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
@@ -1023,7 +1022,6 @@ protocol CallServiceObserver: class {
         }
 
         self.remoteVideoTrack = videoTrack
-        self.fireDidUpdateVideoTracks()
     }
 
     // MARK: Helpers

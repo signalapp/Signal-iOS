@@ -115,7 +115,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
-    private var remoteVideoTrack: RTCVideoTrack?
+    private weak var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callType: CallType) {
@@ -545,22 +545,23 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when media is received on a new stream from remote peer. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+        guard stream.videoTracks.count > 0 else {
+            return
+        }
+        weak var remoteVideoTrack = stream.videoTracks[0]
+        Logger.debug("\(self.TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
+        
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
 
-            if stream.videoTracks.count > 0 {
-                self.remoteVideoTrack = stream.videoTracks[0]
-                if let delegate = self.delegate {
-                    let remoteVideoTrack = self.remoteVideoTrack
-                    DispatchQueue.main.async { [weak self, weak remoteVideoTrack] in
-                        guard let strongSelf = self else { return }
-                        guard let strongRemoteVideoTrack = remoteVideoTrack else { return }
-                        delegate.peerConnectionClient(strongSelf, didUpdateRemote: strongRemoteVideoTrack)
-                    }
+            self.remoteVideoTrack = remoteVideoTrack
+            if let delegate = self.delegate {
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    delegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
                 }
             }
         }
