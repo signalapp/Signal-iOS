@@ -75,7 +75,6 @@ enum CallError: Error {
     case disconnected
     case externalError(underlyingError: Error)
     case timeout(description: String)
-    case unexpected(description: String)
 }
 
 // FIXME TODO do we need to timeout?
@@ -286,7 +285,7 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .Outgoing)
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .outgoing)
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
@@ -440,11 +439,11 @@ protocol CallServiceObserver: class {
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             guard self.call == newCall else {
-                throw CallError.unexpected(description: "getIceServers() response for obsolete call")
+                throw CallError.assertionError(description: "getIceServers() response for obsolete call")
             }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .Incoming)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .incoming)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -453,7 +452,7 @@ protocol CallServiceObserver: class {
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             guard self.call == newCall else {
-                throw CallError.unexpected(description: "negotiateSessionDescription() response for obsolete call")
+                throw CallError.assertionError(description: "negotiateSessionDescription() response for obsolete call")
             }
             Logger.debug("\(self.TAG) set the remote description")
 
@@ -463,7 +462,7 @@ protocol CallServiceObserver: class {
             return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then {
             guard self.call == newCall else {
-                throw CallError.unexpected(description: "sendCallMessage() response for obsolete call")
+                throw CallError.assertionError(description: "sendCallMessage() response for obsolete call")
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 

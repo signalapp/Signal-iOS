@@ -55,7 +55,7 @@ class PeerConnectionClientTest: XCTestCase {
 
         let iceServers = [RTCIceServer]()
         clientDelegate = FakePeerConnectionClientDelegate()
-        client = PeerConnectionClient(iceServers: iceServers, delegate: clientDelegate, callType: .Outgoing)
+        client = PeerConnectionClient(iceServers: iceServers, delegate: clientDelegate, callType: .outgoing)
         peerConnection = client.peerConnectionForTests()
         dataChannel = client.dataChannelForTests()
     }

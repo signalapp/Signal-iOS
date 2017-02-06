@@ -65,8 +65,8 @@ protocol PeerConnectionClientDelegate: class {
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
     enum CallType {
-        case Incoming
-        case Outgoing
+        case incoming
+        case outgoing
     }
 
     let TAG = "[PeerConnectionClient]"
@@ -145,7 +145,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         createAudioSender()
         createVideoSender()
 
-        if callType == .Outgoing {
+        if callType == .outgoing {
             // When placing an outgoing call, it's our responsibility to create the DataChannel. 
             // Recipient will not have to do this explicitly.
             createSignalingDataChannel()
@@ -154,7 +154,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Media Streams
 
-    fileprivate func createSignalingDataChannel() {
+    private func createSignalingDataChannel() {
         AssertIsOnMainThread()
 
         let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
@@ -550,7 +550,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
         weak var remoteVideoTrack = stream.videoTracks[0]
         Logger.debug("\(self.TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
-        
+
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
