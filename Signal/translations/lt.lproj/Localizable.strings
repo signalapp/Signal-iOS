@@ -73,6 +73,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Skambinti";
 
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Perskambinti";
 
@@ -185,7 +188,7 @@
 "EMPTY_INBOX_TEXT" = "None. Zero. Zilch. Nada.";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TITLE" = "Squeaky Freaking Clean.";
+"EMPTY_INBOX_TITLE" = "Visiškai tuščia.";
 
 /* No comment provided by engineer. */
 "END_CALL_BAD_INTERACTION_WITH_SERVER" = "Serveris patyrė nesėkmę!";
@@ -224,7 +227,7 @@
 "END_CALL_REPLACED_BY_NEXT" = "You Made Another Call.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Užimta.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Missed the Call.";
@@ -239,13 +242,13 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Prašome pabandyti iš kito bevielio (WiFi) tinklo arba naudoti mobiliuosius duomenis.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Jūsų įrenginys daugiau nebėra priregistruotas prie jūsų telefono numerio. Jūs privalote pašalinti ir iš naujo įdiegti Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverio klaida. Prašome vėliau bandyti dar kartą.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Įvyko nežinoma klaida.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Signal naudotojas.";
@@ -278,10 +281,10 @@
 "ERROR_WAS_DETECTED_TITLE" = "O, ne!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Šiuo metu programėlė Signal vienam telefono numeriui gali būti aktyvi tik viename mobiliajame įrenginyje.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Šio %@ aktyvavimas išjungs Signal bet kuriame kitame įrenginyje, kuris esamu metu yra susietas su šiuo telefono numeriu.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Per daug nesėkmių su šiuo kontaktu. Prašome po kurio laiko pabandyti dar kartą.";
@@ -490,7 +493,7 @@
 "NETWORK_STATUS_TEXT" = "You can check your network status by looking at the colored bar above your inbox.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Naujas pokalbis su %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
@@ -505,7 +508,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Pridėti žmones";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rasti kontaktus pagal telefono numerį";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Nepavyko išsiųsti jūsų žinutės kontaktui %@.";
@@ -664,7 +667,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Aktyvuoti šį įrenginį";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Atmesti";
@@ -711,7 +714,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Jūs pakvietėte savo draugą naudotis Signal!";
 
-/* Text for button to send a Signal invite via SMS */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
@@ -724,7 +727,7 @@
 "SETTINGS_ABOUT" = "Apie";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Naudoti CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Įjungti derinimo žurnalą";
@@ -766,7 +769,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "I'm sure.";
 
 /* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Help";
+"SETTINGS_HELP_HEADER" = "Pagalba";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Istorijos žurnalas";
@@ -778,7 +781,7 @@
 "SETTINGS_INVITE_TITLE" = "Invite Your Friends";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Jūs galite su manimi susisiekti, naudodami Signal iš @WhisperSystems, gaukite programėlę dabar.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nustatymai";
@@ -799,7 +802,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleidžia Signal peržiūroms atsirasti programėlių perjungiklyje.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit leidžia atsiliepti į skambučius tiesiai iš jūsų užrakinto ekrano. Turėkite omenyje, kad naudojant CallKit, Apple sinchronizuoja kai kuriuos skambučio metaduomenis į jūsų iCloud paskyrą.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";
@@ -901,7 +904,7 @@
 "UPLOADING_MESSAGE_TEXT" = "Įkeliama...";
 
 /* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Change Number";
+"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Pakeisti numerį";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Patvirtinimo kodas";

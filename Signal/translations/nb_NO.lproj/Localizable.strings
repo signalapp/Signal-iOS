@@ -68,10 +68,13 @@
 "ATTACHMENT_QUEUED" = "Nytt vedlegg i kø for å hentes.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal trenger tilgang til mikrofonen din for å fungere. Du kan gi tilgang i Innstillinger >> Personvern >> Mikrofon >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
+
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tilbake";
@@ -224,13 +227,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Du ringte på nytt.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Opptatt.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Du gikk glipp av anropet.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Oppringning mislyktes.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mislyktes med å sende melding.";
@@ -245,10 +248,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "En ukjent feil har oppstått.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten er ikke bruker av Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottok en duplisert melding.";
@@ -359,7 +362,7 @@
 "IN_CALL_TALKING" = "Sikret. Aktiv.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Samtalen er over.";
 
 /* notification body */
 "INCOMING_CALL" = "Innkommende anrop";
@@ -450,7 +453,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal trenger tilgang til kameraet for å gjøre videosamtaler mulig. Du kan gi tilgang i Innstillinger >> Personvern >> Kamera >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -490,7 +493,7 @@
 "NETWORK_STATUS_TEXT" = "Du kan sjekke nettverksstatus ved å se på den fargede rammen over din Innboks.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Ny samtale med %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Velg gruppefoto";
@@ -505,7 +508,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Legg til personer";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Finn kontakter ved å søke på telefonnummer";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Meldingen din kunne ikke sendes til %@.";
@@ -711,8 +714,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Du har invitert vennen din til å bruke Signal!";
 
-/* Text for button to send a Signal invite via SMS */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send en invitasjon via SMS til: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviter en venn via usikker SMS?";
@@ -724,7 +727,7 @@
 "SETTINGS_ABOUT" = "Om";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Bruk CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på debug-logging";
@@ -736,13 +739,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansert";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Skru på videosamtaler (beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Kunne ikke oppdatere innstillingene dine.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Feil";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Det kreves din godkjenning før du kan kommunisere med noen som har endret sikkerhetstall – noe som kan skyldes at de har reinstallert Signal-appen.";
@@ -799,7 +802,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Forhindrer Signal fra å vises i oversikten over nylig brukte apper.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit gjør at du kan svare på oppringninger direkte fra låst skjerm. Til info vil bruk av CallKit gjøre at Apple samler noe metadata om dine samtaler som lagres i din iCloud-konto.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";

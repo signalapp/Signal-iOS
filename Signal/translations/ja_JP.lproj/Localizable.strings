@@ -73,6 +73,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "電話";
 
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
 
@@ -245,7 +248,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "サーバーにエラーが発生しました。少し待って再試行してください。";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "未知のエラーが発生";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "連絡先はSignalのユーザではありません";
@@ -490,7 +493,7 @@
 "NETWORK_STATUS_TEXT" = "ネットワークへの接続状況は，受信箱上部のバーを見て確認できます。";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "%@との新規会話";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "グループのアイコン画像を設定";
@@ -505,7 +508,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "メンバーを追加";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "%@へのメッセージ送信に失敗しました";
@@ -711,8 +714,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "友だちをSignalに招待しました";
 
-/* Text for button to send a Signal invite via SMS */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "招待状をSMSで %@ に送る";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "安全性の低いSMSで招待しますか？";
@@ -724,7 +727,7 @@
 "SETTINGS_ABOUT" = "Signalについて";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "CallKitを使ってください";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "CallKitを使う";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
@@ -799,10 +802,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "アプリ切り替え画面でSignalのプレビューを表示しない（ロゴのみ表示）";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKitを使えばロック画面から直接電話に出ることができます。ただCallKitを使う場合，通話に関する情報の一部はお使いのiCloudアカウントにAppleが同期します。";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKitを使うと，ロック画面から直接電話に出ることができます。ただし，通話に関する情報の一部がAppleによってユーザのiCloudに同期されます。";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "呼出中";
+"SETTINGS_SECTION_TITLE_CALLING" = "電話";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "スクリーン・セキュリティ";

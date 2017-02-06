@@ -73,6 +73,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "โทร";
 
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
 
@@ -245,10 +248,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ข้อผิดพลาดเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "รายชื่อไม่ได้เป็นผู้ใช้ Signal";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ได้รับข้อความที่ซ้ำกัน";
@@ -490,7 +493,7 @@
 "NETWORK_STATUS_TEXT" = "คุณสามารถตรวจสอบสถานะเครือข่ายของคุณโดยดูที่แถบสีด้านบนกล่องขาเข้าของคุณ";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "การสนทนาใหม่กับ %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ตั้งรูปภาพกลุ่ม";
@@ -505,7 +508,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "เพิ่มผู้คน";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหารายชื่อด้วยหมายเลขโทรศัพท์";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "ไม่สามารถส่งข้อความของคุณไปยัง %@";
@@ -711,8 +714,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "คุณได้เชิญเพื่อนของคุณให้มาใช้ Signal!";
 
-/* Text for button to send a Signal invite via SMS */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "ส่งคำเชิญผ่าน SMS ไปยัง: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "เชิญเพื่อนผ่านทาง SMS ที่ไม่ปลอดภัย?";
@@ -739,7 +742,7 @@
 "SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "ไม่สามารถอัปเดตการตั้งค่าของคุณ";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "ข้อผิดพลาด";
@@ -802,7 +805,7 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "การโทร";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "ความปลอดภัยหน้าจอ";

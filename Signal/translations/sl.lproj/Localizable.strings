@@ -73,6 +73,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Kliči";
 
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Pokliči nazaj";
 
@@ -245,7 +248,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Napaka strežnika. Poskusite znova kasneje.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Prišlo je do neznane napake.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Oseba ni uporabnik aplikacije Signal.";
@@ -490,7 +493,7 @@
 "NETWORK_STATUS_TEXT" = "Stanje vašega omrežja lahko preverite na barvnem traku nad poštnim nabiralnikom.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nov pogovor z osebo %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Določi fotografijo skipine";
@@ -505,7 +508,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Dodaj ljudi";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Poišči stike z vnosom telefonske številke";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Vaše sporočilo za %@ ni moglo biti poslano.";
@@ -711,8 +714,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Prijatelja ste povabili k uporabi aplikacije Signal!";
 
-/* Text for button to send a Signal invite via SMS */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Pošlji osebi %@ SMS z vabilom";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Povabim prijatelja preko nezaščitenega sporočila SMS?";

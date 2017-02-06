@@ -73,6 +73,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
+/* Format for call status label */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Devolver chamada";
 
@@ -711,7 +714,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
 
-/* Text for button to send a Signal invite via SMS */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
 
 /* No comment provided by engineer. */
