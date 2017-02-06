@@ -123,7 +123,7 @@ protocol CallServiceObserver: class {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil)")
+            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(peerConnectionClient)")
         }
     }
 
@@ -137,6 +137,8 @@ protocol CallServiceObserver: class {
             call?.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
+
+            Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(call)")
 
             for observer in observers {
                 observer.value?.didUpdateCall(call:call)
@@ -283,11 +285,7 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
-
-            // When placing an outgoing call, it's our responsibility to create the DataChannel. Recipient will not have
-            // to do this explicitly.
-            peerConnectionClient.createSignalingDataChannel()
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .outgoing)
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
@@ -428,6 +426,9 @@ protocol CallServiceObserver: class {
         let backgroundTask = UIApplication.shared.beginBackgroundTask {
             let timeout = CallError.timeout(description: "background task time ran out before call connected.")
             DispatchQueue.main.async {
+                guard self.call == newCall else {
+                    return
+                }
                 self.handleFailedCall(error: timeout)
             }
         }
@@ -437,9 +438,12 @@ protocol CallServiceObserver: class {
         }.then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
+            guard self.call == newCall else {
+                throw CallError.assertionError(description: "getIceServers() response for obsolete call")
+            }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .incoming)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -447,6 +451,9 @@ protocol CallServiceObserver: class {
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+            guard self.call == newCall else {
+                throw CallError.assertionError(description: "negotiateSessionDescription() response for obsolete call")
+            }
             Logger.debug("\(self.TAG) set the remote description")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
@@ -454,6 +461,9 @@ protocol CallServiceObserver: class {
 
             return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then {
+            guard self.call == newCall else {
+                throw CallError.assertionError(description: "sendCallMessage() response for obsolete call")
+            }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
             let (promise, fulfill, _) = Promise<Void>.pending()
@@ -468,6 +478,10 @@ protocol CallServiceObserver: class {
 
             return race(promise, timeout)
         }.catch { error in
+            guard self.call == newCall else {
+                Logger.debug("\(self.TAG) error for obsolete call: \(error)")
+                return
+            }
             if let callError = error as? CallError {
                 self.handleFailedCall(error: callError)
             } else {
@@ -996,7 +1010,6 @@ protocol CallServiceObserver: class {
         }
 
         self.localVideoTrack = videoTrack
-        self.fireDidUpdateVideoTracks()
     }
 
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
@@ -1008,7 +1021,6 @@ protocol CallServiceObserver: class {
         }
 
         self.remoteVideoTrack = videoTrack
-        self.fireDidUpdateVideoTracks()
     }
 
     // MARK: Helpers
