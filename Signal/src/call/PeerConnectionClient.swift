@@ -115,7 +115,14 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
-    private weak var remoteVideoTrack: RTCVideoTrack?
+    // RTCVideoTrack is fragile and prone to throwing exceptions and/or
+    // causing deadlock in its destructor.  Therefore we take great care
+    // with this property.
+    //
+    // We synchronize access to this property and ensure that we never
+    // set or use a strong reference to the remote video track if 
+    // peerConnection is nil.
+    private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callType: CallType) {
@@ -456,6 +463,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         // become nil when it was only a weak property. So we retain it and manually nil the reference here, because
         // we are likely to crash if we retain any peer connection properties when the peerconnection is released
 
+        // See the comments on the remoteVideoTrack property.
+        objc_sync_enter(self)
         localVideoTrack?.isEnabled = false
         remoteVideoTrack?.isEnabled = false
 
@@ -469,6 +478,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         peerConnection.delegate = nil
         peerConnection.close()
         peerConnection = nil
+        objc_sync_exit(self)
 
         delegate = nil
     }
@@ -548,8 +558,17 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         guard stream.videoTracks.count > 0 else {
             return
         }
-        weak var remoteVideoTrack = stream.videoTracks[0]
+        let remoteVideoTrack = stream.videoTracks[0]
         Logger.debug("\(self.TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
+        
+        // See the comments on the remoteVideoTrack property.
+        //
+        // We only set the remoteVideoTrack property if peerConnection is non-nil.
+        objc_sync_enter(self)
+        if self.peerConnection != nil {
+            self.remoteVideoTrack = remoteVideoTrack
+        }
+        objc_sync_exit(self)
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
@@ -557,10 +576,20 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
 
-            self.remoteVideoTrack = remoteVideoTrack
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
+                    
+                    // See the comments on the remoteVideoTrack property.
+                    //
+                    // We only access the remoteVideoTrack property if peerConnection is non-nil.
+                    var remoteVideoTrack: RTCVideoTrack?
+                    objc_sync_enter(strongSelf)
+                    if strongSelf.peerConnection != nil {
+                        remoteVideoTrack = strongSelf.remoteVideoTrack
+                    }
+                    objc_sync_exit(strongSelf)
+
                     delegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
                 }
             }
