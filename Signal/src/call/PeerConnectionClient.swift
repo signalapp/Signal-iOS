@@ -588,7 +588,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                     if strongSelf.peerConnection != nil {
                         remoteVideoTrack = strongSelf.remoteVideoTrack
                     }
-                    objc_sync_exit(self)
+                    objc_sync_exit(strongSelf)
 
                     delegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
                 }
