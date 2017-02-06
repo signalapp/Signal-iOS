@@ -635,11 +635,10 @@ NS_ASSUME_NONNULL_BEGIN
 
           // Any messages sent from the current user - from this device or another - should be
           // automatically marked as read.
-          if ([TSAccountManager isRegistered]) {
-              BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:[TSAccountManager localNumber]];
-              if (shouldMarkMessageAsRead) {
-                  [incomingMessage markAsReadLocallyWithTransaction:transaction];
-              }
+          OWSAssert([TSAccountManager isRegistered]);
+          BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:[TSAccountManager localNumber]];
+          if (shouldMarkMessageAsRead) {
+              [incomingMessage markAsReadLocallyWithTransaction:transaction];
           }
 
           // Android allows attachments to be sent with body.
