@@ -91,9 +91,9 @@ import Foundation
         Logger.info("\(TAG) Placing redphone call to: \(recipientId)")
 
         let number = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: recipientId)
-        let contact = self.contactsManager.latestContact(for: number)
         assert(number != nil)
-        assert(contact != nil)
+
+        let contact: Contact? = self.contactsManager.latestContact(for: number)
 
         redphoneManager.initiateOutgoingCall(to: contact, atRemoteNumber: number)
 
