@@ -74,7 +74,7 @@
 "CALL_LABEL" = "Call";
 
 /* Format for call status label */
-"CALL_STATUS_FORMAT" = "Signal: %@";
+"CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call back";
