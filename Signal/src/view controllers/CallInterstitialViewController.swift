@@ -10,7 +10,7 @@ class CallInterstitialViewController: UIViewController {
     let TAG = "[CallInterstitialViewController]"
 
     var wasCallCancelled = false
-    var callToken: String?
+    let callToken: String!
 
     // MARK: Views
 
@@ -20,12 +20,15 @@ class CallInterstitialViewController: UIViewController {
 
     // MARK: Initializers
 
+    @available(*, unavailable, message:"init is unavailable, use initWithCallToken")
     required init?(coder aDecoder: NSCoder) {
         assert(false)
+        self.callToken = ""
         super.init(coder: aDecoder)
     }
 
-    required init() {
+    required init(callToken: String) {
+        self.callToken = callToken
         super.init(nibName: nil, bundle: nil)
         observeNotifications()
     }
@@ -102,7 +105,7 @@ class CallInterstitialViewController: UIViewController {
         contentView.addSubview(dialingLabel)
 
         let cancelCallButton = UIButton()
-        cancelCallButton.setTitle(NSLocalizedString("CALL_INTERSTITIAL_CANCEL_BUTTON", comment: "Label for cancel button on call interstitial view"),
+        cancelCallButton.setTitle(NSLocalizedString("TXT_CANCEL_TITLE", comment: "nil"),
                                   for:.normal)
         cancelCallButton.setTitleColor(UIColor.white, for:.normal)
         cancelCallButton.titleLabel?.font = UIFont.ows_lightFont(withSize:ScaleFromIPhone5To7Plus(26, 32))
@@ -120,10 +123,6 @@ class CallInterstitialViewController: UIViewController {
         cancelCallButton.autoSetDimension(.height, toSize:ScaleFromIPhone5To7Plus(50, 60))
         cancelCallButton.autoPinWidthToSuperview()
         cancelCallButton.autoPinEdge(toSuperviewEdge:.bottom, withInset:ScaleFromIPhone5To7Plus(23, 41))
-    }
-
-    func cancelCallButtonPressed(sender button: UIButton) {
-        cancelCall()
     }
 
     // MARK: - Layout
@@ -162,5 +161,11 @@ class CallInterstitialViewController: UIViewController {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: notificationName), object: callToken)
 
         self.dismiss(animated: false)
+    }
+
+    // MARK: - Events
+
+    func cancelCallButtonPressed(sender button: UIButton) {
+        cancelCall()
     }
 }

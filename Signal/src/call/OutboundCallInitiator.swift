@@ -38,10 +38,10 @@ import Foundation
         AssertIsOnMainThread()
 
         let callToken = notification.object as! String
-        cancelCallToken(callToken)
+        cancelCallToken(callToken:callToken)
     }
 
-    func cancelCallToken(_ callToken: String) {
+    func cancelCallToken(callToken: String) {
         AssertIsOnMainThread()
 
         cancelledCallTokens.append(callToken)
@@ -72,7 +72,7 @@ import Foundation
 
         // A temporary unique id used to identify this call during the 
         let callToken = NSUUID().uuidString
-        presentCallInterstitial(callToken)
+        presentCallInterstitial(callToken:callToken)
 
         // Since users can toggle this setting, which is only communicated during contact sync, it's easy to imagine the
         // preference getting stale. Especially as users are toggling the feature to test calls. So here, we opt for a
@@ -83,7 +83,7 @@ import Foundation
         self.contactsUpdater.lookupIdentifier(recipientId,
                                               success: { recipient in
                                                 guard !self.cancelledCallTokens.contains(callToken) else {
-                                                    Logger.error("\(self.TAG) OutboundCallInitiator aborting due to cancelled call.")
+                                                    Logger.info("\(self.TAG) OutboundCallInitiator aborting due to cancelled call.")
                                                     return
                                                 }
 
@@ -108,8 +108,8 @@ import Foundation
                                               failure: { error in
                                                 Logger.warn("\(self.TAG) looking up recipientId: \(recipientId) failed with error \(error)")
 
-                                                self.cancelCallToken(callToken)
-                                                self.dismissCallInterstitial(callToken)
+                                                self.cancelCallToken(callToken:callToken)
+                                                self.dismissCallInterstitial(callToken:callToken)
 
                                                 let alertTitle = NSLocalizedString("UNABLE_TO_PLACE_CALL", comment:"Alert Title")
                                                 let alertController = UIAlertController(title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
@@ -150,14 +150,14 @@ import Foundation
         return true
     }
 
-    private func presentCallInterstitial(_ callToken: String) {
+    private func presentCallInterstitial(callToken: String) {
         AssertIsOnMainThread()
 
         let notificationName = CallService.presentCallInterstitialNotificationName()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: notificationName), object: callToken)
     }
 
-    private func dismissCallInterstitial(_ callToken: String) {
+    private func dismissCallInterstitial(callToken: String) {
         AssertIsOnMainThread()
 
         let notificationName = CallService.dismissCallInterstitialNotificationName()

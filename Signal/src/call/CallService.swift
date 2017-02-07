@@ -251,15 +251,15 @@ protocol CallServiceObserver: class {
     }
 
     class func presentCallInterstitialNotificationName() -> String {
-        return  "PresentCallInterstitialNotification"
+        return  "CallServicePresentCallInterstitialNotification"
     }
 
     class func dismissCallInterstitialNotificationName() -> String {
-        return  "DismissCallInterstitialNotification"
+        return  "CallServiceDismissCallInterstitialNotification"
     }
 
     class func callWasCancelledByInterstitialNotificationName() -> String {
-        return  "CallWasCancelledByInterstitialNotification"
+        return  "CallServiceCallWasCancelledByInterstitialNotification"
     }
 
     // MARK: - Service Actions

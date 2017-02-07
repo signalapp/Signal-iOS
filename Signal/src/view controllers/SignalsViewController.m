@@ -165,8 +165,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     NSString *callToken = notification.object;
     OWSAssert(callToken != nil);
     
-    OWSCallInterstitialViewController *viewController = [OWSCallInterstitialViewController new];
-    viewController.callToken = callToken;
+    OWSCallInterstitialViewController *viewController = [[OWSCallInterstitialViewController alloc] initWithCallToken:callToken];
     
     void(^presentInterstitial)() = ^{
         viewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
@@ -177,9 +176,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     
     // Dismiss any other modals so we can present call modal.
     if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:^{
-            presentInterstitial();
-        }];
+        [self dismissViewControllerAnimated:YES completion:presentInterstitial];
     } else {
         presentInterstitial();
     }
