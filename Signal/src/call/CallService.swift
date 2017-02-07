@@ -137,6 +137,7 @@ protocol CallServiceObserver: class {
             call?.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
+            updateLockTimerEnabling()
 
             Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(call)")
 
@@ -1103,7 +1104,7 @@ protocol CallServiceObserver: class {
     internal func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
         Logger.info("\(self.TAG) \(#function): \(state)")
-        self.updateIsVideoEnabled()
+        updateIsVideoEnabled()
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
@@ -1188,7 +1189,7 @@ protocol CallServiceObserver: class {
         observers = []
     }
 
-    func fireDidUpdateVideoTracks() {
+    private func fireDidUpdateVideoTracks() {
         AssertIsOnMainThread()
 
         let localVideoTrack = self.localVideoTrack
@@ -1198,14 +1199,16 @@ protocol CallServiceObserver: class {
             observer.value?.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
+    }
 
-        // Prevent screen from dimming during video call.
+    private func updateLockTimerEnabling() {
+        AssertIsOnMainThread()
+
+        // Prevent screen from dimming during call.
         //
-        // fireDidUpdateVideoTracks() is called by the video track setters,
-        // which are cleared when the call ends. That ensures that this timer
-        // will be re-enabled.
-        let hasLocalOrRemoteVideo = localVideoTrack != nil || remoteVideoTrack != nil
-        UIApplication.shared.isIdleTimerDisabled = hasLocalOrRemoteVideo
+        // Note that this state has no effect if app is in the background.
+        let hasCall = call != nil
+        UIApplication.shared.isIdleTimerDisabled = hasCall
     }
 }
 
