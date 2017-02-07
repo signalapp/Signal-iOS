@@ -70,10 +70,13 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal benötigt Zugriff auf dein Mikrofon, um korrekt zu funktionieren. Du kannst diese Berechtigung über die iOS-Einstellungen erteilen: Einstellungen >> Datenschutz >> Mikrofon >> Signal";
 
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Anrufen";
 
-/* Format for call status label */
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
@@ -350,7 +353,7 @@
 "HOURS_TIME_AMOUNT" = "%u Stunden";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Verbindung wird hergestellt …";
+"IN_CALL_CONNECTING" = "Verbinden …";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Klingelt …";

@@ -70,10 +70,13 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal are nevoie de acces la microfon pentru a funcționa corespunzător. Poți activa această permisiune din Configurări >> Intimitate >> Microfon >> Signal";
 
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Sună";
 
-/* Format for call status label */
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */

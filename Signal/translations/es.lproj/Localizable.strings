@@ -70,10 +70,13 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceder al micrófono para funcionar correctamente. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Micrófono >> Signal";
 
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Llamada";
 
-/* Format for call status label */
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
@@ -251,7 +254,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ocurrió un fallo desconocido.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacto no es usuario de Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Este contacto no usa Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado.";
@@ -350,19 +353,19 @@
 "HOURS_TIME_AMOUNT" = "%u horas";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Conectando...";
+"IN_CALL_CONNECTING" = "conectando ...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Sonando...";
+"IN_CALL_RINGING" = "sonando ...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Conectado. Asegurando...";
+"IN_CALL_SECURING" = "Respondida. Asegurando...";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "Llamada asegurada y activa";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Llamada finalizada.";
+"IN_CALL_TERMINATED" = "llamada finalizada.";
 
 /* notification body */
 "INCOMING_CALL" = "Llamada entrante";

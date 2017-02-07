@@ -70,10 +70,13 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Le signal nécessite l'accès à votre microphone pour fonctionner correctement. Vous pouvez accorder cette autorisation dans l'application Paramètres >> Confidentialité >> Microphone >> Signal";
 
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Appel";
 
-/* Format for call status label */
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
@@ -248,7 +251,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez réessayer plus tard.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n'est pas un utilisateur Signal.";
@@ -493,7 +496,7 @@
 "NETWORK_STATUS_TEXT" = "Vous pouvez vérifier l'état de votre connexion en regardant la barre au-dessus de la boîte de réception.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nouvelle conversation avec %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Définir la photo de groupe";
@@ -508,7 +511,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Ajouter quelqu'un";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "L'envoi de votre message à %@ a échoué.";
@@ -715,7 +718,7 @@
 "SEND_INVITE_SUCCESS" = "Vous avez invité vos amis à utiliser Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Envoyer une invitation par SMS à %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviter un ami via un SMS non sécurisé ?";
