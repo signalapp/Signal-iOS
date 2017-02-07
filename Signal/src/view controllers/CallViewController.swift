@@ -461,6 +461,16 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         self.remoteVideoConstraints = constraints
+
+        // We need to force relayout to occur immediately (and not
+        // wait for a UIKit layout/render pass) or the remoteVideoView
+        // (which presumably is updating its CALayer directly) will 
+        // ocassionally appear to have bad frames.
+        remoteVideoView.setNeedsLayout()
+        remoteVideoView.superview?.setNeedsLayout()
+        remoteVideoView.layoutIfNeeded()
+        remoteVideoView.superview?.layoutIfNeeded()
+
         updateCallUI(callState: call.state)
     }
 
