@@ -560,8 +560,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func updateCallStatusLabel(callState: CallState) {
         assert(Thread.isMainThread)
 
-        let text = String(format:NSLocalizedString("CALL_STATUS_FORMAT", comment: "Format for call status label"),
-                      localizedTextForCallState(callState))
+        let text = String(format: CallStrings.callStatusFormat,
+                          localizedTextForCallState(callState))
         self.callStatusLabel.text = text
     }
 
@@ -686,7 +686,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         guard let call = self.call else {
             Logger.error("\(TAG) call was unexpectedly nil. Terminating call.")
 
-            let text = String(format:NSLocalizedString("CALL_STATUS_FORMAT", comment: "Format for call status label"),
+            let text = String(format: CallStrings.callStatusFormat,
                               NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label"))
             self.callStatusLabel.text = text
 
