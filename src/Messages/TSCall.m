@@ -1,12 +1,25 @@
-//  Created by Frederic Jacobs on 12/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSCall.h"
 #import "TSContactThread.h"
+#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger TSCallCurrentSchemaVersion = 1;
+
+@interface TSCall ()
+
+@property (nonatomic, readonly) NSUInteger callSchemaVersion;
+
+@end
+
 @implementation TSCall
+
+@synthesize read = _read;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
@@ -15,9 +28,34 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
 
-    if (self) {
-        _callType = callType;
+    if (!self) {
+        return self;
     }
+
+    _callSchemaVersion = TSCallCurrentSchemaVersion;
+    _callType = callType;
+    if (_callType == RPRecentCallTypeMissed) {
+        _read = NO;
+    } else {
+        _read = YES;
+    }
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (self.callSchemaVersion < 1) {
+        // Assume user has already seen any call that predate read-tracking
+        _read = YES;
+    }
+
+    _callSchemaVersion = TSCallCurrentSchemaVersion;
 
     return self;
 }
@@ -31,6 +69,24 @@ NS_ASSUME_NONNULL_BEGIN
         case RPRecentCallTypeMissed:
             return NSLocalizedString(@"MISSED_CALL", @"");
     }
+}
+
+#pragma mark - OWSReadTracking
+
+- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    _read = YES;
+    [self saveWithTransaction:transaction];
+
+    // redraw any thread-related unread count UI.
+    [self touchThreadWithTransaction:transaction];
+}
+
+- (void)markAsReadLocally
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self markAsReadLocallyWithTransaction:transaction];
+    }];
 }
 
 @end

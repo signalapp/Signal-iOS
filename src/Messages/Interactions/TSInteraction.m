@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 12/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSInteraction.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -49,9 +50,18 @@
     return self;
 }
 
+
+#pragma mark Thread
+
 - (TSThread *)thread
 {
     return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
+}
+
+- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+    [thread touchWithTransaction:transaction];
 }
 
 #pragma mark Date operations
