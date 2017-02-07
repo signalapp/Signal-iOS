@@ -125,10 +125,18 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleActiveCallNotification:)
                                                  name:[CallService callServiceActiveCallNotificationName]
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePresentCallInterstitialNotification:)
+                                                 name:[CallService presentCallInterstitialNotificationName]
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleDismissCallInterstitialNotification:)
+                                                 name:[CallService dismissCallInterstitialNotificationName]
                                                object:nil];
 }
 
@@ -150,22 +158,68 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     }
 }
 
-- (void)handleActiveCallNotification:(NSNotification *)notification
+- (void)handlePresentCallInterstitialNotification:(NSNotification *)notification
 {
     AssertIsOnMainThread();
+    
+    NSString *callToken = notification.object;
+    OWSAssert(callToken != nil);
+    
+    OWSCallInterstitialViewController *viewController = [[OWSCallInterstitialViewController alloc] initWithCallToken:callToken];
+    
+    void(^presentInterstitial)() = ^{
+        viewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:viewController
+                           animated:NO
+                         completion:nil];
+    };
+    
+    // Dismiss any other modals so we can present call modal.
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:presentInterstitial];
+    } else {
+        presentInterstitial();
+    }
+}
 
-    if (![notification.object isKindOfClass:[SignalCall class]]) {
-        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
-            self.tag,
-            notification.object);
+- (void)handleDismissCallInterstitialNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+    
+    NSString *callToken = notification.object;
+    OWSAssert(callToken != nil);
+    
+    if (!self.presentedViewController ||
+        ![self.presentedViewController isKindOfClass:[OWSCallInterstitialViewController class]]) {
         return;
     }
 
+    
+    OWSCallInterstitialViewController *viewController = (OWSCallInterstitialViewController *)self.presentedViewController;
+    if (![viewController.callToken isEqualToString:callToken]) {
+        return;
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)handleActiveCallNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+    
+    if (![notification.object isKindOfClass:[SignalCall class]]) {
+        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
+                   self.tag,
+                   notification.object);
+        return;
+    }
+    
     SignalCall *call = (SignalCall *)notification.object;
     
     // Dismiss any other modals so we can present call modal.
     if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:^{
+        BOOL shouldAnimate = ![self.presentedViewController isKindOfClass:[OWSCallInterstitialViewController class]];
+        [self dismissViewControllerAnimated:shouldAnimate
+                                 completion:^{
             [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
         }];
     } else {
