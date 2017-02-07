@@ -70,6 +70,12 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+
+/* Label for cancel button on call interstitial view */
+"CALL_INTERSTITIAL_CANCEL_BUTTON" = "Cancel";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 

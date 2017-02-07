@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
+		348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
 		450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
@@ -602,6 +603,7 @@
 		341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMediaItem+OWS.m"; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34535D811E256BE9008A4747 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
+		348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallInterstitialViewController.swift; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSExpirationTimerView.h; sourceTree = "<group>"; };
@@ -2607,25 +2609,26 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */,
 				4509E79B1DD6545B0025A59F /* CallViewController.swift */,
-				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
-				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
-				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
-				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
-				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
-				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
 				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
 				FCB11D911A12A4AA002F93FB /* FullImageViewController.h */,
 				FCB11D921A12A4AA002F93FB /* FullImageViewController.m */,
-				A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */,
-				A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */,
+				FC3196281A067D8F0094C78E /* MessageComposeTableViewController.h */,
+				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
+				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
+				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
 				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
 				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
-				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
-				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 				452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */,
 				452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */,
+				A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */,
+				A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */,
+				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
+				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
+				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
+				FCAC963B19FEF9280046DFC5 /* SignalsViewController.m */,
 			);
 			name = Signals;
 			sourceTree = "<group>";
@@ -3081,6 +3084,7 @@
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
+				348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
