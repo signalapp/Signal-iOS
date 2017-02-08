@@ -1,6 +1,7 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Foundation/Foundation.h>
 #import "Asserts.h"
+#import "OWSDispatch.h"
 
 #ifdef DEBUG
 static const NSUInteger ddLogLevel = DDLogLevelAll;
