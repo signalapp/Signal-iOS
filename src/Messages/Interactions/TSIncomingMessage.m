@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 15/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSIncomingMessage.h"
 #import "TSContactThread.h"
@@ -127,9 +128,22 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 
 - (void)markAsReadWithoutNotificationWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
-    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
+    [self touchThreadWithTransaction:transaction];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
