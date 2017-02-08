@@ -99,8 +99,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contactsDidChange:)
-                                                 name:OWSContactsManagerContactsDidChangeNotification
+                                             selector:@selector(signalRecipientsDidChange:)
+                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
                                                object:nil];
 }
 
@@ -109,7 +109,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)contactsDidChange:(NSNotification *)notification {
+- (void)signalRecipientsDidChange:(NSNotification *)notification {
     [self updateContacts];
 }
 

@@ -1,9 +1,5 @@
 //
-//  NewGroupViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewGroupViewController.h"
@@ -75,8 +71,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contactsDidChange:)
-                                                 name:OWSContactsManagerContactsDidChangeNotification
+                                             selector:@selector(signalRecipientsDidChange:)
+                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
                                                object:nil];
 }
 
@@ -85,7 +81,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)contactsDidChange:(NSNotification *)notification {
+- (void)signalRecipientsDidChange:(NSNotification *)notification {
     [self updateContacts];
 }
 

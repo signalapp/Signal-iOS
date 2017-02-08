@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
@@ -7,7 +11,8 @@
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
-NSString *const OWSContactsManagerContactsDidChangeNotification = @"OWSContactsManagerContactsDidChangeNotification";
+NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
+    @"OWSContactsManagerSignalRecipientsDidChangeNotification";
 
 @interface OWSContactsManager ()
 
@@ -103,7 +108,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
                                                                            success:^{
                                                                                DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
-                                                                               [self fireContactsDidChange];
+                                                                               [self fireSignalRecipientsDidChange];
                                                                            }
                                                                            failure:^(NSError *error) {
                                                                                DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
@@ -116,10 +121,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                                                            }];
 }
 
-- (void)fireContactsDidChange {
+- (void)fireSignalRecipientsDidChange
+{
     AssertIsOnMainThread();
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerContactsDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalRecipientsDidChangeNotification
                                                         object:nil];
 }
 
