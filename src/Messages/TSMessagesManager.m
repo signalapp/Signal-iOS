@@ -560,6 +560,10 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSIncomingMessage *_Nullable incomingMessage;
     __block TSThread *thread;
 
+    // Do this outside of a transaction to avoid deadlock
+    OWSAssert([TSAccountManager isRegistered]);
+    NSString *localNumber = [TSAccountManager localNumber];
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if (groupId) {
           NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
@@ -634,8 +638,7 @@ NS_ASSUME_NONNULL_BEGIN
 
           // Any messages sent from the current user - from this device or another - should be
           // automatically marked as read.
-          OWSAssert([TSAccountManager isRegistered]);
-          BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:[TSAccountManager localNumber]];
+          BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
           if (shouldMarkMessageAsRead) {
               [incomingMessage markAsReadLocallyWithTransaction:transaction];
           }
