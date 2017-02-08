@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Contacts/Contacts.h>
 #import <Foundation/Foundation.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
@@ -7,6 +11,8 @@
 #import "ObservableValue.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 @class UIFont;
 
