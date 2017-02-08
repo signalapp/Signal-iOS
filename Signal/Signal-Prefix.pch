@@ -15,8 +15,9 @@
     static const NSUInteger ddLogLevel = DDLogLevelInfo;
     #endif
 
-    #import "iOSVersions.h"
     #import <SignalServiceKit/Asserts.h>
+    #import "iOSVersions.h"
+    #import "OWSDispatch.h"
 
     #define SignalAlertView(title,msg) [[[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil] show]
     #define SignalReportError [Pastelog reportErrorAndSubmitLogsWithAlertTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"") alertBody:NSLocalizedString(@"ERROR_WAS_DETECTED_SUBMIT", @"")];

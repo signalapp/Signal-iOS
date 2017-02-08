@@ -7,6 +7,8 @@
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
+NSString *const OWSContactsManagerContactsDidChangeNotification = @"OWSContactsManagerContactsDidChangeNotification";
+
 @interface OWSContactsManager ()
 
 @property id addressBookReference;
@@ -99,18 +101,26 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)intersectContacts {
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
-        success:^{
-            DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
-        }
-        failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+                                                                           success:^{
+                                                                               DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
+                                                                               [self fireContactsDidChange];
+                                                                           }
+                                                                           failure:^(NSError *error) {
+                                                                               DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+                                                                               
+                                                                               [NSTimer scheduledTimerWithTimeInterval:60
+                                                                                                                target:self
+                                                                                                              selector:@selector(intersectContacts)
+                                                                                                              userInfo:nil
+                                                                                                               repeats:NO];
+                                                                           }];
+}
 
-            [NSTimer scheduledTimerWithTimeInterval:60
-                                             target:self
-                                           selector:@selector(intersectContacts)
-                                           userInfo:nil
-                                            repeats:NO];
-        }];
+- (void)fireContactsDidChange {
+    AssertIsOnMainThread();
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerContactsDidChangeNotification
+                                                        object:nil];
 }
 
 - (void)pullLatestAddressBook {

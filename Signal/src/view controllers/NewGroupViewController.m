@@ -68,6 +68,33 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                       contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     _contactsManager = [Environment getCurrent].contactsManager;
+
+    [self observeNotifications];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contactsDidChange:)
+                                                 name:OWSContactsManagerContactsDidChangeNotification
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)contactsDidChange:(NSNotification *)notification {
+    [self updateContacts];
+}
+
+- (void)updateContacts {
+    AssertIsOnMainThread();
+
+    contacts = self.contactsManager.signalContacts;
+
+    [self.tableView reloadData];
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
@@ -78,7 +105,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    contacts = [Environment getCurrent].contactsManager.signalContacts;
+    contacts = self.contactsManager.signalContacts;
 
 
     self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);

@@ -77,6 +77,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     _contactsManager = [Environment getCurrent].contactsManager;
     _phoneNumberAccountSet = [NSMutableSet set];
     
+    [self observeNotifications];
+
     return self;
 }
 
@@ -89,7 +91,26 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     _contactsManager = [Environment getCurrent].contactsManager;
 
+    [self observeNotifications];
+    
     return self;
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contactsDidChange:)
+                                                 name:OWSContactsManagerContactsDidChangeNotification
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)contactsDidChange:(NSNotification *)notification {
+    [self updateContacts];
 }
 
 - (void)viewDidLoad {
@@ -612,30 +633,34 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (void)refreshContacts {
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.contactsManager.allContacts
-        success:^{
-            self.contacts = self.contactsManager.signalContacts;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateSearchResultsForSearchController:self.searchController];
-                [self.tableView reloadData];
-                [self updateAfterRefreshTry];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert =
-                    [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"")
-                                               message:NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
-                                              delegate:nil
-                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                     otherButtonTitles:nil];
-                [alert show];
-                [self updateAfterRefreshTry];
-            });
-        }];
-
+                                                                           success:^{
+                                                                               [self updateContacts];
+                                                                           }
+                                                                           failure:^(NSError *error) {
+                                                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                   UIAlertView *alert =
+                                                                                   [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"")
+                                                                                                              message:NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
+                                                                                                             delegate:nil
+                                                                                                    cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                                                                    otherButtonTitles:nil];
+                                                                                   [alert show];
+                                                                                   [self updateAfterRefreshTry];
+                                                                               });
+                                                                           }];
+    
     if ([self.contacts count] == 0) {
         [self showLoadingBackgroundView:YES];
     }
+}
+
+- (void)updateContacts {
+    self.contacts = self.contactsManager.signalContacts;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateSearchResultsForSearchController:self.searchController];
+        [self.tableView reloadData];
+        [self updateAfterRefreshTry];
+    });
 }
 
 #pragma mark - Navigation
