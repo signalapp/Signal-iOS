@@ -14,7 +14,6 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
