@@ -1,10 +1,10 @@
-//  Created by Michael Kirk on 10/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSUploadingService.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
-#import "OWSDispatch.h"
 #import "OWSError.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"

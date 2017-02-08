@@ -5,7 +5,6 @@
 #import "SubProtocol.pb.h"
 
 #import "Cryptography.h"
-#import "OWSDispatch.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"

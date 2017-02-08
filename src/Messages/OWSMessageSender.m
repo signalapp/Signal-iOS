@@ -6,7 +6,6 @@
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSLegacyMessageServiceParams.h"
 #import "OWSMessageServiceParams.h"
