@@ -1,9 +1,5 @@
 //
-//  NewGroupViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewGroupViewController.h"
@@ -68,6 +64,33 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                       contactsUpdater:[Environment getCurrent].contactsUpdater];
 
     _contactsManager = [Environment getCurrent].contactsManager;
+
+    [self observeNotifications];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalRecipientsDidChange:)
+                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)signalRecipientsDidChange:(NSNotification *)notification {
+    [self updateContacts];
+}
+
+- (void)updateContacts {
+    AssertIsOnMainThread();
+
+    contacts = self.contactsManager.signalContacts;
+
+    [self.tableView reloadData];
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
@@ -78,7 +101,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    contacts = [Environment getCurrent].contactsManager.signalContacts;
+    contacts = self.contactsManager.signalContacts;
 
 
     self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);

@@ -84,7 +84,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.debug("\(self.TAG) \(#function)")
 
-        provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+        switch (error) {
+        case .timeout(description: _):
+            provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
+        default:
+            provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+        }
+
         self.callManager.removeCall(call)
     }
 
