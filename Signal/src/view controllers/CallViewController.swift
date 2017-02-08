@@ -733,6 +733,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.updateCallUI(callState: call.state)
     }
 
+    internal func callRecordDidChange(call: SignalCall, callRecord: TSCall?) {
+        AssertIsOnMainThread()
+
+        // Do nothing.
+    }
+
     // MARK: - Video
 
     internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {

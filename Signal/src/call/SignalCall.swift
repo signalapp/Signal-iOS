@@ -27,6 +27,7 @@ protocol CallObserver: class {
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func speakerphoneDidChange(call: SignalCall, isEnabled: Bool)
+    func callRecordDidChange(call: SignalCall, callRecord: TSCall?)
 }
 
 /**
@@ -48,6 +49,17 @@ protocol CallObserver: class {
 
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
+
+    var callRecord: TSCall? {
+        didSet {
+            AssertIsOnMainThread()
+            assert(oldValue == nil)
+
+            for observer in observers {
+                observer.value?.callRecordDidChange(call: self, callRecord: callRecord)
+            }
+        }
+    }
 
     var hasLocalVideo = false {
         didSet {

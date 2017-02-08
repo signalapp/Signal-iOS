@@ -52,6 +52,12 @@ import Foundation
         ensureIsEnabled(call: call)
     }
 
+    internal func callRecordDidChange(call: SignalCall, callRecord: TSCall?) {
+        AssertIsOnMainThread()
+
+        // Do nothing.
+    }
+
     private func ensureIsEnabled(call: SignalCall) {
         // Auto-enable speakerphone when local video is enabled.
         if call.hasLocalVideo {

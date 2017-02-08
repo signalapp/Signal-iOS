@@ -285,8 +285,9 @@ protocol CallServiceObserver: class {
         sendIceUpdatesImmediately = false
         pendingIceUpdateMessages = []
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoing, in: thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: thread)
         callRecord.save()
+        call.callRecord = callRecord
 
         guard self.peerConnectionClient == nil else {
             let errorDescription = "\(TAG) peerconnection was unexpectedly already set."
@@ -388,11 +389,17 @@ protocol CallServiceObserver: class {
     public func handleMissedCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
         // Insert missed call record
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                withCallNumber: thread.contactIdentifier(),
-                                callType: RPRecentCallTypeMissed,
-                                in: thread)
-        callRecord.save()
+        if call.callRecord == nil {
+            call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                     withCallNumber: thread.contactIdentifier(),
+                                     callType: RPRecentCallTypeMissed,
+                                     in: thread)
+        } else if (call.callRecord!.callType == RPRecentCallTypeIncoming) {
+            call.callRecord!.updateCallType(RPRecentCallTypeMissed)
+        }
+
+        assert(call.callRecord != nil)
+        call.callRecord?.save()
 
         self.callUIAdapter.reportMissedCall(call)
     }
@@ -715,8 +722,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncoming, in: thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: thread)
         callRecord.save()
+        call.callRecord = callRecord
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
         peerConnectionClient.sendDataChannelMessage(data: message.asData())
@@ -1142,6 +1150,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
         Logger.info("\(self.TAG) \(#function): \(state)")
         updateIsVideoEnabled()
+        updateCallRecordType(call: call)
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
@@ -1158,6 +1167,33 @@ protocol CallServiceObserver: class {
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         AssertIsOnMainThread()
         // Do nothing
+    }
+
+    internal func callRecordDidChange(call: SignalCall, callRecord: TSCall?) {
+        AssertIsOnMainThread()
+
+        updateCallRecordType(call: call)
+    }
+
+    internal func updateCallRecordType(call: SignalCall?) {
+        AssertIsOnMainThread()
+
+        guard call != nil else {
+            return
+        }
+        guard call!.callRecord != nil else {
+            return
+        }
+
+        // Mark incomplete calls as completed if call has connected.
+        if call!.state == .connected &&
+            call!.callRecord!.callType == RPRecentCallTypeOutgoingIncomplete {
+            call!.callRecord!.updateCallType(RPRecentCallTypeOutgoing)
+        }
+        if call!.state == .connected &&
+            call!.callRecord!.callType == RPRecentCallTypeIncomingIncomplete {
+            call!.callRecord!.updateCallType(RPRecentCallTypeIncoming)
+        }
     }
 
     // MARK: - Video
