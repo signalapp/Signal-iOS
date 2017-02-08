@@ -74,7 +74,7 @@ enum CallError: Error {
     case assertionError(description: String)
     case disconnected
     case externalError(underlyingError: Error)
-    case timeout(description: String)
+    case timeout(description: String, call: SignalCall)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -318,7 +318,7 @@ protocol CallServiceObserver: class {
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                throw CallError.timeout(description: "timed out waiting to receive call answer")
+                throw CallError.timeout(description: "timed out waiting to receive call answer", call: call)
             }
 
             return race(timeout, callConnectedPromise)
@@ -450,7 +450,7 @@ protocol CallServiceObserver: class {
         call = newCall
 
         let backgroundTask = UIApplication.shared.beginBackgroundTask {
-            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
+            let timeout = CallError.timeout(description: "background task time ran out before call connected.", call: newCall)
             DispatchQueue.main.async {
                 guard self.call == newCall else {
                     return
@@ -496,7 +496,7 @@ protocol CallServiceObserver: class {
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                throw CallError.timeout(description: "timed out waiting for call to connect")
+                throw CallError.timeout(description: "timed out waiting for call to connect", call: newCall)
             }
 
             // This will be fulfilled (potentially) by the RTCDataChannel delegate method
@@ -1090,6 +1090,14 @@ protocol CallServiceObserver: class {
         Logger.error("\(TAG) call failed with error: \(error)")
 
         if let call = self.call {
+
+            if case .timeout(description: _, call: let timedOutCall) = error {
+                guard timedOutCall == call else {
+                    Logger.debug("Ignoring timeout for previous call")
+                    return
+                }
+            }
+
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             call.error = error
             call.state = .localFailure
