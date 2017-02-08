@@ -17,6 +17,10 @@ enum CallState: String {
     case remoteBusy // terminal
 }
 
+enum CallDirection {
+    case outgoing, incoming
+}
+
 // All Observer methods will be invoked from the main thread.
 protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
@@ -39,6 +43,8 @@ protocol CallObserver: class {
 
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
     let signalingId: UInt64
+
+    let direction: CallDirection
 
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
@@ -105,7 +111,8 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(localId: UUID, signalingId: UInt64, state: CallState, remotePhoneNumber: String) {
+    init(direction: CallDirection, localId: UUID, signalingId: UInt64, state: CallState, remotePhoneNumber: String) {
+        self.direction = direction
         self.localId = localId
         self.signalingId = signalingId
         self.state = state
@@ -113,11 +120,11 @@ protocol CallObserver: class {
     }
 
     class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> SignalCall {
-        return SignalCall(localId: localId, signalingId: newCallSignalingId(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
+        return SignalCall(direction: .outgoing, localId: localId, signalingId: newCallSignalingId(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
     }
 
     class func incomingCall(localId: UUID, remotePhoneNumber: String, signalingId: UInt64) -> SignalCall {
-        return SignalCall(localId: localId, signalingId: signalingId, state: .answering, remotePhoneNumber: remotePhoneNumber)
+        return SignalCall(direction: .incoming, localId: localId, signalingId: signalingId, state: .answering, remotePhoneNumber: remotePhoneNumber)
     }
 
     // -

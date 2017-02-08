@@ -528,6 +528,17 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         case .remoteBusy:
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
+            if let error = call.error {
+                switch (error) {
+                case .timeout(description: _):
+                    if self.call.direction == .outgoing {
+                        return NSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
+                    }
+                default:
+                    break
+                }
+            }
+
             return NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label")
         }
     }

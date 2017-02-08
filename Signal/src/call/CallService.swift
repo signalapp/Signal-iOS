@@ -77,8 +77,8 @@ enum CallError: Error {
     case timeout(description: String)
 }
 
-// FIXME TODO do we need to timeout?
-fileprivate let timeoutSeconds = 60
+// Should be roughly synced with Android client for consistency
+fileprivate let timeoutSeconds = 120
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -311,6 +311,17 @@ protocol CallServiceObserver: class {
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                 return self.messageSender.sendCallMessage(callMessage)
             }
+        }.then {
+            let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
+            self.fulfillCallConnectedPromise = fulfill
+
+            // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
+            let timeout: Promise<Void> = after(interval: TimeInterval(timeoutSeconds)).then { () -> Void in
+                // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                throw CallError.timeout(description: "timed out waiting to receive call answer")
+            }
+
+            return race(timeout, callConnectedPromise)
         }.catch { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
