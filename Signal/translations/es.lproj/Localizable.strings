@@ -71,10 +71,13 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceder al micrófono para funcionar correctamente. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Micrófono >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "llamando...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Llamada";
+
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -230,13 +233,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Has realizado otra llamada.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Ocupado.";
+"END_CALL_RESPONDER_IS_BUSY" = "ocupado.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Llamada perdida.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Fallo en la llamada.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "llamada fallida.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Fallo al enviar el mensaje.";
@@ -353,10 +356,10 @@
 "HOURS_TIME_AMOUNT" = "%u horas";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "conectando ...";
+"IN_CALL_CONNECTING" = "conectando...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "sonando ...";
+"IN_CALL_RINGING" = "sonando...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Respondida. Asegurando...";
@@ -456,7 +459,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal necesita acceder a la cámara para realizar videollamadas. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Cámara >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal necesita acceder a la cámara para realizar vídeollamadas. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Cámara >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -808,7 +811,7 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit permite recibir notificaciones de (vídeo)llamadas de Signal a pantalla completa. ATENCIÓN: Al usar CallKit Apple almacena la lista de llamadas de Signal en tu cuenta de iCloud.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Llamando";
+"SETTINGS_SECTION_TITLE_CALLING" = "Llamadas";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Seguridad de pantalla";
@@ -904,7 +907,7 @@
 "Upgrading Signal ..." = "Actualizando Signal...";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Subiendo...";
+"UPLOADING_MESSAGE_TEXT" = "Cargando...";
 
 /* button text during registration to make corrections to your submitted phone number */
 "VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Cambiar número";

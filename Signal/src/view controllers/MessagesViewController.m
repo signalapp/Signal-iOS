@@ -72,7 +72,6 @@
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 
-static NSString *const OWSMessagesViewControllerSegueInitiateCall = @"initiateCallSegue";
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
 static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
     @"OWSMessagesViewControllerSeguePushConversationSettings";
@@ -1600,20 +1599,8 @@ typedef enum : NSUInteger {
         OWSConversationSettingsTableViewController *controller
             = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
         [controller configureWithThread:self.thread];
-    } else if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueInitiateCall]) {
-        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
-            DDLogError(@"%@ Expected CallViewController but got: %@", self.tag, segue.destinationViewController);
-            return;
-        }
-
-        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
-
-        if (![self.thread isKindOfClass:[TSContactThread class]]) {
-            DDLogError(@"%@ Unexpectedly trying to call in group thread:%@. This isn't supported.", self.thread, self.tag);
-            return;
-        }
-        callViewController.thread = (TSContactThread *)self.thread;
-        [callViewController setOutgoingCallDirection];
+    } else {
+        DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
     }
 }
 
