@@ -285,8 +285,9 @@ protocol CallServiceObserver: class {
         sendIceUpdatesImmediately = false
         pendingIceUpdateMessages = []
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoing, in: thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: thread)
         callRecord.save()
+        call.callRecord = callRecord
 
         guard self.peerConnectionClient == nil else {
             let errorDescription = "\(TAG) peerconnection was unexpectedly already set."
@@ -387,12 +388,21 @@ protocol CallServiceObserver: class {
      */
     public func handleMissedCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
+
         // Insert missed call record
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                withCallNumber: thread.contactIdentifier(),
-                                callType: RPRecentCallTypeMissed,
-                                in: thread)
-        callRecord.save()
+        if let callRecord = call.callRecord {
+            if (callRecord.callType == RPRecentCallTypeIncoming) {
+                callRecord.updateCallType(RPRecentCallTypeMissed)
+            }
+        } else {
+            call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                     withCallNumber: thread.contactIdentifier(),
+                                     callType: RPRecentCallTypeMissed,
+                                     in: thread)
+        }
+
+        assert(call.callRecord != nil)
+        call.callRecord?.save()
 
         self.callUIAdapter.reportMissedCall(call)
     }
@@ -715,8 +725,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncoming, in: thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: thread)
         callRecord.save()
+        call.callRecord = callRecord
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
         peerConnectionClient.sendDataChannelMessage(data: message.asData())
