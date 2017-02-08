@@ -322,6 +322,8 @@ protocol CallServiceObserver: class {
             }
 
             return race(timeout, callConnectedPromise)
+        }.then {
+            Logger.info("\(self.TAG) outgoing call connected.")
         }.catch { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
@@ -501,6 +503,8 @@ protocol CallServiceObserver: class {
             self.fulfillCallConnectedPromise = fulfill
 
             return race(promise, timeout)
+        }.then {
+            Logger.info("\(self.TAG) incoming call connected.")
         }.catch { error in
             guard self.call == newCall else {
                 Logger.debug("\(self.TAG) error for obsolete call: \(error)")
@@ -617,8 +621,6 @@ protocol CallServiceObserver: class {
         case .answering:
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: thread)
-            // cancel connection timeout
-            self.fulfillCallConnectedPromise?()
         case .remoteRinging:
             Logger.info("\(TAG) call alreading ringing. Ignoring \(#function)")
         case .connected:
@@ -734,6 +736,10 @@ protocol CallServiceObserver: class {
             handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
+
+        assert(self.fulfillCallConnectedPromise != nil)
+        // cancel connection timeout
+        self.fulfillCallConnectedPromise?()
 
         call.state = .connected
 
