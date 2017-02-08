@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     switch (settingsSection) {
         case AdvancedSettingsTableViewControllerSectionCalling:
             // We only show the CallKit setting if WebRTC is enabled.
-            if ([Environment.preferences isWebRTCEnabled]) {
+            if ([Environment.preferences isWebRTCEnabled] && [self supportsCallKit]) {
                 return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
             }
         default:
