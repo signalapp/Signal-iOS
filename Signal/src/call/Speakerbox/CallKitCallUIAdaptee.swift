@@ -228,14 +228,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        self.callService.handleOutgoingCall(call).then { () -> Void in
-            action.fulfill()
-            self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
-            }.catch { error in
-                Logger.error("\(self.TAG) error \(error) in \(#function)")
-                self.callManager.removeCall(call)
-                action.fail()
-        }
+        _ = self.callService.handleOutgoingCall(call)
+        action.fulfill()
+        self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
