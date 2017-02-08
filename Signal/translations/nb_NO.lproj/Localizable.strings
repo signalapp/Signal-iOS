@@ -71,13 +71,13 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal trenger tilgang til mikrofonen din for å fungere. Du kan gi tilgang i Innstillinger >> Personvern >> Mikrofon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Ringer...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Ikke noe svar.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -808,10 +808,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Forhindrer Signal fra å vises i oversikten over nylig brukte apper.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit gjør at du kan svare på oppringninger direkte fra låst skjerm. Til info vil bruk av CallKit gjøre at Apple samler noe metadata om dine samtaler som lagres i din iCloud-konto.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit gjør at du kan svare på oppringninger direkte fra låseskjerm. Til info vil bruk av CallKit gjøre at Apple samler noe metadata om dine samtaler som lagres i din iCloud konto.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skjermsikkerhet";
@@ -865,7 +865,7 @@
 "TXT_DELETE_TITLE" = "Slett";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Klarte ikke å ringe.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Hent frem fra arkiv";

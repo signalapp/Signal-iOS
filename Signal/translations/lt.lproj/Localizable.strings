@@ -14,7 +14,7 @@
 "ACTION_REQUIRED_TITLE" = "Reikalingas veiksmas";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal requires access to your contacts. Access to contacts is restricted. Signal will close. You can disable the restriction temporarily to let Signal access your contacts by going the Settings app >> General >> Restrictions >> Contacts >> Allow Changes.";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal reikalauja prieigos prie jūsų kontaktų. Prieiga prie kontaktų yra apribota. Signal bus užverta. Tam, kad leistumėte Signal prieigą prie savo kontaktų, jūs galite laikinai išjungti apribojimą, pereidami į Nustatymų (angl. Settings) programėlę >> Bendra (angl. General) >> Apribojimai (angl. Restrictions) >> Kontaktai (angl. Contacts) >> Leisti pakeitimus (angl. Allow Changes).";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Užverti";
@@ -68,7 +68,7 @@
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Tam, kad tinkamai veiktų, Signal reikalauja prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje >> Privatumas (angl. Privacy) >> Mikrofonas (angl. Microphone) >> Signal";
 
 /* Title for call interstitial view */
 "CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
@@ -125,7 +125,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Pasirinkite valstybės kodą";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u days";
+"DAYS_TIME_AMOUNT" = "%u dienų";
 
 /* No comment provided by engineer. */
 "DELIVERED_MESSAGE_TEXT" = "Pristatyta";
@@ -191,7 +191,7 @@
 "EMPTY_INBOX_FIRST_TITLE" = "Atlikta. Atlikta. Atlikta.";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TEXT" = "None. Zero. Zilch. Nada.";
+"EMPTY_INBOX_TEXT" = "Nieko nėra. Tuščia.";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Visiškai tuščia.";
@@ -398,7 +398,7 @@
 "LEAVE_GROUP_ACTION" = "Išeiti iš grupės";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Šis QR kodas yra neteisingas, įsitikinkite, kad skenuojate įrenginio, kurį norite susieti, ekrane esantį QR kodą.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Įrenginio susiejimas nepavyko";
@@ -459,7 +459,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Norint skambinti su vaizdu, Signal reikia prieigos prie jūsų kameros. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje >> Privatumas (angl. Privacy) >> Kamera (angl. Camera) >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -607,7 +607,7 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "If you enjoy using Signal to have private conversations, you can support our project by rating it. It won't take more than a minute, and will help others find some privacy.";
+"RATING_MSG" = "Jeigu jūs mėgaujatės, naudodami Signal privatiems pokalbiams, jūs galite palaikyti mūsų projektą, jį įvertindami. Tai neužtruks ilgiau nei minutę ir taip padėsite kitiems atrasti privatumą.";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Įvertinkite Signal";
@@ -670,7 +670,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Patvirtinimas nepavyko";
 
 /* Alert body, during registration */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Jūsų pateikti skaičiai nesutampa su tais, kuriuos mes išsiuntėme. Gal norėtumėte patikrinti dar kartą?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktyvuoti šį įrenginį";
@@ -679,7 +679,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Atmesti";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "The phone number you are trying to register has already been registered on another server, please unregister from there and try again.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Telefono numeris, kurį bandote užregistruoti jau buvo užregistruotas kitame serveryje, prašome jį iš ten išregistruoti ir bandyti dar kartą.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Re-register for push notifications";
@@ -835,16 +835,16 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Rodyti naują saugumo numerį";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u day";
+"SINGLE_DAY_TIME_AMOUNT" = "%u diena(-os)";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u hour";
+"SINGLE_HOUR_TIME_AMOUNT" = "%u valanda(-ų)";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minute";
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u minutė(-ių)";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u week";
+"SINGLE_WEEK_TIME_AMOUNT" = "%u savaitė(-ių)";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Siūlau tau įdiegti Signal! Štai čia yra nuoroda:";

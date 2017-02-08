@@ -71,13 +71,13 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za ispravno funkcionisanje. Možete odobriti ovu dozvolu u aplikaciji Postavke >> Privatnost >> Mirkofon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Pozivanje...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Poziv";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Nema odgovora.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
