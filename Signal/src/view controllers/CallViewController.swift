@@ -11,10 +11,6 @@ import PromiseKit
 @objc(OWSCallViewController)
 class CallViewController: UIViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
 
-    enum CallDirection {
-        case unspecified, outgoing, incoming
-    }
-
     let TAG = "[CallViewController]"
 
     // Dependencies
@@ -24,7 +20,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     // MARK: Properties
 
-    var callDirection: CallDirection = .unspecified
     var thread: TSContactThread!
     var call: SignalCall!
 
@@ -139,17 +134,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
         contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager)
 
-        switch callDirection {
-        case .unspecified:
-            Logger.error("\(TAG) must set call direction before call starts.")
-            showCallFailed(error: OWSErrorMakeAssertionError())
-        case .outgoing:
-            self.call = self.callUIAdapter.startOutgoingCall(handle: thread.contactIdentifier())
-        case .incoming:
-            Logger.error("\(TAG) handling Incoming call")
-            // No-op, since call service is already set up at this point, the result of which was presenting this viewController.
-        }
-
+        assert(call != nil)
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
 
@@ -496,16 +481,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     // MARK: - Methods
 
-    // objc accessible way to set our swift enum.
-    func setOutgoingCallDirection() {
-        callDirection = .outgoing
-    }
-
-    // objc accessible way to set our swift enum.
-    func setIncomingCallDirection() {
-        callDirection = .incoming
-    }
-
     func showCallFailed(error: Error) {
         // TODO Show something in UI.
         Logger.error("\(TAG) call failed with error: \(error)")
@@ -553,6 +528,17 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         case .remoteBusy:
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
+            if let error = call.error {
+                switch (error) {
+                case .timeout(description: _):
+                    if self.call.direction == .outgoing {
+                        return NSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
+                    }
+                default:
+                    break
+                }
+            }
+
             return NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label")
         }
     }
