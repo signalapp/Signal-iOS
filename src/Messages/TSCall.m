@@ -68,6 +68,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"OUTGOING_CALL", @"");
         case RPRecentCallTypeMissed:
             return NSLocalizedString(@"MISSED_CALL", @"");
+        case RPRecentCallTypeOutgoingIncomplete:
+            return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"");
+        case RPRecentCallTypeIncomingIncomplete:
+            return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"");
     }
 }
 
@@ -88,6 +92,20 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self markAsReadLocallyWithTransaction:transaction];
+    }];
+}
+
+#pragma mark - Methods
+
+- (void)updateCallType:(RPRecentCallType)callType
+{
+    _callType = callType;
+
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self saveWithTransaction:transaction];
+
+        // redraw any thread-related unread count UI.
+        [self touchThreadWithTransaction:transaction];
     }];
 }
 

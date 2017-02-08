@@ -13,6 +13,9 @@ typedef enum {
     RPRecentCallTypeIncoming = 1,
     RPRecentCallTypeOutgoing,
     RPRecentCallTypeMissed,
+    // These call types are used until the call connects.
+    RPRecentCallTypeOutgoingIncomplete,
+    RPRecentCallTypeIncomingIncomplete,
 } RPRecentCallType;
 
 @interface TSCall : TSInteraction <OWSReadTracking>
@@ -25,6 +28,8 @@ typedef enum {
                          inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+- (void)updateCallType:(RPRecentCallType)callType;
 
 @end
 
