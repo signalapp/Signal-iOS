@@ -27,7 +27,6 @@ protocol CallObserver: class {
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func speakerphoneDidChange(call: SignalCall, isEnabled: Bool)
-    func callRecordDidChange(call: SignalCall, callRecord: TSCall?)
 }
 
 /**
@@ -55,9 +54,7 @@ protocol CallObserver: class {
             AssertIsOnMainThread()
             assert(oldValue == nil)
 
-            for observer in observers {
-                observer.value?.callRecordDidChange(call: self, callRecord: callRecord)
-            }
+            updateCallRecordType()
         }
     }
 
@@ -84,6 +81,8 @@ protocol CallObserver: class {
             } else {
                 connectedDate = nil
             }
+
+            updateCallRecordType()
 
             for observer in observers {
                 observer.value?.stateDidChange(call: self, state: state)
@@ -162,6 +161,24 @@ protocol CallObserver: class {
         AssertIsOnMainThread()
 
         observers = []
+    }
+
+    private func updateCallRecordType() {
+        AssertIsOnMainThread()
+
+        guard let callRecord = self.callRecord else {
+            return
+        }
+
+        // Mark incomplete calls as completed if call has connected.
+        if state == .connected &&
+            callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
+            callRecord.updateCallType(RPRecentCallTypeOutgoing)
+        }
+        if state == .connected &&
+            callRecord.callType == RPRecentCallTypeIncomingIncomplete {
+            callRecord.updateCallType(RPRecentCallTypeIncoming)
+        }
     }
 
     // MARK: Equatable

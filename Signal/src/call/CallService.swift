@@ -388,14 +388,17 @@ protocol CallServiceObserver: class {
      */
     public func handleMissedCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
+
         // Insert missed call record
-        if call.callRecord == nil {
+        if let callRecord = call.callRecord {
+            if (callRecord.callType == RPRecentCallTypeIncoming) {
+                callRecord.updateCallType(RPRecentCallTypeMissed)
+            }
+        } else {
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: thread.contactIdentifier(),
                                      callType: RPRecentCallTypeMissed,
                                      in: thread)
-        } else if (call.callRecord!.callType == RPRecentCallTypeIncoming) {
-            call.callRecord!.updateCallType(RPRecentCallTypeMissed)
         }
 
         assert(call.callRecord != nil)
@@ -1150,7 +1153,6 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
         Logger.info("\(self.TAG) \(#function): \(state)")
         updateIsVideoEnabled()
-        updateCallRecordType(call: call)
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
@@ -1167,33 +1169,6 @@ protocol CallServiceObserver: class {
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         AssertIsOnMainThread()
         // Do nothing
-    }
-
-    internal func callRecordDidChange(call: SignalCall, callRecord: TSCall?) {
-        AssertIsOnMainThread()
-
-        updateCallRecordType(call: call)
-    }
-
-    internal func updateCallRecordType(call: SignalCall?) {
-        AssertIsOnMainThread()
-
-        guard call != nil else {
-            return
-        }
-        guard call!.callRecord != nil else {
-            return
-        }
-
-        // Mark incomplete calls as completed if call has connected.
-        if call!.state == .connected &&
-            call!.callRecord!.callType == RPRecentCallTypeOutgoingIncomplete {
-            call!.callRecord!.updateCallType(RPRecentCallTypeOutgoing)
-        }
-        if call!.state == .connected &&
-            call!.callRecord!.callType == RPRecentCallTypeIncomingIncomplete {
-            call!.callRecord!.updateCallType(RPRecentCallTypeIncoming)
-        }
     }
 
     // MARK: - Video
