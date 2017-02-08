@@ -64,11 +64,6 @@ protocol PeerConnectionClientDelegate: class {
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
-    enum CallType {
-        case incoming
-        case outgoing
-    }
-
     let TAG = "[PeerConnectionClient]"
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
@@ -125,7 +120,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
-    init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callType: CallType) {
+    init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callDirection: CallDirection) {
         AssertIsOnMainThread()
 
         self.iceServers = iceServers
@@ -152,7 +147,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         createAudioSender()
         createVideoSender()
 
-        if callType == .outgoing {
+        if callDirection == .outgoing {
             // When placing an outgoing call, it's our responsibility to create the DataChannel. 
             // Recipient will not have to do this explicitly.
             createSignalingDataChannel()

@@ -78,7 +78,7 @@ enum CallError: Error {
 }
 
 // Should be roughly synced with Android client for consistency
-fileprivate let timeoutSeconds = 120
+fileprivate let connectingTimeoutSeconds = 120
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -298,7 +298,7 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .outgoing)
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing)
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
@@ -316,7 +316,7 @@ protocol CallServiceObserver: class {
             self.fulfillCallConnectedPromise = fulfill
 
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
-            let timeout: Promise<Void> = after(interval: TimeInterval(timeoutSeconds)).then { () -> Void in
+            let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
                 throw CallError.timeout(description: "timed out waiting to receive call answer")
             }
@@ -467,7 +467,7 @@ protocol CallServiceObserver: class {
             }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callType: .incoming)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -492,7 +492,7 @@ protocol CallServiceObserver: class {
 
             let (promise, fulfill, _) = Promise<Void>.pending()
 
-            let timeout: Promise<Void> = after(interval: TimeInterval(timeoutSeconds)).then { () -> Void in
+            let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
                 throw CallError.timeout(description: "timed out waiting for call to connect")
             }
