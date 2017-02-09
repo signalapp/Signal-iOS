@@ -1,9 +1,5 @@
 //
-//  RegistrationViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationViewController.h"
@@ -218,13 +214,10 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 #pragma mark - Navigation
+
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:kCodeSentSegue]) {
-        CodeVerificationViewController *vc = [segue destinationViewController];
-        vc.formattedPhoneNumber            = [PhoneNumber
-            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:_phoneNumberTextField.text
-                                            withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     }
 }
 

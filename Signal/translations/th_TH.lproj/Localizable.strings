@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "รหัสตรวจสอบ";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "โทรหาฉันแทน";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "โทรหาฉันแทน";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "ขอรหัสอีกครั้ง";

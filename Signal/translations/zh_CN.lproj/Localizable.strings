@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "验证码";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "通过电话呼叫我以获取验证码";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "通过电话呼叫我以获取验证码";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "重新获取验证码";

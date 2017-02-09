@@ -246,9 +246,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
-
-                    cvvc.challengeTextField.text = verificationCode;
-                    [cvvc verifyChallengeAction:nil];
+                    [cvvc setVerificationCodeAndTryToVerify:verificationCode];
                 } else {
                     DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
                               NSStringFromClass(controller.class));

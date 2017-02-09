@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Murau wekuongorora kururama";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Ndifonere ini panzvimbo";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ndifonere ini panzvimbo";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Kumbira murau zvakare ";
