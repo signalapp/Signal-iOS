@@ -123,7 +123,7 @@ DEPENDENCIES:
   - PastelogKit (~> 1.3)
   - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `charlesmchen/markUnsentMessages`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -131,6 +131,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
+    :branch: charlesmchen/markUnsentMessages
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -140,7 +141,7 @@ CHECKOUT OPTIONS:
     :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 12027152f4bffd650badad73203bff788684d76d
+    :commit: c6fdcbb4986a04b184ae6591af44f1e162c9e29f
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -172,6 +173,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 23ca4df281ad1e794af6967db2047f43df88e96a
+PODFILE CHECKSUM: ab71a7c277b83315d9ca0ca86b9e2a2dc92af86a
 
 COCOAPODS: 1.1.1
