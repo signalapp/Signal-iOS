@@ -1,5 +1,6 @@
-//  Created by Dylan Bourgeois on 20/11/14.
-//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSCall.h"
 #import "TSCall.h"
@@ -41,11 +42,17 @@ NS_ASSUME_NONNULL_BEGIN
         case RPRecentCallTypeOutgoing:
             status = kCallOutgoing;
             break;
+        case RPRecentCallTypeOutgoingIncomplete:
+            status = kCallOutgoingIncomplete;
+            break;
         case RPRecentCallTypeMissed:
             status = kCallMissed;
             break;
         case RPRecentCallTypeIncoming:
             status = kCallIncoming;
+            break;
+        case RPRecentCallTypeIncomingIncomplete:
+            status = kCallIncomingIncomplete;
             break;
         default:
             status = kCallIncoming;
@@ -61,8 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
         case kCallIncoming:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
             break;
+        case kCallIncomingIncomplete:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_THEY_TRIED_TO_CALL_YOU", nil), name];
+            break;
         case kCallOutgoing:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_CALLED", nil), name];
+            break;
+        case kCallOutgoingIncomplete:
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_TRIED_TO_CALL", nil), name];
             break;
         default:
             detailString = @"";

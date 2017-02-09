@@ -49,6 +49,15 @@ protocol CallObserver: class {
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
 
+    var callRecord: TSCall? {
+        didSet {
+            AssertIsOnMainThread()
+            assert(oldValue == nil)
+
+            updateCallRecordType()
+        }
+    }
+
     var hasLocalVideo = false {
         didSet {
             AssertIsOnMainThread()
@@ -72,6 +81,8 @@ protocol CallObserver: class {
             } else {
                 connectedDate = nil
             }
+
+            updateCallRecordType()
 
             for observer in observers {
                 observer.value?.stateDidChange(call: self, state: state)
@@ -150,6 +161,24 @@ protocol CallObserver: class {
         AssertIsOnMainThread()
 
         observers = []
+    }
+
+    private func updateCallRecordType() {
+        AssertIsOnMainThread()
+
+        guard let callRecord = self.callRecord else {
+            return
+        }
+
+        // Mark incomplete calls as completed if call has connected.
+        if state == .connected &&
+            callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
+            callRecord.updateCallType(RPRecentCallTypeOutgoing)
+        }
+        if state == .connected &&
+            callRecord.callType == RPRecentCallTypeIncomingIncomplete {
+            callRecord.updateCallType(RPRecentCallTypeIncoming)
+        }
     }
 
     // MARK: Equatable
