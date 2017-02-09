@@ -409,6 +409,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    DDLogDebug(@"%@ sending message to service: %@", self.tag, message.debugDescription);
+
     if (remainingAttempts <= 0) {
         // We should always fail with a specific error.
         DDLogError(@"%@ Unexpected generic failure.", self.tag);
@@ -463,6 +465,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"%@ failure sending to service: %@", self.tag, message.debugDescription);
+            [DDLog flushLog];
+
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
             long statuscode = response.statusCode;
             NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
@@ -473,6 +478,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
 
                 dispatch_async([OWSDispatch sendingQueue], ^{
+                    DDLogDebug(@"%@ Retrying: %@", self.tag, message.debugDescription);
                     [self sendMessage:message
                             recipient:recipient
                                thread:thread
@@ -554,6 +560,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     [self saveMessage:message withState:TSOutgoingMessageStateSent];
     if (message.shouldSyncTranscript) {
+        // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
+        //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
+
         message.hasSyncedTranscript = YES;
         [self sendSyncTranscriptForMessage:message];
     }

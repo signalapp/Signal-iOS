@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 12/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -172,7 +173,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
-        return [NSString stringWithFormat:@"%@ with body:%@", [self class], self.body];
+        return [NSString stringWithFormat:@"%@ with body: %@", [self class], self.body];
     }
 }
 
