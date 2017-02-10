@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "Příchozí hovor od %@";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozvat přátele do Signalu";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Přijali jste hovor od %@.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Volali jste %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nemůžete zpárovat více zařízení.";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Odchozí hovor";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tohle nevypadá jako vaše bezpečnostní číslo s %@. Ověřujete správný kontakt?";

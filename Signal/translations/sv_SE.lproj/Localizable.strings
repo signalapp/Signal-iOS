@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "Inkommande samtal från %@";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Bjud in vänner till Signal";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Du tog emot ett samtal från %@.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Du ringde %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte koppla till fler enheter.";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Utgående samtal";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Det här ser inte ut som ditt säkerhetsnummer med %@. Bekräftar du rätt kontakt?\n";

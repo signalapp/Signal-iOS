@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "%@으로부터 전화";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "시그널로 친구들을 초청하세요.";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "%@으로부터 전화를 받았습니다.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "%@에게 전화를 걸었습니다.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You can not pair any more devices.";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "발신 전화";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";

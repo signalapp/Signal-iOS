@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "Eingehender Anruf von %@";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Freunde zu Signal einladen";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Du hast einen Anruf von %@ erhalten.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Du hast %@ angerufen.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kannst keine weiteren Geräte verknüpfen.";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Ausgehender Anruf";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies scheint nicht deine Sicherheitsnummer mit %@ zu sein. Überprüfst du den richtigen Kontakt?";
@@ -652,7 +664,7 @@
 "REGISTRATION_ERROR" = "Registrierungsfehler";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Dein Konto kann nicht aktiviert werden, bevor du den dir gesendeten Code nicht bestätigst.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Dein Konto kann nicht aktiviert werden, bevor du den dir gesendeten Code bestätigst.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dieses Rufnummernformat wird nicht unterstützt, bitte den Support kontaktieren.";

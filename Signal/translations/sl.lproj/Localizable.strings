@@ -71,13 +71,13 @@
 "AUDIO_PERMISSION_MESSAGE" = "Aplikacija Signal za nemoteno delovanje zahteva dovoljenje za dostop do mikrofona na vaši napravi. Dovoljenje lahko date v aplikaciji Meni >> Zasebnost >> Mikrofon >> Signal.";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Kličem...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Kliči";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Neodgovorjeno.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "Dohodni klic: %@";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Povabite svoje prijatelje k uporabi aplikacije Signal";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Prejeli ste klic: %@";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Klicali ste: %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Ne morete več povezati nobene nove naprave.";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Odhodni klic";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Izgleda, da ne gre za varnostno število z osebo %@. Ste prepričani, da potrjujete pravo osebo?";

@@ -376,6 +376,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "สายโทรเข้าจาก %@";
 
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "เชิญเพื่อนมาใช้ Signal";
 
@@ -472,7 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "คุณได้รับสายจาก %@";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "คุณได้โทรหา %@";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "คุณไม่สามารถจับคู่อุปกรณ์ใด ๆ เพิ่มเติมได้อีก";
@@ -557,6 +566,9 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "สายโทรออก";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "นี่ดูเหมือนจะไม่ใช่ตัวเลขความปลอดภัยของคุณกับ %@ คุณกำลังตรวจสอบรายชื่อที่ถูกต้องหรือไม่?";

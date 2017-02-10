@@ -71,19 +71,19 @@
 "AUDIO_PERMISSION_MESSAGE" = "El Signal requereix accés al micròfon per a funcionar correctament. Podeu activar els permisos a la Configuració >> Privadesa >> Micròfon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Telefonant...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Telefona";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Sense resposta.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Retornar trucada";
+"CALLBACK_BUTTON_TITLE" = "Telefona";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compara'l amb el porta-retalls";
@@ -224,19 +224,19 @@
 "END_CALL_RECIPIENT_UNAVAILABLE" = "El destinatari no es troba disponible.";
 
 /* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Heu rebutjat la trucada.";
+"END_CALL_REJECTED_LOCAL" = "Heu rebutjat la telefonada.";
 
 /* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "S'ha rebutjat la trucada.";
+"END_CALL_REJECTED_REMOTE" = "S'ha rebutjat la telefonada.";
 
 /* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra trucada.";
+"END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra telefonada.";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupat.";
 
 /* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "S'ha perdut la trucada.";
+"END_CALL_STALE_SESSION" = "S'ha perdut la telefonada.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Ha fallat.";
@@ -371,10 +371,13 @@
 "IN_CALL_TERMINATED" = "Ha finalitzat.";
 
 /* notification body */
-"INCOMING_CALL" = "Trucada entrant";
+"INCOMING_CALL" = "Telefonada entrant";
 
 /* notification body */
-"INCOMING_CALL_FROM" = "Trucada entrant de %@";
+"INCOMING_CALL_FROM" = "Telefonada entrant de %@";
+
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Signal";
@@ -455,7 +458,7 @@
 "MINUTES_TIME_AMOUNT" = "%u minuts";
 
 /* notification title */
-"MISSED_CALL" = "Trucada perduda";
+"MISSED_CALL" = "Telefonada perduda";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -466,13 +469,19 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "El Signal necessita accedir a la càmera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Trucada perduda de %@";
+"MSGVIEW_MISSED_CALL" = "Telefonada perduda de %@";
 
 /* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Heu rebut una trucada de %@.";
+"MSGVIEW_RECEIVED_CALL" = "Heu rebut una telefonada de %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Heu trucat %@.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_CALLED" = "Heu telefonat %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "No podeu emparellar més dispositius.";
@@ -556,7 +565,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establit el temps dels missatges efímers en %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Trucada sortint";
+"OUTGOING_CALL" = "Telefonada sortint";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %@. Esteu verificant el contacte correcte?";
@@ -769,7 +781,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Elimina el compte";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu eliminar tot l'historial (missatges, fitxers adjunts, trucades...)? Aquesta acció no es pot desfer.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu eliminar tot l'historial (missatges, fitxers adjunts, telefonades...)? Aquesta acció no es pot desfer.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Sí, endavant.";
@@ -916,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Codi de verificació";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Truca'm, millor";
+"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Telefona'm, millor";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Sol·licita el codi de nou";
