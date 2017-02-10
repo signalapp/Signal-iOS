@@ -11,6 +11,11 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+NSString *const TSStorageManagerSignedPreKeyStoreCollection = @"TSStorageManagerSignedPreKeyStoreCollection";
+NSString *const TSStorageManagerSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
+NSString *const TSStorageManagerKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
+NSString *const TSStorageManagerKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyUpdateFailureDate";
+
 @implementation TSStorageManager (SignedPreKeyStore)
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord {
@@ -66,6 +71,47 @@
 
 - (void)removeSignedPreKey:(int)signedPrekeyId {
     [self removeObjectForKey:[self keyFromInt:signedPrekeyId] inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+}
+
+#pragma mark - Prekey update failures
+
+- (int)prekeyUpdateFailureCount;
+{
+    NSNumber *value = [TSStorageManager.sharedManager objectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    // Will default to zero.
+    return [value intValue];
+}
+
+- (void)clearPrekeyUpdateFailureCount
+{
+    [TSStorageManager.sharedManager removeObjectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                          inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (int)incrementPrekeyUpdateFailureCount
+{
+    return [TSStorageManager.sharedManager incrementIntForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                                 inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (nullable NSDate *)firstPrekeyUpdateFailureDate
+{
+    return [TSStorageManager.sharedManager dateForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                                         inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
+{
+    [TSStorageManager.sharedManager setDate:value
+                                     forKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                               inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (void)clearFirstPrekeyUpdateFailureDate
+{
+    [TSStorageManager.sharedManager removeObjectForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                                          inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 @end

@@ -1,7 +1,13 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
+#import "Asserts.h"
+#import "Constraints.h"
+#import "OWSAnalytics.h"
+#import "OWSDispatch.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Foundation/Foundation.h>
-#import "Asserts.h"
-#import "OWSDispatch.h"
 
 #ifdef DEBUG
 static const NSUInteger ddLogLevel = DDLogLevelAll;

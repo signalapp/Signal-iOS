@@ -378,7 +378,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [transaction removeObjectForKey:string inCollection:collection];
+        [transaction removeObjectForKey:string inCollection:collection];
     }];
 }
 
@@ -445,6 +445,32 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection {
     [self setObject:[NSNumber numberWithInt:integer] forKey:key inCollection:collection];
+}
+
+- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    __block int value = 0;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        value = [[transaction objectForKey:key inCollection:collection] intValue];
+        value++;
+        [transaction setObject:@(value) forKey:key inCollection:collection];
+    }];
+    return value;
+}
+
+- (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    NSNumber *value = [self objectForKey:key inCollection:collection];
+    if (value) {
+        return [NSDate dateWithTimeIntervalSince1970:value.doubleValue];
+    } else {
+        return nil;
+    }
+}
+
+- (void)setDate:(nonnull NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    [self setObject:@(value.timeIntervalSince1970) forKey:key inCollection:collection];
 }
 
 - (void)deleteThreadsAndMessages {
