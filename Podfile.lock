@@ -137,10 +137,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 919d541d6b8a8802a94f943026b8f68394e2c0b8
+    :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: e1949893f297ab485e83a0ea80d3523d3c6cd82b
+    :commit: 93219e4d23e07b3734fb8df4a2d244b26fcecd59
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -174,4 +174,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 48dbf2fb380d626bb799a782dd41b6bf1e466506
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1
