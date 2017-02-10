@@ -1,13 +1,9 @@
 //
-//  TSStorageManager+SignedPreKeyStore.m
-//  TextSecureKit
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-
 
 #import "TSStorageManager+IdentityKeyStore.h"
+#import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
 
@@ -19,8 +15,11 @@
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord {
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
+
+    // Signed prekey ids must be > 0.
+    int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
     return [[SignedPreKeyRecord alloc]
-         initWithId:rand()
+         initWithId:preKeyId
             keyPair:keyPair
           signature:[Ed25519 sign:keyPair.publicKey.prependKeyType withKeyPair:[self identityKeyPair]]
         generatedAt:[NSDate date]];

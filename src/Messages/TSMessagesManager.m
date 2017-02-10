@@ -31,6 +31,7 @@
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSNetworkManager.h"
+#import "TSPreKeyManager.h"
 #import "TSStorageHeaders.h"
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -232,6 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
                      completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssert([NSThread isMainThread]);
+
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = preKeyEnvelope.source;
@@ -247,6 +249,9 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_async([OWSDispatch sessionCipher], ^{
             NSData *plaintextData;
             @try {
+                // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
+                [TSPreKeyManager refreshPreKeys];
+
                 PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
