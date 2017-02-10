@@ -1,29 +1,25 @@
 //
-//  TSStorageManager+PreKeyStore.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <AxolotlKit/AxolotlExceptions.h>
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
+#import <AxolotlKit/AxolotlExceptions.h>
+#import <AxolotlKit/SessionBuilder.h>
 
 #define TSStorageManagerPreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define TSNextPrekeyIdKey @"TSStorageInternalSettingsNextPreKeyId"
 #define BATCH_SIZE 100
-#define MAX_VALUE_LASTRESORT 0xFFFFFF
 
 @implementation TSStorageManager (PreKeyStore)
 
 - (PreKeyRecord *)getOrGenerateLastResortKey {
-    if ([self containsPreKey:MAX_VALUE_LASTRESORT]) {
-        return [self loadPreKey:MAX_VALUE_LASTRESORT];
+    if ([self containsPreKey:kPreKeyOfLastResortId]) {
+        return [self loadPreKey:kPreKeyOfLastResortId];
     } else {
         PreKeyRecord *lastResort =
-            [[PreKeyRecord alloc] initWithId:MAX_VALUE_LASTRESORT keyPair:[Curve25519 generateKeyPair]];
-        [self storePreKey:MAX_VALUE_LASTRESORT preKeyRecord:lastResort];
+            [[PreKeyRecord alloc] initWithId:kPreKeyOfLastResortId keyPair:[Curve25519 generateKeyPair]];
+        [self storePreKey:kPreKeyOfLastResortId preKeyRecord:lastResort];
         return lastResort;
     }
 }
@@ -33,6 +29,8 @@
 
     @synchronized(self) {
         int preKeyId = [self nextPreKeyId];
+
+        DDLogInfo(@"%@ building %d new preKeys starting from preKeyId: %d", self.tag, BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
             ECKeyPair *keyPair   = [Curve25519 generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
@@ -81,11 +79,29 @@
 - (int)nextPreKeyId {
     int lastPreKeyId = [self intForKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
 
-    while (lastPreKeyId < 1 || (lastPreKeyId > (MAX_VALUE_LASTRESORT - BATCH_SIZE))) {
-        lastPreKeyId = rand();
+    if (lastPreKeyId < 1) {
+        // One-time prekey ids must be > 0 and < kPreKeyOfLastResortId.
+        lastPreKeyId = 1 + arc4random_uniform(kPreKeyOfLastResortId - (BATCH_SIZE + 1));
+    } else if (lastPreKeyId > kPreKeyOfLastResortId - BATCH_SIZE) {
+        // We want to "overflow" to 1 when we reach the "prekey of last resort" id
+        // to avoid biasing towards higher values.
+        lastPreKeyId = 1;
     }
+    OWSCAssert(lastPreKeyId > 0 && lastPreKeyId < kPreKeyOfLastResortId);
 
     return lastPreKeyId;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@+PreKeyStore]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
