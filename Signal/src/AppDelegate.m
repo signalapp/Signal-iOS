@@ -17,7 +17,6 @@
 #import "Release.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
-#import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
@@ -28,6 +27,7 @@
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSPreKeyManager.h>
 
 @import WebRTC;
 @import Intents;
@@ -84,6 +84,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
+
+    // Set the seed the generator for rand().
+    //
+    // We should always use arc4random() instead of rand(), but we
+    // still want to ensure that any third-party code that uses rand()
+    // gets random values.
+    srand((unsigned int)time(NULL));
 
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
@@ -277,6 +284,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                            }];
     
     [self removeScreenProtection];
+
+    [TSPreKeyManager checkPreKeysIfNecessary];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
