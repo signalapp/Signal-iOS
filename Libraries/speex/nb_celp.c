@@ -252,7 +252,7 @@ void nb_encoder_destroy(void *state)
 int nb_encode(void *state, void *vin, SpeexBits *bits)
 {
    EncState *st;
-   int i, sub, roots;
+   int i, sub, roots, checker;
    int ol_pitch;
    spx_word16_t ol_pitch_coef;
    spx_word32_t ol_gain;
@@ -350,11 +350,11 @@ int nb_encode(void *state, void *vin, SpeexBits *bits)
 
 
       /*Open-loop pitch*/
-      if (!st->submodes[st->submodeID] || (st->complexity>2 && SUBMODE(have_subframe_gain)<3) || SUBMODE(forced_pitch_gain) || SUBMODE(lbr_pitch) != -1 
+      checker = !st->submodes[st->submodeID] || (st->complexity>2 && SUBMODE(have_subframe_gain)<3) || SUBMODE(forced_pitch_gain) || SUBMODE(lbr_pitch) != -1;
 #ifndef DISABLE_VBR
-           || st->vbr_enabled || st->vad_enabled
+      checker = checker || st->vbr_enabled || st->vad_enabled;
 #endif
-                  )
+      if (checker)
       {
          int nol_pitch[6];
          spx_word16_t nol_pitch_coef[6];
@@ -374,11 +374,11 @@ int nb_encode(void *state, void *vin, SpeexBits *bits)
          for (i=1;i<6;i++)
          {
 #ifdef FIXED_POINT
-            if ((nol_pitch_coef[i]>MULT16_16_Q15(nol_pitch_coef[0],27853)) && 
+            checker = (nol_pitch_coef[i]>MULT16_16_Q15(nol_pitch_coef[0],27853)); 
 #else
-            if ((nol_pitch_coef[i]>.85*nol_pitch_coef[0]) && 
+            checker = (nol_pitch_coef[i]>.85*nol_pitch_coef[0]); 
 #endif
-                (ABS(2*nol_pitch[i]-ol_pitch)<=2 || ABS(3*nol_pitch[i]-ol_pitch)<=3 || 
+            if (checker && (ABS(2*nol_pitch[i]-ol_pitch)<=2 || ABS(3*nol_pitch[i]-ol_pitch)<=3 || 
                  ABS(4*nol_pitch[i]-ol_pitch)<=4 || ABS(5*nol_pitch[i]-ol_pitch)<=5))
             {
                /*ol_pitch_coef=nol_pitch_coef[i];*/
