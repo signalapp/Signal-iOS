@@ -132,8 +132,8 @@
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
-		70B800A6190C53180042E3F0 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800A3190C529C0042E3F0 /* libspandsp.a */; };
-		70B800AF190C548D0042E3F0 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
+		70B800A6190C53180042E3F0 /* libspandsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800A3190C529C0042E3F0 /* libspandsp.a */; };
+		70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B800AC190C54790042E3F0 /* libspeex.a */; };
 		70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */; };
 		70BAFD5D190584BE00FA5E0B /* NotificationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 70BAFD5C190584BE00FA5E0B /* NotificationTracker.m */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
@@ -1259,8 +1259,8 @@
 				FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */,
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
-				70B800AF190C548D0042E3F0 /* ReferenceProxy in Frameworks */,
-				70B800A6190C53180042E3F0 /* ReferenceProxy in Frameworks */,
+				70B800AF190C548D0042E3F0 /* libspeex.a in Frameworks */,
+				70B800A6190C53180042E3F0 /* libspandsp.a in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */,
