@@ -1165,9 +1165,12 @@ typedef enum : NSUInteger {
                     if(tappedImage == nil) {
                         DDLogWarn(@"tapped TSPhotoAdapter with nil image");
                     } else {
-                        CGRect convertedRect =
-                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                  toView:nil];
+                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
+                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
+                                                                    toView:window];
+                        
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment =
@@ -1193,9 +1196,12 @@ typedef enum : NSUInteger {
                     if(tappedImage == nil) {
                         DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
                     } else {
-                        CGRect convertedRect =
-                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                  toView:nil];
+                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
+                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
+                                                                    toView:window];
+
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment =

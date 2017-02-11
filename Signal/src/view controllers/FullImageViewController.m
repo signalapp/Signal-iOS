@@ -274,14 +274,19 @@
         presentViewController:self
                      animated:NO
                    completion:^{
-                     [UIView animateWithDuration:0.4f
+                       UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                       self.imageView.frame = [self.view convertRect:self.originRect
+                                                            fromView:window];
+                       
+                     [UIView animateWithDuration:0.25f
                          delay:0
-                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
+                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
                          animations:^() {
                            self.view.alpha      = 1.0f;
                            self.imageView.frame = [self resizedFrameForImageView:self.image.size];
                            self.imageView.center =
-                               CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height / 2.0f);
+                               CGPointMake(self.view.bounds.size.width / 2.0f,
+                                           self.view.bounds.size.height / 2.0f);
                          }
                          completion:^(BOOL completed) {
                            self.scrollView.frame = self.view.bounds;
@@ -296,9 +301,9 @@
 
 - (void)dismiss {
     self.view.userInteractionEnabled = NO;
-    [UIView animateWithDuration:0.4f
+    [UIView animateWithDuration:0.25f
         delay:0
-        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
+        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveLinear
         animations:^() {
           self.backgroundView.backgroundColor = [UIColor clearColor];
           self.scrollView.alpha               = 0;
@@ -315,7 +320,6 @@
     [self updateLayouts];
 }
 
-
 - (void)updateLayouts {
     if (_isPresenting) {
         return;
@@ -326,7 +330,6 @@
     self.scrollView.contentSize  = self.imageView.frame.size;
     self.scrollView.contentInset = [self contentInsetForScrollView:self.scrollView.zoomScale];
 }
-
 
 #pragma mark - Resizing
 
