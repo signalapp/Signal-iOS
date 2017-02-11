@@ -1239,15 +1239,29 @@ typedef enum : NSUInteger {
                                 [_videoPlayer prepareToPlay];
 
                                 [[NSNotificationCenter defaultCenter]
-                                    addObserver:self
-                                       selector:@selector(moviePlayBackDidFinish:)
-                                           name:MPMoviePlayerPlaybackDidFinishNotification
-                                         object:_videoPlayer];
+                                 addObserver:self
+                                 selector:@selector(moviePlayBackDidFinish:)
+                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                 object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter]
+                                 addObserver:self
+                                 selector:@selector(moviePlayerWillExitFullscreen:)
+                                 name:MPMoviePlayerWillExitFullscreenNotification
+                                 object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter]
+                                 addObserver:self
+                                 selector:@selector(moviePlayerDidExitFullscreen:)
+                                 name:MPMoviePlayerDidExitFullscreenNotification
+                                 object:_videoPlayer];
 
-                                _videoPlayer.controlStyle   = MPMovieControlStyleDefault;
+                                _videoPlayer.controlStyle = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview:_videoPlayer.view];
-                                [_videoPlayer setFullscreen:YES animated:YES];
+                                // We can't animate from the cell media frame;
+                                // MPMoviePlayerController will animate a crop of its
+                                // contents rather than scaling them.
+                                _videoPlayer.view.frame = self.view.bounds;
+                                [_videoPlayer setFullscreen:YES animated:NO];
                             }
                         } else if ([messageMedia isAudio]) {
                             if (messageMedia.isAudioPlaying) {
@@ -1378,9 +1392,26 @@ typedef enum : NSUInteger {
     }
 }
 
-
 - (void)moviePlayBackDidFinish:(id)sender {
-    DDLogDebug(@"playback finished");
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+}
+
+- (void)moviePlayerWillExitFullscreen:(id)sender {
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+
+    [self clearVideoPlayer];
+}
+
+- (void)moviePlayerDidExitFullscreen:(id)sender {
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    
+    [self clearVideoPlayer];
+}
+
+- (void)clearVideoPlayer {
+    [_videoPlayer stop];
+    [_videoPlayer.view removeFromSuperview];
+    _videoPlayer = nil;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
