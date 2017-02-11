@@ -1238,21 +1238,18 @@ typedef enum : NSUInteger {
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
 
-                                [[NSNotificationCenter defaultCenter]
-                                 addObserver:self
-                                 selector:@selector(moviePlayBackDidFinish:)
-                                 name:MPMoviePlayerPlaybackDidFinishNotification
-                                 object:_videoPlayer];
-                                [[NSNotificationCenter defaultCenter]
-                                 addObserver:self
-                                 selector:@selector(moviePlayerWillExitFullscreen:)
-                                 name:MPMoviePlayerWillExitFullscreenNotification
-                                 object:_videoPlayer];
-                                [[NSNotificationCenter defaultCenter]
-                                 addObserver:self
-                                 selector:@selector(moviePlayerDidExitFullscreen:)
-                                 name:MPMoviePlayerDidExitFullscreenNotification
-                                 object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayBackDidFinish:)
+                                                                             name:MPMoviePlayerPlaybackDidFinishNotification
+                                                                           object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayerWillExitFullscreen:)
+                                                                             name:MPMoviePlayerWillExitFullscreenNotification
+                                                                           object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayerDidExitFullscreen:)
+                                                                             name:MPMoviePlayerDidExitFullscreenNotification
+                                                                           object:_videoPlayer];
 
                                 _videoPlayer.controlStyle = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
