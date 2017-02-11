@@ -11,6 +11,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -269,10 +270,21 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 
 - (void)presentAlertWithVerificationError:(NSError *)error
 {
-    UIAlertController *alertController = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE", @"Alert view title")
-                         message:error.localizedDescription
-                  preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController;
+    // In the case of the "rate limiting" error, we want to show the
+    // "recovery suggestion", not the error's "description."
+    if ([error.domain isEqualToString:TSNetworkManagerDomain] &&
+        error.code == 413) {
+        alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE",
+                                                                      @"Alert view title")
+                                                              message:error.localizedRecoverySuggestion
+                                                       preferredStyle:UIAlertControllerStyleAlert];
+    } else {
+        alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE",
+                                                                                        @"Alert view title")
+                                                              message:error.localizedDescription
+                                                       preferredStyle:UIAlertControllerStyleAlert];
+    }
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *action) {

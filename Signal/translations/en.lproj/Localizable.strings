@@ -649,7 +649,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Try again";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "The server is currently rate-limiting signups, please try again later.";
+"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registered Number";
