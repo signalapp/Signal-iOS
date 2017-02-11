@@ -252,8 +252,6 @@ typedef enum : NSUInteger {
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
     SEL saveSelector = NSSelectorFromString(@"save:");
     [JSQMessagesCollectionViewCell registerMenuAction:saveSelector];
-    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
-                                                                                      action:saveSelector] ];
 
     [self initializeCollectionViewLayout];
     [self registerCustomMessageNibs];
@@ -391,6 +389,13 @@ typedef enum : NSUInteger {
                                     atScrollPosition:UICollectionViewScrollPositionBottom
                                             animated:NO];
     }
+
+    // Other views might change these custom menu items, so we
+    // need to set them every time we enter this view.
+    SEL saveSelector = NSSelectorFromString(@"save:");
+    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
+                                                                                                               @"Short name for edit menu item to save contents of media message.")
+                                                                                      action:saveSelector]];
 }
 
 - (void)startReadTimer {
@@ -1174,7 +1179,8 @@ typedef enum : NSUInteger {
                             FullImageViewController *vc   = [[FullImageViewController alloc]
                                                              initWithAttachment:attStream
                                                              fromRect:convertedRect
-                                                             forInteraction:[self interactionAtIndexPath:indexPath]
+                                                             forInteraction:interaction
+                                                             messageItem:messageItem
                                                              isAnimated:NO];
 
                             [vc presentFromViewController:self.navigationController];
@@ -1200,7 +1206,8 @@ typedef enum : NSUInteger {
                             FullImageViewController *vc =
                             [[FullImageViewController alloc] initWithAttachment:attStream
                                                                        fromRect:convertedRect
-                                                                 forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                 forInteraction:interaction
+                                                                    messageItem:messageItem
                                                                      isAnimated:YES];
                             [vc presentFromViewController:self.navigationController];
                         }
