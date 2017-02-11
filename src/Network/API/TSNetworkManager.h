@@ -1,9 +1,5 @@
 //
-//  TSNetworkManager.h
-//  TextSecureiOS
-//
-//  Created by Frederic Jacobs on 9/27/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -23,10 +19,10 @@
 #import "TSUnregisterAccountRequest.h"
 #import "TSUpdateAttributesRequest.h"
 #import "TSVerifyCodeRequest.h"
-
-
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <Foundation/Foundation.h>
+
+extern NSString *const TSNetworkManagerDomain;
 
 NS_ASSUME_NONNULL_BEGIN
 
