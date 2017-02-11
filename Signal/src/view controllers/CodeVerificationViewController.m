@@ -392,31 +392,79 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [self.view endEditing:NO];
 }
 
+- (NSString *)stringByFilteringString:(NSString *)input
+                     withCharacterSet:(NSCharacterSet *)characterSet {
+    NSMutableString *result = [NSMutableString new];
+    for (NSUInteger i=0; i < input.length; i++) {
+        unichar c = [input characterAtIndex:i];
+        if ([characterSet characterIsMember:c]) {
+            [result appendFormat:@"%c", c];
+        }
+    }
+    return result;
+}
+
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString *)string {
-    if (range.location == 7) {
-        return NO;
-    }
+                replacementString:(NSString *)insertionText {
 
-    if (range.length == 0 &&
-        ![[NSCharacterSet decimalDigitCharacterSet] characterIsMember:[string characterAtIndex:0]]) {
-        return NO;
+    // Verification codes take this form: "123-456".
+    //
+    // * We only want to let the user "6 decimal digits + 1 hyphen = 7".
+    // * The user shouldn't have to enter the hyphen - it should be added automatically.
+    // * The user should be able to copy and paste freely.
+    // * Invalid input (including extraneous hyphens) should be simply ignored.
+    //
+    // We accomplish this by being permissive and trying to "take as much of the user
+    // input as possible".
+    //
+    // * Always accept deletes.
+    // * Ignore invalid input.
+    // * Take partial input if possible.
+    
+    NSString *oldText = textField.text;
+    NSCharacterSet *validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
+    // Construct the new contents of the text field by:
+    // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
+    //    Filtering will remove non-decimal digit characters like hyphen "-".
+    NSString *left = [self stringByFilteringString:[oldText substringToIndex:range.location]
+                                  withCharacterSet:validCharacterSet];
+    // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
+    NSString *right = [self stringByFilteringString:[oldText substringFromIndex:range.location + range.length]
+                                   withCharacterSet:validCharacterSet];
+    // 3. Determining the "center" substring: the contents of the new insertion text.
+    NSString *center = [self stringByFilteringString:insertionText
+                                    withCharacterSet:validCharacterSet];
+    // 3a. Trim the tail of the "center" substring to ensure that we don't end up
+    //     with more than 6 decimal digits.
+    while (center.length > 0 &&
+           left.length + center.length + right.length > 6) {
+        center = [center substringToIndex:center.length - 1];
     }
-
-    if (range.length == 0 && range.location == 2) {
-        textField.text = [NSString stringWithFormat:@"%@%@-", textField.text, string];
-        return NO;
+    // 4. Construct the "raw" new text by concatenating left, center and right.
+    NSString *rawNewText = [[left stringByAppendingString:center]
+                            stringByAppendingString:right];
+    // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
+    NSString *formattedNewText = (rawNewText.length <= 3
+                                  ? rawNewText
+                                  : [[[rawNewText substringToIndex:3]
+                                      stringByAppendingString:@"-"]
+                                     stringByAppendingString:[rawNewText substringFromIndex:3]]);
+    textField.text = formattedNewText;
+    
+    // Move the cursor after the newly inserted text.
+    NSUInteger newInsertionPoint = left.length + center.length;
+    if (newInsertionPoint > 3) {
+        // Nudge the cursor to the right to reflect the hyphen
+        // if necessary.
+        newInsertionPoint++;
     }
-
-    if (range.length == 1 && range.location == 3) {
-        range.location--;
-        range.length   = 2;
-        textField.text = [textField.text stringByReplacingCharactersInRange:range withString:@""];
-        return NO;
-    }
-
-    return YES;
+    UITextPosition *newPosition = [textField positionFromPosition:textField.beginningOfDocument
+                                                           offset:(NSInteger) newInsertionPoint];
+    textField.selectedTextRange = [textField textRangeFromPosition:newPosition
+                                                        toPosition:newPosition];
+    
+    return NO;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -426,7 +474,9 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 }
 
 - (void)setVerificationCodeAndTryToVerify:(NSString *)verificationCode {
-    self.challengeTextField.text = verificationCode;
+    NSCharacterSet *validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
+    self.challengeTextField.text = [self stringByFilteringString:verificationCode
+                                                withCharacterSet:validCharacterSet];
     [self verifyChallengeAction:nil];
 }
 
