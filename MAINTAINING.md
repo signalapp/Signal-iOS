@@ -34,7 +34,7 @@ Once you have your build environment set up and the WebRTC source downloaded:
     # 3. Build webrtc
     # NOTE: build_ios_libs.sh only worked for me from inside "src"
     cd src
-    webrtc/build/ios/build_ios_libs.sh
+    tools-webrtc/ios/build_ios_libs.sh
     # NOTE: It's Carthage/Build/iOS, not Carthage/Builds
     mv out_ios_libs/WebRTC.framework ../../Signal-iOS/Carthage/Build/iOS/
 
