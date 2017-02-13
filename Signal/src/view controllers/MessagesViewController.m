@@ -1239,10 +1239,6 @@ typedef enum : NSUInteger {
                                 [_videoPlayer prepareToPlay];
 
                                 [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                         selector:@selector(moviePlayBackDidFinish:)
-                                                                             name:MPMoviePlayerPlaybackDidFinishNotification
-                                                                           object:_videoPlayer];
-                                [[NSNotificationCenter defaultCenter] addObserver:self
                                                                          selector:@selector(moviePlayerWillExitFullscreen:)
                                                                              name:MPMoviePlayerWillExitFullscreenNotification
                                                                            object:_videoPlayer];
@@ -1389,16 +1385,18 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)moviePlayBackDidFinish:(id)sender {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-}
-
+// There's more than one way to exit the fullscreen video playback.
+// There's a done button, a "toggle fullscreen" button and I think
+// there's some gestures too.  These fire slightly different notifications.
+// We want to hide & clean up the video player immediately in all of
+// these cases.
 - (void)moviePlayerWillExitFullscreen:(id)sender {
     DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
 
     [self clearVideoPlayer];
 }
 
+// See comment on moviePlayerWillExitFullscreen:
 - (void)moviePlayerDidExitFullscreen:(id)sender {
     DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
     

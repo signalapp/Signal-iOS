@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "PureLayout.h"
+#import <PureLayout/PureLayout.h>
 #import <UIKit/UIKit.h>
 
 // A convenience method for doing responsive layout. Scales between two

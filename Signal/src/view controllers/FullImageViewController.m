@@ -195,9 +195,9 @@
 #pragma mark - Gesture Recognizers
 
 - (void)imageDismissGesture:(UIGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self dismiss];
-    }
+  if (sender.state == UIGestureRecognizerStateRecognized) {
+    [self dismiss];
+  }
 }
 
 - (void)longPressGesture:(UIGestureRecognizer *)sender {
