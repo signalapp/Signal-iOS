@@ -24,6 +24,7 @@
 #import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -168,6 +169,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         // Clean up any messages that expired since last launch.
         [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
+        // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+        // sent before the app exited should be marked as failures.
+        [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
         [AppStoreRating setupRatingLibrary];
     }];
 
