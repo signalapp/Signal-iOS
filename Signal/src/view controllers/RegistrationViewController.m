@@ -213,14 +213,6 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
 }
 
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:kCodeSentSegue]) {
-    }
-}
-
 #pragma mark iPhone 5s or shorter
 
 - (void)adjustScreenSizes

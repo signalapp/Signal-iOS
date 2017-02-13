@@ -65,6 +65,8 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     return self;
 }
 
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -73,22 +75,31 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [self initializeKeyboardHandlers];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self enableServerActions:YES];
+    [self updatePhoneNumberLabel];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [_challengeTextField becomeFirstResponder];
+}
+
+#pragma mark - 
+
 - (void)createViews {
     self.view.backgroundColor = [UIColor whiteColor];
     self.view.opaque = YES;
 
-    // TODO: Move this to UIColor+OWS?
-    UIColor *signalBlueColor = [UIColor colorWithRed:0.1135657504
-                                               green:0.4787300229
-                                                blue:0.89595204589999999
-                                               alpha:1.];
+    UIColor *signalBlueColor = [UIColor ows_signalBrandBlueColor];
 
     UIView *header = [UIView new];
     header.backgroundColor = signalBlueColor;
     [self.view addSubview:header];
     [header autoPinWidthToSuperview];
     [header autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [header autoSetDimension:ALDimensionHeight toSize:ScaleFromIPhone5To7Plus(60, 60)];
+    // The header will grow to accomodate the titleLabel's height.
 
     UILabel *titleLabel = [UILabel new];
     titleLabel.textColor = [UIColor whiteColor];
@@ -97,6 +108,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [header addSubview:titleLabel];
     [titleLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [titleLabel autoSetDimension:ALDimensionHeight toSize:40];
     [titleLabel autoHCenterInSuperview];
 
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -106,7 +118,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                           forState:UIControlStateNormal];
     backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [header addSubview:backButton];
-    [backButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(10, 10)];
+    [backButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
     [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
     [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -118,6 +130,8 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [_phoneNumberLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header
                           withOffset:ScaleFromIPhone5To7Plus(25, 100)];
     
+    const CGFloat kHMargin = 36;
+    
     _challengeTextField = [UITextField new];
     _challengeTextField.textColor = [UIColor blackColor];
     _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT",
@@ -126,16 +140,16 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     _challengeTextField.textAlignment = NSTextAlignmentCenter;
     _challengeTextField.delegate    = self;
     [self.view addSubview:_challengeTextField];
-    [_challengeTextField autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(36, 36)];
+    [_challengeTextField autoPinWidthToSuperviewWithMargin:kHMargin];
     [_challengeTextField autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_phoneNumberLabel
-                          withOffset:ScaleFromIPhone5To7Plus(25, 25)];
+                          withOffset:25];
     
     UIView *underscoreView = [UIView new];
     underscoreView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.f];
     [self.view addSubview:underscoreView];
     [underscoreView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_challengeTextField
-                     withOffset:ScaleFromIPhone5To7Plus(3, 3)];
-    [underscoreView autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(36, 36)];
+                     withOffset:3];
+    [underscoreView autoPinWidthToSuperviewWithMargin:kHMargin];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
     
     _challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -150,16 +164,19 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_challengeButton];
     [_challengeButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:underscoreView
-                      withOffset:ScaleFromIPhone5To7Plus(15, 15)];
-    [_challengeButton autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(36, 36)];
+                      withOffset:15];
+    [_challengeButton autoPinWidthToSuperviewWithMargin:kHMargin];
     [_challengeButton autoSetDimension:ALDimensionHeight toSize:47.f];
+
+    const CGFloat kSpinnerSize = 20;
+    const CGFloat kSpinnerSpacing = 15;
 
     _submitCodeSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [_challengeButton addSubview:_submitCodeSpinner];
-    [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:ScaleFromIPhone5To7Plus(20, 20)];
-    [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:ScaleFromIPhone5To7Plus(20, 20)];
+    [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
+    [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_submitCodeSpinner autoVCenterInSuperview];
-    [_submitCodeSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:ScaleFromIPhone5To7Plus(15, 15)];
+    [_submitCodeSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
     
     _sendCodeViaSMSAgainButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaSMSAgainButton.backgroundColor = [UIColor whiteColor];
@@ -173,16 +190,16 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                          forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_sendCodeViaSMSAgainButton];
     [_sendCodeViaSMSAgainButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_challengeButton
-                                withOffset:ScaleFromIPhone5To7Plus(10, 10)];
-    [_sendCodeViaSMSAgainButton autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(36, 36)];
+                                withOffset:10];
+    [_sendCodeViaSMSAgainButton autoPinWidthToSuperviewWithMargin:kHMargin];
     [_sendCodeViaSMSAgainButton autoSetDimension:ALDimensionHeight toSize:35];
     
     _requestCodeAgainSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [_sendCodeViaSMSAgainButton addSubview:_requestCodeAgainSpinner];
-    [_requestCodeAgainSpinner autoSetDimension:ALDimensionWidth toSize:ScaleFromIPhone5To7Plus(20, 20)];
-    [_requestCodeAgainSpinner autoSetDimension:ALDimensionHeight toSize:ScaleFromIPhone5To7Plus(20, 20)];
+    [_requestCodeAgainSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
+    [_requestCodeAgainSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoVCenterInSuperview];
-    [_requestCodeAgainSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:ScaleFromIPhone5To7Plus(15, 15)];
+    [_requestCodeAgainSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
     
     _sendCodeViaVoiceButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaVoiceButton.backgroundColor = [UIColor whiteColor];
@@ -196,36 +213,24 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                                 action:@selector(sendCodeViaVoiceAction:)
                       forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_sendCodeViaVoiceButton];
-    [_sendCodeViaVoiceButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_sendCodeViaSMSAgainButton
-                                withOffset:ScaleFromIPhone5To7Plus(0, 0)];
-    [_sendCodeViaVoiceButton autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(36, 36)];
+    [_sendCodeViaVoiceButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_sendCodeViaSMSAgainButton];
+    [_sendCodeViaVoiceButton autoPinWidthToSuperviewWithMargin:kHMargin];
     [_sendCodeViaVoiceButton autoSetDimension:ALDimensionHeight toSize:35];
     
     _requestCallSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [_sendCodeViaVoiceButton addSubview:_requestCallSpinner];
-    [_requestCallSpinner autoSetDimension:ALDimensionWidth toSize:ScaleFromIPhone5To7Plus(20, 20)];
-    [_requestCallSpinner autoSetDimension:ALDimensionHeight toSize:ScaleFromIPhone5To7Plus(20, 20)];
+    [_requestCallSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
+    [_requestCallSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCallSpinner autoVCenterInSuperview];
-    [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:ScaleFromIPhone5To7Plus(15, 15)];
+    [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
 }
 
 - (void)updatePhoneNumberLabel {
     NSString *phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
-
+    OWSAssert([TSAccountManager localNumber] != nil);
     _phoneNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"VERIFICATION_PHONE_NUMBER_FORMAT",
                                                                          @"Label indicating the phone number currently being verified."),
                              phoneNumber];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [self enableServerActions:YES];
-    [self updatePhoneNumberLabel];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [_challengeTextField becomeFirstResponder];
 }
 
 - (void)startActivityIndicator
