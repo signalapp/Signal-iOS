@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <CoreFoundation/CoreFoundation.h>
-#import "Constraints.h"
 
 @interface PriorityQueue : NSObject {
    @private

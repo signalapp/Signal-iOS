@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AnonymousConditionLogger.h"
-#import "Constraints.h"
 
 @implementation AnonymousConditionLogger
 

@@ -1,9 +1,12 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "EvpMessageDigest.h"
 
 #import <OpenSSL/evp.h>
 #import <OpenSSL/hmac.h>
 
-#import "Constraints.h"
 #import "EvpUtil.h"
 #import "NumberUtil.h"
 

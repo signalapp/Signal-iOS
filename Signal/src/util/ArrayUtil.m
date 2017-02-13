@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "ArrayUtil.h"
-#import "Constraints.h"
 
 @implementation NSArray (Util)
 

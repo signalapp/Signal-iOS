@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "DhPacketSharedSecretHashes.h"
-#import "Constraints.h"
 #import "CryptoTools.h"
 
 @implementation DhPacketSharedSecretHashes

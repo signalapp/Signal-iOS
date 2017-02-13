@@ -1,4 +1,7 @@
-#import "Constraints.h"
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "ShortAuthenticationStringGenerator.h"
 #import "Util.h"
 
@@ -88,4 +91,3 @@ const char* PGP_LIST_ODD[] = {
             @(PGP_LIST_ODD[wordIndexTwo])];
 }
 @end
-

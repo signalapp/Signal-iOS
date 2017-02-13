@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AppAudioManager.h"
-#import "Constraints.h"
 #import "Environment.h"
 #import "RemoteIOAudio.h"
 #import "ThreadManager.h"

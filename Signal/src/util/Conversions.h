@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <CoreFoundation/CFSocket.h>
 #import <Foundation/Foundation.h>
-#import "Constraints.h"
 #import "CryptoTools.h"
 
 @interface NSData (Conversions)

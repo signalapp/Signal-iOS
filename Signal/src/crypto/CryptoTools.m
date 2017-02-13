@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "CryptoTools.h"
 
-#import "Constraints.h"
 #import "Conversions.h"
 #import "EvpMessageDigest.h"
 #import "EvpSymetricUtil.h"
