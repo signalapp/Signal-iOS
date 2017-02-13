@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Código de Verificação";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Verificar por Chamada";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Verificar por Chamada";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Pedir Código Novamente";

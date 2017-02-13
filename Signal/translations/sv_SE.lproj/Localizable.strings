@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifieringskod";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Ring mig istället";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring mig istället";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Begär ny kod";

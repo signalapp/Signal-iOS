@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Təsdiqləmə kodu";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Əvəzində mənə zəng et";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Əvəzində mənə zəng et";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Kodu yenidən istə";

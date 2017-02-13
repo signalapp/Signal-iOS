@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Ověřovací kód";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Místo toho mi zavolejte";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Místo toho mi zavolejte";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Znovu zzažádat o kód";
