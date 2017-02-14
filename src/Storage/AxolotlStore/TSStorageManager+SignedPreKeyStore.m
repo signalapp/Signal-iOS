@@ -37,6 +37,12 @@
     }
 }
 
+- (nullable SignedPreKeyRecord *)loadSignedPrekeyOrNil:(int)signedPreKeyId
+{
+    return [self signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
+                             inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+}
+
 - (NSArray *)loadSignedPreKeys {
     NSMutableArray *signedPreKeyRecords = [NSMutableArray array];
 

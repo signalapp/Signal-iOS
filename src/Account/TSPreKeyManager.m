@@ -153,12 +153,19 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
                         NSString *keyIdDictKey = @"keyId";
                         NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
                         OWSAssert(keyId);
-                        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-                        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekey:keyId.intValue];
-                        OWSAssert(currentRecord);
 
-                        BOOL shouldUpdateSignedPrekey
-                            = fabs([currentRecord.generatedAt timeIntervalSinceNow]) >= kSignedPreKeysRotationTime;
+                        TSStorageManager *storageManager = [TSStorageManager sharedManager];
+                        BOOL shouldUpdateSignedPrekey = NO;
+                        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
+                        if (!currentRecord) {
+                            DDLogError(
+                                @"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
+                            shouldUpdateSignedPrekey = YES;
+                        } else {
+                            shouldUpdateSignedPrekey
+                                = fabs([currentRecord.generatedAt timeIntervalSinceNow]) >= kSignedPreKeysRotationTime;
+                        }
+
                         if (shouldUpdateSignedPrekey) {
                             DDLogInfo(@"%@ Updating signed prekey due to rotation period.", self.tag);
                             updatePreKeys(RefreshPreKeysMode_SignedOnly);
@@ -208,9 +215,14 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
     // one thread is "registering" or "clearing" prekeys at a time.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekey:keyId.intValue];
+        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
+        if (!currentRecord) {
+            DDLogError(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
+        }
         NSArray *allSignedPrekeys = [storageManager loadSignedPreKeys];
-        NSArray *oldSignedPrekeys = [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys];
+        NSArray *oldSignedPrekeys
+            = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
+                                    : allSignedPrekeys);
 
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateStyle = NSDateFormatterMediumStyle;
