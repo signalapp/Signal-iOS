@@ -11,6 +11,10 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+NSString *const TSStorageManagerSignedPreKeyStoreCollection = @"TSStorageManagerSignedPreKeyStoreCollection";
+NSString *const TSStorageManagerSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
+NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSignedPrekeyId";
+
 @implementation TSStorageManager (SignedPreKeyStore)
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord {
@@ -72,6 +76,19 @@
 
 - (void)removeSignedPreKey:(int)signedPrekeyId {
     [self removeObjectForKey:[self keyFromInt:signedPrekeyId] inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+}
+
+- (nullable NSNumber *)currentSignedPrekeyId
+{
+    return [TSStorageManager.sharedManager objectForKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (void)setCurrentSignedPrekeyId:(int)value
+{
+    [TSStorageManager.sharedManager setObject:@(value)
+                                       forKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                                 inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 @end

@@ -10,8 +10,8 @@
 
 // Time before deletion of signed prekeys (measured in seconds)
 //
-// Currently we retain signed prekeys for at least 14 days.
-static const CGFloat kSignedPreKeysDeletionTime = 14 * 24 * 60 * 60;
+// Currently we retain signed prekeys for at least 7 days.
+static const CGFloat kSignedPreKeysDeletionTime = 7 * 24 * 60 * 60;
 
 // Time before rotation of signed prekeys (measured in seconds)
 //
@@ -80,6 +80,9 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
         }
 
         SignedPreKeyRecord *signedPreKey = [storageManager generateRandomSignedRecord];
+        // Store the new signed key immediately, before it is sent to the
+        // service to prevent race conditions and other edge cases.
+        [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
 
         NSArray *preKeys = nil;
         TSRequest *request;
@@ -88,6 +91,10 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
             description = @"signed and one-time prekeys";
             PreKeyRecord *lastResortPreKey = [storageManager getOrGenerateLastResortKey];
             preKeys = [storageManager generatePreKeyRecords];
+            // Store the new one-time keys immediately, before they are sent to the
+            // service to prevent race conditions and other edge cases.
+            [storageManager storePreKeyRecords:preKeys];
+            
             request = [[TSRegisterPrekeysRequest alloc] initWithPrekeyArray:preKeys
                                                                 identityKey:[storageManager identityKeyPair].publicKey
                                                          signedPreKeyRecord:signedPreKey
@@ -100,10 +107,9 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
         [[TSNetworkManager sharedManager] makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 DDLogInfo(@"%@ Successfully registered %@.", self.tag, description);
-                if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-                    [storageManager storePreKeyRecords:preKeys];
-                }
-                [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
+                
+                // On success, update the "current" signed prekey state.
+                [storageManager setCurrentSignedPrekeyId:signedPreKey.Id];
 
                 successHandler();
             }
@@ -147,43 +153,36 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
                 DDLogInfo(@"%@ Updating one-time and signed prekeys due to shortage of one-time prekeys.", self.tag);
                 updatePreKeys(RefreshPreKeysMode_SignedAndOneTime);
             } else {
-                TSRequest *currentSignedPreKey = [[TSCurrentSignedPreKeyRequest alloc] init];
-                [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-                    success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-                        NSString *keyIdDictKey = @"keyId";
-                        NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
-                        OWSAssert(keyId);
-
-                        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-                        BOOL shouldUpdateSignedPrekey = NO;
-                        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
-                        if (!currentRecord) {
-                            DDLogError(
-                                @"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
-                            shouldUpdateSignedPrekey = YES;
-                        } else {
-                            shouldUpdateSignedPrekey
-                                = fabs([currentRecord.generatedAt timeIntervalSinceNow]) >= kSignedPreKeysRotationTime;
-                        }
-
-                        if (shouldUpdateSignedPrekey) {
-                            DDLogInfo(@"%@ Updating signed prekey due to rotation period.", self.tag);
-                            updatePreKeys(RefreshPreKeysMode_SignedOnly);
-                        } else {
-                            DDLogDebug(@"%@ Not updating prekeys.", self.tag);
-                        }
-
-                        // Update the prekey check timestamp on success.
-                        dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-                            lastPreKeyCheckTimestamp = [NSDate date];
-                        });
+                TSStorageManager *storageManager = [TSStorageManager sharedManager];
+                NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
+                BOOL shouldUpdateSignedPrekey = NO;
+                if (!currentSignedPrekeyId) {
+                    DDLogError(@"%@ %s Couldn't find current signed prekey id", self.tag, __PRETTY_FUNCTION__);
+                    shouldUpdateSignedPrekey = YES;
+                } else {
+                    SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
+                    if (!currentRecord) {
+                        DDLogError(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, currentSignedPrekeyId);
+                        OWSAssert(0);
+                        shouldUpdateSignedPrekey = YES;
+                    } else {
+                        shouldUpdateSignedPrekey
+                        = fabs([currentRecord.generatedAt timeIntervalSinceNow]) >= kSignedPreKeysRotationTime;
                     }
-                    failure:^(NSURLSessionDataTask *task, NSError *error) {
-                        DDLogWarn(@"%@ Updating signed prekey because of failure to retrieve current signed prekey.",
-                            self.tag);
-                        updatePreKeys(RefreshPreKeysMode_SignedOnly);
-                    }];
+                }
+                
+                if (shouldUpdateSignedPrekey) {
+                    DDLogInfo(@"%@ Updating signed prekey due to rotation period.", self.tag);
+                    updatePreKeys(RefreshPreKeysMode_SignedOnly);
+                } else {
+                    DDLogDebug(@"%@ Not updating prekeys.", self.tag);
+                }
             }
+            
+            // Update the prekey check timestamp on success.
+            dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+                lastPreKeyCheckTimestamp = [NSDate date];
+            });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.tag);
@@ -191,18 +190,9 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
 }
 
 + (void)clearSignedPreKeyRecords {
-    TSRequest *currentSignedPreKey = [[TSCurrentSignedPreKeyRequest alloc] init];
-    [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-        success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-            NSString *keyIdDictKey = @"keyId";
-            NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
-
-            [self clearSignedPreKeyRecordsWithKeyId:keyId];
-
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogWarn(@"%@ Failed to retrieve current prekey.", self.tag);
-        }];
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
+    [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
 }
 
 + (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId {
@@ -218,6 +208,7 @@ static NSDate *lastPreKeyCheckTimestamp = nil;
         SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
             DDLogError(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
+            OWSAssert(0);
         }
         NSArray *allSignedPrekeys = [storageManager loadSignedPreKeys];
         NSArray *oldSignedPrekeys
