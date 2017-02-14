@@ -140,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 7c55d559d3c9ef7e66a4ebd1daaf7620498c3e3a
+    :commit: 5ed95c4782be899e81b85196c4695cdb9e45276b
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -172,6 +172,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 1dec14c6ae3ecc013143fca915e5e7a3bb83bdc0
+PODFILE CHECKSUM: 23ca4df281ad1e794af6967db2047f43df88e96a
 
 COCOAPODS: 1.1.1

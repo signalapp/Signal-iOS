@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AudioStretcher.h"
-#import "Constraints.h"
 #import "Util.h"
 #import "time_scale.h"
 

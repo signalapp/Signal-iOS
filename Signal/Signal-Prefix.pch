@@ -16,6 +16,8 @@
     #endif
 
     #import <SignalServiceKit/Asserts.h>
+    #import <SignalServiceKit/Constraints.h>
+    #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/OWSDispatch.h>
     #import "iOSVersions.h"
 

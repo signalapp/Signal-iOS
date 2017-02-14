@@ -1,7 +1,10 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "SignalUtil.h"
 
 #import <SignalServiceKit/TSAccountManager.h>
-#import "Constraints.h"
 #import "SignalKeyingStorage.h"
 #import "Util.h"
 

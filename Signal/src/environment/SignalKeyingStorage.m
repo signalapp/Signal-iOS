@@ -1,11 +1,7 @@
 //
-//  SignalKeyingStorage.m
-//  Signal
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
-//  Created by Frederic Jacobs on 09/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
-//
-#import "Constraints.h"
+
 #import "CryptoTools.h"
 #import "SignalKeyingStorage.h"
 #import "TSStorageManager.h"
