@@ -68,16 +68,16 @@
 "ATTACHMENT_QUEUED" = "Novo anexo na fila para recuperação.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal requer acesso ao seu microfone para funcionar corretamente. Você pode permitir o acesso ao microfone em Ajustes >> Privacidade >> Microfone >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Chamando...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Chamar";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Não atendida.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -377,7 +377,7 @@
 "INCOMING_CALL_FROM" = "Chamada de %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Chamada nao completada, de ";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convide Amigos para o Signal.";
@@ -462,7 +462,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal requer acesso à sua câmera para funcionar corretamente. Você pode permiti-lo em Ajustes >> Privacidade >> Câmera >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Você recebeu uma chamada de %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tentou telefonar para você.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Você ligou para %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Você tentou telefonar para %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Você não pode emparelhar mais nenhum dispositivo.";
@@ -508,7 +508,7 @@
 "NETWORK_STATUS_TEXT" = "Você pode verificar a situação da rede observando a barra acima da sua caixa de entrada.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nova conversa com %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Definir foto de grupo.";
@@ -568,7 +568,7 @@
 "OUTGOING_CALL" = "Chamada efetuada";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Chamada não completada, para";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Este não é o seu número de segurança com %@. Você está verificando o contato correto?";
@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Sobre";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Usar CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Habilitar log de depuração";
@@ -820,7 +820,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Impedir que imagens do Signal aparecam no comutador de aplicativos";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit possibilita que você attenda a chamadas diretamente na tela bloqueada. Lembre-se que ao usar CallKit, a Apple sincroniza alguns metadados de chamadas na sua conta iCloud.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Chamando";

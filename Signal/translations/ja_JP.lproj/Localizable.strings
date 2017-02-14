@@ -71,13 +71,13 @@
 "AUDIO_PERMISSION_MESSAGE" = "Signalがうまく機能するにはマイクへのアクセスが必要です。アクセスを許可するには，設定→プライバシー→マイク→Signal，と進んでください。";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "呼出中";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "電話";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "応答なし";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -377,7 +377,7 @@
 "INCOMING_CALL_FROM" = "%@ から着信";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "不完全着信";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "%@ から着信";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ から着信あり";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "%@ に発信";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "%@ へ発信しました";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
@@ -568,7 +568,7 @@
 "OUTGOING_CALL" = "発信";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "不完全発信";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@との安全番号ではないようです。連絡先が正しいか確認してください。";
@@ -649,7 +649,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "ユーザーの増加スピードに制限を設けています。しばらくしてから再度試してください。";
 
 /* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "登録済み番号";
+"REGISTERED_NUMBER_TEXT" = "登録番号";
 
 /* Alert title */
 "REGISTRATION_BODY" = "プッシュ通知の再登録に失敗しました";

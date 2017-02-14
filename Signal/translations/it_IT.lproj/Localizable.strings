@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Ha ricevuto una chiamata da %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ ha provato a chiamarti.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Hai chiamato %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Hai provato a chiamare %@";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Non è possibile associare ulteriori dispositivi.";
@@ -568,7 +568,7 @@
 "OUTGOING_CALL" = "Chiamata in uscita";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Chiamata in uscita incompleta";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Questi non sembra il numero sicuro di %@. Stai controllando il contatto corretto?";
