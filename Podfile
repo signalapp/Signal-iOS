@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
-    pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
+    pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git', branch: 'release/2.7.1'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', branch: 'release/2.7.1'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'

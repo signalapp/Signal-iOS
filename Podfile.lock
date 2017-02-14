@@ -116,7 +116,7 @@ PODS:
   - ZXingObjC/All (3.1.0)
 
 DEPENDENCIES:
-  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
+  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`, branch `release/2.7.1`)
   - FFCircularProgressView (~> 0.5)
   - JSQMessagesViewController
   - OpenSSL
@@ -129,6 +129,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   AxolotlKit:
+    :branch: release/2.7.1
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
     :branch: release/2.7.1
@@ -138,10 +139,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
+    :commit: bb770b6a1c1baaf1c5ed1044702929975bdd25b2
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 8acc496a397e8971da6a7e26aa3896c33e3b4e31
+    :commit: f9747063968c67dbba7381b14065baa4e6e6ef01
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -173,6 +174,6 @@ SPEC CHECKSUMS:
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: cdc752b941beadf2808273dea7c78e4f6a9a0ba6
+PODFILE CHECKSUM: f26c8cfdd43287610851e29bd382374dbe0935e7
 
 COCOAPODS: 1.1.1
