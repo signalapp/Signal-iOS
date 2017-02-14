@@ -401,7 +401,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
             [result appendFormat:@"%c", c];
         }
     }
-    return result;
+    return [result copy];
 }
 
 - (BOOL)textField:(UITextField *)textField
