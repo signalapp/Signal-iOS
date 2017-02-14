@@ -164,8 +164,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
         });
 
-        [TSPreKeyManager refreshPreKeys];
-
         // Clean up any messages that expired since last launch.
         [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
         [AppStoreRating setupRatingLibrary];
@@ -285,7 +283,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     
     [self removeScreenProtection];
 
-    [TSPreKeyManager checkPreKeysIfNecessary];
+    static BOOL hasCheckedPrekeys = NO;
+    if (!hasCheckedPrekeys) {
+        // Always check prekeys after app launches...
+        [TSPreKeyManager refreshPreKeys];
+        hasCheckedPrekeys = YES;
+    } else {
+        // ...and sometimes check on app activation.
+        [TSPreKeyManager checkPreKeysIfNecessary];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
