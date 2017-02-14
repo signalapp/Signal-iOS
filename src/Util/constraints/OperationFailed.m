@@ -1,4 +1,8 @@
-#import "Constraints.h"
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
+#import "OperationFailed.h"
 
 @implementation OperationFailed
 +(OperationFailed*) new:(NSString*)reason {

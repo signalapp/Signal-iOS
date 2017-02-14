@@ -33,15 +33,16 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (YapDatabase *)database;
 - (YapDatabaseConnection *)newDatabaseConnection;
 
-
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
-
 
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
+- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)setDate:(nonnull NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
 - (NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection;
 - (NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection;
 - (NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;

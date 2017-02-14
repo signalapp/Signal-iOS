@@ -1,4 +1,8 @@
-#import "Constraints.h"
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
+#import "BadState.h"
 
 @implementation BadState
 +(void)raise:(NSString *)message {

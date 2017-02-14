@@ -23,6 +23,7 @@
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
+#import "TSPreKeyManager.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
@@ -410,6 +411,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failure:(void (^)(NSError *error))failureHandler
 {
     DDLogDebug(@"%@ sending message to service: %@", self.tag, message.debugDescription);
+
+    if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
+        OWSAnalyticsError(@"Message send failed due to prekey update failures");
+
+        // Retry prekey update every time user tries to send a message while app
+        // is disabled due to prekey update failures.
+        //
+        // Only try to update the signed prekey; updating it is sufficient to
+        // re-enable message sending.
+        [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedOnly
+            success:^{
+                DDLogInfo(@"%@ New prekeys registered with server.", self.tag);
+            }
+            failure:^(NSError *error) {
+                DDLogWarn(@"%@ Failed to update prekeys with the server: %@", self.tag, error);
+            }];
+
+        DDLogError(@"%@ Message send failed due to repeated inability to update prekeys.", self.tag);
+        return failureHandler(OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError());
+    }
 
     if (remainingAttempts <= 0) {
         // We should always fail with a specific error.
