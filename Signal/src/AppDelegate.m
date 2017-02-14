@@ -52,6 +52,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
+    
+    [DDLog flushLog];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -68,6 +70,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     DDLogWarn(@"%@ applicationWillTerminate.", self.tag);
+    
+    [DDLog flushLog];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -312,6 +316,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
       [application endBackgroundTask:bgTask];
       bgTask = UIBackgroundTaskInvalid;
     });
+    
+    [DDLog flushLog];
 }
 
 - (void)application:(UIApplication *)application
@@ -543,6 +549,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if (![TSStorageManager isDatabasePasswordAccessible]) {
         DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
+        [DDLog flushLog];
         exit(0);
     }
 }
