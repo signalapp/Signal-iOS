@@ -102,6 +102,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     _expiresInSeconds = expiresInSeconds;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
+    _receivedAtDate = [NSDate date];
 
     return self;
 }
@@ -132,6 +133,10 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
+
+    // We _DO NOT_ set _receivedAt_ in this constructor.  We don't want to
+    // set the receivedAt time for old messages in the data store.
+
     return self;
 }
 
@@ -213,6 +218,11 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
 - (BOOL)isExpiringMessage
 {
     return self.expiresInSeconds > 0;
+}
+
+- (nullable NSDate *)bestReceivedAtDate
+{
+    return self.receivedAtDate;
 }
 
 @end

@@ -121,6 +121,12 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 
 @property (nonatomic, readonly) NSString *authorId;
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
+// _DO NOT_ access this property directly.  You almost certainly
+// want to use bestReceivedAtDate instead.
+//
+// This property has been superceded by TSMessage.receivedAtData.
+// This property only exists for backwards compatability with messages
+// received before TSMessage.receivedAtData was added.
 @property (nonatomic, readonly) NSDate *receivedAt;
 
 /*

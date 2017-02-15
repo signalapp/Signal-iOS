@@ -61,7 +61,8 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 
     _authorId = authorId;
     _read = NO;
-    _receivedAt = [NSDate date];
+
+    OWSAssert(self.receivedAtDate);
 
     return self;
 }
@@ -132,6 +133,18 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
+}
+
+- (nullable NSDate *)bestReceivedAtDate
+{
+    NSDate *result = [super bestReceivedAtDate];
+    if (!result) {
+        // For backward compatibility with messages received before
+        // TSMessage.receivedAtData was added, honor TSIncomingMessage.receivedAt
+        // if TSMessage.receivedAtData is not set.
+        result = self.receivedAt;
+    }
+    return result;
 }
 
 #pragma mark - Logging

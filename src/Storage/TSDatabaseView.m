@@ -9,6 +9,7 @@
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
+#import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
 
@@ -265,11 +266,10 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
 + (NSDate *)localTimeReceiveDateForInteraction:(TSInteraction *)interaction {
     NSDate *interactionDate = interaction.date;
 
-    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-
-        if (message.receivedAt) {
-            interactionDate = message.receivedAt;
+    if ([interaction isKindOfClass:[TSMessage class]]) {
+        TSMessage *message = (TSMessage *)interaction;
+        if ([message bestReceivedAtDate]) {
+            interactionDate = [message bestReceivedAtDate];
         }
     }
 

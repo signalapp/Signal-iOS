@@ -248,9 +248,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
     NSDate *lastMessageDate = lastMessage.date;
 
-    if ([lastMessage isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *message = (TSIncomingMessage *)lastMessage;
-        lastMessageDate            = message.receivedAt;
+    if ([lastMessage isKindOfClass:[TSMessage class]]) {
+        TSMessage *message = (TSMessage *)lastMessage;
+        if ([message bestReceivedAtDate]) {
+            lastMessageDate = [message bestReceivedAtDate];
+        }
     }
 
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
