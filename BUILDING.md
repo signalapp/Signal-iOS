@@ -72,7 +72,7 @@ https://webrtc.org/native-code/ios/
     gclient sync
     # 3. Build webrtc
     cd src
-    webrtc/build/ios/build_ios_libs.sh
+    tools-webrtc/ios/build_ios_libs.sh
 	# 4. Move the WebRTC.framework into Signal-iOS's Carthage directory
     mv out_ios_libs/WebRTC.framework <Your Signal-iOS repository>/Carthage/Build/iOS/
 
