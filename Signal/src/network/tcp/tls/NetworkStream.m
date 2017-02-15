@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "Environment.h"
 #import "NetworkStream.h"
-#import "Constraints.h"
 #import "Util.h"
 #import "ThreadManager.h"
 

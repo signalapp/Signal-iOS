@@ -3,7 +3,6 @@
 //
 
 #import "Environment.h"
-#import "Constraints.h"
 #import "DH3KKeyAgreementProtocol.h"
 #import "DebugLogger.h"
 #import "FunctionalUtil.h"
@@ -313,10 +312,26 @@ static Environment *environment = nil;
 }
 
 + (void)resetAppData {
+    // This _should_ be wiped out below.
+    DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
     [[TSStorageManager sharedManager] resetSignalStorage];
     [Environment.preferences clear];
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

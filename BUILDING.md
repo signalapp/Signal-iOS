@@ -17,10 +17,15 @@ occasionally, CocoaPods itself will need to be updated. Do this with
 sudo gem update
 ```
 
-3) Some dependencies are added via carthage. Run:
+3) Some dependencies are added via carthage. However, our prebuilt WebRTC.framework also resides in the Carthage directory. 
+
+Run:
 ```
-carthage update
+// DO NOT run: `carthage update` or `carthage checkout`.
+git submodule update --init
+carthage build
 ```
+
 If you don't have carthage, here are install instructions:
 ```
 https://github.com/Carthage/Carthage#installing-carthage
@@ -45,4 +50,29 @@ value to "build".
 
 Features related to push notifications are known to be not working for third-party contributors since Apple's Push Notification service pushs will only work with Open Whisper Systems production code signing certificate.
 
+### Building WebRTC
+
+A prebuilt version of WebRTC.framework resides in our Carthage submodule (see above).
+However, if you'd like to build it from souce, this is how it's done.
+
+These instructions are derived from the WebRTC documentation:
+
+https://webrtc.org/native-code/ios/
+
+    # 1. Install depot tools
+    cd <somewhere>
+    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    cd depot_tools
+    export PATH=<somewhere>/depot_tools:"$PATH"
+    # 2. Fetch webrtc source
+    cd <somewhere else>
+    mkdir webrtc
+    cd webrtc
+    fetch --nohooks webrtc_ios
+    gclient sync
+    # 3. Build webrtc
+    cd src
+    tools-webrtc/ios/build_ios_libs.sh
+	# 4. Move the WebRTC.framework into Signal-iOS's Carthage directory
+    mv out_ios_libs/WebRTC.framework <Your Signal-iOS repository>/Carthage/Build/iOS/
 

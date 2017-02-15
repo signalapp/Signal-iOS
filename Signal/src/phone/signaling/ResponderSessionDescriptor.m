@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "ResponderSessionDescriptor.h"
 
-#import "Constraints.h"
 #import "CryptoTools.h"
 #import "InitiateSignal.pb.h"
 #import "SignalKeyingStorage.h"

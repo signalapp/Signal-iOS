@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "확인 코드";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "대신 전화 해주세요";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "대신 전화 해주세요";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "코드 다시 요청하기";

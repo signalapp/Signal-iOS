@@ -2,7 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "PureLayout.h"
 #import "UIView+OWS.h"
 
 // TODO: We'll eventually want to promote these into an OWSMath.h header.

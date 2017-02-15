@@ -184,6 +184,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
+        [DDLog flushLog];
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
         OWSSyncPushTokensJob *syncJob =

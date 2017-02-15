@@ -24,6 +24,7 @@
 #import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -51,6 +52,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
+    
+    [DDLog flushLog];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -67,6 +70,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     DDLogWarn(@"%@ applicationWillTerminate.", self.tag);
+    
+    [DDLog flushLog];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -168,6 +173,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         // Clean up any messages that expired since last launch.
         [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
+        // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+        // sent before the app exited should be marked as failures.
+        [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
         [AppStoreRating setupRatingLibrary];
     }];
 
@@ -246,9 +256,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
-
-                    cvvc.challengeTextField.text = verificationCode;
-                    [cvvc verifyChallengeAction:nil];
+                    [cvvc setVerificationCodeAndTryToVerify:verificationCode];
                 } else {
                     DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
                               NSStringFromClass(controller.class));
@@ -308,6 +316,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
       [application endBackgroundTask:bgTask];
       bgTask = UIBackgroundTaskInvalid;
     });
+    
+    [DDLog flushLog];
 }
 
 - (void)application:(UIApplication *)application
@@ -539,6 +549,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if (![TSStorageManager isDatabasePasswordAccessible]) {
         DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
+        [DDLog flushLog];
         exit(0);
     }
 }

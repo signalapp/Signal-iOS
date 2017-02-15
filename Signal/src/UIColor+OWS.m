@@ -1,10 +1,16 @@
-//  Created by Dylan Bourgeois on 25/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "Cryptography.h"
 #import "UIColor+OWS.h"
 
 @implementation UIColor (OWS)
+
++ (UIColor *)ows_signalBrandBlueColor
+{
+    return [UIColor colorWithRed:0.1135657504 green:0.4787300229 blue:0.89595204589999999 alpha:1.];
+}
 
 + (UIColor *)ows_materialBlueColor
 {

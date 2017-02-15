@@ -928,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Cod de Verificare";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Mai bine Sună-mă";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mai bine Sună-mă";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicită codul din nou";

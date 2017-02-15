@@ -1,4 +1,7 @@
-#import "Constraints.h"
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "DataUtil.h"
 #import "NumberUtil.h"
 #import "StringUtil.h"

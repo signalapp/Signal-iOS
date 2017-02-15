@@ -159,7 +159,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *action) {
-                                                   exit(0);
+                                                     [DDLog flushLog];
+                                                     exit(0);
                                                  }]];
 
             [[UIApplication sharedApplication]

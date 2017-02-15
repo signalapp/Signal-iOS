@@ -18,7 +18,6 @@
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PhoneManager.h"
 #import "PropertyListPreferences.h"
-#import "PureLayout.h"
 #import "PushManager.h"
 #import "RPAccountManager.h"
 #import "TSSocketManager.h"
@@ -27,6 +26,7 @@
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <JSQSystemSoundPlayer.h>
+#import <PureLayout/PureLayout.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
