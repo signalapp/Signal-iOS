@@ -108,7 +108,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, strong) UILabel *navbarTitleLabel;
+@property (nonatomic, strong) UIView *navigationBarTitleView;
+@property (nonatomic, strong) UILabel *navigationBarTitleLabel;
+@property (nonatomic, strong) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
@@ -279,11 +281,6 @@ typedef enum : NSUInteger {
         [self.collectionView.collectionViewLayout
             invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     }
-}
-
-- (void)didMoveToParentViewController:(UIViewController *)parent
-{
-    [self setupTitleLabelGestureRecognizer];
 }
 
 - (void)registerCustomMessageNibs
@@ -495,13 +492,81 @@ typedef enum : NSUInteger {
     if (isGroupConversation && [navTitle length] == 0) {
         navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
-    self.title = navTitle;
+    self.title = nil;
+
+    if ([navTitle isEqualToString:self.navigationBarTitleLabel.text]) {
+        return;
+    }
+    
+    self.navigationBarTitleLabel.text = navTitle;
+
+    // Changing the title requires relayout of the nav bar contents.
+    OWSDisappearingMessagesConfiguration *configuration =
+    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 }
 
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
-
 {
+    UIImage *backImage = [UIImage imageNamed:@"NavBarBack"];
+    OWSAssert(backImage);
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:backImage style:UIBarButtonItemStylePlain target:self action:@selector(backButtonPressed:)];
+    
+    const CGFloat kTitleVSpacing = 0.f;
+    if (!self.navigationBarTitleView) {
+        self.navigationBarTitleView = [UIView new];
+        [self.navigationBarTitleView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                                  action:@selector(navigationTitleTapped:)]];
+        
+        self.navigationBarTitleLabel = [UILabel new];
+        self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
+        self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
+        self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
+        
+        self.navigationBarSubtitleLabel = [UILabel new];
+        self.navigationBarSubtitleLabel.textColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+        self.navigationBarSubtitleLabel.font = [UIFont ows_boldFontWithSize:9.f];
+        self.navigationBarSubtitleLabel.text = NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                                 @"The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation.");
+        [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
+    }
+    
+    // We need to manually resize and position the title views;
+    // iOS AutoLayout doesn't work inside navigation bar items.
+    [self.navigationBarTitleLabel sizeToFit];
+    [self.navigationBarSubtitleLabel sizeToFit];
+    const CGFloat kShortScreenDimension = MIN([UIScreen mainScreen].bounds.size.width,
+                                              [UIScreen mainScreen].bounds.size.height);
+    // We want to leave space for the "back" button, the "timer" button, the "call" or
+    // "group settings" button, and all of the whitespace around these views.  There
+    // isn't a convenient way to calculate these in a navigation bar, so we just leave
+    // a constant amount of space which will be safe unless Apple makes radical changes
+    // to the appearance of the navigation bar.
+    const CGFloat kMaxTitleViewWidth = kShortScreenDimension - 145;
+    const CGFloat titleViewWidth = MIN(kMaxTitleViewWidth,
+                                       MAX(self.navigationBarTitleLabel.frame.size.width,
+                                           self.navigationBarSubtitleLabel.frame.size.width));
+    self.navigationBarTitleView.frame = CGRectMake(0, 0,
+                                                   titleViewWidth,
+                                                   self.navigationBarTitleLabel.frame.size.height +
+                                                   self.navigationBarSubtitleLabel.frame.size.height +
+                                                   kTitleVSpacing);
+    self.navigationBarTitleLabel.frame = CGRectMake(0,
+                                                    0,
+                                                    titleViewWidth,
+                                                    self.navigationBarTitleLabel.frame.size.height);
+    self.navigationBarSubtitleLabel.frame = CGRectMake(0,
+                                                       self.navigationBarTitleView.frame.size.height - self.navigationBarSubtitleLabel.frame.size.height,
+                                                       titleViewWidth,
+                                                       self.navigationBarSubtitleLabel.frame.size.height);
+    
+    self.navigationItem.leftBarButtonItems = @[
+                                               backItem,
+                                               [[UIBarButtonItem alloc] initWithCustomView:self.navigationBarTitleView],
+                                               ];
+    
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;
@@ -509,36 +574,48 @@ typedef enum : NSUInteger {
 
     NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
     if ([self canCall]) {
-        UIBarButtonItem *callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btnPhone--white"]
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(callAction)];
+        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+        // The contents of the navigation bar are cramped in this view.
+        UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        // The "phone_white_thin" image is slightly assymetric in order
+        // to avoid an excessive margin against the right edge of the screen.
+        [callButton setImage:[UIImage imageNamed:@"phone_white_thin"]
+                    forState:UIControlStateNormal];
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibilty label for placing call button");
-        callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-        [barButtons addObject:callButton];
+        [callButton addTarget:self
+                       action:@selector(callAction:)
+             forControlEvents:UIControlEventTouchUpInside];
+        [callButton sizeToFit];
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton]];
     } else if ([self.thread isGroupThread]) {
-        UIBarButtonItem *manageGroupButton =
-            [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapManageGroupButton:)];
-        // Hack to shrink button image
-        manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
+        UIButton *manageGroupButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        // The "phone_white_thin" image is slightly assymetric in order
+        // to avoid an excessive margin against the right edge of the screen.
+        [manageGroupButton setImage:[UIImage imageNamed:@"settings_white_thin"]
+                           forState:UIControlStateNormal];
         manageGroupButton.accessibilityLabel = NSLocalizedString(@"GROUP_SETTINGS_LABEL", @"Accessibilty label for group settings");
-        [barButtons addObject:manageGroupButton];
+        [manageGroupButton addTarget:self
+                              action:@selector(didTapManageGroupButton:)
+                    forControlEvents:UIControlEventTouchUpInside];
+        [manageGroupButton sizeToFit];
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:manageGroupButton]];
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
-        UIBarButtonItem *timerButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
-                                                               style:UIBarButtonItemStylePlain
-                                                              target:self
-                                                              action:@selector(didTapTimerInNavbar)];
+        UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [timerButton setImage:[UIImage imageNamed:@"timer_white_thin"]
+                    forState:UIControlStateNormal];
         timerButton.accessibilityLabel = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
         NSString *formatString = NSLocalizedString(@"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
         timerButton.accessibilityHint = [NSString stringWithFormat:formatString, [disappearingMessagesConfiguration durationString]];
-        [barButtons addObject:timerButton];
+        [timerButton addTarget:self
+                        action:@selector(didTapTimerInNavbar:)
+              forControlEvents:UIControlEventTouchUpInside];
+        [timerButton sizeToFit];
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerButton]];
     }
-
+    
     self.navigationItem.rightBarButtonItems = [barButtons copy];
 }
 
@@ -552,28 +629,6 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
-}
-
-- (void)setupTitleLabelGestureRecognizer
-{
-    // Called on load/unload, but we only want to init once.
-    if (self.navbarTitleLabel) {
-        return;
-    }
-
-    UILabel *navbarTitleLabel = [self findNavbarTitleLabel];
-    if (!navbarTitleLabel) {
-        DDLogError(@"%@ Unable to find navbar title label. Skipping gesture recognition", self.tag);
-        return;
-    }
-
-    self.navbarTitleLabel = navbarTitleLabel;
-    navbarTitleLabel.userInteractionEnabled = YES;
-    navbarTitleLabel.superview.userInteractionEnabled = YES;
-
-    UITapGestureRecognizer *titleTapRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTitle)];
-    [navbarTitleLabel addGestureRecognizer:titleTapRecognizer];
 }
 
 - (nullable UILabel *)findNavbarTitleLabel
@@ -637,7 +692,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (void)callAction {
+- (void)callAction:(id)sender {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
 
     if (![self canCall]) {
@@ -1135,7 +1190,7 @@ typedef enum : NSUInteger {
     [self showConversationSettings];
 }
 
-- (void)didTapTimerInNavbar
+- (void)didTapTimerInNavbar:(id)sender
 {
     DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
     [self showConversationSettings];
@@ -2316,6 +2371,18 @@ typedef enum : NSUInteger {
     return @[];
 }
 
+#pragma mark - Event Handling
+
+- (void)backButtonPressed:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)navigationTitleTapped:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        [self showConversationSettings];
+    }
+}
+         
 #pragma mark - Logging
 
 + (NSString *)tag
