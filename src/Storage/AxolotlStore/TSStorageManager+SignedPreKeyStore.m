@@ -11,6 +11,8 @@
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const TSStorageManagerSignedPreKeyStoreCollection = @"TSStorageManagerSignedPreKeyStoreCollection";
 NSString *const TSStorageManagerSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
 NSString *const TSStorageManagerKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
@@ -135,3 +137,5 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

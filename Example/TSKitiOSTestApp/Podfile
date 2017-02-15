@@ -2,7 +2,8 @@ platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'TSKitiOSTestApp' do
-  pod 'SocketRocket', git: 'https://github.com/WhisperSystems/SocketRocket.git', branch: 'pluggable-security-policies'
+  pod 'SocketRocket', git: 'https://github.com/facebook/SocketRocket.git'
+  pod 'AxolotlKit',  git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
   pod 'SignalServiceKit', :path => '../../SignalServiceKit.podspec'
 
   target 'TSKitiOSTestAppTests' do

@@ -283,12 +283,14 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 + (void)clearSignedPreKeyRecords {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
-    [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
+    [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId success:nil];
 }
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId {
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)())successHandler
+{
     if (!keyId) {
-        DDLogError(@"%@ The server returned an incomplete response", self.tag);
+        OWSAssert(NO);
+        DDLogError(@"%@ Ignoring request to clear signed preKeys since no keyId was specified", self.tag);
         return;
     }
 
@@ -332,7 +334,7 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 
             // We try to keep a minimum of 3 "old, accepted" signed prekeys.
             if (signedPrekey.wasAcceptedByService) {
-                if (oldAcceptedSignedPreKeyCount < 3) {
+                if (oldAcceptedSignedPreKeyCount <= 3) {
                     continue;
                 } else {
                     oldAcceptedSignedPreKeyCount--;
@@ -345,6 +347,10 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                 signedPrekey.wasAcceptedByService);
 
             [storageManager removeSignedPreKey:signedPrekey.Id];
+        }
+
+        if (successHandler) {
+            successHandler();
         }
     });
 }

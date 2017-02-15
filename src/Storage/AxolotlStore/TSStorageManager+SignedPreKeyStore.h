@@ -5,6 +5,11 @@
 #import <AxolotlKit/SignedPreKeyStore.h>
 #import "TSStorageManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+// Used for testing
+extern NSString *const TSStorageManagerSignedPreKeyStoreCollection;
+
 @interface TSStorageManager (SignedPreKeyStore) <SignedPreKeyStore>
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
@@ -26,3 +31,5 @@
 - (void)clearFirstPrekeyUpdateFailureDate;
 
 @end
+
+NS_ASSUME_NONNULL_END
