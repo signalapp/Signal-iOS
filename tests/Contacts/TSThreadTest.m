@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -38,6 +40,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
                                                                              authorId:@"fake-author-id"
+                                                                       sourceDeviceId:1
                                                                           messageBody:@"Incoming message body"];
     [incomingMessage save];
 
@@ -74,6 +77,7 @@
         [[TSIncomingMessage alloc] initWithTimestamp:10000
                                             inThread:thread
                                             authorId:@"fake-author-id"
+                                      sourceDeviceId:1
                                          messageBody:@"incoming message body"
                                        attachmentIds:[NSMutableArray arrayWithObject:incomingAttachment.uniqueId]];
     [incomingMessage save];

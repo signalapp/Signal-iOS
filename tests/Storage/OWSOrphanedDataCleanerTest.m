@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOrphanedDataCleaner.h"
 #import "TSAttachmentStream.h"
@@ -45,6 +47,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:unsavedThread
                                                                              authorId:@"fake-author-id"
+                                                                       sourceDeviceId:1
                                                                           messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
@@ -61,6 +64,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
                                                                              authorId:@"fake-author-id"
+                                                                       sourceDeviceId:1
                                                                           messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
@@ -99,6 +103,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
                                                                              authorId:@"fake-author-id"
+                                                                       sourceDeviceId:1
                                                                           messageBody:@"footch"
                                                                         attachmentIds:@[ attachmentStream.uniqueId ]];
     [incomingMessage save];

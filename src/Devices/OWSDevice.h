@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSYapDatabaseObject.h"
 #import <Mantle/MTLJSONAdapter.h>
@@ -21,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @param devices
  */
 + (void)replaceAll:(NSArray<OWSDevice *> *)devices;
+
+/**
+ * The id of the device currently running this application
+ */
++ (uint32_t)currentDeviceId;
 
 /**
  *

@@ -23,6 +23,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *    Thread to which the message belongs
  *  @param authorId
  *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param sourceDeviceId
+ *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
  *  @param body
  *    Body of the message
  *
@@ -31,6 +33,7 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                          authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body;
 
 /**
@@ -42,6 +45,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *    Thread to which the message belongs
  *  @param authorId
  *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param sourceDeviceId
+ *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
  *  @param body
  *    Body of the message
  *  @param attachmentIds
@@ -52,6 +57,7 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                          authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds;
 
@@ -64,6 +70,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
  *    Thread to which the message belongs
  *  @param authorId
  *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param sourceDeviceId
+ *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
  *  @param body
  *    Body of the message
  *  @param attachmentIds
@@ -76,6 +84,7 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                          authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
@@ -120,6 +129,7 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp;
 
 @property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) UInt32 sourceDeviceId;
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
 /*

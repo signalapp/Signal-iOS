@@ -15,6 +15,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
+#import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptsProcessor.h"
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 
 @end
 
@@ -102,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
+    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
 
     return self;
 }
@@ -281,6 +284,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
 {
     OWSAssert([NSThread isMainThread]);
+
+    BOOL duplicateEnvelope = [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
+                                                                           sourceId:envelope.source
+                                                                     sourceDeviceId:envelope.sourceDevice];
+    if (duplicateEnvelope) {
+        DDLogInfo(@"%@ Ignoring previously received envelope with timestamp: %llu", self.tag, envelope.timestamp);
+        return;
+    }
+
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         if (content.hasSyncMessage) {
@@ -290,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (content.hasCallMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else {
-            DDLogWarn(@"%@ Ignoring envelope.Content with no known payload", self.tag);
+            DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
     } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
         OWSSignalServiceProtosDataMessage *dataMessage =
@@ -611,6 +623,7 @@ NS_ASSUME_NONNULL_BEGIN
                   incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                         inThread:gThread
                                                                         authorId:envelope.source
+                                                                  sourceDeviceId:envelope.sourceDevice
                                                                      messageBody:body
                                                                    attachmentIds:attachmentIds
                                                                 expiresInSeconds:dataMessage.expireTimer];
@@ -632,6 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                 inThread:cThread
                                                                 authorId:[cThread contactIdentifier]
+                                                          sourceDeviceId:envelope.sourceDevice
                                                              messageBody:body
                                                            attachmentIds:attachmentIds
                                                         expiresInSeconds:dataMessage.expireTimer];
@@ -658,12 +672,14 @@ NS_ASSUME_NONNULL_BEGIN
                   textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                     inThread:gThread
                                                                     authorId:envelope.source
+                                                              sourceDeviceId:envelope.sourceDevice
                                                                  messageBody:body];
               } else {
                   TSContactThread *cThread = (TSContactThread *)thread;
                   textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                     inThread:cThread
                                                                     authorId:[cThread contactIdentifier]
+                                                              sourceDeviceId:envelope.sourceDevice
                                                                  messageBody:body];
               }
               textMessage.expiresInSeconds = dataMessage.expireTimer;

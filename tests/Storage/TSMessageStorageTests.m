@@ -1,9 +1,5 @@
 //
-//  TSMessageStorageTests.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
@@ -102,6 +98,7 @@
     TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                         inThread:self.thread
                                                                         authorId:[self.thread contactIdentifier]
+                                                                  sourceDeviceId:1
                                                                      messageBody:body];
     [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
@@ -126,6 +123,7 @@
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
                                                                             inThread:self.thread
                                                                             authorId:[self.thread contactIdentifier]
+                                                                      sourceDeviceId:1
                                                                          messageBody:body];
         [messages addObject:newMessage];
         [newMessage save];
@@ -174,6 +172,7 @@
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
                                                                             inThread:thread
                                                                             authorId:@"Ed"
+                                                                      sourceDeviceId:1
                                                                          messageBody:body];
         [newMessage save];
         [messages addObject:newMessage];

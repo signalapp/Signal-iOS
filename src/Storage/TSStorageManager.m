@@ -7,6 +7,7 @@
 #import "OWSAnalytics.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFailedMessagesJob.h"
+#import "OWSIncomingMessageFinder.h"
 #import "OWSReadReceipt.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
@@ -197,6 +198,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
 
     // Register extensions which aren't essential for rendering threads async
+    [[OWSIncomingMessageFinder new] asyncRegisterExtension];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
     [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
     OWSDisappearingMessagesFinder *finder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:self];
