@@ -6,7 +6,6 @@ target 'Signal' do
     pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
-    #pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git', :branch => 'charlesmchen/rateLimitingErrorMessage'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL'
     pod 'PastelogKit',                '~> 1.3'

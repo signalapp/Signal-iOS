@@ -56,8 +56,8 @@ PODS:
     - TwistedOakCollapsingFutures
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
-  - SQLCipher/common (3.4.1)
-  - SQLCipher/fts (3.4.1):
+  - SQLCipher/common (3.4.0)
+  - SQLCipher/fts (3.4.0):
     - SQLCipher/common
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
@@ -140,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 5ed95c4782be899e81b85196c4695cdb9e45276b
+    :commit: 93219e4d23e07b3734fb8df4a2d244b26fcecd59
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 41b57bb2fc292a814f758441a05243eb38457027
@@ -166,12 +166,12 @@ SPEC CHECKSUMS:
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SignalServiceKit: 59a79a51b89b963ba94db30cc99ed5212da0bb9f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
-  SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
+  SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
   ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
 
-PODFILE CHECKSUM: 23ca4df281ad1e794af6967db2047f43df88e96a
+PODFILE CHECKSUM: 48dbf2fb380d626bb799a782dd41b6bf1e466506
 
 COCOAPODS: 1.1.1
