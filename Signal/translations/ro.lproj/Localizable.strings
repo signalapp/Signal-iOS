@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansat";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Preferințele tale nu au putut fi actualizate.";

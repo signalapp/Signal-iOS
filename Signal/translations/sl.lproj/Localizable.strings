@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Omogoči video klicanje (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Omogoči video klicanje";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Nastavitev ni bilo mogoče posodobiti.";
