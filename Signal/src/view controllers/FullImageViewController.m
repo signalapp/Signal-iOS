@@ -216,9 +216,8 @@
                                                           action:@selector(copyAttachment:)],
                                [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
                                                           action:@selector(saveAttachment:)],
-                               // TODO: We should implement sharing.
-                               //                                                              [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
-                               //                                                                                         action:@selector(shareAttachment:)],
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
+                                                          action:@selector(shareAttachment:)],
                                ];
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
@@ -241,9 +240,8 @@
     OWSAssert([[self.messageItem media] isKindOfClass:[TSPhotoAdapter class]] ||
               [[self.messageItem media] isKindOfClass:[TSAnimatedAdapter class]]);
     
-    id<OWSMessageEditing> messageEditing = (id<OWSMessageEditing>) self.messageItem.media;
-    OWSAssert([messageEditing canPerformEditingAction:selector]);
-    [messageEditing performEditingAction:selector];
+    OWSAssert([self.messageItem canPerformEditingAction:selector]);
+    [self.messageItem performEditingAction:selector];
 }
 
 - (void)copyAttachment:(id)sender {
@@ -255,10 +253,7 @@
 }
 
 - (void)shareAttachment:(id)sender {
-    // TODO: We should implement sharing with UIActivityViewController.
-    //
-    // It seems that loading of the contents of the attachment is done
-    // with TSAttachment and TSAttachmentStream.
+    [self performEditingActionWithSelector:NSSelectorFromString(@"share:")];
 }
 
 #pragma mark - Presentation

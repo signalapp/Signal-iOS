@@ -252,6 +252,8 @@ typedef enum : NSUInteger {
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
     SEL saveSelector = NSSelectorFromString(@"save:");
     [JSQMessagesCollectionViewCell registerMenuAction:saveSelector];
+    SEL shareSelector = NSSelectorFromString(@"share:");
+    [JSQMessagesCollectionViewCell registerMenuAction:shareSelector];
 
     [self initializeCollectionViewLayout];
     [self registerCustomMessageNibs];
@@ -393,9 +395,14 @@ typedef enum : NSUInteger {
     // Other views might change these custom menu items, so we
     // need to set them every time we enter this view.
     SEL saveSelector = NSSelectorFromString(@"save:");
+    SEL shareSelector = NSSelectorFromString(@"share:");
     [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
                                                                                                                @"Short name for edit menu item to save contents of media message.")
-                                                                                      action:saveSelector]];
+                                                                                      action:saveSelector],
+                                                           [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
+                                                                                                               @"Short name for edit menu item to share contents of media message.")
+                                                                                      action:shareSelector],
+                                                           ];
 }
 
 - (void)startReadTimer {
