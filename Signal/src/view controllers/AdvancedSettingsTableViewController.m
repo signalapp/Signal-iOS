@@ -218,12 +218,10 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [[TSNetworkManager sharedManager] makeRequest:request
                                           success:^(NSURLSessionDataTask *task, id responseObject) {
                                               
-                                              AdvancedSettingsTableViewController *strongSelf = weakSelf;
                                               // Use the request id to ignore obsolete requests, e.g. if the
                                               // user repeatedly changes the setting faster than the requests
                                               // can complete.
-                                              if (!strongSelf ||
-                                                  enableWebRTCRequestCounter != enableWebRTCRequestId) {
+                                              if (enableWebRTCRequestCounter != enableWebRTCRequestId) {
                                                   return;
                                               }
                                               
@@ -231,7 +229,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
                                               // otherwise local and service state will fall out of sync
                                               // with every network failure.
                                               [Environment.preferences setIsWebRTCEnabled:isWebRTCEnabled];
-                                              [strongSelf.tableView reloadData];
+                                              
+                                              [weakSelf.tableView reloadData];
                                           }
                                           failure:^(NSURLSessionDataTask *task, NSError *error) {
                                               DDLogError(@"Updating attributes failed with error: %@", error.description);
