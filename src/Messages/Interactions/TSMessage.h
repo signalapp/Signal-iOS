@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly) BOOL shouldStartExpireTimer;
 // _DO NOT_ access this property directly.  You almost certainly
-// want to use bestReceivedAtDate instead.
+// want to use receiptDateForSorting instead.
 @property (nonatomic, readonly) NSDate *receivedAtDate;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
@@ -63,11 +63,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
-
-// This message should return TSMessage.receivedAtDate for most messages.
-// For messages received before TSMessage.receivedAtDate was added, this
-// will try to return TSIncomingMessage.receivedAt.
-- (nullable NSDate *)bestReceivedAtDate;
 
 @end
 

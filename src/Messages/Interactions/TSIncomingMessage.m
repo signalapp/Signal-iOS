@@ -135,18 +135,6 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     [self touchThreadWithTransaction:transaction];
 }
 
-- (nullable NSDate *)bestReceivedAtDate
-{
-    NSDate *result = [super bestReceivedAtDate];
-    if (!result) {
-        // For backward compatibility with messages received before
-        // TSMessage.receivedAtData was added, honor TSIncomingMessage.receivedAt
-        // if TSMessage.receivedAtData is not set.
-        result = self.receivedAt;
-    }
-    return result;
-}
-
 #pragma mark - Logging
 
 + (NSString *)tag

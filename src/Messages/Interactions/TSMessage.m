@@ -132,10 +132,13 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
         _attachmentIds = [NSMutableArray new];
     }
 
-    _schemaVersion = OWSMessageSchemaVersion;
+    if (!_receivedAtDate) {
+        // TSIncomingMessage.receivedAt has been superceded by TSMessage.receivedAtDate.
+        NSDate *receivedAt = [coder decodeObjectForKey:@"receivedAt"];
+        _receivedAtDate = receivedAt;
+    }
 
-    // We _DO NOT_ set _receivedAt_ in this constructor.  We don't want to
-    // set the receivedAt time for old messages in the data store.
+    _schemaVersion = OWSMessageSchemaVersion;
 
     return self;
 }
@@ -220,9 +223,22 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return self.expiresInSeconds > 0;
 }
 
-- (nullable NSDate *)bestReceivedAtDate
+- (nullable NSDate *)receiptDateForSorting
 {
-    return self.receivedAtDate;
+    // Prefer receivedAtDate if set, otherwise fallback to date.
+    return self.receivedAtDate ?: self.date;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

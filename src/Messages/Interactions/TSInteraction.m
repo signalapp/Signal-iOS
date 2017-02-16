@@ -86,6 +86,11 @@
     return [myNumber unsignedLongLongValue];
 }
 
+- (nullable NSDate *)receiptDateForSorting
+{
+    return self.date;
+}
+
 - (NSString *)description {
     return @"Interaction description";
 }
