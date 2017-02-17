@@ -730,6 +730,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (IBAction)closeAction:(id)sender {
+    [self.searchController setActive:NO];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
