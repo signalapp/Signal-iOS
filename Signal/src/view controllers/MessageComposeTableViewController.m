@@ -135,8 +135,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
 
     if ([self.contacts count] == 0) {
         [self showEmptyBackgroundView:YES];
