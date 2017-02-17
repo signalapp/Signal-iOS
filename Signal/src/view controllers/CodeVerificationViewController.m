@@ -139,6 +139,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                                                         @"Text field placeholder for SMS verification code during registration");
     _challengeTextField.font = [UIFont ows_lightFontWithSize:21.f];
     _challengeTextField.textAlignment = NSTextAlignmentCenter;
+    _challengeTextField.keyboardType = UIKeyboardTypePhonePad;
     _challengeTextField.delegate    = self;
     [self.view addSubview:_challengeTextField];
     [_challengeTextField autoPinWidthToSuperviewWithMargin:kHMargin];
@@ -392,18 +393,6 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [self.view endEditing:NO];
 }
 
-- (NSString *)stringByFilteringString:(NSString *)input
-                     withCharacterSet:(NSCharacterSet *)characterSet {
-    NSMutableString *result = [NSMutableString new];
-    for (NSUInteger i=0; i < input.length; i++) {
-        unichar c = [input characterAtIndex:i];
-        if ([characterSet characterIsMember:c]) {
-            [result appendFormat:@"%c", c];
-        }
-    }
-    return [result copy];
-}
-
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText {
@@ -423,18 +412,14 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     // * Take partial input if possible.
     
     NSString *oldText = textField.text;
-    NSCharacterSet *validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
     // Construct the new contents of the text field by:
     // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
     //    Filtering will remove non-decimal digit characters like hyphen "-".
-    NSString *left = [self stringByFilteringString:[oldText substringToIndex:range.location]
-                                  withCharacterSet:validCharacterSet];
+    NSString *left = [oldText substringToIndex:range.location].digitsOnly;
     // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-    NSString *right = [self stringByFilteringString:[oldText substringFromIndex:range.location + range.length]
-                                   withCharacterSet:validCharacterSet];
+    NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
     // 3. Determining the "center" substring: the contents of the new insertion text.
-    NSString *center = [self stringByFilteringString:insertionText
-                                    withCharacterSet:validCharacterSet];
+    NSString *center = insertionText.digitsOnly;
     // 3a. Trim the tail of the "center" substring to ensure that we don't end up
     //     with more than 6 decimal digits.
     while (center.length > 0 &&
@@ -474,9 +459,17 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 }
 
 - (void)setVerificationCodeAndTryToVerify:(NSString *)verificationCode {
-    NSCharacterSet *validCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
-    self.challengeTextField.text = [self stringByFilteringString:verificationCode
-                                                withCharacterSet:validCharacterSet];
+    NSString *rawNewText = verificationCode.digitsOnly;
+    NSString *formattedNewText = (rawNewText.length <= 3
+                                  ? rawNewText
+                                  : [[[rawNewText substringToIndex:3]
+                                      stringByAppendingString:@"-"]
+                                     stringByAppendingString:[rawNewText substringFromIndex:3]]);
+    self.challengeTextField.text = formattedNewText;
+    // Move the cursor after the newly inserted text.
+    UITextPosition *newPosition = [self.challengeTextField endOfDocument];
+    self.challengeTextField.selectedTextRange = [self.challengeTextField textRangeFromPosition:newPosition
+                                                                                    toPosition:newPosition];
     [self verifyChallengeAction:nil];
 }
 
