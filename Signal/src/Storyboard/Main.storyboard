@@ -77,7 +77,7 @@
                             <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <color key="tintColor" red="0.99987119436264038" green="0.99998223781585693" blue="0.99984109401702881" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="u7y-N1-6Ba" kind="modal" id="0Mt-zV-9BX"/>
+                                <segue destination="u7y-N1-6Ba" kind="modal" identifier="ShowAppSettingsSegue" id="0Mt-zV-9BX"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">

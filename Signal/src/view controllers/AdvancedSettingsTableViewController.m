@@ -10,6 +10,7 @@
 #import "RPAccountManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
+#import "UIViewController+OWS.h"
 #import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 
@@ -56,6 +57,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     
+    [self useOWSBackButton];
+
     // WebRTC
     self.enableWebRTCCell                        = [[UITableViewCell alloc] init];
     self.enableWebRTCCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC",

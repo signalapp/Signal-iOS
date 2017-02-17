@@ -1,9 +1,5 @@
 //
-//  PrivacySettingsTableViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 05/01/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -11,6 +7,7 @@
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "UIUtil.h"
+#import "UIViewController+OWS.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -48,6 +45,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
+
+    [self useOWSBackButton];
 
     // Enable Screen Security Cell
     self.enableScreenSecurityCell                = [[UITableViewCell alloc] init];

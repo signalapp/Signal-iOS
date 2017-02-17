@@ -138,6 +138,44 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                              selector:@selector(handleDismissCallInterstitialNotification:)
                                                  name:[CallService dismissCallInterstitialNotificationName]
                                                object:nil];
+    
+    [self updateBarButtonItems];
+}
+
+- (void)updateBarButtonItems {
+    const CGFloat kBarButtonSize = 44;
+    if (YES) {
+        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+        // The contents of the navigation bar are cramped in this view.
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+        [button setImage:image
+                forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // left inset tighten up the layout.
+        imageEdgeInsets.right = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.5f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        button.imageEdgeInsets = imageEdgeInsets;
+        button.accessibilityLabel = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+        [button addTarget:self
+                   action:@selector(settingsButtonPressed:)
+             forControlEvents:UIControlEventTouchUpInside];
+        button.frame = CGRectMake(0, 0,
+                                  round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                  round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    }
+}
+
+- (void)settingsButtonPressed:(id)sender {
+    [self performSegueWithIdentifier:@"ShowAppSettingsSegue" sender:sender];
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
