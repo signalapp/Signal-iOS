@@ -30,22 +30,7 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
                           authorId:authorId
                     sourceDeviceId:sourceDeviceId
                        messageBody:body
-                     attachmentIds:@[]];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                         authorId:(NSString *)authorId
-                   sourceDeviceId:(uint32_t)sourceDeviceId
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                          authorId:authorId
-                    sourceDeviceId:sourceDeviceId
-                       messageBody:body
-                     attachmentIds:attachmentIds
+                     attachmentIds:@[]
                   expiresInSeconds:0];
 }
 

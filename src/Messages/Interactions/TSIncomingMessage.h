@@ -37,31 +37,6 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
                       messageBody:(nullable NSString *)body;
 
 /**
- *  Inits an incoming group message with attachments
- *
- *  @param timestamp
- *    When the message was created in milliseconds since epoch
- *  @param thread
- *    Thread to which the message belongs
- *  @param authorId
- *    Signal ID (i.e. e164) of the user who sent the message
- *  @param sourceDeviceId
- *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
- *  @param body
- *    Body of the message
- *  @param attachmentIds
- *    The uniqueIds for the message's attachments
- *
- *  @return initiated incoming group message
- */
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                         authorId:(NSString *)authorId
-                   sourceDeviceId:(uint32_t)sourceDeviceId
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
-
-/**
  *  Inits an incoming group message that expires.
  *
  *  @param timestamp
@@ -93,8 +68,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 
 
 /**
- * For sake of a smaller API, you must specify an author id for all incoming messages
- * though we technically could get the author id from a contact thread.
+ * For sake of a smaller API, and simplifying assumptions elsewhere, you must specify an author id for *all* incoming
+ * messages, even though we technically could infer the author id for a contact threads.
  */
 - (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_UNAVAILABLE;

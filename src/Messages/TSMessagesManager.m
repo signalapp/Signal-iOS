@@ -662,27 +662,18 @@ NS_ASSUME_NONNULL_BEGIN
               [incomingMessage markAsReadLocallyWithTransaction:transaction];
           }
 
-          // Android allows attachments to be sent with body.
+          // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
+          // message
           if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
               // We want the text to be displayed under the attachment
               uint64_t textMessageTimestamp = timestamp + 1;
-              TSIncomingMessage *textMessage;
-              if ([thread isGroupThread]) {
-                  TSGroupThread *gThread = (TSGroupThread *)thread;
-                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                    inThread:gThread
-                                                                    authorId:envelope.source
-                                                              sourceDeviceId:envelope.sourceDevice
-                                                                 messageBody:body];
-              } else {
-                  TSContactThread *cThread = (TSContactThread *)thread;
-                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                    inThread:cThread
-                                                                    authorId:[cThread contactIdentifier]
-                                                              sourceDeviceId:envelope.sourceDevice
-                                                                 messageBody:body];
-              }
-              textMessage.expiresInSeconds = dataMessage.expireTimer;
+              TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                                   inThread:thread
+                                                                                   authorId:envelope.source
+                                                                             sourceDeviceId:envelope.sourceDevice
+                                                                                messageBody:body
+                                                                              attachmentIds:@[]
+                                                                           expiresInSeconds:dataMessage.expireTimer];
               [textMessage saveWithTransaction:transaction];
           }
       }
