@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UISearchController *searchController;
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
-@property (nonatomic) UIBarButtonItem *addGroup;
 @property (nonatomic) UIView *loadingBackgroundView;
 
 @property (nonatomic, copy) NSArray<Contact *> *contacts;
@@ -240,35 +239,20 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (void)showLoadingBackgroundView:(BOOL)show {
     if (show && !self.isBackgroundViewHidden) {
-        _addGroup = self.navigationItem.rightBarButtonItem != nil ? _addGroup : self.navigationItem.rightBarButtonItem;
-        self.navigationItem.rightBarButtonItem = nil;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView          = _loadingBackgroundView;
         self.refreshControl                    = nil;
         self.tableView.backgroundView.opaque   = YES;
     } else {
         [self initializeRefreshControl];
-        self.navigationItem.rightBarButtonItem =
-            self.navigationItem.rightBarButtonItem != nil ? self.navigationItem.rightBarButtonItem : _addGroup;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
     }
 }
 
-
 - (void)showEmptyBackgroundView:(BOOL)show {
     if (show) {
         self.refreshControl = nil;
-        _addGroup = self.navigationItem.rightBarButtonItem != nil ? _addGroup : self.navigationItem.rightBarButtonItem;
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnRefresh--white"]
-                                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(refreshContacts)];
-        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8, 8, 8, 8);
-
-
         self.inviteCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
@@ -276,8 +260,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     } else {
         [self initializeRefreshControl];
         self.refreshControl.enabled = YES;
-        self.navigationItem.rightBarButtonItem =
-            self.navigationItem.rightBarButtonItem != nil ? self.navigationItem.rightBarButtonItem : _addGroup;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
         self.inviteCell.hidden = NO;
@@ -330,7 +312,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     [self.tableView reloadData];
 }
-
 
 #pragma mark - UISearchBarDelegate
 
