@@ -147,6 +147,10 @@
         self.imageView.userInteractionEnabled       = YES;
         self.imageView.clipsToBounds                = YES;
         self.imageView.layer.allowsEdgeAntialiasing = YES;
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        self.imageView.layer.minificationFilter = kCAFilterTrilinear;
+        self.imageView.layer.magnificationFilter = kCAFilterTrilinear;
     }
 
     [self.scrollView addSubview:self.imageView];
