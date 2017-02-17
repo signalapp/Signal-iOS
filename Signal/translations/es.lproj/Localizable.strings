@@ -374,10 +374,10 @@
 "INCOMING_CALL" = "Llamada entrante";
 
 /* notification body */
-"INCOMING_CALL_FROM" = "Llamada entrante de %@";
+"INCOMING_CALL_FROM" = "Llamada de %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Llamada cancelada de";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitar contactos";
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Has recibido una llamada de %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ ha intentado llamarte.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Has llamado a %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Has intentado llamar a %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "No puedes asociar más dispositivos.";
@@ -568,7 +568,7 @@
 "OUTGOING_CALL" = "Llamada saliente";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Llamada cancelada";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Esas no son las cifras de seguridad del chat con %@. ¿Estás identificando el contacto correcto?";
@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Activar vídeollamadas (beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Activar vídeollamadas";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "No se han podido actualizar tus ajustes.";

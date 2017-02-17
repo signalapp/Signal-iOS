@@ -377,7 +377,7 @@
 "INCOMING_CALL_FROM" = "Inkomende oproep van %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Onvolledige inkomende oproep van";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen bij Signal";
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Je ontving een oproep van %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ heeft je proberen bellen.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Je belde %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Je hebt %@ proberen bellen.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -568,7 +568,7 @@
 "OUTGOING_CALL" = "Uitgaande oproep";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Onvolledige uitgaande oproep";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dit lijkt niet op je veiligheidsnummer met %@. Verifieer je wel het juiste contact?";
@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Geavanceerd";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Schakel videobellen in (beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Schakel videobellen in";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Kon je voorkeuren niet bijwerken.";
@@ -937,7 +937,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Verstuur verificatiecode";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Bevestigen";
+"VERIFICATION_HEADER" = "Verifiëren";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Veiligheidsnummer verifiëren";

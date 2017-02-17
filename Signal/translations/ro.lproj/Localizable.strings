@@ -377,7 +377,7 @@
 "INCOMING_CALL_FROM" = "Apel de intrare de la %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Apel de intrare incomplet de la";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invită-ți prietenii la Signal";
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Ai primit un apel de la %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ a încercat să te sune.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Ai apelat pe %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Ai încercat să suni pe %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nu mai poți conecta alte dispozitive.";
@@ -565,10 +565,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ a setat timpul de expirare a mesajelor la %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Apel de eșire";
+"OUTGOING_CALL" = "Apel de ieșire";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Apel de ieșire incomplet";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansat";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Preferințele tale nu au putut fi actualizate.";

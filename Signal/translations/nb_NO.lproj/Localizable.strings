@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avansert";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Skru på videosamtaler (beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Skru på videosamtaler";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Kunne ikke oppdatere innstillingene dine.";

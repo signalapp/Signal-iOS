@@ -68,16 +68,16 @@
 "ATTACHMENT_QUEUED" = "Ny bifogad fil i kö för hämtning.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal behöver åtkomst till mikrofonen för att fungera. Du kan tillåta det i Inställningar >> Integritetsskydd >> Mikrofon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Ringer...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Inget svar.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -233,13 +233,13 @@
 "END_CALL_REPLACED_BY_NEXT" = "Du gjorde ett annat samtal.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Upptaget.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Missade samtalet.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Samtalsfel.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Kunde inte skicka meddelande.";
@@ -254,10 +254,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Försök igen senare.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ett okänt fel inträffade.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten är inte en Signal-användare.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Fick ett duplicerat meddelande.";
@@ -368,7 +368,7 @@
 "IN_CALL_TALKING" = "Säkrat. Aktiv.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Samtalet avslutades.";
 
 /* notification body */
 "INCOMING_CALL" = "Inkommande samtal";
@@ -462,7 +462,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal behöver åtkomst till kameran för videosamtal. Du kan tillåta det i Inställningar >> Integritetsskydd >> Kamera >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -475,13 +475,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Du tog emot ett samtal från %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ försökte ringa dig.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Du ringde %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Du försökte ringa %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte koppla till fler enheter.";
@@ -508,7 +508,7 @@
 "NETWORK_STATUS_TEXT" = "Du kan se din nätverksstatus på den färgade raden ovanför din inkorg.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Ny konversation med %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Välj gruppbild";
@@ -523,7 +523,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Lägg till personer";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Hitta kontakter via telefonnummer";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Ditt meddelande kunde inte skickas till %@.";
@@ -733,7 +733,7 @@
 "SEND_INVITE_SUCCESS" = "Du har bjudit in din vän att använda Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Skicka inbjudan via SMS till: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Bjud in en vän via osäkert SMS?";
@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Om";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Använd CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Slå på debug-log";
@@ -757,13 +757,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Avancerat";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Aktivera Videosamtal";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Kunde inte uppdatera dina inställningar.";
 
 /* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Fel";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Kräver ditt godkännande innan du kommunicerar med någon som har ett säkert nummer, vanligtvis från en ominstallation av Signal.";
@@ -820,10 +820,10 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Förhindrar Signals förhandsvisning när du växlar mellan appar.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit låter dig svara samtal direkt från låsskärmen. Men var medveten om att när du använder CallKit så synkar Apple viss metadata till ditt iCloud-konto.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skärmsäkerhet";
@@ -877,7 +877,7 @@
 "TXT_DELETE_TITLE" = "Radera";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Kunde inte ringa.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Avarkivera";

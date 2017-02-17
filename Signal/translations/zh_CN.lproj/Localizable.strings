@@ -757,7 +757,7 @@
 "SETTINGS_ADVANCED_TITLE" = "高级";
 
 /* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
+"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling";
 
 /* The message of the alert shown when updates to the WebRTC property fail. */
 "SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
