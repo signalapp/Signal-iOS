@@ -121,7 +121,6 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 
 @property (nonatomic, readonly) NSString *authorId;
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
-@property (nonatomic, readonly) NSDate *receivedAt;
 
 /*
  * Marks a message as having been read on this device (as opposed to responding to a remote read receipt).

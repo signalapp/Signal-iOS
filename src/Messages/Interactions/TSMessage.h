@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 12/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSInteraction.h"
 
@@ -29,6 +30,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly) BOOL shouldStartExpireTimer;
+// _DO NOT_ access this property directly.  You almost certainly
+// want to use receiptDateForSorting instead.
+@property (nonatomic, readonly) NSDate *receivedAtDate;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
 

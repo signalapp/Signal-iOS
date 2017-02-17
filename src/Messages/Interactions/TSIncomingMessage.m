@@ -61,7 +61,8 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 
     _authorId = authorId;
     _read = NO;
-    _receivedAt = [NSDate date];
+
+    OWSAssert(self.receivedAtDate);
 
     return self;
 }

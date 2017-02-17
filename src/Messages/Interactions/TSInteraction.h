@@ -31,5 +31,6 @@
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (nullable NSDate *)receiptDateForSorting;
 
 @end
