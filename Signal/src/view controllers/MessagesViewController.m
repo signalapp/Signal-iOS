@@ -544,8 +544,29 @@ typedef enum : NSUInteger {
     // isn't a convenient way to calculate these in a navigation bar, so we just leave
     // a constant amount of space which will be safe unless Apple makes radical changes
     // to the appearance of the navigation bar.
-    const CGFloat kMaxTitleViewWidth = kShortScreenDimension - 145;
-    const CGFloat titleViewWidth = MIN(kMaxTitleViewWidth,
+    int rightBarButtonItemCount = 0;
+    if ([self canCall]) {
+        rightBarButtonItemCount++;
+    }
+    if (disappearingMessagesConfiguration.isEnabled) {
+        rightBarButtonItemCount++;
+    }
+    CGFloat rightBarButtonSize = 0;
+    switch (rightBarButtonItemCount) {
+        case 0:
+            rightBarButtonSize = 65;
+            break;
+        case 1:
+            rightBarButtonSize = 100;
+            break;
+        default:
+            OWSAssert(0);
+        case 2:
+            rightBarButtonSize = 145;
+            break;
+    }
+    CGFloat maxTitleViewWidth = kShortScreenDimension - rightBarButtonSize;
+    const CGFloat titleViewWidth = MIN(maxTitleViewWidth,
                                        MAX(self.navigationBarTitleLabel.frame.size.width,
                                            self.navigationBarSubtitleLabel.frame.size.width));
     self.navigationBarTitleView.frame = CGRectMake(0, 0,
@@ -572,47 +593,62 @@ typedef enum : NSUInteger {
         return;
     }
 
+    const CGFloat kBarButtonSize = 44;
     NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
     if ([self canCall]) {
         // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
         // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
         // The contents of the navigation bar are cramped in this view.
         UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        // The "phone_white_thin" image is slightly assymetric in order
-        // to avoid an excessive margin against the right edge of the screen.
-        [callButton setImage:[UIImage imageNamed:@"phone_white_thin"]
+        UIImage *image = [UIImage imageNamed:@"button_phone_white"];
+        [callButton setImage:image
                     forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // right inset tighten up the layout.
+        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.25f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        callButton.imageEdgeInsets = imageEdgeInsets;
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibilty label for placing call button");
         [callButton addTarget:self
                        action:@selector(callAction:)
              forControlEvents:UIControlEventTouchUpInside];
-        [callButton sizeToFit];
+        callButton.frame = CGRectMake(0, 0,
+                                      round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                      round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
         [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton]];
-    } else if ([self.thread isGroupThread]) {
-        UIButton *manageGroupButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        // The "phone_white_thin" image is slightly assymetric in order
-        // to avoid an excessive margin against the right edge of the screen.
-        [manageGroupButton setImage:[UIImage imageNamed:@"settings_white_thin"]
-                           forState:UIControlStateNormal];
-        manageGroupButton.accessibilityLabel = NSLocalizedString(@"GROUP_SETTINGS_LABEL", @"Accessibilty label for group settings");
-        [manageGroupButton addTarget:self
-                              action:@selector(didTapManageGroupButton:)
-                    forControlEvents:UIControlEventTouchUpInside];
-        [manageGroupButton sizeToFit];
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:manageGroupButton]];
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
         UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [timerButton setImage:[UIImage imageNamed:@"timer_white_thin"]
+        UIImage *image = [UIImage imageNamed:@"button_timer_white"];
+        [timerButton setImage:image
                     forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // right inset tighten up the layout.
+        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.25f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        timerButton.imageEdgeInsets = imageEdgeInsets;
         timerButton.accessibilityLabel = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
         NSString *formatString = NSLocalizedString(@"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
         timerButton.accessibilityHint = [NSString stringWithFormat:formatString, [disappearingMessagesConfiguration durationString]];
         [timerButton addTarget:self
                         action:@selector(didTapTimerInNavbar:)
               forControlEvents:UIControlEventTouchUpInside];
-        [timerButton sizeToFit];
+        timerButton.frame = CGRectMake(0, 0,
+                                       round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                       round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
         [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerButton]];
     }
     
@@ -1181,12 +1217,6 @@ typedef enum : NSUInteger {
 - (void)didTapTitle
 {
     DDLogDebug(@"%@ Tapped title in navbar", self.tag);
-    [self showConversationSettings];
-}
-
-- (void)didTapManageGroupButton:(id)sender
-{
-    DDLogDebug(@"%@ Tapped options menu in navbar", self.tag);
     [self showConversationSettings];
 }
 
