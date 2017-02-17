@@ -15,6 +15,7 @@ NSString *const TSStorageManagerSignedPreKeyStoreCollection = @"TSStorageManager
 NSString *const TSStorageManagerSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
 NSString *const TSStorageManagerKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
 NSString *const TSStorageManagerKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyUpdateFailureDate";
+NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSignedPrekeyId";
 
 @implementation TSStorageManager (SignedPreKeyStore)
 
@@ -40,6 +41,12 @@ NSString *const TSStorageManagerKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyU
     } else {
         return preKeyRecord;
     }
+}
+
+- (nullable SignedPreKeyRecord *)loadSignedPrekeyOrNil:(int)signedPreKeyId
+{
+    return [self signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
+                             inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 }
 
 - (NSArray *)loadSignedPreKeys {
@@ -71,6 +78,19 @@ NSString *const TSStorageManagerKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyU
 
 - (void)removeSignedPreKey:(int)signedPrekeyId {
     [self removeObjectForKey:[self keyFromInt:signedPrekeyId] inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+}
+
+- (nullable NSNumber *)currentSignedPrekeyId
+{
+    return [TSStorageManager.sharedManager objectForKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+}
+
+- (void)setCurrentSignedPrekeyId:(int)value
+{
+    [TSStorageManager.sharedManager setObject:@(value)
+                                       forKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                                 inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 #pragma mark - Prekey update failures
