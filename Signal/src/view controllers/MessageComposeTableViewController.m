@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 // which are known to correspond to Signal accounts.
 @property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
 
-@property (nonatomic) BOOL isBackgroundViewHidden;
+@property (nonatomic) BOOL isNoContactsViewVisible;
 
 @end
 
@@ -138,9 +138,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    if ([self.contacts count] == 0) {
-        [self showEmptyBackgroundView:YES];
-    }
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (UILabel *)createLabelWithFirstLine:(NSString *)firstLine andSecondLine:(NSString *)secondLine {
@@ -225,9 +223,10 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)hideBackgroundView {
-    self.isBackgroundViewHidden = YES;
+    [[Environment preferences] setHasDeclinedNoContactsView:YES];
     
-    [self showEmptyBackgroundView:NO];
+//    [self showEmptyBackgroundView:NO];
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (void)presentInviteFlow
@@ -238,7 +237,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)showLoadingBackgroundView:(BOOL)show {
-    if (show && !self.isBackgroundViewHidden) {
+    if (show) {
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView          = _loadingBackgroundView;
         self.refreshControl                    = nil;
@@ -250,10 +249,20 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     }
 }
 
-- (void)showEmptyBackgroundView:(BOOL)show {
-    if (show) {
+- (void)showEmptyBackgroundViewIfNecessary {
+    self.isNoContactsViewVisible = ([self.contacts count] == 0 &&
+                                    ![[Environment preferences] hasDeclinedNoContactsView]);
+}
+
+- (void)setIsNoContactsViewVisible:(BOOL)isNoContactsViewVisible {
+    if (isNoContactsViewVisible == _isNoContactsViewVisible) {
+        return;
+    }
+    
+    _isNoContactsViewVisible = isNoContactsViewVisible;
+
+    if (isNoContactsViewVisible) {
         self.refreshControl = nil;
-        self.inviteCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
@@ -262,12 +271,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         self.refreshControl.enabled = YES;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
-        self.inviteCell.hidden = NO;
     }
     
-    for (UITableViewCell *cell in self.tableView.visibleCells) {
-        cell.hidden = show;
-    }
+    [self.tableView reloadData];
 }
 
 #pragma mark - Initializers
@@ -514,7 +520,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return MessageComposeTableViewControllerSection_Count;
+    return (self.isNoContactsViewVisible
+            ? 0
+            : MessageComposeTableViewControllerSection_Count);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -577,14 +585,12 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                                 phoneNumber];
         return inviteViaSMSCell;
     } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteFlow) {
-        self.inviteCell.hidden = NO;
         return self.inviteCell;
     } else {
         OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
         
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
-        cell.hidden = NO;
 
         [cell configureWithContact:[self contactForIndexPath:indexPath] contactsManager:self.contactsManager];
 
@@ -664,11 +670,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [self.refreshControl endRefreshing];
 
     [self showLoadingBackgroundView:NO];
-    if ([self.contacts count] == 0) {
-        [self showEmptyBackgroundView:YES];
-    } else {
-        [self showEmptyBackgroundView:NO];
-    }
+    
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (void)refreshContacts {
