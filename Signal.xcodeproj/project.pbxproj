@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		340757C21E5602D6001F15DD /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 340757C11E5602D6001F15DD /* AttachmentSharing.m */; };
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */; };
@@ -599,6 +600,8 @@
 
 /* Begin PBXFileReference section */
 		1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		340757C01E5602D6001F15DD /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
+		340757C11E5602D6001F15DD /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		341BB7471DB727EE001E2975 /* JSQMediaItem+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMediaItem+OWS.h"; sourceTree = "<group>"; };
 		341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMediaItem+OWS.m"; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
@@ -2013,18 +2016,20 @@
 		76EB04FE18170B33006006FC /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				340757C01E5602D6001F15DD /* AttachmentSharing.h */,
+				340757C11E5602D6001F15DD /* AttachmentSharing.m */,
+				451764261DE939F300EDB8B9 /* ContactsPicker.swift */,
+				E94066141DFC5B7B00B15392 /* ContactsPicker.xib */,
+				76EB050B18170B33006006FC /* InCallViewController.h */,
+				76EB050C18170B33006006FC /* InCallViewController.m */,
+				45514DE11DDFA183003EFF90 /* InviteFlow.swift */,
+				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
+				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
+				458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */,
+				458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */,
 				FC3196311A08141D0094C78E /* Settings */,
 				FC3196321A08142D0094C78E /* Signals */,
 				FCFD25791A1543D500F4C644 /* Signup */,
-				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
-				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
-				76EB050B18170B33006006FC /* InCallViewController.h */,
-				76EB050C18170B33006006FC /* InCallViewController.m */,
-				458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */,
-				458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */,
-				451764261DE939F300EDB8B9 /* ContactsPicker.swift */,
-				45514DE11DDFA183003EFF90 /* InviteFlow.swift */,
-				E94066141DFC5B7B00B15392 /* ContactsPicker.xib */,
 			);
 			name = "View Controllers";
 			path = "view controllers";
@@ -3060,6 +3065,7 @@
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
 				76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
+				340757C21E5602D6001F15DD /* AttachmentSharing.m in Sources */,
 				76EB05BA18170B33006006FC /* CommitPacket.m in Sources */,
 				76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
 				76EB05FC18170B33006006FC /* CallConnectUtil_Server.m in Sources */,

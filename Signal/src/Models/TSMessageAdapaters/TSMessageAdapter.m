@@ -1,11 +1,8 @@
-//  TSMessageAdapter.m
 //
-//  Signal
-//
-//  Created by Frederic Jacobs on 24/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "AttachmentSharing.h"
 #import "OWSCall.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -222,14 +219,15 @@
 
 - (BOOL)canPerformEditingAction:(SEL)action
 {
-
     // Deletes are always handled by TSMessageAdapter
     if (action == @selector(delete:)) {
         return YES;
     }
 
     // Delegate other actions for media items
-    if (self.isMediaMessage) {
+    if ([self attachmentStream] && action == NSSelectorFromString(@"share:")) {
+        return YES;
+    } else if (self.isMediaMessage) {
         return [self.mediaItem canPerformEditingAction:action];
     } else if (self.messageType == TSInfoMessageAdapter || self.messageType == TSErrorMessageAdapter) {
         return NO;
@@ -249,7 +247,15 @@
         DDLogDebug(@"Deleting interaction with uniqueId: %@", self.interaction.uniqueId);
         [self.interaction remove];
         return;
+    } else if (action == NSSelectorFromString(@"share:")) {
+        TSAttachmentStream *stream = [self attachmentStream];
+        OWSAssert(stream);
+        if (stream) {
+            [AttachmentSharing showShareUIForAttachment:stream];
+        }
+        return;
     }
+
 
     // Delegate other actions for media items
     if (self.isMediaMessage) {
@@ -269,6 +275,29 @@
         actionString,
         self.interaction.uniqueId,
         [self.mediaItem class]);
+}
+
+- (TSAttachmentStream *)attachmentStream
+{
+    if (![self.interaction isKindOfClass:[TSMessage class]]) {
+        return nil;
+    }
+
+    TSMessage *message = (TSMessage *)self.interaction;
+
+    if (![message hasAttachments]) {
+        return nil;
+    }
+    OWSAssert(message.attachmentIds.count <= 1);
+    NSString *attachmentID = message.attachmentIds[0];
+    TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
+
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        return nil;
+    }
+
+    TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
+    return stream;
 }
 
 - (BOOL)isMediaMessage {

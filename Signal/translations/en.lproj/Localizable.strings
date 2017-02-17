@@ -67,15 +67,6 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
-/* Short name for edit menu item to copy contents of media message. */
-"ATTACHMENT_VIEW_COPY_ACTION" = "Copy";
-
-/* Short name for edit menu item to save contents of media message. */
-"ATTACHMENT_VIEW_SAVE_ACTION" = "Save";
-
-/* Short name for edit menu item to share contents of media message. */
-"ATTACHMENT_VIEW_SHARE_ACTION" = "Share";
-
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
@@ -166,8 +157,14 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edit Group";
 
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copy";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Save";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Share";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
