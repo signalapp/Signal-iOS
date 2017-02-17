@@ -51,6 +51,10 @@
         imageView.frame         = CGRectMake(0.0f, 0.0f, size.width, size.height);
         imageView.contentMode   = UIViewContentModeScaleAspectFill;
         imageView.clipsToBounds = YES;
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        imageView.layer.minificationFilter = kCAFilterTrilinear;
+        imageView.layer.magnificationFilter = kCAFilterTrilinear;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;
