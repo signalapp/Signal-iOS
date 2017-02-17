@@ -67,15 +67,6 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
-/* Short name for edit menu item to copy contents of media message. */
-"ATTACHMENT_VIEW_COPY_ACTION" = "Copy";
-
-/* Short name for edit menu item to save contents of media message. */
-"ATTACHMENT_VIEW_SAVE_ACTION" = "Save";
-
-/* Short name for edit menu item to share contents of media message. */
-"ATTACHMENT_VIEW_SHARE_ACTION" = "Share";
-
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
@@ -165,6 +156,9 @@
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edit Group";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copy";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Save";

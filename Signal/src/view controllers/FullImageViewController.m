@@ -212,11 +212,11 @@
         }
 
         NSArray *menuItems = @[
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_COPY_ACTION", @"Short name for edit menu item to copy contents of media message.")
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION", @"Short name for edit menu item to copy contents of media message.")
                                                           action:@selector(copyAttachment:)],
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
                                                           action:@selector(saveAttachment:)],
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"ATTACHMENT_VIEW_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
                                                           action:@selector(shareAttachment:)],
                                ];
         [UIMenuController sharedMenuController].menuItems = menuItems;
