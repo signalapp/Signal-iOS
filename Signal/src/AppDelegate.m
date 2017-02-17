@@ -291,15 +291,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     
     [self removeScreenProtection];
 
-    static BOOL hasCheckedPrekeys = NO;
-    if (!hasCheckedPrekeys) {
-        // Always check prekeys after app launches...
-        [TSPreKeyManager refreshPreKeys];
-        hasCheckedPrekeys = YES;
-    } else {
-        // ...and sometimes check on app activation.
-        [TSPreKeyManager checkPreKeysIfNecessary];
-    }
+    // Always check prekeys after app launches, and sometimes check on app activation.
+    [TSPreKeyManager checkPreKeysIfNecessary];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
