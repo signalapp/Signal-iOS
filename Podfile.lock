@@ -140,7 +140,7 @@ CHECKOUT OPTIONS:
     :commit: 945c04f9e70f7119d2ada4edb938849f3b7febab
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 5ed95c4782be899e81b85196c4695cdb9e45276b
+    :commit: 427f225df9be0b6789af95b28f500d451722fe29
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
