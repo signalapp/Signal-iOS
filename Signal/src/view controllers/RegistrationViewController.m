@@ -26,6 +26,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
     // Do any additional setup after loading the view.
     _phoneNumberTextField.delegate = self;
+    _phoneNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self populateDefaultCountryNameAndCode];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 
@@ -148,35 +149,41 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString *)string {
-    NSString *textBeforeChange = textField.text;
-
-    // backspacing should skip over formatting characters
-    UITextPosition *posIfBackspace = [textField positionFromPosition:textField.beginningOfDocument
-                                                              offset:(NSInteger)(range.location + range.length)];
-    UITextRange *rangeIfBackspace = [textField textRangeFromPosition:posIfBackspace toPosition:posIfBackspace];
-    bool isBackspace =
-        string.length == 0 && range.length == 1 && [rangeIfBackspace isEqual:textField.selectedTextRange];
-    if (isBackspace) {
-        NSString *digits                       = textBeforeChange.digitsOnly;
-        NSUInteger correspondingDeletePosition = [PhoneNumberUtil translateCursorPosition:range.location + range.length
-                                                                                     from:textBeforeChange
-                                                                                       to:digits
-                                                                        stickingRightward:true];
-        if (correspondingDeletePosition > 0) {
-            textBeforeChange = digits;
-            range            = NSMakeRange(correspondingDeletePosition - 1, 1);
-        }
-    }
-
-    // make the proposed change
-    NSString *textAfterChange            = [textBeforeChange withCharactersInRange:range replacedBy:string];
-    NSUInteger cursorPositionAfterChange = range.location + string.length;
-
+                replacementString:(NSString *)insertionText {
+    
+    // Phone numbers takes many forms.
+    //
+    // * We only want to let the user enter decimal digits.
+    // * The user shouldn't have to enter hyphen, parentheses or whitespace;
+    //   the phone number should be formatted automatically.
+    // * The user should be able to copy and paste freely.
+    // * Invalid input should be simply ignored.
+    //
+    // We accomplish this by being permissive and trying to "take as much of the user
+    // input as possible".
+    //
+    // * Always accept deletes.
+    // * Ignore invalid input.
+    // * Take partial input if possible.
+    
+    NSString *oldText = textField.text;
+    // Construct the new contents of the text field by:
+    // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
+    //    Filtering will remove non-decimal digit characters like hyphen "-".
+    NSString *left = [oldText substringToIndex:range.location].digitsOnly;
+    // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
+    NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
+    // 3. Determining the "center" substring: the contents of the new insertion text.
+    NSString *center = insertionText.digitsOnly;
+    // 4. Construct the "raw" new text by concatenating left, center and right.
+    NSString *textAfterChange = [[left stringByAppendingString:center]
+                                 stringByAppendingString:right];
+    // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
-    bool isJustDeletion = string.length == 0;
+    bool isJustDeletion = insertionText.length == 0;
+    NSUInteger cursorPositionAfterChange = left.length + center.length;
     NSString *textAfterReformat =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange.digitsOnly
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
                                                      withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
                                                                                  from:textAfterChange
@@ -184,10 +191,16 @@ static NSString *const kCodeSentSegue = @"codeSent";
                                                                     stickingRightward:isJustDeletion];
     textField.text = textAfterReformat;
     UITextPosition *pos =
-        [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
+    [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
-
+    
     return NO; // inform our caller that we took care of performing the change
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self sendCodeAction:nil];
+    [textField resignFirstResponder];
+    return NO;
 }
 
 #pragma mark - Unwind segue
