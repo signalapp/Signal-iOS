@@ -1,22 +1,14 @@
 //
-//  ShowGroupMembersViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShowGroupMembersViewController.h"
-
-
 #import "SignalsViewController.h"
-
 #import "OWSContactsManager.h"
 #import "Environment.h"
 #import "GroupContactsResult.h"
-
 #import "UIUtil.h"
-
+#import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,7 +19,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 @property GroupContactsResult *groupContacts;
 @property TSGroupThread *thread;
-@property (nonatomic, readonly, strong) OWSContactsManager *_Nonnull contactsManager;
+@property (nonatomic, readonly) OWSContactsManager *_Nonnull contactsManager;
 
 @end
 
@@ -66,6 +58,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.title = _thread.groupModel.groupName;
+
+    [self useOWSBackButton];
 
     [self initializeTableView];
 

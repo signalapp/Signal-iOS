@@ -37,6 +37,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
+#import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
@@ -509,10 +510,8 @@ typedef enum : NSUInteger {
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
-    UIImage *backImage = [UIImage imageNamed:@"NavBarBack"];
-    OWSAssert(backImage);
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:backImage style:UIBarButtonItemStylePlain target:self action:@selector(backButtonPressed:)];
-    
+    UIBarButtonItem *backItem = [self createOWSBackButton];
+
     const CGFloat kTitleVSpacing = 0.f;
     if (!self.navigationBarTitleView) {
         self.navigationBarTitleView = [UIView new];
@@ -539,8 +538,8 @@ typedef enum : NSUInteger {
     [self.navigationBarSubtitleLabel sizeToFit];
     const CGFloat kShortScreenDimension = MIN([UIScreen mainScreen].bounds.size.width,
                                               [UIScreen mainScreen].bounds.size.height);
-    // We want to leave space for the "back" button, the "timer" button, the "call" or
-    // "group settings" button, and all of the whitespace around these views.  There
+    // We want to leave space for the "back" button, the "timer" button, and the "call"
+    // button, and all of the whitespace around these views.  There
     // isn't a convenient way to calculate these in a navigation bar, so we just leave
     // a constant amount of space which will be safe unless Apple makes radical changes
     // to the appearance of the navigation bar.
@@ -561,6 +560,7 @@ typedef enum : NSUInteger {
             break;
         default:
             OWSAssert(0);
+            // In production, fall through to the largest defined case.
         case 2:
             rightBarButtonSize = 145;
             break;
@@ -610,7 +610,7 @@ typedef enum : NSUInteger {
         // too far apart and too far from the edge of the screen. So we use a smaller
         // right inset tighten up the layout.
         imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.25f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
         imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
         imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
         callButton.imageEdgeInsets = imageEdgeInsets;
@@ -636,7 +636,7 @@ typedef enum : NSUInteger {
         // too far apart and too far from the edge of the screen. So we use a smaller
         // right inset tighten up the layout.
         imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.25f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
         imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
         imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
         timerButton.imageEdgeInsets = imageEdgeInsets;
@@ -2402,10 +2402,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Event Handling
-
-- (void)backButtonPressed:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
 
 - (void)navigationTitleTapped:(UIGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {

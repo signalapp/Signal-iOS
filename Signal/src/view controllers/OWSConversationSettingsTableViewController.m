@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/21/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSConversationSettingsTableViewController.h"
 #import "Environment.h"
@@ -11,6 +12,7 @@
 #import "ShowGroupMembersViewController.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import "UIViewController+OWS.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -165,6 +167,8 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         = NSLocalizedString(@"LEAVE_GROUP_ACTION", @"table cell label in conversation settings");
     self.listGroupMembersCell.textLabel.text
         = NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION", @"table cell label in conversation settings");
+
+    [self useOWSBackButton];
 
     self.toggleDisappearingMessagesCell.selectionStyle = UITableViewCellSelectionStyleNone;
     self.disappearingMessagesDurationCell.selectionStyle = UITableViewCellSelectionStyleNone;

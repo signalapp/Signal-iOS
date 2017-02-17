@@ -159,7 +159,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         // too far apart and too far from the edge of the screen. So we use a smaller
         // left inset tighten up the layout.
         imageEdgeInsets.right = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.25f);
+        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.5f);
         imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
         imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
         button.imageEdgeInsets = imageEdgeInsets;
