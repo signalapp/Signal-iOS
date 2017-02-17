@@ -26,7 +26,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
     // Do any additional setup after loading the view.
     _phoneNumberTextField.delegate = self;
-    _phoneNumberTextField.keyboardType = UIKeyboardTypePhonePad;
+    _phoneNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
     [self populateDefaultCountryNameAndCode];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 
@@ -183,8 +183,8 @@ static NSString *const kCodeSentSegue = @"codeSent";
     bool isJustDeletion = insertionText.length == 0;
     NSUInteger cursorPositionAfterChange = left.length + center.length;
     NSString *textAfterReformat =
-    [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
-                                                 withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
+                                                     withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat
