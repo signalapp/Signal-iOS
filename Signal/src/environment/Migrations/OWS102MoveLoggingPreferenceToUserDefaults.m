@@ -1,5 +1,5 @@
 //
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
@@ -22,8 +22,8 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
     DDLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
               @"NSUserDefaults");
 
-    NSNumber *existingValue = [self.storageManager objectForKey:PropertyListPreferencesKeyEnableDebugLog
-                                                   inCollection:PropertyListPreferencesSignalDatabaseCollection];
+    NSNumber *existingValue = [transaction objectForKey:PropertyListPreferencesKeyEnableDebugLog
+                                           inCollection:PropertyListPreferencesSignalDatabaseCollection];
 
     if (existingValue) {
         DDLogInfo(@"%@ assigning existing value: %@", self.tag, existingValue);
