@@ -1,9 +1,5 @@
 //
-//  TSAttributes.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 22/08/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttributes.h"
@@ -24,7 +20,8 @@
     return @{
         @"signalingKey" : signalingKey,
         @"AuthKey" : authToken,
-        @"voice" : [NSNumber numberWithBool:YES], // all Signal-iOS clients support voice
+        @"voice" : @(YES), // all Signal-iOS clients support voice
+        @"video" : @(YES), // all Signal-iOS clients support WebRTC-based voice and video calls.
         @"registrationId" : [NSString stringWithFormat:@"%i", [TSAccountManager getOrGenerateRegistrationId]]
     };
 }
