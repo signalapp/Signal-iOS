@@ -66,11 +66,6 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 #pragma mark - Calling
 
-#pragma mark WebRTC
-
-- (BOOL)isWebRTCEnabled;
-- (void)setIsWebRTCEnabled:(BOOL)flag;
-
 #pragma mark Callkit
 
 - (BOOL)isCallKitEnabled;
