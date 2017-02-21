@@ -64,7 +64,6 @@ static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 + (void)rerequestVoiceWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
-              isWebRTCEnabled:(BOOL)isWebRTCEnabled
                       success:(void (^)())successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 

@@ -16,16 +16,13 @@
 - (TSRequest *)initWithVerificationCode:(NSString *)verificationCode
                               forNumber:(NSString *)phoneNumber
                            signalingKey:(NSString *)signalingKey
-                                authKey:(NSString *)authKey
-                        isWebRTCEnabled:(BOOL)isWebRTCEnabled {
+                                authKey:(NSString *)authKey {
     self = [super
         initWithURL:[NSURL URLWithString:[NSString
                                              stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]]];
 
     NSDictionary *attributes =
-        [TSAttributes attributesWithSignalingKey:signalingKey
-                                 serverAuthToken:authKey
-                                 isWebRTCEnabled:isWebRTCEnabled];
+        [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey];
 
     _numberToValidate = phoneNumber;
     [self.parameters addEntriesFromDictionary:attributes];

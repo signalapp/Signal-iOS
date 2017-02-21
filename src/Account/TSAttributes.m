@@ -13,21 +13,18 @@
 
 @implementation TSAttributes
 
-+ (NSDictionary *)attributesFromStorage:(BOOL)isWebRTCEnabled {
++ (NSDictionary *)attributesFromStorageWithVoiceSupport {
     return [self attributesWithSignalingKey:[TSStorageManager signalingKey]
-                            serverAuthToken:[TSStorageManager serverAuthToken]
-                            isWebRTCEnabled:isWebRTCEnabled];
+                            serverAuthToken:[TSStorageManager serverAuthToken]];
 }
 
 + (NSDictionary *)attributesWithSignalingKey:(NSString *)signalingKey
                              serverAuthToken:(NSString *)authToken
-                             isWebRTCEnabled:(BOOL)isWebRTCEnabled
 {
     return @{
         @"signalingKey" : signalingKey,
         @"AuthKey" : authToken,
-        @"voice" : @(YES), // all Signal-iOS clients support voice
-        @"video" : @(isWebRTCEnabled),
+        @"voice" : [NSNumber numberWithBool:YES], // all Signal-iOS clients support voice
         @"registrationId" : [NSString stringWithFormat:@"%i", [TSAccountManager getOrGenerateRegistrationId]]
     };
 }

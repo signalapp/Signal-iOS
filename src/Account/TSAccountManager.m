@@ -177,7 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
-              isWebRTCEnabled:(BOOL)isWebRTCEnabled
                       success:(void (^)())successBlock
                       failure:(void (^)(NSError *error))failureBlock
 {
@@ -192,8 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSVerifyCodeRequest *request = [[TSVerifyCodeRequest alloc] initWithVerificationCode:verificationCode
                                                                                forNumber:phoneNumber
                                                                             signalingKey:signalingKey
-                                                                                 authKey:authToken
-                                                                         isWebRTCEnabled:isWebRTCEnabled];
+                                                                                 authKey:authToken];
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
