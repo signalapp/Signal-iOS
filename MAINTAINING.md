@@ -1,7 +1,7 @@
 Apart from the general `BUILDING.md` there are certain things that have
 to be done by Signal-iOS maintainers.
 
-For transperancy and bus factor, they are outlined here.
+For transparency and bus factor, they are outlined here.
 
 ## Dependencies
 
