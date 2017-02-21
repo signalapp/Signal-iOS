@@ -124,6 +124,9 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Select Country Code";
 
+/* Accessibility label for the create new group button. */
+"CREATE_NEW_GROUP" = "Create new group";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u days";
 
@@ -779,6 +782,9 @@
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+
+/* Settings button accessibility hint */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear History Logs";

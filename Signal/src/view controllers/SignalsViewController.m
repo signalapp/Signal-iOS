@@ -117,9 +117,11 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.segmentedControl addTarget:self
                               action:@selector(swappedSegmentedControl)
                     forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = self.segmentedControl;
+    UINavigationItem *navigationItem = self.navigationItem;
+    navigationItem.titleView = self.segmentedControl;
     [self.segmentedControl setSelectedSegmentIndex:0];
-
+    navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
+        @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
