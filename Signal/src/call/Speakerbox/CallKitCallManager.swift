@@ -18,12 +18,13 @@ final class CallKitCallManager: NSObject {
 
     let TAG = "[CallKitCallManager]"
     let callController = CXCallController()
+    static let kAnonymousCallHandlePrefix = "Signal:"
 
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
         let handle = (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
-            ? CXHandle(type: .generic, value: call.localId.uuidString)
+            ? CXHandle(type: .generic, value: CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString)
             : CXHandle(type: .phoneNumber, value: call.remotePhoneNumber))
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
