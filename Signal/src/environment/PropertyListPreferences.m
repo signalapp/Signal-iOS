@@ -22,7 +22,6 @@ NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"Notification
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
-NSString *const PropertyListPreferencesKeyWebRTCEnabled = @"WebRTCEnabled";
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 
 @implementation PropertyListPreferences
@@ -169,20 +168,6 @@ NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 }
 
 #pragma mark - Calling
-
-#pragma mark WebRTC
-
-- (BOOL)isWebRTCEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyWebRTCEnabled];
-    // Currently default to NO.
-    return preference ? [preference boolValue] : NO;
-}
-
-- (void)setIsWebRTCEnabled:(BOOL)flag
-{
-    [self setValueForKey:PropertyListPreferencesKeyWebRTCEnabled toValue:@(flag)];
-}
 
 #pragma mark CallKit
 

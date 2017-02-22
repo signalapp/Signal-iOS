@@ -65,11 +65,6 @@ import Foundation
      */
     public func initiateCall(recipientId: String) -> Bool {
 
-        let localWantsWebRTC = Environment.preferences().isWebRTCEnabled()
-        if !localWantsWebRTC {
-            return self.initiateRedphoneCall(recipientId: recipientId)
-        }
-
         // A temporary unique id used to identify this call during the 
         let callToken = NSUUID().uuidString
         presentCallInterstitial(callToken:callToken)
@@ -97,9 +92,9 @@ import Foundation
                                                 }
 
                                                 let remoteWantsWebRTC = recipient.supportsWebRTC
-                                                Logger.debug("\(self.TAG) localWantsWebRTC: \(localWantsWebRTC), remoteWantsWebRTC: \(remoteWantsWebRTC)")
+                                                Logger.debug("\(self.TAG) remoteWantsWebRTC: \(remoteWantsWebRTC)")
 
-                                                if localWantsWebRTC, remoteWantsWebRTC {
+                                                if remoteWantsWebRTC {
                                                     _ = self.initiateWebRTCAudioCall(recipientId: recipientId)
                                                 } else {
                                                     _ = self.initiateRedphoneCall(recipientId: recipientId)

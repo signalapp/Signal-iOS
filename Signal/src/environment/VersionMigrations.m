@@ -152,9 +152,7 @@
 
       __block BOOL success;
 
-      BOOL isWebRTCEnabled = [Environment.preferences isWebRTCEnabled];
-      TSUpdateAttributesRequest *request =
-          [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributes:isWebRTCEnabled];
+      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
             success = YES;

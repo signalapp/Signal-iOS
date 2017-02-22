@@ -18,13 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property (nonatomic) UITableViewCell *enableWebRTCCell;
 @property (nonatomic) UITableViewCell *enableCallKitCell;
 @property (nonatomic) UITableViewCell *enableLogCell;
 @property (nonatomic) UITableViewCell *submitLogCell;
 @property (nonatomic) UITableViewCell *registerPushCell;
 
-@property (nonatomic) UISwitch *enableWebRTCSwitch;
 @property (nonatomic) UISwitch *enableCallKitSwitch;
 @property (nonatomic) UISwitch *enableLogSwitch;
 @property (nonatomic, readonly) BOOL supportsCallKit;
@@ -58,18 +56,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     
     [self useOWSBackButton];
-
-    // WebRTC
-    self.enableWebRTCCell                        = [[UITableViewCell alloc] init];
-    self.enableWebRTCCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC",
-                                                                     @"This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling.");
-    self.enableWebRTCCell.userInteractionEnabled = YES;
-    self.enableWebRTCSwitch = [UISwitch new];
-    [self.enableWebRTCSwitch setOn:[Environment.preferences isWebRTCEnabled]];
-    [self.enableWebRTCSwitch addTarget:self
-                                action:@selector(didToggleEnableWebRTCSwitch:)
-                      forControlEvents:UIControlEventTouchUpInside];
-    self.enableWebRTCCell.accessoryView = self.enableWebRTCSwitch;
 
     // CallKit opt-out
     self.enableCallKitCell = [UITableViewCell new];
@@ -113,7 +99,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         case AdvancedSettingsTableViewControllerSectionLogging:
             return self.enableLogSwitch.isOn ? 2 : 1;
         case AdvancedSettingsTableViewControllerSectionCalling:
-            return ([Environment.preferences isWebRTCEnabled] && self.supportsCallKit) ? 2 : 1;
+            return self.supportsCallKit ? 2 : 1;
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return 1;
         default:
@@ -141,8 +127,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
     switch (settingsSection) {
         case AdvancedSettingsTableViewControllerSectionCalling:
-            // We only show the CallKit setting if WebRTC is enabled.
-            if ([Environment.preferences isWebRTCEnabled] && [self supportsCallKit]) {
+            if ([self supportsCallKit]) {
                 return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
             }
         default:
@@ -165,8 +150,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         case AdvancedSettingsTableViewControllerSectionCalling:
             switch (indexPath.row) {
                 case 0:
-                    return self.enableWebRTCCell;
-                case 1:
                     OWSAssert(self.supportsCallKit);
                     return self.enableCallKitCell;
                 default:
@@ -209,54 +192,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
 }
 
 #pragma mark - Actions
-
-- (void)didToggleEnableWebRTCSwitch:(UISwitch *)sender {
-    static long long enableWebRTCRequestCounter = 0;
-    long long enableWebRTCRequestId = ++enableWebRTCRequestCounter;
-
-    __weak AdvancedSettingsTableViewController *weakSelf = self;
-    BOOL isWebRTCEnabled = sender.isOn;
-    DDLogInfo(@"%@ User set WebRTC calling to: %@", self.tag, (isWebRTCEnabled ? @"ON" : @"OFF"));
-    TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributes:isWebRTCEnabled];
-    [[TSNetworkManager sharedManager] makeRequest:request
-                                          success:^(NSURLSessionDataTask *task, id responseObject) {
-                                              
-                                              // Use the request id to ignore obsolete requests, e.g. if the
-                                              // user repeatedly changes the setting faster than the requests
-                                              // can complete.
-                                              if (enableWebRTCRequestCounter != enableWebRTCRequestId) {
-                                                  return;
-                                              }
-                                              
-                                              // Only update the local setting if the request succeeds;
-                                              // otherwise local and service state will fall out of sync
-                                              // with every network failure.
-                                              [Environment.preferences setIsWebRTCEnabled:isWebRTCEnabled];
-                                              
-                                              [weakSelf.tableView reloadData];
-                                          }
-                                          failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                              DDLogError(@"Updating attributes failed with error: %@", error.description);
-                                              
-                                              AdvancedSettingsTableViewController *strongSelf = weakSelf;
-                                              // Use the request id to ignore obsolete requests, e.g. if the
-                                              // user repeatedly changes the setting faster than the requests
-                                              // can complete.
-                                              if (!strongSelf ||
-                                                  enableWebRTCRequestCounter != enableWebRTCRequestId) {
-                                                  return;
-                                              }
-                                              
-                                              // Restore switch to previous state.
-                                              [strongSelf.enableLogSwitch setOn:!isWebRTCEnabled];
-                                              
-                                              // Alert.
-                                              SignalAlertView(NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE",
-                                                                                @"The title of the alert shown when updates to the WebRTC property fail."),
-                                                              NSLocalizedString(@"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE",
-                                                                                @"The message of the alert shown when updates to the WebRTC property fail."));
-                                          }];
-}
 
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender {
     if (!sender.isOn) {
