@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
         [UIAlertController alertControllerWithTitle:failureTitle
                                             message:error.localizedDescription
                                      preferredStyle:UIAlertControllerStyleAlert];
-    
+
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
         
@@ -311,7 +311,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
-
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(nullable void (^)(void))completion
 {
