@@ -22,7 +22,9 @@ final class CallKitCallManager: NSObject {
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
-        let handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        let handle = (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
+            ? CXHandle(type: .generic, value: call.localId.uuidString)
+            : CXHandle(type: .phoneNumber, value: call.remotePhoneNumber))
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
         startCallAction.isVideo = call.hasLocalVideo

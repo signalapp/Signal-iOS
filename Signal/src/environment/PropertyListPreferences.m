@@ -23,6 +23,7 @@ NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnab
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
+NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 
 @implementation PropertyListPreferences
@@ -175,15 +176,15 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
 
 #pragma mark CallKit
 
-- (BOOL)isCallKitEnabled
+- (BOOL)isCallKitPrivacyEnabled
 {
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
     return preference ? [preference boolValue] : YES;
 }
 
-- (void)setIsCallKitEnabled:(BOOL)flag
+- (void)setIsCallKitPrivacyEnabled:(BOOL)flag
 {
-    [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
+    [self setValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
 }
 
 #pragma mark direct call connectivity (non-TURN)

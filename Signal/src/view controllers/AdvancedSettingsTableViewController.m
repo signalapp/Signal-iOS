@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property (nonatomic) UITableViewCell *enableCallKitCell;
+@property (nonatomic) UITableViewCell *enableCallKitPrivacyCell;
 @property (nonatomic) UITableViewCell *enableLogCell;
 @property (nonatomic) UITableViewCell *submitLogCell;
 @property (nonatomic) UITableViewCell *registerPushCell;
 
-@property (nonatomic) UISwitch *enableCallKitSwitch;
+@property (nonatomic) UISwitch *enableCallKitPrivacySwitch;
 @property (nonatomic) UISwitch *enableLogSwitch;
 @property (nonatomic, readonly) BOOL supportsCallKit;
 
@@ -58,14 +58,14 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [self useOWSBackButton];
 
     // CallKit opt-out
-    self.enableCallKitCell = [UITableViewCell new];
-    self.enableCallKitCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_CALLKIT_TITLE", @"Short table cell label");
-    self.enableCallKitSwitch = [UISwitch new];
-    [self.enableCallKitSwitch setOn:[[Environment getCurrent].preferences isCallKitEnabled]];
-    [self.enableCallKitSwitch addTarget:self
-                                 action:@selector(didToggleEnableCallKitSwitch:)
-                       forControlEvents:UIControlEventTouchUpInside];
-    self.enableCallKitCell.accessoryView = self.enableCallKitSwitch;
+    self.enableCallKitPrivacyCell = [UITableViewCell new];
+    self.enableCallKitPrivacyCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_CALLKIT_PRIVACY_TITLE", @"Label for 'CallKit privacy' preference");
+    self.enableCallKitPrivacySwitch = [UISwitch new];
+    [self.enableCallKitPrivacySwitch setOn:![[Environment getCurrent].preferences isCallKitPrivacyEnabled]];
+    [self.enableCallKitPrivacySwitch addTarget:self
+                                        action:@selector(didToggleEnableCallKitPrivacySwitch:)
+                              forControlEvents:UIControlEventTouchUpInside];
+    self.enableCallKitPrivacyCell.accessoryView = self.enableCallKitPrivacySwitch;
     
     // Enable Log
     self.enableLogCell                        = [[UITableViewCell alloc] init];
@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         case AdvancedSettingsTableViewControllerSectionLogging:
             return self.enableLogSwitch.isOn ? 2 : 1;
         case AdvancedSettingsTableViewControllerSectionCalling:
-            return self.supportsCallKit ? 2 : 1;
+            return self.supportsCallKit ? 1 : 0;
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return 1;
         default:
@@ -128,7 +128,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     switch (settingsSection) {
         case AdvancedSettingsTableViewControllerSectionCalling:
             if ([self supportsCallKit]) {
-                return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
+                return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION", @"Explanation of the 'CallKit Privacy` preference.");
             }
         default:
             return nil;
@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             switch (indexPath.row) {
                 case 0:
                     OWSAssert(self.supportsCallKit);
-                    return self.enableCallKitCell;
+                    return self.enableCallKitPrivacyCell;
                 default:
                     // Unknown cell
                     OWSAssert(NO);
@@ -205,9 +205,9 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [self.tableView reloadData];
 }
 
-- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
-    DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
+- (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender {
+    DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
+    [[Environment getCurrent].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
     [[Environment getCurrent].callService createCallUIAdapter];
 }
 
