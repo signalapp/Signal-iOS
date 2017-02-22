@@ -14,16 +14,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     PrivacySettingsTableViewControllerSectionIndexScreenSecurity,
+    PrivacySettingsTableViewControllerSectionIndexCalling,
     PrivacySettingsTableViewControllerSectionIndexHistoryLog,
-    PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange
+    PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange,
+    PrivacySettingsTableViewControllerSectionIndex_Count // meta section to track how many sections
 };
 
 @interface PrivacySettingsTableViewController ()
 
 @property (nonatomic, strong) UITableViewCell *enableScreenSecurityCell;
 @property (nonatomic, strong) UISwitch *enableScreenSecuritySwitch;
+
+@property (nonatomic) UITableViewCell *callsHideIPAddressCell;
+@property (nonatomic) UISwitch *callsHideIPAddressSwitch;
+
 @property (nonatomic, strong) UITableViewCell *blockOnIdentityChangeCell;
 @property (nonatomic, strong) UISwitch *blockOnIdentityChangeSwitch;
+
 @property (nonatomic, strong) UITableViewCell *clearHistoryLogCell;
 
 @end
@@ -59,6 +66,17 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
                                         action:@selector(didToggleScreenSecuritySwitch:)
                               forControlEvents:UIControlEventTouchUpInside];
 
+    // Allow calls to connect directly vs. using TURN exclusively
+    self.callsHideIPAddressCell = [UITableViewCell new];
+    self.callsHideIPAddressCell.textLabel.text
+        = NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE", @"Table cell label");
+    self.callsHideIPAddressSwitch = [UISwitch new];
+    self.callsHideIPAddressCell.accessoryView = self.callsHideIPAddressSwitch;
+    [self.callsHideIPAddressSwitch setOn:[Environment.preferences doCallsHideIPAddress]];
+    [self.callsHideIPAddressSwitch addTarget:self
+                                      action:@selector(didToggleCallsHideIPAddressSwitch:)
+                            forControlEvents:UIControlEventTouchUpInside];
+
     // Clear History Log Cell
     self.clearHistoryLogCell                = [[UITableViewCell alloc] init];
     self.clearHistoryLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"");
@@ -79,12 +97,14 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return PrivacySettingsTableViewControllerSectionIndex_Count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
+            return 1;
+        case PrivacySettingsTableViewControllerSectionIndexCalling:
             return 1;
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return 1;
@@ -100,6 +120,9 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     switch (section) {
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
             return NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
+        case PrivacySettingsTableViewControllerSectionIndexCalling:
+            return NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
+                @"User settings section footer, a detailed explanation");
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
             return NSLocalizedString(
                 @"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL", @"User settings section footer, a detailed explanation");
@@ -112,6 +135,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     switch (indexPath.section) {
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
             return self.enableScreenSecurityCell;
+        case PrivacySettingsTableViewControllerSectionIndexCalling:
+            return self.callsHideIPAddressCell;
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return self.clearHistoryLogCell;
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
@@ -128,6 +153,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     switch (section) {
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
             return NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
+        case PrivacySettingsTableViewControllerSectionIndexCalling:
+            return NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
@@ -180,6 +207,13 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     BOOL enabled = self.blockOnIdentityChangeSwitch.isOn;
     DDLogInfo(@"%@ toggled blockOnIdentityChange: %@", self.tag, enabled ? @"ON" : @"OFF");
     [Environment.preferences setShouldBlockOnIdentityChange:enabled];
+}
+
+- (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
+{
+    BOOL enabled = sender.isOn;
+    DDLogInfo(@"%@ toggled callsHideIPAddress: %@", self.tag, enabled ? @"ON" : @"OFF");
+    [Environment.preferences setDoCallsHideIPAddress:enabled];
 }
 
 #pragma mark - Log util

@@ -23,6 +23,7 @@ NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnab
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
+NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 
 @implementation PropertyListPreferences
 
@@ -138,6 +139,9 @@ NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 
 - (void)setLoggingEnabled:(BOOL)flag
 {
+    // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
+    // logging before the database is initialized. This is important because sometimes there are problems *with* the
+    // database initialization, and without logging it would be hard to track down.
     [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:PropertyListPreferencesKeyEnableDebugLog];
     [NSUserDefaults.standardUserDefaults synchronize];
 }
@@ -180,6 +184,21 @@ NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 - (void)setIsCallKitEnabled:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
+}
+
+#pragma mark direct call connectivity (non-TURN)
+
+// Allow callers to connect directly, when desirable, vs. enforcing TURN only proxy connectivity
+
+- (BOOL)doCallsHideIPAddress
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallsHideIPAddress];
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setDoCallsHideIPAddress:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallsHideIPAddress toValue:@(flag)];
 }
 
 #pragma mark Notification Preferences

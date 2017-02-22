@@ -71,6 +71,11 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;
 
+#pragma mark direct call connectivity (non-TURN)
+
+- (BOOL)doCallsHideIPAddress;
+- (void)setDoCallsHideIPAddress:(BOOL)flag;
+
 #pragma mark - Block on Identity Change
 
 - (BOOL)shouldBlockOnIdentityChange;

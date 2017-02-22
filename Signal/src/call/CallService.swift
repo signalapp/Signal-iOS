@@ -231,6 +231,9 @@ protocol CallServiceObserver: class {
         self.updateIsVideoEnabled()
     }
 
+    /**
+     * Choose whether to use CallKit or a Notification backed interface for calling.
+     */
     public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
@@ -299,7 +302,9 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing)
+            let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
+
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
 
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
@@ -478,8 +483,15 @@ protocol CallServiceObserver: class {
                 throw CallError.assertionError(description: "getIceServers() response for obsolete call")
             }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
+
+            // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
+            // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
+            let unknownCaller = self.contactsManager.contact(forPhoneIdentifier: thread.contactIdentifier()) == nil
+
+            let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
+
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming)
+            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
