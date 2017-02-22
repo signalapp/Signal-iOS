@@ -255,12 +255,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     NSString *descriptionFormat = NSLocalizedString(
-                                                    @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
+        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
     NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
     UIAlertController *successAlertController =
-    [UIAlertController alertControllerWithTitle:successTitle
-                                        message:successDescription
-                                 preferredStyle:UIAlertControllerStyleAlert];
+        [UIAlertController alertControllerWithTitle:successTitle
+                                            message:successDescription
+                                     preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *dismissAction =
     [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
         [self dismissViewControllerAnimated:true completion:nil];
@@ -283,7 +283,6 @@ NS_ASSUME_NONNULL_BEGIN
                                  preferredStyle:UIAlertControllerStyleAlert];
     
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
         
         // Restore previous layout
@@ -312,6 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
+
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(nullable void (^)(void))completion
 {
