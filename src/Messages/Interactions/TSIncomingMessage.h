@@ -69,7 +69,7 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 
 /**
  * For sake of a smaller API, and simplifying assumptions elsewhere, you must specify an author id for *all* incoming
- * messages, even though we technically could infer the author id for a contact threads.
+ * messages, even though we technically could infer the author id for a contact thread.
  */
 - (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_UNAVAILABLE;
@@ -104,6 +104,8 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp;
 
 @property (nonatomic, readonly) NSString *authorId;
+
+// This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 

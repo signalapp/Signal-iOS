@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSDevice.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
@@ -40,7 +41,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
                                                                              authorId:@"fake-author-id"
-                                                                       sourceDeviceId:1
+                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
                                                                           messageBody:@"Incoming message body"];
     [incomingMessage save];
 
@@ -73,13 +74,13 @@
     BOOL incomingFileWasCreated = [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment filePath]];
     XCTAssert(incomingFileWasCreated);
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initWithTimestamp:10000
-                                            inThread:thread
-                                            authorId:@"fake-author-id"
-                                      sourceDeviceId:1
-                                         messageBody:@"incoming message body"
-                                       attachmentIds:[NSMutableArray arrayWithObject:incomingAttachment.uniqueId]];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
+                                                                             inThread:thread
+                                                                             authorId:@"fake-author-id"
+                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                                          messageBody:@"incoming message body"
+                                                                        attachmentIds:@[ incomingAttachment.uniqueId ]
+                                                                     expiresInSeconds:0];
     [incomingMessage save];
 
     TSAttachmentStream *outgoingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
@@ -90,11 +91,10 @@
     BOOL outgoingFileWasCreated = [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment filePath]];
     XCTAssert(outgoingFileWasCreated);
 
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initWithTimestamp:10000
-                                            inThread:thread
-                                         messageBody:@"outgoing message body"
-                                       attachmentIds:[NSMutableArray arrayWithObject:outgoingAttachment.uniqueId]];
+    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:10000
+                                                                             inThread:thread
+                                                                          messageBody:@"outgoing message body"
+                                                                        attachmentIds:@[ outgoingAttachment.uniqueId ]];
     [outgoingMessage save];
 
     // Sanity check

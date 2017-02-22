@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSDevice.h"
 #import "OWSOrphanedDataCleaner.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -47,7 +48,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:unsavedThread
                                                                              authorId:@"fake-author-id"
-                                                                       sourceDeviceId:1
+                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
                                                                           messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
@@ -64,7 +65,7 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
                                                                              authorId:@"fake-author-id"
-                                                                       sourceDeviceId:1
+                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
                                                                           messageBody:@"footch"];
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
@@ -103,9 +104,10 @@
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
                                                                              inThread:savedThread
                                                                              authorId:@"fake-author-id"
-                                                                       sourceDeviceId:1
+                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
                                                                           messageBody:@"footch"
-                                                                        attachmentIds:@[ attachmentStream.uniqueId ]];
+                                                                        attachmentIds:@[ attachmentStream.uniqueId ]
+                                                                     expiresInSeconds:0];
     [incomingMessage save];
 
     NSString *attachmentFilePath = [attachmentStream filePath];

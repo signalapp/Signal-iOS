@@ -37,6 +37,7 @@
 		45B840211D988DA100F9E938 /* OWSReadReceiptTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */; };
 		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */; };
+		45E741B61E5D14E800735842 /* OWSIncomingMessageFinderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
 		6323E1F7730289398452E5C5 /* OWSFingerprintTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */; };
 		6323E339D5B8F4CB77EB3ED4 /* SignalRecipientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */; };
@@ -99,6 +100,7 @@
 		45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSReadReceiptTest.m; path = ../../../tests/Devices/OWSReadReceiptTest.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisionerTest.m; path = ../../../tests/Devices/OWSDeviceProvisionerTest.m; sourceTree = "<group>"; };
+		45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSIncomingMessageFinderTest.m; path = ../../../tests/Messages/OWSIncomingMessageFinderTest.m; sourceTree = "<group>"; };
 		6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFingerprintTest.m; path = ../../../tests/Security/OWSFingerprintTest.m; sourceTree = "<group>"; };
 		6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalRecipientTest.m; path = ../../tests/Contacts/SignalRecipientTest.m; sourceTree = "<group>"; };
 		B6273DD11C13A2E500738558 /* TSKitiOSTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TSKitiOSTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,6 +239,7 @@
 				45046FDF1D95A6130015EFF2 /* TSMessagesManagerTest.m */,
 				454021EC1D960ABF00F2126D /* OWSDisappearingMessageFinderTest.m */,
 				453E1FCE1DA8313100DDD7B7 /* OWSMessageSenderTest.m */,
+				45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */,
 			);
 			name = Messages;
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 				45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */,
 				4516E3E81DD153CC00DC4206 /* TSGroupThreadTest.m in Sources */,
 				45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */,
+				45E741B61E5D14E800735842 /* OWSIncomingMessageFinderTest.m in Sources */,
 				452EE6D51D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m in Sources */,
 				450E3C9A1D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m in Sources */,
 				452EE6CF1D4A754C00E934BA /* TSThreadTest.m in Sources */,

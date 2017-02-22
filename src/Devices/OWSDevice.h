@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern uint32_t const OWSDevicePrimaryDeviceId;
+
 @interface OWSDevice : TSYapDatabaseObject <MTLJSONSerializing>
 
 @property (nonatomic, readonly) NSInteger deviceId;

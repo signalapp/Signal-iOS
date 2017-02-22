@@ -284,6 +284,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
 {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(envelope.hasTimestamp && envelope.timestamp > 0);
+    OWSAssert(envelope.hasSource && envelope.source.length > 0);
+    OWSAssert(envelope.hasSourceDevice && envelope.sourceDevice > 0);
 
     BOOL duplicateEnvelope = [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
                                                                            sourceId:envelope.source

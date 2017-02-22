@@ -20,7 +20,6 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 @property (nonatomic, readonly) YapDatabase *database;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) BOOL isExtensionRegistered;
 
 @end
 
@@ -93,12 +92,16 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 - (void)asyncRegisterExtension
 {
     DDLogInfo(@"%@ registering async.", self.tag);
-    [self.database registerExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
+    [self.database asyncRegisterExtension:self.indexExtension
+                                 withName:OWSIncomingMessageFinderExtensionName
+                          completionBlock:^(BOOL ready) {
+                              DDLogInfo(@"%@ finished registering async.", self.tag);
+                          }];
 }
 
+// We should not normally hit this, as we should have prefer registering async, but it is useful for testing.
 - (void)registerExtension
 {
-    OWSAssert(NO);
     DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.tag);
     [self.database registerExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }

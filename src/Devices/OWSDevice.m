@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static MTLValueTransformer *_millisecondTimestampToDateTransformer;
-static uint32_t const OWSDevicePrimaryDeviceId = 1;
+uint32_t const OWSDevicePrimaryDeviceId = 1;
 
 @interface OWSDevice ()
 
