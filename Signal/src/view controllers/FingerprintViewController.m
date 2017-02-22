@@ -255,16 +255,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     NSString *descriptionFormat = NSLocalizedString(
-        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
+                                                    @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
     NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
     UIAlertController *successAlertController =
-        [UIAlertController alertControllerWithTitle:successTitle
-                                            message:successDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    [UIAlertController alertControllerWithTitle:successTitle
+                                        message:successDescription
+                                 preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:nil];
+    [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        [self dismissViewControllerAnimated:true completion:nil];
+    }];
     [successAlertController addAction:dismissAction];
-
+    
     [self presentViewController:successAlertController animated:YES completion:nil];
 }
 
@@ -274,16 +276,31 @@ NS_ASSUME_NONNULL_BEGIN
     if (error.code != OWSErrorCodeUserError) {
         failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
     } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
-
+    
     UIAlertController *failureAlertController =
-        [UIAlertController alertControllerWithTitle:failureTitle
-                                            message:error.localizedDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-
+    [UIAlertController alertControllerWithTitle:failureTitle
+                                        message:error.localizedDescription
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler:nil];
+    
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
+        
+        // Restore previous layout
+        self.shareButton.enabled = YES;
+        self.qrScanningView.hidden = YES;
+        self.scanningInstructions.hidden = YES;
+        [UIView animateWithDuration:0.4
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.instructionsContainer.alpha = 1.0f;
+                             self.qrContainer.frame = self.scanningContainer.frame;
+                         }
+                         completion:nil];
+    }];
     [failureAlertController addAction:dismissAction];
-
+    
     // TODO
     //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);
     //        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryText style:UIAlertActionStyleDefault
@@ -292,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
     //        }];
     //        [failureAlertController addAction:retryAction];
     [self presentViewController:failureAlertController animated:YES completion:nil];
-
+    
     DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
 
