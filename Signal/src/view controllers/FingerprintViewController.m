@@ -262,8 +262,8 @@ NS_ASSUME_NONNULL_BEGIN
                                             message:successDescription
                                      preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *dismissAction =
-    [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-        [self dismissViewControllerAnimated:true completion:nil];
+        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+            [self dismissViewControllerAnimated:true completion:nil];
     }];
     [successAlertController addAction:dismissAction];
     
@@ -276,11 +276,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (error.code != OWSErrorCodeUserError) {
         failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
     } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
-    
+
     UIAlertController *failureAlertController =
-    [UIAlertController alertControllerWithTitle:failureTitle
-                                        message:error.localizedDescription
-                                 preferredStyle:UIAlertControllerStyleAlert];
+        [UIAlertController alertControllerWithTitle:failureTitle
+                                            message:error.localizedDescription
+                                     preferredStyle:UIAlertControllerStyleAlert];
     
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
                          completion:nil];
     }];
     [failureAlertController addAction:dismissAction];
-    
+
     // TODO
     //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);
     //        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryText style:UIAlertActionStyleDefault
@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
     //        }];
     //        [failureAlertController addAction:retryAction];
     [self presentViewController:failureAlertController animated:YES completion:nil];
-    
+
     DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
 
