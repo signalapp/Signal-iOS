@@ -1,9 +1,5 @@
 //
-//  TSAttributes.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 22/08/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttributes.h"
@@ -13,21 +9,19 @@
 
 @implementation TSAttributes
 
-+ (NSDictionary *)attributesFromStorage:(BOOL)isWebRTCEnabled {
++ (NSDictionary *)attributesFromStorageWithVoiceSupport {
     return [self attributesWithSignalingKey:[TSStorageManager signalingKey]
-                            serverAuthToken:[TSStorageManager serverAuthToken]
-                            isWebRTCEnabled:isWebRTCEnabled];
+                            serverAuthToken:[TSStorageManager serverAuthToken]];
 }
 
 + (NSDictionary *)attributesWithSignalingKey:(NSString *)signalingKey
                              serverAuthToken:(NSString *)authToken
-                             isWebRTCEnabled:(BOOL)isWebRTCEnabled
 {
     return @{
         @"signalingKey" : signalingKey,
         @"AuthKey" : authToken,
         @"voice" : @(YES), // all Signal-iOS clients support voice
-        @"video" : @(isWebRTCEnabled),
+        @"video" : @(YES), // all Signal-iOS clients support WebRTC-based voice and video calls.
         @"registrationId" : [NSString stringWithFormat:@"%i", [TSAccountManager getOrGenerateRegistrationId]]
     };
 }

@@ -12,13 +12,13 @@
 
 @implementation TSUpdateAttributesRequest
 
-- (instancetype)initWithUpdatedAttributes:(BOOL)isWebRTCEnabled {
+- (instancetype)initWithUpdatedAttributesWithVoice {
     NSString *endPoint = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
     self               = [super initWithURL:[NSURL URLWithString:endPoint]];
 
     if (self) {
         [self setHTTPMethod:@"PUT"];
-        [self.parameters addEntriesFromDictionary:[TSAttributes attributesFromStorage:isWebRTCEnabled]];
+        [self.parameters addEntriesFromDictionary:[TSAttributes attributesFromStorageWithVoiceSupport]];
     }
 
     return self;
