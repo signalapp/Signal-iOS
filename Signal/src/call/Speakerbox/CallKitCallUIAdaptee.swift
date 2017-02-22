@@ -100,9 +100,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
-        update.remoteHandle = (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
-            ? CXHandle(type: .generic, value: CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString)
-            : CXHandle(type: .phoneNumber, value: call.remotePhoneNumber))
+        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            update.remoteHandle = CXHandle(type: .generic, value: callKitId)
+            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+        } else {
+            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        }
+
         update.hasVideo = call.hasLocalVideo
         // Update the name used in the CallKit UI for incoming calls.
         update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
@@ -237,15 +242,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         _ = self.callService.handleOutgoingCall(call)
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
-        
+
         ensureCallName(call:call)
     }
 
-    func ensureCallName(call : SignalCall) {
+    func ensureCallName(call: SignalCall) {
         guard Environment.getCurrent().preferences.isCallKitPrivacyEnabled() else {
-            return;
+            return
         }
-        
+
         // Update the name used in the CallKit UI for outgoing calls.
         let update = CXCallUpdate()
         update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
