@@ -208,12 +208,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
-    // Camera stops capturing when "sharing" while in capture mode.
-    // Also, it's less obvious whats being "shared" at this point,
-    // so just disable sharing when in capture mode.
-    self.shareButton.enabled = NO;
-
     [self ows_askForCameraPermissions:^{
+        
+        // Camera stops capturing when "sharing" while in capture mode.
+        // Also, it's less obvious whats being "shared" at this point,
+        // so just disable sharing when in capture mode.
+        self.shareButton.enabled = NO;
+
         DDLogInfo(@"%@ Showing Scanner", self.tag);
         self.qrScanningView.hidden = NO;
         self.scanningInstructions.hidden = NO;
