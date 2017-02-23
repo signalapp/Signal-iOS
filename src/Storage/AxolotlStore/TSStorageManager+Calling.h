@@ -4,6 +4,8 @@
 
 #import "TSStorageManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSStorageManager (Calling)
 
 // phoneNumber is an e164 formatted phone number.
@@ -18,3 +20,5 @@
 - (NSString *)phoneNumberForCallKitId:(NSString *)callKitId;
 
 @end
+
+NS_ASSUME_NONNULL_END

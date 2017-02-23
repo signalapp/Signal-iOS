@@ -4,7 +4,9 @@
 
 #import "TSStorageManager+Calling.h"
 
-#define TSStorageManagerCallKitIdToPhoneNumberCollection @"TSStorageManagerCallKitIdToPhoneNumberCollection"
+NS_ASSUME_NONNULL_BEGIN
+
+NSString *const TSStorageManagerCallKitIdToPhoneNumberCollection = @"TSStorageManagerCallKitIdToPhoneNumberCollection";
 
 @implementation TSStorageManager (Calling)
 
@@ -24,3 +26,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
