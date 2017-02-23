@@ -243,18 +243,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 
-        ensureCallName(call:call)
-    }
-
-    func ensureCallName(call: SignalCall) {
-        guard Environment.getCurrent().preferences.isCallKitPrivacyEnabled() else {
-            return
+        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+            // Update the name used in the CallKit UI for outgoing calls.
+            let update = CXCallUpdate()
+            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
+                                                           comment: "The generic name used for calls if CallKit privacy is enabled")
+            provider.reportCall(with: call.localId, updated: update)
         }
-
-        // Update the name used in the CallKit UI for outgoing calls.
-        let update = CXCallUpdate()
-        update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
-        provider.reportCall(with: call.localId, updated: update)
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
