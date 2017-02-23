@@ -75,6 +75,15 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                   untilCancelled:nil];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (!self.isMovingToParentViewController) {
+        [UIUtil applySignalAppearence];
+    }
+}
+
 #pragma mark - Initializers
 
 - (void)initializeTableView {
@@ -154,6 +163,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         if (!anError && aContact) {
             view.displayedPerson           = aContact; // Assume person is already defined.
             view.allowsAddingToAddressBook = YES;
+            
+            [UIUtil applyDefaultSystemAppearence]; // Required to have nav bar buttons show in Create New Contact
             [self.navigationController pushViewController:view animated:YES];
         }
     }
