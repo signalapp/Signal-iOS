@@ -35,8 +35,7 @@
     };
 
     NSDictionary *actual = [TSAttributes attributesWithSignalingKey:@"fake-signaling-key"
-                                                    serverAuthToken:@"fake-server-auth-token"
-                                                    isWebRTCEnabled:YES];
+                                                    serverAuthToken:@"fake-server-auth-token"];
 
     XCTAssertEqualObjects(expected, actual);
 }
