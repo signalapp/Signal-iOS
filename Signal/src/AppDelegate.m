@@ -18,6 +18,7 @@
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
+#import "TSStorageManager+Calling.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
@@ -377,6 +378,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
+        NSString *_Nullable phoneNumber = handle;
+        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+            if (phoneNumber.length < 1) {
+                DDLogWarn(@"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.tag);
+                return NO;
+            }
+        }
+
         // This intent can be received from more than one user interaction.
         //
         // * It can be received if the user taps the "video" button in the CallKit UI for an
@@ -386,7 +396,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         //   contacts app.  If so, the correct response is to try to initiate a new call
         //   to that user - unless there already is another call in progress.
         if ([Environment getCurrent].callService.call != nil) {
-            if ([handle isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
+            if ([phoneNumber isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
                 DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.tag);
                 [[Environment getCurrent].callService handleCallKitStartVideo];
                 return YES;
@@ -399,7 +409,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
-        return [outboundCallInitiator initiateCallWithHandle:handle];
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
@@ -423,6 +433,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
+        NSString *_Nullable phoneNumber = handle;
+        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+            if (phoneNumber.length < 1) {
+                DDLogWarn(@"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.tag);
+                return NO;
+            }
+        }
+
         if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
             return NO;
@@ -434,7 +453,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
-        return [outboundCallInitiator initiateCallWithHandle:handle];
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else {
         DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
             self.tag,

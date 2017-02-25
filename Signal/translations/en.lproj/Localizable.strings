@@ -85,6 +85,9 @@
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call back";
 
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
 
@@ -757,9 +760,6 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "About";
 
-/* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Enable Debug Log";
 
@@ -820,6 +820,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Names & Numbers";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
 
@@ -834,6 +840,9 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+
+/* Explanation of the 'CallKit Privacy` preference. */
+"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION" = "If you show the names and phone numbers of incoming callers in CallKit, this information will appear in your phone's call history and will be synced to your iCloud account.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";

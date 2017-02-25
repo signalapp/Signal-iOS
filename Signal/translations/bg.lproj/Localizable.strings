@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Относно";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Вкл. Регистриране на Грешки";

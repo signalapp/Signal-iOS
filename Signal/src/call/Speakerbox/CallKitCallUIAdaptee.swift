@@ -37,7 +37,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         providerConfiguration.maximumCallsPerCallGroup = 1
 
-        providerConfiguration.supportedHandleTypes = [.phoneNumber]
+        providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
 
         if let iconMaskImage = UIImage(named: "IconMask") {
             providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconMaskImage)
@@ -84,7 +84,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.debug("\(self.TAG) \(#function)")
 
-        switch (error) {
+        switch error {
         case .timeout(description: _):
             provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
         default:
@@ -100,8 +100,17 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
-        update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            update.remoteHandle = CXHandle(type: .generic, value: callKitId)
+            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+        } else {
+            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        }
+
         update.hasVideo = call.hasLocalVideo
+        // Update the name used in the CallKit UI for incoming calls.
+        update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
@@ -192,7 +201,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         Logger.debug("\(self.TAG) \(#function)")
 
         let update = CXCallUpdate()
-        update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         update.hasVideo = hasLocalVideo
 
         // Update the CallKit UI.
@@ -234,6 +242,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         _ = self.callService.handleOutgoingCall(call)
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
+
+        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+            // Update the name used in the CallKit UI for outgoing calls.
+            let update = CXCallUpdate()
+            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
+                                                           comment: "The generic name used for calls if CallKit privacy is enabled")
+            provider.reportCall(with: call.localId, updated: update)
+        }
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {

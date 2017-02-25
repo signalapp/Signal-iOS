@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "A propos de";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Utiliser CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Utiliser CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activer le log de débuggage";

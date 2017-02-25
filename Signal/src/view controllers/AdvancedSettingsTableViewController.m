@@ -18,12 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property (nonatomic) UITableViewCell *enableCallKitCell;
 @property (nonatomic) UITableViewCell *enableLogCell;
 @property (nonatomic) UITableViewCell *submitLogCell;
 @property (nonatomic) UITableViewCell *registerPushCell;
 
-@property (nonatomic) UISwitch *enableCallKitSwitch;
 @property (nonatomic) UISwitch *enableLogSwitch;
 @property (nonatomic, readonly) BOOL supportsCallKit;
 
@@ -31,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     AdvancedSettingsTableViewControllerSectionLogging,
-    AdvancedSettingsTableViewControllerSectionCalling,
     AdvancedSettingsTableViewControllerSectionPushNotifications,
     AdvancedSettingsTableViewControllerSection_Count // meta section
 };
@@ -56,16 +53,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     
     [self useOWSBackButton];
-
-    // CallKit opt-out
-    self.enableCallKitCell = [UITableViewCell new];
-    self.enableCallKitCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_CALLKIT_TITLE", @"Short table cell label");
-    self.enableCallKitSwitch = [UISwitch new];
-    [self.enableCallKitSwitch setOn:[[Environment getCurrent].preferences isCallKitEnabled]];
-    [self.enableCallKitSwitch addTarget:self
-                                 action:@selector(didToggleEnableCallKitSwitch:)
-                       forControlEvents:UIControlEventTouchUpInside];
-    self.enableCallKitCell.accessoryView = self.enableCallKitSwitch;
     
     // Enable Log
     self.enableLogCell                        = [[UITableViewCell alloc] init];
@@ -98,8 +85,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     switch (settingsSection) {
         case AdvancedSettingsTableViewControllerSectionLogging:
             return self.enableLogSwitch.isOn ? 2 : 1;
-        case AdvancedSettingsTableViewControllerSectionCalling:
-            return self.supportsCallKit ? 2 : 1;
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return 1;
         default:
@@ -113,23 +98,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     switch (settingsSection) {
         case AdvancedSettingsTableViewControllerSectionLogging:
             return NSLocalizedString(@"LOGGING_SECTION", nil);
-        case AdvancedSettingsTableViewControllerSectionCalling:
-            return NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
-        default:
-            return nil;
-    }
-}
-
-- (nullable NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
-    switch (settingsSection) {
-        case AdvancedSettingsTableViewControllerSectionCalling:
-            if ([self supportsCallKit]) {
-                return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
-            }
         default:
             return nil;
     }
@@ -146,16 +116,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
                 case 1:
                     OWSAssert(self.enableLogSwitch.isOn);
                     return self.submitLogCell;
-            }
-        case AdvancedSettingsTableViewControllerSectionCalling:
-            switch (indexPath.row) {
-                case 0:
-                    OWSAssert(self.supportsCallKit);
-                    return self.enableCallKitCell;
-                default:
-                    // Unknown cell
-                    OWSAssert(NO);
-                    return nil;
             }
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return self.registerPushCell;
@@ -203,19 +163,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     
     [Environment.preferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
-}
-
-- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
-    DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
-    [[Environment getCurrent].callService createCallUIAdapter];
-}
-
-#pragma mark - Util
-
-- (BOOL)supportsCallKit
-{
-    return SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0);
 }
 
 #pragma mark - Logging

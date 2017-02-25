@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Despre";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Activează CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Activează CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activează Log-ul de depanare";

@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Tietoja ohjelmasta";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Käytä CallKit-rajapintaa";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Käytä CallKit-rajapintaa";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Virheenkorjausloki";

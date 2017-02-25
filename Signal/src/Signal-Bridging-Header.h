@@ -21,6 +21,7 @@
 #import "PushManager.h"
 #import "RPAccountManager.h"
 #import "TSSocketManager.h"
+#import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"

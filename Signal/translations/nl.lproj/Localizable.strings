@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Over";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Gebruik CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Gebruik CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Zet debug-log aan";

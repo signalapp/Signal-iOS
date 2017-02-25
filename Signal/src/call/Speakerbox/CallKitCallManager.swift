@@ -18,11 +18,20 @@ final class CallKitCallManager: NSObject {
 
     let TAG = "[CallKitCallManager]"
     let callController = CXCallController()
+    static let kAnonymousCallHandlePrefix = "Signal:"
 
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
-        let handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        var handle: CXHandle
+        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            handle = CXHandle(type: .generic, value: callKitId)
+            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+        } else {
+            handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        }
+
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
         startCallAction.isVideo = call.hasLocalVideo

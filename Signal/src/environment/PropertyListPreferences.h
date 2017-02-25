@@ -70,6 +70,8 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;
+- (BOOL)isCallKitPrivacyEnabled;
+- (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
 
 #pragma mark direct call connectivity (non-TURN)
 
