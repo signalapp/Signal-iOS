@@ -1198,6 +1198,7 @@ protocol CallServiceObserver: class {
             call!.hasLocalVideo)
     }
 
+    //TODO only fire this when it's changed? as of right now it gets called whenever you e.g. lock the phone while it's incoming ringing.
     private func updateIsVideoEnabled() {
         AssertIsOnMainThread()
 

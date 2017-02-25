@@ -3,16 +3,51 @@
 //
 
 import Foundation
+import AVFoundation
 
 @objc class CallAudioService: NSObject, CallObserver {
 
     private let TAG = "[CallAudioService]"
     private var vibrateTimer: Timer?
-    private let soundPlayer = JSQSystemSoundPlayer.shared()!
+    private let audioPlayer = AVAudioPlayer()
     private let handleRinging: Bool
 
-    enum SoundFilenames: String {
-        case incomingRing = "r"
+    class Sound {
+        let TAG = "[Sound]"
+
+        static let incomingRing = Sound(filePath: "r", fileExtension: "caf", loop: true)
+        static let outgoingRing = Sound(filePath: "outring", fileExtension: "mp3", loop: true)
+        static let dialing = Sound(filePath: "sonarping", fileExtension: "mp3", loop: true)
+        static let busy = Sound(filePath: "busy", fileExtension: "mp3", loop: false)
+        static let failure = Sound(filePath: "failure", fileExtension: "mp3", loop: false)
+
+        let filePath: String
+        let fileExtension: String
+        let url: URL
+
+        let loop: Bool
+
+        init(filePath: String, fileExtension: String, loop: Bool) {
+            self.filePath = filePath
+            self.fileExtension = fileExtension
+            self.url = Bundle.main.url(forResource: self.filePath, withExtension: self.fileExtension)!
+            self.loop = loop
+        }
+
+        lazy var player: AVAudioPlayer? = {
+            let newPlayer: AVAudioPlayer?
+            do {
+                try newPlayer = AVAudioPlayer(contentsOf: self.url, fileTypeHint: nil)
+                if self.loop {
+                    newPlayer?.numberOfLoops = -1
+                }
+            } catch {
+                Logger.error("\(self.TAG) faild to build audio player with error: \(error)")
+                newPlayer = nil
+                assertionFailure()
+            }
+            return newPlayer
+        }()
     }
 
     // MARK: Vibration config
@@ -76,89 +111,152 @@ import Foundation
         Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
 
         switch call.state {
-        case .idle: handleIdle()
-        case .dialing: handleDialing()
-        case .answering: handleAnswering()
-        case .remoteRinging: handleRemoteRinging()
-        case .localRinging: handleLocalRinging()
-        case .connected: handleConnected(call:call)
-        case .localFailure: handleLocalFailure()
-        case .localHangup: handleLocalHangup()
-        case .remoteHangup: handleRemoteHangup()
-        case .remoteBusy: handleBusy()
+        case .idle: handleIdle(call: call)
+        case .dialing: handleDialing(call: call)
+        case .answering: handleAnswering(call: call)
+        case .remoteRinging: handleRemoteRinging(call: call)
+        case .localRinging: handleLocalRinging(call: call)
+        case .connected: handleConnected(call: call)
+        case .localFailure: handleLocalFailure(call: call)
+        case .localHangup: handleLocalHangup(call: call)
+        case .remoteHangup: handleRemoteHangup(call: call)
+        case .remoteBusy: handleBusy(call: call)
         }
     }
 
-    private func handleIdle() {
+    private func handleIdle(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
     }
 
-    private func handleDialing() {
+    private func handleDialing(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+
+        if call.isSpeakerphoneEnabled {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
+                            mode: AVAudioSessionModeVoiceChat,
+                            options: [.defaultToSpeaker, .mixWithOthers])
+        } else {
+            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
+                            mode: AVAudioSessionModeVoiceChat,
+                            options: .mixWithOthers)
+        }
+
+        // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
+        // need some time to settle? Is somethign else interrupting our session?
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+            self.play(sound: Sound.dialing, call: call)
+        }
     }
 
-    private func handleAnswering() {
+    private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+        stopPlayingAnySounds()
     }
 
-    private func handleRemoteRinging() {
+    private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        stopPlayingAnySounds()
+
+        // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
+        self.play(sound: Sound.outgoingRing, call: call)
     }
 
-    private func handleLocalRinging() {
+    private func handleLocalRinging(call: SignalCall) {
         Logger.debug("\(TAG) in \(#function)")
-        startRinging()
+        stopPlayingAnySounds()
+
+        startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+        stopPlayingAnySounds()
 
-        // disable start recording to transmit call audio.
+        // start recording to transmit call audio.
         ensureIsEnabled(call: call)
     }
 
-    private func handleLocalFailure() {
+    private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+        stopPlayingAnySounds()
+
+        play(sound: Sound.failure, call: call)
     }
 
-    private func handleLocalHangup() {
+    private func handleLocalHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+
+        handleCallEnded(call: call)
     }
 
-    private func handleRemoteHangup() {
+    private func handleRemoteHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+
+        vibrate()
+
+        handleCallEnded()
     }
 
-    private func handleBusy() {
+    private func handleBusy(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopRinging()
+        stopPlayingAnySounds()
+
+        play(sound: Sound.busy, call: call)
+        // Let the busy sound play for 4 seconds. The full file is longer than necessary
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
+            self.handleCallEnded()
+        }
+    }
+
+    private func handleCallEnded(call: SignalCall) {
+        Logger.debug("\(TAG) \(#function)")
+        stopPlayingAnySounds()
+
+        // Stop solo audio, revert to default.
+        setAudioSession(category: AVAudioSessionCategoryAmbient)
+    }
+
+    // MARK: Playing Sounds
+
+    var currentPlayer: AVAudioPlayer?
+
+    private func stopPlayingAnySounds() {
+        currentPlayer?.stop()
+        stopAnyRingingVibration()
+    }
+
+    private func play(sound: Sound, call: SignalCall) {
+        guard let newPlayer = sound.player else {
+            Logger.error("\(self.TAG) unable to build player")
+            return
+        }
+        Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
+
+        newPlayer.play()
+        self.currentPlayer?.stop()
+
+        self.currentPlayer = newPlayer
     }
 
     // MARK: - Ringing
 
-    private func startRinging() {
+    private func startRinging(call: SignalCall) {
         guard handleRinging else {
             Logger.debug("\(TAG) ignoring \(#function) since CallKit handles it's own ringing state")
             return
         }
 
+        // SoloAmbient plays through speaker, but respects silent switch
+        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
+
         vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] _ in
             self?.ringVibration()
         }
         vibrateTimer?.fire()
-
-        // Stop other sounds and play ringer through external speaker
-        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
-
-        soundPlayer.playSound(withFilename: SoundFilenames.incomingRing.rawValue, fileExtension: kJSQSystemSoundTypeCAF)
+        play(sound: Sound.incomingRing, call: call)
     }
 
-    private func stopRinging() {
+    private func stopAnyRingingVibration() {
         guard handleRinging else {
             Logger.debug("\(TAG) ignoring \(#function) since CallKit handles it's own ringing state")
             return
@@ -168,21 +266,21 @@ import Foundation
         // Stop vibrating
         vibrateTimer?.invalidate()
         vibrateTimer = nil
-
-        soundPlayer.stopSound(withFilename: SoundFilenames.incomingRing.rawValue)
-
-        // Stop solo audio, revert to default.
-        setAudioSession(category: AVAudioSessionCategoryAmbient)
     }
 
     // public so it can be called by timer via selector
     public func ringVibration() {
         // Since a call notification is more urgent than a message notifaction, we
         // vibrate twice, like a pulse, to differentiate from a normal notification vibration.
-        soundPlayer.playVibrateSound()
+        vibrate()
         DispatchQueue.default.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
-            self.soundPlayer.playVibrateSound()
+            self.vibrate()
         }
+    }
+
+    func vibrate() {
+        // TODO implement HapticAdapter for iPhone7 and up
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     }
 
     private func setAudioSession(category: String,
@@ -197,7 +295,7 @@ import Foundation
                 Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
             }
         } catch {
-            let message = "\(self.TAG) in \(#function) failed to set category: \(category) with error: \(error)"
+            let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(mode), options: \(options) with error: \(error)"
             assertionFailure(message)
             Logger.error(message)
         }
