@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "ใช้ CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "ใช้ CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกการดีบั๊ก";

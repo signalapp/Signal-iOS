@@ -68,6 +68,8 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 #pragma mark Callkit
 
+- (BOOL)isCallKitEnabled;
+- (void)setIsCallKitEnabled:(BOOL)flag;
 - (BOOL)isCallKitPrivacyEnabled;
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
 

@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Om";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Bruk CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Bruk CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på debug-logging";

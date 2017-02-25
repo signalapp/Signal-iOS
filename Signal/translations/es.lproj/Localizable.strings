@@ -745,7 +745,7 @@
 "SETTINGS_ABOUT" = "Acerca de Signal";
 
 /* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Aviso de llamada CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Aviso de llamada CallKit";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activar registro de depuración";

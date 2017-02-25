@@ -176,6 +176,17 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
 
 #pragma mark CallKit
 
+- (BOOL)isCallKitEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    return preference ? [preference boolValue] : YES;
+}
+
+- (void)setIsCallKitEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
+}
+
 - (BOOL)isCallKitPrivacyEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
