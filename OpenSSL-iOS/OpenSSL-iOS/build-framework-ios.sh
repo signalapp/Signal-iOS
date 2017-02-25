@@ -32,9 +32,9 @@ echo "Could not find platform name from SDK_NAME: $SDK_NAME"
 exit 1
 fi
 
-if [[ "$SF_SDK_PLATFORM" = "iphoneos" ]]
+if [[ "$SF_SDK_PLATFORM" != "iphoneos" ]]
 then
-echo "Please choose iPhone simulator as the build target."
+echo "Please choose iPhone device as the build target."
 exit 1
 fi
 

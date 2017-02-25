@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -426,7 +426,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0820;
-				ORGANIZATIONNAME = krzyzanowskim;
+				ORGANIZATIONNAME = levigroker;
 				TargetAttributes = {
 					C71BFA001D395F47006DBF18 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -434,7 +434,7 @@
 				};
 			};
 			buildConfigurationList = C71BF9FB1D395F47006DBF18 /* Build configuration list for PBXProject "OpenSSL-iOS" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
