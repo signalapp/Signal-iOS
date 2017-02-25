@@ -1,5 +1,6 @@
-//  Created by Dylan Bourgeois on 20/11/14.
-//  Portions Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageData.h"
 
@@ -12,9 +13,11 @@ typedef enum : NSUInteger {
     kCallOutgoing = 1,
     kCallIncoming = 2,
     kCallMissed = 3,
-    kGroupUpdateJoin = 4,
-    kGroupUpdateLeft = 5,
-    kGroupUpdate = 6
+    kCallOutgoingIncomplete = 4,
+    kCallIncomingIncomplete = 5,
+    kGroupUpdateJoin = 6,
+    kGroupUpdateLeft = 7,
+    kGroupUpdate = 8,
 } CallStatus;
 
 @interface OWSCall : NSObject <OWSMessageData>

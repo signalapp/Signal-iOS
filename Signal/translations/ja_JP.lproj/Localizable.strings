@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@の%@：%@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "保管庫に移動";
 
@@ -65,12 +68,21 @@
 "ATTACHMENT_QUEUED" = "添付ファイルが取得予定に追加されました。";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signalを使うにはマイクへのアクセスが必要です。アクセスを許可するには，「設定」>「プライバシー」>「マイク」>「Signal」で設定してください。";
+"AUDIO_PERMISSION_MESSAGE" = "Signalがうまく機能するにはマイクへのアクセスが必要です。アクセスを許可するには，設定→プライバシー→マイク→Signal，と進んでください。";
+
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "呼出中";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "電話";
 
-/* No comment provided by engineer. */
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "応答なし";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
 
 /* Activity Sheet label */
@@ -220,14 +232,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "続けて電話をかけました";
 
-/* No comment provided by engineer. */
+/* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "話し中";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "通話失敗";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "エラー発生";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "通話に失敗しました";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "メッセージの送信に失敗しました";
@@ -241,8 +253,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "サーバーにエラーが発生しました。少し待って再試行してください。";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "未知のエラーが発生";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "相手がSignalユーザーではないようです。";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "連絡先はSignalのユーザではありません";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複メッセージを受信しました";
@@ -353,16 +368,22 @@
 "IN_CALL_TALKING" = "通信は安全です";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "終了しました";
+"IN_CALL_TERMINATED" = "通話が終了";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "着信";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "%@ から着信";
+
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "不完全着信";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "検索";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "友だちを招待";
@@ -436,23 +457,31 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u分";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "不在着信";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signalがカメラにアクセスできないよう設定されているようです。端末の設定を見直してください。";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "ビデオ電話をするにはカメラへのアクセスが必要です。アクセスを許可するには，設定→プライバシー→カメラ→Signal，と進んでください。";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "%@ から不在着信";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "%@ から着信";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ から着信あり";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "%@ に発信";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "%@ へ発信しました";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
@@ -478,6 +507,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "ネットワークへの接続状況は，受信箱上部のバーを見て確認できます。";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "%@との新規会話";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "グループのアイコン画像を設定";
 
@@ -489,6 +521,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "メンバーを追加";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "%@へのメッセージ送信に失敗しました";
@@ -533,7 +568,7 @@
 "OUTGOING_CALL" = "発信";
 
 /* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "新着メッセージを受信するにはデバイスのロックを解除してください";
+"OUTGOING_INCOMPLETE_CALL" = "不完全発信";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@との安全番号ではないようです。連絡先が正しいか確認してください。";
@@ -614,7 +649,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "ユーザーの増加スピードに制限を設けています。しばらくしてから再度試してください。";
 
 /* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "登録済み番号";
+"REGISTERED_NUMBER_TEXT" = "登録番号";
 
 /* Alert title */
 "REGISTRATION_BODY" = "プッシュ通知の再登録に失敗しました";
@@ -697,8 +732,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "友だちをSignalに招待しました";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "この人にSMSを送信する：";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "招待状をSMSで %@ に送る";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "安全性の低いSMSで招待しますか？";
@@ -709,6 +744,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Signalについて";
 
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "CallKitを使う";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
 
@@ -717,6 +755,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "ビデオ電話（ベータ版）を有効にする";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "設定を更新できませんでした";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "エラー";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新規の安全番号を持つ人（例えばSignalを再インストールした人）と通信する前にはあなたに承認を求めます。";
@@ -772,6 +819,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "アプリ切り替え画面でSignalのプレビューを表示しない（ロゴのみ表示）";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKitを使うと，ロック画面から直接電話に出ることができます。ただし，通話に関する情報の一部がAppleによってユーザのiCloudに同期されます。";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "電話";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "スクリーン・セキュリティ";
 
@@ -823,6 +876,9 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "削除";
 
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "電話を掛けれませんでした";
+
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "受信箱に戻す";
 
@@ -872,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "認証コード";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "電話で行う";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "電話で行う";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "コードを再発行する";

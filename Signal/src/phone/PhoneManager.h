@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import "CallAudioManager.h"
 #import "CallConnectUtil.h"
@@ -35,6 +39,9 @@
 - (void)answerCall;
 - (BOOL)toggleMute;
 - (void)backgroundTimeExpired;
+
+// Returns YES IFF there is an ongoing RedPhone call.
+- (BOOL)hasOngoingRedphoneCall;
 
 - (ObservableValue *)currentCallObservable;
 

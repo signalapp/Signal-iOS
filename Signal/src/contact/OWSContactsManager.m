@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "OWSContactsManager.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
@@ -6,6 +10,9 @@
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
+
+NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
+    @"OWSContactsManagerSignalRecipientsDidChangeNotification";
 
 @interface OWSContactsManager ()
 
@@ -38,7 +45,7 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 }
 
 - (void)doAfterEnvironmentInitSetup {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(_iOS_9)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         self.contactStore = [[CNContactStore alloc] init];
         [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
                                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
@@ -99,18 +106,27 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)intersectContacts {
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
-        success:^{
-            DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
-        }
-        failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+                                                                           success:^{
+                                                                               DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
+                                                                               [self fireSignalRecipientsDidChange];
+                                                                           }
+                                                                           failure:^(NSError *error) {
+                                                                               DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+                                                                               
+                                                                               [NSTimer scheduledTimerWithTimeInterval:60
+                                                                                                                target:self
+                                                                                                              selector:@selector(intersectContacts)
+                                                                                                              userInfo:nil
+                                                                                                               repeats:NO];
+                                                                           }];
+}
 
-            [NSTimer scheduledTimerWithTimeInterval:60
-                                             target:self
-                                           selector:@selector(intersectContacts)
-                                           userInfo:nil
-                                            repeats:NO];
-        }];
+- (void)fireSignalRecipientsDidChange
+{
+    AssertIsOnMainThread();
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                        object:nil];
 }
 
 - (void)pullLatestAddressBook {
@@ -143,7 +159,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *action) {
-                                                   exit(0);
+                                                     [DDLog flushLog];
+                                                     exit(0);
                                                  }]];
 
             [[UIApplication sharedApplication]
@@ -399,10 +416,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [self getSignalUsersFromContactsArray:[self allContacts]];
 }
 
+- (NSString *)unknownContactName
+{
+    return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
+                             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+}
+
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
     if (!identifier) {
-        return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
-            @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+        return self.unknownContactName;
     }
     Contact *contact = [self contactForPhoneIdentifier:identifier];
     
@@ -474,6 +496,21 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
     return nil;
 }
+
+- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier
+{
+    Contact *savedContact = [self contactForPhoneIdentifier:identifier];
+    if (savedContact) {
+        return savedContact;
+    } else {
+        return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
+                                                 andLastName:nil
+                                     andUserTextPhoneNumbers:@[ identifier ]
+                                                    andImage:nil
+                                                andContactID:0];
+    }
+}
+
 
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = [self contactForPhoneIdentifier:identifier];

@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "CryptoTools.h"
-#import "Constraints.h"
 #import "HashChain.h"
 
 @implementation HashChain

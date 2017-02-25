@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ in groep %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Archiveer";
 
@@ -65,12 +68,21 @@
 "ATTACHMENT_QUEUED" = "Er staat een nieuwe bijlage klaar om te downloaden.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Om goed te kunnen werken heeft Signal toegang nodig tot je microfoon. Je kan toestemming geven door te gaan naar Instellingen >> Privacy >> Microfoon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal heeft je microfoon nodig om goed te kunnen werken. Je kan toestemming geven in de Instellingen-app >> Privacy >> Microfoon >> Signal";
+
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Bellen...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Bellen";
 
-/* No comment provided by engineer. */
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Geen antwoord.";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Terugbellen";
 
 /* Activity Sheet label */
@@ -220,14 +232,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Je voerde nog een gesprek.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Niet beschikbaar...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Niet beschikbaar.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Oproep gemist.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Cliënt-fout!";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Bericht versturen mislukt.";
@@ -241,8 +253,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfout. Probeer het later opnieuw.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Ontvanger gebruikt niet langer Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is geen Signal-gebruiker.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Duplicaat bericht ontvangen.";
@@ -353,16 +368,22 @@
 "IN_CALL_TALKING" = "Beveiligd. Actief.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Klaar.";
+"IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Binnenkomende oproep";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Inkomende oproep van %@";
+
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Onvolledige inkomende oproep van";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen bij Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Zoeken";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Vrienden uitnodigen";
@@ -436,23 +457,31 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuten";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Gemiste oproep";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Je hebt de vorige keer Signal de toegang tot je camera geweigerd. Werk je systeeminstellingen bij om verder te gaan.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal heeft je camera nodig voor videogesprekken. Je kan toestemming geven in de Instellingen-app >> Privacy >> Camera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Oproep gemist van %@.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Je ontving een oproep van %@.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ heeft je proberen bellen.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Je belde %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Je hebt %@ proberen bellen.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -478,6 +507,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Je kan de netwerkstatus controleren door te kijken naar de gekleurde balk boven je inbox.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Een nieuw gesprek met:%@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Groepsfoto instellen";
 
@@ -489,6 +521,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Voeg mensen toe";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Zoek contacten op telefoonnummer";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Versturen van bericht aan %@ mislukt.";
@@ -533,7 +568,7 @@
 "OUTGOING_CALL" = "Uitgaande oproep";
 
 /* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Je iPhone moet ontgrendeld zijn om nieuwe berichten te kunnen ontvangen.";
+"OUTGOING_INCOMPLETE_CALL" = "Onvolledige uitgaande oproep";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dit lijkt niet op je veiligheidsnummer met %@. Verifieer je wel het juiste contact?";
@@ -697,8 +732,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Je hebt je vriend uitgenodigd om Signal te gebruiken!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Verstuur SMS naar:";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Stuur uitnodiging via SMS naar:%@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Vriend uitnodigen via onbeveiligde SMS?";
@@ -709,6 +744,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Over";
 
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Gebruik CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Zet debug-log aan";
 
@@ -717,6 +755,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Geavanceerd";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Schakel videobellen in";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Kon je voorkeuren niet bijwerken.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Fout";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Vereist je bevestiging vooraleer je kan communiceren met iemand die een nieuw veiligheidsnummer heeft, meestal omdat ze Signal opnieuw geïnstalleerd hebben.";
@@ -772,6 +819,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Voorkom dat Signal voorvertoningen laat zien in de app switcher.";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit laat je toe oproepen te beantwoorden vanop je vergrendelscherm. Let op: wanneer je CallKit gebruikt, synchroniseert Apple metadata over de oproep met je iCloud-account.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Bellen";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Schermbeveiliging";
 
@@ -823,6 +876,9 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Verwijderen";
 
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Kan oproep niet maken.";
+
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "De-archiveer";
 
@@ -872,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verificatiecode";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Bel mij";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Bel mij";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Code opnieuw aanvragen";
@@ -881,7 +937,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Verstuur verificatiecode";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Bevestigen";
+"VERIFICATION_HEADER" = "Verifiëren";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Veiligheidsnummer verifiëren";

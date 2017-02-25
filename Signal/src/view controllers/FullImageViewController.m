@@ -1,44 +1,60 @@
 //
-//  FullImageViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 11/11/14.
-//  Animated GIF support added by Mike Okner (@mikeokner) on 11/27/15.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "FLAnimatedImage.h"
 #import "FullImageViewController.h"
 #import "UIUtil.h"
-
-#define kImageViewCornerRadius 5.0f
+#import "UIView+OWS.h"
+#import "TSPhotoAdapter.h"
+#import "TSMessageAdapter.h"
+#import "TSAnimatedAdapter.h"
 
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 8.0f
-#define kTargetDoubleTapZoom 3.0f
 
 #define kBackgroundAlpha 0.6f
 
+// In order to use UIMenuController, the view from which it is
+// presented must have certain custom behaviors.
+@interface AttachmentMenuView : UIView
+
+@end
+
+#pragma mark -
+
+@implementation AttachmentMenuView
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+// We only use custom actions in UIMenuController.
+- (BOOL)canPerformAction:(SEL)action
+              withSender:(id)sender
+{
+    return NO;
+}
+
+@end
+
+#pragma mark -
+
 @interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
-@property (nonatomic, strong) UIView *backgroundView;
+@property (nonatomic) UIView *backgroundView;
+@property (nonatomic) UIScrollView *scrollView;
+@property (nonatomic) UIImageView *imageView;
+@property (nonatomic) UIButton *shareButton;
 
-@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic) CGRect originRect;
+@property (nonatomic) BOOL isPresenting;
+@property (nonatomic) BOOL isAnimated;
+@property (nonatomic) NSData *fileData;
 
-@property (nonatomic, strong) UIImageView *imageView;
-
-@property (nonatomic, strong) UITapGestureRecognizer *singleTap;
-@property (nonatomic, strong) UITapGestureRecognizer *doubleTap;
-
-@property (nonatomic, strong) UIButton *shareButton;
-
-@property CGRect originRect;
-@property BOOL isPresenting;
-@property BOOL isAnimated;
-@property NSData *fileData;
-
-@property TSAttachmentStream *attachment;
-@property TSInteraction *interaction;
+@property (nonatomic) TSAttachmentStream *attachment;
+@property (nonatomic) TSInteraction *interaction;
+@property (nonatomic) id<OWSMessageData> messageItem;
 
 @end
 
@@ -48,6 +64,7 @@
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                           fromRect:(CGRect)rect
                     forInteraction:(TSInteraction *)interaction
+                       messageItem:(id<OWSMessageData>)messageItem
                         isAnimated:(BOOL)animated {
     self = [super initWithNibName:nil bundle:nil];
 
@@ -55,6 +72,7 @@
         self.attachment  = attachment;
         self.originRect  = rect;
         self.interaction = interaction;
+        self.messageItem = messageItem;
         self.isAnimated  = animated;
         self.fileData    = [NSData dataWithContentsOfURL:[attachment mediaURL]];
     }
@@ -64,6 +82,12 @@
 
 - (UIImage *)image {
     return self.attachment.image;
+}
+
+- (void)loadView {
+    self.view = [AttachmentMenuView new];
+    self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
 - (void)viewDidLoad {
@@ -77,16 +101,24 @@
     [self populateImageView:self.image];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    if ([UIMenuController sharedMenuController].isMenuVisible) {
+        [[UIMenuController sharedMenuController] setMenuVisible:NO
+                                                       animated:NO];
+    }
+}
+
 #pragma mark - Initializers
 
 - (void)initializeBackground {
     self.imageView.backgroundColor      = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
-    self.view.backgroundColor           = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
-    self.view.autoresizingMask          = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.backgroundView                 = [[UIView alloc] initWithFrame:CGRectInset(self.view.bounds, -512, -512)];
+    
+    self.backgroundView                 = [UIView new];
     self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
-
     [self.view addSubview:self.backgroundView];
+    [self.backgroundView autoPinEdgesToSuperviewEdges];
 }
 
 - (void)initializeScrollView {
@@ -111,11 +143,14 @@
     } else {
         // Present the static image using standard UIImageView
         self.imageView                              = [[UIImageView alloc] initWithFrame:self.originRect];
-        self.imageView.layer.cornerRadius           = kImageViewCornerRadius;
         self.imageView.contentMode                  = UIViewContentModeScaleAspectFill;
         self.imageView.userInteractionEnabled       = YES;
         self.imageView.clipsToBounds                = YES;
         self.imageView.layer.allowsEdgeAntialiasing = YES;
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        self.imageView.layer.minificationFilter = kCAFilterTrilinear;
+        self.imageView.layer.magnificationFilter = kCAFilterTrilinear;
     }
 
     [self.scrollView addSubview:self.imageView];
@@ -128,56 +163,101 @@
 }
 
 - (void)initializeGestureRecognizers {
-    self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDoubleTapped:)];
-    self.doubleTap.numberOfTapsRequired = 2;
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                action:@selector(imageDismissGesture:)];
+    singleTap.delegate = self;
+    [self.view addGestureRecognizer:singleTap];
+    
+    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                action:@selector(imageDismissGesture:)];
+    doubleTap.numberOfTapsRequired = 2;
+    doubleTap.delegate = self;
+    [self.view addGestureRecognizer:doubleTap];
+    
+    // UISwipeGestureRecognizer supposedly supports multiple directions,
+    // but in practice it works better if you use a separate GR for each
+    // direction.
+    for (NSNumber *direction in @[
+                                  @(UISwipeGestureRecognizerDirectionRight),
+                                  @(UISwipeGestureRecognizerDirectionLeft),
+                                  @(UISwipeGestureRecognizerDirectionUp),
+                                  @(UISwipeGestureRecognizerDirectionDown),
+                                  ]) {
+        UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(imageDismissGesture:)];
+        swipe.direction = (UISwipeGestureRecognizerDirection) direction.integerValue;
+        swipe.delegate = self;
+        [self.view addGestureRecognizer:swipe];
+    }
 
-    self.singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageSingleTapped:)];
-    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
-
-    self.singleTap.delegate = self;
-    self.doubleTap.delegate = self;
-
-    [self.view addGestureRecognizer:self.singleTap];
-    [self.view addGestureRecognizer:self.doubleTap];
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                            action:@selector(longPressGesture:)];
+    longPress.delegate = self;
+    [self.view addGestureRecognizer:longPress];
 }
 
 #pragma mark - Gesture Recognizers
 
-- (void)imageDoubleTapped:(UITapGestureRecognizer *)doubleTap {
-    CGPoint tap          = [doubleTap locationInView:doubleTap.view];
-    CGPoint convertCoord = [self.scrollView convertPoint:tap fromView:doubleTap.view];
-    CGRect targetZoomRect;
-    UIEdgeInsets targetInsets;
-
-    CGSize zoom;
-
-    if (self.scrollView.zoomScale == 1.0f) {
-        zoom = CGSizeMake(self.view.bounds.size.width / kTargetDoubleTapZoom,
-                          self.view.bounds.size.height / kTargetDoubleTapZoom);
-        targetZoomRect = CGRectMake(
-            convertCoord.x - (zoom.width / 2.0f), convertCoord.y - (zoom.height / 2.0f), zoom.width, zoom.height);
-        targetInsets = [self contentInsetForScrollView:kTargetDoubleTapZoom];
-    } else {
-        zoom = CGSizeMake(self.view.bounds.size.width * self.scrollView.zoomScale,
-                          self.view.bounds.size.height * self.scrollView.zoomScale);
-        targetZoomRect = CGRectMake(
-            convertCoord.x - (zoom.width / 2.0f), convertCoord.y - (zoom.height / 2.0f), zoom.width, zoom.height);
-        targetInsets = [self contentInsetForScrollView:1.0f];
-    }
-
-    self.view.userInteractionEnabled = NO;
-
-    [CATransaction begin];
-    [CATransaction setCompletionBlock:^{
-      self.scrollView.contentInset     = targetInsets;
-      self.view.userInteractionEnabled = YES;
-    }];
-    [self.scrollView zoomToRect:targetZoomRect animated:YES];
-    [CATransaction commit];
+- (void)imageDismissGesture:(UIGestureRecognizer *)sender {
+  if (sender.state == UIGestureRecognizerStateRecognized) {
+    [self dismiss];
+  }
 }
 
-- (void)imageSingleTapped:(UITapGestureRecognizer *)singleTap {
-    [self dismiss];
+- (void)longPressGesture:(UIGestureRecognizer *)sender {
+    // We "eagerly" respond when the long press begins, not when it ends.
+    if (sender.state == UIGestureRecognizerStateBegan) {
+
+        [self.view becomeFirstResponder];
+        
+        if ([UIMenuController sharedMenuController].isMenuVisible) {
+            [[UIMenuController sharedMenuController] setMenuVisible:NO
+                                                           animated:NO];
+        }
+
+        NSArray *menuItems = @[
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION", @"Short name for edit menu item to copy contents of media message.")
+                                                          action:@selector(copyAttachment:)],
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
+                                                          action:@selector(saveAttachment:)],
+                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
+                                                          action:@selector(shareAttachment:)],
+                               ];
+        [UIMenuController sharedMenuController].menuItems = menuItems;
+        CGPoint location = [sender locationInView:self.view];
+        CGRect targetRect = CGRectMake(location.x,
+                                       location.y,
+                                       1, 1);
+        [[UIMenuController sharedMenuController] setTargetRect:targetRect
+                                                        inView:self.view];
+        [[UIMenuController sharedMenuController] setMenuVisible:YES
+                                                       animated:YES];
+    }
+}
+
+- (void)performEditingActionWithSelector:(SEL)selector {
+    OWSAssert(self.messageItem.messageType == TSIncomingMessageAdapter ||
+              self.messageItem.messageType == TSOutgoingMessageAdapter);
+    OWSAssert([self.messageItem isMediaMessage]);
+    OWSAssert([self.messageItem isKindOfClass:[TSMessageAdapter class]]);
+    OWSAssert([self.messageItem conformsToProtocol:@protocol(OWSMessageEditing)]);
+    OWSAssert([[self.messageItem media] isKindOfClass:[TSPhotoAdapter class]] ||
+              [[self.messageItem media] isKindOfClass:[TSAnimatedAdapter class]]);
+    
+    OWSAssert([self.messageItem canPerformEditingAction:selector]);
+    [self.messageItem performEditingAction:selector];
+}
+
+- (void)copyAttachment:(id)sender {
+    [self performEditingActionWithSelector:NSSelectorFromString(@"copy:")];
+}
+
+- (void)saveAttachment:(id)sender {
+    [self performEditingActionWithSelector:NSSelectorFromString(@"save:")];
+}
+
+- (void)shareAttachment:(id)sender {
+    [self performEditingActionWithSelector:NSSelectorFromString(@"share:")];
 }
 
 #pragma mark - Presentation
@@ -193,14 +273,19 @@
         presentViewController:self
                      animated:NO
                    completion:^{
-                     [UIView animateWithDuration:0.4f
+                       UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                       self.imageView.frame = [self.view convertRect:self.originRect
+                                                            fromView:window];
+                       
+                     [UIView animateWithDuration:0.25f
                          delay:0
-                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
+                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
                          animations:^() {
                            self.view.alpha      = 1.0f;
                            self.imageView.frame = [self resizedFrameForImageView:self.image.size];
                            self.imageView.center =
-                               CGPointMake(self.view.bounds.size.width / 2.0f, self.view.bounds.size.height / 2.0f);
+                               CGPointMake(self.view.bounds.size.width / 2.0f,
+                                           self.view.bounds.size.height / 2.0f);
                          }
                          completion:^(BOOL completed) {
                            self.scrollView.frame = self.view.bounds;
@@ -215,9 +300,9 @@
 
 - (void)dismiss {
     self.view.userInteractionEnabled = NO;
-    [UIView animateWithDuration:0.4f
+    [UIView animateWithDuration:0.25f
         delay:0
-        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
+        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveLinear
         animations:^() {
           self.backgroundView.backgroundColor = [UIColor clearColor];
           self.scrollView.alpha               = 0;
@@ -234,7 +319,6 @@
     [self updateLayouts];
 }
 
-
 - (void)updateLayouts {
     if (_isPresenting) {
         return;
@@ -245,7 +329,6 @@
     self.scrollView.contentSize  = self.imageView.frame.size;
     self.scrollView.contentInset = [self contentInsetForScrollView:self.scrollView.zoomScale];
 }
-
 
 #pragma mark - Resizing
 

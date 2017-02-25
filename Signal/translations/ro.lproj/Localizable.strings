@@ -40,6 +40,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ în grupul %@: %@";
 
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arhivează";
 
@@ -65,12 +68,21 @@
 "ATTACHMENT_QUEUED" = "Un nou atașament a fost pus în coada de descărcare.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Pentru a funcționa corect aplicația Signal are nevoie de accesul la microfon.Puteți permite accesul în Configurări >> Intimitate >> Microfon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal are nevoie de acces la microfon pentru a funcționa corespunzător. Poți activa această permisiune din Configurări >> Intimitate >> Microfon >> Signal";
+
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Apel în curs...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Sună";
 
-/* No comment provided by engineer. */
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Nici un răspuns.";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* notification action */
 "CALLBACK_BUTTON_TITLE" = "Sună înapoi";
 
 /* Activity Sheet label */
@@ -220,14 +232,14 @@
 /* No comment provided by engineer. */
 "END_CALL_REPLACED_BY_NEXT" = "Ai făcut un alt apel.";
 
-/* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "Ocupat...";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Ocupat.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Apel ratat.";
 
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Eroare de client!";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Apelul a eșuat.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Trimiterea mesajului a eșuat.";
@@ -241,8 +253,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Eroare de server. Te rog încearcă mai târziu.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "A apărut o eroare necunoscută.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Destinatarul nu mai este un utilizator Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contactul nu este un utilizator de Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "A fost primit un mesaj duplicat.";
@@ -353,16 +368,22 @@
 "IN_CALL_TALKING" = "Ești securizat și poți fi auzit acum.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Executat.";
+"IN_CALL_TERMINATED" = "Apelul a fost terminat.";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL" = "Apel de intrare";
 
-/* No comment provided by engineer. */
+/* notification body */
 "INCOMING_CALL_FROM" = "Apel de intrare de la %@";
+
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "Apel de intrare incomplet de la";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invită-ți prietenii la Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Căutare";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Invită prieteni";
@@ -436,23 +457,31 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minute";
 
-/* No comment provided by engineer. */
+/* notification title */
 "MISSED_CALL" = "Apel ratat.";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Anterior ai refuzat accesul Signal la camera ta. Actualizează-ți setările de sistem pentru a continua.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal are nevoie de acces la cameră pentru apelurile video. Poți activa această permisiune din Configurări >> Intimitate >> Cameră >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal are nevoie de acces la camera ta.";
 
-/* No comment provided by engineer. */
+/* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Apel ratat de la %@.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Ai primit un apel de la %@.";
 
 /* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ a încercat să te sune.";
+
+/* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Ai apelat pe %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Ai încercat să suni pe %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nu mai poți conecta alte dispozitive.";
@@ -478,6 +507,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Poți verifica status-ul rețelei prin observarea barei colorate deasupra inbox-ului.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Conversație nouă cu %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Setează Poza de Grup";
 
@@ -489,6 +521,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Adaugă persoane";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Găsește contacte după numărul de telefon";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Mesajul tău nu a fost transmis către %@.";
@@ -530,10 +565,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ a setat timpul de expirare a mesajelor la %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Apel de eșire";
+"OUTGOING_CALL" = "Apel de ieșire";
 
 /* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Iphone-ul tău trebuie deblocat pentru a primi mesaje noi.";
+"OUTGOING_INCOMPLETE_CALL" = "Apel de ieșire incomplet";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
@@ -697,8 +732,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Ai invitat prietenul tău să folosească Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Trimite SMS spre:";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Trimite invitație prin SMS către: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invită un prieten prin SMS nesecurizat?";
@@ -709,6 +744,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Despre";
 
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Activează CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activează Log-ul de depanare";
 
@@ -717,6 +755,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avansat";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Preferințele tale nu au putut fi actualizate.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Eroare";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Este nevoie de aprobarea ta înainte de a comunica cu cineva care are un nou număr de siguranță, situație comună când se reinstalează Signal.";
@@ -772,6 +819,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Previne previzualizare lui Signal în app switcher.";
 
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit îți permite să răspunzi la apeluri direct din ecranul de blocare. Fi conștient de faptul că atunci când se utilizează CallKit, Apple sincronizează unele metadate ale apelului la contul tău iCloud.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Apel în curs";
+
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Securitate Ecran";
 
@@ -823,6 +876,9 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Șterge";
 
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "Apelul nu a putut fi efectuat.";
+
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Dezarhivare";
 
@@ -872,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Cod de Verificare";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Mai bine Sună-mă";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mai bine Sună-mă";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicită codul din nou";

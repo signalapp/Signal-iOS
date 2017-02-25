@@ -1,9 +1,5 @@
 //
-//  SignalsViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsViewController.h"
@@ -32,6 +28,8 @@
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
+NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallSegue";
+
 @interface SignalsViewController ()
 
 @property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
@@ -41,9 +39,10 @@
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) id previewingContext;
+@property (nonatomic, readonly, strong) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
 
 @end
 
@@ -56,12 +55,7 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messagesManager = [TSMessagesManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
 
     return self;
 }
@@ -73,14 +67,17 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messagesManager = [TSMessagesManager sharedManager];
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
 
     return self;
+}
+
+- (void)commonInit
+{
+    _accountManager = [Environment getCurrent].accountManager;
+    _contactsManager = [Environment getCurrent].contactsManager;
+    _messagesManager = [TSMessagesManager sharedManager];
+    _messageSender = [Environment getCurrent].messageSender;
 }
 
 - (void)awakeFromNib
@@ -120,14 +117,67 @@
     [self.segmentedControl addTarget:self
                               action:@selector(swappedSegmentedControl)
                     forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = self.segmentedControl;
+    UINavigationItem *navigationItem = self.navigationItem;
+    navigationItem.titleView = self.segmentedControl;
     [self.segmentedControl setSelectedSegmentIndex:0];
-
+    navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
+        @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleActiveCallNotification:)
+                                                 name:[CallService callServiceActiveCallNotificationName]
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePresentCallInterstitialNotification:)
+                                                 name:[CallService presentCallInterstitialNotificationName]
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleDismissCallInterstitialNotification:)
+                                                 name:[CallService dismissCallInterstitialNotificationName]
+                                               object:nil];
+    
+    [self updateBarButtonItems];
+}
+
+- (void)updateBarButtonItems {
+    const CGFloat kBarButtonSize = 44;
+    if (YES) {
+        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+        // The contents of the navigation bar are cramped in this view.
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+        [button setImage:image
+                forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // left inset tighten up the layout.
+        imageEdgeInsets.right = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.5f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        button.imageEdgeInsets = imageEdgeInsets;
+        button.accessibilityLabel = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+        [button addTarget:self
+                   action:@selector(settingsButtonPressed:)
+             forControlEvents:UIControlEventTouchUpInside];
+        button.frame = CGRectMake(0, 0,
+                                  round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                  round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    }
+}
+
+- (void)settingsButtonPressed:(id)sender {
+    [self performSegueWithIdentifier:@"ShowAppSettingsSegue" sender:sender];
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -145,6 +195,75 @@
         return vc;
     } else {
         return nil;
+    }
+}
+
+- (void)handlePresentCallInterstitialNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+    
+    NSString *callToken = notification.object;
+    OWSAssert(callToken != nil);
+    
+    OWSCallInterstitialViewController *viewController = [[OWSCallInterstitialViewController alloc] initWithCallToken:callToken];
+    
+    void(^presentInterstitial)() = ^{
+        viewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:viewController
+                           animated:NO
+                         completion:nil];
+    };
+    
+    // Dismiss any other modals so we can present call modal.
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:presentInterstitial];
+    } else {
+        presentInterstitial();
+    }
+}
+
+- (void)handleDismissCallInterstitialNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+    
+    NSString *callToken = notification.object;
+    OWSAssert(callToken != nil);
+    
+    if (!self.presentedViewController ||
+        ![self.presentedViewController isKindOfClass:[OWSCallInterstitialViewController class]]) {
+        return;
+    }
+
+    
+    OWSCallInterstitialViewController *viewController = (OWSCallInterstitialViewController *)self.presentedViewController;
+    if (![viewController.callToken isEqualToString:callToken]) {
+        return;
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)handleActiveCallNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+    
+    if (![notification.object isKindOfClass:[SignalCall class]]) {
+        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
+                   self.tag,
+                   notification.object);
+        return;
+    }
+    
+    SignalCall *call = (SignalCall *)notification.object;
+    
+    // Dismiss any other modals so we can present call modal.
+    if (self.presentedViewController) {
+        BOOL shouldAnimate = ![self.presentedViewController isKindOfClass:[OWSCallInterstitialViewController class]];
+        [self dismissViewControllerAnimated:shouldAnimate
+                                 completion:^{
+            [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+        }];
+    } else {
+        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
     }
 }
 
@@ -224,13 +343,9 @@
 
 - (void)ensureNotificationsUpToDate
 {
-    OWSAccountManager *accountManager =
-        [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                             redPhoneAccountManager:[RPAccountManager sharedInstance]];
-
     OWSSyncPushTokensJob *syncPushTokensJob =
         [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                           accountManager:accountManager
+                                           accountManager:self.accountManager
                                               preferences:[Environment preferences]];
     [syncPushTokensJob run];
 }
@@ -401,6 +516,7 @@
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
+    [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber.integerValue];
 
@@ -432,10 +548,26 @@
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:kCallSegue]) {
+    if ([segue.identifier isEqualToString:kRedphoneCallSegue]) {
         InCallViewController *vc = [segue destinationViewController];
         [vc configureWithLatestCall:_latestCall];
         _latestCall = nil;
+    } else if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
+        DDLogDebug(@"%@ preparing for incoming call segue", self.tag);
+        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
+            DDLogError(@"%@ Received unexpected destination view controller: %@", self.tag, segue.destinationViewController);
+            return;
+        }
+        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
+
+        if (![sender isKindOfClass:[SignalCall class]]) {
+            DDLogError(@"%@ expecting call segueu to be sent by a SignalCall, but found: %@", self.tag, sender);
+            return;
+        }
+        SignalCall *call = (SignalCall *)sender;
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+        callViewController.thread = thread;
+        callViewController.call = call;
     }
 }
 

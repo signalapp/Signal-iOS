@@ -1,9 +1,5 @@
 //
-//  MessagesViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 28/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -41,6 +37,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
+#import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
@@ -51,6 +48,7 @@
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -64,7 +62,6 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-
 @import Photos;
 
 #define kYapDatabaseRangeLength 50
@@ -75,9 +72,11 @@
 #define JSQ_IMAGE_INSET 5
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
 static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
     @"OWSMessagesViewControllerSeguePushConversationSettings";
+
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
 typedef enum : NSUInteger {
@@ -110,7 +109,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
 
 @property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, strong) UILabel *navbarTitleLabel;
+@property (nonatomic, strong) UIView *navigationBarTitleView;
+@property (nonatomic, strong) UILabel *navigationBarTitleLabel;
+@property (nonatomic, strong) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic, retain) UIButton *attachButton;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
@@ -126,6 +127,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
 @property NSCache *messageAdapterCache;
 
@@ -167,6 +169,7 @@ typedef enum : NSUInteger {
     _contactsManager = [Environment getCurrent].contactsManager;
     _contactsUpdater = [Environment getCurrent].contactsUpdater;
     _messageSender = [Environment getCurrent].messageSender;
+    _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
@@ -188,6 +191,8 @@ typedef enum : NSUInteger {
     isGroupConversation            = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen                 = keyboardAppearing;
 
+    [self markAllMessagesAsRead];
+
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     self.messageMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
@@ -195,7 +200,6 @@ typedef enum : NSUInteger {
       [self.messageMappings updateWithTransaction:transaction];
       self.page = 0;
       [self updateRangeOptionsForPage:self.page];
-      [self markAllMessagesAsRead];
       [self.collectionView reloadData];
     }];
     [self updateLoadEarlierVisible];
@@ -251,8 +255,8 @@ typedef enum : NSUInteger {
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
     SEL saveSelector = NSSelectorFromString(@"save:");
     [JSQMessagesCollectionViewCell registerMenuAction:saveSelector];
-    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
-                                                                                      action:saveSelector] ];
+    SEL shareSelector = NSSelectorFromString(@"share:");
+    [JSQMessagesCollectionViewCell registerMenuAction:shareSelector];
 
     [self initializeCollectionViewLayout];
     [self registerCustomMessageNibs];
@@ -278,11 +282,6 @@ typedef enum : NSUInteger {
         [self.collectionView.collectionViewLayout
             invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     }
-}
-
-- (void)didMoveToParentViewController:(UIViewController *)parent
-{
-    [self setupTitleLabelGestureRecognizer];
 }
 
 - (void)registerCustomMessageNibs
@@ -390,6 +389,18 @@ typedef enum : NSUInteger {
                                     atScrollPosition:UICollectionViewScrollPositionBottom
                                             animated:NO];
     }
+
+    // Other views might change these custom menu items, so we
+    // need to set them every time we enter this view.
+    SEL saveSelector = NSSelectorFromString(@"save:");
+    SEL shareSelector = NSSelectorFromString(@"share:");
+    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
+                                                                                                               @"Short name for edit menu item to save contents of media message.")
+                                                                                      action:saveSelector],
+                                                           [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
+                                                                                                               @"Short name for edit menu item to share contents of media message.")
+                                                                                      action:shareSelector],
+                                                           ];
 }
 
 - (void)startReadTimer {
@@ -482,50 +493,165 @@ typedef enum : NSUInteger {
     if (isGroupConversation && [navTitle length] == 0) {
         navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
-    self.title = navTitle;
+    self.title = nil;
+
+    if ([navTitle isEqualToString:self.navigationBarTitleLabel.text]) {
+        return;
+    }
+    
+    self.navigationBarTitleLabel.text = navTitle;
+
+    // Changing the title requires relayout of the nav bar contents.
+    OWSDisappearingMessagesConfiguration *configuration =
+    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 }
 
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
-
 {
+    UIBarButtonItem *backItem = [self createOWSBackButton];
+
+    const CGFloat kTitleVSpacing = 0.f;
+    if (!self.navigationBarTitleView) {
+        self.navigationBarTitleView = [UIView new];
+        [self.navigationBarTitleView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                                  action:@selector(navigationTitleTapped:)]];
+        
+        self.navigationBarTitleLabel = [UILabel new];
+        self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
+        self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
+        self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
+        
+        self.navigationBarSubtitleLabel = [UILabel new];
+        self.navigationBarSubtitleLabel.textColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+        self.navigationBarSubtitleLabel.font = [UIFont ows_boldFontWithSize:9.f];
+        self.navigationBarSubtitleLabel.text = NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                                 @"The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation.");
+        [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
+    }
+    
+    // We need to manually resize and position the title views;
+    // iOS AutoLayout doesn't work inside navigation bar items.
+    [self.navigationBarTitleLabel sizeToFit];
+    [self.navigationBarSubtitleLabel sizeToFit];
+    const CGFloat kShortScreenDimension = MIN([UIScreen mainScreen].bounds.size.width,
+                                              [UIScreen mainScreen].bounds.size.height);
+    // We want to leave space for the "back" button, the "timer" button, and the "call"
+    // button, and all of the whitespace around these views.  There
+    // isn't a convenient way to calculate these in a navigation bar, so we just leave
+    // a constant amount of space which will be safe unless Apple makes radical changes
+    // to the appearance of the navigation bar.
+    int rightBarButtonItemCount = 0;
+    if ([self canCall]) {
+        rightBarButtonItemCount++;
+    }
+    if (disappearingMessagesConfiguration.isEnabled) {
+        rightBarButtonItemCount++;
+    }
+    CGFloat rightBarButtonSize = 0;
+    switch (rightBarButtonItemCount) {
+        case 0:
+            rightBarButtonSize = 65;
+            break;
+        case 1:
+            rightBarButtonSize = 100;
+            break;
+        default:
+            OWSAssert(0);
+            // In production, fall through to the largest defined case.
+        case 2:
+            rightBarButtonSize = 145;
+            break;
+    }
+    CGFloat maxTitleViewWidth = kShortScreenDimension - rightBarButtonSize;
+    const CGFloat titleViewWidth = MIN(maxTitleViewWidth,
+                                       MAX(self.navigationBarTitleLabel.frame.size.width,
+                                           self.navigationBarSubtitleLabel.frame.size.width));
+    self.navigationBarTitleView.frame = CGRectMake(0, 0,
+                                                   titleViewWidth,
+                                                   self.navigationBarTitleLabel.frame.size.height +
+                                                   self.navigationBarSubtitleLabel.frame.size.height +
+                                                   kTitleVSpacing);
+    self.navigationBarTitleLabel.frame = CGRectMake(0,
+                                                    0,
+                                                    titleViewWidth,
+                                                    self.navigationBarTitleLabel.frame.size.height);
+    self.navigationBarSubtitleLabel.frame = CGRectMake(0,
+                                                       self.navigationBarTitleView.frame.size.height - self.navigationBarSubtitleLabel.frame.size.height,
+                                                       titleViewWidth,
+                                                       self.navigationBarSubtitleLabel.frame.size.height);
+    
+    self.navigationItem.leftBarButtonItems = @[
+                                               backItem,
+                                               [[UIBarButtonItem alloc] initWithCustomView:self.navigationBarTitleView],
+                                               ];
+    
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;
     }
 
+    const CGFloat kBarButtonSize = 44;
     NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
     if ([self canCall]) {
-        UIBarButtonItem *callButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btnPhone--white"]
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(callAction)];
+        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+        // The contents of the navigation bar are cramped in this view.
+        UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [UIImage imageNamed:@"button_phone_white"];
+        [callButton setImage:image
+                    forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // right inset tighten up the layout.
+        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        callButton.imageEdgeInsets = imageEdgeInsets;
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibilty label for placing call button");
-        callButton.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
-        [barButtons addObject:callButton];
-    } else if ([self.thread isGroupThread]) {
-        UIBarButtonItem *manageGroupButton =
-            [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"contact-options-action"]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapManageGroupButton:)];
-        // Hack to shrink button image
-        manageGroupButton.imageInsets = UIEdgeInsetsMake(10, 20, 10, 0);
-        manageGroupButton.accessibilityLabel = NSLocalizedString(@"GROUP_SETTINGS_LABEL", @"Accessibilty label for group settings");
-        [barButtons addObject:manageGroupButton];
+        [callButton addTarget:self
+                       action:@selector(callAction:)
+             forControlEvents:UIControlEventTouchUpInside];
+        callButton.frame = CGRectMake(0, 0,
+                                      round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                      round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton]];
     }
 
     if (disappearingMessagesConfiguration.isEnabled) {
-        UIBarButtonItem *timerButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_timer"]
-                                                               style:UIBarButtonItemStylePlain
-                                                              target:self
-                                                              action:@selector(didTapTimerInNavbar)];
+        UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [UIImage imageNamed:@"button_timer_white"];
+        [timerButton setImage:image
+                    forState:UIControlStateNormal];
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        // We normally would want to use left and right insets that ensure the button
+        // is square and the icon is centered.  However UINavigationBar doesn't offer us
+        // control over the margins and spacing of its content, and the buttons end up
+        // too far apart and too far from the edge of the screen. So we use a smaller
+        // right inset tighten up the layout.
+        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
+        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        timerButton.imageEdgeInsets = imageEdgeInsets;
         timerButton.accessibilityLabel = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
         NSString *formatString = NSLocalizedString(@"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
         timerButton.accessibilityHint = [NSString stringWithFormat:formatString, [disappearingMessagesConfiguration durationString]];
-        [barButtons addObject:timerButton];
+        [timerButton addTarget:self
+                        action:@selector(didTapTimerInNavbar:)
+              forControlEvents:UIControlEventTouchUpInside];
+        timerButton.frame = CGRectMake(0, 0,
+                                       round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+                                       round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerButton]];
     }
-
+    
     self.navigationItem.rightBarButtonItems = [barButtons copy];
 }
 
@@ -539,28 +665,6 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
-}
-
-- (void)setupTitleLabelGestureRecognizer
-{
-    // Called on load/unload, but we only want to init once.
-    if (self.navbarTitleLabel) {
-        return;
-    }
-
-    UILabel *navbarTitleLabel = [self findNavbarTitleLabel];
-    if (!navbarTitleLabel) {
-        DDLogError(@"%@ Unable to find navbar title label. Skipping gesture recognition", self.tag);
-        return;
-    }
-
-    self.navbarTitleLabel = navbarTitleLabel;
-    navbarTitleLabel.userInteractionEnabled = YES;
-    navbarTitleLabel.superview.userInteractionEnabled = YES;
-
-    UITapGestureRecognizer *titleTapRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapTitle)];
-    [navbarTitleLabel addGestureRecognizer:titleTapRecognizer];
 }
 
 - (nullable UILabel *)findNavbarTitleLabel
@@ -624,32 +728,15 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (SignalRecipient *)signalRecipient {
-    __block SignalRecipient *recipient;
-    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      recipient = [SignalRecipient recipientWithTextSecureIdentifier:[self phoneNumberForThread].toE164
-                                                     withTransaction:transaction];
-    }];
-    return recipient;
-}
+- (void)callAction:(id)sender {
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
 
-- (BOOL)isTextSecureReachable {
-    return isGroupConversation || [self signalRecipient];
-}
-
-- (PhoneNumber *)phoneNumberForThread {
-    NSString *contactId = [(TSContactThread *)self.thread contactIdentifier];
-    return [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-}
-
-- (void)callAction {
-    if ([self canCall]) {
-        PhoneNumber *number = [self phoneNumberForThread];
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
-    } else {
+    if (![self canCall]) {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
+        return;
     }
+
+    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
 - (BOOL)canCall {
@@ -1133,13 +1220,7 @@ typedef enum : NSUInteger {
     [self showConversationSettings];
 }
 
-- (void)didTapManageGroupButton:(id)sender
-{
-    DDLogDebug(@"%@ Tapped options menu in navbar", self.tag);
-    [self showConversationSettings];
-}
-
-- (void)didTapTimerInNavbar
+- (void)didTapTimerInNavbar:(id)sender
 {
     DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
     [self showConversationSettings];
@@ -1176,9 +1257,12 @@ typedef enum : NSUInteger {
                     if(tappedImage == nil) {
                         DDLogWarn(@"tapped TSPhotoAdapter with nil image");
                     } else {
-                        CGRect convertedRect =
-                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                  toView:nil];
+                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
+                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
+                                                                    toView:window];
+                        
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment =
@@ -1190,7 +1274,8 @@ typedef enum : NSUInteger {
                             FullImageViewController *vc   = [[FullImageViewController alloc]
                                                              initWithAttachment:attStream
                                                              fromRect:convertedRect
-                                                             forInteraction:[self interactionAtIndexPath:indexPath]
+                                                             forInteraction:interaction
+                                                             messageItem:messageItem
                                                              isAnimated:NO];
 
                             [vc presentFromViewController:self.navigationController];
@@ -1203,9 +1288,12 @@ typedef enum : NSUInteger {
                     if(tappedImage == nil) {
                         DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
                     } else {
-                        CGRect convertedRect =
-                        [self.collectionView convertRect:[collectionView cellForItemAtIndexPath:indexPath].frame
-                                                  toView:nil];
+                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
+                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
+                                                                    toView:window];
+
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment =
@@ -1216,7 +1304,8 @@ typedef enum : NSUInteger {
                             FullImageViewController *vc =
                             [[FullImageViewController alloc] initWithAttachment:attStream
                                                                        fromRect:convertedRect
-                                                                 forInteraction:[self interactionAtIndexPath:indexPath]
+                                                                 forInteraction:interaction
+                                                                    messageItem:messageItem
                                                                      isAnimated:YES];
                             [vc presentFromViewController:self.navigationController];
                         }
@@ -1242,17 +1331,24 @@ typedef enum : NSUInteger {
                                 
                                 _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
-                                
-                                [[NSNotificationCenter defaultCenter]
-                                    addObserver:self
-                                       selector:@selector(moviePlayBackDidFinish:)
-                                           name:MPMoviePlayerPlaybackDidFinishNotification
-                                         object:_videoPlayer];
 
-                                _videoPlayer.controlStyle   = MPMovieControlStyleDefault;
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayerWillExitFullscreen:)
+                                                                             name:MPMoviePlayerWillExitFullscreenNotification
+                                                                           object:_videoPlayer];
+                                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                         selector:@selector(moviePlayerDidExitFullscreen:)
+                                                                             name:MPMoviePlayerDidExitFullscreenNotification
+                                                                           object:_videoPlayer];
+
+                                _videoPlayer.controlStyle = MPMovieControlStyleDefault;
                                 _videoPlayer.shouldAutoplay = YES;
                                 [self.view addSubview:_videoPlayer.view];
-                                [_videoPlayer setFullscreen:YES animated:YES];
+                                // We can't animate from the cell media frame;
+                                // MPMoviePlayerController will animate a crop of its
+                                // contents rather than scaling them.
+                                _videoPlayer.view.frame = self.view.bounds;
+                                [_videoPlayer setFullscreen:YES animated:NO];
                             }
                         } else if ([messageMedia isAudio]) {
                             if (messageMedia.isAudioPlaying) {
@@ -1383,9 +1479,28 @@ typedef enum : NSUInteger {
     }
 }
 
+// There's more than one way to exit the fullscreen video playback.
+// There's a done button, a "toggle fullscreen" button and I think
+// there's some gestures too.  These fire slightly different notifications.
+// We want to hide & clean up the video player immediately in all of
+// these cases.
+- (void)moviePlayerWillExitFullscreen:(id)sender {
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
 
-- (void)moviePlayBackDidFinish:(id)sender {
-    DDLogDebug(@"playback finished");
+    [self clearVideoPlayer];
+}
+
+// See comment on moviePlayerWillExitFullscreen:
+- (void)moviePlayerDidExitFullscreen:(id)sender {
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    
+    [self clearVideoPlayer];
+}
+
+- (void)clearVideoPlayer {
+    [_videoPlayer stop];
+    [_videoPlayer.view removeFromSuperview];
+    _videoPlayer = nil;
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
@@ -1617,8 +1732,9 @@ typedef enum : NSUInteger {
         OWSConversationSettingsTableViewController *controller
             = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
         [controller configureWithThread:self.thread];
+    } else {
+        DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
     }
-
 }
 
 
@@ -2287,6 +2403,14 @@ typedef enum : NSUInteger {
     return @[];
 }
 
+#pragma mark - Event Handling
+
+- (void)navigationTitleTapped:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        [self showConversationSettings];
+    }
+}
+         
 #pragma mark - Logging
 
 + (NSString *)tag

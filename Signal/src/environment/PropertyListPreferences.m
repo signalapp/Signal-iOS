@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "PropertyListPreferences.h"
-#import "Constraints.h"
 #import "TSStorageHeaders.h"
 #import <SignalServiceKit/TSPrivacyPreferences.h>
 
@@ -19,6 +22,9 @@ NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"Notification
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
+NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
+NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
+NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 
 @implementation PropertyListPreferences
 
@@ -68,16 +74,6 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     [self setValueForKey:PropertyListPreferencesKeyCallStreamDESBufferLevel toValue:@(value)];
 }
 
-- (BOOL)loggingIsEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyEnableDebugLog];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
-}
-
 - (BOOL)screenSecurityIsEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyScreenSecurity];
@@ -125,14 +121,30 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];
 }
 
+
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled
 {
     [self setValueForKey:PropertyListPreferencesKeyHasRegisteredVoipPush toValue:@(enabled)];
 }
 
+- (BOOL)loggingIsEnabled
+{
+    NSNumber *preference = [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyEnableDebugLog];
+
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        return YES;
+    }
+}
+
 - (void)setLoggingEnabled:(BOOL)flag
 {
-    [self setValueForKey:PropertyListPreferencesKeyEnableDebugLog toValue:@(flag)];
+    // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
+    // logging before the database is initialized. This is important because sometimes there are problems *with* the
+    // database initialization, and without logging it would be hard to track down.
+    [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:PropertyListPreferencesKeyEnableDebugLog];
+    [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (nullable NSString *)lastRanVersion
@@ -158,6 +170,47 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
                                             forKey:PropertyListPreferencesKeyLastRunSignalVersion];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+#pragma mark - Calling
+
+#pragma mark CallKit
+
+- (BOOL)isCallKitEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    return preference ? [preference boolValue] : YES;
+}
+
+- (void)setIsCallKitEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
+}
+
+- (BOOL)isCallKitPrivacyEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
+    return preference ? [preference boolValue] : YES;
+}
+
+- (void)setIsCallKitPrivacyEnabled:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
+}
+
+#pragma mark direct call connectivity (non-TURN)
+
+// Allow callers to connect directly, when desirable, vs. enforcing TURN only proxy connectivity
+
+- (BOOL)doCallsHideIPAddress
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallsHideIPAddress];
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setDoCallsHideIPAddress:(BOOL)flag
+{
+    [self setValueForKey:PropertyListPreferencesKeyCallsHideIPAddress toValue:@(flag)];
 }
 
 #pragma mark Notification Preferences

@@ -19,20 +19,20 @@ PODS:
     - 25519 (~> 2.0.1)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.8)
-  - CocoaLumberjack (2.2.0):
-    - CocoaLumberjack/Default (= 2.2.0)
-    - CocoaLumberjack/Extensions (= 2.2.0)
-  - CocoaLumberjack/Core (2.2.0)
-  - CocoaLumberjack/Default (2.2.0):
+  - CocoaLumberjack (2.4.0):
+    - CocoaLumberjack/Default (= 2.4.0)
+    - CocoaLumberjack/Extensions (= 2.4.0)
+  - CocoaLumberjack/Core (2.4.0)
+  - CocoaLumberjack/Default (2.4.0):
     - CocoaLumberjack/Core
-  - CocoaLumberjack/Extensions (2.2.0):
+  - CocoaLumberjack/Extensions (2.4.0):
     - CocoaLumberjack/Default
   - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
-  - libPhoneNumber-iOS (0.9.2)
+  - libPhoneNumber-iOS (0.9.4)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -40,6 +40,7 @@ PODS:
   - PastelogKit (1.3):
     - CocoaLumberjack (~> 2.0)
   - ProtocolBuffers (1.9.11)
+  - PureLayout (3.0.2)
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
@@ -55,8 +56,8 @@ PODS:
     - TwistedOakCollapsingFutures
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
-  - SQLCipher/common (3.4.0)
-  - SQLCipher/fts (3.4.0):
+  - SQLCipher/common (3.4.1)
+  - SQLCipher/fts (3.4.1):
     - SQLCipher/common
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
@@ -110,9 +111,9 @@ PODS:
     - YapDatabase/SQLCipher/Core
   - YapDatabase/SQLCipher/Extensions/Views (2.9.2):
     - YapDatabase/SQLCipher/Core
-  - ZXingObjC (3.1.0):
-    - ZXingObjC/All (= 3.1.0)
-  - ZXingObjC/All (3.1.0)
+  - ZXingObjC (3.2.1):
+    - ZXingObjC/All (= 3.2.1)
+  - ZXingObjC/All (3.2.1)
 
 DEPENDENCIES:
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
@@ -120,8 +121,9 @@ DEPENDENCIES:
   - JSQMessagesViewController
   - OpenSSL
   - PastelogKit (~> 1.3)
+  - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `master`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
   - ZXingObjC
 
@@ -129,47 +131,47 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :branch: master
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 714f5ebe199ecc999b33c6f97a4bb57e2db90e75
+    :commit: a3c843cc8a423c5924c663490978f81dba34d04e
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 7b7b338075f3b4615755fcc1f1fb8a8c67b0bd0a
+    :commit: '0393e4f0b4eea97ffcc8343558947363d303a904'
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
-    :commit: 41b57bb2fc292a814f758441a05243eb38457027
+    :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
 
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   AxolotlKit: 240c7d761e4b1be9c6de78ebec498aaeedc978f4
-  CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
+  CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
   FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
-  libPhoneNumber-iOS: a8bffdec18c37728360f6771fe021302f1e0b497
+  libPhoneNumber-iOS: 63bab980d1fc9783d82d955800ac9d7c1d81fde3
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
+  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SignalServiceKit: 59a79a51b89b963ba94db30cc99ed5212da0bb9f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
-  SQLCipher: 4c768761421736a247ed6cf412d9045615d53dff
+  SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
-  ZXingObjC: bf15b3814f7a105b6d99f47da2333c93a063650a
+  ZXingObjC: bbf7b8f0cf8933fdd33eb4f9f46e22308552869b
 
-PODFILE CHECKSUM: cb24c78080551874a45d1a20de4a1bef7427b41f
+PODFILE CHECKSUM: e42108cf3f6af782b766b179d69dbc8e6daf070d
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.2.0

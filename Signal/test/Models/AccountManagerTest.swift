@@ -1,24 +1,25 @@
-//  Created by Michael Kirk on 10/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import XCTest
 import PromiseKit
 
-struct VerificationFailedError : Error { }
-struct FailedToGetRPRegistrationTokenError : Error { }
-struct FailedToRegisterWithRedphoneError : Error { }
+struct VerificationFailedError: Error { }
+struct FailedToGetRPRegistrationTokenError: Error { }
+struct FailedToRegisterWithRedphoneError: Error { }
 
-enum PushNotificationRequestResult : String {
+enum PushNotificationRequestResult: String {
     case FailTSOnly = "FailTSOnly",
     FailRPOnly = "FailRPOnly",
     FailBoth = "FailBoth",
     Succeed = "Succeed"
 }
 
-class FailingTSAccountManager : TSAccountManager {
+class FailingTSAccountManager: TSAccountManager {
     let phoneNumberAwaitingVerification = "+13235555555"
 
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
+    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         failure(VerificationFailedError())
     }
 
@@ -31,8 +32,8 @@ class FailingTSAccountManager : TSAccountManager {
     }
 }
 
-class VerifyingTSAccountManager : FailingTSAccountManager {
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) -> Void {
+class VerifyingTSAccountManager: FailingTSAccountManager {
+    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         success()
     }
 
@@ -41,19 +42,19 @@ class VerifyingTSAccountManager : FailingTSAccountManager {
     }
 }
 
-class TokenObtainingTSAccountManager : VerifyingTSAccountManager {
+class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
     override func obtainRPRegistrationToken(success: @escaping (String) -> Void, failure failureBlock: @escaping (Error) -> Void) {
         success("fakeRegistrationToken")
     }
 }
 
-class FailingRPAccountManager : RPAccountManager {
+class FailingRPAccountManager: RPAccountManager {
     override func register(withTsToken tsToken: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
-        failure(FailedToRegisterWithRedphoneError());
+        failure(FailedToRegisterWithRedphoneError())
     }
 }
 
-class SuccessfulRPAccountManager : RPAccountManager {
+class SuccessfulRPAccountManager: RPAccountManager {
     override func register(withTsToken tsToken: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         if tsToken == "fakeRegistrationToken" {
             success()
@@ -179,7 +180,7 @@ class AccountManagerTest: XCTestCase {
         }.catch { error in
             XCTFail("Unexpected error: \(error)")
         }
-        
+
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
 
@@ -187,12 +188,11 @@ class AccountManagerTest: XCTestCase {
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager,
                                             redPhoneAccountManager: rpAccountManager)
 
-
         let expectation = self.expectation(description: "should fail")
 
         accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever").then {
             XCTFail("Expected to fail.")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 

@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION" = "Dóna-li accés";
 
 /* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal requereix accés als contactes, encara que no els emmagatzemem als nostres servidors. ";
+"AB_PERMISSION_MISSING_BODY" = "El Signal requereix accés als contactes. No els emmagatzemem als nostres servidors. ";
 
 /* Alert title when contacts disabled */
 "AB_PERMISSION_MISSING_TITLE" = "Perdó!";
@@ -14,7 +14,7 @@
 "ACTION_REQUIRED_TITLE" = "Requeriment d'acció";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal necessita accedir als teus contactes. L'accés a contactes està restringit. Signal es tancarà. Pots desactivar la restricció temporalment per permetre a Signal accedir als teus contactes anant a Ajustos d'aplicacions >> General >> Restriccions >> Contactes >> Permetre canvis.";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "El Signal requereix accés als contactes. L'accés als contactes està restringit. El Signal es tancarà. Podeu desactivar la restricció temporalment per permetre al Signal accedir als contactes si aneu a Configuració >> General >> Restriccions >> Contactes >> Permetre canvis.";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Tanca";
@@ -39,6 +39,9 @@
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ en el grup %@: %@";
+
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arxiva";
@@ -65,13 +68,22 @@
 "ATTACHMENT_QUEUED" = "El fitxer adjunt s'ha posat en cua per obtindre'l.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "El Signal requereix accés al micròfon per funcionar correctament. Podeu restablir els permisos anant a Configuració >> Privadesa >> Micròfon >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "El Signal requereix accés al micròfon per a funcionar correctament. Podeu activar els permisos a la Configuració >> Privadesa >> Micròfon >> Signal";
+
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Telefonant...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Telefona";
 
-/* No comment provided by engineer. */
-"CALLBACK_BUTTON_TITLE" = "Retornar trucada";
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Sense resposta.";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* notification action */
+"CALLBACK_BUTTON_TITLE" = "Telefona";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compara'l amb el porta-retalls";
@@ -212,22 +224,22 @@
 "END_CALL_RECIPIENT_UNAVAILABLE" = "El destinatari no es troba disponible.";
 
 /* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Heu rebutjat la trucada.";
+"END_CALL_REJECTED_LOCAL" = "Heu rebutjat la telefonada.";
 
 /* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "S'ha rebutjat la trucada.";
+"END_CALL_REJECTED_REMOTE" = "S'ha rebutjat la telefonada.";
 
 /* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra trucada.";
+"END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra telefonada.";
+
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Ocupat.";
 
 /* No comment provided by engineer. */
-"END_CALL_RESPONDER_IS_BUSY" = "No disponible...";
+"END_CALL_STALE_SESSION" = "S'ha perdut la telefonada.";
 
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "S'ha perdut la trucada.";
-
-/* No comment provided by engineer. */
-"END_CALL_UNCATEGORIZED_FAILURE" = "L'aplicació ha fallat.";
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "Ha fallat.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "No s'ha pogut enviar el missatge.";
@@ -241,8 +253,11 @@
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
 
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "S'ha produit un error desconegut.";
+
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El destinatari ja no és usuari del Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacte no és usuari del Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Rebut missatge duplicat.";
@@ -353,16 +368,22 @@
 "IN_CALL_TALKING" = "Assegurat. Actiu.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Fet.";
+"IN_CALL_TERMINATED" = "Ha finalitzat.";
+
+/* notification body */
+"INCOMING_CALL" = "Telefonada entrant";
+
+/* notification body */
+"INCOMING_CALL_FROM" = "Telefonada entrant de %@";
 
 /* No comment provided by engineer. */
-"INCOMING_CALL" = "Trucada entrant";
-
-/* No comment provided by engineer. */
-"INCOMING_CALL_FROM" = "Trucada entrant de %@";
+"INCOMING_INCOMPLETE_CALL" = "Telefonada incompleta de";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Convideu els amics";
@@ -436,23 +457,31 @@
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuts";
 
-/* No comment provided by engineer. */
-"MISSED_CALL" = "Trucada perduda";
+/* notification title */
+"MISSED_CALL" = "Telefonada perduda";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Abans vau impedir que el Signal accedís a la càmera. Canvieu la configuració del sistema per continuar.";
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "El Signal requereix accés a la càmera per fer telefonades de vídeo. Podeu activar els permisos a la Configuració >> Privadesa >> Càmera >> Signal";
 
-/* Alert title */
+/* Alert title
+   Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "El Signal necessita accedir a la càmera.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL" = "Trucada perduda de %@";
+/* notification title. Embeds {{Caller's Name}} */
+"MSGVIEW_MISSED_CALL" = "Telefonada perduda de %@";
 
 /* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Heu rebut una trucada de %@.";
+"MSGVIEW_RECEIVED_CALL" = "Heu rebut una telefonada de %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Heu trucat %@.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ ha provat de telefonar-vos.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_CALLED" = "Heu telefonat %@.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Heu provat de telefonar %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "No podeu emparellar més dispositius.";
@@ -478,6 +507,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Podeu comprovar l'estat de la xarxa mirant la barra de color dalt de Converses.";
 
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Conversa nova amb %@";
+
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Establiu la foto del grup";
 
@@ -489,6 +521,9 @@
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Afegiu contactes";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Troba contactes pel número de telèfon";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "No s'ha pogut enviar el missatge a %@.";
@@ -530,10 +565,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establit el temps dels missatges efímers en %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Trucada sortint";
+"OUTGOING_CALL" = "Telefonada sortint";
 
 /* No comment provided by engineer. */
-"PHONE_NEEDS_UNLOCK" = "Heu de desbloquejar l'iPhone per a rebre missatges nous.";
+"OUTGOING_INCOMPLETE_CALL" = "Telefonada sortint incompleta";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %@. Esteu verificant el contacte correcte?";
@@ -557,10 +592,10 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El codi escanejat no sembla un codi de números de seguretat. Segur que utilitzeu una versió actualitzada del Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat del xifratge extrem a extrem amb %@, compareu els números de sobre amb els números al seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escaneji el vostre.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat del xifratge extrem a extrem amb %@, compareu els números de sobre amb els números del seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escanegi el vostre.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verificació dels números de seguretat";
+"PRIVACY_VERIFICATION_TITLE" = "Verificació de la seguretat";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continua";
@@ -578,7 +613,7 @@
 "PUSH_REGISTER_TITLE" = "Notificacions «push»";
 
 /* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal requereix que estiguin activades les notificacions push perquè les alertes i sons funcionin correctament. Per favor canvia'l en Ajustos d'aplicacions >> Centre de Notificacions >> Signal.";
+"PUSH_SETTINGS_MESSAGE" = "El Signal requereix que estiguin activades les alertes i sons de les notificacions push per a funcionar correctament. Canvieu-ho a la Configuració >> Centre de Notificacions >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -697,8 +732,8 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Heu convidat el vostre amic a utilitzar el Signal!";
 
-/* No comment provided by engineer. */
-"SEND_SMS_BUTTON" = "Envia un SMS a:";
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Envia una invitació per SMS a: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar a un amic via SMS segur?";
@@ -709,6 +744,9 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Quant a";
 
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Utilitza el CallKit";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activa el registre de depuració";
 
@@ -717,6 +755,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avançada";
+
+/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
+"SETTINGS_ADVANCED_WEBRTC" = "Activa les telefonades de vídeo";
+
+/* The message of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "No s'han pogut actualitzar les preferències.";
+
+/* The title of the alert shown when updates to the WebRTC property fail. */
+"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Sol·licita la vostra aprovació abans de comunicar-se amb qui tingui números de seguretat nous, habitualment degut a una nova instal·lació del Signal.";
@@ -734,7 +781,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Elimina el compte";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu eliminar tot l'historial (missatges, fitxers adjunts, trucades...)? Aquesta acció no es pot desfer.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Segur que voleu eliminar tot l'historial (missatges, fitxers adjunts, telefonades...)? Aquesta acció no es pot desfer.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Sí, endavant.";
@@ -771,6 +818,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Evita que aparegui la vista prèvia del Signal al selector d'aplicacions.";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "El CallKit us permet respondre telefonades des de la pantalla de bloqueig. Teniu en compte que Apple sincronitza algunes metadades amb el vostre compte d'iCloud.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "Telefonades";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Seguretat de pantalla";
@@ -823,6 +876,9 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Elimina";
 
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "No s'ha pogut establir.";
+
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Restaura";
 
@@ -872,7 +928,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Codi de verificació";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Truca'm, millor";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Telefona'm, millor";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Sol·licita el codi de nou";

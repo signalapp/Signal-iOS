@@ -1,4 +1,7 @@
-#import "Constraints.h"
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "FutureUtil.h"
 
 @implementation TOCCancelToken (FutureUtil)

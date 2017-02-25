@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "EvpSymetricUtil.h"
 
-#import "Constraints.h"
 #import "EvpUtil.h"
 #import "NumberUtil.h"
 

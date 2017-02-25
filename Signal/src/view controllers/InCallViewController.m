@@ -61,7 +61,7 @@
     [super viewWillDisappear:animated];
     [self stopRingingAnimation];
     [self stopConnectingFlashAnimation];
-    [AppAudioManager.sharedInstance cancellAllAudio];
+    [AppAudioManager.sharedInstance cancelAllAudio];
     [UIDevice.currentDevice setProximityMonitoringEnabled:NO];
 }
 

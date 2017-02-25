@@ -1,9 +1,5 @@
 //
-//  MessageComposeTableViewController.m
-//
-//
-//  Created by Dylan Bourgeois on 02/11/14.
-//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "MessageComposeTableViewController.h"
@@ -17,6 +13,7 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
+#import "UIViewController+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,24 +21,47 @@ NS_ASSUME_NONNULL_BEGIN
                                                  UISearchResultsUpdating,
                                                  MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableViewCell *inviteCell;
-@property (nonatomic, strong) IBOutlet OWSNoSignalContactsView *noSignalContactsView;
+@property (nonatomic) IBOutlet UITableViewCell *inviteCell;
+@property (nonatomic) UITableViewCell *conversationForNonContactCell;
+@property (nonatomic) UITableViewCell *inviteViaSMSCell;
+@property (nonatomic) IBOutlet OWSNoSignalContactsView *noSignalContactsView;
 
-@property (nonatomic) UIButton *sendTextButton;
-@property (nonatomic, strong) UISearchController *searchController;
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
-@property (nonatomic, strong) UIBarButtonItem *addGroup;
-@property (nonatomic, strong) UIView *loadingBackgroundView;
+@property (nonatomic) UISearchController *searchController;
+@property (nonatomic) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) UIBarButtonItem *addGroup;
+@property (nonatomic) UIView *loadingBackgroundView;
 
 @property (nonatomic) NSString *currentSearchTerm;
 @property (copy) NSArray<Contact *> *contacts;
 @property (copy) NSArray<Contact *> *searchResults;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
+// This property should be set IFF the current search text can
+// be parsed as a phone number. If set, it contains a E164 value.
+@property (nonatomic) NSString *searchPhoneNumber;
+// This dictionary is used to cache the set of phone numbers
+// which are known to correspond to Signal accounts.
+@property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
+
+@property (nonatomic) BOOL isBackgroundViewHidden;
+
 @end
 
-NSInteger const MessageComposeTableViewControllerSectionInvite = 0;
-NSInteger const MessageComposeTableViewControllerSectionContacts = 1;
+// The "special" sections are used to display (at most) one of three cells:
+//
+// * "New conversation for non-contact" if user has entered a phone
+//    number which corresponds to a signal account, or:
+// * "Send invite via SMS" if user has entered a phone number
+//    which is not known to correspond to a signal account, or:
+// * "Invite contacts" if the invite flow is available, or:
+// * Nothing, otherwise.
+typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
+    MessageComposeTableViewControllerSectionInviteNonContactConversation = 0,
+    MessageComposeTableViewControllerSectionInviteViaSMS,
+    MessageComposeTableViewControllerSectionInviteFlow,
+    MessageComposeTableViewControllerSectionContacts,
+    MessageComposeTableViewControllerSection_Count // meta section
+};
 
 NSString *const MessageComposeTableViewControllerCellInvite = @"ContactTableInviteCell";
 NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableViewCell";
@@ -56,6 +76,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     }
 
     _contactsManager = [Environment getCurrent].contactsManager;
+    _phoneNumberAccountSet = [NSMutableSet set];
+    
+    [self observeNotifications];
 
     return self;
 }
@@ -69,12 +92,35 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     _contactsManager = [Environment getCurrent].contactsManager;
 
+    [self observeNotifications];
+    
     return self;
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalRecipientsDidChange:)
+                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)signalRecipientsDidChange:(NSNotification *)notification {
+    [self updateContacts];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
+    [self useOWSBackButton];
+    
+    self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
+        @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
 
     self.tableView.estimatedRowHeight = (CGFloat)60.0;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -87,6 +133,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
     self.inviteCell.textLabel.text = NSLocalizedString(
         @"INVITE_FRIENDS_CONTACT_TABLE_BUTTON", @"Text for button at the top of the contact picker");
+    
+    self.conversationForNonContactCell = [UITableViewCell new];
+    self.inviteViaSMSCell = [UITableViewCell new];
 
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
@@ -156,9 +205,36 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [_loadingBackgroundView addSubview:loadingProgressView];
     [_loadingBackgroundView addSubview:loadingLabel];
 
-    [self.noSignalContactsView.inviteButton addTarget:self
-                                               action:@selector(presentInviteFlow)
-                                     forControlEvents:UIControlEventTouchUpInside];
+    UIButton *inviteButton = self.noSignalContactsView.inviteButton;
+    [inviteButton addTarget:self
+                     action:@selector(presentInviteFlow)
+           forControlEvents:UIControlEventTouchUpInside];
+    [inviteButton setTitleColor:[UIColor ows_materialBlueColor]
+                                    forState:UIControlStateNormal];
+    [inviteButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
+
+    UIButton *searchByPhoneNumberButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [searchByPhoneNumberButton setTitle:NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
+                                                          @"Label for a button that lets users search for contacts by phone number")
+                               forState:UIControlStateNormal];
+    [searchByPhoneNumberButton setTitleColor:[UIColor ows_materialBlueColor]
+                                    forState:UIControlStateNormal];
+    [searchByPhoneNumberButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
+    [inviteButton.superview addSubview:searchByPhoneNumberButton];
+    [searchByPhoneNumberButton autoHCenterInSuperview];
+    [searchByPhoneNumberButton autoPinEdge:ALEdgeTop
+                                    toEdge:ALEdgeBottom
+                                    ofView:inviteButton
+                                withOffset:20];
+    [searchByPhoneNumberButton addTarget:self
+                                  action:@selector(hideBackgroundView)
+                        forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)hideBackgroundView {
+    self.isBackgroundViewHidden = YES;
+    
+    [self showEmptyBackgroundView:NO];
 }
 
 - (void)presentInviteFlow
@@ -168,9 +244,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
-
 - (void)showLoadingBackgroundView:(BOOL)show {
-    if (show) {
+    if (show && !self.isBackgroundViewHidden) {
         _addGroup = self.navigationItem.rightBarButtonItem != nil ? _addGroup : self.navigationItem.rightBarButtonItem;
         self.navigationItem.rightBarButtonItem = nil;
         self.searchController.searchBar.hidden = YES;
@@ -201,6 +276,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 
         self.inviteCell.hidden = YES;
+        self.conversationForNonContactCell.hidden = YES;
+        self.inviteViaSMSCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
@@ -212,6 +289,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
         self.inviteCell.hidden = NO;
+        self.conversationForNonContactCell.hidden = NO;
+        self.inviteViaSMSCell.hidden = NO;
     }
 }
 
@@ -238,17 +317,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.searchController.searchBar.delegate       = self;
     self.searchController.searchBar.placeholder    = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
 
-    self.sendTextButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [self.sendTextButton setBackgroundColor:[UIColor ows_materialBlueColor]];
-    [self.sendTextButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.sendTextButton.frame = CGRectMake(self.searchController.searchBar.frame.origin.x,
-        self.searchController.searchBar.frame.origin.y + 44.0f,
-        self.searchController.searchBar.frame.size.width,
-        44.0);
-    [self.view addSubview:self.sendTextButton];
-    self.sendTextButton.hidden = YES;
-
-    [self.sendTextButton addTarget:self action:@selector(sendText) forControlEvents:UIControlEventTouchUpInside];
     [self initializeRefreshControl];
 }
 
@@ -277,9 +345,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    self.sendTextButton.hidden = YES;
 }
-
 
 #pragma mark - Filter
 
@@ -291,16 +357,47 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     NSString *formattedNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:searchText].toE164;
     // text to a non-signal number if we have no results and a valid phone #
     if (self.searchResults.count == 0 && searchText.length > 8 && formattedNumber) {
-        NSString *sendTextTo = NSLocalizedString(@"SEND_SMS_BUTTON", @"");
-        sendTextTo           = [sendTextTo stringByAppendingString:formattedNumber];
-        [self.sendTextButton setTitle:sendTextTo forState:UIControlStateNormal];
-        self.sendTextButton.hidden = NO;
         self.currentSearchTerm     = formattedNumber;
+        self.searchPhoneNumber = formattedNumber;
+        // Kick off account lookup if necessary.
+        [self checkIsNonContactPhoneNumberSignalUser:formattedNumber];
     } else {
-        self.sendTextButton.hidden = YES;
+        _searchPhoneNumber = nil;
     }
 }
 
+- (void)checkIsNonContactPhoneNumberSignalUser:(NSString *)phoneNumber
+{
+    if ([self.phoneNumberAccountSet containsObject:phoneNumber]) {
+        return;
+    }
+    
+    __weak MessageComposeTableViewController *weakSelf = self;
+    [[ContactsUpdater sharedUpdater] lookupIdentifier:phoneNumber
+                                              success:^(SignalRecipient *recipient) {
+                                                  MessageComposeTableViewController *strongSelf = weakSelf;
+                                                  if (!strongSelf) {
+                                                      return;
+                                                  }
+                                                  if (![strongSelf.phoneNumberAccountSet containsObject:phoneNumber]) {
+                                                      [strongSelf.phoneNumberAccountSet addObject:phoneNumber];
+                                                      [strongSelf.tableView reloadData];
+                                                  }
+                                              }
+                                              failure:^(NSError *error) {
+                                                  // Ignore.
+                                              }];
+}
+
+- (void)setSearchPhoneNumber:(NSString *)searchPhoneNumber {
+    if ([_searchPhoneNumber isEqualToString:searchPhoneNumber]) {
+        return;
+    }
+
+    _searchPhoneNumber = searchPhoneNumber;
+    
+    [self.tableView reloadData];
+}
 
 #pragma mark - Send Normal Text to Unknown Contact
 
@@ -352,7 +449,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
-    self.sendTextButton.hidden = YES;
     self.searchController.searchBar.text = @"";
 
     //must dismiss search controller before presenting alert.
@@ -407,17 +503,36 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return MessageComposeTableViewControllerSection_Count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == MessageComposeTableViewControllerSectionInvite) {
-        if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_9_0) {
-            // Invite flow not supported on iOS8
-            return 0;
-        }
-        return 1;
+    // This logic will determine which one (if any) of the following special controls
+    // should be shown.  No more than one should be shown at a time.
+    BOOL showNonContactConversation = NO;
+    BOOL showInviteViaSMS = NO;
+    BOOL showInviteFlow = NO;
+
+    BOOL hasPhoneNumber = self.searchPhoneNumber.length > 0;
+    BOOL isKnownSignalUser = hasPhoneNumber && [self.phoneNumberAccountSet containsObject:self.searchPhoneNumber];
+    BOOL isInviteFlowSupported = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0);
+    if (hasPhoneNumber && isKnownSignalUser) {
+        showNonContactConversation = YES;
+    } else if (hasPhoneNumber) {
+        showInviteViaSMS = YES;
+    } else if (isInviteFlowSupported) {
+        showInviteFlow = YES;
+    }
+
+    if (section == MessageComposeTableViewControllerSectionInviteNonContactConversation) {
+        return showNonContactConversation ? 1 : 0;
+    } else if (section == MessageComposeTableViewControllerSectionInviteViaSMS) {
+        return showInviteViaSMS ? 1 : 0;
+    } else if (section == MessageComposeTableViewControllerSectionInviteFlow) {
+        return showInviteFlow ? 1 : 0;
     } else {
+        OWSAssert(section == MessageComposeTableViewControllerSectionContacts)
+        
         if (self.searchController.active) {
             return (NSInteger)[self.searchResults count];
         } else {
@@ -428,9 +543,21 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == MessageComposeTableViewControllerSectionInvite) {
+    if (indexPath.section == MessageComposeTableViewControllerSectionInviteNonContactConversation) {
+        self.conversationForNonContactCell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT",
+                                                                                                         @"Text for button to start a new conversation with a non-contact"),
+                                                             self.searchPhoneNumber];
+        return self.conversationForNonContactCell;
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteViaSMS) {
+        self.inviteViaSMSCell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                                                            @"Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number."),
+                                                self.searchPhoneNumber];
+        return self.inviteViaSMSCell;
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteFlow) {
         return self.inviteCell;
     } else {
+        OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
+        
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
 
@@ -444,7 +571,18 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    if (indexPath.section == MessageComposeTableViewControllerSectionInvite) {
+    if (indexPath.section == MessageComposeTableViewControllerSectionInviteNonContactConversation) {
+        OWSAssert(self.searchPhoneNumber.length > 0);
+        
+        if (self.searchPhoneNumber.length > 0) {
+            [self dismissViewControllerAnimated:YES
+                                     completion:^() {
+                                         [Environment messageIdentifier:self.searchPhoneNumber withCompose:YES];
+                                     }];
+        }
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteViaSMS) {
+        [self sendText];
+    } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteFlow) {
         void (^showInvite)() = ^{
             OWSInviteFlow *inviteFlow =
                 [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
@@ -462,6 +600,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             showInvite();
         }
     } else {
+        OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
+
         NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
 
         [self dismissViewControllerAnimated:YES
@@ -498,30 +638,34 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (void)refreshContacts {
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.contactsManager.allContacts
-        success:^{
-            self.contacts = self.contactsManager.signalContacts;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateSearchResultsForSearchController:self.searchController];
-                [self.tableView reloadData];
-                [self updateAfterRefreshTry];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert =
-                    [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"")
-                                               message:NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
-                                              delegate:nil
-                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                     otherButtonTitles:nil];
-                [alert show];
-                [self updateAfterRefreshTry];
-            });
-        }];
-
+                                                                           success:^{
+                                                                               [self updateContacts];
+                                                                           }
+                                                                           failure:^(NSError *error) {
+                                                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                   UIAlertView *alert =
+                                                                                   [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR_WAS_DETECTED_TITLE", @"")
+                                                                                                              message:NSLocalizedString(@"TIMEOUT_CONTACTS_DETAIL", @"")
+                                                                                                             delegate:nil
+                                                                                                    cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                                                                    otherButtonTitles:nil];
+                                                                                   [alert show];
+                                                                                   [self updateAfterRefreshTry];
+                                                                               });
+                                                                           }];
+    
     if ([self.contacts count] == 0) {
         [self showLoadingBackgroundView:YES];
     }
+}
+
+- (void)updateContacts {
+    self.contacts = self.contactsManager.signalContacts;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateSearchResultsForSearchController:self.searchController];
+        [self.tableView reloadData];
+        [self updateAfterRefreshTry];
+    });
 }
 
 #pragma mark - Navigation

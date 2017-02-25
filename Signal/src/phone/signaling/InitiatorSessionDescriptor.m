@@ -1,6 +1,9 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "InitiatorSessionDescriptor.h"
 
-#import "Constraints.h"
 #import "Util.h"
 
 #define SessionIdKey @"sessionId"

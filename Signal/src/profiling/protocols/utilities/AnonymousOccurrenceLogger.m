@@ -1,5 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AnonymousOccurrenceLogger.h"
-#import "Constraints.h"
 
 @implementation AnonymousOccurrenceLogger
 

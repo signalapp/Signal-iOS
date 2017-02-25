@@ -4,6 +4,7 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "OWS100RemoveTSRecipientsMigration.h"
 #import "OWS101ExistingUsersBlockOnIdentityChange.h"
+#import "OWS102MoveLoggingPreferenceToUserDefaults.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @[
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
-        [[OWS101ExistingUsersBlockOnIdentityChange alloc] initWithStorageManager:self.storageManager]
+        [[OWS101ExistingUsersBlockOnIdentityChange alloc] initWithStorageManager:self.storageManager],
+        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager]
     ];
 }
 

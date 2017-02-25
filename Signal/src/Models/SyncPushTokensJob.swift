@@ -79,6 +79,7 @@ class SyncPushTokensJob : NSObject {
             self.preferences.setVoipToken(voipToken);
         }
 
+        // TODO code cleanup: convert to `return Promise(value: nil)` and test.
         return Promise { fulfill, reject in  fulfill(); }
     }
 }

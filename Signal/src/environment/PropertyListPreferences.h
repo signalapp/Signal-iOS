@@ -1,5 +1,12 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * The users privacy preference for what kind of content to show in lock screen notifications.
+ */
 typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNoNameNoPreview,
     NotificationNameNoPreview,
@@ -12,6 +19,10 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
     TSImageQualityMedium = 3,
     TSImageQualityLow = 4
 };
+
+// Used when migrating logging to NSUserDefaults.
+extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
+extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 @interface PropertyListPreferences : NSObject
 
@@ -52,6 +63,20 @@ typedef NS_ENUM(NSUInteger, TSImageQuality) {
 
 - (nullable NSString *)lastRanVersion;
 - (NSString *)setAndGetCurrentVersion;
+
+#pragma mark - Calling
+
+#pragma mark Callkit
+
+- (BOOL)isCallKitEnabled;
+- (void)setIsCallKitEnabled:(BOOL)flag;
+- (BOOL)isCallKitPrivacyEnabled;
+- (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
+
+#pragma mark direct call connectivity (non-TURN)
+
+- (BOOL)doCallsHideIPAddress;
+- (void)setDoCallsHideIPAddress:(BOOL)flag;
 
 #pragma mark - Block on Identity Change
 

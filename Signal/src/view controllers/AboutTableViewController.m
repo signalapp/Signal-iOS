@@ -1,14 +1,11 @@
 //
-//  AboutTableViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 05/01/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Social/Social.h>
 #import "AboutTableViewController.h"
 #import "UIUtil.h"
+#import "UIViewController+OWS.h"
 
 @interface AboutTableViewController ()
 
@@ -36,6 +33,7 @@ typedef NS_ENUM(NSUInteger, AboutTableViewControllerSection) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
+    [self useOWSBackButton];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 

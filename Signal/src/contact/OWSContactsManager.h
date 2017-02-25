@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Contacts/Contacts.h>
 #import <Foundation/Foundation.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
@@ -7,6 +11,8 @@
 #import "ObservableValue.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 @class UIFont;
 
@@ -22,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nonnull NSArray *)getContactsFromAddressBook:(nonnull ABAddressBookRef)addressBook;
 - (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber;
+- (nullable Contact *)contactForPhoneIdentifier:(nullable NSString *)identifier;
+- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
 
 - (void)verifyABPermission;
 

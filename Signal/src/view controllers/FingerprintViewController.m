@@ -1,9 +1,5 @@
 //
-//  FingerprintViewController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 02/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewController.h"
@@ -12,6 +8,7 @@
 #import "Signal-Swift.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
+#import "UIViewController+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>

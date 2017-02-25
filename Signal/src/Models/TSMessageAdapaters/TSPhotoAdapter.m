@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 17/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSPhotoAdapter.h"
 #import "TSAttachmentStream.h"
@@ -50,6 +51,10 @@
         imageView.frame         = CGRectMake(0.0f, 0.0f, size.width, size.height);
         imageView.contentMode   = UIViewContentModeScaleAspectFill;
         imageView.clipsToBounds = YES;
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        imageView.layer.minificationFilter = kCAFilterTrilinear;
+        imageView.layer.magnificationFilter = kCAFilterTrilinear;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;

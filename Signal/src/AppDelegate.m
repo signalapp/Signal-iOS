@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
@@ -13,16 +17,22 @@
 #import "Release.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
-#import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
+#import "TSStorageManager+Calling.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import <AxolotlKit/SessionCipher.h>
 #import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSPreKeyManager.h>
+
+@import WebRTC;
+@import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 NSString *const AppDelegateStoryboardRegistration = @"Registration";
@@ -41,14 +51,57 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @implementation AppDelegate
 
-#pragma mark Detect updates - perform migrations
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
+    
+    [DDLog flushLog];
+}
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationWillEnterForeground.", self.tag);
+    
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+    DDLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.tag);
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    DDLogWarn(@"%@ applicationWillTerminate.", self.tag);
+    
+    [DDLog flushLog];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Initializing logger
+    BOOL loggingIsEnabled;
+#ifdef DEBUG
+    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
+    // the phone directory being looked up during tests.
+    loggingIsEnabled = TRUE;
+    [DebugLogger.sharedLogger enableTTYLogging];
+#elif RELEASE
+    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+#endif
+    if (loggingIsEnabled) {
+        [DebugLogger.sharedLogger enableFileLogging];
+    }
+
+    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
+
+    // Set the seed the generator for rand().
+    //
+    // We should always use arc4random() instead of rand(), but we
+    // still want to ensure that any third-party code that uses rand()
+    // gets random values.
+    srand((unsigned int)time(NULL));
+
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+
+    // Initializing env logger
     CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
     [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
     }];
@@ -67,22 +120,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
     [Environment.getCurrent initCallListener];
-
-    BOOL loggingIsEnabled;
-
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    loggingIsEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
-#endif
-    [self verifyBackgroundBeforeKeysAvailableLaunch];
-
-    if (loggingIsEnabled) {
-        [DebugLogger.sharedLogger enableFileLogging];
-    }
 
     [self setupTSKitEnv];
 
@@ -123,22 +160,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             DDLogWarn(@"The app was launched in an unknown way");
         }
 
-        OWSAccountManager *accountManager =
-            [[OWSAccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                 redPhoneAccountManager:[RPAccountManager sharedInstance]];
+        RTCInitializeSSL();
 
         [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                  accountManager:accountManager
+                                  accountManager:[Environment getCurrent].accountManager
                                      preferences:[Environment preferences]].then(^{
             DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
         }).catch(^(NSError *_Nonnull error) {
             DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
         });
 
-        [TSPreKeyManager refreshPreKeys];
-
         // Clean up any messages that expired since last launch.
         [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
+        // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+        // sent before the app exited should be marked as failures.
+        [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
         [AppStoreRating setupRatingLibrary];
     }];
 
@@ -149,15 +187,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             gesture.numberOfTapsRequired = 8;
             [self.window addGestureRecognizer:gesture];
         });
+        RTCInitializeSSL();
     }];
 
     return YES;
 }
 
 - (void)setupTSKitEnv {
-    [TextSecureKitEnv sharedEnv].contactsManager = [Environment getCurrent].contactsManager;
+    // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
+    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionCipher]];
+
+    TextSecureKitEnv *sharedEnv =
+        [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
+                                             contactsManager:[Environment getCurrent].contactsManager
+                                        notificationsManager:[Environment getCurrent].notificationsManager];
+    [TextSecureKitEnv setSharedEnv:sharedEnv];
+
     [[TSStorageManager sharedManager] setupDatabase];
-    [TextSecureKitEnv sharedEnv].notificationsManager = [[NotificationsManager alloc] init];
 
     OWSMessageSender *messageSender =
         [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
@@ -209,9 +255,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
-
-                    cvvc.challengeTextField.text = verificationCode;
-                    [cvvc verifyChallengeAction:nil];
+                    [cvvc setVerificationCodeAndTryToVerify:verificationCode];
                 } else {
                     DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
                               NSStringFromClass(controller.class));
@@ -227,6 +271,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationDidBecomeActive.", self.tag);
+
     if (getenv("runningTests_dontStartApp")) {
         return;
     }
@@ -245,9 +291,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                            }];
     
     [self removeScreenProtection];
+
+    // Always check prekeys after app launches, and sometimes check on app activation.
+    [TSPreKeyManager checkPreKeysIfNecessary];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    DDLogWarn(@"%@ applicationWillResignActive.", self.tag);
+    
     UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
     bgTask                                    = [application beginBackgroundTaskWithExpirationHandler:^{
 
@@ -256,15 +307,17 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if ([TSAccountManager isRegistered]) {
           dispatch_sync(dispatch_get_main_queue(), ^{
-            [self protectScreen];
-            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [self protectScreen];
+              [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+              [TSSocketManager resignActivity];
           });
-          [TSSocketManager resignActivity];
       }
 
       [application endBackgroundTask:bgTask];
       bgTask = UIBackgroundTaskInvalid;
     });
+    
+    [DDLog flushLog];
 }
 
 - (void)application:(UIApplication *)application
@@ -292,6 +345,146 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                                           }];
     }
 }
+
+/**
+ * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
+ */
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
+{
+    if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+            DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.tag);
+            return NO;
+        }
+
+        DDLogInfo(@"%@ got start video call intent", self.tag);
+
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
+            DDLogError(@"%@ unexpected class for start call video: %@", self.tag, intent);
+            return NO;
+        }
+        INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
+        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
+        if (!handle) {
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            return NO;
+        }
+
+        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
+            DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing RedPhone call.", self.tag);
+            return NO;
+        }
+
+        NSString *_Nullable phoneNumber = handle;
+        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+            if (phoneNumber.length < 1) {
+                DDLogWarn(@"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.tag);
+                return NO;
+            }
+        }
+
+        // This intent can be received from more than one user interaction.
+        //
+        // * It can be received if the user taps the "video" button in the CallKit UI for an
+        //   an ongoing call.  If so, the correct response is to try to activate the local
+        //   video for that call.
+        // * It can be received if the user taps the "video" button for a contact in the
+        //   contacts app.  If so, the correct response is to try to initiate a new call
+        //   to that user - unless there already is another call in progress.
+        if ([Environment getCurrent].callService.call != nil) {
+            if ([phoneNumber isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
+                DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.tag);
+                [[Environment getCurrent].callService handleCallKitStartVideo];
+                return YES;
+            } else {
+                DDLogWarn(
+                    @"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.", self.tag);
+                return NO;
+            }
+        }
+
+        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OWSAssert(outboundCallInitiator);
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+    } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
+
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+            DDLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.tag);
+            return NO;
+        }
+
+        DDLogInfo(@"%@ got start audio call intent", self.tag);
+
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
+            DDLogError(@"%@ unexpected class for start call audio: %@", self.tag, intent);
+            return NO;
+        }
+        INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
+        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
+        if (!handle) {
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            return NO;
+        }
+
+        NSString *_Nullable phoneNumber = handle;
+        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+            if (phoneNumber.length < 1) {
+                DDLogWarn(@"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.tag);
+                return NO;
+            }
+        }
+
+        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
+            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
+            return NO;
+        }
+        if ([Environment getCurrent].callService.call != nil) {
+            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
+            return NO;
+        }
+
+        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OWSAssert(outboundCallInitiator);
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+    } else {
+        DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
+            self.tag,
+            __PRETTY_FUNCTION__,
+            userActivity.activityType);
+    }
+
+    // TODO Something like...
+    // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
+    // thread = blah
+    // [callUIAdapter startCall:thread]
+    //
+    // Here's the Speakerbox Example for intent / NSUserActivity handling:
+    //
+    //    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+    //        guard let handle = userActivity.startCallHandle else {
+    //            print("Could not determine start call handle from user activity: \(userActivity)")
+    //            return false
+    //        }
+    //
+    //        guard let video = userActivity.video else {
+    //            print("Could not determine video from user activity: \(userActivity)")
+    //            return false
+    //        }
+    //
+    //        callManager.startCall(handle: handle, video: video)
+    //        return true
+    //    }
+    return NO;
+}
+
 
 /**
  * Screen protection obscures the app screen shown in the app switcher.
@@ -327,6 +520,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
+
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -363,29 +557,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 /**
- *  Signal requires an iPhone to be unlocked after reboot to be able to access keying material.
+ *  The user must unlock the device once after reboot before the database encryption key can be accessed.
  */
-- (void)verifyBackgroundBeforeKeysAvailableLaunch {
-    if ([self applicationIsActive]) {
+- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
+{
+    if (UIApplication.sharedApplication.applicationState != UIApplicationStateBackground) {
         return;
     }
 
-    if (![[TSStorageManager sharedManager] databasePasswordAccessible]) {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.alertBody            = NSLocalizedString(@"PHONE_NEEDS_UNLOCK", nil);
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    if (![TSStorageManager isDatabasePasswordAccessible]) {
+        DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
+        [DDLog flushLog];
         exit(0);
     }
-}
-
-- (BOOL)applicationIsActive {
-    UIApplication *app = [UIApplication sharedApplication];
-
-    if (app.applicationState == UIApplicationStateActive) {
-        return YES;
-    }
-
-    return NO;
 }
 
 #pragma mark - Logging

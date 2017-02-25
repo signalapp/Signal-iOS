@@ -1,9 +1,5 @@
 //
-//  VersionMigrations.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 29/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
@@ -63,6 +59,7 @@
         UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                               [DDLog flushLog];
                                                                exit(0);
                                                            }];
         [alertController addAction:quitAction];
