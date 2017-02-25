@@ -590,7 +590,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.krzyzanowskim.OpenSSL-macOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.levigroker.OpenSSL-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -615,7 +615,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.krzyzanowskim.OpenSSL-macOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.levigroker.OpenSSL-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

@@ -599,7 +599,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.krzyzanowskim.OpenSSL-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.levigroker.OpenSSL-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -623,7 +623,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				OTHER_LDFLAGS = "-all_load";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.krzyzanowskim.OpenSSL-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.levigroker.OpenSSL-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
