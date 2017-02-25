@@ -22,28 +22,22 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                          authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body
-{
-    return [self initWithTimestamp:timestamp inThread:thread authorId:authorId messageBody:body attachmentIds:@[]];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                         authorId:(NSString *)authorId
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     return [self initWithTimestamp:timestamp
                           inThread:thread
                           authorId:authorId
+                    sourceDeviceId:sourceDeviceId
                        messageBody:body
-                     attachmentIds:attachmentIds
+                     attachmentIds:@[]
                   expiresInSeconds:0];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                          authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
@@ -60,6 +54,7 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     }
 
     _authorId = authorId;
+    _sourceDeviceId = sourceDeviceId;
     _read = NO;
 
     OWSAssert(self.receivedAtDate);

@@ -15,6 +15,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
+#import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptsProcessor.h"
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 
 @end
 
@@ -102,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
+    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
 
     return self;
 }
@@ -281,6 +284,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
 {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(envelope.hasTimestamp && envelope.timestamp > 0);
+    OWSAssert(envelope.hasSource && envelope.source.length > 0);
+    OWSAssert(envelope.hasSourceDevice && envelope.sourceDevice > 0);
+
+    BOOL duplicateEnvelope = [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
+                                                                           sourceId:envelope.source
+                                                                     sourceDeviceId:envelope.sourceDevice];
+    if (duplicateEnvelope) {
+        DDLogInfo(@"%@ Ignoring previously received envelope with timestamp: %llu", self.tag, envelope.timestamp);
+        return;
+    }
+
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         if (content.hasSyncMessage) {
@@ -290,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (content.hasCallMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else {
-            DDLogWarn(@"%@ Ignoring envelope.Content with no known payload", self.tag);
+            DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
     } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
         OWSSignalServiceProtosDataMessage *dataMessage =
@@ -611,6 +626,7 @@ NS_ASSUME_NONNULL_BEGIN
                   incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                         inThread:gThread
                                                                         authorId:envelope.source
+                                                                  sourceDeviceId:envelope.sourceDevice
                                                                      messageBody:body
                                                                    attachmentIds:attachmentIds
                                                                 expiresInSeconds:dataMessage.expireTimer];
@@ -632,6 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
           incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                 inThread:cThread
                                                                 authorId:[cThread contactIdentifier]
+                                                          sourceDeviceId:envelope.sourceDevice
                                                              messageBody:body
                                                            attachmentIds:attachmentIds
                                                         expiresInSeconds:dataMessage.expireTimer];
@@ -648,25 +665,18 @@ NS_ASSUME_NONNULL_BEGIN
               [incomingMessage markAsReadLocallyWithTransaction:transaction];
           }
 
-          // Android allows attachments to be sent with body.
+          // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
+          // message
           if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
               // We want the text to be displayed under the attachment
               uint64_t textMessageTimestamp = timestamp + 1;
-              TSIncomingMessage *textMessage;
-              if ([thread isGroupThread]) {
-                  TSGroupThread *gThread = (TSGroupThread *)thread;
-                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                    inThread:gThread
-                                                                    authorId:envelope.source
-                                                                 messageBody:body];
-              } else {
-                  TSContactThread *cThread = (TSContactThread *)thread;
-                  textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                    inThread:cThread
-                                                                    authorId:[cThread contactIdentifier]
-                                                                 messageBody:body];
-              }
-              textMessage.expiresInSeconds = dataMessage.expireTimer;
+              TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                                   inThread:thread
+                                                                                   authorId:envelope.source
+                                                                             sourceDeviceId:envelope.sourceDevice
+                                                                                messageBody:body
+                                                                              attachmentIds:@[]
+                                                                           expiresInSeconds:dataMessage.expireTimer];
               [textMessage saveWithTransaction:transaction];
           }
       }

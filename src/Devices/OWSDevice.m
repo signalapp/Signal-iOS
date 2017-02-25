@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDevice.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -10,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static MTLValueTransformer *_millisecondTimestampToDateTransformer;
-static int const OWSDevicePrimaryDeviceId = 1;
+uint32_t const OWSDevicePrimaryDeviceId = 1;
 
 @interface OWSDevice ()
 
@@ -106,6 +108,13 @@ static int const OWSDevicePrimaryDeviceId = 1;
                 }];
     }
     return _millisecondTimestampToDateTransformer;
+}
+
++ (uint32_t)currentDeviceId
+{
+    // Someday it may be possible to have a non-primary iOS device, but for now
+    // any iOS device must be the primary device.
+    return OWSDevicePrimaryDeviceId;
 }
 
 - (BOOL)isPrimaryDevice

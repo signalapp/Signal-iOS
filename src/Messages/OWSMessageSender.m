@@ -5,6 +5,7 @@
 #import "OWSMessageSender.h"
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
 #import "OWSLegacyMessageServiceParams.h"
@@ -622,6 +623,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
                                                 inThread:cThread
                                                 authorId:[cThread contactIdentifier]
+                                          sourceDeviceId:[OWSDevice currentDeviceId]
                                              messageBody:outgoingMessage.body
                                            attachmentIds:outgoingMessage.attachmentIds
                                         expiresInSeconds:outgoingMessage.expiresInSeconds];
