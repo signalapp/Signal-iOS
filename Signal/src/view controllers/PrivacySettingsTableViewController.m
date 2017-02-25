@@ -157,10 +157,14 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
                 @"User settings section footer, a detailed explanation");
         case PrivacySettingsTableViewControllerSectionIndexCallKitEnabled:
-            return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
+            return (self.supportsCallKit
+                    ? NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.")
+                    : nil);
         case PrivacySettingsTableViewControllerSectionIndexCallKitPrivacy:
-            return NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION",
-                                     @"Explanation of the 'CallKit Privacy` preference.");
+            return ((self.supportsCallKit && [[Environment getCurrent].preferences isCallKitEnabled])
+                    ? NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION",
+                                        @"Explanation of the 'CallKit Privacy` preference.")
+                    : nil);
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
             return NSLocalizedString(
                 @"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL", @"User settings section footer, a detailed explanation");
@@ -262,6 +266,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
     [[Environment getCurrent].callService createCallUIAdapter];
+    [self.tableView reloadData];
 }
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender {
