@@ -17,6 +17,7 @@
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PhoneManager.h"
+#import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RPAccountManager.h"

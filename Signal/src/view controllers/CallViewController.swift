@@ -22,6 +22,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     var thread: TSContactThread!
     var call: SignalCall!
+    var hasDismissed = false
 
     // MARK: Views
 
@@ -73,6 +74,18 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             updateCallUI(callState: call.state)
         }
     }
+
+    // MARK: Settings Nag Views
+
+    var isShowingSettingsNag = false {
+        didSet {
+            if oldValue != isShowingSettingsNag {
+                updateCallUI(callState: call.state)
+            }
+        }
+    }
+    var settingsNagView: UIView!
+    var settingsNagDescriptionLabel: UILabel!
 
     // MARK: Initializers
 
@@ -160,6 +173,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
+        createSettingsNagViews()
     }
 
     func didTouchRootView(sender: UIGestureRecognizer) {
@@ -198,6 +212,62 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         contactAvatarView = AvatarImageView()
         self.view.addSubview(contactAvatarView)
+    }
+
+    func createSettingsNagViews() {
+        settingsNagView = UIView()
+        settingsNagView.isHidden = true
+        self.view.addSubview(settingsNagView)
+
+        let viewStack = UIView()
+        settingsNagView.addSubview(viewStack)
+        viewStack.autoPinWidthToSuperview()
+        viewStack.autoVCenterInSuperview()
+
+        settingsNagDescriptionLabel = UILabel()
+        settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
+                                                             comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
+        settingsNagDescriptionLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(16, 18))
+        settingsNagDescriptionLabel.textColor = UIColor.white
+        settingsNagDescriptionLabel.numberOfLines = 0
+        settingsNagDescriptionLabel.lineBreakMode = .byWordWrapping
+        viewStack.addSubview(settingsNagDescriptionLabel)
+        settingsNagDescriptionLabel.autoPinWidthToSuperview()
+        settingsNagDescriptionLabel.autoPinEdge(toSuperviewEdge:.top)
+
+        let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
+        let buttonFont = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14, 18))
+        let buttonCornerRadius = CGFloat(4)
+        let descriptionVSpacingHeight = ScaleFromIPhone5To7Plus(30, 60)
+
+        let callSettingsButton = UIButton()
+        callSettingsButton.setTitle(NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
+                                                      comment: "Label for button that shows the privacy settings"), for:.normal)
+        callSettingsButton.setTitleColor(UIColor.white, for:.normal)
+        callSettingsButton.titleLabel!.font = buttonFont
+        callSettingsButton.addTarget(self, action:#selector(didPressShowCallSettings), for:.touchUpInside)
+        callSettingsButton.backgroundColor = UIColor.ows_signalBrandBlue()
+        callSettingsButton.layer.cornerRadius = buttonCornerRadius
+        callSettingsButton.clipsToBounds = true
+        viewStack.addSubview(callSettingsButton)
+        callSettingsButton.autoSetDimension(.height, toSize:buttonHeight)
+        callSettingsButton.autoPinWidthToSuperview()
+        callSettingsButton.autoPinEdge(.top, to:.bottom, of:settingsNagDescriptionLabel, withOffset:descriptionVSpacingHeight)
+
+        let notNowButton = UIButton()
+        notNowButton.setTitle(NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
+                                                comment: "Label for button that dismiss the call view's settings nag."), for:.normal)
+        notNowButton.setTitleColor(UIColor.white, for:.normal)
+        notNowButton.titleLabel!.font = buttonFont
+        notNowButton.addTarget(self, action:#selector(didPressDismissNag), for:.touchUpInside)
+        notNowButton.backgroundColor = UIColor.ows_signalBrandBlue()
+        notNowButton.layer.cornerRadius = buttonCornerRadius
+        notNowButton.clipsToBounds = true
+        viewStack.addSubview(notNowButton)
+        notNowButton.autoSetDimension(.height, toSize:buttonHeight)
+        notNowButton.autoPinWidthToSuperview()
+        notNowButton.autoPinEdge(toSuperviewEdge:.bottom)
+        notNowButton.autoPinEdge(.top, to:.bottom, of:callSettingsButton, withOffset:12)
     }
 
     func buttonSize() -> CGFloat {
@@ -356,8 +426,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             let contactVSpacing = CGFloat(3)
             let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
             let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
+            let settingsNagHMargin = CGFloat(30)
             let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
             let incomingBottomMargin = CGFloat(41)
+            let settingsNagBottomMargin = CGFloat(41)
             let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
             // The buttons have built-in 10% margins, so to appear centered
             // the avatar's bottom spacing should be a bit less.
@@ -401,6 +473,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             incomingCallView.autoPinEdge(toSuperviewEdge:.bottom, withInset:incomingBottomMargin)
             incomingCallView.autoPinWidthToSuperview(withMargin:incomingHMargin)
             incomingCallView.setContentHuggingVerticalHigh()
+
+            // Settings nag views
+            settingsNagView.autoPinEdge(toSuperviewEdge:.bottom, withInset:settingsNagBottomMargin)
+            settingsNagView.autoPinWidthToSuperview(withMargin:settingsNagHMargin)
+            settingsNagView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
         }
 
         updateRemoteVideoLayout()
@@ -529,7 +606,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
             if let error = call.error {
-                switch (error) {
+                switch error {
                 case .timeout(description: _):
                     if self.call.direction == .outgoing {
                         return NSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
@@ -554,6 +631,13 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func updateCallUI(callState: CallState) {
         assert(Thread.isMainThread)
         updateCallStatusLabel(callState: callState)
+
+        if isShowingSettingsNag {
+            settingsNagView.isHidden = false
+            contactAvatarView.isHidden = true
+            ongoingCallView.isHidden = true
+            return
+        }
 
         audioModeMuteButton.isSelected = call.isMuted
         videoModeMuteButton.isSelected = call.isMuted
@@ -595,13 +679,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
             Logger.debug("\(TAG) dismissing after delay because new state is \(callState)")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.dismiss(animated: true)
-            }
+            dismissIfPossible(shouldDelay:true)
         case .localHangup:
             Logger.debug("\(TAG) dismissing immediately from local hangup")
-            self.dismiss(animated: true)
-
+            dismissIfPossible(shouldDelay:false)
         default: break
         }
 
@@ -637,7 +718,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             Logger.warn("\(TAG) hung up, but call was unexpectedly nil")
         }
 
-        self.dismiss(animated: true)
+        dismissIfPossible(shouldDelay:false)
     }
 
     func didPressMute(sender muteButton: UIButton) {
@@ -663,7 +744,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressTextMessage(sender speakerphoneButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
-        self.dismiss(animated: true)
+        dismissIfPossible(shouldDelay:false)
     }
 
     func didPressAnswerCall(sender: UIButton) {
@@ -676,9 +757,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                               NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label"))
             self.callStatusLabel.text = text
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.dismiss(animated: true)
-            }
+            dismissIfPossible(shouldDelay:true)
             return
         }
 
@@ -707,7 +786,57 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             Logger.warn("\(TAG) denied call, but call was unexpectedly nil")
         }
 
-        self.dismiss(animated: true)
+        dismissIfPossible(shouldDelay:false)
+    }
+
+    func didPressShowCallSettings(sender: UIButton) {
+        Logger.info("\(TAG) called \(#function)")
+
+        markSettingsNagAsComplete()
+
+        dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
+            // Find the frontmost presented UIViewController from which to present the
+            // settings views.
+            let window = UIApplication.shared.keyWindow
+            var fromViewController = window!.rootViewController
+            let storyboard = fromViewController?.storyboard
+            while fromViewController?.presentedViewController != nil {
+                fromViewController = fromViewController?.presentedViewController
+            }
+            assert(fromViewController != nil)
+            assert(storyboard != nil)
+
+            // Construct the "settings" view & push the "privacy settings" view.
+            let navigationController = storyboard?.instantiateViewController(withIdentifier:"SettingsNavigationController") as! UINavigationController
+            assert(navigationController.viewControllers.count == 1)
+            let privacySettingsViewController = PrivacySettingsTableViewController()
+            navigationController.pushViewController(privacySettingsViewController, animated:false)
+
+            fromViewController?.present(navigationController, animated: true, completion: nil)
+        })
+    }
+
+    func didPressDismissNag(sender: UIButton) {
+        Logger.info("\(TAG) called \(#function)")
+
+        markSettingsNagAsComplete()
+
+        dismissIfPossible(shouldDelay: false, ignoreNag: true)
+    }
+
+    // We only show the "blocking" settings nag until the user has chosen
+    // to view the privacy settings _or_ dismissed the nag at least once.
+    // 
+    // In either case, we set the "CallKit enabled" and "CallKit privacy enabled" 
+    // settings to their default values to indicate that the user has reviewed
+    // them.
+    private func markSettingsNagAsComplete() {
+        Logger.info("\(TAG) called \(#function)")
+
+        let preferences = Environment.getCurrent().preferences!
+
+        preferences.setIsCallKitEnabled(preferences.isCallKitEnabled())
+        preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
     // MARK: - CallObserver
@@ -773,6 +902,56 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
 
         updateRemoteVideoLayout()
+    }
+
+    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag: Bool = false, completion: (() -> Swift.Void)? = nil) {
+        if hasDismissed {
+            // Don't dismiss twice.
+            return
+        } else if !ignoreNag &&
+            call.direction == .incoming &&
+            supportsCallKit() &&
+            (!Environment.getCurrent().preferences.isCallKitEnabled() ||
+                Environment.getCurrent().preferences.isCallKitPrivacyEnabled()) {
+
+            isShowingSettingsNag = true
+
+            // Update the nag view's copy to reflect the settings state.
+            if Environment.getCurrent().preferences.isCallKitEnabled() {
+                settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY",
+                                                                     comment: "Reminder to the user of the benefits of disabling CallKit privacy.")
+            } else {
+                settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
+                                                                     comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
+            }
+            settingsNagDescriptionLabel.superview?.setNeedsLayout()
+
+            if Environment.getCurrent().preferences.isCallKitEnabledSet() ||
+                Environment.getCurrent().preferences.isCallKitPrivacySet() {
+                // User has already touched these preferences, only show
+                // the "fleeting" nag, not the "blocking" nag.
+
+                // Show nag for N seconds.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.dismissIfPossible(shouldDelay: false, ignoreNag: true)
+                }
+            }
+        } else if shouldDelay {
+            hasDismissed = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.dismiss(animated: true, completion:completion)
+            }
+        } else {
+            hasDismissed = true
+            self.dismiss(animated: false, completion:completion)
+        }
+    }
+
+    // MARK: - Util
+
+    private func supportsCallKit() -> Bool {
+        return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
     }
 
     // MARK: - CallServiceObserver

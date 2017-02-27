@@ -187,6 +187,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
 }
 
+- (BOOL)isCallKitEnabledSet
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    return preference != nil;
+}
+
 - (BOOL)isCallKitPrivacyEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
@@ -196,6 +202,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
+}
+
+- (BOOL)isCallKitPrivacySet
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
+    return preference != nil;
 }
 
 #pragma mark direct call connectivity (non-TURN)
