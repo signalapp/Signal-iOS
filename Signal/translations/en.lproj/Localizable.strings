@@ -791,10 +791,10 @@
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Hide IP Address";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Hiding your IP address during audio and video calls will decrease call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear History Logs";
@@ -836,7 +836,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Names & Numbers";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
@@ -848,10 +848,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevents Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Show Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple.";
 
 /* Explanation of the 'CallKit Privacy` preference. */
 "SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION" = "If you show the names and phone numbers of incoming callers in CallKit, this information will appear in your phone's call history and will be synced to your iCloud account.";
@@ -948,6 +948,24 @@
 
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Update";
+
+/* accessibility label for arrow in slideshow */
+"UPGRADE_CAROUSEL_NEXT_BUTTON" = "Show next";
+
+/* accessibility label for arrow in slideshow */
+"UPGRADE_CAROUSEL_PREVIOUS_BUTTON" = "Show previous";
+
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lockscreen is easy and private, since by default we anonymize your caller.\n\n Read more in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Upgrading Signal ...";

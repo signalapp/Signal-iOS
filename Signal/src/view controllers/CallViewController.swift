@@ -910,7 +910,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             return
         } else if !ignoreNag &&
             call.direction == .incoming &&
-            supportsCallKit() &&
+            UIDevice.current.supportsCallKit &&
             (!Environment.getCurrent().preferences.isCallKitEnabled() ||
                 Environment.getCurrent().preferences.isCallKitPrivacyEnabled()) {
 
@@ -948,13 +948,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             self.dismiss(animated: false, completion:completion)
         }
     }
-
-    // MARK: - Util
-
-    private func supportsCallKit() -> Bool {
-        return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
-    }
-
+    
     // MARK: - CallServiceObserver
 
     internal func didUpdateCall(call: SignalCall?) {
