@@ -8,9 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (OWS)
 
-- (UIBarButtonItem *)createOWSBackButtonWithSelector:(SEL)selector;
 - (UIBarButtonItem *)createOWSBackButton;
-- (void)useOWSBackButtonWithSelector:(SEL)selector;
 - (void)useOWSBackButton;
 
 @end

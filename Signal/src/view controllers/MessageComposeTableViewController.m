@@ -117,7 +117,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    [self useOWSBackButtonWithSelector:@selector(closeButton:)];
     
     self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
@@ -148,11 +147,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     if ([self.contacts count] == 0) {
         [self showEmptyBackgroundView:YES];
     }
-}
-
-- (void)closeButton:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (UILabel *)createLabelWithFirstLine:(NSString *)firstLine andSecondLine:(NSString *)secondLine {

@@ -8,25 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIViewController (OWS)
 
-- (UIBarButtonItem *)createOWSBackButtonWithSelector:(SEL)selector
+- (UIBarButtonItem *)createOWSBackButton
 {
     UIImage *backImage = [UIImage imageNamed:@"NavBarBack"];
     OWSAssert(backImage);
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:backImage
                                                                  style:UIBarButtonItemStylePlain
                                                                 target:self
-                                                                action:selector];
+                                                                action:@selector(backButtonPressed:)];
     return backItem;
-}
-
-- (UIBarButtonItem *)createOWSBackButton
-{
-    return [self createOWSBackButtonWithSelector:@selector(backButtonPressed:)];
-}
-
-- (void)useOWSBackButtonWithSelector:(SEL)selector
-{
-    self.navigationItem.leftBarButtonItem = [self createOWSBackButtonWithSelector:selector];
 }
 
 - (void)useOWSBackButton
