@@ -117,7 +117,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    [self useOWSBackButton];
     
     self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
