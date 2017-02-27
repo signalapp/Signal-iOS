@@ -477,7 +477,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // Settings nag views
             settingsNagView.autoPinEdge(toSuperviewEdge:.bottom, withInset:settingsNagBottomMargin)
             settingsNagView.autoPinWidthToSuperview(withMargin:settingsNagHMargin)
-            settingsNagView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
+            settingsNagView.autoPinEdge(.top, to:.bottom, of:callStatusLabel)
         }
 
         updateRemoteVideoLayout()
@@ -939,8 +939,9 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             }
         } else if shouldDelay {
             hasDismissed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                self.dismiss(animated: true, completion:completion)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.dismiss(animated: true, completion:completion)
             }
         } else {
             hasDismissed = true
