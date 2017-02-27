@@ -108,19 +108,19 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Shortcut for fetching just the collection at the given index.
 **/
-- (NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+- (nullable NSString *)collectionAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * Shortcut for fetching just the key at the given index.
  * Convenient if you already know what collection the key is in.
 **/
-- (NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group;
+- (nullable NSString *)keyAtIndex:(NSUInteger)index inGroup:(NSString *)group;
 
 /**
  * If the given {collection, key} are included in the view, then returns the associated group.
  * If the {collection, key} isn't in the view, then returns nil.
 **/
-- (NSString *)groupForKey:(NSString *)key inCollection:(nullable NSString *)collection;
+- (nullable NSString *)groupForKey:(NSString *)key inCollection:(nullable NSString *)collection;
 
 /**
  * Fetches both the group and the index within the group for the given {collection, key}.
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
  * - [YapDatabaseView versionTag]            = versionTag of most recent commit
  * - [YapDatabaseViewTransaction versionTag] = versionTag of this commit
 **/
-- (NSString *)versionTag;
+- (nullable NSString *)versionTag;
 
 #pragma mark Finding
 
@@ -552,9 +552,9 @@ NS_ASSUME_NONNULL_BEGIN
  * Fetches the indexPath for the given {collection, key} tuple, assuming the given mappings are being used.
  * Returns nil if the {collection, key} tuple isn't included in the view + mappings.
 **/
-- (NSIndexPath *)indexPathForKey:(NSString *)key
-                    inCollection:(nullable NSString *)collection
-                    withMappings:(YapDatabaseViewMappings *)mappings;
+- (nullable NSIndexPath *)indexPathForKey:(NSString *)key
+                             inCollection:(nullable NSString *)collection
+                             withMappings:(YapDatabaseViewMappings *)mappings;
 
 /**
  * Fetches the row & section for the given {collection, key} tuple, assuming the given mappings are being used.
