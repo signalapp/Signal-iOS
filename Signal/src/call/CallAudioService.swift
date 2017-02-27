@@ -194,7 +194,7 @@ import AVFoundation
 
         vibrate()
 
-        handleCallEnded()
+        handleCallEnded(call:call)
     }
 
     private func handleBusy(call: SignalCall) {
@@ -204,7 +204,7 @@ import AVFoundation
         play(sound: Sound.busy, call: call)
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
-            self.handleCallEnded()
+            self.handleCallEnded(call: call)
         }
     }
 
@@ -280,7 +280,7 @@ import AVFoundation
 
     func vibrate() {
         // TODO implement HapticAdapter for iPhone7 and up
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 
     private func setAudioSession(category: String,
