@@ -16,8 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     PrivacySettingsTableViewControllerSectionIndexScreenSecurity,
     PrivacySettingsTableViewControllerSectionIndexCalling,
-    PrivacySettingsTableViewControllerSectionIndexCallKitEnabled,
-    PrivacySettingsTableViewControllerSectionIndexCallKitPrivacy,
+    PrivacySettingsTableViewControllerSectionIndexCallKit,
     PrivacySettingsTableViewControllerSectionIndexHistoryLog,
     PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange,
     PrivacySettingsTableViewControllerSectionIndex_Count // meta section to track how many sections
@@ -135,10 +134,11 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return 1;
         case PrivacySettingsTableViewControllerSectionIndexCalling:
             return 1;
-        case PrivacySettingsTableViewControllerSectionIndexCallKitEnabled:
-            return [UIDevice currentDevice].supportsCallKit ? 1 : 0;
-        case PrivacySettingsTableViewControllerSectionIndexCallKitPrivacy:
-            return ([UIDevice currentDevice].supportsCallKit && [[Environment getCurrent].preferences isCallKitEnabled]) ? 1 : 0;
+        case PrivacySettingsTableViewControllerSectionIndexCallKit:
+            if (![UIDevice currentDevice].supportsCallKit) {
+                return 0;
+            }
+            return [Environment getCurrent].preferences.isCallKitEnabled ? 2 : 1;
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return 1;
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
@@ -156,14 +156,9 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
         case PrivacySettingsTableViewControllerSectionIndexCalling:
             return NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
                 @"User settings section footer, a detailed explanation");
-        case PrivacySettingsTableViewControllerSectionIndexCallKitEnabled:
+        case PrivacySettingsTableViewControllerSectionIndexCallKit:
             return ([UIDevice currentDevice].supportsCallKit
                     ? NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.")
-                    : nil);
-        case PrivacySettingsTableViewControllerSectionIndexCallKitPrivacy:
-            return (([UIDevice currentDevice].supportsCallKit && [[Environment getCurrent].preferences isCallKitEnabled])
-                    ? NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION",
-                                        @"Explanation of the 'CallKit Privacy` preference.")
                     : nil);
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
             return NSLocalizedString(
@@ -179,10 +174,13 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return self.enableScreenSecurityCell;
         case PrivacySettingsTableViewControllerSectionIndexCalling:
             return self.callsHideIPAddressCell;
-        case PrivacySettingsTableViewControllerSectionIndexCallKitEnabled:
-            return self.enableCallKitCell;
-        case PrivacySettingsTableViewControllerSectionIndexCallKitPrivacy:
-            return self.enableCallKitPrivacyCell;
+        case PrivacySettingsTableViewControllerSectionIndexCallKit:
+            switch (indexPath.row) {
+                case 0:
+                    return self.enableCallKitCell;
+                case 1:
+                    return self.enableCallKitPrivacyCell;
+            }
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return self.clearHistoryLogCell;
         case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
@@ -265,6 +263,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
     DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
+    // rebuild callUIAdapter since CallKit vs not changed.
     [[Environment getCurrent].callService createCallUIAdapter];
     [self.tableView reloadData];
 }

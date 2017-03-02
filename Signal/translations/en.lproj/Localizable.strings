@@ -833,7 +833,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Names & Numbers";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Name & Number";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
@@ -851,7 +851,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Show Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
 
 /* Explanation of the 'CallKit Privacy` preference. */
 "SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION" = "If you show the names and phone numbers of incoming callers in CallKit, this information will appear in your phone's call history and will be synced to your iCloud account.";
