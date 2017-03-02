@@ -18,8 +18,67 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
+    _countryCodes = [self countryCodesForSearchTerm:nil];
     self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
+}
+
+- (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSString *countryCode in [PhoneNumberUtil countryCodesForSearchTerm:nil]) {
+        NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
+        if (callingCode != nil &&
+            ![callingCode isEqualToString:@"+0"]) {
+            [result addObject:countryCode];
+        }
+    }
+    return result;
+}
+
+- (NSString *)callingCodeFromCountryCode:(NSString *)countryCode {
+    NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    if ([countryCode isEqualToString:@"AQ"]) {
+        // Antarctica
+        callingCode = @"+672";
+    } else if ([countryCode isEqualToString:@"BV"]) {
+        // Bouvet Island
+        callingCode = @"+55";
+    } else if ([countryCode isEqualToString:@"IC"]) {
+        // Canary Islands
+        callingCode = @"+34";
+    } else if ([countryCode isEqualToString:@"EA"]) {
+        // Ceuta & Melilla
+        callingCode = @"+34";
+    } else if ([countryCode isEqualToString:@"CP"]) {
+        // Clipperton Island
+        //
+        // This country code should be filtered.
+        return nil;
+    } else if ([countryCode isEqualToString:@"DG"]) {
+        // Diego Garcia
+        callingCode = @"+246";
+    } else if ([countryCode isEqualToString:@"TF"]) {
+        // French Southern Territories
+        callingCode = @"+262";
+    } else if ([countryCode isEqualToString:@"HM"]) {
+        // Heard & McDonald Islands
+        //
+        // This country code should be filtered.
+        return nil;
+    } else if ([countryCode isEqualToString:@"XK"]) {
+        // Kosovo
+        callingCode = @"+383";
+    } else if ([countryCode isEqualToString:@"PN"]) {
+        // Pitcairn Islands
+        callingCode = @"+64";
+    } else if ([countryCode isEqualToString:@"GS"]) {
+        // So. Georgia & So. Sandwich Isl.
+        callingCode = @"+500";
+    } else if ([countryCode isEqualToString:@"UM"]) {
+        // U.S. Outlying Islands
+        callingCode = @"+1";
+    }
+    
+    return callingCode;
 }
 
 #pragma mark - UITableViewDelegate
@@ -36,8 +95,12 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     }
 
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
+    OWSAssert(countryCode.length > 0);
+    OWSAssert([PhoneNumberUtil countryNameFromCountryCode:countryCode].length > 0);
+    OWSAssert([self callingCodeFromCountryCode:countryCode].length > 0);
+    OWSAssert(![[self callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
 
-    [cell configureWithCountryCode:[PhoneNumberUtil callingCodeFromCountryCode:countryCode]
+    [cell configureWithCountryCode:[self callingCodeFromCountryCode:countryCode]
                     andCountryName:[PhoneNumberUtil countryNameFromCountryCode:countryCode]];
 
     return cell;
@@ -45,7 +108,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    _callingCodeSelected  = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    _callingCodeSelected  = [self callingCodeFromCountryCode:countryCode];
     _countryNameSelected  = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     [self.searchBar resignFirstResponder];
     [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
@@ -58,12 +121,12 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
+    _countryCodes = [self countryCodesForSearchTerm:searchText];
     [self.countryCodeTableView reloadData];
 }
 
 - (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope {
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
+    _countryCodes = [self countryCodesForSearchTerm:searchText];
 }
 
 @end
