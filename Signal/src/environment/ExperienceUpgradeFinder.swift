@@ -4,18 +4,23 @@
 
 import Foundation
 
+enum ExperienceUpgradeId: String {
+    case videoCalling = "001",
+    callKit = "002"
+}
+
 class ExperienceUpgradeFinder: NSObject {
     public let TAG = "[ExperienceUpgradeFinder]"
 
     // Keep these ordered by increasing uniqueId.
     private var allExperienceUpgrades: [ExperienceUpgrade] {
-        var upgrades = [ExperienceUpgrade(uniqueId: "001",
+        var upgrades = [ExperienceUpgrade(uniqueId: ExperienceUpgradeId.videoCalling.rawValue,
                                           title: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_TITLE", comment: "Header for upgrade experience"),
                                           body: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION", comment: "Description of video calling to upgrading (existing) users"),
                                           image: #imageLiteral(resourceName: "introductory_splash_video_calling"))]
 
         if UIDevice.current.supportsCallKit {
-            upgrades.append(ExperienceUpgrade(uniqueId: "002",
+            upgrades.append(ExperienceUpgrade(uniqueId: ExperienceUpgradeId.callKit.rawValue,
                                               title: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_TITLE", comment: "Header for upgrade experience"),
                                               body: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION", comment: "Description of CallKit to upgrading (existing) users"),
                                               image: #imageLiteral(resourceName: "introductory_splash_callkit")))
@@ -23,7 +28,6 @@ class ExperienceUpgradeFinder: NSObject {
 
         return upgrades
     }
-
 
     // MARK: - Instance Methods
 

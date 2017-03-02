@@ -269,7 +269,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
@@ -833,7 +833,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
@@ -852,9 +852,6 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
-
-/* Explanation of the 'CallKit Privacy` preference. */
-"SETTINGS_SECTION_CALL_KIT_PRIVACY_DESCRIPTION" = "If you show the names and phone numbers of incoming callers in CallKit, this information will appear in your phone's call history and will be synced to your iCloud account.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";
@@ -949,14 +946,11 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Update";
 
-/* accessibility label for arrow in slideshow */
-"UPGRADE_CAROUSEL_NEXT_BUTTON" = "Show next";
+/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
 
-/* accessibility label for arrow in slideshow */
-"UPGRADE_CAROUSEL_PREVIOUS_BUTTON" = "Show previous";
-
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lockscreen is easy and private, since by default we anonymize your caller.\n\n Read more in your privacy settings.";
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";

@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Luk";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Har du allerede en Signal konto?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
@@ -59,34 +59,49 @@
 "ATTACHMENT_DOWNLOADING" = "Den vedhæftede fil hentes";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Vælg et ekisterende eller tag et nyt billede du ønsker at sende";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Vedhæftede fil";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Ny vedhæftelse sat i kø for at blive hentet.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Signal kræver adgang til telefonens mikrofon for at fungere korret. Du kan give adgang under Indstillinger >> Privatliv >> Mikrofon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Ringer...";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Ring op";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Intet svar.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lockscreen and see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tilbage";
 
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med Udklipsholder";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil nulstille Signal ved at slette dine meddelser og afmelde dig fra serveren. Signal vil lukke når programmet er færdig med at slette data.";
@@ -95,13 +110,13 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på, du vil slette din bruger?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kan ikke længere sende eller modtage beskeder i denne gruppe.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Link New Device";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Tilknyt ny enhed";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Bekræft";
@@ -110,13 +125,13 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ikke-registreret nummer";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Ingen e-mail tilgængelig.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Intet telefonnummer tilgængeligt.";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Conversation Settings";
+"CONVERSATION_SETTINGS" = "Samtale indstillingér";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
@@ -124,14 +139,17 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Vælg landekode";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Create new group";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u days";
+"DAYS_TIME_AMOUNT" = "%u dage";
 
 /* No comment provided by engineer. */
 "DELIVERED_MESSAGE_TEXT" = "Leveret";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Sidst aktiv: %@";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Linked: %@";
@@ -146,7 +164,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Beskeder forsvinder efter %@";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
@@ -155,16 +173,22 @@
 "DISMISS_BUTTON_TEXT" = "Luk";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "Redigér gruppe";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copy";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Gem";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Share";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Lad os skifte til Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Tryk på knappen for at skrive.";
@@ -179,10 +203,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Ryd op i dine samtaler.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ingen af dine kontakter har Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Hvorfor ikke invitere nogle af dem?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tip: Tilføj en samtale som en påmindelse!";
@@ -233,31 +257,34 @@
 "END_CALL_REPLACED_BY_NEXT" = "Du foretog et andet opkald.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Optaget.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Ubesvaret opkald";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Opkald fejlede.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Beskeden kunne ikke sendes.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal kan ikke forbinde til internettet. Prøv et andet WIFI netværk eller benyt mobildata.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Sever fejl. Prøv igen senere.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Der skete en ukendt fejl.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten benytter ikke Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Modtog en duplikeret besked.";
@@ -308,13 +335,13 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nulstil denne session.";
 
 /* Accessibilty label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Færdigør gruppe opretning";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar ændret.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created.";
+"GROUP_CREATED" = "Gruppe oprettet.";
 
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Opret en ny gruppe";
@@ -340,9 +367,6 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Det var ikke muligt at forlade gruppen";
 
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Group settings";
-
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titel er nu '%@'";
 
@@ -353,7 +377,7 @@
 "GROUP_YOU_LEFT" = "Du har forladt gruppen.";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u hours";
+"HOURS_TIME_AMOUNT" = "%u timer";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Tilslutter...";
@@ -380,25 +404,25 @@
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitér dine venner til Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Søg";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Invitér venner";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
+"KEEP_MESSAGES_DURATION" = "Beskeder forsvinder efter %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
+"KEEP_MESSAGES_FOREVER" = "Beskeder forsvinder ikke.";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Forlad";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Leave Group";
+"LEAVE_GROUP_ACTION" = "Forlad gruppe";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
@@ -410,10 +434,10 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, read all your messages, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Link this device?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Tilføj denne enhed?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Retry";
+"LINK_DEVICE_RESTART" = "Prøv igen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan QR koden vist på skærmen for at linke.";
@@ -422,13 +446,13 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Scan QR kode";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Link New Device";
+"LINK_NEW_DEVICE_TITLE" = "Tilknyt ny enhed";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Linked Devices";
+"LINKED_DEVICES_TITLE" = "Tilknyttede enheder";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
+"LINKING_DEVICE_FAILED_TITLE" = "Tilknytning af ny enhed fejlede";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "List Group Members";
@@ -446,16 +470,19 @@
 "ME_STRING" = "Mig";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Billedbibliotek";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ny besked";
 
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u minutes";
+"MINUTES_TIME_AMOUNT" = "%u minutter";
 
 /* notification title */
 "MISSED_CALL" = "Ubesvaret opkald";
@@ -466,7 +493,7 @@
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal kræver adgang til dit kamera.";
 
 /* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Ubesvaret opkald fra %@.";
@@ -475,13 +502,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Du modtog et opkald fra %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ forsøgte at ringe til dig.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Du ringede til %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Du forsøgte at ringe til %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan ikke forbinde flere enheder.";
@@ -508,10 +535,10 @@
 "NETWORK_STATUS_TEXT" = "Du kan kontrollere din netværksstatus ved at kigge på den farvede bjælke over din indbakke.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Ny samtale med %@";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Vælg nyt gruppebillede";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Ny gruppe";
@@ -555,8 +582,9 @@
 /* No comment provided by engineer. */
 "OK" = "Ok";
 
-/* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
+"OPEN_SETTINGS_BUTTON" = "Indstillingér";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
@@ -646,7 +674,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Prøv igen";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Serveren begrænser i øjeblikket antallet af registreringer. Prøv igen senere.";
+"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registered Number";
@@ -685,7 +713,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
+"REGISTRATION_VERIFY_DEVICE" = "Aktivér denne enhed";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Afvis";
@@ -706,7 +734,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
 /* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
-"SCAN_CODE_ACTION" = "Scan Code";
+"SCAN_CODE_ACTION" = "Scan kode";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
@@ -715,7 +743,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Søg via navn eller nummer";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u seconds";
+"SECONDS_TIME_AMOUNT" = "%u sekunder";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Den sikre session blev nulstillet.";
@@ -733,7 +761,7 @@
 "SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send invitation via SMS til: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invitér en ven via ukrypteret SMS?";
@@ -744,9 +772,6 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Om";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlrapporteringslog";
 
@@ -756,20 +781,20 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avanceret";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling";
-
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
-
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
-
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Ryd historik";
@@ -796,7 +821,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Information";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Invitér dine venner";
 
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
@@ -806,6 +831,12 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Meddelelser";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privatliv";
@@ -817,13 +848,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Aktiver skærmsikkerhed";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Skjuler Signal-forhåndsvisninger i app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skærmsikkerhed";
@@ -838,7 +869,7 @@
 "SHARE_ACTION_MAIL" = "Mail";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Besked";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
@@ -847,16 +878,16 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u day";
+"SINGLE_DAY_TIME_AMOUNT" = "%u dag";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u hour";
+"SINGLE_HOUR_TIME_AMOUNT" = "%u time";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minute";
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u minut";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u week";
+"SINGLE_WEEK_TIME_AMOUNT" = "%u uge";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Hermed en invitation til at installere Signal! Her er et linket til programmet:";
@@ -901,7 +932,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal was unable to unlink your device.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
+"UNNAMED_DEVICE" = "Ikke navngivet enhed";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Afregistrering af Signal mislykkedes.";
@@ -915,29 +946,47 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Opdater";
 
+/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal ...";
+"Upgrading Signal ..." = "Opdatere Signal ...";
 
 /* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploading...";
+"UPLOADING_MESSAGE_TEXT" = "Uploader...";
 
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Skift nummer";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Back";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikationskode";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring til mig i stedet";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Bed om kode igen";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Indsend verifikationskode";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Verificér";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verify Safety Number";
@@ -946,7 +995,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u weeks";
+"WEEKS_TIME_AMOUNT" = "%u uger";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Indbakke";

@@ -364,7 +364,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     }];
 
     if (unseenUpgrades.count > 0) {
-        ExperienceUpgradeViewController *experienceUpgradeViewController = [[ExperienceUpgradeViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
+        ExperienceUpgradesPageViewController *experienceUpgradeViewController = [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
         [self presentViewController:experienceUpgradeViewController animated:YES completion:^{
             [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
                 [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
