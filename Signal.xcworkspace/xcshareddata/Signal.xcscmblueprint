@@ -4,20 +4,20 @@
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "90530B99EB0008E7A50951FDFBE02169118FA649" : 0,
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : 0,
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0,
     "ABB939127996C66F7E852A780552ADEEF03C6B13" : 0,
     "8176314449001F06FB0E5B588C62133EAA2FE911" : 9223372036854775807,
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0,
-    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : 0,
-    "90530B99EB0008E7A50951FDFBE02169118FA649" : 0,
     "D74FB800F048CB516BB4BC70047F7CC676D291B9" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D0F297E7-A82D-4657-A941-96B268F80ABC",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "ABB939127996C66F7E852A780552ADEEF03C6B13" : "SocketRocket\/",
-    "8176314449001F06FB0E5B588C62133EAA2FE911" : "Signal-iOS\/Carthage\/",
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "SignalServiceKit\/",
-    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : "Signal-iOS\/",
     "90530B99EB0008E7A50951FDFBE02169118FA649" : "JSQMessagesViewController\/",
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : "Signal-iOS-5\/",
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "SignalServiceKit\/",
+    "ABB939127996C66F7E852A780552ADEEF03C6B13" : "SocketRocket\/",
+    "8176314449001F06FB0E5B588C62133EAA2FE911" : "Signal-iOS-5\/Carthage\/",
     "D74FB800F048CB516BB4BC70047F7CC676D291B9" : "Signal-iOS\/Pods\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Signal",
@@ -27,7 +27,7 @@
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/SignalProtocolKit.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "01DE8628B025BC69C8C7D8B4612D57BE2C08B62C"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37054CE35CE656680D6FFFA9EE19249E0D149C5E"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:FredericJacobs\/TextSecureKit.git",
