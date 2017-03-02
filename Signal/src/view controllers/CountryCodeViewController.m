@@ -51,7 +51,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     } else if ([countryCode isEqualToString:@"CP"]) {
         // Clipperton Island
         //
-        // This country code should be filtered.
+        // This country code should be filtered - it does not appear to have a calling code.
         return nil;
     } else if ([countryCode isEqualToString:@"DG"]) {
         // Diego Garcia
@@ -61,9 +61,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
         callingCode = @"+262";
     } else if ([countryCode isEqualToString:@"HM"]) {
         // Heard & McDonald Islands
-        //
-        // This country code should be filtered.
-        return nil;
+        callingCode = @"+672";
     } else if ([countryCode isEqualToString:@"XK"]) {
         // Kosovo
         callingCode = @"+383";
