@@ -13,6 +13,12 @@
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
+		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
+		4505C2C01E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
+		4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2C11E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift */; };
+		4505C2C31E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2C11E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift */; };
+		4505C2C51E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */; };
+		4505C2C61E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */; };
 		450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
 		450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */; };
 		450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */; };
@@ -82,9 +88,15 @@
 		45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45AE48521E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */; };
+		45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
+		45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
 		45BFFFA91D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */; };
+		45C0DC1B1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1A1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift */; };
+		45C0DC1C1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1A1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift */; };
+		45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */; };
+		45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */; };
 		45C681B71D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
 		45C681B81D305A580050903A /* OWSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681B61D305A580050903A /* OWSCall.m */; };
 		45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */; };
@@ -612,6 +624,9 @@
 		348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallInterstitialViewController.swift; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExperienceUpgrade.swift; path = ExperienceUpgrades/ExperienceUpgrade.swift; sourceTree = "<group>"; };
+		4505C2C11E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
+		4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
 		450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSExpirationTimerView.h; sourceTree = "<group>"; };
 		450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSExpirationTimerView.m; sourceTree = "<group>"; };
 		450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIncomingMessageCollectionViewCell.h; sourceTree = "<group>"; };
@@ -691,9 +706,12 @@
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
 		45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightableLabel.swift; sourceTree = "<group>"; };
+		45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+featureSupport.swift"; sourceTree = "<group>"; };
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45BFFFA61D898AF0004A12A7 /* OWSStaleNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSStaleNotificationObserver.h; path = Observers/OWSStaleNotificationObserver.h; sourceTree = "<group>"; };
 		45BFFFA71D898AF0004A12A7 /* OWSStaleNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSStaleNotificationObserver.m; path = Observers/OWSStaleNotificationObserver.m; sourceTree = "<group>"; };
+		45C0DC1A1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+frontmostViewController.swift"; sourceTree = "<group>"; };
+		45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
 		45C681B51D305A580050903A /* OWSCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCall.h; sourceTree = "<group>"; };
 		45C681B61D305A580050903A /* OWSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCall.m; sourceTree = "<group>"; };
 		45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCallCollectionViewCell.h; sourceTree = "<group>"; };
@@ -719,7 +737,7 @@
 		45EB32CD1D7465C900735B2E /* OWSLinkedDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkedDevicesTableViewController.h; sourceTree = "<group>"; };
 		45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkedDevicesTableViewController.m; sourceTree = "<group>"; };
 		45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioSession.swift; sourceTree = "<group>"; };
-		45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallAudioSessionTest.swift; path = test/call/CallAudioSessionTest.swift; sourceTree = "<group>"; };
+		45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioSessionTest.swift; sourceTree = "<group>"; };
 		45F170B31E2F0A6A003FC1F2 /* RTCAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCAudioSession.h; sourceTree = "<group>"; };
 		45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
 		45F170CB1E310E22003FC1F2 /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
@@ -1311,6 +1329,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */ = {
+			isa = PBXGroup;
+			children = (
+				4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */,
+				4505C2C11E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift */,
+			);
+			name = ExperienceUpgrades;
+			sourceTree = "<group>";
+		};
 		450DF2061E0DD28D003D14BE /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
@@ -1589,6 +1616,7 @@
 		76EB041118170B33006006FC /* environment */ = {
 			isa = PBXGroup;
 			children = (
+				4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */,
 				45666F731D9BFDB9008FE134 /* Migrations */,
 				B6258B311C29E2E60014138E /* NotificationsManager.h */,
 				B6258B321C29E2E60014138E /* NotificationsManager.m */,
@@ -2033,6 +2061,7 @@
 				FC3196311A08141D0094C78E /* Settings */,
 				FC3196321A08142D0094C78E /* Signals */,
 				FCFD25791A1543D500F4C644 /* Signup */,
+				4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */,
 			);
 			name = "View Controllers";
 			path = "view controllers";
@@ -2212,6 +2241,7 @@
 		B660F6731C29867F00687D6E /* call */ = {
 			isa = PBXGroup;
 			children = (
+				45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */,
 				456F6E2E1E261D1000FD2210 /* PeerConnectionClientTest.swift */,
 				B660F6741C29867F00687D6E /* RecentCallTest.m */,
 			);
@@ -2492,7 +2522,6 @@
 				B660F66C1C29867F00687D6E /* test */,
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
-				45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -2656,6 +2685,9 @@
 				EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */,
 				344F2F651E57A932000D9322 /* UIViewController+OWS.h */,
 				344F2F661E57A932000D9322 /* UIViewController+OWS.m */,
+				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
+				45C0DC1A1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift */,
+				45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -3071,6 +3103,7 @@
 				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
 				76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
 				340757C21E5602D6001F15DD /* AttachmentSharing.m in Sources */,
+				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				76EB05BA18170B33006006FC /* CommitPacket.m in Sources */,
 				344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */,
 				76EB060218170B33006006FC /* InitiatorSessionDescriptor.m in Sources */,
@@ -3093,6 +3126,7 @@
 				4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */,
 				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				76EB05A818170B33006006FC /* RtpSocket.m in Sources */,
+				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
@@ -3160,6 +3194,7 @@
 				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */,
+				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				45C681C61D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
 				E197B61E18BBEC6D00F073E5 /* AudioRouter.m in Sources */,
 				E197B60D18BBEC1A00F073E5 /* AudioSocket.m in Sources */,
@@ -3184,6 +3219,7 @@
 				E197B61118BBEC1A00F073E5 /* AudioProcessor.m in Sources */,
 				FCAC964019FEF99A0046DFC5 /* InboxTableViewCell.m in Sources */,
 				76EB05EA18170B33006006FC /* CallProgress.m in Sources */,
+				4505C2C51E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				FCFA64B41A24F3880007FB87 /* UIColor+OWS.m in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
@@ -3202,6 +3238,7 @@
 				76EB05A218170B33006006FC /* IpEndPoint.m in Sources */,
 				E197B61A18BBEC1A00F073E5 /* SpeexCodec.m in Sources */,
 				76EB05F018170B33006006FC /* PhoneManager.m in Sources */,
+				45C0DC1B1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift in Sources */,
 				452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */,
 				E197B60F18BBEC1A00F073E5 /* EncodedAudioFrame.m in Sources */,
 				34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */,
@@ -3242,6 +3279,7 @@
 				45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				B63761EE19E1FBE8005735D1 /* HttpRequestUtil.m in Sources */,
+				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				76EB05B618170B33006006FC /* MasterSecret.m in Sources */,
@@ -3305,6 +3343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4505C2C31E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				B660F7001C29988E00687D6E /* AppAudioManager.m in Sources */,
 				B660F7011C29988E00687D6E /* AudioRouter.m in Sources */,
 				B660F7021C29988E00687D6E /* AudioPacker.m in Sources */,
@@ -3324,6 +3363,7 @@
 				B660F70C1C29988E00687D6E /* StretchFactorController.m in Sources */,
 				B660F70D1C29988E00687D6E /* AnonymousAudioCallbackHandler.m in Sources */,
 				45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,
+				45C0DC1C1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift in Sources */,
 				45F170BC1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				B660F70E1C29988E00687D6E /* RemoteIOAudio.m in Sources */,
 				B660F70F1C29988E00687D6E /* RemoteIOBufferListWrapper.m in Sources */,
@@ -3346,6 +3386,7 @@
 				B660F71D1C29988E00687D6E /* LocalizableText.m in Sources */,
 				B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */,
 				B660F7201C29988E00687D6E /* Release.m in Sources */,
+				45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */,
 				B660F7221C29988E00687D6E /* VersionMigrations.m in Sources */,
 				B660F7231C29988E00687D6E /* DnsManager.m in Sources */,
@@ -3522,11 +3563,14 @@
 				B660F6CD1C29868000687D6E /* UdpSocketTest.m in Sources */,
 				B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
+				45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
+				4505C2C01E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				B660F6C61C29868000687D6E /* MasterSecretTest.m in Sources */,
 				B660F6D91C29868000687D6E /* CyclicalBufferTest.m in Sources */,
 				B660F6DC1C29868000687D6E /* FutureUtilTest.m in Sources */,
 				450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
 				B660F6CA1C29868000687D6E /* LowLatencyConnectorTest.m in Sources */,
+				4505C2C61E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

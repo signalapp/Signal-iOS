@@ -49,4 +49,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)addBorderWithColor:(UIColor *)color;
 - (void)addRedBorder;
 
+// Add red border to self, and all subviews recursively.
+- (void)addRedBorderRecursively;
+
 @end

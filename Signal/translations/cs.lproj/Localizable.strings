@@ -68,22 +68,37 @@
 "ATTACHMENT_QUEUED" = "Nová příloha byla přidána do fronty k získání.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Aby mohl Signal správně fungovat, vyžadue přístup k vašemu mikrofonu. Oprávnění můžete udělit v aplikaci Nastavení >> Soukromí >> Mikrofon >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Volám...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Volat";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Žádná odpověď.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lockscreen and see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Zavolat zpět";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnat se schránkou";
@@ -124,6 +139,9 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Vyberte kód země";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Create new group";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dnů";
 
@@ -157,8 +175,14 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Upravit skupinu";
 
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copy";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Uložit";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Share";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Čau,\n\nPoslední dobou jsem začal na svém iPhonu používat Signal, aby moje konverzace zůstaly soukromé. Byl bych rád, kdyby sis ho také nainstaloval, takže by naše zprávy a hovory nemohl sledovat nikdo nepovolaný.\n\nSignal je dostupný pro iPhony a Android. Získáš ho zde: %@\n\nSignal funguje stejně, jako tvá stávající aplikace na posílání zpráv. Můžeme posílat obrázky, videa, pořádat hovory a vytvářet skupinové chaty. A nejlepší na tom je, že nidko iný to nemůže vidět, ani lidé, co vyvíjí Signal!\n\nO Open Whisper Systems, lidech, kteří vyvíjí Signal, se můžeš dočíst tady %@";
@@ -233,16 +257,19 @@
 "END_CALL_REPLACED_BY_NEXT" = "Uskutečnil jste jiný hovor.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Obsazeno.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Zmeškaný hovor";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Hovor selhal.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepodařilo se odeslat zprávu.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal se nemohl připojit k internetu. Zkuste jinou bezdrátovou síť, nebo mobilní data.";
@@ -254,10 +281,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Chyba serveru. Prosím, zkuste to později.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo k neznámé chybě.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt není uživatelem Signalu.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Přijata duplikovaná zpráva.";
@@ -340,9 +367,6 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Nepodařilo se opustit skupinu";
 
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Nastavení skupiny";
-
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titulek je nyní '%@'.";
 
@@ -368,7 +392,7 @@
 "IN_CALL_TALKING" = "Zabezpečeno";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Hovor skončil.";
 
 /* notification body */
 "INCOMING_CALL" = "Příchozí hovor";
@@ -377,13 +401,13 @@
 "INCOMING_CALL_FROM" = "Příchozí hovor od %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Nekompletní příchozí hovor od";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozvat přátele do Signalu";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Hledat";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Pozvat přátele";
@@ -454,6 +478,9 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nová zpráva";
 
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minut";
 
@@ -462,7 +489,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal při video hovorech potřebuje přístup k vašemu fotoaparátu. Toto oprávnění můžete udělit v aplikaci Nastavení >> Soukromí >> Fotoaparát >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -475,13 +502,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Přijali jste hovor od %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ se vám pokusil zavolat.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Volali jste %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Pokusil(a) jste se zavolat %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nemůžete zpárovat více zařízení.";
@@ -508,7 +535,7 @@
 "NETWORK_STATUS_TEXT" = "Zkontrojuj připojení k internetu ve stavovém řádku nad přichozími zprávami.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nová konverzace s %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Nastavit fotku skupiny";
@@ -523,7 +550,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Přidat osoby";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Najít kontakty pomocí telefonního čísla";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Nepodařilo se odeslat zprávu pro %@.";
@@ -555,7 +582,8 @@
 /* No comment provided by engineer. */
 "OK" = "Ok";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Nastavení";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -568,7 +596,7 @@
 "OUTGOING_CALL" = "Odchozí hovor";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Nekompletní odchozí hovor";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tohle nevypadá jako vaše bezpečnostní číslo s %@. Ověřujete správný kontakt?";
@@ -646,7 +674,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Zkusit znovu";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Server momentálně omezuje frekvenci registrací. Zkuste to později prosím.";
+"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Reggistrované číslo";
@@ -733,7 +761,7 @@
 "SEND_INVITE_SUCCESS" = "Pozval(a) jste vašeho přítele, aby začal používat Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Odeslat pozvánku pomocí SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Pozvat kamaráda přes zabezpečenou SMS?";
@@ -744,9 +772,6 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaci";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Zapnout Debug Log";
 
@@ -756,20 +781,20 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Rozšířené";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling";
-
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
-
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
-
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Vyžaduje vaše povolení před komunikací s někým, kdo má nové bezpečnostní číslo, typicky po reinstalaci Signalu.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Vyžadovat povolení při změně";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Vymazat historii";
@@ -807,6 +832,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Upozornění";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Soukromí";
 
@@ -817,13 +848,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Ochrana obrazovky";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Zabrání náhledům ze Signalu, aby se objevily v přepínači aplikací.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Volání";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Zabezpečení obrazovky";
@@ -877,7 +908,7 @@
 "TXT_DELETE_TITLE" = "Odstranit";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Nepodařilo se zavolat.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Zrušit archivaci";
@@ -915,29 +946,47 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Aktualizovat";
 
+/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Aktualizace Signalu...";
 
 /* message footer while attachment is uploading */
 "UPLOADING_MESSAGE_TEXT" = "Nahrávání...";
 
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Změnit číslo";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Back";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Ověřovací kód";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Místo toho mi zavolejte";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Znovu zzažádat o kód";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Odeslat ověřovací kód";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Ověřit";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Ověřit bezpečnostní číslo";

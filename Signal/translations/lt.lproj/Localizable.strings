@@ -82,8 +82,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lockscreen and see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the names and phone numbers of incoming callers if you change your settings.\n\nSee the privacy settings for details.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne dabar";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Rodyti privatumo nustatymus";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Perskambinti";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal naudotojas";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Palyginti su iškarpine";
@@ -124,6 +139,9 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Pasirinkite valstybės kodą";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Sukurti naują grupę";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dienų";
 
@@ -157,8 +175,14 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Taisyti grupę";
 
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Kopijuoti";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Įrašyti";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Share";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Labas,\n\nPaskutiniu metu, tam kad savo iPhone telefone išlaikyčiau pokalbius privačius, aš naudoju Signal. Norėčiau, kad ir tu įsidiegtum šią programėlę, taigi, tokiu būdu mes galėtume būti tikri, kad tik tu ir aš galime skaityti savo žinutes ir girdėti savo skambučius.\n\nSignal yra prieinama iPhone ir Android telefonams. Atsisiųsk ją iš čia: %@\n\nSignal veikia panašiai kaip tavo dabartinė susirašinėjimo programėlė. Mes galime siųsti paveikslus ir vaizdo įrašus, skambinti ir pradėti grupės pokalbius. Geriausia yra tai, kad niekas negali to pamatyti, netgi žmonės, kurie sukūrė Signal!\n\nGali daugiau paskaityti apie Open Whisper Systems (žmones, kurie sukūrė Signal) čia: %@";
@@ -243,6 +267,9 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepavyko išsiųsti žinutę.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Prašome pabandyti iš kito bevielio (WiFi) tinklo arba naudoti mobiliuosius duomenis.";
@@ -339,9 +366,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Nepavyko išeiti iš grupės";
-
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Grupės nustatymai";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Dabar pavadinimas yra \"%@\". ";
@@ -454,6 +478,9 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nauja žinutė";
 
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutes";
 
@@ -555,7 +582,8 @@
 /* No comment provided by engineer. */
 "OK" = "Gerai";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Nustatymai";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -646,7 +674,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Bandyti dar kartą";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "The server is currently rate-limiting signups, please try again later.";
+"REGISTER_RATE_LIMITING_BODY" = "Jūs bandėte pernelyg dažnai. Prieš bandydami dar kartą, palaukite minutėlę.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registered Number";
@@ -744,9 +772,6 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Apie";
 
-/* Short table cell label */
-"SETTINGS_ADVANCED_CALLKIT_TITLE" = "Naudoti CallKit";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Įjungti derinimo žurnalą";
 
@@ -756,20 +781,20 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Išplėstiniai";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling (Beta)";
-
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Nepavyko atnaujinti jūsų nuostatų.";
-
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Klaida";
-
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Reikalauja jūsų patvirtinimo, prieš susisiekiant su kuo nors, kas turi naują saugumo numerį, dažniausiai, dėl Signal įdiegimo iš naujo.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Nustatymai";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Išvalyti istorijos žurnalus";
@@ -807,6 +832,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Pranešimai";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privatumas";
 
@@ -817,10 +848,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Įjungti ekrano saugumą";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleidžia Signal peržiūroms atsirasti programėlių perjungiklyje.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit leidžia atsiliepti į skambučius tiesiai iš jūsų užrakinto ekrano. Turėkite omenyje, kad naudojant CallKit, Apple sinchronizuoja kai kuriuos skambučio metaduomenis į jūsų iCloud paskyrą.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";
@@ -915,29 +946,47 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Atnaujinti";
 
+/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Sveiki, saugūs vaizdo skambučiai!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Naujinama Signal ...";
 
 /* message footer while attachment is uploading */
 "UPLOADING_MESSAGE_TEXT" = "Įkeliama...";
 
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Pakeisti numerį";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Atgal";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Patvirtinimo kodas";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIAVOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Dar kartą užklausti kodą";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pateikti patvirtinimo kodą";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Patvirtinti";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Patvirtinti saugumo numerį";

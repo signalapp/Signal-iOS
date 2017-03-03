@@ -39,8 +39,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic) long inboxCount;
 @property (nonatomic, retain) UISegmentedControl *segmentedControl;
 @property (nonatomic, strong) id previewingContext;
+
+// Dependencies
+
 @property (nonatomic, readonly, strong) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) ExperienceUpgradeFinder *experienceUpgradeFinder;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
 
@@ -78,6 +82,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     _contactsManager = [Environment getCurrent].contactsManager;
     _messagesManager = [TSMessagesManager sharedManager];
     _messageSender = [Environment getCurrent].messageSender;
+    _experienceUpgradeFinder = [ExperienceUpgradeFinder new];
 }
 
 - (void)awakeFromNib
@@ -304,9 +309,17 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.newlyRegisteredUser) {
+        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
+        }];
+
         [self didAppearForNewlyRegisteredUser];
+    } else {
+        [self displayAnyUnseenUpgradeExperience];
     }
 }
+
+#pragma mark - startup
 
 - (void)didAppearForNewlyRegisteredUser
 {
@@ -338,6 +351,25 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
             break;
         }
+    }
+}
+
+- (void)displayAnyUnseenUpgradeExperience
+{
+    AssertIsOnMainThread();
+
+    __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
+    [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        unseenUpgrades = [self.experienceUpgradeFinder allUnseenWithTransaction:transaction];
+    }];
+
+    if (unseenUpgrades.count > 0) {
+        ExperienceUpgradesPageViewController *experienceUpgradeViewController = [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
+        [self presentViewController:experienceUpgradeViewController animated:YES completion:^{
+            [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+                [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
+            }];
+        }];
     }
 }
 

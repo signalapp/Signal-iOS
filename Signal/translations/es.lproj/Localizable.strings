@@ -82,8 +82,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Puedes ver los nombres y números de las llamadas entrantes directamente en la pantalla bloqueada si cambias tu configuración.\n\nPara más detalles, mira la configuración de privacidad.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Puedes ver los nombres y números de las llamadas entrantes si cambias tu configuración.\n\nPara más detalles, mira la configuración de privacidad.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ahora no";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostrar configuración de privacidad";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Devolver llamada";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Usuario de Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparar con portapapeles";
@@ -124,6 +139,9 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Seleccionar código de país";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Crear grupo nuevo";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u días";
 
@@ -157,11 +175,17 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editar grupo";
 
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copiar";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Guardar";
 
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Compartir";
+
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hola:\n\nÚltimamente uso Signal para tener chats privados desde mi iPhone. Me gustaría que te lo instalases y así estar seguros que solo tú y yo podemos leer nuestros mensajes.\n\nSignal está disponible para iPhone y Android. Consíguelo aquí: %@\n\nSignal funciona como tu aplicación de mensajes de toda la vida. Podemos enviarnos fotos y videos, hacer llamadas y crear chats de grupo. Lo mejor es que nadie puede ver el contenido de nuestra conversación ¡ni siquiera los creadores de Signal!\n\nPuedes leer más sobre Open Whisper Systems (los creadores de Signal) aquí: %@";
+"EMAIL_INVITE_BODY" = "Hola:\n\nÚltimamente uso Signal para tener chats privados desde mi iPhone. Me gustaría que también lo instalases y así estar seguros que solo tú y yo podemos leer nuestros mensajes.\n\nSignal está disponible para iPhone y Android. Consíguelo aquí: %@\n\nSignal funciona como tu aplicación de mensajes de toda la vida. Podemos enviarnos fotos y videos, hacer llamadas y crear chats de grupo. Lo mejor es que nadie puede ver el contenido de nuestra conversación ¡ni siquiera los desarrolladores de Signal!\n\nPuedes leer más sobre Open Whisper Systems (los desarrolladores de Signal) aquí: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "¿Usamos Signal para chatear de forma segura?";
@@ -243,6 +267,9 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Fallo al enviar el mensaje.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "No se puede enviar debido a datos privados sin actualizar.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba a conectarte desde otra red WiFi o usa la red de datos de tu operador.";
@@ -340,9 +367,6 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Fallo al abandonar grupo";
 
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Ajustes del grupo";
-
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Nuevo nombre del grupo: %@.";
 
@@ -371,13 +395,13 @@
 "IN_CALL_TERMINATED" = "llamada finalizada.";
 
 /* notification body */
-"INCOMING_CALL" = "Llamada entrante";
+"INCOMING_CALL" = "Llamada recibida";
 
 /* notification body */
 "INCOMING_CALL_FROM" = "Llamada de %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Llamada cancelada de";
+"INCOMING_INCOMPLETE_CALL" = "Llamada recibida sin responder de";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitar contactos";
@@ -453,6 +477,9 @@
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toque aquí para ver preferencias";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutos";
@@ -555,7 +582,8 @@
 /* No comment provided by engineer. */
 "OK" = "De acuerdo";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Ajustes";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -565,10 +593,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha fijado la caducidad de mensajes a %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Llamada saliente";
+"OUTGOING_CALL" = "Llamada realizada";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Llamada cancelada";
+"OUTGOING_INCOMPLETE_CALL" = "Llamada realizada sin respuesta";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Esas no son las cifras de seguridad del chat con %@. ¿Estás identificando el contacto correcto?";
@@ -646,7 +674,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Intentar de nuevo";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "En este momento el servidor está limitando los registros, por favor, inténtalo de nuevo más tarde.";
+"REGISTER_RATE_LIMITING_BODY" = "Lo ha intentado muy seguido. Por favor espere un minuto antes de intentar de nuevo.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Número registrado";
@@ -744,9 +772,6 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Acerca de Signal";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Aviso de llamada CallKit";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activar registro de depuración";
 
@@ -756,20 +781,20 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Activar vídeollamadas";
-
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "No se han podido actualizar tus ajustes.";
-
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
-
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal necesita tu confirmación antes de comunicarse con un contacto cuyas cifras de seguridad han cambiado. Esto suele ocurrir al reinstalar Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Aprobar cambio de cifras";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Configuración";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Retransmitir siempre las llamadas";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransmitir todas las llamadas a través de un servidor de Signal para evitar revelar la dirección IP al contacto. Permitirlo reducirá la calidad de la llamada.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Borrar historial";
@@ -807,6 +832,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notificaciones";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integración con llamadas en iOS";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privacidad";
 
@@ -820,7 +851,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Evita que aparezcan las capturas de pantalla en el gestor de aplicaciones.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit permite recibir notificaciones de (vídeo)llamadas de Signal a pantalla completa. ATENCIÓN: Al usar CallKit Apple almacena la lista de llamadas de Signal en tu cuenta de iCloud.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integración de llamadas de iOS muestra las de Signal en tu pantalla bloqueada y en el historial de llamadas del sistema. Si iCloud está activado, el historial de llamadas será compartido con Apple. Puedes de manera opcional mostrar el nombre y número del contacto.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Llamadas";
@@ -915,14 +946,29 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Actualizar";
 
+/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Para Responder, sólo Desliza";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Ahora Signal soporta video llamadas seguras. Simplemente inicia una llamada normal, toca el botón de cámara y saluda.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Hola Video llamadas Seguras!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Actualizando Signal...";
 
 /* message footer while attachment is uploading */
 "UPLOADING_MESSAGE_TEXT" = "Cargando...";
 
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Cambiar número";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Regresar";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Código de verificación";
@@ -931,13 +977,16 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Recibir llamada con código";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código nuevamente";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código de nuevo";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar código";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Introduce el código recibido";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verificando: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Comprobar cifras de seguridad";

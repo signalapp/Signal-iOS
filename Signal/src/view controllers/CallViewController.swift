@@ -797,17 +797,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
-            let window = UIApplication.shared.keyWindow
-            var fromViewController = window!.rootViewController
-            let storyboard = fromViewController?.storyboard
-            while fromViewController?.presentedViewController != nil {
-                fromViewController = fromViewController?.presentedViewController
-            }
+            let fromViewController = UIApplication.shared.frontmostViewController
             assert(fromViewController != nil)
-            assert(storyboard != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
-            let navigationController = storyboard?.instantiateViewController(withIdentifier:"SettingsNavigationController") as! UINavigationController
+            let navigationController = UIStoryboard.main.instantiateViewController(withIdentifier: "SettingsNavigationController") as! UINavigationController
             assert(navigationController.viewControllers.count == 1)
             let privacySettingsViewController = PrivacySettingsTableViewController()
             navigationController.pushViewController(privacySettingsViewController, animated:false)
@@ -910,7 +904,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             return
         } else if !ignoreNag &&
             call.direction == .incoming &&
-            supportsCallKit() &&
+            UIDevice.current.supportsCallKit &&
             (!Environment.getCurrent().preferences.isCallKitEnabled() ||
                 Environment.getCurrent().preferences.isCallKitPrivacyEnabled()) {
 
@@ -948,13 +942,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             self.dismiss(animated: false, completion:completion)
         }
     }
-
-    // MARK: - Util
-
-    private func supportsCallKit() -> Bool {
-        return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
-    }
-
+    
     // MARK: - CallServiceObserver
 
     internal func didUpdateCall(call: SignalCall?) {
