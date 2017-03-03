@@ -78,8 +78,11 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
         if ([object isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
 
+            // On new messages authorId should be set on all incoming messages, but there was a time when authorId was
+            // only set on incoming group messages.
+            NSObject *authorIdOrNull = incomingMessage.authorId ? incomingMessage.authorId : [NSNull null];
             [dict setObject:@(incomingMessage.timestamp) forKey:OWSIncomingMessageFinderColumnTimestamp];
-            [dict setObject:incomingMessage.authorId forKey:OWSIncomingMessageFinderColumnSourceId];
+            [dict setObject:authorIdOrNull forKey:OWSIncomingMessageFinderColumnSourceId];
             [dict setObject:@(incomingMessage.sourceDeviceId) forKey:OWSIncomingMessageFinderColumnSourceDeviceId];
         }
     };
