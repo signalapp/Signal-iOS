@@ -399,7 +399,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [recipient removeWithTransaction:transaction];
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread transaction:transaction]
+        [[TSInfoMessage userNotRegisteredMessageInThread:thread]
             saveWithTransaction:transaction];
     }];
 }
