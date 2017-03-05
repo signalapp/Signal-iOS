@@ -109,17 +109,14 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     }
 
     // Try to reuse the existing socket (if any) if it is in a valid state.
-    SRWebSocket *socket = self.websocket;
-    if (socket) {
-        switch ([socket readyState]) {
+    if (self.websocket) {
+        switch ([self.websocket readyState]) {
             case SR_OPEN:
                 DDLogVerbose(@"WebSocket already open on connection request");
-                OWSAssert(self.status == kSocketStatusOpen);
                 self.status = kSocketStatusOpen;
                 return;
             case SR_CONNECTING:
                 DDLogVerbose(@"WebSocket is already connecting");
-                OWSAssert(self.status == kSocketStatusConnecting);
                 self.status = kSocketStatusConnecting;
                 return;
             default:
@@ -127,22 +124,117 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         }
     }
 
-    // Discard the old socket which is already closed or is closing.
-    [self closeWebSocket];
-
-    OWSAssert(self.status == kSocketStatusClosed);
+    // If socket is not already open or connecting, connect now.
     self.status = kSocketStatusConnecting;
+}
 
-    // Create a new web socket.
-    NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
-    NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
+- (NSString *)stringFromSocketStatus:(SocketStatus)status {
+    
+    // If this status update is _not_ redundant,
+    // update class state to reflect the new status.
+    switch (status) {
+        case kSocketStatusClosed:
+            return @"Closed";
+        case kSocketStatusOpen:
+            return @"Open";
+        case kSocketStatusConnecting:
+            return @"Connecting";
+    }
+}
 
-    socket = [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
-    socket.delegate = self;
+// We need to keep websocket state and class state tightly aligned.
+//
+// Sometimes we'll need to update class state to reflect changes
+// in socket state; sometimes we'll need to update socket state
+// and class state to reflect changes in app state.
+//
+// We learn about changes to socket state through websocket
+// delegate methods like [webSocketDidOpen:], [didFailWithError:...]
+// and [didCloseWithCode:...].  These delegate methods are sometimes
+// invoked _after_ web socket state changes, so we sometimes learn
+// about changes to socket state in [ensureWebsocket].  Put another way,
+// it's not safe to assume we'll learn of changes to websocket state
+// in the websocket delegate methods.
+//
+// Therefore, we use the [setStatus:] setter to ensure alignment between
+// websocket state and class state.
+- (void)setStatus:(SocketStatus)status {
+    
+    // If this status update is redundant, verify that
+    // class state and socket state are aligned.
+    if (_status == status) {
+        switch (status) {
+            case kSocketStatusClosed:
+                OWSAssert(!self.websocket);
+                break;
+            case kSocketStatusOpen:
+                OWSAssert(self.websocket);
+                OWSAssert([self.websocket readyState] == SR_OPEN);
+                break;
+            case kSocketStatusConnecting:
+                OWSAssert(self.websocket);
+                OWSAssert([self.websocket readyState] == SR_CONNECTING);
+                break;
+        }
+        return;
+    }
+    
+    DDLogWarn(@"%@ Socket status change: %@ -> %@",
+              self.tag,
+              [self stringFromSocketStatus:_status],
+              [self stringFromSocketStatus:status]);
+    
+    // If this status update is _not_ redundant,
+    // update class state to reflect the new status.
+    switch (status) {
+        case kSocketStatusClosed: {
+            [self resetSocket];
+            break;
+        }
+        case kSocketStatusOpen: {
+            OWSAssert(self.status == kSocketStatusConnecting);
 
-    [self setWebsocket:socket];
-    [socket open];
+            self.pingTimer = [NSTimer timerWithTimeInterval:kWebSocketHeartBeat
+                                                     target:self
+                                                   selector:@selector(webSocketHeartBeat)
+                                                   userInfo:nil
+                                                    repeats:YES];
+            
+            // Additionally, we want the ping timer to work in the background too.
+            [[NSRunLoop mainRunLoop] addTimer:self.pingTimer forMode:NSDefaultRunLoopMode];
+            
+            [self.reconnectTimer invalidate];
+            self.reconnectTimer = nil;
+            self.didConnectBg   = YES;
+            break;
+        }
+        case kSocketStatusConnecting: {
+            // Discard the old socket which is already closed or is closing.
+            [self resetSocket];
+            
+            // Create a new web socket.
+            NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
+            NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
+            
+            SRWebSocket *socket = [[SRWebSocket alloc] initWithURLRequest:request
+                                                           securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
+            socket.delegate = self;
+            
+            [self setWebsocket:socket];
+            [socket open];
+        }
+    }
+
+    _status = status;
+}
+
+- (void)resetSocket {
+    self.websocket.delegate = nil;
+    [self.websocket close];
+    self.websocket = nil;
+    [self.pingTimer invalidate];
+    self.pingTimer = nil;
 }
 
 + (void)resignActivity {
@@ -159,11 +251,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         DDLogWarn(@"%@ closeWebSocket.", self.tag);
     }
 
-    [self.websocket close];
-    self.websocket.delegate = nil;
-    self.websocket = nil;
-    [self.pingTimer invalidate];
-    self.pingTimer = nil;
     self.status = kSocketStatusClosed;
 }
 
@@ -172,20 +259,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     OWSAssert([NSThread isMainThread]);
     
-    self.pingTimer = [NSTimer timerWithTimeInterval:kWebSocketHeartBeat
-                                             target:self
-                                           selector:@selector(webSocketHeartBeat)
-                                           userInfo:nil
-                                            repeats:YES];
-
-    // Additionally, we want the ping timer to work in the background too.
-    [[NSRunLoop mainRunLoop] addTimer:self.pingTimer forMode:NSDefaultRunLoopMode];
-
-    OWSAssert(self.status == kSocketStatusConnecting);
     self.status = kSocketStatusOpen;
-    [self.reconnectTimer invalidate];
-    self.reconnectTimer = nil;
-    self.didConnectBg   = YES;
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
