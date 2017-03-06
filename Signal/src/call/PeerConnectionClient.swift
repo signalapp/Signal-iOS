@@ -108,6 +108,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // Video
 
+    private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
@@ -192,7 +193,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
+        self.videoCaptureSession = videoSource.captureSession
         videoSource.useBackCamera = false
+
         let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
         self.localVideoTrack = localVideoTrack
 
@@ -220,8 +223,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.error("\(self.TAG)) trying to \(action) videoTrack which doesn't exist")
                 return
             }
+            guard let videoCaptureSession = self.videoCaptureSession else {
+                Logger.error("\(self.TAG) videoCaptureSession was unexpectedly nil")
+                assertionFailure()
+                return
+            }
 
             localVideoTrack.isEnabled = enabled
+
+            if enabled {
+                Logger.debug("\(self.TAG) in \(#function) starting videoCaptureSession")
+                videoCaptureSession.startRunning()
+            } else {
+                Logger.debug("\(self.TAG) in \(#function) stopping videoCaptureSession")
+                videoCaptureSession.stopRunning()
+            }
 
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self, weak localVideoTrack] in
