@@ -525,8 +525,8 @@ typedef enum : NSUInteger {
         [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
         
         self.navigationBarSubtitleLabel = [UILabel new];
-        self.navigationBarSubtitleLabel.textColor = [UIColor colorWithWhite:0.85f alpha:1.f];
-        self.navigationBarSubtitleLabel.font = [UIFont ows_boldFontWithSize:9.f];
+        self.navigationBarSubtitleLabel.textColor = [UIColor colorWithWhite:0.9f alpha:1.f];
+        self.navigationBarSubtitleLabel.font = [UIFont ows_regularFontWithSize:9.f];
         self.navigationBarSubtitleLabel.text = NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
                                                                  @"The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation.");
         [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
@@ -550,22 +550,22 @@ typedef enum : NSUInteger {
     if (disappearingMessagesConfiguration.isEnabled) {
         rightBarButtonItemCount++;
     }
-    CGFloat rightBarButtonSize = 0;
+    CGFloat barButtonSize = 0;
     switch (rightBarButtonItemCount) {
         case 0:
-            rightBarButtonSize = 65;
+            barButtonSize = 70;
             break;
         case 1:
-            rightBarButtonSize = 100;
+            barButtonSize = 105;
             break;
         default:
             OWSAssert(0);
             // In production, fall through to the largest defined case.
         case 2:
-            rightBarButtonSize = 145;
+            barButtonSize = 150;
             break;
     }
-    CGFloat maxTitleViewWidth = kShortScreenDimension - rightBarButtonSize;
+    CGFloat maxTitleViewWidth = kShortScreenDimension - barButtonSize;
     const CGFloat titleViewWidth = MIN(maxTitleViewWidth,
                                        MAX(self.navigationBarTitleLabel.frame.size.width,
                                            self.navigationBarSubtitleLabel.frame.size.width));
