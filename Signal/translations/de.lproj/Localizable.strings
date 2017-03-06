@@ -83,10 +83,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Durch Ändern deiner Einstellungen kannst du Anrufe direkt aus dem Sperrbildschirm heraus beantworten, und die Namen und Rufnummern eingehender Anrufe sehen.\n\nSiehe die Datenschutzeinstelllungen für Details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Durch Ändern deiner Einstellungen kannst du Anrufe direkt aus dem Sperrbildschirm heraus beantworten sowie Name und Rufnummer für eingehende Anrufe sehen.\n\nSiehe die Datenschutzeinstelllungen für Details.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Durch Ändern deiner Einstellungen kannst du die Namen und Rufnummern eingehender Anrufe sehen.\n\nSiehe die Datenschutzeinstellungen für Details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Durch Ändern deiner Einstellungen kannst du Name und Rufnummer für eingehende Anrufe sehen.\n\nSiehe die Datenschutzeinstellungen für Details.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Nicht jetzt";

@@ -53,7 +53,7 @@
 "ATTACHMENT" = "Privitak";
 
 /* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo, dotaknite za pokušaj.";
+"ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo, dodirni za pokušaj.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Preuzimanje privitka";
@@ -83,10 +83,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Možete odgovoriti na pozive direktno sa zaključanog zaslona i vidjeti imena i telefonske brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nDetaljnije u postavkama privatnosti.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Možete odgovarati na pozive direktno sa zaključanog zaslona i vidjeti imena i telefonske brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nVidi postavke privatnosti za detalje.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Možete vidjeti imena i brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nDetaljnije u postavkama privatnosti.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Možete vidjeti imena i brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nVidi postavke privatnosti za detalje.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne sada";
@@ -191,7 +191,7 @@
 "EMAIL_INVITE_SUBJECT" = "Prebacimo se na Signal";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Dotaknite gumb za sastavljanje poruke.";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Dodirni gumb za sastavljanje poruke.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Započnite vaš prvi razgovor na Signalu!";
@@ -293,7 +293,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primaoca nije validan.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka je van sinkronizacije. Dotaknite za resetovanje sigurnosne sesije.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka je van sinkronizacije. Dodirni za resetovanje sigurnosne sesije.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Primljena poruka nije kompatibilna s ovom verzijom.";
@@ -308,7 +308,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dotaknite za verifikaciju.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirni za verifikaciju.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Pažnja!";
@@ -326,7 +326,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Morate prihvatiti novi sigurnosni broj prije mogućnosti slanja.";
 
 /* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dotaknite za novi pokušaj.";
+"FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dodirni za novi pokušaj.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja nije uspjela!";
@@ -479,7 +479,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Dotaknite ovdje za postavke";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Dodirni ovdje za više opcija";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuta";

@@ -53,7 +53,7 @@
 "ATTACHMENT" = "Adjunto";
 
 /* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar el adjunto, pulsa para reintentar.";
+"ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar el adjunto, toca para reintentar.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Descargando adjunto";
@@ -83,10 +83,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Puedes responder llamadas directamente con la pantalla bloqueada y ver los nombres y números de las llamadas recibidas si modificas los ajustes.\n\nPara más detalles, comprueba los ajustes de privacidad de Signal.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Puedes responder llamadas desde la pantalla bloqueada y ver el nombre y número de teléfono del contacto si modificas los ajustes.\n\nPara más detalles, comprueba los ajustes de Signal.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Puedes ver los nombres y números de las llamadas recibidas si modificas los ajustes.\n\nPara más detalles, comprueba los ajustes de privacidad de Signal.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Puedes ver el nombre y número de teléfono de las llamadas recibidas si modificas los ajustes.\n\nPara más detalles, comprueba los ajustes de Signal.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ahora no";
@@ -191,7 +191,7 @@
 "EMAIL_INVITE_SUBJECT" = "¿Usamos Signal para chatear de forma segura?";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Pulsa en el símbolo del lápiz para comenzar un chat.";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Toca sobre el símbolo del lápiz para comenzar un chat.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "¡Escribe tu primer mensaje con Signal!";
@@ -293,7 +293,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del contacto no es válida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje cifrado con clave desincronizada. Pulsa para reiniciar la sesión segura.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje cifrado con clave desincronizada. Toca para reiniciar la sesión segura.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Mensaje recibido no compatible con esta versión.";
@@ -308,7 +308,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ocurrió un fallo desconocido.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Pulsa para comprobar.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Toca para comprobar.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "¡Recórcholis!";
@@ -326,7 +326,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Tienes que aceptar las nuevas cifras de seguridad para poder enviar.";
 
 /* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Fallo al enviar. Pulsa para reintentar.";
+"FAILED_SENDING_TEXT" = "Fallo al enviar. Toca para reintentar.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "¡Fallo al comprobar las cifras de seguridad!";
@@ -479,7 +479,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Pulsa aquí para ver los ajustes";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca aquí para ir a ajustes";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutos";
@@ -890,7 +890,7 @@
 "SINGLE_WEEK_TIME_AMOUNT" = "%u semana";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Pulsa aquí:";
+"SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Toca aquí:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Las cifras de seguridad del chat con %@ han sido comprobadas. Puedes estar seguro que vuestro chat es privado.";
@@ -956,7 +956,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Desliza para responder";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Ahora Signal permite hacer vídeollamadas seguras. Inicia simplemente una llamada de Signal, pulsa el botón de la cámara y saluda.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Ahora Signal permite hacer vídeollamadas seguras. Inicia simplemente una llamada de Signal, toca el botón de la cámara y saluda.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Hola vídeollamadas seguras!";

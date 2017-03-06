@@ -83,10 +83,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "V nastavitvah lahko omogočite odgovarjanje na klice direktno iz zaslona za zaklepanje. Tam bosta vidna tudi ime klicočega in njegova številka.\n\nZa podrobnosti poglejte v nastavitve zasebnosti.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "S tem boste lahko odgovarjali na klice neposredno z zaslona za zaklepanje, vidna bosta tudi ime in številka klicočega.\n\n Za podrobnosti poglejte v nastavitve zasebnosti.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "V nastavitvah lahko omogočite prikaz imena in številke klicočih.\n\nZa podrobnosti poglejte v nastavitve zasebnosti.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "S tem boste omogočili vidnost imena in številke klicočega.\n\nZa podrobnosti poglejte v nastavitve zasebnosti.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne zdaj";
