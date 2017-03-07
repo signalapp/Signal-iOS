@@ -691,7 +691,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         if callState == .connected {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
-                callDurationTimer = Timer.scheduledTimer(timeInterval: kDurationUpdateFrequencySeconds,
+                callDurationTimer = Timer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
                                                          target:self,
                                                          selector:#selector(updateCallDuration),
                                                          userInfo:nil,
