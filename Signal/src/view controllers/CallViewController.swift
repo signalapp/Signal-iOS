@@ -123,13 +123,15 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
+        UIDevice.current.isProximityMonitoringEnabled = false
+
         callDurationTimer?.invalidate()
         callDurationTimer = nil
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        UIDevice.current.isProximityMonitoringEnabled = true
         updateCallUI(callState: call.state)
     }
 
