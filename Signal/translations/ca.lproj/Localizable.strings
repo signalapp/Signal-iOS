@@ -403,6 +403,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Telefonada incompleta de";
 
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Signal";
 
@@ -946,20 +949,20 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Actualitza";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Respondre telefonades des de la pantalla de bloqueig és fàcil amb la integració amb iOS. També es privat: qui vos telefona roman en l'anonimat.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Teniu més informació a la configuració.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Llisca per respondre";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "El Signal és compatible amb les telefonades de vídeo segures. Feu una telefonada normal, toqueu el botó de la càmera i saludeu.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hola, Telefonades de Vídeo Segures!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "S'està actualitzant el Signal...";
@@ -968,16 +971,16 @@
 "UPLOADING_MESSAGE_TEXT" = "S'està pujant...";
 
 /* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Back";
+"VERIFICATION_BACK_BUTTON" = "Enrere";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Codi de verificació";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Telefona'm, millor";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Reenvia el codi via SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Tramet el codi de verificació";
@@ -986,7 +989,7 @@
 "VERIFICATION_HEADER" = "Verificació";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "S'està verificant: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifica els números de seguretat";

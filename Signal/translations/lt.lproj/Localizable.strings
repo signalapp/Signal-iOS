@@ -403,6 +403,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pakviesti draugus į Signal";
 
@@ -946,7 +949,7 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Atnaujinti";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+/* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Su iOS skambučių integracija, atsiliepti į skambučius iš jūsų užrakinto ekrano yra lengva. Pagal numatymą, mes anonimizuojame jūsų skambintojus, taigi tuo pačiu tai yra ir privatu.";
 
 /* button label shown once when when user upgrades app, in context of call kit */

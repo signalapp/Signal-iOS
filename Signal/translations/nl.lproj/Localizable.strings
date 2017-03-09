@@ -403,6 +403,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Onvolledige inkomende oproep van";
 
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen bij Signal";
 
@@ -946,7 +949,7 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Update";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+/* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Oproepen beantwoorden vanop je vergrendelscherm is makkelijk met iOS-oproepintegratie. Standaard anonimiseren we je beller, dus is het ook privé.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
@@ -956,7 +959,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Veeg om te beantwoorden";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ondersteunt nu videogesprekken. Maak gewoon een oproep en tik op de cameraknop om een videogesprek te beginnen.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ondersteunt nu beveiligde videogesprekken. Maak gewoon een oproep en tik op de cameraknop om een videogesprek te beginnen.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, beveiligde videogesprekken!";

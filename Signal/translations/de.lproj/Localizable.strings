@@ -269,7 +269,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Senden der Nachricht gescheitert.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Senden nich möglich aufgrund veralteter Sicherheitsdaten.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Senden nicht möglich aufgrund veralteter Schlüssel.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche ein anderes WLAN-Netzwerk oder verwende die mobile Datenverbindung.";
@@ -402,6 +402,9 @@
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Unvollständiger eingehender Anruf von";
+
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Freunde zu Signal einladen";
@@ -791,7 +794,7 @@
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Einstellungen";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Anrufe immer indirekt";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Anrufe immer umleiten";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Alle Anrufe über den Signal-Server leiten, um deine IP-Adresse gegenüber Kontakten nicht offenzulegen. Bei Aktivierung wird sich die Anrufqualität verringern.";
@@ -946,7 +949,7 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Aktualisieren";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+/* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Mit der iOS-Anrufintegration ist das Beanworten von Anrufen aus dem Sperrbildschirm heraus einfach. Weiterhin ist es vertraulich, denn deine Anrufer werden standardmäßig anonymisiert.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
@@ -956,7 +959,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Zum Antworten wischen";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal unterstützt jetzt sichere Videoanrufe. Beginne einfach einen Anruf wie immer, tippe die Kameraschaltfläche an und winke deinem Kontakt zu.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal unterstützt jetzt sichere Videoanrufe. Beginne einfach einen Signal-Anruf wie sonst auch, tippe die Kameraschaltfläche an und winke deinem Kontakt zu.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, sichere Videoanrufe!";

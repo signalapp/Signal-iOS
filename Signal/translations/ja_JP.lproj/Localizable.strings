@@ -170,7 +170,7 @@
 "DISAPPEARING_MESSAGES_LABEL" = "メッセージが消える時間の設定";
 
 /* Generic short text for button to dismiss a dialog */
-"DISMISS_BUTTON_TEXT" = "やめる";
+"DISMISS_BUTTON_TEXT" = "消す";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "グループを編集";
@@ -402,6 +402,9 @@
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "不完全着信";
+
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
@@ -791,7 +794,7 @@
 "SETTINGS_BUTTON_ACCESSIBILITY" = "設定";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "常に中継する";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "IPアドレスを隠す";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "すべての通話をSignalサーバーに中継して，IPアドレスが相手に見えないようにします。ただし通話の質は下がります。";
@@ -836,7 +839,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "相手の名前と番号を表示する";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS通話統合";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "通話をiOSに統合する";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "プライバシー";
@@ -851,7 +854,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しない";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS通話統合を有効にすると，iOSの通話履歴やロック画面にSignalでの通話が表示されます。iCloudが有効の場合は，通話履歴がAppleと共有されます。通話相手の名前と番号を表示させることも可能となります。";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "通話をiOSに統合すると，Signalでの通話がiOSの通話履歴やロック画面に表示されます。通話相手の名前や番号を表示させることもできます。ただしiCloudが有効の場合は，通話履歴がAppleと共有されます。";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "電話";
@@ -946,8 +949,8 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "更新";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "ロック画面から電話に出ることはiOS通話統合で簡単にできます。既定では通話を匿名化しますので，プライバシーも保たれます。";
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "通話をiOSに統合することで，ロック画面から直接電話に出ることが可能になります。既定では通話の匿名化が行われますので，プライバシーも保たれます。";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "プライバシー設定で詳細を見る";

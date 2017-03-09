@@ -403,6 +403,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Nepopoln dohodni klic od";
 
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Povabite svoje prijatelje k uporabi aplikacije Signal";
 
@@ -946,7 +949,7 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Posodobi";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+/* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Z integracijo klicev iOS je odgovarjanje na klice iz zaslona za zaklepanje zelo preprosto. Klicočega smo anonimizirali in s tem omogočili večjo zasebnost.";
 
 /* button label shown once when when user upgrades app, in context of call kit */

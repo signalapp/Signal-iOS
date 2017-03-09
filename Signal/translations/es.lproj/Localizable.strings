@@ -131,7 +131,7 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Teléfono no disponible";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Ajustes de chat";
+"CONVERSATION_SETTINGS" = "Ajustes del chat";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar tu sesión te permitirá recibir mensajes de %@ pero no permitirá recuperar los mensajes corruptos ya recibidos.";
@@ -403,6 +403,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Llamada recibida sin responder de";
 
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invitar contactos";
 
@@ -479,7 +482,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca aquí para ir a ajustes";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca aquí para ajustes del chat";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutos";
@@ -782,7 +785,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal necesita tu confirmación antes de comunicarse con un contacto cuyas cifras de seguridad han cambiado. Esto suele ocurrir al reinstalar Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal requerirá tu confirmación antes de comunicarse con un contacto cuyas cifras de seguridad han cambiado. Esto suele ocurrir si tu contacto reinstala Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Aprobar cambio de cifras";
@@ -794,7 +797,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Redirigir llamadas siempre";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirige todas las llamadas a través del servidor de Signal para evitar revelar tu dirección IP al contacto. Activarlo reducirá la calidad de las llamadas.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Signal redirigirá todas las llamadas a través del servidor de Signal para evitar revelar tu dirección IP al contacto. Activar la opción reducirá la calidad de las llamadas.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Borrar historial";
@@ -946,7 +949,7 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Actualizar";
 
-/* Description of CallKit to upgrading (existing) users. Space is tight, try to keep this as short as the English */
+/* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Responder llamadas desde la pantalla bloqueada es fácil con la integración de llamadas en iOS. El número de la llamada recibida es anonimizado por defecto, por lo que la llamada es también privada.\n\nPuedes leer más al respecto en los ajustes de privacidad de Signal.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
@@ -983,7 +986,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar código";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Introduce el código recibido";
+"VERIFICATION_HEADER" = "Verificar número";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Verificando: %@";
@@ -992,7 +995,7 @@
 "VERIFY_PRIVACY" = "Comprobar cifras de seguridad";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "WEEKS_TIME_AMOUNT" = "%u semanas";
