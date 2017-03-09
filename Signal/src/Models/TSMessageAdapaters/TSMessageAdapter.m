@@ -14,6 +14,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
+#import "Signal-Swift.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 
@@ -161,6 +162,11 @@
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
                                NSStringFromClass([attachment class]));
                 }
+            }
+        } else { // no attachment, plain text message
+            if ([[DisplayableTextFilter new] shouldPreventDisplayOfText:adapter.messageBody]) {
+                adapter.messageType = TSInfoMessageAdapter;
+                adapter.messageBody = NSLocalizedString(@"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE", @"Generic error text when message contents are undisplayable");
             }
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
@@ -350,6 +356,18 @@
         }
     }
     return NO;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

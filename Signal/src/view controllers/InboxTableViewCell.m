@@ -1,5 +1,6 @@
-//  Created by Dylan Bourgeois on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "InboxTableViewCell.h"
 #import "Environment.h"
@@ -9,6 +10,7 @@
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "Util.h"
+#import "Signal-Swift.h"
 #import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
 #import <JSQMessagesViewController/UIImage+JSQMessages.h>
 
@@ -61,7 +63,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
     self.threadId = thread.uniqueId;
-    NSString *snippetLabel             = thread.lastMessageLabel;
+    NSString *snippetLabel;
+    if ([[DisplayableTextFilter new] shouldPreventDisplayOfText:thread.lastMessageLabel]) {
+        snippetLabel = NSLocalizedString(@"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE", @"Generic error text when message contents are undisplayable");
+    } else {
+        snippetLabel = thread.lastMessageLabel;
+    }
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount             = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
