@@ -11,6 +11,10 @@
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
+		348A08421E6A044E0057E290 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08411E6A044E0057E290 /* MessagesViewController.xib */; };
+		348A08441E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */; };
+		348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */; };
+		348A08531E6C75590057E290 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A08521E6C75590057E290 /* SignalAttachment.swift */; };
 		348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
@@ -624,6 +628,10 @@
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34535D811E256BE9008A4747 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
+		348A08411E6A044E0057E290 /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
+		348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSMessagesToolbarContentView.xib; sourceTree = "<group>"; };
+		348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
+		348A08521E6C75590057E290 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
 		348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallInterstitialViewController.swift; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
@@ -2653,6 +2661,7 @@
 		FC3196321A08142D0094C78E /* Signals */ = {
 			isa = PBXGroup;
 			children = (
+				348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */,
 				348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */,
 				4509E79B1DD6545B0025A59F /* CallViewController.swift */,
 				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
@@ -2663,12 +2672,15 @@
 				FC3196291A067D8F0094C78E /* MessageComposeTableViewController.m */,
 				FCAC964F19FF0A6E0046DFC5 /* MessagesViewController.h */,
 				FCAC965019FF0A6E0046DFC5 /* MessagesViewController.m */,
+				348A08411E6A044E0057E290 /* MessagesViewController.xib */,
 				FCFD256D1A151BCB00F4C644 /* NewGroupViewController.h */,
 				FCFD256E1A151BCB00F4C644 /* NewGroupViewController.m */,
 				452E3C8C1D935C77002A45B0 /* OWSConversationSettingsTableViewController.h */,
 				452E3C8D1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m */,
+				348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */,
 				A5D0699A1A50E9CB004CB540 /* ShowGroupMembersViewController.h */,
 				A5D069991A50E9CB004CB540 /* ShowGroupMembersViewController.m */,
+				348A08521E6C75590057E290 /* SignalAttachment.swift */,
 				FC4FA0241A1B9DC600DA100A /* SignalsNavigationController.h */,
 				FC4FA0251A1B9DC600DA100A /* SignalsNavigationController.m */,
 				FCAC963A19FEF9280046DFC5 /* SignalsViewController.h */,
@@ -2897,6 +2909,7 @@
 				E94066151DFC5B7B00B15392 /* ContactsPicker.xib in Resources */,
 				AD41D7B61A6F6F0600241130 /* play_button@2x.png in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
+				348A08421E6A044E0057E290 /* MessagesViewController.xib in Resources */,
 				45E1F3A31DEF1DF000852CF1 /* NoSignalContactsView.xib in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				A507A3B11A6C60E300BEED0D /* InboxTableViewCell.xib in Resources */,
@@ -2941,6 +2954,7 @@
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
+				348A08441E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3137,6 +3151,7 @@
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
+				348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */,
 				348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
 				453201251E71100C00F20761 /* DisplayableTextFilter.swift in Sources */,
@@ -3147,6 +3162,7 @@
 				76EB05E018170B33006006FC /* NetworkStream.m in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
+				348A08531E6C75590057E290 /* SignalAttachment.swift in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				76EB05D618170B33006006FC /* ZrtpResponder.m in Sources */,

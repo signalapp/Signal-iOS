@@ -564,8 +564,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
     dispatch_async(dispatch_get_main_queue(), ^{
-        MessagesViewController *mvc = [[UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:NULL]
-            instantiateViewControllerWithIdentifier:@"MessagesViewController"];
+        MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
+                                                                               bundle:nil];
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];

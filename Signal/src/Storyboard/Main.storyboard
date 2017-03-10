@@ -120,12 +120,33 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="inputToolbar" destination="BdJ-vY-dHA" id="EfK-zI-nSM"/>
                         <segue destination="4oU-Rv-yJi" kind="push" identifier="OWSMessagesViewControllerSeguePushConversationSettings" id="vOd-aS-6Wx"/>
                         <segue destination="urv-62-RsD" kind="modal" identifier="fingerprintSegue" id="tfr-ZV-qWs"/>
                         <segue destination="Tyf-mN-gzf" kind="modal" identifier="initiateCallSegue" modalTransitionStyle="crossDissolve" id="I6y-pT-nEd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="BdJ-vY-dHA" customClass="OWSMessagesInputToolbar">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <items>
+                        <barButtonItem title="Item" id="4F3-az-L9s"/>
+                    </items>
+                </toolbar>
+                <view contentMode="scaleToFill" id="X6H-b7-xZK" customClass="OWSMessagesToolbarContentView">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <outlet property="textView" destination="XUl-oy-JS1" id="kzd-TM-IJT"/>
+                    </connections>
+                </view>
+                <view contentMode="scaleToFill" id="XUl-oy-JS1" customClass="JSQMessagesComposerTextView">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
             </objects>
             <point key="canvasLocation" x="-2287" y="-1516"/>
         </scene>
@@ -352,7 +373,7 @@
         <!--Conversation Settings-->
         <scene sceneID="Flt-X5-Amc">
             <objects>
-                <tableViewController title="Contact Information" id="4oU-Rv-yJi" userLabel="Conversation Settings" customClass="OWSConversationSettingsTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="OWSConversationSettingsTableViewController" title="Contact Information" id="4oU-Rv-yJi" userLabel="Conversation Settings" customClass="OWSConversationSettingsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Dgp-fo-Lyr">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -625,7 +646,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ftx-dN-loa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1393" y="-1482"/>
+            <point key="canvasLocation" x="-1448" y="-1570"/>
         </scene>
         <!--Show Group Members View Controller-->
         <scene sceneID="VBt-Ax-0G9">
@@ -1701,7 +1722,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="E8S-Yc-X7E"/>
+        <segue reference="I6y-pT-nEd"/>
         <segue reference="wgA-Oo-kKq"/>
-        <segue reference="G2B-Fr-Ezs"/>
     </inferredMetricsTieBreakers>
 </document>

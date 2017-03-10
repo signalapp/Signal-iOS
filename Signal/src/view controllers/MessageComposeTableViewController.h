@@ -7,10 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <JSQMessagesViewController/JSQMessagesComposerTextView.h>
-#import <JSQMessagesViewController/JSQMessagesInputToolbar.h>
-#import <JSQMessagesViewController/JSQMessagesToolbarContentView.h>
-#import <JSQMessagesViewController/JSQMessagesKeyboardController.h>
 #import "Contact.h"
 #import "LocalizableText.h"
 
