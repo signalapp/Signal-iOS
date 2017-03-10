@@ -1,7 +1,11 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "CountryCodeTableViewCell.h"
 #import "CountryCodeViewController.h"
 #import "PhoneNumberUtil.h"
+#import "FunctionalUtil.h"
 
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER    = @"CountryCodeTableViewCell";
 static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
@@ -20,17 +24,61 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     [self.navigationController.navigationBar setTranslucent:NO];
     _countryCodes = [self countryCodesForSearchTerm:nil];
     self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
+    self.searchBar.delegate = self;
 }
 
 - (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
     NSMutableArray *result = [NSMutableArray array];
-    for (NSString *countryCode in [PhoneNumberUtil countryCodesForSearchTerm:nil]) {
+    for (NSString *countryCode in [PhoneNumberUtil countryCodesForSearchTerm:searchTerm]) {
         NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
         if (callingCode != nil &&
             ![callingCode isEqualToString:@"+0"]) {
             [result addObject:countryCode];
         }
     }
+    
+    if (searchTerm.length > 0) {
+        NSArray *allCountryCodes = [self countryCodesForSearchTerm:nil];
+        // We want to ignore + when using a search term like "+44".
+        // We also want to ignore punctuation, etc.
+        // To keep things simple, we just remove everything except letters and numbers.
+        NSCharacterSet *charactersToRemove = [[NSMutableCharacterSet alphanumericCharacterSet] invertedSet];
+        NSString *simplifiedSearchTerm = [[searchTerm componentsSeparatedByCharactersInSet:charactersToRemove]
+                                          componentsJoinedByString:@"" ];
+        for (NSString *split in [simplifiedSearchTerm componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]) {
+            NSString *simplifiedSplit = split.lowercaseString;
+            OWSAssert(simplifiedSplit.length > 0);
+            for (NSString *countryCode in allCountryCodes) {
+                if ([countryCode.lowercaseString rangeOfString:simplifiedSplit].location != NSNotFound) {
+                    [result addObject:countryCode];
+                    continue;
+                }
+                NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+                OWSAssert(countryName.length > 0);
+                if ([countryName.lowercaseString rangeOfString:simplifiedSplit].location != NSNotFound) {
+                    [result addObject:countryCode];
+                    continue;
+                }
+                NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
+                OWSAssert(callingCode.length > 0);
+                if ([callingCode.lowercaseString rangeOfString:simplifiedSplit].location != NSNotFound) {
+                    [result addObject:countryCode];
+                    continue;
+                }
+            }
+        }
+        
+        // De-duplicate and sort.
+        //
+        // The results of this method should be sorted by _country name_, not
+        // country code, so we sort by filtering allCountryCodes, which is
+        // already sorted in the correct order.
+        NSSet *countryCodeSet = [NSSet setWithArray:result];
+        return [allCountryCodes filter:^int(NSString *countryCode) {
+            return [countryCodeSet containsObject:countryCode];
+        }];
+    }
+    
     return result;
 }
 
