@@ -13,6 +13,13 @@ enum SignalAttachmentError: String {
     case invalidFileFormat
 }
 
+enum TSImageQuality: Int {
+    case uncropped
+    case high
+    case medium
+    case low
+}
+
 // Represents a possible attachment to upload.
 // The attachment may be invalid.
 //
@@ -260,6 +267,13 @@ class SignalAttachment: NSObject {
         }
     }
 
+    private class func defaultImageUploadQuality() -> TSImageQuality {
+        // always return average image quality
+        //
+        // TODO: Why are we using this value?  Why not default to .uncropped?
+        return .medium
+    }
+
     // If the proposed attachment already is a JPEG, and already conforms to the 
     // file size and content size limits, don't recompress it.
     //
@@ -272,8 +286,8 @@ class SignalAttachment: NSObject {
             return false
         }
         if dataUTI == kUTTypeJPEG as String {
-            let imageUploadQuality = Environment.preferences().imageUploadQuality()
-            let maxSize = maxSizeForImage(image: image, imageUploadQuality:imageUploadQuality)
+            let maxSize = maxSizeForImage(image: image,
+                                          imageUploadQuality:defaultImageUploadQuality())
             if image.size.width <= maxSize &&
                 image.size.height <= maxSize &&
                 imageData.count <= kMaxFileSizeImage {
@@ -305,7 +319,7 @@ class SignalAttachment: NSObject {
     private class func compressImageAsJPEG(image: UIImage!, attachment: SignalAttachment!) -> SignalAttachment! {
         assert(attachment.error == nil)
 
-        var imageUploadQuality = Environment.preferences().imageUploadQuality()
+        var imageUploadQuality = defaultImageUploadQuality()
 
         while true {
             let maxSize = maxSizeForImage(image: image, imageUploadQuality:imageUploadQuality)

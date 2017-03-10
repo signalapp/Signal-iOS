@@ -110,12 +110,6 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     }
 }
 
-- (TSImageQuality)imageUploadQuality
-{
-    // always return average image quality
-    return TSImageQualityMedium;
-}
-
 - (void)setScreenSecurity:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];

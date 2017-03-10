@@ -118,10 +118,6 @@ typedef enum : NSUInteger {
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(paste:)) {
-        DDLogWarn(@"UIPasteboard.generalPasteboard(): %@.",
-                  [UIPasteboard generalPasteboard].pasteboardTypes);
-        DDLogWarn(@"UIPasteboard.generalPasteboard(): %d.",
-                  (int) [UIPasteboard generalPasteboard].numberOfItems);
         if ([self pasteBoardHasPossibleAttachment]) {
             return YES;
         }
@@ -2479,9 +2475,6 @@ typedef enum : NSUInteger {
 
 - (BOOL)composerTextView:(JSQMessagesComposerTextView *)textView
    shouldPasteWithSender:(id)sender {
-    DDLogError(@"%@ sender: %@",
-               self.tag,
-               sender);
     return YES;
 }
 
