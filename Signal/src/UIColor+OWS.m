@@ -102,7 +102,7 @@
 
     NSUInteger hashingLength = 8;
     unsigned long long choose;
-    NSData *hashData = [Cryptography computeSHA256:contactData truncatedToBytes:hashingLength];
+    NSData *hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
     [hashData getBytes:&choose length:hashingLength];
     return [colors objectAtIndex:(choose % [colors count])];
 }
