@@ -203,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setId:attachmentStream.serverId];
     [builder setContentType:attachmentStream.contentType];
     [builder setKey:attachmentStream.encryptionKey];
+    [builder setDigest:attachmentStream.digest];
 
     return [builder build];
 }

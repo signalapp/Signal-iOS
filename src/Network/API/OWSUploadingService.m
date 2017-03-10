@@ -68,10 +68,12 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 NSData *encryptionKey;
+                NSData *digest;
                 NSData *encryptedAttachmentData =
-                    [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey];
+                    [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey outDigest:&digest];
 
                 attachmentStream.encryptionKey = encryptionKey;
+                attachmentStream.digest = digest;
 
                 [self uploadDataWithProgress:encryptedAttachmentData
                                     location:location

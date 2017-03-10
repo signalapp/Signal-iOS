@@ -1,9 +1,5 @@
 //
-//  Cryptography.m
-//  TextSecureiOS
-//
-//  Created by Christine Corbett Moran on 3/26/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <CommonCrypto/CommonCryptor.h>
@@ -11,11 +7,14 @@
 
 #import "Cryptography.h"
 #import "NSData+Base64.h"
+#import "NSData+OWSConstantTimeCompare.h"
 
 #define HMAC256_KEY_LENGTH 32
 #define HMAC256_OUTPUT_LENGTH 32
 #define AES_CBC_IV_LENGTH 16
 #define AES_KEY_SIZE 32
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation Cryptography
 
@@ -65,8 +64,14 @@
     return output;
 }
 
-#pragma mark SHA256
-+ (NSData *)computeSHA256:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes {
+#pragma mark SHA256 Digest
++ (NSData *)computeSHA256Digest:(NSData *)data
+{
+    return [self computeSHA256Digest:(NSData *)data truncatedToBytes:CC_SHA256_DIGEST_LENGTH];
+}
+
++ (NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes
+{
     uint8_t digest[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256(data.bytes, (unsigned int)data.length, digest);
     return
@@ -98,96 +103,57 @@
 
 
 #pragma mark AES CBC Mode
-+ (NSData *)encryptCBCMode:(NSData *)dataToEncrypt
-                   withKey:(NSData *)key
-                    withIV:(NSData *)iv
-               withVersion:(NSData *)version
-               withHMACKey:(NSData *)hmacKey
-              withHMACType:(TSMACType)hmacType
-              computedHMAC:(NSData **)hmac {
-    /* AES256 CBC encrypt then mac
-     Returns nil if encryption fails
-     */
-    size_t bufferSize = [dataToEncrypt length] + kCCBlockSizeAES128;
-    void *buffer      = malloc(bufferSize);
-    
-    if (buffer == NULL) {
-        DDLogError(@"Failed to allocate memory.");
-        return nil;
-    }
 
-    size_t bytesEncrypted       = 0;
-    CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
-                                          kCCAlgorithmAES128,
-                                          kCCOptionPKCS7Padding,
-                                          [key bytes],
-                                          [key length],
-                                          [iv bytes],
-                                          [dataToEncrypt bytes],
-                                          [dataToEncrypt length],
-                                          buffer,
-                                          bufferSize,
-                                          &bytesEncrypted);
-
-    if (cryptStatus == kCCSuccess) {
-        NSData *encryptedData = [NSData dataWithBytesNoCopy:buffer length:bytesEncrypted];
-        // compute hmac of version||encrypted data||iv
-        NSMutableData *dataToHmac = [NSMutableData data];
-        if (version != nil) {
-            [dataToHmac appendData:version];
-        }
-        [dataToHmac appendData:iv];
-        [dataToHmac appendData:encryptedData];
-
-        if (hmacType == TSHMACSHA1Truncated10Bytes) {
-            *hmac = [Cryptography truncatedSHA1HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
-        } else if (hmacType == TSHMACSHA256Truncated10Bytes) {
-            *hmac = [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
-        } else if (hmacType == TSHMACSHA256AttachementType) {
-            *hmac = [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
-        }
-
-        return encryptedData;
-    }
-    free(buffer);
-    return nil;
-}
-
-
+/**
+ * AES256 CBC encrypt then mac. Used to decrypt both signal messages and attachment blobs
+ *
+ * @return decrypted data or nil if hmac invalid/decryption fails
+ */
 + (NSData *)decryptCBCMode:(NSData *)dataToDecrypt
                        key:(NSData *)key
                         IV:(NSData *)iv
-                   version:(NSData *)version
+                   version:(nullable NSData *)version
                    HMACKey:(NSData *)hmacKey
                   HMACType:(TSMACType)hmacType
-              matchingHMAC:(NSData *)hmac {
-    /* AES256 CBC encrypt then mac
-
-     Returns nil if hmac invalid or decryption fails
-     */
-    // verify hmac of version||encrypted data||iv
-    NSMutableData *dataToHmac = [NSMutableData data];
+              matchingHMAC:(NSData *)hmac
+                    digest:(nullable NSData *)digest
+{
+    // Verify hmac of: version? || iv || encrypted data
+    NSMutableData *dataToAuth = [NSMutableData data];
     if (version != nil) {
-        [dataToHmac appendData:version];
+        [dataToAuth appendData:version];
     }
 
-    [dataToHmac appendData:iv];
-    [dataToHmac appendData:dataToDecrypt];
+    [dataToAuth appendData:iv];
+    [dataToAuth appendData:dataToDecrypt];
 
     NSData *ourHmacData;
 
     if (hmacType == TSHMACSHA1Truncated10Bytes) {
-        ourHmacData = [Cryptography truncatedSHA1HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
+        ourHmacData = [Cryptography truncatedSHA1HMAC:dataToAuth withHMACKey:hmacKey truncation:10];
     } else if (hmacType == TSHMACSHA256Truncated10Bytes) {
-        ourHmacData = [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:10];
+        ourHmacData = [Cryptography truncatedSHA256HMAC:dataToAuth withHMACKey:hmacKey truncation:10];
     } else if (hmacType == TSHMACSHA256AttachementType) {
         ourHmacData =
-            [Cryptography truncatedSHA256HMAC:dataToHmac withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
+            [Cryptography truncatedSHA256HMAC:dataToAuth withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
     }
 
-    if (hmac == nil || ![ourHmacData isEqualToData:hmac]) {
-        DDLogError(@"Bad HMAC on decrypting payload");
+    if (hmac == nil || ![ourHmacData ows_constantTimeIsEqualToData:hmac]) {
+        DDLogError(@"%@ %s Bad HMAC on decrypting payload. Their MAC: %@, our MAC: %@", self.tag, __PRETTY_FUNCTION__, hmac, ourHmacData);
         return nil;
+    }
+
+    // Optionally verify digest of: version? || iv || encrypted data || hmac
+    if (digest) {
+        DDLogDebug(@"%@ %s verifying their digest: %@", self.tag, __PRETTY_FUNCTION__, digest);
+        [dataToAuth appendData:ourHmacData];
+        NSData *ourDigest = [Cryptography computeSHA256Digest:dataToAuth];
+        if (!ourDigest || ![ourDigest ows_constantTimeIsEqualToData:digest]) {
+            DDLogWarn(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@", self.tag, digest, ourDigest);
+            return nil;
+        }
+    } else {
+        DDLogVerbose(@"%@ %s no digest to verify", self.tag, __PRETTY_FUNCTION__);
     }
 
     // decrypt
@@ -195,7 +161,7 @@
     void *buffer      = malloc(bufferSize);
     
     if (buffer == NULL) {
-        DDLogError(@"Failed to allocate memory.");
+        DDLogError(@"%@ Failed to allocate memory.", self.tag);
         return nil;
     }
 
@@ -212,9 +178,9 @@
                                           bufferSize,
                                           &bytesDecrypted);
     if (cryptStatus == kCCSuccess) {
-        return [NSData dataWithBytesNoCopy:buffer length:bytesDecrypted];
+        return [NSData dataWithBytesNoCopy:buffer length:bytesDecrypted freeWhenDone:YES];
     } else {
-        DDLogError(@"Failed CBC decryption");
+        DDLogError(@"%@ Failed CBC decryption", self.tag);
         free(buffer);
     }
 
@@ -246,13 +212,15 @@
                              version:[NSData dataWithBytes:version length:1]
                              HMACKey:signalingKeyHMACKeyMaterial
                             HMACType:TSHMACSHA256Truncated10Bytes
-                        matchingHMAC:[NSData dataWithBytes:mac length:10]];
+                        matchingHMAC:[NSData dataWithBytes:mac length:10]
+                              digest:nil];
 }
 
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key {
++ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key digest:(nullable NSData *)digest
+{
     if (([dataToDecrypt length] < AES_CBC_IV_LENGTH + HMAC256_OUTPUT_LENGTH) ||
         ([key length] < AES_KEY_SIZE + HMAC256_KEY_LENGTH)) {
-        DDLogError(@"Message shorter than crypto overhead!");
+        DDLogError(@"%@ Message shorter than crypto overhead!", self.tag);
         return nil;
     }
 
@@ -274,36 +242,84 @@
                                 version:nil
                                 HMACKey:hmacKey
                                HMACType:TSHMACSHA256AttachementType
-                           matchingHMAC:hmac];
+                           matchingHMAC:hmac
+                                 digest:digest];
 }
 
-+ (NSData *)encryptAttachmentData:(NSData *)attachmentData outKey:(NSData **)outKey
++ (NSData *)encryptAttachmentData:(NSData *)attachmentData
+                           outKey:(NSData *_Nonnull *_Nullable)outKey
+                        outDigest:(NSData *_Nonnull *_Nullable)outDigest
 {
     NSData *iv            = [Cryptography generateRandomBytes:AES_CBC_IV_LENGTH];
     NSData *encryptionKey = [Cryptography generateRandomBytes:AES_KEY_SIZE];
     NSData *hmacKey       = [Cryptography generateRandomBytes:HMAC256_KEY_LENGTH];
 
     // The concatenated key for storage
-    NSMutableData *key = [NSMutableData data];
-    [key appendData:encryptionKey];
-    [key appendData:hmacKey];
-    *outKey = [key copy];
+    NSMutableData *attachmentKey = [NSMutableData data];
+    [attachmentKey appendData:encryptionKey];
+    [attachmentKey appendData:hmacKey];
+    *outKey = [attachmentKey copy];
 
-    NSData *computedHMAC;
-    NSData *ciphertext = [Cryptography encryptCBCMode:attachmentData
-                                              withKey:encryptionKey
-                                               withIV:iv
-                                          withVersion:nil
-                                          withHMACKey:hmacKey
-                                         withHMACType:TSHMACSHA256AttachementType
-                                         computedHMAC:&computedHMAC];
+    // Encrypt
+    size_t bufferSize = [attachmentData length] + kCCBlockSizeAES128;
+    void *buffer = malloc(bufferSize);
+
+    if (buffer == NULL) {
+        DDLogError(@"%@ Failed to allocate memory.", self.tag);
+        return nil;
+    }
+
+    size_t bytesEncrypted = 0;
+    CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
+                                          kCCAlgorithmAES128,
+                                          kCCOptionPKCS7Padding,
+                                          [encryptionKey bytes],
+                                          [encryptionKey length],
+                                          [iv bytes],
+                                          [attachmentData bytes],
+                                          [attachmentData length],
+                                          buffer,
+                                          bufferSize,
+                                          &bytesEncrypted);
+
+    if (cryptStatus != kCCSuccess) {
+        DDLogError(@"%@ %s CCCrypt failed with status: %d", self.tag, __PRETTY_FUNCTION__, (int32_t)cryptStatus);
+        free(buffer);
+        return nil;
+    }
+
+    NSData *cipherText = [NSData dataWithBytesNoCopy:buffer length:bytesEncrypted freeWhenDone:YES];
 
     NSMutableData *encryptedAttachmentData = [NSMutableData data];
     [encryptedAttachmentData appendData:iv];
-    [encryptedAttachmentData appendData:ciphertext];
-    [encryptedAttachmentData appendData:computedHMAC];
+    [encryptedAttachmentData appendData:cipherText];
 
-    return encryptedAttachmentData;
+    // compute hmac of: iv || encrypted data
+    NSData *hmac =
+        [Cryptography truncatedSHA256HMAC:encryptedAttachmentData withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
+    DDLogVerbose(@"%@ computed hmac: %@", self.tag, hmac);
+
+    [encryptedAttachmentData appendData:hmac];
+
+    // compute digest of: iv || encrypted data || hmac
+    *outDigest = [self computeSHA256Digest:encryptedAttachmentData];
+    DDLogVerbose(@"%@ computed digest: %@", self.tag, *outDigest);
+
+    return [encryptedAttachmentData copy];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
