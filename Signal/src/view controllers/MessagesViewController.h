@@ -14,6 +14,24 @@
 
 extern NSString *const OWSMessagesViewControllerDidAppearNotification;
 
+@interface OWSMessagesComposerTextView : JSQMessagesComposerTextView
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesToolbarContentView : JSQMessagesToolbarContentView
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesInputToolbar : JSQMessagesInputToolbar
+
+@end
+
+#pragma mark -
+
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,
                                                                UINavigationControllerDelegate,
                                                                UITextViewDelegate,
