@@ -2496,11 +2496,15 @@ typedef enum : NSUInteger {
         [attachment hasError]) {
         // TODO: Add UI.
     } else {
-        
-        // TODO: Add UI.
-        UIViewController *viewController = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment];
-        //    [self tryToSendMessageAttachmentWithData:imageData
-        //                                     dataUTI:dataUTI];
+        __weak MessagesViewController *weakSelf = self;
+        UIViewController *viewController = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
+                                            successCompletion:^{
+                                                [weakSelf sendMessageAttachment:attachment];
+                                            }];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self.navigationController presentViewController:navigationController
+                                                animated:YES
+                                              completion:nil];
     }
 }
 
