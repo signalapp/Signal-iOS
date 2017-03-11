@@ -182,7 +182,9 @@
             // repurposing call display for info message stuff for group updates, ! adapter will know because the date
             // is nil.
             //
-            // TODO: This doesn't seem like a good idea.
+            // TODO: I suspect that we'll want a separate model
+            //       that conforms to <OWSMessageData> for info
+            //       messages.
             CallStatus status = 0;
             if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit) {
                 status = kGroupUpdateLeft;

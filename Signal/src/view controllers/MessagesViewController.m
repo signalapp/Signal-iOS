@@ -2083,14 +2083,11 @@ typedef enum : NSUInteger {
     // Currently, we update thread and message state every time
     // the database is modified.  That doesn't seem optimal, but
     // in practice it's efficient enough.
-    //
-    // 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateContents];
-    });
-}
 
-- (void)updateContents {
+    // We need to `beginLongLivedReadTransaction` before we update our
+    // models in order to jump to the most recent commit.
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+
     [self updateBackButtonAsync];
 
     if (isGroupConversation) {
@@ -2103,8 +2100,6 @@ typedef enum : NSUInteger {
         }];
         [self setNavigationTitle];
     }
-
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName]
             hasChangesForNotifications:notifications]) {
