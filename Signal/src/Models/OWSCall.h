@@ -15,7 +15,7 @@ typedef enum : NSUInteger {
     kCallMissed = 3,
     kCallOutgoingIncomplete = 4,
     kCallIncomingIncomplete = 5,
-    kGroupUpdateJoin = 6,
+    // kGroupUpdateJoin has been deprecated.
     kGroupUpdateLeft = 7,
     kGroupUpdate = 8,
 } CallStatus;

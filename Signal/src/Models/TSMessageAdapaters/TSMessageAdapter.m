@@ -180,7 +180,9 @@
         if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit ||
             adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
             // repurposing call display for info message stuff for group updates, ! adapter will know because the date
-            // is nil
+            // is nil.
+            //
+            // TODO: This doesn't seem like a good idea.
             CallStatus status = 0;
             if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit) {
                 status = kGroupUpdateLeft;
