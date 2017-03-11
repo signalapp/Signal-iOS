@@ -1,6 +1,13 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "MIMETypeUtil.h"
 #if TARGET_OS_IPHONE
 #import "UIImage+contentTypes.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#else
+#import <CoreServices/CoreServices.h>
 #endif
 
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
@@ -302,5 +309,41 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 }
 
 #endif
+
++ (NSString *)utiTypeForMIMEType:(NSString *)mimeType
+{
+    CFStringRef utiType
+        = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
+    return (__bridge_transfer NSString *)utiType;
+}
+
++ (NSSet<NSString *> *)utiTypesForMIMETypes:(NSArray *)mimeTypes
+{
+    NSMutableSet<NSString *> *result = [NSMutableSet new];
+    for (NSString *mimeType in mimeTypes) {
+        [result addObject:[self utiTypeForMIMEType:mimeType]];
+    }
+    return result;
+}
+
++ (NSSet<NSString *> *)supportedVideoUTITypes
+{
+    return [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys];
+}
+
++ (NSSet<NSString *> *)supportedAudioUTITypes
+{
+    return [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys];
+}
+
++ (NSSet<NSString *> *)supportedImageUTITypes
+{
+    return [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys];
+}
+
++ (NSSet<NSString *> *)supportedAnimatedImageUTITypes
+{
+    return [self utiTypesForMIMETypes:[self supportedAnimatedMIMETypesToExtensionTypes].allKeys];
+}
 
 @end
