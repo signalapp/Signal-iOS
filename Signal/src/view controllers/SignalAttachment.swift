@@ -91,6 +91,15 @@ class SignalAttachment: NSObject {
         return error != nil
     }
 
+    var errorMessage: String? {
+        guard let error = error else {
+            // This method should only be called if there is an error.
+            assert(false)
+            return nil
+        }
+        return "\(error)"
+    }
+
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
     var mimeType: String? {

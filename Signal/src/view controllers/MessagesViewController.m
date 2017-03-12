@@ -1914,6 +1914,10 @@ typedef enum : NSUInteger {
                                                                               dataUTI:(NSString *) kUTTypeJPEG];
             if (!attachment ||
                 [attachment hasError]) {
+                DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                          self.tag,
+                          __PRETTY_FUNCTION__,
+                          attachment ? [attachment errorMessage] : @"Missing data");
                 failedToPickAttachment(nil);
             } else {
                 [self sendMessageAttachment:attachment];
@@ -1952,7 +1956,10 @@ typedef enum : NSUInteger {
                                                                               dataUTI:dataUTI];
              if (!attachment ||
                  [attachment hasError]) {
-                 // TODO: Should we create an NSError?
+                 DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                           self.tag,
+                           __PRETTY_FUNCTION__,
+                           attachment ? [attachment errorMessage] : @"Missing data");
                  failedToPickAttachment(nil);
              } else {
                  [self dismissViewControllerAnimated:YES
@@ -2036,6 +2043,10 @@ typedef enum : NSUInteger {
                                                                          dataUTI:(NSString *) kUTTypeMPEG4];
         if (!attachment ||
             [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                      self.tag,
+                      __PRETTY_FUNCTION__,
+                      attachment ? [attachment errorMessage] : @"Missing data");
             // TODO: How should we handle errors here?
         } else {
             [self sendMessageAttachment:attachment];
@@ -2247,6 +2258,10 @@ typedef enum : NSUInteger {
                                                                          dataUTI:(NSString *) kUTTypeMPEG4Audio];
         if (!attachment ||
             [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                      self.tag,
+                      __PRETTY_FUNCTION__,
+                      attachment ? [attachment errorMessage] : @"Missing data");
             // TODO: How should we handle errors here?
         } else {
             [self sendMessageAttachment:attachment];
@@ -2483,6 +2498,10 @@ typedef enum : NSUInteger {
     
     if (attachment == nil ||
         [attachment hasError]) {
+        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                  self.tag,
+                  __PRETTY_FUNCTION__,
+                  attachment ? [attachment errorMessage] : @"Missing data");
         // TODO: Add UI.
     } else {
         __weak MessagesViewController *weakSelf = self;
