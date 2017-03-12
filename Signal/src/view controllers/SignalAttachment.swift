@@ -120,6 +120,8 @@ class SignalAttachment: NSObject {
         return fileExtension.takeRetainedValue() as String
     }
 
+    private static let allowArbitraryAttachments = false
+
     // Returns the set of UTIs that correspond to valid _input_ image formats
     // for Signal attachments.
     //
@@ -132,7 +134,17 @@ class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedImageUTITypes()
+        if allowArbitraryAttachments {
+            return MIMETypeUtil.supportedImageUTITypes()
+        } else {
+            // Until Android client can handle arbitrary attachments,
+            // restrict output.
+            return [
+                kUTTypeJPEG as String,
+                kUTTypeGIF as String,
+                kUTTypePNG as String
+            ]
+        }
     }
 
     // Returns the set of UTIs that correspond to valid animated image formats
@@ -144,13 +156,26 @@ class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid video formats
     // for Signal attachments.
     private class var videoUTISet: Set<String> {
-        return MIMETypeUtil.supportedVideoUTITypes()
+        if allowArbitraryAttachments {
+            return MIMETypeUtil.supportedVideoUTITypes()
+        } else {
+            return [
+                kUTTypeMPEG4 as String
+            ]
+        }
     }
 
     // Returns the set of UTIs that correspond to valid audio formats
     // for Signal attachments.
     private class var audioUTISet: Set<String> {
-        return MIMETypeUtil.supportedAudioUTITypes()
+        if allowArbitraryAttachments {
+            return MIMETypeUtil.supportedAudioUTITypes()
+        } else {
+            return [
+                kUTTypeMP3 as String,
+                kUTTypeMPEG4Audio as String
+            ]
+        }
     }
 
     // Returns the set of UTIs that correspond to valid input formats
@@ -278,6 +303,10 @@ class SignalAttachment: NSObject {
         guard let imageData = imageData else {
             return false
         }
+        guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
+            return false
+        }
+
         let maxSize = maxSizeForImage(image: image,
                                       imageUploadQuality:defaultImageUploadQuality())
         if image.size.width <= maxSize &&
