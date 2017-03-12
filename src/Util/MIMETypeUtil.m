@@ -16,119 +16,165 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 @implementation MIMETypeUtil
 
 + (NSDictionary *)supportedVideoMIMETypesToExtensionTypes {
-    return @{
-        @"video/3gpp" : @"3gp",
-        @"video/3gpp2" : @"3g2",
-        @"video/mp4" : @"mp4",
-        @"video/quicktime" : @"mov",
-        @"video/x-m4v" : @"m4v"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"video/3gpp" : @"3gp",
+            @"video/3gpp2" : @"3g2",
+            @"video/mp4" : @"mp4",
+            @"video/quicktime" : @"mov",
+            @"video/x-m4v" : @"m4v"
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedAudioMIMETypesToExtensionTypes {
-    return @{
-        @"audio/aac" : @"m4a",
-        @"audio/x-m4p" : @"m4p",
-        @"audio/x-m4b" : @"m4b",
-        @"audio/x-m4a" : @"m4a",
-        @"audio/wav" : @"wav",
-        @"audio/x-wav" : @"wav",
-        @"audio/x-mpeg" : @"mp3",
-        @"audio/mpeg" : @"mp3",
-        @"audio/mp4" : @"mp4",
-        @"audio/mp3" : @"mp3",
-        @"audio/mpeg3" : @"mp3",
-        @"audio/x-mp3" : @"mp3",
-        @"audio/x-mpeg3" : @"mp3",
-        @"audio/amr" : @"amr",
-        @"audio/aiff" : @"aiff",
-        @"audio/x-aiff" : @"aiff",
-        @"audio/3gpp2" : @"3g2",
-        @"audio/3gpp" : @"3gp"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"audio/aac" : @"m4a",
+            @"audio/x-m4p" : @"m4p",
+            @"audio/x-m4b" : @"m4b",
+            @"audio/x-m4a" : @"m4a",
+            @"audio/wav" : @"wav",
+            @"audio/x-wav" : @"wav",
+            @"audio/x-mpeg" : @"mp3",
+            @"audio/mpeg" : @"mp3",
+            @"audio/mp4" : @"mp4",
+            @"audio/mp3" : @"mp3",
+            @"audio/mpeg3" : @"mp3",
+            @"audio/x-mp3" : @"mp3",
+            @"audio/x-mpeg3" : @"mp3",
+            @"audio/amr" : @"amr",
+            @"audio/aiff" : @"aiff",
+            @"audio/x-aiff" : @"aiff",
+            @"audio/3gpp2" : @"3g2",
+            @"audio/3gpp" : @"3gp"
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedImageMIMETypesToExtensionTypes {
-    return @{
-        @"image/jpeg" : @"jpeg",
-        @"image/pjpeg" : @"jpeg",
-        OWSMimeTypeImagePng : @"png",
-        @"image/tiff" : @"tif",
-        @"image/x-tiff" : @"tif",
-        @"image/bmp" : @"bmp",
-        @"image/x-windows-bmp" : @"bmp"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"image/jpeg" : @"jpeg",
+            @"image/pjpeg" : @"jpeg",
+            OWSMimeTypeImagePng : @"png",
+            @"image/tiff" : @"tif",
+            @"image/x-tiff" : @"tif",
+            @"image/bmp" : @"bmp",
+            @"image/x-windows-bmp" : @"bmp"
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedAnimatedMIMETypesToExtensionTypes {
-    return @{
-        @"image/gif" : @"gif",
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"image/gif" : @"gif",
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedBinaryDataMIMETypesToExtensionTypes
 {
-    return @{
-        OWSMimeTypeApplicationOctetStream : @"dat",
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            OWSMimeTypeApplicationOctetStream : @"dat",
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedVideoExtensionTypesToMIMETypes {
-    return @{
-        @"3gp" : @"video/3gpp",
-        @"3gpp" : @"video/3gpp",
-        @"3gp2" : @"video/3gpp2",
-        @"3gpp2" : @"video/3gpp2",
-        @"mp4" : @"video/mp4",
-        @"mov" : @"video/quicktime",
-        @"mqv" : @"video/quicktime",
-        @"m4v" : @"video/x-m4v"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"3gp" : @"video/3gpp",
+            @"3gpp" : @"video/3gpp",
+            @"3gp2" : @"video/3gpp2",
+            @"3gpp2" : @"video/3gpp2",
+            @"mp4" : @"video/mp4",
+            @"mov" : @"video/quicktime",
+            @"mqv" : @"video/quicktime",
+            @"m4v" : @"video/x-m4v"
+        };
+    });
+    return result;
 }
+
 + (NSDictionary *)supportedAudioExtensionTypesToMIMETypes {
-    return @{
-        @"3gp" : @"audio/3gpp",
-        @"3gpp" : @"@audio/3gpp",
-        @"3g2" : @"audio/3gpp2",
-        @"3gp2" : @"audio/3gpp2",
-        @"aiff" : @"audio/aiff",
-        @"aif" : @"audio/aiff",
-        @"aifc" : @"audio/aiff",
-        @"cdda" : @"audio/aiff",
-        @"amr" : @"audio/amr",
-        @"mp3" : @"audio/mp3",
-        @"swa" : @"audio/mp3",
-        @"mp4" : @"audio/mp4",
-        @"mpeg" : @"audio/mpeg",
-        @"mpg" : @"audio/mpeg",
-        @"wav" : @"audio/wav",
-        @"bwf" : @"audio/wav",
-        @"m4a" : @"audio/x-m4a",
-        @"m4b" : @"audio/x-m4b",
-        @"m4p" : @"audio/x-m4p"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"3gp" : @"audio/3gpp",
+            @"3gpp" : @"@audio/3gpp",
+            @"3g2" : @"audio/3gpp2",
+            @"3gp2" : @"audio/3gpp2",
+            @"aiff" : @"audio/aiff",
+            @"aif" : @"audio/aiff",
+            @"aifc" : @"audio/aiff",
+            @"cdda" : @"audio/aiff",
+            @"amr" : @"audio/amr",
+            @"mp3" : @"audio/mp3",
+            @"swa" : @"audio/mp3",
+            @"mp4" : @"audio/mp4",
+            @"mpeg" : @"audio/mpeg",
+            @"mpg" : @"audio/mpeg",
+            @"wav" : @"audio/wav",
+            @"bwf" : @"audio/wav",
+            @"m4a" : @"audio/x-m4a",
+            @"m4b" : @"audio/x-m4b",
+            @"m4p" : @"audio/x-m4p"
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedImageExtensionTypesToMIMETypes {
-    return @{
-        @"png" : OWSMimeTypeImagePng,
-        @"x-png" : OWSMimeTypeImagePng,
-        @"jfif" : @"image/jpeg",
-        @"jfif" : @"image/pjpeg",
-        @"jfif-tbnl" : @"image/jpeg",
-        @"jpe" : @"image/jpeg",
-        @"jpe" : @"image/pjpeg",
-        @"jpeg" : @"image/jpeg",
-        @"jpg" : @"image/jpeg",
-        @"tif" : @"image/tiff",
-        @"tiff" : @"image/tiff"
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"png" : OWSMimeTypeImagePng,
+            @"x-png" : OWSMimeTypeImagePng,
+            @"jfif" : @"image/jpeg",
+            @"jfif" : @"image/pjpeg",
+            @"jfif-tbnl" : @"image/jpeg",
+            @"jpe" : @"image/jpeg",
+            @"jpe" : @"image/pjpeg",
+            @"jpeg" : @"image/jpeg",
+            @"jpg" : @"image/jpeg",
+            @"tif" : @"image/tiff",
+            @"tiff" : @"image/tiff"
+        };
+    });
+    return result;
 }
 
 + (NSDictionary *)supportedAnimatedExtensionTypesToMIMETypes {
-    return @{
-        @"gif" : @"image/gif",
-    };
+    static NSDictionary *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = @{
+            @"gif" : @"image/gif",
+        };
+    });
+    return result;
 }
 
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType {
@@ -328,22 +374,46 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 
 + (NSSet<NSString *> *)supportedVideoUTITypes
 {
-    return [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys];
+    OWSAssert([NSThread isMainThread]);
+    static NSSet<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self utiTypesForMIMETypes:[self supportedVideoMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
 }
 
 + (NSSet<NSString *> *)supportedAudioUTITypes
 {
-    return [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys];
+    OWSAssert([NSThread isMainThread]);
+    static NSSet<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self utiTypesForMIMETypes:[self supportedAudioMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
 }
 
 + (NSSet<NSString *> *)supportedImageUTITypes
 {
-    return [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys];
+    OWSAssert([NSThread isMainThread]);
+    static NSSet<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
 }
 
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes
 {
-    return [self utiTypesForMIMETypes:[self supportedAnimatedMIMETypesToExtensionTypes].allKeys];
+    OWSAssert([NSThread isMainThread]);
+    static NSSet<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self utiTypesForMIMETypes:[self supportedAnimatedMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
 }
 
 @end
