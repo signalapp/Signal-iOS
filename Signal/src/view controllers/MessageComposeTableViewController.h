@@ -1,9 +1,5 @@
 //
-//  MessageComposeTableViewController.h
-//
-//
-//  Created by Dylan Bourgeois on 02/11/14.
-//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
