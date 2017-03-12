@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
 extern NSString *const OWSMimeTypeImagePng;
@@ -43,5 +45,10 @@ extern NSString *const OWSMimeTypeImagePng;
 + (NSString *)getSupportedImageMIMETypeFromImage:(UIImage *)image;
 + (BOOL)getIsSupportedTypeFromImage:(UIImage *)image;
 #endif
+
++ (NSSet<NSString *> *)supportedVideoUTITypes;
++ (NSSet<NSString *> *)supportedAudioUTITypes;
++ (NSSet<NSString *> *)supportedImageUTITypes;
++ (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
 
 @end
