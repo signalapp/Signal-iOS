@@ -10,22 +10,22 @@ class AttachmentApprovalViewController: UIViewController {
 
     // MARK: Properties
 
-    let attachment: SignalAttachment!
+    let attachment: SignalAttachment
 
     var successCompletion : (() -> Void)?
 
     // MARK: Initializers
 
-    @available(*, deprecated, message:"use attachment: constructor instead.")
+    @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.attachment = SignalAttachment.genericAttachment(withData: nil,
+        self.attachment = SignalAttachment.genericAttachment(data: nil,
                                                              dataUTI: kUTTypeContent as String)
         super.init(coder: aDecoder)
         assert(false)
     }
 
     required init(attachment: SignalAttachment!, successCompletion : @escaping () -> Void) {
-        assert(!attachment.hasError())
+        assert(!attachment.hasError)
         self.attachment = attachment
         self.successCompletion = successCompletion
         super.init(nibName: nil, bundle: nil)
@@ -50,8 +50,8 @@ class AttachmentApprovalViewController: UIViewController {
     // MARK: - Create Views
 
     private func createViews() {
-        let previewTopMargin = 30 as CGFloat
-        let previewHMargin = 20 as CGFloat
+        let previewTopMargin: CGFloat = 30
+        let previewHMargin: CGFloat = 20
 
         let attachmentPreviewView = UIView()
         self.view.addSubview(attachmentPreviewView)
@@ -60,7 +60,7 @@ class AttachmentApprovalViewController: UIViewController {
 
         createButtonRow(attachmentPreviewView:attachmentPreviewView)
 
-        if attachment.isImage() {
+        if attachment.isImage {
             createImagePreview(attachmentPreviewView:attachmentPreviewView)
         } else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
@@ -74,8 +74,8 @@ class AttachmentApprovalViewController: UIViewController {
         }
         if image != nil {
             let imageView = UIImageView(image:image)
-            imageView.layer.minificationFilter = kCAFilterTrilinear;
-            imageView.layer.magnificationFilter = kCAFilterTrilinear;
+            imageView.layer.minificationFilter = kCAFilterTrilinear
+            imageView.layer.magnificationFilter = kCAFilterTrilinear
             imageView.contentMode = .scaleAspectFit
             attachmentPreviewView.addSubview(imageView)
             imageView.autoPinWidthToSuperview()
@@ -94,8 +94,8 @@ class AttachmentApprovalViewController: UIViewController {
         let image = UIImage(named:"file-icon-large")
         assert(image != nil)
         let imageView = UIImageView(image:image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear;
-        imageView.layer.magnificationFilter = kCAFilterTrilinear;
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
         stackView.addSubview(imageView)
         imageView.autoHCenterInSuperview()
         imageView.autoPinEdge(toSuperviewEdge:.top)
@@ -106,11 +106,11 @@ class AttachmentApprovalViewController: UIViewController {
 
         let labelFont = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(18, 24))
 
-        if attachment.fileExtension() != nil {
+        if let fileExtension = attachment.fileExtension {
             let fileExtensionLabel = UILabel()
             fileExtensionLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
                                                                  comment: "Format string for file extension label in call interstitial view"),
-                                             attachment.fileExtension()!.capitalized)
+                                             fileExtension.capitalized)
 
             fileExtensionLabel.textColor = UIColor.white
             fileExtensionLabel.font = labelFont
@@ -158,8 +158,8 @@ class AttachmentApprovalViewController: UIViewController {
         buttonSpacer.autoSetDimension(.width, toSize:buttonHSpacing)
         buttonSpacer.autoHCenterInSuperview()
 
-        let cancelButton = createButton(title: NSLocalizedString("ATTACHMENT_APPROVAL_CANCEL_BUTTON",
-                                                                 comment: "Label for 'cancel' button in the 'attachment approval' dialog."),
+        let cancelButton = createButton(title: NSLocalizedString("TXT_CANCEL_TITLE",
+                                                                 comment: ""),
                                         color : UIColor(rgbHex:0xff3B30),
                                         action: #selector(cancelPressed))
         buttonRow.addSubview(cancelButton)
@@ -209,9 +209,7 @@ class AttachmentApprovalViewController: UIViewController {
     func sendPressed(sender: UIButton) {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
-            if successCompletion != nil {
-                successCompletion!()
-            }
+            successCompletion?()
         })
     }
 }

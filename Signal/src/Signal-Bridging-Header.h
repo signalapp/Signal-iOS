@@ -32,6 +32,7 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>

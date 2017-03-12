@@ -1831,10 +1831,6 @@ typedef enum : NSUInteger {
 
         NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:fingerprint.theirStableId];
         [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
-    } else if ([segue.destinationViewController isKindOfClass:[OWSConversationSettingsTableViewController class]]) {
-        OWSConversationSettingsTableViewController *controller
-            = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
-        [controller configureWithThread:self.thread];
     } else {
         DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
     }
