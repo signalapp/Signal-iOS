@@ -22,6 +22,11 @@ This repository is set up with [BitHub](https://whispersystems.org/blog/bithub/)
 ## Contributing Ideas
 Have something you want to say about Open Whisper Systems projects or want to be part of the conversation? Get involved in the [community forum](https://whispersystems.discoursehosting.net).
 
+Current BitHub Payment Per Commit:
+=================
+![Current Price](https://bithub.herokuapp.com/v1/status/payment/commit)
+
+
 ## Cryptography Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. 
