@@ -19,6 +19,5 @@
 + (UIColor *)ows_infoMessageBorderColor;
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
-+ (UIColor *)colorWithARGBHex:(unsigned long)value;
 
 @end
