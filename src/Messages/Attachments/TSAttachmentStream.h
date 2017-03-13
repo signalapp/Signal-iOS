@@ -17,8 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContentType:(NSString *)contentType NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 
-@property (atomic, readwrite) BOOL isDownloaded;
-
 // Though now required, `digest` may be null for pre-existing records or from
 // messages received from other clients
 @property (nullable, nonatomic) NSData *digest;

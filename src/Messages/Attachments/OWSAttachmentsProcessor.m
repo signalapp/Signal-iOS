@@ -119,6 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     };
 
+    if (attachment.serverId < 100) {
+        DDLogError(@"%@ Suspicious attachment id: %llu", self.tag, (unsigned long long)attachment.serverId);
+    }
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:attachment.serverId relay:attachment.relay];
 
     [self.networkManager makeRequest:attachmentRequest
@@ -139,18 +142,48 @@ NS_ASSUME_NONNULL_BEGIN
 
                                  dispatch_async([OWSDispatch attachmentsQueue], ^{
                                      [self downloadFromLocation:location
-                                                        pointer:attachment
-                                                        success:^(NSData *_Nonnull encryptedData) {
-                                                            [self decryptAttachmentData:encryptedData
-                                                                                pointer:attachment
-                                                                                success:markAndHandleSuccess
-                                                                                failure:markAndHandleFailure];
-                                                        }
-                                                        failure:markAndHandleFailure];
+                                         pointer:attachment
+                                         success:^(NSData *_Nonnull encryptedData) {
+                                             [self decryptAttachmentData:encryptedData
+                                                                 pointer:attachment
+                                                                 success:markAndHandleSuccess
+                                                                 failure:markAndHandleFailure];
+                                         }
+                                         failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+                                             if (attachment.serverId < 100) {
+                                                 // This looks like the symptom of the "frequent 404
+                                                 // downloading attachments with low server ids".
+                                                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                                                 NSInteger statusCode = [httpResponse statusCode];
+                                                 DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                                                     self.tag,
+                                                     (int)statusCode,
+                                                     (unsigned long long)attachment.serverId,
+                                                     error);
+                                                 [DDLog flushLog];
+                                                 OWSAssert(0);
+                                             }
+                                             if (markAndHandleFailure) {
+                                                 markAndHandleFailure(error);
+                                             }
+                                         }];
                                  });
                              }
                              failure:^(NSURLSessionDataTask *task, NSError *error) {
                                  DDLogError(@"Failed retrieval of attachment with error: %@", error);
+                                 if (attachment.serverId < 100) {
+                                     // This _shouldn't_ be the symptom of the "frequent 404
+                                     // downloading attachments with low server ids".
+                                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                                     NSInteger statusCode = [httpResponse statusCode];
+                                     DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                                         self.tag,
+                                         (int)statusCode,
+                                         (unsigned long long)attachment.serverId,
+                                         error);
+                                     [DDLog flushLog];
+                                     OWSAssert(0);
+                                 }
                                  return markAndHandleFailure(error);
                              }];
 }
@@ -184,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)downloadFromLocation:(NSString *)location
                      pointer:(TSAttachmentPointer *)pointer
                      success:(void (^)(NSData *encryptedData))successHandler
-                     failure:(void (^)(NSError *error))failureHandler
+                     failure:(void (^)(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error))failureHandler
 {
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer     = [AFHTTPRequestSerializer serializer];
@@ -200,13 +233,13 @@ NS_ASSUME_NONNULL_BEGIN
              if (![responseObject isKindOfClass:[NSData class]]) {
                  DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
                  NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                 return failureHandler(error);
+                 return failureHandler(task, error);
              }
              successHandler((NSData *)responseObject);
          }
          failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
              DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
-             return failureHandler(error);
+             return failureHandler(task, error);
          }];
 }
 

@@ -114,6 +114,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         }
     }
 
+    DDLogWarn(@"Creating new websocket");
+
     // If socket is not already open or connecting, connect now.
     self.status = kSocketStatusConnecting;
 }
@@ -229,6 +231,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 + (void)resignActivity {
     OWSAssert([NSThread isMainThread]);
 
+    DDLogWarn(@"resignActivity closing web socket");
     [[self sharedManager] closeWebSocket];
 }
 
@@ -253,8 +256,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     OWSAssert([NSThread isMainThread]);
-    
-    DDLogError(@"Error connecting to socket %@", error);
+
+    DDLogError(@"Websocket did fail with error: %@", error);
 
     [self closeWebSocket];
 
@@ -352,6 +355,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
          wasClean:(BOOL)wasClean {
     OWSAssert([NSThread isMainThread]);
 
+    DDLogWarn(@"Websocket did close with code: %ld", (long)code);
+
     [self closeWebSocket];
 
     if (!wasClean && [self shouldKeepWebSocketAlive]) {
@@ -370,6 +375,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             [self scheduleRetry];
         }
     } else {
+        DDLogWarn(@"webSocketHeartBeat closing web socket");
         [self closeWebSocket];
     }
 }
