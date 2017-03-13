@@ -1,5 +1,8 @@
-//  Created by Christine Corbett Moran on 3/26/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface Cryptography : NSObject
 
@@ -13,7 +16,12 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 
 #pragma mark SHA and HMAC methods
 
-+ (NSData *)computeSHA256:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes;
+// Full length SHA256 digest for `data`
++ (NSData *)computeSHA256Digest:(NSData *)data;
+
+// Truncated SHA256 digest for `data`
++ (NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes;
+
 + (NSString *)truncatedSHA1Base64EncodedWithoutPadding:(NSString *)string;
 + (NSString *)computeSHA1DigestForString:(NSString *)input;
 
@@ -24,8 +32,12 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString;
 
 #pragma mark encrypt and decrypt attachment data
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key;
++ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key digest:(nullable NSData *)digest;
 
-+ (NSData *)encryptAttachmentData:(NSData *)attachmentData outKey:(NSData **)outKey;
++ (NSData *)encryptAttachmentData:(NSData *)attachmentData
+                           outKey:(NSData *_Nonnull *_Nullable)outKey
+                        outDigest:(NSData *_Nonnull *_Nullable)outDigest;
 
 @end
+
+NS_ASSUME_NONNULL_END

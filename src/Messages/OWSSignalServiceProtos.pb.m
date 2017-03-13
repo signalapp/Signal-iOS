@@ -5319,6 +5319,7 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 @property (strong) NSData* key;
 @property UInt32 size;
 @property (strong) NSData* thumbnail;
+@property (strong) NSData* digest;
 @end
 
 @implementation OWSSignalServiceProtosAttachmentPointer
@@ -5358,6 +5359,13 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   hasThumbnail_ = !!_value_;
 }
 @synthesize thumbnail;
+- (BOOL) hasDigest {
+  return !!hasDigest_;
+}
+- (void) setHasDigest:(BOOL) _value_ {
+  hasDigest_ = !!_value_;
+}
+@synthesize digest;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = 0L;
@@ -5365,6 +5373,7 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
     self.key = [NSData data];
     self.size = 0;
     self.thumbnail = [NSData data];
+    self.digest = [NSData data];
   }
   return self;
 }
@@ -5399,6 +5408,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasThumbnail) {
     [output writeData:5 value:self.thumbnail];
   }
+  if (self.hasDigest) {
+    [output writeData:6 value:self.digest];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -5422,6 +5434,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasThumbnail) {
     size_ += computeDataSize(5, self.thumbnail);
+  }
+  if (self.hasDigest) {
+    size_ += computeDataSize(6, self.digest);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -5473,6 +5488,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasThumbnail) {
     [output appendFormat:@"%@%@: %@\n", indent, @"thumbnail", self.thumbnail];
   }
+  if (self.hasDigest) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"digest", self.digest];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -5490,6 +5508,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasThumbnail) {
     [dictionary setObject: self.thumbnail forKey: @"thumbnail"];
+  }
+  if (self.hasDigest) {
+    [dictionary setObject: self.digest forKey: @"digest"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -5512,6 +5533,8 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
       (!self.hasSize || self.size == otherMessage.size) &&
       self.hasThumbnail == otherMessage.hasThumbnail &&
       (!self.hasThumbnail || [self.thumbnail isEqual:otherMessage.thumbnail]) &&
+      self.hasDigest == otherMessage.hasDigest &&
+      (!self.hasDigest || [self.digest isEqual:otherMessage.digest]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -5530,6 +5553,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasThumbnail) {
     hashCode = hashCode * 31 + [self.thumbnail hash];
+  }
+  if (self.hasDigest) {
+    hashCode = hashCode * 31 + [self.digest hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -5589,6 +5615,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (other.hasThumbnail) {
     [self setThumbnail:other.thumbnail];
   }
+  if (other.hasDigest) {
+    [self setDigest:other.digest];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -5628,6 +5657,10 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
       }
       case 42: {
         [self setThumbnail:[input readData]];
+        break;
+      }
+      case 50: {
+        [self setDigest:[input readData]];
         break;
       }
     }
@@ -5711,6 +5744,22 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearThumbnail {
   resultAttachmentPointer.hasThumbnail = NO;
   resultAttachmentPointer.thumbnail = [NSData data];
+  return self;
+}
+- (BOOL) hasDigest {
+  return resultAttachmentPointer.hasDigest;
+}
+- (NSData*) digest {
+  return resultAttachmentPointer.digest;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setDigest:(NSData*) value {
+  resultAttachmentPointer.hasDigest = YES;
+  resultAttachmentPointer.digest = value;
+  return self;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearDigest {
+  resultAttachmentPointer.hasDigest = NO;
+  resultAttachmentPointer.digest = [NSData data];
   return self;
 }
 @end

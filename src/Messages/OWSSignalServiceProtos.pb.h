@@ -1277,17 +1277,20 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define AttachmentPointer_key @"key"
 #define AttachmentPointer_size @"size"
 #define AttachmentPointer_thumbnail @"thumbnail"
+#define AttachmentPointer_digest @"digest"
 @interface OWSSignalServiceProtosAttachmentPointer : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasId_:1;
   BOOL hasContentType_:1;
   BOOL hasKey_:1;
   BOOL hasThumbnail_:1;
+  BOOL hasDigest_:1;
   BOOL hasSize_:1;
   UInt64 id;
   NSString* contentType;
   NSData* key;
   NSData* thumbnail;
+  NSData* digest;
   UInt32 size;
 }
 - (BOOL) hasId;
@@ -1295,11 +1298,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasKey;
 - (BOOL) hasSize;
 - (BOOL) hasThumbnail;
+- (BOOL) hasDigest;
 @property (readonly) UInt64 id;
 @property (readonly, strong) NSString* contentType;
 @property (readonly, strong) NSData* key;
 @property (readonly) UInt32 size;
 @property (readonly, strong) NSData* thumbnail;
+@property (readonly, strong) NSData* digest;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1360,6 +1365,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) thumbnail;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) setThumbnail:(NSData*) value;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearThumbnail;
+
+- (BOOL) hasDigest;
+- (NSData*) digest;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setDigest:(NSData*) value;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearDigest;
 @end
 
 #define GroupContext_id @"id"

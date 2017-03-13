@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                                  key:attachmentProto.key
+                                                                              digest:attachmentProto.digest
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay];
 
@@ -159,7 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
                       success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                       failure:(void (^)(NSError *error))failureHandler
 {
-    NSData *plaintext = [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey];
+    NSData *plaintext =
+        [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey digest:attachment.digest];
 
     if (!plaintext) {
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));

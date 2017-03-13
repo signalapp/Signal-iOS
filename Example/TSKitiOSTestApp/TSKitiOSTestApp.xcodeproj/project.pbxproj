@@ -20,7 +20,6 @@
 		454021ED1D960ABF00F2126D /* OWSDisappearingMessageFinderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 454021EC1D960ABF00F2126D /* OWSDisappearingMessageFinderTest.m */; };
 		454092FA1DB7AFDE00579DE1 /* OWSFakeNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 454092F91DB7AFDE00579DE1 /* OWSFakeNetworkManager.m */; };
 		45458B751CC342B600A02153 /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */; };
-		45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */; };
 		45458B771CC342B600A02153 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */; };
 		45458B781CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */; };
 		45458B791CC342B600A02153 /* TSStoragePreKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */; };
@@ -79,7 +78,6 @@
 		454092F81DB7AFDE00579DE1 /* OWSFakeNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFakeNetworkManager.h; path = ../../../tests/TestSupport/Fakes/OWSFakeNetworkManager.h; sourceTree = "<group>"; };
 		454092F91DB7AFDE00579DE1 /* OWSFakeNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFakeNetworkManager.m; path = ../../../tests/TestSupport/Fakes/OWSFakeNetworkManager.m; sourceTree = "<group>"; };
 		45458B6A1CC342B600A02153 /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
-		45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentsTest.m; sourceTree = "<group>"; };
 		45458B6E1CC342B600A02153 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
 		45458B6F1CC342B600A02153 /* TSStorageIdentityKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStorageIdentityKeyStoreTests.m; sourceTree = "<group>"; };
 		45458B701CC342B600A02153 /* TSStoragePreKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSStoragePreKeyStoreTests.m; sourceTree = "<group>"; };
@@ -176,15 +174,6 @@
 			);
 			name = Account;
 			path = ../../../tests/Account;
-			sourceTree = "<group>";
-		};
-		45458B6B1CC342B600A02153 /* Attachments */ = {
-			isa = PBXGroup;
-			children = (
-				45458B6C1CC342B600A02153 /* TSAttachmentsTest.m */,
-			);
-			name = Attachments;
-			path = ../../../tests/Attachments;
 			sourceTree = "<group>";
 		};
 		45458B6D1CC342B600A02153 /* Storage */ = {
@@ -333,7 +322,6 @@
 			children = (
 				453E1FD41DA83DD500DDD7B7 /* TestSupport */,
 				45458B691CC342B600A02153 /* Account */,
-				45458B6B1CC342B600A02153 /* Attachments */,
 				459850BF1D22C6C4006FFEDB /* Contacts */,
 				45D7243D1D67894100E0CA54 /* Devices */,
 				45C6A0971D2F0254007D8AC0 /* Messages */,
@@ -568,7 +556,6 @@
 				452EE6D51D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m in Sources */,
 				450E3C9A1D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m in Sources */,
 				452EE6CF1D4A754C00E934BA /* TSThreadTest.m in Sources */,
-				45458B761CC342B600A02153 /* TSAttachmentsTest.m in Sources */,
 				45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */,
 				453E1FCF1DA8313100DDD7B7 /* OWSMessageSenderTest.m in Sources */,
 				45AE484C1E072871004D96C2 /* OWSFakeCallMessageHandler.m in Sources */,
