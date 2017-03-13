@@ -127,7 +127,7 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyHasRegisteredVoipPush toValue:@(enabled)];
 }
 
-- (BOOL)loggingIsEnabled
++ (BOOL)loggingIsEnabled
 {
     NSNumber *preference = [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyEnableDebugLog];
 
@@ -138,18 +138,13 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     }
 }
 
-- (void)setLoggingEnabled:(BOOL)flag
++ (void)setLoggingEnabled:(BOOL)flag
 {
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the
     // database initialization, and without logging it would be hard to track down.
     [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:PropertyListPreferencesKeyEnableDebugLog];
     [NSUserDefaults.standardUserDefaults synchronize];
-}
-
-- (nullable NSString *)lastRanVersion
-{
-    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
 }
 
 - (void)setHasSentAMessage:(BOOL)enabled
@@ -162,7 +157,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyHasArchivedAMessage toValue:@(enabled)];
 }
 
-- (NSString *)setAndGetCurrentVersion
++ (nullable NSString *)lastRanVersion
+{
+    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
+}
+
++ (NSString *)setAndGetCurrentVersion
 {
     NSString *currentVersion =
         [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
