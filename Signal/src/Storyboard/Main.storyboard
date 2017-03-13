@@ -385,7 +385,7 @@
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FtL-Hb-6Dz" userLabel="Contact Info">
                                     <rect key="frame" x="16" y="16" width="343" height="68"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="empty-group-avatar" translatesAutoresizingMaskIntoConstraints="NO" id="7IV-AJ-aCS">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="empty-group-avatar" translatesAutoresizingMaskIntoConstraints="NO" id="7IV-AJ-aCS">
                                             <rect key="frame" x="0.0" y="0.0" width="68" height="68"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="7IV-AJ-aCS" secondAttribute="height" multiplier="1:1" id="XYc-uT-wt9"/>
