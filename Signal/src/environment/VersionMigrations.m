@@ -31,7 +31,11 @@
 
 + (void)performUpdateCheck
 {
-    NSString *previousVersion = Environment.preferences.lastRanVersion;
+    // performUpdateCheck must be invoked after Environment has been initialized because
+    // upgrade process may depend on Environment.
+    OWSAssert([Environment getCurrent]);
+
+    NSString *previousVersion = PropertyListPreferences.lastRanVersion;
     NSString *currentVersion =
         [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
 
@@ -43,7 +47,7 @@
         OWSDatabaseMigrationRunner *runner =
             [[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]];
         [runner assumeAllExistingMigrationsRun];
-        [Environment.preferences setAndGetCurrentVersion];
+        [PropertyListPreferences setAndGetCurrentVersion];
         return;
     }
 
@@ -90,7 +94,7 @@
     }
 
     [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];
-    [Environment.preferences setAndGetCurrentVersion];
+    [PropertyListPreferences setAndGetCurrentVersion];
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

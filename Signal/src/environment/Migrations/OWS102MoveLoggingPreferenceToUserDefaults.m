@@ -27,7 +27,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
 
     if (existingValue) {
         DDLogInfo(@"%@ assigning existing value: %@", self.tag, existingValue);
-        [[Environment preferences] setLoggingEnabled:[existingValue boolValue]];
+        [PropertyListPreferences setLoggingEnabled:[existingValue boolValue]];
 
         if (![existingValue boolValue]) {
             DDLogInfo(@"%@ Disabling file logger after one-time log settings migration.", self.tag);

@@ -83,7 +83,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+    loggingIsEnabled = PropertyListPreferences.loggingIsEnabled;
 #endif
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
@@ -134,8 +134,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.window.rootViewController = [storyboard instantiateInitialViewController];
     [self.window makeKeyAndVisible];
 
-    [VersionMigrations performUpdateCheck]; // this call must be made after environment has been initialized because in
-                                            // general upgrade may depend on environment
+    // performUpdateCheck must be invoked after Environment has been initialized because
+    // upgrade process may depend on Environment.
+    [VersionMigrations performUpdateCheck];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];

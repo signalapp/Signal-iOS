@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     self.enableLogCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
     self.enableLogCell.userInteractionEnabled = YES;
     self.enableLogSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-    [self.enableLogSwitch setOn:[Environment.preferences loggingIsEnabled]];
+    [self.enableLogSwitch setOn:[PropertyListPreferences loggingIsEnabled]];
     [self.enableLogSwitch addTarget:self
                              action:@selector(didToggleEnableLogSwitch:)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -161,7 +161,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         [[DebugLogger sharedLogger] enableFileLogging];
     }
     
-    [Environment.preferences setLoggingEnabled:sender.isOn];
+    [PropertyListPreferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
 }
 
