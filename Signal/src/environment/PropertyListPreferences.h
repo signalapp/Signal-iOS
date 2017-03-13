@@ -43,8 +43,8 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)getHasArchivedAMessage;
 - (void)setHasArchivedAMessage:(BOOL)enabled;
 
-- (BOOL)loggingIsEnabled;
-- (void)setLoggingEnabled:(BOOL)flag;
++ (BOOL)loggingIsEnabled;
++ (void)setLoggingEnabled:(BOOL)flag;
 
 - (BOOL)screenSecurityIsEnabled;
 - (void)setScreenSecurity:(BOOL)flag;
@@ -61,8 +61,8 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 - (TSImageQuality)imageUploadQuality;
 
-- (nullable NSString *)lastRanVersion;
-- (NSString *)setAndGetCurrentVersion;
++ (nullable NSString *)lastRanVersion;
++ (NSString *)setAndGetCurrentVersion;
 
 #pragma mark - Calling
 

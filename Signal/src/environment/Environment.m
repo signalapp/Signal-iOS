@@ -244,6 +244,8 @@ static Environment *environment = nil;
 
 + (PropertyListPreferences *)preferences
 {
+    OWSAssert([Environment getCurrent] != nil);
+    OWSAssert([Environment getCurrent].preferences != nil);
     return [Environment getCurrent].preferences;
 }
 
