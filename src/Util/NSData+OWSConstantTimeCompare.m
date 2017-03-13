@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
     UInt8 *leftBytes = (UInt8 *)self.bytes;
     UInt8 *rightBytes = (UInt8 *)other.bytes;
     for (int i = 0; i < self.length; i++) {
+        // rather than returning as soon as we find a discrepency, we compare the rest of
+        // the byte stream to maintain a constant time comparison
         isEqual = isEqual && (leftBytes[i] == rightBytes[i]);
     }
 
