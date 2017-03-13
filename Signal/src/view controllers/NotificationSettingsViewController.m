@@ -10,6 +10,8 @@
 
 #define kNotificationOptionSection 0
 
+#define kNotificationOptionSection 0
+
 @interface NotificationSettingsViewController ()
 
 @property NSArray *notificationsSections;
