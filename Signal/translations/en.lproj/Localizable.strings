@@ -979,6 +979,9 @@
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Upgrading Signal ...";
 
+/* message footer while attachment is uploading */
+"UPLOADING_MESSAGE_TEXT" = "Uploading...";
+
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Back";
 

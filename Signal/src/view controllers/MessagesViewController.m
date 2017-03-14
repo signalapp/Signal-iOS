@@ -1248,20 +1248,17 @@ typedef enum : NSUInteger {
     return !![self collectionView:self.collectionView attributedTextForCellBottomLabelAtIndexPath:indexPath];
 }
 
-- (id<OWSMessageData>)nextOutgoingMessage:(NSIndexPath *)indexPath
+- (TSOutgoingMessage *)nextOutgoingMessage:(NSIndexPath *)indexPath
 {
-    id<OWSMessageData> nextMessage =
-        [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
-    int i = 1;
-
-    while (indexPath.item + i < [self.collectionView numberOfItemsInSection:indexPath.section] - 1
-        && !nextMessage.isOutgoingAndDelivered) {
-        i++;
-        nextMessage =
-            [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + i inSection:indexPath.section]];
+    NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section];
+    for (NSInteger row = indexPath.row + 1; row < rowCount; row++) {
+        id<OWSMessageData> nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:row
+                                                                                     inSection:indexPath.section]];
+        if ([nextMessage isKindOfClass:[TSOutgoingMessage class]]) {
+            return (TSOutgoingMessage *)nextMessage;
+        }
     }
-
-    return nextMessage;
+    return nil;
 }
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
@@ -1277,11 +1274,16 @@ typedef enum : NSUInteger {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
             return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-        } else if (message.isOutgoingAndDelivered ||
-                   message.isOutgoingAndSent) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSent ||
+                   outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
             // Show a checkmark icon.
+            //
+            // TODO: It'd be nice to distinguish the "sent" and "delivered" states,
+            //       but JSQMessageViewController doesn't give us a great way to do so.
+            //       We don't have a great icon for the "delivered" state,
+            //       we can't kern checkmarks together in a JSQMessageViewController
+            //       "cell bottom label", etc.
             NSAttributedString *result =
-            // Show an "..." ellisis icon.
             [[NSAttributedString alloc] initWithString:@"N"
                                             attributes:@{
                                                          NSFontAttributeName: [UIFont ows_elegantIconsFont:10.f],
@@ -1293,13 +1295,23 @@ typedef enum : NSUInteger {
                 return result;
             }
 
-            // Or when the next message is *not* an outgoing delivered message.
-            TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (!nextMessage.isOutgoingAndDelivered) {
+            // Or when the next message is *not* an outgoing sent/delivered message.
+            TSOutgoingMessage *nextMessage = [self nextOutgoingMessage:indexPath];
+            if (nextMessage &&
+                nextMessage.messageState != TSOutgoingMessageStateSent &&
+                nextMessage.messageState != TSOutgoingMessageStateDelivered) {
                 [self updateLastDeliveredMessage:message];
                 return result;
             }
         } else if (message.isMediaBeingSent) {
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"UPLOADING_MESSAGE_TEXT",
+                                                                                @"message footer while attachment is uploading")];
+        } else {
+            OWSAssert(outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut);
+            // Show an "..." ellisis icon.
+            //
+            // TODO: It'd be nice to animate this, but JSQMessageViewController doesn't give us a great way to do so.
+            //       We already have problems with unstable cell layout; we don't want to exacerbate them.
             NSAttributedString *result =
             [[NSAttributedString alloc] initWithString:@"/"
                                             attributes:@{
