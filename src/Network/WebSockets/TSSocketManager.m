@@ -12,6 +12,7 @@
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import "Threading.h"
 
 #define kWebSocketHeartBeat 30
 #define kWebSocketReconnectTry 5
@@ -35,10 +36,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 @property (nonatomic) SocketStatus status;
 
 @property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
-
-@property (nonatomic) BOOL didConnectBg;
-@property (nonatomic) BOOL didRetreiveMessageBg;
-@property (nonatomic) BOOL shouldDownloadMessage;
 
 @property (nonatomic) NSTimer *backgroundKeepAliveTimer;
 @property (nonatomic) NSTimer *backgroundConnectTimer;
@@ -72,9 +69,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     dispatch_once(&onceToken, ^{
       sharedMyManager                        = [[self alloc] init];
       sharedMyManager.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-      sharedMyManager.didConnectBg           = NO;
-      sharedMyManager.shouldDownloadMessage  = NO;
-      sharedMyManager.didRetreiveMessageBg   = NO;
     });
     return sharedMyManager;
 }
@@ -89,14 +83,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)becomeActive
 {
     OWSAssert([NSThread isMainThread]);
-    
-    if ([NSThread isMainThread]) {
+
+    DispatchMainThreadSafe(^{
         [self ensureWebsocket];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self ensureWebsocket];
-        });
-    }
+    });
 }
 
 - (void)ensureWebsocket
@@ -129,9 +119,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (NSString *)stringFromSocketStatus:(SocketStatus)status {
-    
-    // If this status update is _not_ redundant,
-    // update class state to reflect the new status.
     switch (status) {
         case kSocketStatusClosed:
             return @"Closed";
@@ -159,7 +146,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 // Therefore, we use the [setStatus:] setter to ensure alignment between
 // websocket state and class state.
 - (void)setStatus:(SocketStatus)status {
-    
+    OWSAssert([NSThread isMainThread]);
+
     // If this status update is redundant, verify that
     // class state and socket state are aligned.
     if (_status == status) {
@@ -205,7 +193,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             
             [self.reconnectTimer invalidate];
             self.reconnectTimer = nil;
-            self.didConnectBg   = YES;
             break;
         }
         case kSocketStatusConnecting: {
@@ -230,6 +217,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)resetSocket {
+    OWSAssert([NSThread isMainThread]);
+
     self.websocket.delegate = nil;
     [self.websocket close];
     self.websocket = nil;
@@ -273,8 +262,9 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
+    OWSAssert([NSThread isMainThread]);
+
     WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
-    self.didRetreiveMessageBg   = YES;
 
     if (wsMessage.type == WebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
@@ -286,6 +276,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage *)message {
+    OWSAssert([NSThread isMainThread]);
+
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
 
     [self sendWebSocketMessageAcknowledgement:message];
@@ -329,6 +321,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)processWebSocketResponseMessage:(WebSocketResponseMessage *)message {
+    OWSAssert([NSThread isMainThread]);
+
     DDLogWarn(@"Client should not receive WebSocket Respond messages");
 }
 
@@ -388,6 +382,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (BOOL)shouldKeepWebSocketAlive {
+    OWSAssert([NSThread isMainThread]);
+
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
         // If app is active, keep web socket alive.
         return YES;
@@ -425,7 +421,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 #pragma mark - Background Connect
 
 + (void)becomeActiveFromForeground {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
         [[self sharedManager] becomeActiveFromForeground];
     });
 }
@@ -441,7 +437,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 + (void)becomeActiveFromBackgroundExpectMessage:(BOOL)expected {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
         [[TSSocketManager sharedManager] becomeActiveFromBackgroundExpectMessage:expected];
     });
 }
@@ -461,9 +457,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         
         [self.backgroundKeepAliveTimer invalidate];
         self.backgroundKeepAliveTimer = nil;
-        self.didConnectBg          = NO;
-        self.didRetreiveMessageBg  = NO;
-        self.shouldDownloadMessage = expected;
         self.fetchingTaskIdentifier =
         [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             OWSAssert([NSThread isMainThread]);
@@ -479,6 +472,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)backgroundConnectTimerExpired {
+    OWSAssert([NSThread isMainThread]);
+
     [self.backgroundConnectTimer invalidate];
     self.backgroundConnectTimer = nil;
     
@@ -502,26 +497,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     [self.backgroundConnectTimer invalidate];
     self.backgroundConnectTimer = nil;
 
-    /*
-     If VOIP Push worked, we should just have to check if message was retreived and if not, alert the user.
-     But we have to rely on the server for the fallback in failed cases since background push is unreliable.
-     https://devforums.apple.com/message/1135227
-
-     if ((self.shouldDownloadMessage && !self.didRetreiveMessageBg) || !self.didConnectBg) {
-     [self backgroundConnectTimedOut];
-     }
-
-     */
-
     [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
     self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-}
-
-- (void)backgroundConnectTimedOut {
-    UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.alertBody            = NSLocalizedString(@"APN_FETCHED_FAILED", nil);
-    notification.soundName            = @"NewMessage.aifc";
-    [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 }
 
 #pragma mark UI Delegates

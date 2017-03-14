@@ -45,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread {
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread
+{
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                                messageType:TSInfoMessageUserNotRegistered];
