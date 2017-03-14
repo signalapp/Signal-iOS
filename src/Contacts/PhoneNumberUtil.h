@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import "NBPhoneNumberUtil.h"
 #import "PhoneNumber.h"
@@ -9,7 +13,6 @@
 + (NSString *)callingCodeFromCountryCode:(NSString *)code;
 + (NSString *)countryNameFromCountryCode:(NSString *)code;
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
-+ (NSArray *)validCountryCallingPrefixes:(NSString *)string;
 
 + (NSUInteger)translateCursorPosition:(NSUInteger)offset
                                  from:(NSString *)source
