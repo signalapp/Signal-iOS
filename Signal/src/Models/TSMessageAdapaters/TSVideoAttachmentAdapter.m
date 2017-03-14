@@ -170,9 +170,9 @@
         _durationLabel.text   = [self formatDuration:player.duration];
         _durationLabel.font   = [UIFont systemFontOfSize:14];
         [_durationLabel sizeToFit];
-        _durationLabel.frame = CGRectMake((size.width - _durationLabel.frame.size.width) - 10,
+        _durationLabel.frame = CGRectMake((size.width - _durationLabel.frame.size.width) - 16,
                                           _durationLabel.frame.origin.y,
-                                          _durationLabel.frame.size.width,
+                                          _durationLabel.frame.size.width + 8,
                                           AUDIO_BAR_HEIGHT);
         _durationLabel.backgroundColor = [UIColor clearColor];
         _durationLabel.textColor       = [UIColor whiteColor];
