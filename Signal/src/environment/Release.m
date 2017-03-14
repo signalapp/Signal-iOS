@@ -1,8 +1,11 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "Release.h"
 #import "DiscardingLog.h"
 #import "NotificationsManager.h"
 #import "PhoneManager.h"
-#import "PhoneNumberUtil.h"
 #import "RecentCallManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSMessageSender.h>
