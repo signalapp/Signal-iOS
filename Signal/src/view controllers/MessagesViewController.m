@@ -853,6 +853,29 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
+    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    // Limit outgoing text messages to 64kb.
+    //
+    // TODO: Convert large text messages to attachments
+    // which are presented as normal text messages.
+    const NSUInteger kMaxTextMessageSize = 64 * 1024;
+    if (text.length > kMaxTextMessageSize) {
+        UIAlertController *controller =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE",
+                                                                      @"The title of the 'text message too large' alert.")
+                                            message:NSLocalizedString(@"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE",
+                                                                      @"The message of the 'text message too large' alert.")
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:nil]];
+        [self presentViewController:controller
+                           animated:YES
+                         completion:nil];
+        return;
+    }
+    
     if (text.length > 0) {
         if ([Environment.preferences soundInForeground]) {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
