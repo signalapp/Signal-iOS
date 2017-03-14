@@ -1277,25 +1277,35 @@ typedef enum : NSUInteger {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
             return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-        } else if (message.isOutgoingAndDelivered) {
-            NSAttributedString *deliveredString =
-                [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
-
+        } else if (message.isOutgoingAndDelivered ||
+                   message.isOutgoingAndSent) {
+            // Show a checkmark icon.
+            NSAttributedString *result =
+            // Show an "..." ellisis icon.
+            [[NSAttributedString alloc] initWithString:@"N"
+                                            attributes:@{
+                                                         NSFontAttributeName: [UIFont ows_elegantIconsFont:10.f],
+                                                         }];
+            
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
                 [self updateLastDeliveredMessage:message];
-                return deliveredString;
+                return result;
             }
 
             // Or when the next message is *not* an outgoing delivered message.
             TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
             if (!nextMessage.isOutgoingAndDelivered) {
                 [self updateLastDeliveredMessage:message];
-                return deliveredString;
+                return result;
             }
         } else if (message.isMediaBeingSent) {
-            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"UPLOADING_MESSAGE_TEXT",
-                                                                  @"message footer while attachment is uploading")];
+            NSAttributedString *result =
+            [[NSAttributedString alloc] initWithString:@"/"
+                                            attributes:@{
+                                                         NSFontAttributeName: [UIFont ows_dripIconsFont:14.f],
+                                                         }];
+            return result;
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;

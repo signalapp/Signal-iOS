@@ -351,6 +351,17 @@
     return NO;
 }
 
+- (BOOL)isOutgoingAndSent
+{
+    if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateSent) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (BOOL)isOutgoingAndDelivered
 {
     if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {

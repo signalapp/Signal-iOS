@@ -1,9 +1,5 @@
 //
-//  TSMessageAdapter.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 24/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageData.h"
@@ -25,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSInteraction *interaction;
 @property (readonly) TSInfoMessageType infoMessageType;
 @property (nonatomic, readonly) CGFloat mediaViewAlpha;
-@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
 @property (nonatomic, readonly) BOOL isMediaBeingSent;
+@property (nonatomic, readonly) BOOL isOutgoingAndSent;
+@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
 
 @end
 
