@@ -62,11 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
     if (rangeOfLetters.location != NSNotFound) {
         // Contact name contains letters, so it's probably not just a phone number.
         // Make an image from the contact's initials
+        NSCharacterSet *excludeAlphanumeric = [NSCharacterSet alphanumericCharacterSet].invertedSet;
         NSArray *words =
             [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (NSString *word in words) {
-            if (word.length > 0) {
-                NSString *firstLetter = [word substringToIndex:1];
+            NSString *trimmedWord = [word stringByTrimmingCharactersInSet:excludeAlphanumeric];
+            if (trimmedWord.length > 0) {
+                NSString *firstLetter = [trimmedWord substringToIndex:1];
                 [initials appendString:[firstLetter uppercaseString]];
             }
         }
