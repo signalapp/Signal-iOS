@@ -24,7 +24,7 @@ class AttachmentApprovalViewController: UIViewController {
         assert(false)
     }
 
-    required init(attachment: SignalAttachment!, successCompletion : @escaping () -> Void) {
+    required init(attachment: SignalAttachment, successCompletion : @escaping () -> Void) {
         assert(!attachment.hasError)
         self.attachment = attachment
         self.successCompletion = successCompletion

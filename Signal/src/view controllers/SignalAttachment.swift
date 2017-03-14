@@ -213,25 +213,53 @@ class SignalAttachment: NSObject {
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                let data = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet)![0] as! Data
+                guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
+                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    return nil
+                }
                 return imageAttachment(data : data, dataUTI : dataUTI)
             }
         }
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                let data = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet)![0] as! Data
+                guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
+                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    return nil
+                }
                 return videoAttachment(data : data, dataUTI : dataUTI)
             }
         }
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                let data = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet)![0] as! Data
+                guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
+                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    return nil
+                }
                 return audioAttachment(data : data, dataUTI : dataUTI)
             }
         }
         // TODO: We could handle generic attachments at this point.
 
         return nil
+    }
+
+    // This method should only be called for dataUTIs that
+    // are appropriate for the first pasteboard item.
+    private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
+        let itemSet = IndexSet(integer:0)
+        guard let datas = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet) else {
+            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            return nil
+        }
+        guard datas.count > 0 else {
+            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            return nil
+        }
+        guard let data = datas[0] as? Data else {
+            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            return nil
+        }
+        return data
     }
 
     // MARK: Image Attachments
@@ -289,9 +317,10 @@ class SignalAttachment: NSObject {
     }
 
     private class func defaultImageUploadQuality() -> TSImageQuality {
-        // Always default to the highest possible image quality and
-        // not converting the image if possible.
-        return .uncropped
+        // Currently default to a middling image quality and size.
+        // 
+        // TODO: We're likely to change this behavior soon.
+        return .medium
     }
 
     // If the proposed attachment already conforms to the
