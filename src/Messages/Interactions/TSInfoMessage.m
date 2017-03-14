@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 15/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSInfoMessage.h"
@@ -45,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction {
+{
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                                messageType:TSInfoMessageUserNotRegistered];
