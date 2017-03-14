@@ -208,12 +208,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showScanner
 {
-    // Camera stops capturing when "sharing" while in capture mode.
-    // Also, it's less obvious whats being "shared" at this point,
-    // so just disable sharing when in capture mode.
-    self.shareButton.enabled = NO;
-
     [self ows_askForCameraPermissions:^{
+        
+        // Camera stops capturing when "sharing" while in capture mode.
+        // Also, it's less obvious whats being "shared" at this point,
+        // so just disable sharing when in capture mode.
+        self.shareButton.enabled = NO;
+
         DDLogInfo(@"%@ Showing Scanner", self.tag);
         self.qrScanningView.hidden = NO;
         self.scanningInstructions.hidden = NO;
@@ -262,7 +263,9 @@ NS_ASSUME_NONNULL_BEGIN
                                             message:successDescription
                                      preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:nil];
+        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+            [self dismissViewControllerAnimated:true completion:nil];
+    }];
     [successAlertController addAction:dismissAction];
 
     [self presentViewController:successAlertController animated:YES completion:nil];
@@ -281,7 +284,21 @@ NS_ASSUME_NONNULL_BEGIN
                                      preferredStyle:UIAlertControllerStyleAlert];
 
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler:nil];
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
+        
+        // Restore previous layout
+        self.shareButton.enabled = YES;
+        self.qrScanningView.hidden = YES;
+        self.scanningInstructions.hidden = YES;
+        [UIView animateWithDuration:0.4
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.instructionsContainer.alpha = 1.0f;
+                             self.qrContainer.frame = self.scanningContainer.frame;
+                         }
+                         completion:nil];
+    }];
     [failureAlertController addAction:dismissAction];
 
     // TODO
