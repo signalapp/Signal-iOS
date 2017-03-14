@@ -83,7 +83,7 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Pode atender chamadas diretamente do ecrã bloqueado e ver o nome e número de telefone para chamadas se alterar as definições.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
@@ -404,7 +404,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Chamada incompleta";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Não foi possível mostrar mensagem.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convidar amigos para o Signal";
@@ -836,7 +836,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificações";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar Nome e Número da chamada";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integração de chamadas iOS";
@@ -953,7 +953,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Saiba mais nas definições de privacidade.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Arrastar para Atender";

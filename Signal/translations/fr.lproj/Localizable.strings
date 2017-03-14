@@ -83,22 +83,22 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Vous pouvez répondre aux appels directement depuis votre écran de verrouillage et voir le nom et le numéro de téléphone des appels entrants si vous modifiez vos paramètres.\n\nVoir les paramètres de confidentialité pour plus de détails.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Vous pouvez voir le nom et le numéro de téléphone des appels entrants si vous modifiez vos paramètres.\n\nVoir les paramètres de confidentialité pour plus de détails.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Pas maintenant";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Afficher les paramètres de confidentialité";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Appeler en retour";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilisateur de Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le presse-papier";
@@ -140,7 +140,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l'indicatif pays";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Create new group";
+"CREATE_NEW_GROUP" = "Créer un nouveau groupe";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u jours";
@@ -182,7 +182,7 @@
 "EDIT_ITEM_SAVE_ACTION" = "Sauvegarder";
 
 /* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
+"EDIT_ITEM_SHARE_ACTION" = "Partager";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey\n\nDernièrement, j'ai utilisé Signal pour garder les conversations sur mon iPhone privé. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seul vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est disponible pour iPhones et Android. Téléchargez ici: %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, faire des appels et commencer des discussions de groupe. La meilleure partie est, personne d'autre ne peut voir tout cela, pas même les gens qui font Signal!\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici: %@ ";
@@ -269,7 +269,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec de l'envoi du message.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible d'envoyer en raison de données de confidentialité vaines.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal n'a pas pu se connecter à Internet. Essayez un autre réseau WiFi ou utilisez des données mobiles.";
@@ -404,7 +404,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Appel entrant incomplet de";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Impossible d'afficher le message.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des Amis à Signal";
@@ -482,7 +482,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nouveau message";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Appuyez ici pour les paramètres";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minutes";
@@ -677,7 +677,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Veuillez réessayer";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_BODY" = "Vous avez essayé trop souvent. Attendez une minute avant de réessayer.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Numéro enregistré";
@@ -791,13 +791,13 @@
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Exiger l'approbation d'un changement";
 
 /* Accessibility hint for the settings button */
-"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Paramètres";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer des appels";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayer tous les appels via le serveur de signal pour éviter de révéler votre adresse IP à votre contact. L'activation réduit la qualité de l'appel";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Effacer les logs de l'historique";
@@ -836,10 +836,10 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Afficher le nom et le numéro de l'appelant";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Intégration d'appels iOS";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Vie privée";
@@ -851,10 +851,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Activer l'écran de sécurité";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de signaux d'apparaître dans le commutateur d'applications.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Si iCloud est activé, l'historique des appels sera partagé avec Apple. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Appel";
@@ -950,19 +950,19 @@
 "UPDATE_BUTTON_TITLE" = "Mettre à jour";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Répondre aux appels de votre écran de verrouillage est facile avec l'intégration d'appels iOS. Nous anonymisons votre appelant par défaut, donc il est privé aussi.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "En savoir plus dans vos paramètres de confidentialité.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Glissez juste pour répondre";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend désormais en charge les appels vidéo sécurisés. Il suffit de commencer un appel comme normal, appuyez sur le bouton de la caméra, et vague salut.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bonjour Appels vidéo sécurisés!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Mise à niveau de Signal ...";
@@ -971,16 +971,16 @@
 "UPLOADING_MESSAGE_TEXT" = "En cours de chargement...";
 
 /* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Back";
+"VERIFICATION_BACK_BUTTON" = "Retour";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Code de vérification";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Appelez-moi plutôt";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Renvoyer le code par SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Envoyer le code de vérification";
@@ -989,7 +989,7 @@
 "VERIFICATION_HEADER" = "Vérifier";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Vérification: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Vérifier le numéro de sécurité";

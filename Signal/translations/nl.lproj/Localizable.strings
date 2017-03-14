@@ -404,7 +404,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Onvolledige inkomende oproep van";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Kan bericht niet weergeven.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen bij Signal";

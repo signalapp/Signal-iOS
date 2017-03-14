@@ -404,7 +404,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Telefonada incompleta de";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "No es pot mostrar el missatge.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convideu els amics al Signal";

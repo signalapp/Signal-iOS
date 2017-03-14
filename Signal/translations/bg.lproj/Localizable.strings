@@ -41,7 +41,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ група %@: %@";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Сигнал";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Архивиране";
@@ -68,37 +68,37 @@
 "ATTACHMENT_QUEUED" = "Нов прикачен файл за извличане.";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+"AUDIO_PERMISSION_MESSAGE" = "Сигнал изисква достъп до микрофона ви за да работи коректно. Можете да разрешите достъпа от Settings >> Privacy >> Microphone >> Signal";
 
 /* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+"CALL_INTERSTITIAL_CALLING_LABEL" = "Повикване ...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Повикване";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Без Отговор.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Сигнал %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можете да отговаряте на позвъняване директно от заключен екран и да виждате името и телефонния номер на входящото повикване ако промените настройките си.\nВижте в Поверителност в настройките  за детайли.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Можете да виждате името и телефонния номер на входящото повикване ако промените настройките си.\nВижте в Поверителност в настройките  за детайли.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не Сега";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Покажи Настройките за Поверителност";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Обратно Повикване";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Сигнал Потребител";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Сравнете с копираното";
@@ -140,7 +140,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Изберете Код на Държава";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Create new group";
+"CREATE_NEW_GROUP" = "Създай нова група";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u дни";
@@ -176,13 +176,13 @@
 "EDIT_GROUP_ACTION" = "Редактирай Група";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copy";
+"EDIT_ITEM_COPY_ACTION" = "Копирай";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Запази";
 
 /* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
+"EDIT_ITEM_SHARE_ACTION" = "Сподели";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Здравей,\n\nНапоследък използвам приложението Signal за сигурен чат. Инсталирай си го и ти ако желаеш, и ще можем да си пишем сигурно, както и да си говорим чрез него.\n\nSignal е налично за iPhone и Android. Свали го от тук: %@\n\nSignal работи като другите програми за чат. Може да си изпращаме снимки и видео, да водим разговори, или да правим групов чат. Най хубавото е, че приложението е сигурно и никой не може да види това което си писал, или изпращал. Дори и тези които са създали Signal!\n\nМоже да прочетеш по-вече за Open Whisper Systems, хората които са създали Signal, тук: %@";
@@ -257,19 +257,19 @@
 "END_CALL_REPLACED_BY_NEXT" = "Направихте още едно обаждане.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Заето.";
 
 /* No comment provided by engineer. */
 "END_CALL_STALE_SESSION" = "Неуспех при позвъняване.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Обаждането се провали.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Неуспешно изпращане на съобщение.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не може да се изпрати поради остаряли лични данни.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal не успя да се свърже с интернет. Моля, опитайте от друга WiFi мрежа или чрез използване на мобилни данни.";
@@ -281,10 +281,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Грешка в сървъра. Моля, опитайте отново по-късно.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Възникна неизвестна грешка.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Контакта не е Сигнал потребител.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Получено е дублирано съобщение.";
@@ -392,7 +392,7 @@
 "IN_CALL_TALKING" = "Защита. Активна.";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Обаждането Приключи.";
 
 /* notification body */
 "INCOMING_CALL" = "Входящо повикване";
@@ -401,16 +401,16 @@
 "INCOMING_CALL_FROM" = "Входящо повикване от  %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Непълно входящо повикване от";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Не може да се покаже съобщение.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Покани приятели в Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Търсене";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Покани Приятели";
@@ -482,7 +482,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ново Съобщение";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Докосни тук за настройки";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u минути";
@@ -492,7 +492,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Сигнал изисква достъп до камерата ви за видео повикване. Можете да разрешите достъпа от Settings app >> Privacy >> Camera >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -505,13 +505,13 @@
 "MSGVIEW_RECEIVED_CALL" = "Получихте обаждане от %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ се опита да ви се обади.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Ти се обади на %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Опитахте се да се обадите на %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Не можете да свържете повече устройства.";
@@ -538,7 +538,7 @@
 "NETWORK_STATUS_TEXT" = "Можете да проверите състоянието на мрежата си, като погледнете в оцветената ивица над входящите съобщения.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Нов разговор с %@";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Задай Снимка на Групата";
@@ -553,7 +553,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Добави хора";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Намери Контакти по Телефонен Номер";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Вашето съобщение не беше изпратено до %@.";
@@ -599,7 +599,7 @@
 "OUTGOING_CALL" = "Изходящо повикване";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Непълно изходящо повикване";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Това не приличат на номерата ви за сигурност с %@. Сигурни ли сте, че това е правилният контакт?";
@@ -677,7 +677,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Опитайте отново";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_BODY" = "Вие сте опитвали твърде често. Моля, изчакайте няколко минути преди да опитате отново.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Регистриран Номер";
@@ -764,7 +764,7 @@
 "SEND_INVITE_SUCCESS" = "Вие поканихте приятелят си да използва Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Изпрати покана чрез СМС до: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Покани прияте с не толкова сигурният СМС?";
@@ -791,13 +791,13 @@
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Вкл. Одобрение при Промяна";
 
 /* Accessibility hint for the settings button */
-"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Настройки";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Винаги Маскирай Обажданията";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Маскиране на всички обаждания чрез сървърите на Сигнал с чел да защитите IP адреса си. Включването може да наруши качеството на разговора.  ";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Изчисти Регистъра с История";
@@ -836,10 +836,10 @@
 "SETTINGS_NOTIFICATIONS" = "Известия";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Покажи Повикващите Име & Номер";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Интегрирани Повиквания";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Поверителност";
@@ -851,13 +851,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Вкл. Екранна Сигурност";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Забрани превю на данни от Сигнал при заключен екран.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. If iCloud is enabled, call history will be shared with Apple. You may optionally show your contact's name and number.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Интегрирани Повиквания показва Повиквания от Сигнал на заключен екран  и във историята с обаждания на телефона ви. Ако iCloud е включен, историята на обажданията ще бъде споделена със Apple. Така можете да разкриете номера на контакта ви и името му.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Повикване";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Екранна Сигурност";
@@ -911,7 +911,7 @@
 "TXT_DELETE_TITLE" = "Изтрий";
 
 /* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
+"UNABLE_TO_PLACE_CALL" = "Не може да се осъществи разговор.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Разархивиране";
@@ -950,19 +950,19 @@
 "UPDATE_BUTTON_TITLE" = "Обнови";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Приемането на входящи повиквания от заключен екран е удобно с iOS интегриране на повикванията. Данните за повикване са скрити по подразбиране така, че е и поверително.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Научете по-вече в настройките за поверителност.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто Плъзни за Отговор";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Сигнал вече поддържа сигурни видео повиквания. Просто стартирайте повикването като нормално такова, докоснете бутона за камера и помахайте за здрасти.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Здравейте Безопасни Видео Обаждания!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Обновяване на Signal ...";
@@ -971,16 +971,16 @@
 "UPLOADING_MESSAGE_TEXT" = "Качване...";
 
 /* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Back";
+"VERIFICATION_BACK_BUTTON" = "Обратно";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Код за потвърждение";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Звънни ми вместо това";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Повторно изпращане на кода чрез СМС";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Изпрати кода за потвърждение";
@@ -989,7 +989,7 @@
 "VERIFICATION_HEADER" = "Валидиране";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Валидиране: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Провери Номерата за Безопасност";
