@@ -107,4 +107,12 @@
     return [colors objectAtIndex:(choose % [colors count])];
 }
 
++ (UIColor *)colorWithRGBHex:(unsigned long)value
+{
+    CGFloat red = ((value >> 16) & 0xff) / 255.f;
+    CGFloat green = ((value >> 8) & 0xff) / 255.f;
+    CGFloat blue = ((value >> 0) & 0xff) / 255.f;
+    return [UIColor colorWithRed:red green:green blue:blue alpha:1.f];
+}
+
 @end

@@ -13,13 +13,6 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNamePreview,
 };
 
-typedef NS_ENUM(NSUInteger, TSImageQuality) {
-    TSImageQualityUncropped = 1,
-    TSImageQualityHigh = 2,
-    TSImageQualityMedium = 3,
-    TSImageQualityLow = 4
-};
-
 // Used when migrating logging to NSUserDefaults.
 extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
 extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
@@ -58,8 +51,6 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
-
-- (TSImageQuality)imageUploadQuality;
 
 + (nullable NSString *)lastRanVersion;
 + (NSString *)setAndGetCurrentVersion;

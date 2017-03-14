@@ -52,6 +52,21 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Attachment";
 
+/* Label for 'cancel' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_CANCEL_BUTTON" = "Cancel";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed, tap to retry.";
 

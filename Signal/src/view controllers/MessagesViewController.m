@@ -74,8 +74,7 @@
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 
 static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
-static NSString *const OWSMessagesViewControllerSeguePushConversationSettings =
-    @"OWSMessagesViewControllerSeguePushConversationSettings";
+static NSString *const OWSMessagesViewControllerSeguePushConversationSettings = @"OWSMessagesViewControllerSeguePushConversationSettings";
 
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
@@ -84,10 +83,96 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
-@interface MessagesViewController () {
+@protocol OWSTextViewPasteDelegate <NSObject>
+
+- (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesComposerTextView ()
+
+@property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesComposerTextView
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (BOOL)pasteBoardHasPossibleAttachment {
+    NSSet *pasteboardUTISet = [NSSet setWithArray:[UIPasteboard generalPasteboard].pasteboardTypes];
+    if ([UIPasteboard generalPasteboard].numberOfItems == 1 &&
+        [[SignalAttachment validInputUTISet] intersectsSet:pasteboardUTISet]) {
+        // We don't want to load/convert images more than once so we
+        // only do a cursory validation pass at this time.
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(paste:)) {
+        if ([self pasteBoardHasPossibleAttachment]) {
+            return YES;
+        }
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
+- (void)paste:(id)sender {
+    if ([self pasteBoardHasPossibleAttachment]) {
+        SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
+        // Note: attachment might be nil or have an error at this point; that's fine.
+        [self.textViewPasteDelegate didPasteAttachment:attachment];
+        return;
+    }
+    
+    [super paste:sender];
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesToolbarContentView
+
+#pragma mark - Class methods
+
++ (UINib *)nib
+{
+    return [UINib nibWithNibName:NSStringFromClass([OWSMessagesToolbarContentView class])
+                          bundle:[NSBundle bundleForClass:[OWSMessagesToolbarContentView class]]];
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesInputToolbar
+
+- (JSQMessagesToolbarContentView *)loadToolbarContentView {
+    NSArray *views = [[OWSMessagesToolbarContentView nib] instantiateWithOwner:nil
+                                                                       options:nil];
+    OWSAssert(views.count == 1);
+    OWSMessagesToolbarContentView *view = views[0];
+    OWSAssert([view isKindOfClass:[OWSMessagesToolbarContentView class]]);
+    return view;
+}
+
+@end
+
+#pragma mark -
+
+@interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate, OWSTextViewPasteDelegate> {
     UIImage *tappedImage;
     BOOL isGroupConversation;
-
+    
     UIView *_unreadContainer;
     UIImageView *_unreadBackground;
     UILabel *_unreadLabel;
@@ -160,7 +245,18 @@ typedef enum : NSUInteger {
     }
 
     [self commonInit];
+    
+    return self;
+}
 
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (!self) {
+        return self;
+    }
+    
+    [self commonInit];
+    
     return self;
 }
 
@@ -665,6 +761,11 @@ typedef enum : NSUInteger {
     // prevent draft from obscuring message history in case user wants to scroll back to refer to something
     // while composing a long message.
     self.inputToolbar.maximumHeight = 300;
+    
+    OWSAssert(self.inputToolbar.contentView);
+    OWSAssert(self.inputToolbar.contentView.textView);
+    self.inputToolbar.contentView.textView.pasteDelegate = self;
+    ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
 }
 
 - (nullable UILabel *)findNavbarTitleLabel
@@ -1211,7 +1312,11 @@ typedef enum : NSUInteger {
         DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
         return;
     }
-    [self performSegueWithIdentifier:OWSMessagesViewControllerSeguePushConversationSettings sender:self];
+    
+    OWSConversationSettingsTableViewController *settingsVC = [[UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:NULL]
+                                                              instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
+    [settingsVC configureWithThread:self.thread];
+    [self.navigationController pushViewController:settingsVC animated:YES];
 }
 
 - (void)didTapTitle
@@ -1726,10 +1831,6 @@ typedef enum : NSUInteger {
 
         NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:fingerprint.theirStableId];
         [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
-    } else if ([segue.destinationViewController isKindOfClass:[OWSConversationSettingsTableViewController class]]) {
-        OWSConversationSettingsTableViewController *controller
-            = (OWSConversationSettingsTableViewController *)segue.destinationViewController;
-        [controller configureWithThread:self.thread];
     } else {
         DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
     }
@@ -1809,7 +1910,18 @@ typedef enum : NSUInteger {
 
         UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
         if (imageFromCamera) {
-            [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:imageFromCamera] ofType:@"image/jpeg"];
+            SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:imageFromCamera
+                                                                              dataUTI:(NSString *) kUTTypeJPEG];
+            if (!attachment ||
+                [attachment hasError]) {
+                DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                          self.tag,
+                          __PRETTY_FUNCTION__,
+                          attachment ? [attachment errorMessage] : @"Missing data");
+                failedToPickAttachment(nil);
+            } else {
+                [self sendMessageAttachment:attachment];
+            }
         } else {
             failedToPickAttachment(nil);
         }
@@ -1827,46 +1939,47 @@ typedef enum : NSUInteger {
         options.networkAccessAllowed = YES; // iCloud OK
         options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
         [[PHImageManager defaultManager]
-            requestImageDataForAsset:asset
-                             options:options
-                       resultHandler:^(NSData *_Nullable imageData,
-                           NSString *_Nullable dataUTI,
-                           UIImageOrientation orientation,
-                           NSDictionary *_Nullable assetInfo) {
-
-                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
-                           if (assetFetchingError || !imageData) {
-                               return failedToPickAttachment(assetFetchingError);
-                           }
-                           DDLogVerbose(
-                               @"Size in bytes: %lu; detected filetype: %@", (unsigned long)imageData.length, dataUTI);
-
-                           if ([dataUTI isEqualToString:(__bridge NSString *)kUTTypeGIF]
-                               && imageData.length <= 5 * 1024 * 1024) {
-                               DDLogVerbose(@"Sending raw image/gif to retain any animation");
-                               /**
-                                * Media Size constraints lifted from Signal-Android
-                                * (org/thoughtcrime/securesms/mms/PushMediaConstraints.java)
-                                *
-                                * GifMaxSize return 5 * MB;
-                                * For reference, other media size limits we're not explicitly enforcing:
-                                * ImageMaxSize return 420 * KB;
-                                * VideoMaxSize return 100 * MB;
-                                * getAudioMaxSize 100 * MB;
-                                */
-                               [self sendMessageAttachment:imageData ofType:@"image/gif"];
-                           } else {
-                               DDLogVerbose(@"Compressing attachment as image/jpeg");
-                               UIImage *pickedImage = [[UIImage alloc] initWithData:imageData];
-                               [self sendMessageAttachment:[self qualityAdjustedAttachmentForImage:pickedImage]
-                                                    ofType:@"image/jpeg"];
-                           }
-                       }];
+         requestImageDataForAsset:asset
+         options:options
+         resultHandler:^(NSData *_Nullable imageData,
+                         NSString *_Nullable dataUTI,
+                         UIImageOrientation orientation,
+                         NSDictionary *_Nullable assetInfo) {
+             
+             NSError *assetFetchingError = assetInfo[PHImageErrorKey];
+             if (assetFetchingError || !imageData) {
+                 return failedToPickAttachment(assetFetchingError);
+             }
+             OWSAssert([NSThread isMainThread]);
+             
+             SignalAttachment *attachment = [SignalAttachment imageAttachmentWithData:imageData
+                                                                              dataUTI:dataUTI];
+             if (!attachment ||
+                 [attachment hasError]) {
+                 DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                           self.tag,
+                           __PRETTY_FUNCTION__,
+                           attachment ? [attachment errorMessage] : @"Missing data");
+                 failedToPickAttachment(nil);
+             } else {
+                 [self dismissViewControllerAnimated:YES
+                                          completion:^{
+                                              OWSAssert([NSThread isMainThread]);
+                                              [self sendMessageAttachment:attachment];
+                                          }];
+             }
+         }];
     }
 }
 
-- (void)sendMessageAttachment:(NSData *)attachmentData ofType:(NSString *)attachmentType
+- (void)sendMessageAttachment:(SignalAttachment *)attachment
 {
+    OWSAssert([NSThread isMainThread]);
+    // TODO: Should we assume non-nil or should we check for non-nil?
+    OWSAssert(attachment != nil);
+    OWSAssert(![attachment hasError]);
+    OWSAssert([attachment mimeType].length > 0);
+    
     TSOutgoingMessage *message;
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
@@ -1882,25 +1995,20 @@ typedef enum : NSUInteger {
                                                    messageBody:nil
                                                  attachmentIds:[NSMutableArray new]];
     }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                                                  (unsigned long)attachmentData.length,
-                                                  attachmentType);
-                                     [self.messageSender sendAttachmentData:attachmentData
-                                                                contentType:attachmentType
-                                                                  inMessage:message
-                                                                    success:^{
-                                                                        DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
-                                                                    }
-                                                                    failure:^(NSError *error) {
-                                                                        DDLogError(
-                                                                                   @"%@ Failed to send message attachment with error: %@", self.tag, error);
-                                                                    }];
-                                 }];
-    });
+    
+    DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                 (unsigned long)attachment.data.length,
+                 [attachment mimeType]);
+    [self.messageSender sendAttachmentData:attachment.data
+                               contentType:[attachment mimeType]
+                                 inMessage:message
+                                   success:^{
+                                       DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
+                                   }
+                                   failure:^(NSError *error) {
+                                       DDLogError(
+                                                  @"%@ Failed to send message attachment with error: %@", self.tag, error);
+                                   }];
 }
 
 - (NSURL *)videoTempFolder {
@@ -1930,75 +2038,28 @@ typedef enum : NSUInteger {
 
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-      NSError *error;
-      [self sendMessageAttachment:[NSData dataWithContentsOfURL:compressedVideoUrl] ofType:@"video/mp4"];
-      [[NSFileManager defaultManager] removeItemAtURL:compressedVideoUrl error:&error];
-      if (error) {
-          DDLogWarn(@"Failed to remove cached video file: %@", error.debugDescription);
-      }
+        NSData *videoData = [NSData dataWithContentsOfURL:compressedVideoUrl];
+        SignalAttachment *attachment = [SignalAttachment videoAttachmentWithData:videoData
+                                                                         dataUTI:(NSString *) kUTTypeMPEG4];
+        if (!attachment ||
+            [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                      self.tag,
+                      __PRETTY_FUNCTION__,
+                      attachment ? [attachment errorMessage] : @"Missing data");
+            // TODO: How should we handle errors here?
+        } else {
+            [self sendMessageAttachment:attachment];
+        }
+        
+        NSError *error;
+        [[NSFileManager defaultManager] removeItemAtURL:compressedVideoUrl error:&error];
+        if (error) {
+            DDLogWarn(@"Failed to remove cached video file: %@", error.debugDescription);
+        }
     }];
 }
 
-- (NSData *)qualityAdjustedAttachmentForImage:(UIImage *)image {
-    return UIImageJPEGRepresentation([self adjustedImageSizedForSending:image], [self compressionRate]);
-}
-
-- (UIImage *)adjustedImageSizedForSending:(UIImage *)image {
-    CGFloat correctedWidth;
-    switch ([Environment.preferences imageUploadQuality]) {
-        case TSImageQualityUncropped:
-            return image;
-
-        case TSImageQualityHigh:
-            correctedWidth = 2048;
-            break;
-        case TSImageQualityMedium:
-            correctedWidth = 1024;
-            break;
-        case TSImageQualityLow:
-            correctedWidth = 512;
-            break;
-        default:
-            break;
-    }
-
-    return [self imageScaled:image toMaxSize:correctedWidth];
-}
-
-- (UIImage *)imageScaled:(UIImage *)image toMaxSize:(CGFloat)size {
-    CGFloat scaleFactor;
-    CGFloat aspectRatio = image.size.height / image.size.width;
-
-    if (aspectRatio > 1) {
-        scaleFactor = size / image.size.width;
-    } else {
-        scaleFactor = size / image.size.height;
-    }
-
-    CGSize newSize = CGSizeMake(image.size.width * scaleFactor, image.size.height * scaleFactor);
-
-    UIGraphicsBeginImageContext(newSize);
-    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-    UIImage *updatedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return updatedImage;
-}
-
-- (CGFloat)compressionRate {
-    switch ([Environment.preferences imageUploadQuality]) {
-        case TSImageQualityUncropped:
-            return 1;
-        case TSImageQualityHigh:
-            return 0.9f;
-        case TSImageQualityMedium:
-            return 0.5f;
-        case TSImageQualityLow:
-            return 0.3f;
-        default:
-            break;
-    }
-}
 
 #pragma mark Storage access
 
@@ -2192,7 +2253,19 @@ typedef enum : NSUInteger {
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
     if (flag) {
-        [self sendMessageAttachment:[NSData dataWithContentsOfURL:recorder.url] ofType:@"audio/m4a"];
+        NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
+        SignalAttachment *attachment = [SignalAttachment audioAttachmentWithData:audioData
+                                                                         dataUTI:(NSString *) kUTTypeMPEG4Audio];
+        if (!attachment ||
+            [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                      self.tag,
+                      __PRETTY_FUNCTION__,
+                      attachment ? [attachment errorMessage] : @"Missing data");
+            // TODO: How should we handle errors here?
+        } else {
+            [self sendMessageAttachment:attachment];
+        }
     }
 }
 
@@ -2408,7 +2481,55 @@ typedef enum : NSUInteger {
         [self showConversationSettings];
     }
 }
-         
+
+#pragma mark - JSQMessagesComposerTextViewPasteDelegate
+
+- (BOOL)composerTextView:(JSQMessagesComposerTextView *)textView
+   shouldPasteWithSender:(id)sender {
+    return YES;
+}
+
+#pragma mark - OWSTextViewPasteDelegate
+
+- (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment {
+    DDLogError(@"%@ %s",
+               self.tag,
+               __PRETTY_FUNCTION__);
+    
+    if (attachment == nil ||
+        [attachment hasError]) {
+        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                  self.tag,
+                  __PRETTY_FUNCTION__,
+                  attachment ? [attachment errorMessage] : @"Missing data");
+        // TODO: Add UI.
+    } else {
+        __weak MessagesViewController *weakSelf = self;
+        UIViewController *viewController = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
+                                            successCompletion:^{
+                                                [weakSelf sendMessageAttachment:attachment];
+                                            }];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self.navigationController presentViewController:navigationController
+                                                animated:YES
+                                              completion:nil];
+    }
+}
+
+#pragma mark - Class methods
+
++ (UINib *)nib
+{
+    return [UINib nibWithNibName:NSStringFromClass([MessagesViewController class])
+                          bundle:[NSBundle bundleForClass:[MessagesViewController class]]];
+}
+
++ (instancetype)messagesViewController
+{
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([MessagesViewController class])
+                                          bundle:[NSBundle bundleForClass:[MessagesViewController class]]];
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag

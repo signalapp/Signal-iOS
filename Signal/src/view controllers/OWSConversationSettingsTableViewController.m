@@ -93,12 +93,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         return self;
     }
 
-    _storageManager = [TSStorageManager sharedManager];
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:_storageManager
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    [self commonInit];
 
     return self;
 }
@@ -110,14 +105,30 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
         return self;
     }
 
+    [self commonInit];
+
+    return self;
+}
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (!self) {
+        return self;
+    }
+    
+    [self commonInit];
+    
+    return self;
+}
+
+- (void)commonInit
+{
     _storageManager = [TSStorageManager sharedManager];
     _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
                                                        storageManager:_storageManager
                                                       contactsManager:_contactsManager
                                                       contactsUpdater:[Environment getCurrent].contactsUpdater];
-
-    return self;
 }
 
 - (void)configureWithThread:(TSThread *)thread
