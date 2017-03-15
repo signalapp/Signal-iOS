@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateUnsent,
     // The message has been sent to the service, but not received by any recipient client.
     TSOutgoingMessageStateSent,
-    // The message has been sent to the service, but not received by at least one recipient client.
+    // The message has been sent to the service and received by at least one recipient client.
     // A recipient may have more than one client, and group message may have more than one recipient.
     TSOutgoingMessageStateDelivered
 };
