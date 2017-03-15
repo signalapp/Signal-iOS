@@ -2177,12 +2177,21 @@ typedef enum : NSUInteger {
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
 
-    __block BOOL scrollToBottom = NO;
-
     if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
         return;
     }
-
+    
+    __block BOOL scrollToBottom = NO;
+    const CGFloat kIsAtBottomTolerancePts = 5;
+    BOOL wasAtBottom = (self.collectionView.contentOffset.y +
+                        self.collectionView.bounds.size.height +
+                        kIsAtBottomTolerancePts >=
+                        self.collectionView.contentSize.height);
+    // We want sending messages to feel snappy.  So, if the only
+    // update is a new outgoing message AND we're already scrolled to
+    // the bottom of the conversation, skip the scroll animation.
+    __block BOOL shouldAnimateScrollToBottom = !wasAtBottom;
+    
     [self.collectionView performBatchUpdates:^{
       for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
           switch (rowChange.type) {
@@ -2193,11 +2202,17 @@ typedef enum : NSUInteger {
                   if (collectionKey.key) {
                       [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                   }
+                  
                   break;
               }
               case YapDatabaseViewChangeInsert: {
                   [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                   scrollToBottom = YES;
+                  
+                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
+                  if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                      shouldAnimateScrollToBottom = YES;
+                  }
                   break;
               }
               case YapDatabaseViewChangeMove: {
@@ -2223,7 +2238,7 @@ typedef enum : NSUInteger {
               [self.collectionView reloadData];
           }
           if (scrollToBottom) {
-              [self scrollToBottomAnimated:YES];
+              [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
           }
         }];
 }
