@@ -56,6 +56,7 @@
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalRecipient.h>
+#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -1965,6 +1966,7 @@ typedef enum : NSUInteger {
                  [self dismissViewControllerAnimated:YES
                                           completion:^{
                                               OWSAssert([NSThread isMainThread]);
+                                              
                                               [self sendMessageAttachment:attachment];
                                           }];
              }
@@ -1974,41 +1976,42 @@ typedef enum : NSUInteger {
 
 - (void)sendMessageAttachment:(SignalAttachment *)attachment
 {
-    OWSAssert([NSThread isMainThread]);
     // TODO: Should we assume non-nil or should we check for non-nil?
     OWSAssert(attachment != nil);
     OWSAssert(![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);
     
-    TSOutgoingMessage *message;
-    OWSDisappearingMessagesConfiguration *configuration =
+    DispatchMainThreadSafe(^{
+        TSOutgoingMessage *message;
+        OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    if (configuration.isEnabled) {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:self.thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]
-                                              expiresInSeconds:configuration.durationSeconds];
-    } else {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:self.thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]];
-    }
-    
-    DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                 (unsigned long)attachment.data.length,
-                 [attachment mimeType]);
-    [self.messageSender sendAttachmentData:attachment.data
-                               contentType:[attachment mimeType]
-                                 inMessage:message
-                                   success:^{
-                                       DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
-                                   }
-                                   failure:^(NSError *error) {
-                                       DDLogError(
-                                                  @"%@ Failed to send message attachment with error: %@", self.tag, error);
-                                   }];
+        if (configuration.isEnabled) {
+            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                          inThread:self.thread
+                                                       messageBody:nil
+                                                     attachmentIds:[NSMutableArray new]
+                                                  expiresInSeconds:configuration.durationSeconds];
+        } else {
+            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                          inThread:self.thread
+                                                       messageBody:nil
+                                                     attachmentIds:[NSMutableArray new]];
+        }
+        
+        DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                     (unsigned long)attachment.data.length,
+                     [attachment mimeType]);
+        [self.messageSender sendAttachmentData:attachment.data
+                                   contentType:[attachment mimeType]
+                                     inMessage:message
+                                       success:^{
+                                           DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
+                                       }
+                                       failure:^(NSError *error) {
+                                           DDLogError(
+                                                      @"%@ Failed to send message attachment with error: %@", self.tag, error);
+                                       }];
+    });
 }
 
 - (NSURL *)videoTempFolder {
