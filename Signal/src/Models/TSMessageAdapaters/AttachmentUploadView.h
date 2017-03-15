@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSAttachmentStream;
 
 typedef void (^AttachmentStateBlock)(BOOL isAttachmentReady);
@@ -15,10 +17,10 @@ typedef void (^AttachmentStateBlock)(BOOL isAttachmentReady);
 // * Disable any media view controls using a callback.
 @interface AttachmentUploadView : NSObject
 
-@property (nonatomic, readonly) TSAttachmentStream *attachment;
-
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                          superview:(UIView *)superview
-           attachmentStateCallback:(AttachmentStateBlock)attachmentStateCallback;
+           attachmentStateCallback:(AttachmentStateBlock _Nullable)attachmentStateCallback;
 
 @end
+
+NS_ASSUME_NONNULL_END

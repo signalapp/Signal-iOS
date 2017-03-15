@@ -7,6 +7,8 @@
 #import "OWSUploadingService.h"
 #import "TSAttachmentStream.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface AttachmentUploadView ()
 
 @property (nonatomic) TSAttachmentStream *attachment;
@@ -15,7 +17,7 @@
 
 @property (nonatomic) CALayer *maskLayer;
 
-@property (nonatomic) AttachmentStateBlock attachmentStateCallback;
+@property (nonatomic) AttachmentStateBlock _Nullable attachmentStateCallback;
 
 @property (nonatomic) BOOL isAttachmentReady;
 
@@ -27,7 +29,7 @@
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                          superview:(UIView *)superview
-           attachmentStateCallback:(AttachmentStateBlock)attachmentStateCallback
+           attachmentStateCallback:(AttachmentStateBlock _Nullable)attachmentStateCallback
 {
     self = [super init];
 
@@ -116,3 +118,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
