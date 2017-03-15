@@ -2,9 +2,9 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#pragma once
-
 #import <UIKit/UIKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSProgressView : UIView
 
@@ -12,3 +12,5 @@
 @property (nonatomic) CGFloat progress;
 
 @end
+
+NS_ASSUME_NONNULL_END
