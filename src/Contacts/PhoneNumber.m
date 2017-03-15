@@ -143,7 +143,14 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
             [phoneNumberSet addObject:[phoneNumber toE164]];
         }
     };
-    
+
+    if ([sanitizedString hasPrefix:@"+"]) {
+        // If the text starts with "+", just parse it.
+        tryParsingWithCountryCode(sanitizedString, [self defaultRegionCode]);
+
+        return result;
+    }
+
     // Order matters; better results should appear first so
     // prefer matches using this client's phone number.
     if (clientPhoneNumber.length > 0) {
@@ -153,6 +160,14 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
                                        callingCodeForLocalNumber,
                                        sanitizedString],
                                       [self defaultRegionCode]);
+
+            if ([sanitizedString hasPrefix:callingCodeForLocalNumber.description]) {
+                // If the text starts with the calling code for the local number, try
+                // just adding "+" and parsing it.
+                tryParsingWithCountryCode(
+                    [NSString stringWithFormat:@"+%@", sanitizedString], [self defaultRegionCode]);
+            }
+
             // It's gratuitous to try all country codes associated with a given
             // calling code, but it can't hurt and this isn't a performance
             // hotspot.
