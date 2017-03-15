@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 // messages received from other clients
 @property (nullable, nonatomic) NSData *digest;
 
+// This only applies for attachments being uploaded.
+@property (atomic) BOOL isUploaded;
+
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
 #endif

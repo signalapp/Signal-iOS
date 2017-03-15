@@ -12,9 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSOutgoingMessage : TSMessage
 
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
+    // The message is either:
+    // a) Enqueued for sending.
+    // b) Waiting on attachment upload(s).
+    // c) Being sent to the service.
     TSOutgoingMessageStateAttemptingOut,
+    // The failure state.
     TSOutgoingMessageStateUnsent,
+    // The message has been sent to the service, but not received by any recipient client.
     TSOutgoingMessageStateSent,
+    // The message has been sent to the service and received by at least one recipient client.
+    // A recipient may have more than one client, and group message may have more than one recipient.
     TSOutgoingMessageStateDelivered
 };
 
