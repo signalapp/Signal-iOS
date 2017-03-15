@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSAttachmentPointer;
-
 @interface TSAttachment : TSYapDatabaseObject {
 
 @protected
@@ -24,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readwrite) UInt64 serverId;
 @property (atomic, readwrite) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
-// This property
 
 @property (atomic, readwrite) BOOL isDownloaded;
 
@@ -40,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer;
+- (instancetype)initWithPointer:(TSAttachment *)pointer;
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
