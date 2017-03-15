@@ -1273,22 +1273,17 @@ typedef enum : NSUInteger {
     if (message.messageType == TSOutgoingMessageAdapter) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"MESSAGE_STATUS_FAILED",
+                                                                                @"message footer for failed messages")];
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSent ||
                    outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
-            // Show a checkmark icon.
-            //
-            // TODO: It'd be nice to distinguish the "sent" and "delivered" states,
-            //       but JSQMessageViewController doesn't give us a great way to do so.
-            //       We don't have a great icon for the "delivered" state,
-            //       we can't kern checkmarks together in a JSQMessageViewController
-            //       "cell bottom label", etc.
-            NSAttributedString *result =
-            [[NSAttributedString alloc] initWithString:@"N"
-                                            attributes:@{
-                                                         NSFontAttributeName: [UIFont ows_elegantIconsFont:10.f],
-                                                         }];
-            
+            NSString *text = (outgoingMessage.messageState == TSOutgoingMessageStateSent
+                              ? NSLocalizedString(@"MESSAGE_STATUS_SENT",
+                                                  @"message footer for sent messages")
+                              : NSLocalizedString(@"MESSAGE_STATUS_DELIVERED",
+                                                  @"message footer for delivered messages"));
+            NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
+
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
                 [self updateLastDeliveredMessage:message];
@@ -1304,7 +1299,7 @@ typedef enum : NSUInteger {
                 return result;
             }
         } else if (message.isMediaBeingSent) {
-            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"UPLOADING_MESSAGE_TEXT",
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"MESSAGE_STATUS_UPLOADING",
                                                                                 @"message footer while attachment is uploading")];
         } else {
             OWSAssert(outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut);
