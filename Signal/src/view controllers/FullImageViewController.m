@@ -99,6 +99,7 @@
     [self initializeGestureRecognizers];
 
     [self populateImageView:self.image];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -299,6 +300,7 @@
 }
 
 - (void)dismiss {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO];
     self.view.userInteractionEnabled = NO;
     [UIView animateWithDuration:0.25f
         delay:0
