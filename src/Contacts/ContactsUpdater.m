@@ -60,11 +60,36 @@ NS_ASSUME_NONNULL_BEGIN
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
-
+    
     [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
                              success:^(NSSet<NSString *> *_Nonnull matchedIds) {
                                  if (matchedIds.count == 1) {
                                      success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                 } else {
+                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
+                                 }
+                             }
+                             failure:failure];
+}
+
+- (void)lookupIdentifiers:(NSArray<NSString *> *)identifiers
+                 success:(void (^)(NSArray<SignalRecipient *> *recipients))success
+                 failure:(void (^)(NSError *error))failure
+{
+    if (identifiers.count < 1) {
+        OWSAssert(NO);
+        failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
+        return;
+    }
+    
+    [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
+                             success:^(NSSet<NSString *> *_Nonnull matchedIds) {
+                                 if (matchedIds.count == 1) {
+                                     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
+                                     for (NSString *identifier in matchedIds) {
+                                         [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
+                                     }
+                                     success(recipients);
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }

@@ -14,10 +14,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
 
-// This asynchronously updates the SignalRecipient for a given contactId.
+// This asynchronously tries to verify whether or not a contact id
+// corresponds to a service account.
+//
+// The failure callback is invoked if the lookup fails _or_ if the
+// contact id doesn't correspond to an account.
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure;
+
+// This asynchronously tries to verify whether or not group of possible
+// contact ids correspond to service accounts.
+//
+// The failure callback is only invoked if the lookup fails.  Otherwise,
+// the success callback is invoked with the (possibly empty) set of contacts
+// that were found.
+- (void)lookupIdentifiers:(NSArray<NSString *> *)identifiers
+                  success:(void (^)(NSArray<SignalRecipient *> *recipients))success
+                  failure:(void (^)(NSError *error))failure;
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
                                               success:(void (^)())success

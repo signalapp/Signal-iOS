@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "NBAsYouTypeFormatter.h"
 #import "NBPhoneNumber.h"
 #import "PhoneNumber.h"
@@ -113,6 +117,60 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NSString *sanitizedString = [self removeFormattingCharacters:text];
 
     return [self phoneNumberFromUserSpecifiedText:sanitizedString];
+}
+
++ (NSArray *)tryParsePhoneNumbersFromsUserSpecifiedText:(NSString *)text
+                                      clientPhoneNumber:(NSString *)clientPhoneNumber {
+    assert(text != nil);
+    
+    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([text isEqualToString:@""]) {
+        return nil;
+    }
+    
+    NSString *sanitizedString = [self removeFormattingCharacters:text];
+    assert(sanitizedString != nil);
+    
+    NSMutableArray *result = [NSMutableArray new];
+    NSMutableSet *phoneNumberSet = [NSMutableSet new];
+    void (^tryParsingWithCountryCode)(NSString *, NSString *) = ^(NSString *text,
+                                                      NSString *countryCode) {
+        PhoneNumber *phoneNumber = [PhoneNumber phoneNumberFromText:text
+                                                          andRegion:countryCode];
+        if (phoneNumber &&
+            ![phoneNumberSet containsObject:[phoneNumber toE164]]) {
+            [result addObject:phoneNumber];
+            [phoneNumberSet addObject:[phoneNumber toE164]];
+        }
+    };
+    
+    // Order matters; better results should appear first so
+    // prefer matches using this client's phone number.
+    if (clientPhoneNumber.length > 0) {
+        NSNumber *callingCodeForLocalNumber = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
+        if (callingCodeForLocalNumber != nil) {
+            tryParsingWithCountryCode([NSString stringWithFormat:@"+%@%@",
+                                       callingCodeForLocalNumber,
+                                       sanitizedString],
+                                      [self defaultRegionCode]);
+            // It's gratuitous to try all country codes associated with a given
+            // calling code, but it can't hurt and this isn't a performance
+            // hotspot.
+            NSArray *possibleLocalCountryCodes = [PhoneNumberUtil countryCodesFromCallingCode:[NSString stringWithFormat:@"+%@",
+                                                                                               callingCodeForLocalNumber]];
+            for (NSString *countryCode in possibleLocalCountryCodes) {
+                tryParsingWithCountryCode([NSString stringWithFormat:@"+%@%@",
+                                           callingCodeForLocalNumber,
+                                           sanitizedString],
+                                          countryCode);
+            }
+        }
+    }
+    
+    // Also try matches using the phone's default region.
+    tryParsingWithCountryCode(sanitizedString, [self defaultRegionCode]);
+    
+    return result;
 }
 
 + (NSString *)removeFormattingCharacters:(NSString *)inputString {
