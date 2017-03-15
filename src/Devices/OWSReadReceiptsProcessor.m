@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -91,7 +93,7 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                               object:message];
 
         } else {
-            DDLogDebug(@"%@ Received read receipt for an unkown message. Saving it for later.", self.tag);
+            DDLogDebug(@"%@ Received read receipt for an unknown message. Saving it for later.", self.tag);
             [readReceipt save];
         }
     }

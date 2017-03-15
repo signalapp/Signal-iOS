@@ -17,6 +17,8 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
 
 @implementation TSAttachment
 
+// This constructor is used for new instances of TSAttachmentPointer,
+// i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
                    encryptionKey:(NSData *)encryptionKey
                      contentType:(NSString *)contentType
@@ -29,6 +31,39 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     _serverId = serverId;
     _encryptionKey = encryptionKey;
     _contentType = contentType;
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+    return self;
+}
+
+// This constructor is used for new instances of TSAttachmentStream
+// that represent new, un-uploaded outgoing attachments.
+- (instancetype)initWithContentType:(NSString *)contentType
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contentType = contentType;
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+    return self;
+}
+
+// This constructor is used for new instances of TSAttachmentStream
+// that represent downloaded incoming attachments.
+- (instancetype)initWithPointer:(TSAttachment *)pointer
+{
+    // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
+    self = [super initWithUniqueId:pointer.uniqueId];
+    if (!self) {
+        return self;
+    }
+
+    _serverId = pointer.serverId;
+    _encryptionKey = pointer.encryptionKey;
+    _contentType = pointer.contentType;
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
     return self;
@@ -51,14 +86,8 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {
-    if (attachmentSchemaVersion < 2) {
-        if (!_serverId) {
-            _serverId = [self.uniqueId integerValue];
-            if (!_serverId) {
-                DDLogError(@"%@ failed to parse legacy uniqueId:%@ as integer.", self.tag, self.uniqueId);
-            }
-        }
-    }
+    // This method is overridden by the base classes TSAttachmentPointer and
+    // TSAttachmentStream.
 }
 
 + (NSString *)collection {
