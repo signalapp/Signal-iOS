@@ -1,13 +1,14 @@
-//  Created by Frederic Jacobs on 17/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSVideoAttachmentAdapter.h"
+#import "AttachmentUploadView.h"
+#import "JSQMediaItem+OWS.h"
 #import "MIMETypeUtil.h"
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "JSQMediaItem+OWS.h"
-#import <FFCircularProgressView.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SCWaveformView.h>
@@ -15,18 +16,17 @@
 
 @interface TSVideoAttachmentAdapter ()
 
-@property UIImage *image;
-@property (strong, nonatomic) UIImageView *cachedImageView;
-@property (strong, nonatomic) UIImageView *videoPlayButton;
-@property (strong, nonatomic) CALayer *maskLayer;
-@property (strong, nonatomic) FFCircularProgressView *progressView;
-@property (strong, nonatomic) TSAttachmentStream *attachment;
-@property (strong, nonatomic) UIProgressView *audioProgress;
-@property (strong, nonatomic) SCWaveformView *waveform;
-@property (strong, nonatomic) UIButton *audioPlayPauseButton;
-@property (strong, nonatomic) UILabel *durationLabel;
-@property (strong, nonatomic) UIView *audioBubble;
+@property (nonatomic) UIImage *image;
+@property (nonatomic) UIImageView *cachedImageView;
+@property (nonatomic) UIImageView *videoPlayButton;
+@property (nonatomic) TSAttachmentStream *attachment;
+@property (nonatomic) UIProgressView *audioProgress;
+@property (nonatomic) SCWaveformView *waveform;
+@property (nonatomic) UIButton *audioPlayPauseButton;
+@property (nonatomic) UILabel *durationLabel;
+@property (nonatomic) UIView *audioBubble;
 @property (nonatomic) BOOL incoming;
+@property (nonatomic) AttachmentUploadView *attachmentUploadView;
 
 @end
 
@@ -121,23 +121,16 @@
             _videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
             [self.cachedImageView addSubview:_videoPlayButton];
             _videoPlayButton.hidden = YES;
-            _maskLayer              = [CALayer layer];
-            [_maskLayer setBackgroundColor:[UIColor blackColor].CGColor];
-            [_maskLayer setOpacity:0.4f];
-            [_maskLayer setFrame:self.cachedImageView.frame];
-            [self.cachedImageView.layer addSublayer:_maskLayer];
-            _progressView = [[FFCircularProgressView alloc]
-                initWithFrame:CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37)];
-            [_cachedImageView addSubview:_progressView];
-            if (_attachment.isDownloaded) {
-                _videoPlayButton.hidden = NO;
-                _maskLayer.hidden       = YES;
-                _progressView.hidden    = YES;
+
+            if (!_incoming) {
+                __weak TSVideoAttachmentAdapter *weakSelf = self;
+                self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                                   superview:imageView
+                                                                     attachmentStateCallback:^(BOOL isAttachmentReady) {
+                                                                         weakSelf.videoPlayButton.hidden
+                                                                             = !isAttachmentReady;
+                                                                     }];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(attachmentUploadProgress:)
-                                                         name:@"attachmentUploadProgress"
-                                                       object:nil];
         }
     } else if ([self isAudio]) {
         NSError *err = NULL;
@@ -192,7 +185,20 @@
         [_audioBubble addSubview:_audioPlayPauseButton];
         [_audioBubble addSubview:_durationLabel];
 
+        if (!_incoming) {
+            __weak TSVideoAttachmentAdapter *weakSelf = self;
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                               superview:_audioBubble
+                                                                 attachmentStateCallback:^(BOOL isAttachmentReady) {
+                                                                     weakSelf.audioPlayPauseButton.enabled
+                                                                         = isAttachmentReady;
+                                                                 }];
+        }
+
         return _audioBubble;
+    } else {
+        // Unknown media type.
+        OWSAssert(0);
     }
     return self.cachedImageView;
 }
@@ -213,35 +219,6 @@
 
 - (NSUInteger)hash {
     return [super hash];
-}
-
-- (void)attachmentUploadProgress:(NSNotification *)notification {
-    NSDictionary *userinfo = [notification userInfo];
-    double progress        = [[userinfo objectForKey:@"progress"] doubleValue];
-    NSString *attachmentID = [userinfo objectForKey:@"attachmentID"];
-    if ([_attachmentId isEqualToString:attachmentID]) {
-        NSLog(@"is downloaded: %d", _attachment.isDownloaded);
-        if (!isnan(progress)) {
-            [_progressView setProgress:(float)progress];
-        }
-        if (progress >= 1) {
-            _maskLayer.hidden        = YES;
-            _progressView.hidden     = YES;
-            _videoPlayButton.hidden  = NO;
-            _attachment.isDownloaded = YES; // TODO isn't this redundant with attachment processor?
-            [[TSMessagesManager sharedManager]
-                    .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-              [_attachment saveWithTransaction:transaction];
-            }];
-        }
-    }
-    // set progress on bar
-}
-
-- (void)dealloc {
-    _image           = nil;
-    _cachedImageView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {

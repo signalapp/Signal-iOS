@@ -180,29 +180,29 @@ typedef enum : NSUInteger {
     NSUInteger _unreadCount;
 }
 
-@property TSThread *thread;
-@property TSMessageAdapter *lastDeliveredMessage;
-@property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
-@property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
+@property (nonatomic) TSThread *thread;
+@property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
+@property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *incomingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
+@property (nonatomic) JSQMessagesBubbleImage *outgoingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *incomingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
 
-@property (nonatomic, strong) NSTimer *audioPlayerPoller;
-@property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
+@property (nonatomic) NSTimer *audioPlayerPoller;
+@property (nonatomic) TSVideoAttachmentAdapter *currentMediaAdapter;
 
-@property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, strong) UIView *navigationBarTitleView;
-@property (nonatomic, strong) UILabel *navigationBarTitleLabel;
-@property (nonatomic, strong) UILabel *navigationBarSubtitleLabel;
-@property (nonatomic, retain) UIButton *attachButton;
+@property (nonatomic) NSTimer *readTimer;
+@property (nonatomic) UIView *navigationBarTitleView;
+@property (nonatomic) UILabel *navigationBarTitleLabel;
+@property (nonatomic) UILabel *navigationBarSubtitleLabel;
+@property (nonatomic) UIButton *attachButton;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
-@property NSUInteger page;
+@property (nonatomic) NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
@@ -215,7 +215,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
-@property NSCache *messageAdapterCache;
+@property (nonatomic) NSCache *messageAdapterCache;
 
 @end
 

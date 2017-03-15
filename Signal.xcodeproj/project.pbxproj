@@ -12,6 +12,8 @@
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
+		34330A611E788EA900DF2FB9 /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330A601E788EA900DF2FB9 /* AttachmentUploadView.m */; };
+		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		348A08421E6A044E0057E290 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08411E6A044E0057E290 /* MessagesViewController.xib */; };
@@ -631,6 +633,10 @@
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
 		34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ElegantIcons.ttf; sourceTree = "<group>"; };
+		34330A5F1E788EA900DF2FB9 /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
+		34330A601E788EA900DF2FB9 /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
+		34330AA11E79686200DF2FB9 /* OWSProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProgressView.h; sourceTree = "<group>"; };
+		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		344F2F651E57A932000D9322 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "util/UIViewController+OWS.h"; sourceTree = "<group>"; };
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
@@ -2105,38 +2111,40 @@
 		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */,
+				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
+				451764281DE939FD00EDB8B9 /* ContactCell.xib */,
+				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
+				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
+				A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */,
+				A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */,
 				45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */,
-				45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */,
-				45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */,
-				45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */,
+				FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */,
+				FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */,
+				4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */,
+				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
+				45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */,
+				45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */,
 				45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */,
 				45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */,
 				45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */,
+				459311FA1D75C948008DD4F0 /* OWSDeviceTableViewCell.h */,
+				459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */,
+				45C681C11D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.h */,
+				45C681C21D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m */,
+				45C681C31D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib */,
+				450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */,
+				450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */,
+				450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */,
 				450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */,
 				450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */,
 				45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */,
 				45F2B1921D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.h */,
 				45F2B1931D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m */,
 				45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */,
-				A5509ECB1A69B1D600ABA4BC /* CountryCodeTableViewCell.h */,
-				A5509ECC1A69B1D600ABA4BC /* CountryCodeTableViewCell.m */,
-				FCAC963D19FEF99A0046DFC5 /* InboxTableViewCell.h */,
-				FCAC963E19FEF99A0046DFC5 /* InboxTableViewCell.m */,
-				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
-				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
-				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
-				451764281DE939FD00EDB8B9 /* ContactCell.xib */,
+				34330AA11E79686200DF2FB9 /* OWSProgressView.h */,
+				34330AA21E79686200DF2FB9 /* OWSProgressView.m */,
 				76EB053818170B33006006FC /* xibs */,
-				459311FA1D75C948008DD4F0 /* OWSDeviceTableViewCell.h */,
-				459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */,
-				450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */,
-				450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */,
-				450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */,
-				4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */,
-				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
-				45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */,
-				45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */,
-				45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -2173,19 +2181,21 @@
 		B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */ = {
 			isa = PBXGroup;
 			children = (
-				A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */,
-				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
-				B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */,
-				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
-				4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */,
-				4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */,
-				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
-				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
-				B6D3CBCE1C1376BE00C039DF /* TSContentAdapters.h */,
+				34330A5F1E788EA900DF2FB9 /* AttachmentUploadView.h */,
+				34330A601E788EA900DF2FB9 /* AttachmentUploadView.m */,
 				341BB7471DB727EE001E2975 /* JSQMediaItem+OWS.h */,
 				341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */,
-				4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */,
 				45666ECE1D995B94008FE134 /* OWSMessageData.h */,
+				4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */,
+				4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */,
+				4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */,
+				B6D3CBCE1C1376BE00C039DF /* TSContentAdapters.h */,
+				B62D53F51A23CCAD009AAF82 /* TSMessageAdapter.h */,
+				B62D53F61A23CCAD009AAF82 /* TSMessageAdapter.m */,
+				B6A3EB491A423B3800B2236B /* TSPhotoAdapter.h */,
+				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
+				A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */,
+				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
 			);
 			name = TSMessageAdapters;
 			path = TSMessageAdapaters;
@@ -3262,6 +3272,7 @@
 				B63761ED19E1FBE8005735D1 /* HttpRequestOrResponse.m in Sources */,
 				76EB05A018170B33006006FC /* IpAddress.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
+				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */,
 				45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,
 				B68EF9BB1C0B1EBD009C3DCD /* FLAnimatedImageView.m in Sources */,
@@ -3371,6 +3382,7 @@
 				45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */,
 				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
+				34330A611E788EA900DF2FB9 /* AttachmentUploadView.m in Sources */,
 				76EB05B218170B33006006FC /* DH3KKeyAgreementProtocol.m in Sources */,
 				B63761EC19E1FBE8005735D1 /* HttpRequest.m in Sources */,
 				45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */,
