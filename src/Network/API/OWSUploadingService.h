@@ -1,11 +1,16 @@
-//  Created by Michael Kirk on 10/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSOutgoingMessage;
 @class TSNetworkManager;
 @class TSAttachmentStream;
+
+extern NSString *const kAttachmentUploadProgressNotification;
+extern NSString *const kAttachmentUploadProgressKey;
+extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 @interface OWSUploadingService : NSObject
 

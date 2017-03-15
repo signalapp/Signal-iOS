@@ -12,6 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kAttachmentUploadProgressNotification = @"kAttachmentUploadProgressNotification";
+NSString *const kAttachmentUploadProgressKey = @"kAttachmentUploadProgressKey";
+NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachmentIDKey";
+
 @interface OWSUploadingService ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
@@ -79,9 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
                                     location:location
                                 attachmentId:attachmentStream.uniqueId
                                      success:^{
-                                         DDLogInfo(@"%@ Uploaded attachment.", self.tag);
+                                         OWSAssert([NSThread isMainThread]);
+
+                                         DDLogInfo(@"%@ Uploaded attachment: %p.", self.tag, attachmentStream);
                                          attachmentStream.serverId = serverId;
-                                         attachmentStream.isDownloaded = YES;
+                                         attachmentStream.isUploaded = YES;
                                          [attachmentStream save];
 
                                          successHandler();
@@ -111,20 +117,18 @@ NS_ASSUME_NONNULL_BEGIN
     AFURLSessionManager *manager = [[AFURLSessionManager alloc]
         initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 
+    [self fireProgressNotification:0 attachmentId:attachmentId];
+
     NSURLSessionUploadTask *uploadTask;
     uploadTask = [manager uploadTaskWithRequest:request
         fromData:cipherText
         progress:^(NSProgress *_Nonnull uploadProgress) {
-            NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-            [notificationCenter postNotificationName:@"attachmentUploadProgress"
-                                              object:nil
-                                            userInfo:@{
-                                                @"progress" : @(uploadProgress.fractionCompleted),
-                                                @"attachmentId" : attachmentId
-                                            }];
+            [self fireProgressNotification:uploadProgress.fractionCompleted attachmentId:attachmentId];
         }
         completionHandler:^(NSURLResponse *_Nonnull response, id _Nullable responseObject, NSError *_Nullable error) {
+            OWSAssert([NSThread isMainThread]);
             if (error) {
+                [self fireProgressNotification:0 attachmentId:attachmentId];
                 return failureHandler(error);
             }
 
@@ -137,9 +141,24 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             successHandler();
+
+            [self fireProgressNotification:1 attachmentId:attachmentId];
         }];
 
     [uploadTask resume];
+}
+
+- (void)fireProgressNotification:(CGFloat)progress attachmentId:(NSString *)attachmentId
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        [notificationCenter postNotificationName:kAttachmentUploadProgressNotification
+                                          object:nil
+                                        userInfo:@{
+                                            kAttachmentUploadProgressKey : @(progress),
+                                            kAttachmentUploadAttachmentIDKey : attachmentId
+                                        }];
+    });
 }
 
 #pragma mark - Logging
