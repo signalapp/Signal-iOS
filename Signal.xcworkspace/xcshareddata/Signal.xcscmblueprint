@@ -1,24 +1,30 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C",
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++ED4C31A",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "90530B99EB0008E7A50951FDFBE02169118FA649" : 0,
-    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : 0,
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : 0,
-    "ABB939127996C66F7E852A780552ADEEF03C6B13" : 0,
-    "8176314449001F06FB0E5B588C62133EAA2FE911" : 9223372036854775807,
-    "D74FB800F048CB516BB4BC70047F7CC676D291B9" : 0
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++ED4C31A" : 0,
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++901E7D4" : 0,
+    "8176314449001F06FB0E5B588C62133EAA2FE911+++31C7255" : 9223372036854775807,
+    "D74FB800F048CB516BB4BC70047F7CC676D291B9+++375B249" : 0,
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++03D0758" : 0,
+    "ABB939127996C66F7E852A780552ADEEF03C6B13+++69179A3" : 0,
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++E57A04A" : 0,
+    "8176314449001F06FB0E5B588C62133EAA2FE911+++E19D6E3" : 9223372036854775807,
+    "90530B99EB0008E7A50951FDFBE02169118FA649+++EF2C0B3" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D0F297E7-A82D-4657-A941-96B268F80ABC",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "90530B99EB0008E7A50951FDFBE02169118FA649" : "JSQMessagesViewController\/",
-    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C" : "Signal-iOS-5\/",
-    "37054CE35CE656680D6FFFA9EE19249E0D149C5E" : "SignalServiceKit\/",
-    "ABB939127996C66F7E852A780552ADEEF03C6B13" : "SocketRocket\/",
-    "8176314449001F06FB0E5B588C62133EAA2FE911" : "Signal-iOS-5\/Carthage\/",
-    "D74FB800F048CB516BB4BC70047F7CC676D291B9" : "Signal-iOS\/Pods\/"
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++ED4C31A" : "Signal-iOS\/",
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++901E7D4" : "SignalServiceKit\/",
+    "8176314449001F06FB0E5B588C62133EAA2FE911+++31C7255" : "Signal-iOS-5\/Carthage\/",
+    "D74FB800F048CB516BB4BC70047F7CC676D291B9+++375B249" : "Signal-iOS\/Pods\/",
+    "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++03D0758" : "Signal-iOS-5\/",
+    "ABB939127996C66F7E852A780552ADEEF03C6B13+++69179A3" : "SocketRocket\/",
+    "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++E57A04A" : "SignalServiceKit\/",
+    "8176314449001F06FB0E5B588C62133EAA2FE911+++E19D6E3" : "Signal-iOS\/Carthage\/",
+    "90530B99EB0008E7A50951FDFBE02169118FA649+++EF2C0B3" : "JSQMessagesViewController\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Signal",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
@@ -27,37 +33,47 @@
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/SignalProtocolKit.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37054CE35CE656680D6FFFA9EE19249E0D149C5E"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++901E7D4"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:FredericJacobs\/TextSecureKit.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37054CE35CE656680D6FFFA9EE19249E0D149C5E"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37054CE35CE656680D6FFFA9EE19249E0D149C5E+++E57A04A"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/Signal-iOS.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++03D0758"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/Signal-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D79A077E31B3FE97A3C6613CBFFDD71C314D14C+++ED4C31A"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:michaelkirk\/Signal-Carthage.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8176314449001F06FB0E5B588C62133EAA2FE911"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8176314449001F06FB0E5B588C62133EAA2FE911+++31C7255"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/Signal-Carthage.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8176314449001F06FB0E5B588C62133EAA2FE911+++E19D6E3"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/JSQMessagesViewController.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90530B99EB0008E7A50951FDFBE02169118FA649"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "90530B99EB0008E7A50951FDFBE02169118FA649+++EF2C0B3"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:WhisperSystems\/SocketRocket.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "ABB939127996C66F7E852A780552ADEEF03C6B13"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "ABB939127996C66F7E852A780552ADEEF03C6B13+++69179A3"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/FredericJacobs\/Precompiled-Signal-Dependencies.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D74FB800F048CB516BB4BC70047F7CC676D291B9"
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D74FB800F048CB516BB4BC70047F7CC676D291B9+++375B249"
     }
   ]
 }

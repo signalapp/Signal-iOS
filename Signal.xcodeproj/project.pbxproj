@@ -3011,6 +3011,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -3027,6 +3028,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (

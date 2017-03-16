@@ -16,7 +16,7 @@ ci: dependencies test
 
 update_dependencies:
 	pod update
-	carthage update
+	carthage update --platform iOS
 
 dependencies:
 	cd $(WORKING_DIR) && \
