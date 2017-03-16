@@ -860,7 +860,7 @@ typedef enum : NSUInteger {
     // TODO: Convert large text messages to attachments
     // which are presented as normal text messages.
     const NSUInteger kMaxTextMessageSize = 64 * 1024;
-    if (text.length > kMaxTextMessageSize) {
+    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kMaxTextMessageSize) {
         UIAlertController *controller =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE",
                                                                       @"The title of the 'text message too large' alert.")
