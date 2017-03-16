@@ -136,7 +136,7 @@ CHECKOUT OPTIONS:
     :commit: a3c843cc8a423c5924c663490978f81dba34d04e
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: ca81e139bbe968dbaf41445ea4c92d45f57f6f5f
+    :commit: 312f398dddb5eac902ae5a7739f0ae814caa7912
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
@@ -169,4 +169,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 7088298933b189805c955880c8d1be86da3078af
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.1.1
