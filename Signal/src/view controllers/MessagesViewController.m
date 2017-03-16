@@ -333,6 +333,7 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self.navigationController.navigationBar setTranslucent:NO];
+    [self.navigationController.interactivePopGestureRecognizer setDelegate:self];
 
     self.messageAdapterCache = [[NSCache alloc] init];
 
@@ -1858,6 +1859,14 @@ typedef enum : NSUInteger {
     } else {
         DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
     }
+}
+
+
+#pragma mark - UIGestureRecognizerDeletgate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
 }
 
 
