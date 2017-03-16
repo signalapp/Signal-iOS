@@ -33,8 +33,8 @@
 // number.
 //
 // Order matters; better results will appear first.
-+ (NSArray *)tryParsePhoneNumbersFromsUserSpecifiedText:(NSString *)text
-                                      clientPhoneNumber:(NSString *)clientPhoneNumber;
++ (NSArray<PhoneNumber *> *)tryParsePhoneNumbersFromsUserSpecifiedText:(NSString *)text
+                                                     clientPhoneNumber:(NSString *)clientPhoneNumber;
 
 + (NSString *)removeFormattingCharacters:(NSString *)inputString;
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input;

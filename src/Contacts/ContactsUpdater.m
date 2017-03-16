@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      for (NSString *identifier in matchedIds) {
                                          [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
                                      }
-                                     success(recipients);
+                                     success([recipients copy]);
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }

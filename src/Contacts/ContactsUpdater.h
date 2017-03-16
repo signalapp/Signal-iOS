@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                  success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure;
 
-// This asynchronously tries to verify whether or not group of possible
+// This asynchronously tries to verify whether or not a group of possible
 // contact ids correspond to service accounts.
 //
 // The failure callback is only invoked if the lookup fails.  Otherwise,
