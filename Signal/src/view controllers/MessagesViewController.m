@@ -1916,6 +1916,8 @@ typedef enum : NSUInteger {
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
+    OWSAssert([NSThread isMainThread]);
+    
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
@@ -1928,27 +1930,36 @@ typedef enum : NSUInteger {
         // Video picked from library or captured with camera
 
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        [self sendQualityAdjustedAttachmentForVideo:videoURL];
+        [self dismissViewControllerAnimated:YES
+                                 completion:^{
+                                     [self sendQualityAdjustedAttachmentForVideo:videoURL];
+                                 }];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
 
         UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
-        if (imageFromCamera) {
-            SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:imageFromCamera
-                                                                              dataUTI:(NSString *) kUTTypeJPEG];
-            if (!attachment ||
-                [attachment hasError]) {
-                DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                          self.tag,
-                          __PRETTY_FUNCTION__,
-                          attachment ? [attachment errorMessage] : @"Missing data");
-                failedToPickAttachment(nil);
-            } else {
-                [self sendMessageAttachment:attachment];
-            }
-        } else {
-            failedToPickAttachment(nil);
-        }
+        
+        [self dismissViewControllerAnimated:YES
+                                 completion:^{
+                                     OWSAssert([NSThread isMainThread]);
+                                     
+                                     if (imageFromCamera) {
+                                         SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:imageFromCamera
+                                                                                                           dataUTI:(NSString *) kUTTypeJPEG];
+                                         if (!attachment ||
+                                             [attachment hasError]) {
+                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                                                       self.tag,
+                                                       __PRETTY_FUNCTION__,
+                                                       attachment ? [attachment errorMessage] : @"Missing data");
+                                             failedToPickAttachment(nil);
+                                         } else {
+                                             [self sendMessageAttachment:attachment];
+                                         }
+                                     } else {
+                                         failedToPickAttachment(nil);
+                                     }
+                                 }];
     } else {
         // Non-Video image picked from library
 
