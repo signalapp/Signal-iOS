@@ -35,10 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
-@property (nonatomic) NSArray *searchPhoneNumbers;
+@property (nonatomic) NSArray<NSString *> *searchPhoneNumbers;
 // A list of possible phone numbers parsed from the search text
 // that correspond to known accounts as E164 values.
-@property (nonatomic) NSArray *searchPhoneNumberWithAccounts;
+@property (nonatomic) NSArray<NSString *> *searchPhoneNumberWithAccounts;
 // This dictionary is used to cache the set of phone numbers
 // which are known to correspond to Signal accounts.
 @property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
@@ -63,7 +63,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     MessageComposeTableViewControllerSection_Count // meta section
 };
 
-NSString *const MessageComposeTableViewControllerCellInvite = @"ContactTableInviteCell";
 NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableViewCell";
 
 @implementation MessageComposeTableViewController
@@ -350,7 +349,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts: self.contacts];
     self.searchResults = [contactsSearcher filterWithString:searchText];
 
-    NSMutableArray *searchPhoneNumbers = [NSMutableArray new];
+    NSMutableArray<NSString *> *searchPhoneNumbers = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
                                                                            clientPhoneNumber:[TSStorageManager localNumber]]) {
         [searchPhoneNumbers addObject:phoneNumber.toE164];
@@ -398,7 +397,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                               }];
 }
 
-- (void)setSearchPhoneNumbers:(NSArray *)searchPhoneNumbers {
+- (void)setSearchPhoneNumbers:(NSArray<NSString *> *)searchPhoneNumbers {
     if ([_searchPhoneNumbers isEqual:searchPhoneNumbers]) {
         return;
     }
@@ -411,16 +410,17 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)ensureSearchPhoneNumberWithAccounts {
-    NSMutableArray *searchPhoneNumberWithAccounts = [NSMutableArray new];
+    NSMutableArray<NSString *> *searchPhoneNumberWithAccounts = [NSMutableArray new];
     for (NSString *phoneNumber in self.searchPhoneNumbers) {
-        if ([self.phoneNumberAccountSet containsObject:phoneNumber]) {
+        if ([self.phoneNumberAccountSet containsObject:phoneNumber] &&
+            ![searchPhoneNumberWithAccounts containsObject:phoneNumber]) {
             [searchPhoneNumberWithAccounts addObject:phoneNumber];
         }
     }
     self.searchPhoneNumberWithAccounts = searchPhoneNumberWithAccounts;
 }
 
-- (void)setSearchPhoneNumberWithAccounts:(NSArray *)searchPhoneNumberWithAccounts {
+- (void)setSearchPhoneNumberWithAccounts:(NSArray<NSString *> *)searchPhoneNumberWithAccounts {
     if ([_searchPhoneNumberWithAccounts isEqual:searchPhoneNumberWithAccounts]) {
         return;
     }
@@ -604,6 +604,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
+        cell.hidden = NO;
 
         [cell configureWithContact:[self contactForIndexPath:indexPath] contactsManager:self.contactsManager];
 
