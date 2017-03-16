@@ -81,9 +81,6 @@
     test([PhoneNumberUtil translateCursorPosition:4 from:@"(5551) 234-567" to:@"(555) 123-4567" stickingRightward:false] == 4);
     test([PhoneNumberUtil translateCursorPosition:5 from:@"(5551) 234-567" to:@"(555) 123-4567" stickingRightward:false] == 7);
 }
-//+ (NSString *)callingCodeFromCountryCode:(NSString *)code;
-//+ (NSString *)countryNameFromCountryCode:(NSString *)code;
-//+ (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
 
 - (void)testCallingCodeFromCountryCode
 {
@@ -109,7 +106,7 @@
 {
 // PhoneNumberUtil needs a valid OWSContactsManager in the TextSecureKitEnv,
 // but we want to avoid constructing the entire app apparatus so we pass nil
-// for the other parameters of the environemtn and disable nonnull warnings.
+// for the other parameters of the environment and disable nonnull warnings.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnonnull"
     TextSecureKitEnv *sharedEnv = [[TextSecureKitEnv alloc] initWithCallMessageHandler:nil
