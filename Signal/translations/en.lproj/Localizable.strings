@@ -52,9 +52,6 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Attachment";
 
-/* Label for 'cancel' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_CANCEL_BUTTON" = "Cancel";
-
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
 
@@ -147,6 +144,12 @@
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
