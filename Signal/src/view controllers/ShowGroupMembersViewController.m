@@ -164,7 +164,11 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             view.displayedPerson           = aContact; // Assume person is already defined.
             view.allowsAddingToAddressBook = YES;
             
-            [UIUtil applyDefaultSystemAppearence]; // Required to have nav bar buttons show in Create New Contact
+            // Required to have nav bar buttons show in Create New Contact
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
+            [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
+            
             [self.navigationController pushViewController:view animated:YES];
         }
     }
