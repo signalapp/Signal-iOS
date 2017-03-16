@@ -32,9 +32,9 @@ import Foundation
         let characterCount = text.characters.count
         // discard any zalgo style text, which we detect by enforcing avg bytes per character ratio.
         if byteCount / characterCount > 10 {
+            Logger.warn("filtering undisplayable text bytes: \(byteCount), characterCount: \(characterCount)")
             return true
         } else {
-            Logger.warn("filtering undisplayable text bytes: \(byteCount), characterCount: \(characterCount)")
             return false
         }
     }
