@@ -30,8 +30,8 @@
 }
 
 // country code -> country name
-+ (NSString *)countryNameFromCountryCode:(NSString *)code {
-    NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : code};
++ (NSString *)countryNameFromCountryCode:(NSString *)countryCode {
+    NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
     NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
     NSString *country                  = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier value:identifier];
     return country;
@@ -84,6 +84,17 @@
                                       COUNTRY_CODE_PREFIX,
                                       [[[self sharedUtil] nbPhoneNumberUtil] getCountryCodeForRegion:countryCode]];
     return callingCode;
+}
+
++ (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode {
+    NSMutableArray *countryCodes = [NSMutableArray new];
+    for (NSString *countryCode in NSLocale.ISOCountryCodes) {
+        NSString *callingCodeForCountryCode = [self callingCodeFromCountryCode:countryCode];
+        if ([callingCode isEqualToString:callingCodeForCountryCode]) {
+            [countryCodes addObject:countryCode];
+        }
+    }
+    return countryCodes;
 }
 
 // search term -> country codes
