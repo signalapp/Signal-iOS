@@ -37,8 +37,6 @@ PODS:
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
   - OpenSSL (1.0.210)
-  - PastelogKit (1.3):
-    - CocoaLumberjack (~> 2.0)
   - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
   - Reachability (3.2)
@@ -117,7 +115,6 @@ DEPENDENCIES:
   - FFCircularProgressView (~> 0.5)
   - JSQMessagesViewController
   - OpenSSL
-  - PastelogKit (~> 1.3)
   - PureLayout
   - SCWaveformView (~> 1.0)
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
@@ -154,7 +151,6 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: 63bab980d1fc9783d82d955800ac9d7c1d81fde3
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
-  PastelogKit: 7b475be4cf577713506a943dd940bcc0499c8bca
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -167,6 +163,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: 7088298933b189805c955880c8d1be86da3078af
+PODFILE CHECKSUM: e1b30ecf8ba192005de35b7e0928ed01ae8a91ba
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.2.0

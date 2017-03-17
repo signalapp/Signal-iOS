@@ -22,7 +22,7 @@
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
-#import <PastelogKit/Pastelog.h>
+#import "Pastelog.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
