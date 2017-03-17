@@ -63,9 +63,17 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSString *> *supportedAttachmentIds = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
+
+        OWSAssert(attachmentProto.id != 0);
+        OWSAssert(attachmentProto.key != nil);
+        OWSAssert(attachmentProto.contentType != nil);
+
+        // digest will be empty for old clients.
+        NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
+
         TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                                  key:attachmentProto.key
-                                                                              digest:attachmentProto.digest
+                                                                              digest:digest
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay];
 

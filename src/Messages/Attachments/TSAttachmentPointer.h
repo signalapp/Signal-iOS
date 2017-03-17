@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
-                          digest:(NSData *)digest
+                          digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay NS_DESIGNATED_INITIALIZER;
 
