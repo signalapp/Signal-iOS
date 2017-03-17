@@ -41,6 +41,163 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
+ * getting proper keys,
+ * and retrying upon failure.
+ *
+ * Used by `OWSMessageSender` to serialize message sending, ensuring that messages are emitted in the order they
+ * were sent.
+ */
+@interface OWSSendMessageOperation : NSOperation
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithMessage:(TSOutgoingMessage *)message
+                  messageSender:(OWSMessageSender *)messageSender
+                        success:(void (^)())successHandler
+                        failure:(void (^)(NSError *_Nonnull error))failureHandler NS_DESIGNATED_INITIALIZER;
+
+@end
+
+typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
+    OWSSendMessageOperationStateNew,
+    OWSSendMessageOperationStateExecuting,
+    OWSSendMessageOperationStateFinished
+};
+
+@interface OWSMessageSender (OWSSendMessageOperation)
+
+- (void)attemptToSendMessage:(TSOutgoingMessage *)message
+                     success:(void (^)())successHandler
+                     failure:(void (^)(NSError *error))failureHandler;
+
+@end
+
+NSString *const OWSSendMessageOperationKeyIsExecuting = @"isExecuting";
+NSString *const OWSSendMessageOperationKeyIsFinished = @"isFinished";
+
+NSUInteger const OWSSendMessageOperationMaxRetries = 4;
+
+@interface OWSSendMessageOperation ()
+
+@property (nonatomic, readonly) TSOutgoingMessage *message;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) void (^successHandler)();
+@property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
+@property (atomic) OWSSendMessageOperationState operationState;
+
+@end
+
+@implementation OWSSendMessageOperation
+
+- (instancetype)initWithMessage:(TSOutgoingMessage *)message
+                  messageSender:(OWSMessageSender *)messageSender
+                        success:(void (^)())aSuccessHandler
+                        failure:(void (^)(NSError *_Nonnull error))aFailureHandler
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _operationState = OWSSendMessageOperationStateNew;
+
+    _message = message;
+    _messageSender = messageSender;
+
+    __weak typeof(self) weakSelf = self;
+    _successHandler = ^{
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        DDLogDebug(@"%@ succeeded.", strongSelf.tag);
+        aSuccessHandler();
+        [strongSelf markAsComplete];
+    };
+
+    _failureHandler = ^(NSError *_Nonnull error) {
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
+        aFailureHandler(error);
+        [strongSelf markAsComplete];
+    };
+
+    return self;
+}
+
+#pragma mark - NSOperation overrides
+
+- (BOOL)isExecuting
+{
+    return self.operationState == OWSSendMessageOperationStateExecuting;
+}
+
+- (BOOL)isFinished
+{
+    return self.operationState == OWSSendMessageOperationStateFinished;
+}
+
+- (void)start
+{
+    [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
+    self.operationState = OWSSendMessageOperationStateExecuting;
+    [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
+    [self main];
+}
+
+- (void)main
+{
+    [self tryWithRemainingRetries:OWSSendMessageOperationMaxRetries];
+}
+
+#pragma mark - methods
+
+- (void)tryWithRemainingRetries:(NSUInteger)remainingRetries
+{
+    DDLogDebug(@"%@ remainingRetries: %lu", self.tag, remainingRetries);
+
+    void (^retryableFailureHandler)(NSError *_Nonnull) = ^(NSError *_Nonnull error) {
+        DDLogInfo(@"%@ Sending failed.", self.tag);
+        if (remainingRetries > 0) {
+            [self tryWithRemainingRetries:remainingRetries - 1];
+        } else {
+            DDLogWarn(@"%@ Too many failures. Giving up sending.", self.tag);
+            self.failureHandler(error);
+        }
+    };
+
+    [self.messageSender attemptToSendMessage:self.message success:self.successHandler failure:retryableFailureHandler];
+}
+
+- (void)markAsComplete
+{
+    [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
+    [self willChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
+    self.operationState = OWSSendMessageOperationStateFinished;
+    [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
+    [self didChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
+@end
+
+
 int const OWSMessageSenderRetryAttempts = 3;
 NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceException";
 NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
@@ -54,6 +211,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) NSOperationQueue *sendingQueue;
 
 @end
 
@@ -73,6 +231,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     _storageManager = storageManager;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
+    _sendingQueue = [NSOperationQueue new];
+    _sendingQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
+    _sendingQueue.maxConcurrentOperationCount = 1;
 
     _uploadingService = [[OWSUploadingService alloc] initWithNetworkManager:networkManager];
     _dbConnection = storageManager.newDatabaseConnection;
@@ -84,6 +245,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)sendMessage:(TSOutgoingMessage *)message
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
+{
+    OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
+                                                                                       messageSender:self
+                                                                                             success:successHandler
+                                                                                             failure:failureHandler];
+    [self.sendingQueue addOperation:sendMessageOperation];
+}
+
+- (void)attemptToSendMessage:(TSOutgoingMessage *)message
+                     success:(void (^)())successHandler
+                     failure:(void (^)(NSError *error))failureHandler
 {
     DDLogDebug(@"%@ sending message: %@", self.tag, message.debugDescription);
     void (^markAndFailureHandler)(NSError *error) = ^(NSError *error) {
