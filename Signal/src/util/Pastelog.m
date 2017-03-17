@@ -36,7 +36,7 @@
     [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
             sharedManager.gistURL = urlString;
-            sharedManager.submitAlertView = [[UIAlertView alloc] initWithTitle:@"One More Step" message:@"What would you like to do with the link to your debug log?" delegate:[self sharedManager] cancelButtonTitle:@"Create GitHub Issue" otherButtonTitles:@"Email Link", @"Copy Link", nil];
+            sharedManager.submitAlertView = [[UIAlertView alloc] initWithTitle:@"One More Step" message:@"What would you like to do with the link to your debug log?" delegate:[self sharedManager] cancelButtonTitle:@"Open a Bug Report" otherButtonTitles:@"Email Support", @"Copy Link", nil];
             [sharedManager.submitAlertView show];
         } else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
