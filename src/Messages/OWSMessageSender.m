@@ -246,6 +246,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
                                                                                              success:successHandler
@@ -339,8 +340,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [attachmentStream save];
         [message.attachmentIds addObject:attachmentStream.uniqueId];
-
-        message.messageState = TSOutgoingMessageStateAttemptingOut;
         [message save];
 
         [self sendMessage:message success:successHandler failure:failureHandler];
@@ -438,9 +437,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             || [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
             TSContactThread *contactThread = (TSContactThread *)thread;
-
-            [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
-
             if ([contactThread.contactIdentifier isEqualToString:self.storageManager.localNumber]
                 && ![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
