@@ -25,6 +25,7 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
+NSString *const PropertyListPreferencesKeyDefaultBrowser = @"DefaultBrowser";
 
 @implementation PropertyListPreferences
 
@@ -108,6 +109,19 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     } else {
         return YES;
     }
+}
+
+- (NSString *)defaultBrowser
+{
+    NSString *preference = [self tryGetValueForKey:PropertyListPreferencesKeyDefaultBrowser];
+    if (preference == nil) {
+        return @"Safari";
+    }
+    return preference;
+}
+
+- (void)setDefaultBrowser:(NSString *)browserName {
+    [self setValueForKey:PropertyListPreferencesKeyDefaultBrowser toValue:browserName];
 }
 
 - (void)setScreenSecurity:(BOOL)flag

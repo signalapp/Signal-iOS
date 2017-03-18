@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0773FC2A1E7D509700C1E683 /* OWSMessageViewCellDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0773FC291E7D509700C1E683 /* OWSMessageViewCellDelegate.m */; };
+		0773FC301E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0773FC2F1E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.m */; };
+		0773FC331E7D5FF800C1E683 /* BrowserUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0773FC321E7D5FF800C1E683 /* BrowserUtil.m */; };
 		340757C21E5602D6001F15DD /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 340757C11E5602D6001F15DD /* AttachmentSharing.m */; };
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
@@ -619,6 +622,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0773FC281E7D509700C1E683 /* OWSMessageViewCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageViewCellDelegate.h; sourceTree = "<group>"; };
+		0773FC291E7D509700C1E683 /* OWSMessageViewCellDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageViewCellDelegate.m; sourceTree = "<group>"; };
+		0773FC2E1E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultBrowserSelectionViewController.h; sourceTree = "<group>"; };
+		0773FC2F1E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultBrowserSelectionViewController.m; sourceTree = "<group>"; };
+		0773FC311E7D5FDA00C1E683 /* BrowserUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrowserUtil.h; sourceTree = "<group>"; };
+		0773FC321E7D5FF800C1E683 /* BrowserUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserUtil.m; sourceTree = "<group>"; };
 		1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		340757C01E5602D6001F15DD /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
 		340757C11E5602D6001F15DD /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
@@ -2023,6 +2032,8 @@
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
 				453201241E71100C00F20761 /* DisplayableTextFilter.swift */,
+				0773FC311E7D5FDA00C1E683 /* BrowserUtil.h */,
+				0773FC321E7D5FF800C1E683 /* BrowserUtil.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2061,6 +2072,8 @@
 		76EB04FE18170B33006006FC /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				0773FC281E7D509700C1E683 /* OWSMessageViewCellDelegate.h */,
+				0773FC291E7D509700C1E683 /* OWSMessageViewCellDelegate.m */,
 				340757C01E5602D6001F15DD /* AttachmentSharing.h */,
 				340757C11E5602D6001F15DD /* AttachmentSharing.m */,
 				451764261DE939F300EDB8B9 /* ContactsPicker.swift */,
@@ -2638,6 +2651,8 @@
 		FC3196311A08141D0094C78E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0773FC2E1E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.h */,
+				0773FC2F1E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.m */,
 				FC31962E1A0814130094C78E /* SettingsTableViewController.h */,
 				FC31962F1A0814130094C78E /* SettingsTableViewController.m */,
 				FCD274E01A5AFD8000202277 /* PrivacySettingsTableViewController.h */,
@@ -3139,6 +3154,7 @@
 				B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */,
 				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				45CD81F21DC03A22004C9430 /* OWSLogger.m in Sources */,
+				0773FC2A1E7D509700C1E683 /* OWSMessageViewCellDelegate.m in Sources */,
 				76EB05AC18170B33006006FC /* SrtpSocket.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
@@ -3199,6 +3215,7 @@
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
+				0773FC301E7D5DB100C1E683 /* DefaultBrowserSelectionViewController.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
 				B6258B331C29E2E60014138E /* NotificationsManager.m in Sources */,
@@ -3213,6 +3230,7 @@
 				76EB05EE18170B33006006FC /* CallTermination.m in Sources */,
 				B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */,
 				E1CD329618BCFF9900B1A496 /* SoundInstance.m in Sources */,
+				0773FC331E7D5FF800C1E683 /* BrowserUtil.m in Sources */,
 				76EB05B418170B33006006FC /* HashChain.m in Sources */,
 				76EB05E418170B33006006FC /* UdpSocket.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,

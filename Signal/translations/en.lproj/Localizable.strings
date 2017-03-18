@@ -163,6 +163,9 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u days";
 
+/* Settings section heading for choosing the default web browser for handling links in messages */
+"DEFAULT_BROWSER" = "Default Browser";
+
 /* No comment provided by engineer. */
 "DELIVERED_MESSAGE_TEXT" = "Delivered";
 

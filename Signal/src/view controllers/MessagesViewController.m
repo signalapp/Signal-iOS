@@ -19,6 +19,7 @@
 #import "OWSExpirableMessageView.h"
 #import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
+#import "OWSMessageViewCellDelegate.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "PhoneManager.h"
 #import "PropertyListPreferences.h"
@@ -214,6 +215,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
+@property (nonatomic, readonly) OWSMessageViewCellDelegate *viewCellTextViewDelegate;
 
 @property NSCache *messageAdapterCache;
 
@@ -271,6 +273,7 @@ typedef enum : NSUInteger {
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
+    _viewCellTextViewDelegate = [[OWSMessageViewCellDelegate alloc] init];
 }
 
 - (void)peekSetup {
@@ -1013,6 +1016,7 @@ typedef enum : NSUInteger {
         } break;
     }
     cell.delegate = collectionView;
+    cell.textView.delegate = self.viewCellTextViewDelegate;
 
     if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
         id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;

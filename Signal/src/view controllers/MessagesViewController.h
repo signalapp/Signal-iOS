@@ -5,6 +5,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <JSQMessagesViewController/JSQMessagesViewController.h>
+#import "OWSMessageViewCellDelegate.h"
 #import "TSGroupModel.h"
 @class TSThread;
 

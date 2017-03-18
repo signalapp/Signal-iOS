@@ -4,6 +4,7 @@
 
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugLogger.h"
+#import "DefaultBrowserSelectionViewController.h"
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UITableViewCell *enableLogCell;
 @property (nonatomic) UITableViewCell *submitLogCell;
 @property (nonatomic) UITableViewCell *registerPushCell;
+@property (nonatomic) UITableViewCell *defaultBrowserCell;
 
 @property (nonatomic) UISwitch *enableLogSwitch;
 @property (nonatomic, readonly) BOOL supportsCallKit;
@@ -30,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     AdvancedSettingsTableViewControllerSectionLogging,
     AdvancedSettingsTableViewControllerSectionPushNotifications,
+    AdvancedSettingsTableViewControllerSectionDefaultBrowser,
     AdvancedSettingsTableViewControllerSection_Count // meta section
 };
 
@@ -39,6 +42,10 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self.tableView reloadData];
 }
 
 - (instancetype)init
@@ -71,6 +78,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
 
     self.registerPushCell                = [[UITableViewCell alloc] init];
     self.registerPushCell.textLabel.text = NSLocalizedString(@"REREGISTER_FOR_PUSH", nil);
+
+    self.defaultBrowserCell = [[UITableViewCell alloc] init];
 }
 
 #pragma mark - Table view data source
@@ -87,6 +96,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             return self.enableLogSwitch.isOn ? 2 : 1;
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return 1;
+        case AdvancedSettingsTableViewControllerSectionDefaultBrowser:
+            return 1;
         default:
             return 0;
     }
@@ -100,6 +111,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             return NSLocalizedString(@"LOGGING_SECTION", nil);
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
+        case AdvancedSettingsTableViewControllerSectionDefaultBrowser:
+            return NSLocalizedString(@"DEFAULT_BROWSER", nil);
         default:
             return nil;
     }
@@ -119,6 +132,13 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             }
         case AdvancedSettingsTableViewControllerSectionPushNotifications:
             return self.registerPushCell;
+        case AdvancedSettingsTableViewControllerSectionDefaultBrowser: {
+            PropertyListPreferences *prefs = Environment.preferences;
+            NSString *defaultBrowser = [prefs defaultBrowser];
+            [[self.defaultBrowserCell textLabel] setText:defaultBrowser];
+            [self.defaultBrowserCell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+            return self.defaultBrowserCell;
+        }
         default:
             // Unknown section
             OWSAssert(NO);
@@ -145,7 +165,10 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             .catch(^(NSError *error) {
                 SignalAlertView(NSLocalizedString(@"REGISTRATION_BODY", @"Alert title"), error.localizedDescription);
             });
-
+    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.defaultBrowserCell) {
+        DefaultBrowserSelectionViewController *vc =
+            [[DefaultBrowserSelectionViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [self.navigationController pushViewController:vc animated:YES];
     } else {
         DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }

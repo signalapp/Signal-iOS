@@ -52,8 +52,12 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
+- (NSString *)defaultBrowser;
+- (void)setDefaultBrowser:(NSString *)browserName;
+
 + (nullable NSString *)lastRanVersion;
 + (NSString *)setAndGetCurrentVersion;
+
 
 #pragma mark - Calling
 
