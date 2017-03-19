@@ -769,24 +769,6 @@ typedef enum : NSUInteger {
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
 }
 
-- (nullable UILabel *)findNavbarTitleLabel
-{
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            UIView *navItemView = view;
-            for (UIView *aView in navItemView.subviews) {
-                if ([aView isKindOfClass:[UILabel class]]) {
-                    UILabel *label = (UILabel *)aView;
-                    if ([label.text isEqualToString:self.title]) {
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-    return nil;
-}
-
 // Overiding JSQMVC layout defaults
 - (void)initializeCollectionViewLayout
 {
@@ -1358,12 +1340,6 @@ typedef enum : NSUInteger {
                                                               instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
-}
-
-- (void)didTapTitle
-{
-    DDLogDebug(@"%@ Tapped title in navbar", self.tag);
-    [self showConversationSettings];
 }
 
 - (void)didTapTimerInNavbar:(id)sender
