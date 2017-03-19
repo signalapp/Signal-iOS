@@ -1,9 +1,5 @@
 //
-//  PhoneNumberTest.m
-//  Signal
-//
-//  Created by Michael Kirk on 6/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
@@ -14,6 +10,13 @@
 @end
 
 @implementation PhoneNumberTest
+
+-(void)testE164 {
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"+1 (902) 555-5555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1 (902) 555-5555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1-902-555-5555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1-902-５５５-5555" fromRegion:@"US"] toE164]);
+}
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextAssumesLocalRegion {
     PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"3235551234"];

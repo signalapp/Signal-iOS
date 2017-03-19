@@ -118,7 +118,7 @@
 		C0DC1A83C39CBC09FB2405A3 /* libPods-TSKitiOSTestAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TSKitiOSTestAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AECE721DE8C3360068CE15 /* ContactSortingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactSortingTest.m; path = ../../../tests/Contacts/ContactSortingTest.m; sourceTree = "<group>"; };
 		D3737F7A041D7147015C02C2 /* Pods-TSKitiOSTestAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestAppTests/Pods-TSKitiOSTestAppTests.release.xcconfig"; sourceTree = "<group>"; };
-		E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtilTest.m; sourceTree = "<group>"; };
+		E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhoneNumberUtilTest.m; path = ../../../tests/Contacts/PhoneNumberUtilTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,7 +194,6 @@
 		45458B721CC342B600A02153 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */,
 				45458B731CC342B600A02153 /* CryptographyTests.m */,
 				45458B741CC342B600A02153 /* MessagePaddingTests.m */,
 			);
@@ -213,12 +212,13 @@
 		459850BF1D22C6C4006FFEDB /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
-				459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */,
-				452EE6CE1D4A754C00E934BA /* TSThreadTest.m */,
+				D2AECE721DE8C3360068CE15 /* ContactSortingTest.m */,
 				45B700961D9841E400269FFD /* OWSDisappearingMessagesConfigurationTest.m */,
+				459850C01D22C6F2006FFEDB /* PhoneNumberTest.m */,
+				E95668311E0964F9002418B1 /* PhoneNumberUtilTest.m */,
+				452EE6CE1D4A754C00E934BA /* TSThreadTest.m */,
 				4516E3E71DD153CC00DC4206 /* TSGroupThreadTest.m */,
 				4516E3E91DD1542300DC4206 /* TSContactThreadTest.m */,
-				D2AECE721DE8C3360068CE15 /* ContactSortingTest.m */,
 			);
 			name = Contacts;
 			sourceTree = "<group>";
