@@ -16,12 +16,25 @@ class DisplayableTextFilterTest: XCTestCase {
         super.tearDown()
     }
 
-    func testFiltering() {
+    func testDisplayableText() {
         // Ignore default byte size limitations to test other filtering behaviors
-        let filter = DisplayableTextFilter(allowAnyTextLessThanByteSize: 0)
+        let filter = DisplayableTextFilter()
 
-        XCTAssertFalse( filter.shouldPreventDisplay(text: "normal text") )
-        XCTAssertFalse( filter.shouldPreventDisplay(text: "🇹🇹🌼🇹🇹🌼🇹🇹") )
-        XCTAssertTrue( filter.shouldPreventDisplay(text: "L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓") )
+        // show plain text
+        let boringText = "boring text"
+        XCTAssertEqual(boringText, filter.displayableText(boringText))
+
+        // show high byte emojis
+        let emojiText = "🇹🇹🌼🇹🇹🌼🇹🇹"
+        XCTAssertEqual(emojiText, filter.displayableText(emojiText))
+
+        // show normal diacritic usage
+        let diacriticalText = "Příliš žluťoučký kůň úpěl ďábelské ódy."
+        XCTAssertEqual(diacriticalText, filter.displayableText(diacriticalText))
+
+        // filter excessive diacritics
+        XCTAssertEqual("HAVING TROUBLE READING TEXT?", filter.displayableText("H҉̸̧͘͠A͢͞V̛̛I̴̸N͏̕͏G҉̵͜͏͢ ̧̧́T̶̛͘͡R̸̵̨̢̀O̷̡U͡҉B̶̛͢͞L̸̸͘͢͟É̸ ̸̛͘͏R͟È͠͞A̸͝Ḑ̕͘͜I̵͘҉͜͞N̷̡̢͠G̴͘͠ ͟͞T͏̢́͡È̀X̕҉̢̀T̢͠?̕͏̢͘͢") )
+
+        XCTAssertEqual("LGO!", filter.displayableText("L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓"))
     }
 }
