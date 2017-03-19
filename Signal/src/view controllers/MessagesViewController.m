@@ -462,6 +462,9 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
@@ -542,6 +545,9 @@ typedef enum : NSUInteger {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
+
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
