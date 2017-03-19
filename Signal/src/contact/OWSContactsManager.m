@@ -377,22 +377,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return allContacts;
 }
 
-
-+ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString {
-    NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
-    NSArray *queryStrings         = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
-    NSArray *nameStrings          = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
-
-    return [queryStrings all:^int(NSString *query) {
-      if (query.length == 0)
-          return YES;
-      return [nameStrings any:^int(NSString *nameWord) {
-        NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
-        return [nameWord rangeOfString:query options:searchOpts].location != NSNotFound;
-      }];
-    }];
-}
-
 #pragma mark - Whisper User Management
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
