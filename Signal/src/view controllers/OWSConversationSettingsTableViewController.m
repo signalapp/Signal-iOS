@@ -211,6 +211,10 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
@@ -219,6 +223,9 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     if (self.disappearingMessagesConfiguration.isNewRecord && !self.disappearingMessagesConfiguration.isEnabled) {
         // don't save defaults, else we'll unintentionally save the configuration and notify the contact.
