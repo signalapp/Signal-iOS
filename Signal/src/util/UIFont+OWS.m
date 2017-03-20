@@ -1,9 +1,5 @@
 //
-//  UIFont+OWS.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 25/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIFont+OWS.h"
@@ -47,7 +43,24 @@
     return [UIFont boldSystemFontOfSize:size];
 }
 
-#pragma mark Dynamic Type
+#pragma mark - Icon Fonts
+
++ (UIFont *)ows_fontAwesomeFont:(CGFloat)size
+{
+    return [UIFont fontWithName:@"FontAwesome" size:size];
+}
+
++ (UIFont *)ows_dripIconsFont:(CGFloat)size
+{
+    return [UIFont fontWithName:@"dripicons-v2" size:size];
+}
+
++ (UIFont *)ows_elegantIconsFont:(CGFloat)size
+{
+    return [UIFont fontWithName:@"ElegantIcons" size:size];
+}
+
+#pragma mark - Dynamic Type
 
 + (UIFont *)ows_dynamicTypeBodyFont {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];

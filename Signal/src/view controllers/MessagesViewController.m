@@ -180,29 +180,29 @@ typedef enum : NSUInteger {
     NSUInteger _unreadCount;
 }
 
-@property TSThread *thread;
-@property TSMessageAdapter *lastDeliveredMessage;
-@property (nonatomic, strong) YapDatabaseConnection *editingDatabaseConnection;
-@property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, strong) YapDatabaseViewMappings *messageMappings;
+@property (nonatomic) TSThread *thread;
+@property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
+@property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *incomingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
-@property (nonatomic, retain) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
+@property (nonatomic) JSQMessagesBubbleImage *outgoingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *incomingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
+@property (nonatomic) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
 
-@property (nonatomic, strong) NSTimer *audioPlayerPoller;
-@property (nonatomic, strong) TSVideoAttachmentAdapter *currentMediaAdapter;
+@property (nonatomic) NSTimer *audioPlayerPoller;
+@property (nonatomic) TSVideoAttachmentAdapter *currentMediaAdapter;
 
-@property (nonatomic, retain) NSTimer *readTimer;
-@property (nonatomic, strong) UIView *navigationBarTitleView;
-@property (nonatomic, strong) UILabel *navigationBarTitleLabel;
-@property (nonatomic, strong) UILabel *navigationBarSubtitleLabel;
-@property (nonatomic, retain) UIButton *attachButton;
+@property (nonatomic) NSTimer *readTimer;
+@property (nonatomic) UIView *navigationBarTitleView;
+@property (nonatomic) UILabel *navigationBarTitleLabel;
+@property (nonatomic) UILabel *navigationBarSubtitleLabel;
+@property (nonatomic) UIButton *attachButton;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
-@property NSUInteger page;
+@property (nonatomic) NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL peek;
 
@@ -215,7 +215,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
-@property NSCache *messageAdapterCache;
+@property (nonatomic) NSCache *messageAdapterCache;
 
 @end
 
@@ -1248,20 +1248,17 @@ typedef enum : NSUInteger {
     return !![self collectionView:self.collectionView attributedTextForCellBottomLabelAtIndexPath:indexPath];
 }
 
-- (id<OWSMessageData>)nextOutgoingMessage:(NSIndexPath *)indexPath
+- (TSOutgoingMessage *)nextOutgoingMessage:(NSIndexPath *)indexPath
 {
-    id<OWSMessageData> nextMessage =
-        [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
-    int i = 1;
-
-    while (indexPath.item + i < [self.collectionView numberOfItemsInSection:indexPath.section] - 1
-        && !nextMessage.isOutgoingAndDelivered) {
-        i++;
-        nextMessage =
-            [self messageAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + i inSection:indexPath.section]];
+    NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section];
+    for (NSInteger row = indexPath.row + 1; row < rowCount; row++) {
+        id<OWSMessageData> nextMessage = [self messageAtIndexPath:[NSIndexPath indexPathForRow:row
+                                                                                     inSection:indexPath.section]];
+        if ([nextMessage isKindOfClass:[TSOutgoingMessage class]]) {
+            return (TSOutgoingMessage *)nextMessage;
+        }
     }
-
-    return nextMessage;
+    return nil;
 }
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
@@ -1276,26 +1273,46 @@ typedef enum : NSUInteger {
     if (message.messageType == TSOutgoingMessageAdapter) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"FAILED_SENDING_TEXT", nil)];
-        } else if (message.isOutgoingAndDelivered) {
-            NSAttributedString *deliveredString =
-                [[NSAttributedString alloc] initWithString:NSLocalizedString(@"DELIVERED_MESSAGE_TEXT", @"")];
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"MESSAGE_STATUS_FAILED",
+                                                                                @"message footer for failed messages")];
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSent ||
+                   outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
+            NSString *text = (outgoingMessage.messageState == TSOutgoingMessageStateSent
+                              ? NSLocalizedString(@"MESSAGE_STATUS_SENT",
+                                                  @"message footer for sent messages")
+                              : NSLocalizedString(@"MESSAGE_STATUS_DELIVERED",
+                                                  @"message footer for delivered messages"));
+            NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
 
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
                 [self updateLastDeliveredMessage:message];
-                return deliveredString;
+                return result;
             }
 
-            // Or when the next message is *not* an outgoing delivered message.
-            TSMessageAdapter *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (!nextMessage.isOutgoingAndDelivered) {
+            // Or when the next message is *not* an outgoing sent/delivered message.
+            TSOutgoingMessage *nextMessage = [self nextOutgoingMessage:indexPath];
+            if (nextMessage &&
+                nextMessage.messageState != TSOutgoingMessageStateSent &&
+                nextMessage.messageState != TSOutgoingMessageStateDelivered) {
                 [self updateLastDeliveredMessage:message];
-                return deliveredString;
+                return result;
             }
         } else if (message.isMediaBeingSent) {
-            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"UPLOADING_MESSAGE_TEXT",
-                                                                  @"message footer while attachment is uploading")];
+            return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"MESSAGE_STATUS_UPLOADING",
+                                                                                @"message footer while attachment is uploading")];
+        } else {
+            OWSAssert(outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut);
+            // Show an "..." ellisis icon.
+            //
+            // TODO: It'd be nice to animate this, but JSQMessageViewController doesn't give us a great way to do so.
+            //       We already have problems with unstable cell layout; we don't want to exacerbate them.
+            NSAttributedString *result =
+            [[NSAttributedString alloc] initWithString:@"/"
+                                            attributes:@{
+                                                         NSFontAttributeName: [UIFont ows_dripIconsFont:14.f],
+                                                         }];
+            return result;
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;

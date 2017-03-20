@@ -127,15 +127,19 @@
             for (NSString *attachmentID in message.attachmentIds) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
 
+                BOOL isIncomingAttachment = [interaction isKindOfClass:[TSIncomingMessage class]];
+
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
                     if ([stream isAnimated]) {
-                        adapter.mediaItem = [[TSAnimatedAdapter alloc] initWithAttachment:stream];
+                        adapter.mediaItem =
+                            [[TSAnimatedAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
                             [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
                     } else if ([stream isImage]) {
-                        adapter.mediaItem = [[TSPhotoAdapter alloc] initWithAttachment:stream];
+                        adapter.mediaItem =
+                            [[TSPhotoAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
                             [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;

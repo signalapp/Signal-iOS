@@ -110,5 +110,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+	    <string>dripicons-v2.ttf</string>
+	    <string>ElegantIcons.ttf</string>
+	    <string>fontawesome-webfont.ttf</string>
+	</array>
 </dict>
 </plist>

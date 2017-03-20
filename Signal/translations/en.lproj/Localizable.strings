@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Answer";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "New Message! Open app to read it.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "New Message!";
 
 /* No comment provided by engineer. */
@@ -162,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u days";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Delivered";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
@@ -343,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Sending failed. Tap to retry.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
@@ -498,6 +489,18 @@
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
+
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
@@ -984,9 +987,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Upgrading Signal ...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploading...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Back";

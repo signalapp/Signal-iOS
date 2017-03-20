@@ -3,18 +3,23 @@
 //
 
 #import "TSPhotoAdapter.h"
-#import "TSAttachmentStream.h"
+#import "AttachmentUploadView.h"
 #import "JSQMediaItem+OWS.h"
+#import "TSAttachmentStream.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 
 @interface TSPhotoAdapter ()
 
-@property (strong, nonatomic) UIImageView *cachedImageView;
+@property (nonatomic) UIImageView *cachedImageView;
+@property (nonatomic) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic) BOOL incoming;
+
 @end
 
 @implementation TSPhotoAdapter
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment {
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming
+{
     self = [super initWithImage:attachment.image];
 
     if (!self) {
@@ -24,6 +29,7 @@
     _cachedImageView = nil;
     _attachment = attachment;
     _attachmentId = attachment.uniqueId;
+    _incoming = incoming;
 
     return self;
 }
@@ -58,6 +64,12 @@
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;
+
+        if (!self.incoming) {
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                               superview:imageView
+                                                                 attachmentStateCallback:nil];
+        }
     }
 
     return self.cachedImageView;
