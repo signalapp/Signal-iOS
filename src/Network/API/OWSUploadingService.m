@@ -41,9 +41,6 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                        success:(void (^)())successHandler
                        failure:(void (^)(NSError *_Nonnull))failureHandler
 {
-    outgoingMessage.messageState = TSOutgoingMessageStateAttemptingOut;
-    [outgoingMessage save];
-
     if (attachmentStream.serverId) {
         DDLogDebug(@"%@ Attachment previously uploaded.", self.tag);
         successHandler(outgoingMessage);
