@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSAccountManager.h"
@@ -7,6 +8,7 @@
 #import "TSErrorMessage.h"
 #import "TSPrivacyPreferences.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+#import "TSStorageManager+SessionStore.h"
 #import <25519/Curve25519.h>
 
 #define TSStorageManagerIdentityKeyStoreIdentityKey \
@@ -39,11 +41,23 @@
 }
 
 - (void)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId {
+    NSData *existingKey = [self identityKeyForRecipientId:recipientId];
+    if ([existingKey isEqual:identityKey]) {
+        // Since we need to clear existing sessions when identity changes, we have to exit early
+        // when the identity key hasn't changed, lest we blow away valid sessions.
+        DDLogDebug(@"%s no-op since identity hasn't changed for recipient: %@", __PRETTY_FUNCTION__, recipientId);
+        return;
+    }
+
+    DDLogInfo(@"%s invalidating any pre-existing sessions for recipientId: %@", __PRETTY_FUNCTION__, recipientId);
+    [self deleteAllSessionsForContact:recipientId];
+
+    DDLogInfo(@"%s saving new identity key for recipientId: %@", __PRETTY_FUNCTION__, recipientId);
     [self setObject:identityKey forKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
 }
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey recipientId:(NSString *)recipientId {
-    NSData *existingKey = [self dataForKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
+    NSData *existingKey = [self identityKeyForRecipientId:recipientId];
 
     if (!existingKey) {
         return YES;
