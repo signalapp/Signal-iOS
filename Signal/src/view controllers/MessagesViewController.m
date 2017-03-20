@@ -582,6 +582,18 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.textView.editable = NO;
 }
 
+- (NSArray *)keyCommands {
+    return @[ [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:0 action:@selector(pressSendButton)] ];
+}
+
+- (void)pressSendButton {
+    if (self.inputToolbar.sendButtonOnRight) {
+        [self.inputToolbar.contentView.rightBarButtonItem sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else {
+        [self.inputToolbar.contentView.leftBarButtonItem sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
+}
+
 #pragma mark - Initiliazers
 
 - (void)setNavigationTitle
