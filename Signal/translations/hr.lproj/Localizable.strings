@@ -404,7 +404,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Nedovršen dolazni poziv od";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Nije moguće prikazati poruku.";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozovite prijatelje na Signal";
@@ -638,13 +638,13 @@
 "PUSH_MANAGER_REPLY" = "Odgovor";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za push obavijesti.";
+"PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za \"push\" obavijesti.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push obavijesti";
+"PUSH_REGISTER_TITLE" = "\"Push\" obavijesti";
 
 /* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal zahtijeva push notifikacije, upozorenja i zvukovi moraju biti omogućeni za ispravno funkcionisanje. Molimo izvršite izmjene u aplikaciji Postavke >> Obavijesti >> Signal.";
+"PUSH_SETTINGS_MESSAGE" = "Signal zahtijeva \"push\" notifikacije, upozorenja i zvukovi moraju biti omogućeni za ispravno funkcionisanje. Molimo izvršite izmjene u aplikaciji Postavke >> Obavijesti >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -683,7 +683,7 @@
 "REGISTERED_NUMBER_TEXT" = "Registrirani broj";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Neuspješna ponovna registracija za push obavijesti.";
+"REGISTRATION_BODY" = "Neuspješna ponovna registracija za \"push\" obavijesti.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Državni kôd ";
@@ -725,7 +725,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonski broj koji pokušavate registrovati je već registrovan na drugom serveru, molimo odjavite ga i pokušajte ponovo.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Ponovno registruj push obavijesti";
+"REREGISTER_FOR_PUSH" = "Ponovno registruj \"push\" obavijesti";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Pokušaj";
@@ -854,7 +854,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS integracija poziva prikazuje Signal pozive na zaključanom zaslonu i povijest poziva u aplikaciji Telefon. Kada je omogućen iCloud, povijest poziva dijelit će se s kompanijom Apple. Po izboru možete omogućiti prikaz imena i brojeva vaših kontakata.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS integracija poziva prikazuje Signal pozive na zaključanom zaslonu i povijest poziva u aplikaciji \"Telefon\". Kada je omogućen iCloud, povijest poziva dijelit će se s kompanijom Apple. Po izboru možete omogućiti prikaz imena i brojeva vaših kontakata.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Pozivanje";
