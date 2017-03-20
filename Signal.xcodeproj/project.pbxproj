@@ -332,7 +332,6 @@
 		B660F6CB1C29868000687D6E /* NetworkStreamTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6901C29868000687D6E /* NetworkStreamTest.m */; };
 		B660F6CC1C29868000687D6E /* SecureEndPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6911C29868000687D6E /* SecureEndPointTest.m */; };
 		B660F6CD1C29868000687D6E /* UdpSocketTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6931C29868000687D6E /* UdpSocketTest.m */; };
-		B660F6CE1C29868000687D6E /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6951C29868000687D6E /* PhoneNumberTest.m */; };
 		B660F6CF1C29868000687D6E /* SessionDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6971C29868000687D6E /* SessionDescriptorTest.m */; };
 		B660F6D01C29868000687D6E /* DecayingSampleEstimatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6991C29868000687D6E /* DecayingSampleEstimatorTest.m */; };
 		B660F6D11C29868000687D6E /* EventWindowTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F69A1C29868000687D6E /* EventWindowTest.m */; };
@@ -1086,7 +1085,6 @@
 		B660F6901C29868000687D6E /* NetworkStreamTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkStreamTest.m; sourceTree = "<group>"; };
 		B660F6911C29868000687D6E /* SecureEndPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureEndPointTest.m; sourceTree = "<group>"; };
 		B660F6931C29868000687D6E /* UdpSocketTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpSocketTest.m; sourceTree = "<group>"; };
-		B660F6951C29868000687D6E /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
 		B660F6971C29868000687D6E /* SessionDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SessionDescriptorTest.m; sourceTree = "<group>"; };
 		B660F6991C29868000687D6E /* DecayingSampleEstimatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecayingSampleEstimatorTest.m; sourceTree = "<group>"; };
 		B660F69A1C29868000687D6E /* EventWindowTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindowTest.m; sourceTree = "<group>"; };
@@ -2409,7 +2407,6 @@
 		B660F6941C29868000687D6E /* phone */ = {
 			isa = PBXGroup;
 			children = (
-				B660F6951C29868000687D6E /* PhoneNumberTest.m */,
 				B660F6961C29868000687D6E /* signaling */,
 			);
 			path = phone;
@@ -3630,7 +3627,6 @@
 				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
-				B660F6CE1C29868000687D6E /* PhoneNumberTest.m in Sources */,
 				B660F6C41C29868000687D6E /* HandshakePacketTest.m in Sources */,
 				B660F6CD1C29868000687D6E /* UdpSocketTest.m in Sources */,
 				B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */,
