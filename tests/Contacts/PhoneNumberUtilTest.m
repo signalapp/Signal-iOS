@@ -13,7 +13,10 @@
 
 - (void)testQueryMatching
 {
+    XCTAssertTrue([PhoneNumberUtil name:@"dave" matchesQuery:@"dave"]);
     XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big dave"]);
+    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big dave dave"]);
+    XCTAssertTrue([PhoneNumberUtil name:@"big big dave" matchesQuery:@"big dave"]);
     XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"dave big"]);
     XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"dave"]);
     XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big"]);
@@ -26,7 +29,6 @@
 
     XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"ave"]);
     XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"dare"]);
-    XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"mike"]);
     XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"mike"]);
     XCTAssertFalse([PhoneNumberUtil name:@"dave" matchesQuery:@"big"]);
 }
