@@ -43,8 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
- * getting proper keys,
- * and retrying upon failure.
+ * getting proper keys, and retrying upon failure.
  *
  * Used by `OWSMessageSender` to serialize message sending, ensuring that messages are emitted in the order they
  * were sent.
@@ -109,6 +108,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _successHandler = ^{
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
+            OWSAssert(NO);
             return;
         }
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
@@ -119,6 +119,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _failureHandler = ^(NSError *_Nonnull error) {
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
+            OWSAssert(NO);
             return;
         }
 
