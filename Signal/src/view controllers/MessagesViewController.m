@@ -2441,6 +2441,7 @@ typedef enum : NSUInteger {
           dispatch_async(dispatch_get_main_queue(), ^{
             [self.inputToolbar.contentView.textView setText:placeholder];
             [self textViewDidChange:self.inputToolbar.contentView.textView];
+            [self reloadInputToolbarSizeIfNeeded];
           });
         }];
 }
