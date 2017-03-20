@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary *userinfo = [notification userInfo];
     double progress = [[userinfo objectForKey:kAttachmentUploadProgressKey] doubleValue];
     NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
-    if ([self.attachment.uniqueId isEqualToString:attachmentID]) {
+    if ([self.attachment.uniqueId isEqual:attachmentID]) {
         if (!isnan(progress)) {
             [_progressView setProgress:progress];
             self.isAttachmentReady = self.attachment.isUploaded;
