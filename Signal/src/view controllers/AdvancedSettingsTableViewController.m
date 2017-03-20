@@ -11,7 +11,7 @@
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "UIViewController+OWS.h"
-#import <PastelogKit/Pastelog.h>
+#import "Pastelog.h"
 #import <PromiseKit/AnyPromise.h>
 
 NS_ASSUME_NONNULL_BEGIN
