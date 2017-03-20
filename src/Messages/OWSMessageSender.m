@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
                         success:(void (^)())successHandler
                         failure:(void (^)(NSError *_Nonnull error))failureHandler NS_DESIGNATED_INITIALIZER;
 
+#pragma mark - background task mgmt
+
+- (void)startBackgroundTask;
+- (void)endBackgroundTask;
+
 @end
 
 typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
@@ -83,7 +88,8 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) void (^successHandler)();
 @property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
-@property (atomic) OWSSendMessageOperationState operationState;
+@property (nonatomic) OWSSendMessageOperationState operationState;
+@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 
 @end
 
@@ -100,6 +106,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     }
 
     _operationState = OWSSendMessageOperationStateNew;
+    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 
     _message = message;
     _messageSender = messageSender;
@@ -131,6 +138,38 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     return self;
 }
 
+#pragma mark - background task mgmt
+
+// We want to make sure to finish sending any in-flight messages when the app is backgrounded.
+// We have to call `startBackgroundTask` *before* the task is enqueued, since we can't guarantee when the operation will
+// be dequeued.
+- (void)startBackgroundTask
+{
+    AssertIsOnMainThread();
+    OWSAssert(self.backgroundTaskIdentifier == UIBackgroundTaskInvalid);
+
+    self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.tag, self.message);
+        [self endBackgroundTask];
+    }];
+}
+
+- (void)endBackgroundTask
+{
+    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
+}
+
+- (void)setBackgroundTaskIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
+{
+    AssertIsOnMainThread();
+
+    // Should only be sent once per operation
+    OWSAssert(_backgroundTaskIdentifier == UIBackgroundTaskInvalid);
+    OWSAssert(backgroundTaskIdentifier != UIBackgroundTaskInvalid);
+
+    _backgroundTaskIdentifier = backgroundTaskIdentifier;
+}
+
 #pragma mark - NSOperation overrides
 
 - (BOOL)isExecuting
@@ -145,6 +184,10 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (void)start
 {
+    // Should call `startBackgroundTask` before enqueuing the operation
+    // to ensure we don't get suspended before the operation completes.
+    OWSAssert(self.backgroundTaskIdentifier != UIBackgroundTaskInvalid);
+
     [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     self.operationState = OWSSendMessageOperationStateExecuting;
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
@@ -182,6 +225,8 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     self.operationState = OWSSendMessageOperationStateFinished;
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
+
+    [self endBackgroundTask];
 }
 
 #pragma mark - Logging
@@ -252,6 +297,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                                        messageSender:self
                                                                                              success:successHandler
                                                                                              failure:failureHandler];
+
+    // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
+    // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
+    [sendMessageOperation startBackgroundTask];
     [self.sendingQueue addOperation:sendMessageOperation];
 }
 
