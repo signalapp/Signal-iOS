@@ -292,6 +292,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    AssertIsOnMainThread();
+
     [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
@@ -392,7 +394,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message.attachmentIds addObject:attachmentStream.uniqueId];
         [message save];
 
-        [self sendMessage:message success:successHandler failure:failureHandler];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendMessage:message success:successHandler failure:failureHandler];
+        });
     });
 }
 
