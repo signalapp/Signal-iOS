@@ -233,22 +233,64 @@ NS_ASSUME_NONNULL_BEGIN
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue    = dispatch_get_main_queue();
 
+    // We want to avoid large downloads from a compromised or buggy service.
+    const long kMaxDownloadSize = 150 * 1024 * 1024;
     // TODO stream this download rather than storing the entire blob.
-    [manager GET:location
-      parameters:nil
-        progress:nil // TODO show some progress!
-         success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
-             if (![responseObject isKindOfClass:[NSData class]]) {
-                 DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
-                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                 return failureHandler(task, error);
-             }
-             successHandler((NSData *)responseObject);
-         }
-         failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
-             DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
-             return failureHandler(task, error);
-         }];
+    __block NSURLSessionDataTask *task = nil;
+    // We only need to check the content length header once.
+    __block BOOL hasCheckedContentLength = NO;
+    task = [manager GET:location
+        parameters:nil
+        progress:^(NSProgress *_Nonnull progress) {
+            if (!hasCheckedContentLength) {
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                if ([httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
+                    NSDictionary *headers = [httpResponse allHeaderFields];
+                    if ([headers isKindOfClass:[NSDictionary class]]) {
+                        NSString *contentLength = headers[@"Content-Length"];
+                        if ([contentLength isKindOfClass:[NSString class]]) {
+                            if (contentLength.longLongValue > 0) {
+                                if (contentLength.longLongValue <= kMaxDownloadSize) {
+                                    // This response has a valid content length that is less
+                                    // than our max download size.  Proceed with the download.
+                                    hasCheckedContentLength = YES;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                // If the task doesn't exist, or doesn't have a response, or is missing
+                // the expected headers, or has an invalid or oversize content length, etc.,
+                // abort the download.
+                OWSAssert(0);
+                [task cancel];
+            } else {
+                OWSAssert(progress != nil);
+
+                if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
+                    // A malicious service might send an incorrect content length header,
+                    // so....
+                    //
+                    // If the current downloaded bytes or the expected total byes
+                    // exceed the max download size, abort the download.
+                    OWSAssert(0);
+                    [task cancel];
+                }
+            }
+        }
+        success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+            if (![responseObject isKindOfClass:[NSData class]]) {
+                DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
+                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                return failureHandler(task, error);
+            }
+            successHandler((NSData *)responseObject);
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+            DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
+            return failureHandler(task, error);
+        }];
 }
 
 - (void)setAttachment:(TSAttachmentPointer *)pointer isDownloadingInMessage:(nullable TSMessage *)message
