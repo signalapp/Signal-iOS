@@ -12,6 +12,7 @@
 #import "NewGroupViewController.h"
 #import "OWSCall.h"
 #import "OWSCallCollectionViewCell.h"
+#import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "OWSConversationSettingsTableViewController.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -40,12 +41,15 @@
 #import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <ContactsUI/CNContactViewController.h>
+#import <JSQMessagesViewController/JSQMessagesAvatarImage.h>
+#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
+
 #import <JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>
@@ -216,6 +220,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 
 @property NSCache *messageAdapterCache;
+@property NSCache *avatarImageCache;
 
 @end
 
@@ -333,6 +338,14 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self.navigationController.navigationBar setTranslucent:NO];
+
+    [self.contactsManager
+     .getObservableContacts watchLatestValue:^(id latestValue) {
+            [self.avatarImageCache removeAllObjects];
+            [self.collectionView reloadData];
+        }
+                            onThread:[NSThread mainThread]
+                            untilCancelled:nil];
 
     self.messageAdapterCache = [[NSCache alloc] init];
 
@@ -797,7 +810,9 @@ typedef enum : NSUInteger {
 
     [self updateLoadEarlierVisible];
 
-    self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+    if (!isGroupConversation) {
+        self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeZero;
+    }
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeZero;
 
     if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad) {
@@ -978,7 +993,26 @@ typedef enum : NSUInteger {
 
 - (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView
                     avatarImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return nil;
+    if (!isGroupConversation) {
+        return nil;
+    }
+    id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
+
+    NSString* senderId = [message senderId];
+    JSQMessagesAvatarImage* jsqImage = [self.avatarImageCache objectForKey:senderId];
+    if (jsqImage != nil) {
+        return jsqImage;
+    }
+
+    NSString* displayName = [self.contactsManager displayNameForPhoneIdentifier:senderId];
+    OWSContactAvatarBuilder* avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithContactId:senderId name:displayName contactsManager:self.contactsManager];
+    UIImage* avatarImage = [avatarBuilder build];
+
+    jsqImage = [JSQMessagesAvatarImageFactory avatarImageWithImage:avatarImage diameter:(NSUInteger)kJSQMessagesCollectionViewAvatarSizeDefault];
+
+    [self.avatarImageCache setObject:jsqImage forKey:senderId];
+
+    return jsqImage;
 }
 
 #pragma mark - UICollectionView DataSource
