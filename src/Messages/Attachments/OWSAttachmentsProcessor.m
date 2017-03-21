@@ -237,49 +237,83 @@ NS_ASSUME_NONNULL_BEGIN
     const long kMaxDownloadSize = 150 * 1024 * 1024;
     // TODO stream this download rather than storing the entire blob.
     __block NSURLSessionDataTask *task = nil;
-    // We only need to check the content length header once.
     __block BOOL hasCheckedContentLength = NO;
     task = [manager GET:location
         parameters:nil
         progress:^(NSProgress *_Nonnull progress) {
-            // Once we've received some bytes of the download, check the content length
-            // header for the download.
-            if (progress.completedUnitCount > 0 && !hasCheckedContentLength) {
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                if ([httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
-                    NSDictionary *headers = [httpResponse allHeaderFields];
-                    if ([headers isKindOfClass:[NSDictionary class]]) {
-                        NSString *contentLength = headers[@"Content-Length"];
-                        if ([contentLength isKindOfClass:[NSString class]]) {
-                            if (contentLength.longLongValue > 0) {
-                                if (contentLength.longLongValue <= kMaxDownloadSize) {
-                                    // This response has a valid content length that is less
-                                    // than our max download size.  Proceed with the download.
-                                    hasCheckedContentLength = YES;
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                // If the task doesn't exist, or doesn't have a response, or is missing
-                // the expected headers, or has an invalid or oversize content length, etc.,
-                // abort the download.
+            OWSAssert(progress != nil);
+            
+            // Don't do anything until we've received at least one byte of data.
+            if (progress.completedUnitCount < 1) {
+                return;
+            }
+            
+            void (^abortDownload)() = ^{
                 OWSAssert(0);
                 [task cancel];
-            } else {
-                OWSAssert(progress != nil);
-
-                if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
-                    // A malicious service might send a misleading content length header,
-                    // so....
-                    //
-                    // If the current downloaded bytes or the expected total byes
-                    // exceed the max download size, abort the download.
-                    OWSAssert(0);
-                    [task cancel];
-                }
+            };
+            
+            if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
+                // A malicious service might send a misleading content length header,
+                // so....
+                //
+                // If the current downloaded bytes or the expected total byes
+                // exceed the max download size, abort the download.
+                DDLogError(@"%@ Attachment download exceed expected content length: %lld, %lld.",
+                           self.tag,
+                           (long long) progress.totalUnitCount,
+                           (long long) progress.completedUnitCount);
+                abortDownload();
+                return;
             }
+            
+            // We only need to check the content length header once.
+            if (hasCheckedContentLength) {
+                return;
+            }
+            
+            // Once we've received some bytes of the download, check the content length
+            // header for the download.
+            //
+            // If the task doesn't exist, or doesn't have a response, or is missing
+            // the expected headers, or has an invalid or oversize content length, etc.,
+            // abort the download.
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+            if (![httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
+                DDLogError(@"%@ Attachment download has missing or invalid response.",
+                           self.tag);
+                abortDownload();
+                return;
+            }
+            
+            NSDictionary *headers = [httpResponse allHeaderFields];
+            if (![headers isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"%@ Attachment download invalid headers.",
+                           self.tag);
+                abortDownload();
+                return;
+            }
+            
+            
+            NSString *contentLength = headers[@"Content-Length"];
+            if (![contentLength isKindOfClass:[NSString class]]) {
+                DDLogError(@"%@ Attachment download missing or invalid content length.",
+                           self.tag);
+                abortDownload();
+                return;
+            }
+            
+            
+            if (contentLength.longLongValue > kMaxDownloadSize) {
+                DDLogError(@"%@ Attachment download content length exceeds max download size.",
+                           self.tag);
+                abortDownload();
+                return;
+            }
+            
+            // This response has a valid content length that is less
+            // than our max download size.  Proceed with the download.
+            hasCheckedContentLength = YES;
         }
         success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
             if (![responseObject isKindOfClass:[NSData class]]) {
