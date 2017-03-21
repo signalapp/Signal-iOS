@@ -160,6 +160,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     // If this status update is redundant, verify that
     // class state and socket state are aligned.
+    //
+    // Note: it's not safe to check the socket's readyState here as
+    //       it may have been just updated on another thread. If so,
+    //       we'll learn of that state change soon.
     if (_status == status) {
         switch (status) {
             case kSocketStatusClosed:
@@ -167,11 +171,9 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                 break;
             case kSocketStatusOpen:
                 OWSAssert(self.websocket);
-                OWSAssert([self.websocket readyState] == SR_OPEN);
                 break;
             case kSocketStatusConnecting:
                 OWSAssert(self.websocket);
-                OWSAssert([self.websocket readyState] == SR_CONNECTING);
                 break;
         }
         return;
