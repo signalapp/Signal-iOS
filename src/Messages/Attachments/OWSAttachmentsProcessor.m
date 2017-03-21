@@ -242,7 +242,9 @@ NS_ASSUME_NONNULL_BEGIN
     task = [manager GET:location
         parameters:nil
         progress:^(NSProgress *_Nonnull progress) {
-            if (!hasCheckedContentLength) {
+            // Once we've received some bytes of the download, check the content length
+            // header for the download.
+            if (progress.completedUnitCount > 0 && !hasCheckedContentLength) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                 if ([httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
                     NSDictionary *headers = [httpResponse allHeaderFields];
@@ -269,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert(progress != nil);
 
                 if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
-                    // A malicious service might send an incorrect content length header,
+                    // A malicious service might send a misleading content length header,
                     // so....
                     //
                     // If the current downloaded bytes or the expected total byes
