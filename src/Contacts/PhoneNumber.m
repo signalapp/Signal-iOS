@@ -144,30 +144,31 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         }
     };
 
-    if ([sanitizedString hasPrefix:@"+"]) {
-        // If the text starts with "+", just parse it.
-        tryParsingWithCountryCode(sanitizedString, [self defaultRegionCode]);
+    tryParsingWithCountryCode(sanitizedString, [self defaultRegionCode]);
 
+    if ([sanitizedString hasPrefix:@"+"]) {
+        // If the text starts with "+", don't try prepending
+        // anything else.
         return result;
     }
+
+    // Try just adding "+" and parsing it.
+    tryParsingWithCountryCode([NSString stringWithFormat:@"+%@", sanitizedString], [self defaultRegionCode]);
 
     // Order matters; better results should appear first so prefer
     // matches with the same country code as this client's phone number.
     OWSAssert(clientPhoneNumber.length > 0);
     if (clientPhoneNumber.length > 0) {
+        // Note that NBPhoneNumber uses "country code" to refer to what we call a
+        // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
+        // (and sometimes "region code") to refer to a country's ISO 2-letter code
+        // (ISO 3166-1 alpha-2).
         NSNumber *callingCodeForLocalNumber = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
         if (callingCodeForLocalNumber != nil) {
             tryParsingWithCountryCode([NSString stringWithFormat:@"+%@%@",
                                        callingCodeForLocalNumber,
                                        sanitizedString],
                                       [self defaultRegionCode]);
-
-            if ([sanitizedString hasPrefix:[NSString stringWithFormat:@"%d", callingCodeForLocalNumber.intValue]]) {
-                // If the text starts with the calling code for the local number, try
-                // just adding "+" and parsing it.
-                tryParsingWithCountryCode(
-                    [NSString stringWithFormat:@"+%@", sanitizedString], [self defaultRegionCode]);
-            }
 
             // It's gratuitous to try all country codes associated with a given
             // calling code, but it can't hurt and this isn't a performance
@@ -182,9 +183,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
             }
         }
     }
-    
-    // Also try matches using the phone's default region.
-    tryParsingWithCountryCode(sanitizedString, [self defaultRegionCode]);
     
     return result;
 }
