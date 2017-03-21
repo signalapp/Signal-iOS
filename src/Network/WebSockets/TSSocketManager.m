@@ -57,7 +57,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     OWSAssert([NSThread isMainThread]);
 
     _signalService = [OWSSignalService new];
-    
+    _status = kSocketStatusClosed;
+
     [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
     return self;
@@ -117,6 +118,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     DDLogWarn(@"Creating new websocket");
 
     // If socket is not already open or connecting, connect now.
+    //
+    // First we need to close the existing websocket, if any.
+    // The websocket methods are invoked _after_ the websocket state
+    // changes, so we may be just learning about a socket failure
+    // or close event now.
+    self.status = kSocketStatusClosed;
+    // Now open a new socket.
     self.status = kSocketStatusConnecting;
 }
 
@@ -211,7 +219,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             socket.delegate = self;
             
             [self setWebsocket:socket];
+
+            // [SRWebSocket open] could hypothetically call a delegate method (e.g. if
+            // the socket failed immediately for some reason), so we update the status
+            // _before_ calling it, not after.
+            _status = status;
             [socket open];
+            return;
         }
     }
 
@@ -250,12 +264,22 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     OWSAssert([NSThread isMainThread]);
-    
+    OWSAssert(webSocket);
+    if (webSocket != self.websocket) {
+        // Ignore events from obsolete web sockets.
+        return;
+    }
+
     self.status = kSocketStatusOpen;
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(webSocket);
+    if (webSocket != self.websocket) {
+        // Ignore events from obsolete web sockets.
+        return;
+    }
 
     DDLogError(@"Websocket did fail with error: %@", error);
 
@@ -266,6 +290,11 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(webSocket);
+    if (webSocket != self.websocket) {
+        // Ignore events from obsolete web sockets.
+        return;
+    }
 
     WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
 
@@ -354,6 +383,11 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
            reason:(NSString *)reason
          wasClean:(BOOL)wasClean {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(webSocket);
+    if (webSocket != self.websocket) {
+        // Ignore events from obsolete web sockets.
+        return;
+    }
 
     DDLogWarn(@"Websocket did close with code: %ld", (long)code);
 
