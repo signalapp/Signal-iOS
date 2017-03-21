@@ -331,6 +331,22 @@
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activating this %@ will disable Signal on any other device currently associated with this phone number.";
 
+/* Alert title
+ Alert title when getting the location failed */
+"FAILED_GET_LOCATION_TITLE" = "Location unavailable";
+
+/* Alert body
+ Alert body when getting the location failed */
+"FAILED_GET_LOCATION_BODY" = "Signal could not determine your location.";
+
+/* Alert title
+ Alert title when getting the location failed */
+"FAILED_GET_STATIC_MAP_TITLE" = "Location unavailable";
+
+/* Alert body
+ Alert body when getting the location failed */
+"FAILED_GET_STATIC_MAP_BODY" = "Signal needs an internet connection to send your current location";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
 
@@ -481,6 +497,9 @@
 /* No comment provided by engineer. */
 "ME_STRING" = "Me";
 
+/* media picker option to choose current location */
+"MEDIA_CURRENT_LOCATION_BUTTON" = "Current Location";
+
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
 
@@ -518,6 +537,14 @@
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+
+/* Alert body
+ Alert body when location services are not authorized */
+"MISSING_LOCATION_PERMISSION_BODY" = "Signal needs to access location services to send your current position. You can grant this permission in the Settings app >> Privacy >> Location Services >> Signal";
+
+/* Alert title
+ Alert title when location services are not authorized */
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal needs to access your location";
 
 /* notification title. Embeds {{Caller's Name}} */
 "MSGVIEW_MISSED_CALL" = "Missed call from %@.";

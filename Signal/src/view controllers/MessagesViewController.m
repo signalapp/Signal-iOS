@@ -214,6 +214,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
+@property (nonatomic, readonly) ShareLocationManager *locationManager;
 
 @property (nonatomic) NSCache *messageAdapterCache;
 
@@ -271,6 +272,7 @@ typedef enum : NSUInteger {
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
+    _locationManager = [[ShareLocationManager alloc] init];
 }
 
 - (void)peekSetup {
@@ -881,28 +883,7 @@ typedef enum : NSUInteger {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
         }
 
-        TSOutgoingMessage *message;
-        OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-        if (configuration.isEnabled) {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:text
-                                                     attachmentIds:[NSMutableArray new]
-                                                  expiresInSeconds:configuration.durationSeconds];
-        } else {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:text];
-        }
-
-        [self.messageSender sendMessage:message
-            success:^{
-                DDLogInfo(@"%@ Successfully sent message.", self.tag);
-            }
-            failure:^(NSError *error) {
-                DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
-            }];
+        [self sendMessageText:text];
         [self toggleDefaultKeyboard];
         [self finishSendingMessage];
     }
@@ -1912,6 +1893,52 @@ typedef enum : NSUInteger {
     });
 }
 
+/**
+ Request the location message
+ */
+- (void)sendLocation {
+    
+    __weak typeof(self) weakSelf = self;
+    
+    self.locationManager.completionHandler = ^{
+        [weakSelf callbackLocationFinished];
+    };
+    
+    [self.locationManager requestCurrentLocation];
+}
+
+/**
+ Callback for successful location message
+ */
+- (void) callbackLocationFinished {
+    
+    UIImage *locationImage = self.locationManager.image;
+    NSString *messageBody = self.locationManager.message;
+    
+    if (locationImage && messageBody) {
+        SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:locationImage
+                                                                          dataUTI:(NSString *) kUTTypeJPEG];
+        if (!attachment ||
+            [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                      self.tag,
+                      __PRETTY_FUNCTION__,
+                      attachment ? [attachment errorMessage] : @"Missing data");
+        } else {
+            [self sendMessageAttachment:attachment];
+        }
+        
+        if ([Environment.preferences soundInForeground]) {
+            [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        }
+        
+        [self sendMessageText:messageBody];
+        
+    } else {
+        DDLogWarn(@"%@ %s Sending location failed.", self.tag, __PRETTY_FUNCTION__);
+    }
+};
+
 /*
  *  Dismissing UIImagePickerController
  */
@@ -1961,18 +1988,7 @@ typedef enum : NSUInteger {
                                      OWSAssert([NSThread isMainThread]);
                                      
                                      if (imageFromCamera) {
-                                         SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:imageFromCamera
-                                                                                                           dataUTI:(NSString *) kUTTypeJPEG];
-                                         if (!attachment ||
-                                             [attachment hasError]) {
-                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                                                       self.tag,
-                                                       __PRETTY_FUNCTION__,
-                                                       attachment ? [attachment errorMessage] : @"Missing data");
-                                             failedToPickAttachment(nil);
-                                         } else {
-                                             [self sendMessageAttachment:attachment];
-                                         }
+                                         [self sendImage:imageFromCamera failure:failedToPickAttachment];
                                      } else {
                                          failedToPickAttachment(nil);
                                      }
@@ -2023,6 +2039,51 @@ typedef enum : NSUInteger {
              }
          }];
     }
+}
+
+- (void)sendMessageText:(NSString *) body
+{
+    TSOutgoingMessage *message;
+    OWSDisappearingMessagesConfiguration *configuration =
+    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+    if (configuration.isEnabled) {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:body
+                                                 attachmentIds:[NSMutableArray new]
+                                              expiresInSeconds:configuration.durationSeconds];
+    } else {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:body];
+    }
+    
+    [self.messageSender sendMessage:message
+                            success:^{
+                                DDLogInfo(@"%@ Successfully sent message.", self.tag);
+                            }
+                            failure:^(NSError *error) {
+                                DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
+                            }];
+}
+
+- (void) sendImage:(UIImage *)image
+           failure:(void (^)(NSError *error))failureHandler
+{
+    SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:image
+                                                                      dataUTI:(NSString *) kUTTypeJPEG];
+    if (!attachment ||
+        [attachment hasError]) {
+        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                  self.tag,
+                  __PRETTY_FUNCTION__,
+                  attachment ? [attachment errorMessage] : @"Missing data");
+        // No error defined yet
+        failureHandler(nil);
+    } else {
+        [self sendMessageAttachment:attachment];
+    }
+    
 }
 
 - (void)sendMessageAttachment:(SignalAttachment *)attachment
@@ -2354,7 +2415,14 @@ typedef enum : NSUInteger {
                                              [self chooseFromLibrary];
                                          }];
     [actionSheetController addAction:chooseMediaAction];
-    
+
+    UIAlertAction *sendLocationAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_CURRENT_LOCATION_BUTTON", @"share location option to send current location")
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * _Nonnull action) {
+                                                                   [self sendLocation];
+                                                               }];
+    [actionSheetController addAction:sendLocationAction];
+
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 

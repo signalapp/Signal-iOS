@@ -79,6 +79,8 @@
 	<string>Signal needs access to your microphone to make and receive phone calls.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Signal will let you choose which photos from your library to send.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Signal uses your location if you choose to send your current location to a group or contact.</string>
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
