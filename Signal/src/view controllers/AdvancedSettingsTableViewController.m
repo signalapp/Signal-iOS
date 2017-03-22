@@ -10,7 +10,6 @@
 #import "RPAccountManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
-#import "UIViewController+OWS.h"
 #import "Pastelog.h"
 #import <PromiseKit/AnyPromise.h>
 
@@ -51,8 +50,6 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-    
-    [self useOWSBackButton];
     
     // Enable Log
     self.enableLogCell                        = [[UITableViewCell alloc] init];

@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 #import "Signal-Swift.h"
 #import <25519/Curve25519.h>
 
@@ -60,8 +59,6 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
-
-    [self useOWSBackButton];
 
     // CallKit opt-out
     self.enableCallKitCell = [UITableViewCell new];

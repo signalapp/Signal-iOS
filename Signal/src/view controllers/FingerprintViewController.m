@@ -8,7 +8,6 @@
 #import "Signal-Swift.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
-#import "UIViewController+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>

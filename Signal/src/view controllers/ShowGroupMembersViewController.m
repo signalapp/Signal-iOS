@@ -8,7 +8,6 @@
 #import "Environment.h"
 #import "GroupContactsResult.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -58,8 +57,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.title = _thread.groupModel.groupName;
-
-    [self useOWSBackButton];
 
     [self initializeTableView];
 
