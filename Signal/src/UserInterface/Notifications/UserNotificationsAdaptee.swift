@@ -103,8 +103,9 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
             case .noNameNoPreview:
                 return CallStrings.missedCallNotificationBody
             case .nameNoPreview, .namePreview:
-                let format = CallStrings.missedCallNotificationBodyWithCallerName
-                return String(format: format, callerName)
+                return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
+                    ? CallStrings.missedCallNotificationBodyWithoutCallerName
+                    : String(format: CallStrings.missedCallNotificationBodyWithCallerName, callerName))
         }}()
 
         content.body = notificationBody

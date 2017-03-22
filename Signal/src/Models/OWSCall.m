@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *detailString;
     switch (status) {
         case kCallMissed:
-            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL", nil), name];
+            detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL_WITH_NAME", nil), name];
             break;
         case kCallIncoming:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_RECEIVED_CALL", nil), name];
