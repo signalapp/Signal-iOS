@@ -710,7 +710,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert([NSThread isMainThread]);
-    DDLogError(@"%@ Got exception: %@ of type: %@", self.tag, exception.description, exception.name);
+    DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
+        self.tag,
+        exception.description,
+        exception.name,
+        exception.reason);
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       TSErrorMessage *errorMessage;
 

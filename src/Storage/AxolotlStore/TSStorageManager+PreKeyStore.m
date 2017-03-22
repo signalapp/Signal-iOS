@@ -55,8 +55,9 @@
         [self preKeyRecordForKey:[self keyFromInt:preKeyId] inCollection:TSStorageManagerPreKeyStoreCollection];
 
     if (!preKeyRecord) {
-        @throw
-            [NSException exceptionWithName:InvalidKeyIdException reason:@"No key found matching key id" userInfo:@{}];
+        @throw [NSException exceptionWithName:InvalidKeyIdException
+                                       reason:@"No pre key found matching key id"
+                                     userInfo:@{}];
     } else {
         return preKeyRecord;
     }

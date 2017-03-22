@@ -38,8 +38,9 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
                                                          inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 
     if (!preKeyRecord) {
-        @throw
-            [NSException exceptionWithName:InvalidKeyIdException reason:@"No key found matching key id" userInfo:@{}];
+        @throw [NSException exceptionWithName:InvalidKeyIdException
+                                       reason:@"No signed pre key found matching key id"
+                                     userInfo:@{}];
     } else {
         return preKeyRecord;
     }
