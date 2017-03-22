@@ -12,7 +12,6 @@
 #import "ShowGroupMembersViewController.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -179,8 +178,6 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     self.listGroupMembersCell.textLabel.text
         = NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION", @"table cell label in conversation settings");
 
-    [self useOWSBackButton];
-
     self.toggleDisappearingMessagesCell.selectionStyle = UITableViewCellSelectionStyleNone;
     self.disappearingMessagesDurationCell.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -212,9 +209,6 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 {
     [super viewWillAppear:animated];
 
-    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
-
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
@@ -223,9 +217,6 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-
-    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
-    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     if (self.disappearingMessagesConfiguration.isNewRecord && !self.disappearingMessagesConfiguration.isEnabled) {
         // don't save defaults, else we'll unintentionally save the configuration and notify the contact.

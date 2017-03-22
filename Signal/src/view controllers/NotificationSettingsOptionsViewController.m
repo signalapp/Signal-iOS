@@ -5,7 +5,6 @@
 #import "NotificationSettingsOptionsViewController.h"
 #import "Environment.h"
 #import "PropertyListPreferences.h"
-#import "UIViewController+OWS.h"
 
 @interface NotificationSettingsOptionsViewController ()
 
@@ -19,8 +18,6 @@
     self.options = @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ];
 
     [super viewDidLoad];
-
-    [self useOWSBackButton];
 }
 
 #pragma mark - Table view data source

@@ -13,7 +13,6 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
