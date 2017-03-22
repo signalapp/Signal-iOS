@@ -410,8 +410,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
-        [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-        return YES;
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
@@ -455,8 +454,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
-        [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-        return YES;
+        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else {
         DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
             self.tag,
