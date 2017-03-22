@@ -120,8 +120,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     // If socket is not already open or connecting, connect now.
     //
     // First we need to close the existing websocket, if any.
-    // The websocket methods are invoked _after_ the websocket state
-    // changes, so we may be just learning about a socket failure
+    // The websocket delegate methods are invoked _after_ the websocket
+    // state changes, so we may be just learning about a socket failure
     // or close event now.
     self.status = kSocketStatusClosed;
     // Now open a new socket.
