@@ -24,7 +24,6 @@
     if (self) {
         self.pinnedCertificates = [NSSet setWithArray:@[
             [self certificateDataForService:@"textsecure"],
-            [self certificateDataForService:@"redphone"]
         ]];
     }
 

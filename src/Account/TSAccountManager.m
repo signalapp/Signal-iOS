@@ -10,7 +10,6 @@
 #import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "TSRedPhoneTokenRequest.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 
@@ -251,20 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *signalingKeyToken        = [SecurityUtils generateRandomBytes:52];
     NSString *signalingKeyTokenPrint = [[NSData dataWithData:signalingKeyToken] base64EncodedString];
     return signalingKeyTokenPrint;
-}
-
-- (void)obtainRPRegistrationTokenWithSuccess:(void (^)(NSString *rpRegistrationToken))success
-                                     failure:(void (^)(NSError *error))failureBlock
-{
-    [self.networkManager makeRequest:[[TSRedPhoneTokenRequest alloc] init]
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            DDLogInfo(@"%@ Successfully obtained Redphone token", self.tag);
-            success([responseObject objectForKey:@"token"]);
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogError(@"%@ Failed to obtain Redphone token with error: %@", self.tag, error);
-            failureBlock(error);
-        }];
 }
 
 + (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock
