@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [self.enableLogSwitch setOn:[PropertyListPreferences loggingIsEnabled]];
     [self.enableLogSwitch addTarget:self
                              action:@selector(didToggleEnableLogSwitch:)
-                   forControlEvents:UIControlEventTouchUpInside];
+                   forControlEvents:UIControlEventValueChanged];
     self.enableLogCell.accessoryView = self.enableLogSwitch;
 
     // Send Log
