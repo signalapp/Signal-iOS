@@ -10,13 +10,10 @@ import Foundation
 @objc class OutboundCallInitiator: NSObject {
     let TAG = "[OutboundCallInitiator]"
 
-    let redphoneManager: PhoneManager
     let contactsManager: OWSContactsManager
     let contactsUpdater: ContactsUpdater
 
-    init(redphoneManager: PhoneManager, contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
-        self.redphoneManager = redphoneManager
-
+    init(contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
         self.contactsManager = contactsManager
         self.contactsUpdater = contactsUpdater
 
