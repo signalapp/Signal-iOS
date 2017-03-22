@@ -121,7 +121,7 @@
     if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
         [interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSMessage *message  = (TSMessage *)interaction;
-        adapter.messageBody = message.body;
+        adapter.messageBody = [[DisplayableTextFilter new] displayableText:message.body];
 
         if ([message hasAttachments]) {
             for (NSString *attachmentID in message.attachmentIds) {
@@ -166,11 +166,6 @@
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
                                NSStringFromClass([attachment class]));
                 }
-            }
-        } else { // no attachment, plain text message
-            if ([[DisplayableTextFilter new] shouldPreventDisplayOfText:adapter.messageBody]) {
-                adapter.messageType = TSInfoMessageAdapter;
-                adapter.messageBody = NSLocalizedString(@"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE", @"Generic error text when message contents are undisplayable");
             }
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
