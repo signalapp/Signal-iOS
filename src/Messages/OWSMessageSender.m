@@ -862,9 +862,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return;
     }
 
+    // Getting the local number uses a transaction, so we need to do that before we
+    // create a new transaction to avoid deadlock.
+    NSString *contactId = [TSAccountManager localNumber];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSContactThread *cThread =
-            [TSContactThread getOrCreateThreadWithContactId:[TSAccountManager localNumber] transaction:transaction];
+            [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
         [cThread saveWithTransaction:transaction];
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
