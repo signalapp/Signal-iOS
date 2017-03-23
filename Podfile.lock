@@ -130,10 +130,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: a3c843cc8a423c5924c663490978f81dba34d04e
+    :commit: 23a5d1b67afc4dd028198202e25fd2e06ce396d7
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: 4dc18f2f0351701b3187f38ab5011324611403d0
+    :commit: d31cfe6fd687d01a485e08373e0a5c511cf79539
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
