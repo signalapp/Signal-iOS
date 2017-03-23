@@ -115,7 +115,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _successHandler = ^{
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
-            OWSAssert(NO);
+            OWSCAssert(NO);
             return;
         }
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
@@ -126,7 +126,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _failureHandler = ^(NSError *_Nonnull error) {
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
-            OWSAssert(NO);
+            OWSCAssert(NO);
             return;
         }
 
@@ -495,6 +495,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 && ![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
                 [self handleSendToMyself:message];
+                successHandler();
                 return;
             }
 
