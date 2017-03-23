@@ -128,14 +128,14 @@ class SignalAttachment: NSObject {
     // Image attachments may be converted to another image format before 
     // being uploaded.
     private class var inputImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedImageUTITypes()
+        return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
     }
 
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
         if allowArbitraryAttachments {
-            return MIMETypeUtil.supportedImageUTITypes()
+            return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
         } else {
             // Until Android client can handle arbitrary attachments,
             // restrict output.
