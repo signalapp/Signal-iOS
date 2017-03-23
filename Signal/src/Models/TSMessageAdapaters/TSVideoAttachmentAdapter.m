@@ -120,7 +120,6 @@
             _videoPlayButton       = [[UIImageView alloc] initWithImage:img];
             _videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
             [self.cachedImageView addSubview:_videoPlayButton];
-            _videoPlayButton.hidden = YES;
 
             if (!_incoming) {
                 __weak TSVideoAttachmentAdapter *weakSelf = self;
