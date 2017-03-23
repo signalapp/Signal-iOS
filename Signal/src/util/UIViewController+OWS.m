@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
 
     // Default back button is 1.5 pixel lower than our extracted image.
-    const CGFloat kTopInsetPadding = 1.5
+    const CGFloat kTopInsetPadding = 1.5;
     backButton.imageEdgeInsets = UIEdgeInsetsMake(kTopInsetPadding, kExtraLeftPadding, 0, 0);
 
     backButton.frame = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
