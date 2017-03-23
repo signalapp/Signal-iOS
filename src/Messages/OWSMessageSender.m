@@ -257,7 +257,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
-@property (nonatomic, readonly) NSOperationQueue *sendingQueue;
+@property (atomic, readonly) NSMutableDictionary<NSString *, NSOperationQueue *> *sendingQueueMap;
 
 @end
 
@@ -277,15 +277,37 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     _storageManager = storageManager;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
-    _sendingQueue = [NSOperationQueue new];
-    _sendingQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
-    _sendingQueue.maxConcurrentOperationCount = 1;
+    _sendingQueueMap = [NSMutableDictionary new];
 
     _uploadingService = [[OWSUploadingService alloc] initWithNetworkManager:networkManager];
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
 
     return self;
+}
+
+- (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
+{
+    OWSAssert(message);
+
+    NSString *kDefaultQueueKey = @"kDefaultQueueKey";
+    NSString *queueKey = message.uniqueThreadId ?: kDefaultQueueKey;
+    OWSAssert(queueKey.length > 0);
+
+    @synchronized(self)
+    {
+        NSOperationQueue *sendingQueue = self.sendingQueueMap[queueKey];
+
+        if (!sendingQueue) {
+            sendingQueue = [NSOperationQueue new];
+            sendingQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
+            sendingQueue.maxConcurrentOperationCount = 1;
+
+            self.sendingQueueMap[queueKey] = sendingQueue;
+        }
+
+        return sendingQueue;
+    }
 }
 
 - (void)sendMessage:(TSOutgoingMessage *)message
@@ -303,7 +325,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
     // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
     [sendMessageOperation startBackgroundTask];
-    [self.sendingQueue addOperation:sendMessageOperation];
+
+    NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
+    [sendingQueue addOperation:sendMessageOperation];
 }
 
 - (void)attemptToSendMessage:(TSOutgoingMessage *)message
