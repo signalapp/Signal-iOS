@@ -117,13 +117,14 @@ DEPENDENCIES:
   - OpenSSL
   - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/better-envelope-logging`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
+    :branch: mkirk/better-envelope-logging
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -133,7 +134,7 @@ CHECKOUT OPTIONS:
     :commit: 23a5d1b67afc4dd028198202e25fd2e06ce396d7
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :commit: d31cfe6fd687d01a485e08373e0a5c511cf79539
+    :commit: a8bcf4665b8d38a7ee63b8ec4c8bdbe4fe586fd1
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
@@ -163,6 +164,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: e1b30ecf8ba192005de35b7e0928ed01ae8a91ba
+PODFILE CHECKSUM: a892292740b6318c478d61a32b22c5a874ab2df1
 
 COCOAPODS: 1.2.0
