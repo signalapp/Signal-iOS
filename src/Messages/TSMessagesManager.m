@@ -111,9 +111,50 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
+- (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
+    OWSAssert(envelope != nil);
+    NSString *envelopeType;
+    switch (envelope.type) {
+        case OWSSignalServiceProtosEnvelopeTypeReceipt:
+            envelopeType = @"DeliveryReceipt";
+            break;
+        case OWSSignalServiceProtosEnvelopeTypeUnknown:
+            // Shouldn't happen
+            OWSAssert(NO);
+            envelopeType = @"Unknown";
+            break;
+        case OWSSignalServiceProtosEnvelopeTypeCiphertext:
+            envelopeType = @"SignalEncryptedMessage";
+            break;
+        case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
+            // Unsupported
+            OWSAssert(NO);
+            envelopeType = @"KeyExchange";
+            break;
+        case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
+            envelopeType = @"PreKeyEncryptedMessage";
+            break;
+        default:
+            // Shouldn't happen
+            OWSAssert(NO);
+            envelopeType = @"Other";
+            break;
+    }
+
+    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@.%d, timestamp: %llu content.length: %lu>",
+                     envelopeType,
+                     envelope.source,
+                     envelope.sourceDevice,
+                     envelope.timestamp,
+                     (unsigned long)envelope.content.length];
+}
+
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
     @try {
         switch (envelope.type) {
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
