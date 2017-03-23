@@ -8,8 +8,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (OWS)
 
+/**
+ * Takes up a bit less space than the default system back button
+ * used in the MessagesViewController to help left-align the title view.
+ *
+ * **note** Using this breaks the interactive pop gesture (swipe back) unless you set/unset the 
+ * interactivePopGesture.delegate to self/nil on viewWillAppear/Disappear
+ */
 - (UIBarButtonItem *)createOWSBackButton;
-- (void)useOWSBackButton;
 
 @end
 

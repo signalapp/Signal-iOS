@@ -462,6 +462,9 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
@@ -542,6 +545,9 @@ typedef enum : NSUInteger {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
+
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
@@ -767,24 +773,6 @@ typedef enum : NSUInteger {
     OWSAssert(self.inputToolbar.contentView.textView);
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
-}
-
-- (nullable UILabel *)findNavbarTitleLabel
-{
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            UIView *navItemView = view;
-            for (UIView *aView in navItemView.subviews) {
-                if ([aView isKindOfClass:[UILabel class]]) {
-                    UILabel *label = (UILabel *)aView;
-                    if ([label.text isEqualToString:self.title]) {
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-    return nil;
 }
 
 // Overiding JSQMVC layout defaults
@@ -1358,12 +1346,6 @@ typedef enum : NSUInteger {
                                                               instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
-}
-
-- (void)didTapTitle
-{
-    DDLogDebug(@"%@ Tapped title in navbar", self.tag);
-    [self showConversationSettings];
 }
 
 - (void)didTapTimerInNavbar:(id)sender
