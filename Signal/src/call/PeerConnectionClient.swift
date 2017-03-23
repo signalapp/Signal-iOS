@@ -774,11 +774,13 @@ class HardenedRTCSessionDescription {
         var description = rtcSessionDescription.sdp
 
         // Enforce Constant bit rate.
-        description = description.replacingOccurrences(of: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", with: "$1;cbr=1\r\n")
+        let cbrRegex = try! NSRegularExpression(pattern:"(a=fmtp:111 ((?!cbr=).)*)\r?\n", options:.caseInsensitive)
+        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.characters.count), withTemplate: "$1;cbr=1\r\n")
 
         // Strip plaintext audio-level details
         // https://tools.ietf.org/html/rfc6464
-        description = description.replacingOccurrences(of: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", with: "")
+        let audioLevelRegex = try! NSRegularExpression(pattern:".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options:.caseInsensitive)
+        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.characters.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }
