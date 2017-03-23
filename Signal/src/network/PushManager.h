@@ -1,9 +1,5 @@
 //
-//  PushManager.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <CollapsingFutures.h>
@@ -21,19 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define Signal_Message_Reply_Identifier @"Signal_New_Message_Reply"
 #define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
-
-#pragma mark Redphone Calls (deprecated)
-
-#define Signal_Call_UserInfo_Key @"Signal_Call_Id"
-
-#define Signal_Call_Accept_Identifier @"Signal_Call_Accept"
-#define Signal_Call_Decline_Identifier @"Signal_Call_Decline"
-
-#define Signal_CallBack_Identifier @"Signal_CallBack"
-
-#define Signal_Call_Category @"Signal_IncomingCall"
-
-#define Signal_CallBack_Category @"Signal_CallBack"
 
 #pragma mark Signal Calls constants
 
@@ -81,7 +64,6 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 
 - (TOCFuture *)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
-- (UILocalNotification *)closeVOIPBackgroundTask;
 - (void)presentNotification:(UILocalNotification *)notification;
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId;
 

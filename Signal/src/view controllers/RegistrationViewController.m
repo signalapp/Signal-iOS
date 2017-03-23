@@ -5,7 +5,6 @@
 #import "RegistrationViewController.h"
 #import "CodeVerificationViewController.h"
 #import "Environment.h"
-#import "LocalizableText.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 #import "SignalKeyingStorage.h"

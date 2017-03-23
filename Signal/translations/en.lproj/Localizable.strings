@@ -250,47 +250,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Squeaky Freaking Clean.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Server Failed!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "End";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Handshake Failed!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "You Hung Up.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "They Hung Up.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Login failed!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Message from Server: ";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Number not registered with Signal or RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Recipient Unavailable.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "You Rejected the Call.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Call Rejected.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "You Made Another Call.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Missed the Call.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";

@@ -4,7 +4,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Contact.h"
-#import "LocalizableText.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

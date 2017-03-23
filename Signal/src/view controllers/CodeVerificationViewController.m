@@ -4,10 +4,10 @@
 
 #import "CodeVerificationViewController.h"
 #import "AppDelegate.h"
-#import "RPAccountManager.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
 #import "SignalsViewController.h"
+#import "StringUtil.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>

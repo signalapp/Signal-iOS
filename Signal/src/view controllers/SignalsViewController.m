@@ -4,14 +4,12 @@
 
 #import "SignalsViewController.h"
 #import "AppDelegate.h"
-#import "InCallViewController.h"
 #import "InboxTableViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
@@ -527,11 +525,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:kRedphoneCallSegue]) {
-        InCallViewController *vc = [segue destinationViewController];
-        [vc configureWithLatestCall:_latestCall];
-        _latestCall = nil;
-    } else if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
+    if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
         DDLogDebug(@"%@ preparing for incoming call segue", self.tag);
         if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
             DDLogError(@"%@ Received unexpected destination view controller: %@", self.tag, segue.destinationViewController);

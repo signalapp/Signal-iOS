@@ -4,7 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "AppAudioManager.h"
 #import "Asserts.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
@@ -16,11 +15,9 @@
 #import "OWSError.h"
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
-#import "PhoneManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
