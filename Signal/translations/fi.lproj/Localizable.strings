@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Vastaa";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Uusi viesti! Lue se avaamalla ohjelma.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Uusi viesti!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Liite";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Liite";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tiedoston tyyppi: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Tiedoston koko: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Lähetä";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Liitteen lataaminen epäonnistui. Yritä uudelleen napauttamalla.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Keskustelun asetukset";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Tämä viesti on liian iso lähetettäväksi.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Virhe";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Istunnon alustaminen mahdollistaa uusien viestien vastaanottamisen yhteystiedolta %@. Vanhoja, jo korruptoituneita viestejä ei kuitenkaan ole mahdollista enää palauttaa.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u päivää";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Toimitettu";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi käytetty: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sinun täytyy ensin hyväksyä uusi turvanumero, ennen kuin voit lähettää viestejä.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Lähetys epäonnistui. Yritä uudelleen napauttamalla.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Turvanumeron varmennus epäonnistui!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Uusi viesti";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Toimitettu";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Lähetys epäonnistui. Yritä uudelleen napauttamalla.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Lähetetty";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Lähetetään...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Napsauta tästä asetuksiin";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal tarvitsee oikeutta käyttää kameraa.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Vastaamatta jäänyt puhelu: %@";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "%@ soitti sinulle.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Estä Signalin esikatselukuvien näkyminen ohjelmanvaihtajanäytöltä.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS puheluiden integraatio näyttää Signal-puhelut lukitusruudullasi ja järjestelmän puheluhistoriassa. Jos iCloud on käytössä, puheluhistoria jaetaan myös Applelle. Voi halutessasi näyttää myös yhteystietosi nimen ja numeron.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS puheluiden integraatio näyttää Signal-puhelut lukitusruudullasi ja järjestelmän puheluhistoriassa. Voi halutessasi näyttää myös yhteystietosi nimen ja numeron. Jos iCloud on käytössä, puheluhistoria jaetaan myös Applelle.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Puhelut";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Päivitetään Signalia ...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Lähetetään...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Takaisin";

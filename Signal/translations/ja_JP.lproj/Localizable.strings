@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "応答";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "新着メッセージがありますのでアプリを起動してください。";
-
-/* No comment provided by engineer. */
 "APN_Message" = "新着メッセージがあります";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "添付ファイル取得失敗（タップでやり直し）";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会話設定";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "接触をリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u日";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "配信済み";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終活動：%@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "新しい安全番号を承諾しなければ送信を行うことはできません";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "送信失敗（タップでやり直し）";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "安全番号が確認できませんでした";
 
@@ -404,7 +413,7 @@
 "INCOMING_INCOMPLETE_CALL" = "不完全着信";
 
 /* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "メッセージを表示できません";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新しいメッセージ";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "タップで設定";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "%@ から不在着信";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "%@ から着信";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しない";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "通話をiOSに統合すると，Signalでの通話がiOSの通話履歴やロック画面に表示されます。通話相手の名前や番号を表示させることもできます。ただしiCloudが有効の場合は，通話履歴がAppleと共有されます。";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "電話";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signalをアップグレードしています……";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "アップロードしています……";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "もどる";

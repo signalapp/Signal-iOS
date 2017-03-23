@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Odgovori";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Nova poruka! Za čitanje otvorite aplikaciju.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Nova Poruka!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Privitak";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Privitak";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Veličina datoteke: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Šalji";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo, dodirni za pokušaj.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Postavke razgovora";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Ova poruka je predugačka za slanje.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Pogreška";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dana";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Isporučeno";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posljednja aktivnost: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Morate prihvatiti novi sigurnosni broj prije mogućnosti slanja.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dodirni za novi pokušaj.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja nije uspjela!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "isporučeno";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo. Dodirni za novi pokušaj.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Poslano";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Prijenos...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Dodirni ovdje za postavke";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Propušten poziv od %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Primili ste poziv od %@.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS integracija poziva prikazuje Signal pozive na zaključanom zaslonu i povijest poziva u aplikaciji \"Telefon\". Kada je omogućen iCloud, povijest poziva dijelit će se s kompanijom Apple. Po izboru možete omogućiti prikaz imena i brojeva vaših kontakata.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS integracija poziva omogućava prikaz Signal poziva na zaključanom zaslonu i povijest poziva unutar sistema u aplikaciji \"Telefon\". Po izboru možete omogućiti prikaz imena i brojeva vaših kontakata. Ako je omogućen iCloud, ova povijest poziva dijelit će se sa Apple-om.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Pozivanje";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signal se nadograđuje...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Prijenos...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Nazad";

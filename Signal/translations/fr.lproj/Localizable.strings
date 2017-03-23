@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Répondre";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Vous avez un nouveau message ! Ouvrez l'app pour le lire.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Nouveau message !";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Pièce jointe";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Le téléchargement de la pièce jointe a échoué, appuyez pour réessayer.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de cette conversation";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "La réinitialisation de votre session vous permettra de recevoir des messages futurs de %@ , mais elle ne récupérera pas les messages déjà corrompus.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u jours";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Reçu";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vous devez accepter le nouveau numéro de sécurité avant de pouvoir envoyer.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Échec de l'envoi. Taper ici pour réessayer.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Impossible de vérifier le numéro de sécurité!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nouveau message";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Appuyez ici pour les paramètres";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d'accéder à votre appareil photo.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Appel manqué de %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Vous avez reçu un appel de %@.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de signaux d'apparaître dans le commutateur d'applications.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Si iCloud est activé, l'historique des appels sera partagé avec Apple. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Appel";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Mise à niveau de Signal ...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "En cours de chargement...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Retour";

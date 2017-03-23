@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Respon";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Missatge nou! Obre l'aplicació per llegir-ho.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Missatge nou!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Fitxer adjunt";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Fitxer adjunt";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipus de fitxer: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Mida del fitxer: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envia";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Error en baixar el fitxer adjunt, toqueu per provar de nou.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configuració del xat";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Aquest missatge és massa llarg.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Restablir la sessió us permetrà tornar a rebre missatges de %@, però no recuperareu cap missatge que ja sigui corromput.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dies";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Entregat";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera connexió: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Heu d'acceptar els números de seguretat nous abans de poder enviar res.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Ha fallat l'enviament. Toqueu per provar de nou.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar els números.";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Missatge nou";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "S'ha enviat";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Ha fallat l'enviament. Toqueu per provar de nou.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "S'ha enviat";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "S'està pujant...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu aquí per anar a la configuració";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "El Signal necessita accedir a la càmera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Telefonada perduda de %@";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Heu rebut una telefonada de %@.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevé que la visualització prèvia del Signal aparegui a la multitasca.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integració amb iOS mostra les telefonades de Signal a la pantalla de bloqueig i a l'historial de telefonades del sistema. Si l'iCloud es troba activat, l'historial es compartirà amb Apple. Podeu mostrar el nom i el número del vostre contacte.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integració amb iOS mostra les telefonades de Signal a la pantalla de bloqueig i a l'historial de telefonades del sistema. Podeu mostrar el nom i el número del vostre contacte. Si l'iCloud es troba activat, l'historial es compartirà amb Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Telefonades";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "S'està actualitzant el Signal...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "S'està pujant...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Enrere";

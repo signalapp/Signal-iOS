@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Sprejmi";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Novo sporočilo! Za prebiranje odprite aplikacijo.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Novo sporočilo!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Priponka";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Priponka";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Velikost datoteke: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Pošlji";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Prenos priponke ni uspel. Tapnite za ponoven poskus.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Nastavitve pogovora";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Sporočilo je predolgo za pošiljanje.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Napaka";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "S ponastavitvijo seje boste zopet lahko prejemali sporočila osebe %@, ne bo pa mogoče obnoviti okvarjenih sporočil iz preteklosti.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dni";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Dostavljeno";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Nazadnje aktivna: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Preden boste lahko pošiljali sporočila, morate potrditi novo skupno varnostno število.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Pošiljanje ni uspelo. Tapnite za ponovitev.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Varnostnega števila ni bilo mogoče potrditi!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Novo sporočilo";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Dostavljeno";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Pošiljanje ni uspelo. Tapnite za ponovitev.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Poslano";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Prenašam...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tapnite za nastavitve";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Aplikacija Signal potrebuje dostop do vaše kamere";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Zgrešen klic: %@";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Prejeli ste klic: %@";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Prepreči aplikaciji Signal, da bi bila prikazana v preklopniku med aplikacijami.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integracija klicev iOS omogoči prikaz klicev Signal na zaslonu za zaklepanje in v sistemski zgodovini klicev. Če imate vklopljeno storitev iCloud, bo zgodovina vaših klicev prenešena tudi na strežnike Apple. Izberete lahko tudi prikaz imena in številke klicočega.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integracija klicev iOS omogoča prikaz klicev Signal na zaslonu za zaklepanje in v sistemski zgodovini klicev. Izberete lahko tudi prikaz imena in številke klicočega. Če imate vklopljeno storitev iCloud, bo zgodovina vaših klicev prenešena tudi na strežnike Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Kličem";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Posodabljam Signal...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Nalagam...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Nazaj";
