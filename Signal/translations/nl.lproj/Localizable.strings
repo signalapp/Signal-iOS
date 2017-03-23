@@ -520,22 +520,22 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Gemiste oproep van %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Gemiste oproep van een Signal-gebruiker.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Je ontving een oproep van %@.";
+"MSGVIEW_RECEIVED_CALL" = "%@ heeft je gebeld.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ heeft je proberen bellen.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ probeerde je te bellen.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Je belde %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Je hebt %@ proberen bellen.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Je probeerde %@ te bellen.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -701,7 +701,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Opnieuw proberen";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Je hebt te vaak geprobeerd. Wacht een minuutje vooraleer je het opnieuw probeert.";
+"REGISTER_RATE_LIMITING_BODY" = "Je hebt het te vaak geprobeerd. Wacht een minuutje vooraleer je het opnieuw probeert.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Geregistreerd nummer";
@@ -860,7 +860,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificaties";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Naam en telefoonnummer van oproep weergeven";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Weergeef naam & nummer van beller";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS-oproepintegratie";

@@ -520,10 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal reikalinga prieiga prie jūsų kameros.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Praleistas skambutis nuo %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Praleistas skambutis nuo Signal naudotojo.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Jūs gavote skambutį nuo %@.";
