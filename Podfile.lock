@@ -27,7 +27,6 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.4.0):
     - CocoaLumberjack/Default
-  - FFCircularProgressView (0.5)
   - HKDFKit (0.0.3)
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
@@ -38,7 +37,6 @@ PODS:
   - Mantle/extobjc (2.1.0)
   - OpenSSL (1.0.210)
   - ProtocolBuffers (1.9.11)
-  - PureLayout (3.0.2)
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SCWaveformView (1.0.0)
@@ -112,10 +110,8 @@ PODS:
 
 DEPENDENCIES:
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
-  - FFCircularProgressView (~> 0.5)
   - JSQMessagesViewController
   - OpenSSL
-  - PureLayout
   - SCWaveformView (~> 1.0)
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
@@ -144,7 +140,6 @@ SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   AxolotlKit: 240c7d761e4b1be9c6de78ebec498aaeedc978f4
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
-  FFCircularProgressView: 683a4ab1e1bd613246a3dffa61503ffdebcde8d8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
@@ -152,7 +147,6 @@ SPEC CHECKSUMS:
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
-  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
@@ -163,6 +157,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: e1b30ecf8ba192005de35b7e0928ed01ae8a91ba
+PODFILE CHECKSUM: c4ba1b6a6e6d71830df353075ba164e346303c27
 
 COCOAPODS: 1.2.0
