@@ -5,7 +5,7 @@
 import Foundation
 import MobileCoreServices
 
-enum SignalAttachmentError: String {
+enum SignalAttachmentError: Int {
     case missingData
     case fileSizeTooLarge
     case invalidData
@@ -97,7 +97,25 @@ class SignalAttachment: NSObject {
             assert(false)
             return nil
         }
-        return "\(error)"
+
+        switch error {
+        case .missingData:
+            return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
+        case .fileSizeTooLarge:
+            return NSLocalizedString("ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE", comment: "Attachment error message for attachments whose data exceed file size limits")
+        case .invalidData:
+            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_DATA", comment: "Attachment error message for attachments with invalid data")
+        case .couldNotParseImage:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE", comment: "Attachment error message for image attachments which cannot be parsed")
+        case .couldNotConvertToJpeg:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
+        case .invalidFileFormat:
+            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        }
+    }
+
+    class var missingDataErrorMessage: String {
+        return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
     }
 
     // Returns the MIME type for this attachment or nil if no MIME type

@@ -1951,6 +1951,7 @@ typedef enum : NSUInteger {
                                                        self.tag,
                                                        __PRETTY_FUNCTION__,
                                                        attachment ? [attachment errorMessage] : @"Missing data");
+                                             [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
                                              [self sendMessageAttachment:attachment];
@@ -1988,21 +1989,21 @@ typedef enum : NSUInteger {
              
              SignalAttachment *attachment = [SignalAttachment imageAttachmentWithData:imageData
                                                                               dataUTI:dataUTI];
-             if (!attachment ||
-                 [attachment hasError]) {
-                 DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                           self.tag,
-                           __PRETTY_FUNCTION__,
-                           attachment ? [attachment errorMessage] : @"Missing data");
-                 failedToPickAttachment(nil);
-             } else {
-                 [self dismissViewControllerAnimated:YES
-                                          completion:^{
-                                              OWSAssert([NSThread isMainThread]);
-                                              
+             [self dismissViewControllerAnimated:YES
+                                      completion:^{
+                                          OWSAssert([NSThread isMainThread]);
+                                          if (!attachment ||
+                                              [attachment hasError]) {
+                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                                                        self.tag,
+                                                        __PRETTY_FUNCTION__,
+                                                        attachment ? [attachment errorMessage] : @"Missing data");
+                                              [self showErrorAlertForAttachment:attachment];
+                                              failedToPickAttachment(nil);
+                                          } else {
                                               [self sendMessageAttachment:attachment];
-                                          }];
-             }
+                                          }
+                                      }];
          }];
     }
 }
@@ -2083,7 +2084,7 @@ typedef enum : NSUInteger {
                       self.tag,
                       __PRETTY_FUNCTION__,
                       attachment ? [attachment errorMessage] : @"Missing data");
-            // TODO: How should we handle errors here?
+            [self showErrorAlertForAttachment:attachment];
         } else {
             [self sendMessageAttachment:attachment];
         }
@@ -2319,7 +2320,7 @@ typedef enum : NSUInteger {
                       self.tag,
                       __PRETTY_FUNCTION__,
                       attachment ? [attachment errorMessage] : @"Missing data");
-            // TODO: How should we handle errors here?
+            [self showErrorAlertForAttachment:attachment];
         } else {
             [self sendMessageAttachment:attachment];
         }
@@ -2559,18 +2560,42 @@ typedef enum : NSUInteger {
                   self.tag,
                   __PRETTY_FUNCTION__,
                   attachment ? [attachment errorMessage] : @"Missing data");
-        // TODO: Add UI.
+        [self showErrorAlertForAttachment:attachment];
     } else {
         __weak MessagesViewController *weakSelf = self;
         UIViewController *viewController = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
-                                            successCompletion:^{
-                                                [weakSelf sendMessageAttachment:attachment];
-                                            }];
+                                                                                      successCompletion:^{
+                                                                                          [weakSelf sendMessageAttachment:attachment];
+                                                                                      }];
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self.navigationController presentViewController:navigationController
                                                 animated:YES
                                               completion:nil];
     }
+}
+
+- (void)showErrorAlertForAttachment:(SignalAttachment * _Nullable)attachment {
+    OWSAssert(attachment == nil || [attachment hasError]);
+    
+    NSString *errorMessage = (attachment
+                              ? [attachment errorMessage]
+                              : [SignalAttachment missingDataErrorMessage]);
+    
+    DDLogError(@"%@ %s: %@",
+               self.tag,
+               __PRETTY_FUNCTION__, errorMessage);
+    
+    UIAlertController *controller =
+    [UIAlertController alertControllerWithTitle:NSLocalizedString(@"ATTACHMENT_ERROR_ALERT_TITLE",
+                                                                  @"The title of the 'attachment error' alert.")
+                                        message:errorMessage
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:nil]];
+    [self presentViewController:controller
+                       animated:YES
+                     completion:nil];
 }
 
 #pragma mark - Class methods
