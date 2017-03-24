@@ -41,6 +41,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(major, minor)                                                          \
+    ([[NSProcessInfo processInfo]                                                                                      \
+        isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){                                                    \
+                                            .majorVersion = major, .minorVersion = minor, .patchVersion = 0 }])
+
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
  * getting proper keys, and retrying upon failure.
@@ -404,11 +409,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                    success:(void (^)())successHandler
                    failure:(void (^)(NSError *error))failureHandler
 {
+    // There's an odd bug wherein instances of NSData/Data created in Swift
+    // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
+    // We can avoid these crashes by simply copying the Data.
+    //
+    // TODO: Move the iOSVersion header to SSK.
+    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? data : [data copy]);
+
     dispatch_async([OWSDispatch attachmentsQueue], ^{
         TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:contentType];
 
         NSError *error;
-        [attachmentStream writeData:data error:&error];
+        [attachmentStream writeData:dataCopy error:&error];
         if (error) {
             DDLogError(@"%@ Failed to write data for outgoing attachment with error:%@", self.tag, error);
             return failureHandler(error);
