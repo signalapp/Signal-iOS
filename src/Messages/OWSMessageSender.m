@@ -414,7 +414,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // We can avoid these crashes by simply copying the Data.
     //
     // TODO: Move the iOSVersion header to SSK.
-    __block NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? data : [data copy]);
+    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? data : [data copy]);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
         TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:contentType];
