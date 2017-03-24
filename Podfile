@@ -10,6 +10,7 @@ target 'Signal' do
     pod 'OpenSSL'
     pod 'SCWaveformView',             '~> 1.0'
     pod 'JSQMessagesViewController'
+    pod 'PureLayout'
     target 'SignalTests' do
         inherit! :search_paths
     end
