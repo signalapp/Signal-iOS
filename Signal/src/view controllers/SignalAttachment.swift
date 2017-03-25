@@ -90,7 +90,7 @@ class SignalAttachment: NSObject {
      *
      * https://github.com/WhisperSystems/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
-    static let kMaxFileSizeAnimatedImage = 6 * 1024 * 1024
+    static let kMaxFileSizeAnimatedImage = 15 * 1024 * 1024
     static let kMaxFileSizeImage = 6 * 1024 * 1024
     static let kMaxFileSizeVideo = 100 * 1024 * 1024
     static let kMaxFileSizeAudio = 100 * 1024 * 1024
@@ -351,10 +351,8 @@ class SignalAttachment: NSObject {
     }
 
     private class func defaultImageUploadQuality() -> TSImageQuality {
-        // Currently default to a middling image quality and size.
-        // 
-        // TODO: We're likely to change this behavior soon.
-        return .medium
+        // Currently default to a original image quality and size.
+        return .uncropped
     }
 
     // If the proposed attachment already conforms to the
