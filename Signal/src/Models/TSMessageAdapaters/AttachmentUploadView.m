@@ -47,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
         [superview.layer addSublayer:_maskLayer];
 
         const CGFloat progressWidth = round(superview.frame.size.width * 0.45f);
-        const CGFloat progressHeight = round(progressWidth * 0.11f);
+        const CGFloat progressHeight = round(MIN(superview.frame.size.height * 0.5f,
+                                                 progressWidth * 0.09f));
         CGRect progressFrame = CGRectMake(round((superview.frame.size.width - progressWidth) * 0.5f),
             round((superview.frame.size.height - progressHeight) * 0.5f),
             progressWidth,
