@@ -79,8 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)update
 {
-    CGFloat kBorderThickness = self.bounds.size.height * 0.15f;
-    CGFloat kOuterRadius = self.bounds.size.height * 0.3f;
+    CGFloat kBorderThickness = self.bounds.size.height * 0.1f;
+    CGFloat kOuterRadius = self.bounds.size.height * 0.25f;
     CGFloat kInnerRadius = kOuterRadius - kBorderThickness;
     // We want to slightly overlap the border with the progress
     // to achieve a clean effect.
