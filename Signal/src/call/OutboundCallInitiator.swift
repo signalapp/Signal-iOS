@@ -46,10 +46,13 @@ import Foundation
             return false
         }
 
+        
         // Check for microphone permissions
-        AVAudioSession.sharedInstance().requestRecordPermission { status in
+        // Alternative way without prompting for permissions:
+        // if AVAudioSession.sharedInstance().recordPermission() == .denied {
+        AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
             // Here the permissions are either granted or denied
-            guard status == true else {
+            guard isGranted == true else {
                 Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
                 self.showAlertNoPermission()
                 return
