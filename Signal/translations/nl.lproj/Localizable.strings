@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Beantwoorden";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Nieuw bericht! Open app om te lezen.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Nieuw bericht!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Bijlage";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Bijlage";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Bestandstype: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Bestandsgrootte: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Stuur";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Download van bijlage mislukt, tik om opnieuw te proberen.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Gespreksinstellingen";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Dit bericht is te lang om te kunnen versturen.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Fout";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Je sessie opnieuw instellen zal je toestaan toekomstige berichten van %@ te ontvangen, maar het zal reeds beschadigde berichten niet herstellen.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dagen";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Afgeleverd";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Laatst gezien: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Je moet het nieuwe veiligheidsnummer aanvaarden voordat je berichten kunt versturen.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Versturen mislukt, tik om opnieuw te proberen.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifiëren van veiligheidsnummer mislukt!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nieuw bericht";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Afgeleverd";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Versturen mislukt, tik om opnieuw te proberen.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Verstuurd";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploaden...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tik hier voor instellingen";
 
@@ -499,19 +520,22 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Oproep gemist van %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Gemiste oproep van %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Gemiste oproep van een Signal-gebruiker.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Je ontving een oproep van %@.";
+"MSGVIEW_RECEIVED_CALL" = "%@ heeft je gebeld.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ heeft je proberen bellen.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ probeerde je te bellen.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Je belde %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Je hebt %@ proberen bellen.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Je probeerde %@ te bellen.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -677,7 +701,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Opnieuw proberen";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Je hebt te vaak geprobeerd. Wacht een minuutje vooraleer je het opnieuw probeert.";
+"REGISTER_RATE_LIMITING_BODY" = "Je hebt het te vaak geprobeerd. Wacht een minuutje vooraleer je het opnieuw probeert.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Geregistreerd nummer";
@@ -836,7 +860,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificaties";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Naam en telefoonnummer van oproep weergeven";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Weergeef naam & nummer van beller";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS-oproepintegratie";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Verberg Signal-voorbeeldweergaven in het overzicht van open apps.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-oproepintegratie geeft Signal-oproepen weer op je vergrendelscherm en in de oproepgeschiedenis van het systeem. Als iCloud is ingeschakeld zal je oproepgeschiedenis gedeeld worden met Apple. Je kan ervoor kiezen dat naam en telefoonnummer van je contact ook weergegeven worden.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-oproepintegratie geeft Signal-oproepen weer op je vergrendelscherm en in de oproepgeschiedenis van het systeem. Je kan ervoor kiezen dat naam en telefoonnummer van je contact ook weergegeven worden. Als iCloud is ingeschakeld zal je oproepgeschiedenis gedeeld worden met Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Bellen";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signal wordt bijgewerkt...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Uploaden...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Terug";

@@ -464,6 +464,9 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
@@ -544,6 +547,9 @@ typedef enum : NSUInteger {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
+
+    // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     [_unreadContainer removeFromSuperview];
     _unreadContainer = nil;
@@ -769,24 +775,6 @@ typedef enum : NSUInteger {
     OWSAssert(self.inputToolbar.contentView.textView);
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
-}
-
-- (nullable UILabel *)findNavbarTitleLabel
-{
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        if ([view isKindOfClass:NSClassFromString(@"UINavigationItemView")]) {
-            UIView *navItemView = view;
-            for (UIView *aView in navItemView.subviews) {
-                if ([aView isKindOfClass:[UILabel class]]) {
-                    UILabel *label = (UILabel *)aView;
-                    if ([label.text isEqualToString:self.title]) {
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-    return nil;
 }
 
 // Overiding JSQMVC layout defaults
@@ -1339,12 +1327,6 @@ typedef enum : NSUInteger {
                                                               instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
-}
-
-- (void)didTapTitle
-{
-    DDLogDebug(@"%@ Tapped title in navbar", self.tag);
-    [self showConversationSettings];
 }
 
 - (void)didTapTimerInNavbar:(id)sender
@@ -2238,12 +2220,21 @@ typedef enum : NSUInteger {
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
 
-    __block BOOL scrollToBottom = NO;
-
     if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
         return;
     }
-
+    
+    __block BOOL scrollToBottom = NO;
+    const CGFloat kIsAtBottomTolerancePts = 5;
+    BOOL wasAtBottom = (self.collectionView.contentOffset.y +
+                        self.collectionView.bounds.size.height +
+                        kIsAtBottomTolerancePts >=
+                        self.collectionView.contentSize.height);
+    // We want sending messages to feel snappy.  So, if the only
+    // update is a new outgoing message AND we're already scrolled to
+    // the bottom of the conversation, skip the scroll animation.
+    __block BOOL shouldAnimateScrollToBottom = !wasAtBottom;
+    
     [self.collectionView performBatchUpdates:^{
       for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
           switch (rowChange.type) {
@@ -2254,11 +2245,17 @@ typedef enum : NSUInteger {
                   if (collectionKey.key) {
                       [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                   }
+                  
                   break;
               }
               case YapDatabaseViewChangeInsert: {
                   [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                   scrollToBottom = YES;
+                  
+                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
+                  if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                      shouldAnimateScrollToBottom = YES;
+                  }
                   break;
               }
               case YapDatabaseViewChangeMove: {
@@ -2284,7 +2281,7 @@ typedef enum : NSUInteger {
               [self.collectionView reloadData];
           }
           if (scrollToBottom) {
-              [self scrollToBottomAnimated:YES];
+              [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
           }
         }];
 }

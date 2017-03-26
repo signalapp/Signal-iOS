@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/27/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSScrubbingLogFormatter.h"
 #import <XCTest/XCTest.h>
@@ -36,11 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSString *phoneString in phoneStrings) {
         OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-        NSString *actual = [formatter
-            formatLogMessage:[self
-                                 messageWithString:[NSString stringWithFormat:@"My phone number is %@", phoneString]]];
-
-        NSRange redactedRange = [actual rangeOfString:@"My phone number is [ REDACTED_PHONE_NUMBER ]"];
+        NSString *messageText = [NSString stringWithFormat:@"My phone number is %@", phoneString];
+        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
+        NSRange redactedRange = [actual rangeOfString:@"My phone number is [ REDACTED_PHONE_NUMBER:xxx234 ]"];
         XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact phone string: %@", phoneString);
 
         NSRange phoneNumberRange = [actual rangeOfString:phoneString];

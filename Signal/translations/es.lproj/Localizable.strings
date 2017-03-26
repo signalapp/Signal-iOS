@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Responder";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "¡Mensaje nuevo! Abre Signal para leerlo.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "¡Nuevo mensaje!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Adjunto";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Adjunto";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipo de archivo: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Tamaño de archivo: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Enviar";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar el adjunto, toca para reintentar.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ajustes del chat";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Mensaje demasiado largo para ser enviado.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar tu sesión te permitirá recibir mensajes de %@ pero no permitirá recuperar los mensajes corruptos ya recibidos.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u días";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Entregado";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Última conexión: %@";
@@ -325,14 +337,11 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Tienes que aceptar las nuevas cifras de seguridad para poder enviar.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Fallo al enviar. Toca para reintentar.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "¡Fallo al comprobar las cifras de seguridad!";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sesión.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sesión";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Grupo creado con éxito";
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Entregado";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Fallo al enviar. Toca para reintentar.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Enviado";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Cargando...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca aquí para ajustes del chat";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal necesita acceder a la cámara.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Llamada perdida de %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Llamada perdida de %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Llamada perdida de Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Has recibido una llamada de %@.";
@@ -749,7 +773,7 @@
 "SECONDS_TIME_AMOUNT" = "%u segundos";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "Sesión segura reinicializada.";
+"SECURE_SESSION_RESET" = "Reinicializada sesión segura";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Enviar nuevamente";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Evita que aparezcan las capturas de pantalla en el gestor de aplicaciones.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integración en iOS muestra las llamadas de Signal en la pantalla bloqueada y en el historial de llamadas del sistema como llamadas normales. Si iCloud está activado, el historial de llamadas se comparte con Apple. Puedes activar el mostrar el nombre y número del contacto de manera opcional.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integración de llamadas en iOS muestra los avisos de llamada de Signal a pantalla completa y en el historial de llamadas del sistema de forma anónima. Opcionalmente puedes activar que se muestre el nombre o número del contacto. Con iCloud activado, el historial de llamadas se comparte con Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Llamadas";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Actualizando Signal...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Cargando...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Atrás";

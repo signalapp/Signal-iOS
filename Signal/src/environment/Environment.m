@@ -184,8 +184,7 @@ static Environment *environment = nil;
             OWSAssert(self.phoneManager);
             OWSAssert(self.contactsManager);
             OWSAssert(self.contactsUpdater);
-            _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithRedphoneManager:self.phoneManager
-                                                                            contactsManager:self.contactsManager
+            _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithContactsManager:self.contactsManager
                                                                             contactsUpdater:self.contactsUpdater];
         }
     }

@@ -1,0 +1,1031 @@
+/* No comment provided by engineer. */
+"AB_PERMISSION_MISSING_ACTION" = "ផ្តល់សិទ្ធិប្រើប្រាស់";
+
+/* No comment provided by engineer. */
+"AB_PERMISSION_MISSING_BODY" = "Signal ត្រូវការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។ យើងមិនរក្សាទុកលេខទំនាក់ទំនងរបស់អ្នក លើម៉ាស៊ីនមេរបស់យើងឡើយ។";
+
+/* Alert title when contacts disabled */
+"AB_PERMISSION_MISSING_TITLE" = "សុំទោស!";
+
+/* Action sheet item */
+"ACCEPT_NEW_IDENTITY_ACTION" = "ទទួលយកលេខសុវត្ថិភាពថ្មី";
+
+/* No comment provided by engineer. */
+"ACTION_REQUIRED_TITLE" = "ទាមទារសកម្មភាព";
+
+/* Alert body when contacts disabled */
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal ត្រូវការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។ ការចូលប្រើប្រាស់ត្រូវបានហាមឃាត់។ Signal និងត្រូវបិទ។ អ្នកអាចបិទការហាមឃាត់ជាបណ្តោះអាសន្ន ដើម្បីកំណត់ការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង ដោយចូលទៅកាន់ ការកំណត់ >> ទូទៅ >> ការហាមឃាត់ >> បញ្ជីទំនាក់ទំនង >> អនុញ្ញាតការផ្លាស់ប្តូរ។";
+
+/* No comment provided by engineer. */
+"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "បិទ";
+
+/* registration button text */
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "មានគណនីស៊ីកណល?";
+
+/* No comment provided by engineer. */
+"ANSWER_CALL_BUTTON_TITLE" = "ឆ្លើយតប";
+
+/* No comment provided by engineer. */
+"APN_Message" = "សារថ្មី!";
+
+/* No comment provided by engineer. */
+"APN_MESSAGE_FROM" = "សារពី";
+
+/* No comment provided by engineer. */
+"APN_MESSAGE_IN_GROUP" = "សារក្នុងក្រុម";
+
+/* No comment provided by engineer. */
+"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ក្នុងក្រុម %@: %@";
+
+/* Name of application */
+"APPLICATION_NAME" = "Signal";
+
+/* Pressing this button moves a thread from the inbox to the archive */
+"ARCHIVE_ACTION" = "បណ្ណសារ";
+
+/* No comment provided by engineer. */
+"ARCHIVE_NAV_BAR_TITLE" = "បណ្ណសារ";
+
+/* No comment provided by engineer. */
+"ATTACHMENT" = "ឯកសារភ្ជាប់";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+
+/* No comment provided by engineer. */
+"ATTACHMENT_DOWNLOAD_FAILED" = "ទាញយកឯកសារភ្ជាប់បរាជ័យ ចុចដើម្បីសាកល្បងម្តងទៀត។";
+
+/* No comment provided by engineer. */
+"ATTACHMENT_DOWNLOADING" = "កំពុងទាញយកឯកសារភ្ជាប់";
+
+/* Accessibility hint describing what you can do with the attachment button */
+"ATTACHMENT_HINT" = "ជ្រើសរើស ឬថតរូបភាព និងបញ្ជូនវា";
+
+/* Accessibility label for attaching photos */
+"ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
+
+/* No comment provided by engineer. */
+"ATTACHMENT_QUEUED" = "ឯកសារភ្ជាប់ថ្មីបានដាក់ជាជួរសម្រាប់ការទាញយក។";
+
+/* No comment provided by engineer. */
+"AUDIO_PERMISSION_MESSAGE" = "Signal ត្រូវការចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេងរបស់អ្នកដើម្បីដំណើរការ។ អ្នកអាចផ្តល់សិទ្ធិនៅក្នុង ការកំណត់ >> ឯកជនភាព >> ប្រដាប់ស្រូបសំឡេង >> Signal";
+
+/* Title for call interstitial view */
+"CALL_INTERSTITIAL_CALLING_LABEL" = "កំពុងហៅ...";
+
+/* Accessibilty label for placing call button */
+"CALL_LABEL" = "ការហៅ";
+
+/* Call setup status label after outgoing call times out */
+"CALL_SCREEN_STATUS_NO_ANSWER" = "គ្មានឆ្លើយតប";
+
+/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
+"CALL_STATUS_FORMAT" = "Signal %@";
+
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "អ្នកអាចលើកទូរស័ព្ទដោយផ្ទាល់ពីអេក្រង់ចាក់សោរ ហើយឃើញឈ្មោះ និងលេខទូរស័ព្ទហៅចូល ប្រសិនបើ​អ្នកផ្លាស់ប្តូរក្នុងការកំណត់។\n\nមើលការកំណត់ឯកជនភាពសម្រាប់លម្អិត។";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "អ្នកអាចឃើញឈ្មោះ និងលេខទូរស័ព្ទហៅចូល ប្រសិនបើ​អ្នកផ្លាស់ប្តូរក្នុងការកំណត់។\n\nមើលការកំណត់ឯកជនភាពសម្រាប់លម្អិត។";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "មិនមែនឥលូវ";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "បង្ហាញការកំណត់ឯកជន";
+
+/* notification action */
+"CALLBACK_BUTTON_TITLE" = "ហៅត្រលប់ទៅវិញ";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "អ្នកប្រើប្រាស់ Signal";
+
+/* Activity Sheet label */
+"COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ Clipboard";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "នេះនឹងកំណត់កម្មវិធីឡើងវិញ ដោយលុបសាររបស់អ្នក និងលុបឈ្មោះអ្នកពីម៉ាស៊ីនមេ។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីទិន្នន័យត្រូវបានលុប។";
+
+/* No comment provided by engineer. */
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "តើអ្នកច្បាស់ថា ចង់លុបគណនីរបស់អ្នក?";
+
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "អ្នកនឹងមិនអាចបញ្ជូន និងទទួលសារក្នុងក្រុមនេះទៀតទេ។";
+
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "តើអ្នកពិតជាចង់ចាកចេញ?";
+
+/* Button text */
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "ភ្ជាប់ឧបករណ៍ថ្មី";
+
+/* No comment provided by engineer. */
+"CONFIRMATION_TITLE" = "បញ្ជាក់";
+
+/* No comment provided by engineer. */
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "លេខមិនបានចុះឈ្មោះ";
+
+/* table cell subtitle when contact card has no email */
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "មិនមានអ៊ីម៉ែល។";
+
+/* table cell subtitle when contact card has no known phone number */
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "មិនមានលេខទូរស័ព្ទ។";
+
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "ការកំណត់ការសន្ទនា";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
+/* ActionSheet title */
+"CORRUPTED_SESSION_DESCRIPTION" = "ការកំណត់ការចូលប្រើប្រាស់របស់អ្នកឡើងវិញ នឹងអនុញ្ញាតអ្នក ឲ្យទទួលសារក្នុងពេលខាងមុខពី %@, ប៉ុន្តែ វានឹងមិនស្តារសារណាដែលខូចខាតទេ។";
+
+/* No comment provided by engineer. */
+"COUNTRYCODE_SELECT_TITLE" = "ជ្រើសរើសកូដប្រទេស";
+
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "បង្កើតក្រុមថ្មី";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"DAYS_TIME_AMOUNT" = "%u ថ្ងៃ";
+
+/* {{Short Date}} when device last communicated with Signal Server. */
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "សកម្មភាពចុងក្រោយ៖ %@";
+
+/* {{Short Date}} when device was linked. */
+"DEVICE_LINKED_AT_LABEL" = "បានតភ្ជាប់៖​ %@";
+
+/* Alert title that can occur when viewing device manager. */
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "បរាជ័យបច្ចុប្បន្នភាពបញ្ជីឧបករណ៍។";
+
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "សាររលុបទៅវិញ";
+
+/* subheading in conversation settings */
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "ពេលបើក សារដែលបានបញ្ជូន និងទទួលក្នុងកិច្ចសន្ទនានេះ នឹងត្រូវរលុប បន្ទាប់ពីបានមើលហើយ។";
+
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "សារបច្ចុប្បន្ននឹងរលុបបាត់បន្ទាប់ពី %@";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "ការកំណត់សាររលុបបាត់";
+
+/* Generic short text for button to dismiss a dialog */
+"DISMISS_BUTTON_TEXT" = "ច្រានចោល";
+
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "កែក្រុម";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "ចម្លង";
+
+/* Short name for edit menu item to save contents of media message. */
+"EDIT_ITEM_SAVE_ACTION" = "រក្សាទុក";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "ចែករំលែក";
+
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+"EMAIL_INVITE_BODY" = "សួស្តី,\n\nថ្មីៗនេះ ខ្ញុំបានប្រើប្រាស់ Signal ដើម្បីរក្សាការសន្ទនាឯកជនលើទូរស័ព្ទ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឲ្យអ្នកបញ្ចូលវាដែរ ដូចនេះ យើងអាចទុកចិត្តថា មានតែអ្នកនិងខ្ញុំ ដែលអាចអានសាររបស់យើង ឬស្តាប់ការហៅរបស់យើង។\n\nSignal មានសម្រាប់ ទូរស័ព្ទ iPhone និង Android។ ទាញយកនៅទីនេះ៖ %@\n\nSignal ដំណើរការដូចគ្នានឹងកម្មវិធីផ្ញើសារ ដែលមានស្រាប់ដែរ។ យើងអាចបញ្ជូនរូបភាព និងវីដេអូ ហៅទូរស័ព្ទ និងចាប់ផ្តើមការជជែកជាក្រុម។ ផ្នែកដែលល្អបំផុតគឺ គ្មាននរណាអាចមើលឃើញ សូម្បីអ្នកដែលបង្កើត Signal ក៏ដោយ!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems, មនុស្សបង្កើត Signal នៅទីនេះ %@";
+
+/* subject of email sent to contacts when inviting to install Signal */
+"EMAIL_INVITE_SUBJECT" = "តោះប្តូរទៅប្រើ Signal";
+
+/* No comment provided by engineer. */
+"EMPTY_ARCHIVE_FIRST_TEXT" = "ចុចលើប៊ូតុង ផ្ញើសារ។";
+
+/* No comment provided by engineer. */
+"EMPTY_ARCHIVE_FIRST_TITLE" = "ចាប់ផ្តើមការសន្ទនា Signal ដំបូង!";
+
+/* No comment provided by engineer. */
+"EMPTY_ARCHIVE_TEXT" = "អ្នកអាចបណ្ណសាររាល់ការសន្ទនាដែលអសកម្ម ពីប្រអប់សបុត្ររបស់អ្នក។";
+
+/* No comment provided by engineer. */
+"EMPTY_ARCHIVE_TITLE" = "សំអាតការសន្ទនារបស់អ្នក។";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE1" = "គ្មានលេខទំនាក់ទំនងរបស់អ្នកប្រើ Signal ទេ។";
+
+/* Full width label displayed when attempting to compose message */
+"EMPTY_CONTACTS_LABEL_LINE2" = "ហេតុអី អ្នកមិនអញ្ជើញនរណាម្នាក់?";
+
+/* No comment provided by engineer. */
+"EMPTY_INBOX_FIRST_TEXT" = "គន្លឹះ៖ បន្ថែមការសន្ទនាជាការរំលឹក!";
+
+/* No comment provided by engineer. */
+"EMPTY_INBOX_FIRST_TITLE" = "រួចរាល់. រួចរាល់. រួចរាល់.";
+
+/* No comment provided by engineer. */
+"EMPTY_INBOX_TEXT" = "គ្មាន. សូន្យ. ទទេរ. ";
+
+/* No comment provided by engineer. */
+"EMPTY_INBOX_TITLE" = "ស្អាតមែនទែន.";
+
+/* No comment provided by engineer. */
+"END_CALL_BAD_INTERACTION_WITH_SERVER" = "ម៉ាស៊ីនមេបរាជ័យ!";
+
+/* No comment provided by engineer. */
+"END_CALL_BUTTON_TITLE" = "បញ្ចប់";
+
+/* No comment provided by engineer. */
+"END_CALL_HANDSHAKE_FAILED" = "ការចាប់ដៃបរាជ័យ!";
+
+/* No comment provided by engineer. */
+"END_CALL_HANGUP_LOCAL" = "អ្នកបានដាក់ទូរស័ព្ទចុះ។";
+
+/* No comment provided by engineer. */
+"END_CALL_HANGUP_REMOTE" = "គេបានដាក់ទូរស័ព្ទចុះ។";
+
+/* No comment provided by engineer. */
+"END_CALL_LOGIN_FAILED" = "ការចូលប្រើប្រាស់បរាជ័យ!";
+
+/* No comment provided by engineer. */
+"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "សារពីម៉ាស៊ីនមេ៖";
+
+/* No comment provided by engineer. */
+"END_CALL_NO_SUCH_USER" = "លេខមិនបានចុះឈ្មោះជាមួយ Signal ឬ RedPhone!";
+
+/* No comment provided by engineer. */
+"END_CALL_RECIPIENT_UNAVAILABLE" = "អ្នកទទួលមិនទំនេរ។";
+
+/* No comment provided by engineer. */
+"END_CALL_REJECTED_LOCAL" = "អ្នកបានច្រានចោលការហៅ។";
+
+/* No comment provided by engineer. */
+"END_CALL_REJECTED_REMOTE" = "ការហៅត្រូវបានច្រានចោល។";
+
+/* No comment provided by engineer. */
+"END_CALL_REPLACED_BY_NEXT" = "អ្នកហៅទៅលេខផ្សេង។";
+
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "រវល់";
+
+/* No comment provided by engineer. */
+"END_CALL_STALE_SESSION" = "ខកការហៅ";
+
+/* Call setup status label */
+"END_CALL_UNCATEGORIZED_FAILURE" = "ការហៅបរាជ័យ";
+
+/* Generic notice when message failed to send. */
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "បរាជ័យក្នុងការបញ្ជូនសារ";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "មិនអាចបញ្ជូនដោយសារទិន្នន័យឯកជនចាស់ពេក។";
+
+/* Generic error used whenver Signal can't contact the server */
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal មិនអាចតភ្ជាប់ទៅកាន់អ៊ីនធើណែត។ សូមព្យាយាមពីបណ្តាញ WiFi ផ្សេង ឬប្រើប្រាស់ទិន្នន័យទូរស័ព្ទ។";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "ឧបករណ៍អ្នក លែងមានលេខទូរស័ព្ទរបស់អ្នកទៀតហើយ។ អ្នកត្រូវលុបចោល និងបញ្ចូល Signal ឡើងវិញ។";
+
+/* Generic server error */
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "បញ្ហាម៉ាស៊ីនមេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
+
+/* Worst case generic error message */
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "បញ្ហាមួយកើតឡើង។";
+
+/* Error message when attempting to send message */
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "លេខទំនាក់ទំនងមិនមែនជាអ្នកប្រើប្រាស់ Signal។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ទទួលបានសារស្ទួនគ្នាមួយ។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "សោរអ្នកទទួល មិនត្រឹមត្រូវ។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_MESSAGE" = "សារទទួលបាន មិនសមកាលកម្ម។ ចុច ដើម្បីកំណត់ការប្រើប្រាស់សុវត្ថិភាពឡើងវិញ។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_INVALID_VERSION" = "ទទួលបានសារមួយ ដែលមានស្គាល់នឹងជំនាន់កម្មវិធីនេះ។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_NO_SESSION" = "គ្មានការប្រើទំនេរសម្រាប់លេខទំនាក់ទំនង។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "បញ្ហាមិនស្គាល់កើតឡើង។";
+
+/* No comment provided by engineer. */
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។ ចុច ដើម្បីផ្ទៀងផ្ទាត់។";
+
+/* No comment provided by engineer. */
+"ERROR_WAS_DETECTED_TITLE" = "ចុម!";
+
+/* during registration */
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "ពេលនេះ Signal អាចសកម្ម បានទូរស័ព្ទមួយ លេខទូរស័ព្ទមួយ តែប៉ុណ្ណោះ។";
+
+/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "ការបើកសកម្ម %@ នេះ នឹងបិទ Signal លើឧបករណ៍ដទៃ ដែលភ្ជាប់ដោយលេខទូរស័ព្ទនេះ។";
+
+/* action sheet header when re-sending message which failed because of too many attempts */
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "មានការបរាជ័យច្រើនដងជាមួយលេខទំនាក់ទំនងនេះ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
+
+/* action sheet header when re-sending message which failed because of untrusted identity keys */
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "អ្នកត្រូវទទួលយកលេខសុវត្ថិភាពថ្មី មុនពេលអ្នកអាចបញ្ជូន។";
+
+/* alert title */
+"FAILED_VERIFICATION_TITLE" = "បរាជ័យក្នុងការផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព!";
+
+/* No comment provided by engineer. */
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "កំណត់ការប្រើប្រាស់ឡើងវិញ។";
+
+/* Accessibilty label for finishing new group */
+"FINISH_GROUP_CREATION_LABEL" = "ការបង្កើតក្រុមត្រូវបានបញ្ចប់";
+
+/* No comment provided by engineer. */
+"GROUP_AVATAR_CHANGED" = "រូបតំណាងបានផ្លាស់ប្តូរ។";
+
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "ក្រុមបានបង្កើត។";
+
+/* No comment provided by engineer. */
+"GROUP_CREATING" = "កំពុងបង្កើតក្រុមថ្មី";
+
+/* No comment provided by engineer. */
+"GROUP_CREATING_FAILED" = "ការបង្កើតក្រុមបរាជ័យ";
+
+/* Conversation settings table section title */
+"GROUP_MANAGEMENT_SECTION" = "ការគ្រប់គ្រងក្រុម";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ បានចូលក្នុងក្រុម។";
+
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ បានចាកចេញពីក្រុម។";
+
+/* header for table which lists the members of this group thread */
+"GROUP_MEMBERS_HEADER" = "សមាជិកក្រុម";
+
+/* No comment provided by engineer. */
+"GROUP_REMOVING" = "ចាកចេញពីក្រុម %@";
+
+/* No comment provided by engineer. */
+"GROUP_REMOVING_FAILED" = "បរាជ័យក្នុងការចាកចេញពីក្រុម";
+
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "ចំណងជើងឥលូវគឺ '%@'។";
+
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "ក្រុមបានធ្វើបច្ចុប្បន្នភាព។";
+
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"HOURS_TIME_AMOUNT" = "%u ម៉ោង";
+
+/* Call setup status label */
+"IN_CALL_CONNECTING" = "កំពុងតភ្ជាប់...";
+
+/* Call setup status label */
+"IN_CALL_RINGING" = "កំពុងរោទិ៍...";
+
+/* Call setup status label */
+"IN_CALL_SECURING" = "បានទទួល។ កំពុងការពារ...";
+
+/* Call setup status label */
+"IN_CALL_TALKING" = "សុវត្ថិភាព។ សកម្ម។";
+
+/* Call setup status label */
+"IN_CALL_TERMINATED" = "ការហៅបញ្ចប់។";
+
+/* notification body */
+"INCOMING_CALL" = "ការហៅចូល";
+
+/* notification body */
+"INCOMING_CALL_FROM" = "ការហៅចូលពី %@";
+
+/* No comment provided by engineer. */
+"INCOMING_INCOMPLETE_CALL" = "ការហៅចូលមិនត្រឹមត្រូវពី";
+
+/* Generic error text when message contents are undisplayable */
+"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "មិនអាចបង្ហាញសារ។";
+
+/* Text for button at the top of the contact picker */
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "អញ្ជើញមិត្តភក្តិមកកាន់ Signal";
+
+/* Search */
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ស្វែងរក";
+
+/* Navbar title */
+"INVITE_FRIENDS_PICKER_TITLE" = "អញ្ជើញមិត្តភក្តិ";
+
+/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
+"KEEP_MESSAGES_DURATION" = "សាររលុបបន្ទាប់ពី %@។";
+
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "សារ នឹងមិនរលុប។";
+
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "ចាកចេញ";
+
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "ចាកចេញពីក្រុម";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_BODY" = "កូដ QR នេះ មិនត្រឹមត្រូវ សូមប្រាកដថា អ្នកកំពុងស្កេនកូដ QR ដែលបង្ហាញលើឧបករណ៍ដែលអ្នកចង់តភ្ជាប់។";
+
+/* report an invalid linking code */
+"LINK_DEVICE_INVALID_CODE_TITLE" = "ការតភ្ជាប់ឧបករណ៍បរាជ័យ";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "ឧបករណ៍នេះ នឹងមិនអាចមើលឃើញក្រុម និងបញ្ជីទំនាក់ទំនង, អានសារទាំងអស់របស់អ្នក, និងបញ្ជូនសារក្នុងឈ្មោះរបស់អ្នក។";
+
+/* confirm the users intent to link a new device */
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "តភ្ជាប់ឧបករណ៍នេះ?";
+
+/* attempt another linking */
+"LINK_DEVICE_RESTART" = "ព្យាយាមម្តងទៀត";
+
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "ស្កេនកូដ QR បង្ហាញលើឧបករណ៍ដើម្បីតភ្ជាប់។";
+
+/* Subheading for 'Link New Device' navigation */
+"LINK_NEW_DEVICE_SUBTITLE" = "ស្កេនកូដ QR";
+
+/* Navigation title when scanning QR code to add new device. */
+"LINK_NEW_DEVICE_TITLE" = "ភ្ជាប់ឧបករណ៍ថ្មី";
+
+/* Menu item and navbar title for the device manager */
+"LINKED_DEVICES_TITLE" = "ឧបករណ៍ដែលបានតភ្ជាប់";
+
+/* Alert Title */
+"LINKING_DEVICE_FAILED_TITLE" = "ការតភ្ជាប់ឧបករណ៍បរាជ័យ";
+
+/* table cell label in conversation settings */
+"LIST_GROUP_MEMBERS_ACTION" = "បញ្ជីក្រុមសមាជិក";
+
+/* No comment provided by engineer. */
+"LOADING_CONTACTS_LABEL_LINE1" = "កំពុងបើកបញ្ជីទំនាក់ទំនងរបស់អ្នក។";
+
+/* No comment provided by engineer. */
+"LOADING_CONTACTS_LABEL_LINE2" = "អង្គុយស្រួលបួល។";
+
+/* No comment provided by engineer. */
+"LOGGING_SECTION" = "កំពុងចូល";
+
+/* No comment provided by engineer. */
+"ME_STRING" = "ខ្ញុំ";
+
+/* media picker option to take photo or video */
+"MEDIA_FROM_CAMERA_BUTTON" = "កាមេរ៉ា";
+
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "បណ្ណាល័យរូបភាព";
+
+/* No comment provided by engineer. */
+"MESSAGE_COMPOSEVIEW_TITLE" = "សារថ្មី";
+
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "ចុចទីនេះ សម្រាប់ការកំណត់";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"MINUTES_TIME_AMOUNT" = "%u នាទី";
+
+/* notification title */
+"MISSED_CALL" = "ខកការហៅ";
+
+/* Alert body
+   Alert body when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal ត្រូវការចូលប្រើប្រាស់កាមេរ៉ា សម្រាប់ការហៅជាវីដេអូ។ អ្នកអាចផ្តល់សិទ្ធិក្នុង ការកំណត់ >> ឯកជនភាព >> កាមេរ៉ា >> Signal";
+
+/* Alert title
+   Alert title when camera is not authorized */
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal ត្រូវការចូលប្រើប្រាស់កាមេរ៉ារបស់អ្នក។";
+
+/* notification title. Embeds {{Caller's Name}} */
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+
+/* No comment provided by engineer. */
+"MSGVIEW_RECEIVED_CALL" = "អ្នកបានទទួលការហៅមួយ ពី%@។";
+
+/* No comment provided by engineer. */
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ ព្យាយាមហៅអ្នក។";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_CALLED" = "អ្នកបានហៅ %@។";
+
+/* No comment provided by engineer. */
+"MSGVIEW_YOU_TRIED_TO_CALL" = "អ្នកបានព្យាយាមហៅទៅ %@។";
+
+/* No comment provided by engineer. */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "អ្នកមិនអាចតភ្ជាប់ផ្សេងទៀតបាន។";
+
+/* No comment provided by engineer. */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "អ្នកបានភ្ជាប់ចំនួនឧបករណ៍ច្រើនពេក ជាមួយគណនីរបស់អ្នក។ សូមលុបឧបករណ៍មួយចោល ឬព្យយាមភ្ជាប់ម្តងទៀតពេលក្រោយ។";
+
+/* No comment provided by engineer. */
+"NETWORK_ERROR_RECOVERY" = "សូមពិនិត្យថា អ្នកកំពុងលើបណ្តាញ និងព្យាយាមម្តងទៀត។";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTED" = "បានភ្ជាប់";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_CONNECTING" = "កំពុងតភ្ជាប់";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_HEADER" = "ស្ថានភាពបណ្តាញ";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_OFFLINE" = "ក្រៅបណ្តាញ";
+
+/* No comment provided by engineer. */
+"NETWORK_STATUS_TEXT" = "អ្នកអាចពិនិត្យស្ថានភាពបណ្តាញ ដោយមើលលើរបារពណ៌ នៅលើប្រអប់សបុត្ររបស់អ្នក។";
+
+/* Text for button to start a new conversation with a non-contact */
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "ការសន្ទនាថ្មីជាមួយ %@";
+
+/* Action Sheet title prompting the user for a group avatar */
+"NEW_GROUP_ADD_PHOTO_ACTION" = "កំណត់រូបថតក្រុម";
+
+/* No comment provided by engineer. */
+"NEW_GROUP_DEFAULT_TITLE" = "ក្រុមថ្មី";
+
+/* No comment provided by engineer. */
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ដាក់ឈ្មោះក្រុមជជែកនេះ";
+
+/* No comment provided by engineer. */
+"NEW_GROUP_REQUEST_ADDPEOPLE" = "បន្ថែមមនុស្ស";
+
+/* Label for a button that lets users search for contacts by phone number */
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ស្វែងរកលេខទំនាក់ទំនងតាមលេខទូរស័ព្ទ";
+
+/* No comment provided by engineer. */
+"NOTIFICATION_SEND_FAILED" = "សាររបស់អ្នកបរាជ័យក្នុងការបញ្ជូនទៅកាន់ %@។";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "ដោយសារបញ្ហាដែលបានរកឃើញ ក្នុងការជម្រុញក្រមខណ្ឌរបស់ Apple ការបើកមើលសារជាមុន នឹងបង្ហាញបាន ក្នុងករណីសារត្រូវបានទាញយកក្នុងពេល 30 វិនាទី បន្ទាប់បានបញ្ជូន។ ផ្លាកកម្មវិធី អាចនឹងមិនត្រឹមត្រូវ ជាមួយលទ្ធផលជាក់ស្តែង។";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "គ្មានឈ្មោះ ឬ សារ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SECTION_BACKGROUND" = "ការផ្តល់ដំណឹងខាងក្រោយ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SECTION_INAPP" = "ការផ្តល់ដំណឹងក្នុងកម្មវិធី";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "ឈ្មោះអ្នកបញ្ជូន និងសារ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "ឈ្មោះអ្នកផ្ញើប៉ុណ្ណោះ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "បង្ហាញ";
+
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SOUND" = "សំឡេងដំណឹង";
+
+/* No comment provided by engineer. */
+"OK" = "យល់ព្រម";
+
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
+"OPEN_SETTINGS_BUTTON" = "ការកំណត់";
+
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ បានបិទសាររលុប។";
+
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ កំណត់រយៈពេលសាររលុប %@។";
+
+/* No comment provided by engineer. */
+"OUTGOING_CALL" = "ហៅចេញក្រៅ";
+
+/* No comment provided by engineer. */
+"OUTGOING_INCOMPLETE_CALL" = "ការហៅចេញក្រៅមិនពេញលេញ";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "នេះទំនងមិនមែនជាលេខសុវត្ថិភាពរបស់អ្នក ជាមួយ%@ ទេ។ តើអ្នកបានផ្ទៀងផ្ទាត់លេខទំនាក់ទំនង ត្រឹមត្រូវហើយ?";
+
+/* Alert body */
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "លេខក្នុងclipboard អ្នក ទំនងមិនត្រឹមត្រូវជាមួយលេខសុវត្ថិភាពសម្រាប់ការសន្ទនានេះ។ ";
+
+/* Alert body for user error */
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal មិនអាចស្វែងរកលេខសុវត្ថិភាពណាមួយក្នុង clipboard របស់អ្នកបានទេ។ តើអ្នកបានថតចម្លងវា ត្រឹមត្រូវហើយ?";
+
+/* Alert body when verifying with {{contact name}} */
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "រាល់គូអ្នកប្រើប្រាស់ Signal ចែករំលែកលេខសុវត្ថិភាពខុសគ្នា។ ពិនិត្យម្តងទៀត ថា%@ គឹកំពុងបង្ហាញ លេខសុវត្ថិភាពខុសគ្នារបស់ *អ្នក*។";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់។ អ្នកត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "ដៃគូរបស់អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់។ ពួកគេត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
+
+/* alert body */
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "កូដដែលស្កេន ទំនងជាមិនមែនកូដសុវត្ថិភាព។ តើអ្នកច្បាស់ អ្នកទាំងពីរមានជំនាន់ Signal ចុងក្រោយគេ?";
+
+/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "ប្រសិនបើ អ្នកចង់ផ្ទៀងផ្ទាត់សុវត្ថិភាពនៃការអ៊ិនគ្រីបទាំងសងខាង ជាមួយ %@, ប្រៀបធៀបលេខខាងលើ ជាមួយលេខនៅលើឧបករណ៍របស់គេ។\n\nផ្សេងពីនេះ អ្នកអាចស្កេនកូដលើទូរស័ព្ទគេ ឬសុំគេឲ្យស្កេនកូដរបស់អ្នក។";
+
+/* Navbar title */
+"PRIVACY_VERIFICATION_TITLE" = "ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព";
+
+/* No comment provided by engineer. */
+"PROCEED_BUTTON" = "ដំណើរការ";
+
+/* No comment provided by engineer. */
+"PUSH_MANAGER_MARKREAD" = "ដាក់ថាអានហើយ";
+
+/* No comment provided by engineer. */
+"PUSH_MANAGER_REPLY" = "តប";
+
+/* Alert title */
+"PUSH_REGISTER_SUCCESS" = "បានចុះឈ្មោះឡើងវិញដោយជោគជ័យ សម្រាប់ការផ្តល់ដំណឹង។";
+
+/* Used in table section header and alert view title contexts */
+"PUSH_REGISTER_TITLE" = "ការផ្តល់ដំណឹង";
+
+/* No comment provided by engineer. */
+"PUSH_SETTINGS_MESSAGE" = " Signal ទាមទារការផ្តល់ដំណឹង និងសំឡេង ដើម្បីដំណើរការដោយប្រក្រតី។ សូមផ្លាស់ប្តូរវាក្នុង ការកំណត់  >> មជ្ឈមណ្ឌលដំណឹង  >> Signal។";
+
+/* No comment provided by engineer. */
+"QUESTIONMARK_PUNCTUATION" = "?";
+
+/* No comment provided by engineer. */
+"RATING_MSG" = "ប្រសិនបើអ្នកពេញចិត្តប្រើប្រាស់ Signal សម្រាប់ការសន្ទនាផ្ទាល់ខ្លួន អ្នកអាចគាំទ្រគម្រោងរបស់យើង ដោយដាក់ពិន្ទុវា។ វាចំណាយពេលមិនលើសពីមួយនាទីទេ និងអាចជួយអ្នកដទៃ រក្សាឯកជនភាពបាន។";
+
+/* No comment provided by engineer. */
+"RATING_RATE" = "ដាក់ពិន្ទុ Signal";
+
+/* No comment provided by engineer. */
+"RATING_TITLE" = "គាំទ្រ Signal!";
+
+/* No comment provided by engineer. */
+"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "សូមបញ្ចូលលេខកូដប្រទេសដែលត្រឹមត្រូវមួយ";
+
+/* No comment provided by engineer. */
+"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "បញ្ហាកូដប្រទេស";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_BODY" = "Signal អនុញ្ញាតអ្នកមានការសន្ទនាផ្ទាល់ខ្លួនជាមួយលេខទំនាក់ទំនងដែលមានស្រាប់របស់អ្នក។ ដើម្បីប្រើប្រាស់ Signal សូមអនុញ្ញាតការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_CONTINUE" = "បន្ត";
+
+/* No comment provided by engineer. */
+"REGISTER_CONTACTS_WELCOME" = "ស្វាគមន៍!";
+
+/* No comment provided by engineer. */
+"REGISTER_FAILED_TRY_AGAIN" = "ព្យាយាមម្តងទៀត";
+
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_BODY" = "អ្នកបានព្យាយាមច្រើនដងពេក។ សូមរង់ចាំមួយនាទី មុនពេលព្យាយាមម្តងទៀត។";
+
+/* No comment provided by engineer. */
+"REGISTERED_NUMBER_TEXT" = "លេខបានចុះឈ្មោះ";
+
+/* Alert title */
+"REGISTRATION_BODY" = "បរាជ័យក្នុងការចុះឈ្មោះឡើងវិញ​ សម្រាប់ការផ្តល់ដំណឹង។";
+
+/* No comment provided by engineer. */
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "កូដប្រទេស";
+
+/* No comment provided by engineer. */
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "បញ្ចូលលេខ";
+
+/* No comment provided by engineer. */
+"REGISTRATION_ERROR" = "បញ្ហាចុះឈ្មោះ";
+
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "អ្នកមិនអាចបើកគណនីរបស់អ្នក រហូតអ្នកបានផ្ទៀងផ្ទាត់លេខកូដ ដែលយើងបានផ្ញើជូនអ្នក។";
+
+/* No comment provided by engineer. */
+"REGISTRATION_NON_VALID_NUMBER" = "មិនគាំទ្រទម្រង់លេខទូរស័ព្ទនេះទេ សូមទំនាក់ទំនងផ្នែកជំនួយ។";
+
+/* No comment provided by engineer. */
+"REGISTRATION_PHONENUMBER_BUTTON" = "លេខទូរស័ព្ទ";
+
+/* No comment provided by engineer. */
+"REGISTRATION_RESTRICTED_MESSAGE" = "អ្នកខ្លះកំពុងត្រេកអរក្នុងការបញ្ជូនសារលើកដំបូងរបស់គេ! អ្នកត្រូវចុះឈ្មោះសិន មុនពេលធ្វើដូចនេះ។";
+
+/* No comment provided by engineer. */
+"REGISTRATION_TITLE_LABEL" = "លេខទូរស័ព្ទរបស់អ្នក";
+
+/* Alert view title */
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "ការផ្ទៀងផ្ទាត់បរាជ័យ";
+
+/* Alert body, during registration */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "លេខដែលអ្នកបានបញ្ចូលមិនត្រូវគ្នា នឹងអ្វីដែលយើងបានផ្ញើទេ។ ចង់ពិនិត្យម្តងទៀតទេ?";
+
+/* No comment provided by engineer. */
+"REGISTRATION_VERIFY_DEVICE" = "បើកប្រើសកម្មឧបករណ៍នេះ";
+
+/* No comment provided by engineer. */
+"REJECT_CALL_BUTTON_TITLE" = "ច្រានចោល";
+
+/* No comment provided by engineer. */
+"RELAY_REGISTERED_ERROR_RECOVERY" = "លេខទូរស័ព្ទដែលអ្នកព្យាយាមចុះឈ្មោះនេះ បានចុះឈ្មោះរួចហើយ នៅលើម៉ាស៊ីនមេផ្សេង, សូមលុបឈ្មោះពីទីនោះសិន ហើយព្យាយាមម្តងទៀត។";
+
+/* No comment provided by engineer. */
+"REREGISTER_FOR_PUSH" = "ចុះឈ្មោះឡើងវិញ សម្រាប់ការផ្តល់ដំណឹង";
+
+/* Generic text for button that retries whatever the last action was. */
+"RETRY_BUTTON_TEXT" = "ព្យាយាមម្តងទៀត";
+
+/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
+"SAFETY_NUMBER_SHARE_FORMAT" = "លេខសុវត្ថិភាព Signal របស់យើង៖\n%@";
+
+/* Action sheet heading */
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្លាស់ប្តូរ។ អ្នកប្រហែលចង់ផ្ទៀងផ្ទាត់វា។";
+
+/* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
+"SCAN_CODE_ACTION" = "ស្កេនកូដ";
+
+/* label presented once scanning (camera) view is visible. */
+"SCAN_CODE_INSTRUCTIONS" = "ស្កេនកូដ QR លើឧបករណ៍ទំនាក់ទំនងរបស់អ្នក។";
+
+/* No comment provided by engineer. */
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ស្វែងរកឈ្មោះ ឬលេខទូរស័ព្ទ";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"SECONDS_TIME_AMOUNT" = "%u វិនាទី";
+
+/* No comment provided by engineer. */
+"SECURE_SESSION_RESET" = "កាលប្រើប្រាស់សុវត្ថិភាពត្រូវបានកំណត់ឡើងវិញ។";
+
+/* No comment provided by engineer. */
+"SEND_AGAIN_BUTTON" = "បញ្ជូនម្តងទៀត";
+
+/* No comment provided by engineer. */
+"SEND_BUTTON_TITLE" = "បញ្ជូន";
+
+/* Alert body after invite failed */
+"SEND_INVITE_FAILURE" = "ការផ្ញើលិខិតអញ្ជើញបរាជ័យ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
+
+/* Alert body after invite succeeded */
+"SEND_INVITE_SUCCESS" = "អ្នកបានអញ្ជើញមិត្តភក្តិរបស់អ្នកប្រើប្រាស់ Signal!";
+
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "ផ្ញើលិខិតអញ្ជើញតាម SMS ទៅកាន់៖ %@";
+
+/* No comment provided by engineer. */
+"SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
+
+/* No comment provided by engineer. */
+"SEND_SMS_INVITE_TITLE" = "តើអ្នកចង់អញ្ជើញលេខខាងក្រោម មកកាន់ Signal៖";
+
+/* Navbar title */
+"SETTINGS_ABOUT" = "អំពី";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_DEBUGLOG" = "បើកកំណត់ត្រាកំហុស";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "បញ្ជូនកំណត់ត្រាកំហុស";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_TITLE" = "កម្រិតខ្ពស់";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "ទាមទារការអនុញ្ញាតរបស់អ្នក មុនពេលទាក់ទងជាមួយអ្នកណាដែលមានលេខសុវត្ថិភាពថ្មី ជាធម្មតាពីការដំឡើង Signal ឡើងវិញ។";
+
+/* Table cell label */
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "ទាមទារការអនុញ្ញាតលើការផ្លាស់ប្តូរ";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "ការកំណត់";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "តែងតែហៅបន្ត";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "បន្តការហៅទាំងអស់តាមរយៈម៉ាស៊ីនមេ Signal ដើម្បីចៀសវាងការបង្ហាញអាសយដ្ឋាន IP របស់អ្នកទៅកាន់លេខទំនាក់ទំនងរបស់អ្នក។ ការបើកនេះ នឹងកាត់បន្ថយគុណភាពនៃការហៅ។";
+
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "សំអាតកំណត់ត្រាពីមុន";
+
+/* No comment provided by engineer. */
+"SETTINGS_COPYRIGHT" = "រក្សាសិទ្ធ Open Whisper Systems \nក្រោមអាជ្ញាប័ណ្ណ the GPLv3";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "លុបគណនី";
+
+/* Alert message before user confirms clearing history */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "តើអ្នកច្បាស់ថា ចង់លុបរាល់កំណត់ត្រាទាំងអស់​ (សារ, ឯកសារភ្ជាប់, កំណត់ត្រាការហៅ ...)? សកម្មភាពនេះ មិនអាចត្រលប់ក្រោយបានទេ។";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ខ្ញុំច្បាស់ហើយ។";
+
+/* No comment provided by engineer. */
+"SETTINGS_HELP_HEADER" = "ជំនួយ";
+
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "កំណត់ត្រាពីមុន";
+
+/* No comment provided by engineer. */
+"SETTINGS_INFORMATION_HEADER" = "ព័ត៌មាន";
+
+/* Settings table view cell label */
+"SETTINGS_INVITE_TITLE" = "អញ្ជើញមិត្តភក្តិអ្នក";
+
+/* content of tweet when inviting via twitter */
+"SETTINGS_INVITE_TWITTER_TEXT" = "អ្នកអាចទាក់ទងខ្ញុំ​ ប្រើប្រាស់ Signal ដោយ @WhisperSystems, ទាញយកវាឥលូវនេះ។";
+
+/* Title for settings activity */
+"SETTINGS_NAV_BAR_TITLE" = "ការកំណត់";
+
+/* No comment provided by engineer. */
+"SETTINGS_NOTIFICATIONS" = "ការផ្តល់ដំណឹង";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "បង្ហាញអ្នកហៅចូល និងលេខទំនាក់ទំនង";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "សមាហរណកម្មការហៅតាម iOS";
+
+/* No comment provided by engineer. */
+"SETTINGS_PRIVACY_TITLE" = "ឯកជនភាព";
+
+/* Section header */
+"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "ការអនុញ្ញាតលេខសុវត្ថិភាព";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY" = "បើកអេក្រង់សុវត្ថិភាព";
+
+/* No comment provided by engineer. */
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលមុន Signal ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
+
+/* Settings table section footer. */
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+
+/* settings topic header for table section */
+"SETTINGS_SECTION_TITLE_CALLING" = "ការហៅ";
+
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "អេក្រង់សុវត្ថិភាព";
+
+/* No comment provided by engineer. */
+"SETTINGS_SUPPORT" = "ការគាំទ្រ";
+
+/* No comment provided by engineer. */
+"SETTINGS_VERSION" = "ជំនាន់";
+
+/* action sheet item to open native mail app */
+"SHARE_ACTION_MAIL" = "សារ";
+
+/* action sheet item to open native messages app */
+"SHARE_ACTION_MESSAGE" = "សារ";
+
+/* action sheet item */
+"SHARE_ACTION_TWEET" = "Twitter";
+
+/* Action sheet item */
+"SHOW_SAFETY_NUMBER_ACTION" = "បង្ហាញលេខទំនាក់ទំនងថ្មី";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"SINGLE_DAY_TIME_AMOUNT" = "%u ថ្ងៃ";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"SINGLE_HOUR_TIME_AMOUNT" = "%u ម៉ោង";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"SINGLE_MINUTE_TIME_AMOUNT" = "%u នាទី";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"SINGLE_WEEK_TIME_AMOUNT" = "%u សប្តាហ៍";
+
+/* body sent to contacts when inviting to Install Signal */
+"SMS_INVITE_BODY" = "ខ្ញុំអញ្ជើញអ្នក ដំឡើង Signal! នេះជាតំណ៖";
+
+/* Alert body after verifying privacy with {{other user's name}} */
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្ទៀងផ្ទាត់។ អ្នកទាក់ទងដោយទុកចិត្តបាន។";
+
+/* No comment provided by engineer. */
+"SUCCESSFUL_VERIFICATION_TITLE" = "លេខសុវត្ថិភាពបានផ្ទៀងផ្ទាត់!";
+
+/* No comment provided by engineer. */
+"TIMEOUT_CONTACTS_DETAIL" = "យើងមិនអាចទាញយកបញ្ជីទំនាក់ទំនងពីម៉ាស៊ីនមេនេះបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
+
+/* No comment provided by engineer. */
+"TXT_CANCEL_TITLE" = "បោះបង់";
+
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "លុបចោល";
+
+/* Alert Title */
+"UNABLE_TO_PLACE_CALL" = "មិនអាចហៅចេញបាន។";
+
+/* Pressing this button moves an archived thread from the archive back to the inbox */
+"UNARCHIVE_ACTION" = "បិទបណ្ណសារ";
+
+/* In Inbox view, last message label for thread with corrupted attachment. */
+"UNKNOWN_ATTACHMENT_LABEL" = "ឯកសារមិនស្គាល់";
+
+/* Displayed if for some reason we can't determine a contacts phone number *or* name */
+"UNKNOWN_CONTACT_NAME" = "លេខទំនាក់ទំនងមិនស្គាល់";
+
+/* button title for unlinking a device */
+"UNLINK_ACTION" = "ផ្តាច់";
+
+/* Alert message to confirm unlinking a device */
+"UNLINK_CONFIRMATION_ALERT_BODY" = "ការផ្តាច់ឧបករណ៍នេះ អ្នកនឹងមិនអាចបញ្ជូន ឬទទួលសារបានទៀតទេ។";
+
+/* Alert title for confirming device deletion */
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "ផ្តាច់ \"%@\"?";
+
+/* Alert title when unlinking device fails */
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal មិនអាចផ្តាច់ឧបករណ៍របស់អ្នកបានទេ។";
+
+/* Label text in device manager for a device with no name */
+"UNNAMED_DEVICE" = "ឧបករណ៍គ្មានឈ្មោះ";
+
+/* No comment provided by engineer. */
+"UNREGISTER_SIGNAL_FAIL" = "បរាជ័យក្នុងការលុបឈ្មោះពី Signal។";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_ATTACHMENT" = "បានទទួលប្រភេទឯកសារភ្ជាប់ដែលមិនគាំទ្រ។";
+
+/* No comment provided by engineer. */
+"UNSUPPORTED_FEATURE_ERROR" = "ឧបករណ៍របស់អ្នកមិនគាំទ្រមុខងារនេះទេ។";
+
+/* No comment provided by engineer. */
+"UPDATE_BUTTON_TITLE" = "បច្ចុប្បន្នភាព";
+
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "ការឆ្លើយការហៅពីអេក្រង់ចាក់សោរ មានភាពងាយស្រួលជាមួយសមាហរណកម្មការហៅ iOS។ យើងមិនបញ្ចេញអ្នកហៅចូលដោយលំនាំដើមទេ ដូចនេះវាជាលក្ខណៈឯកជនផងដែរ។";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "ស្វែងយល់បន្ថែមពីការកំណត់ឯកជនភាពរបស់អ្នក។";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "គ្រាន់តែអូស ដើម្បីឆ្លើយ";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ឥលូវគាំទ្រការហៅវីដេអូសុវត្ថិភាព។ គ្រាន់តែហៅតាមធម្មតា ចុចលើប៊ូតុង កាមេរ៉ា ហើយបក់ដៃ សួស្តី។";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "សួស្តី ការហៅវីដេអូសុវត្ថិភាព!";
+
+/* No comment provided by engineer. */
+"Upgrading Signal ..." = "កំពុងធ្វើបច្ចុប្បន្នភាព Signal ...";
+
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "ត្រលប់ក្រោយ";
+
+/* Text field placeholder for SMS verification code during registration */
+"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "កូដផ្ទៀងផ្ទាត់";
+
+/* button text during registration to request phone number verification be done via phone call */
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "ហៅខ្ញុំជំនួសវិញ";
+
+/* button text during registration to request another SMS code be sent */
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "បញ្ជូនកូដម្តងទៀតតាម SMS";
+
+/* button text during registration to submit your SMS verification code */
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "បញ្ជូនកូដផ្ទៀងផ្ទាត់";
+
+/* Navigation title in the registration flow - during the sms code verification process. */
+"VERIFICATION_HEADER" = "ផ្ទៀងផ្ទាត់";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "កំពុងផ្ទៀងផ្ទាត់៖ %@";
+
+/* table cell label in conversation settings */
+"VERIFY_PRIVACY" = "ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព";
+
+/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ Signal Desktop។";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"WEEKS_TIME_AMOUNT" = "%u សប្តាហ៍";
+
+/* No comment provided by engineer. */
+"WHISPER_NAV_BAR_TITLE" = "ប្រអប់សារ";
+
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកបានបិទសាររលុប។";
+
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកកំណត់រយៈពេលសាររលុប %@។";

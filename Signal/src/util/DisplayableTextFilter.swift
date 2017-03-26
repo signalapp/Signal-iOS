@@ -6,36 +6,34 @@ import Foundation
 
 @objc class DisplayableTextFilter: NSObject {
 
-    // don't bother filtering on small text, lest we inadvertently catch legitimate usage of rare code point stacking
-    let allowAnyTextLessThanByteSize: Int
+    let TAG = "[DisplayableTextFilter]"
 
-    convenience override init() {
-        self.init(allowAnyTextLessThanByteSize: 10000)
-    }
-
-    required init(allowAnyTextLessThanByteSize: Int) {
-        self.allowAnyTextLessThanByteSize = allowAnyTextLessThanByteSize
-    }
-
-    @objc(shouldPreventDisplayOfText:)
-    func shouldPreventDisplay(text: String?) -> Bool {
+    @objc
+    func displayableText(_ text: String?) -> String? {
         guard let text = text else {
-            return false
+            return nil
         }
 
-        let byteCount = text.lengthOfBytes(using: .utf8)
-
-        guard byteCount >= allowAnyTextLessThanByteSize else {
-            return false
+        if (self.hasExcessiveDiacriticals(text: text)) {
+            Logger.warn("\(TAG) filtering text for excessive diacriticals.")
+            let filteredText = text.folding(options: .diacriticInsensitive, locale: .current)
+            assert(!self.hasExcessiveDiacriticals(text: filteredText))
+            return filteredText
         }
 
-        let characterCount = text.characters.count
-        // discard any zalgo style text, which we detect by enforcing avg bytes per character ratio.
-        if byteCount / characterCount > 10 {
-            Logger.warn("filtering undisplayable text bytes: \(byteCount), characterCount: \(characterCount)")
-            return true
-        } else {
-            return false
+        return text
+    }
+
+    private func hasExcessiveDiacriticals(text: String) -> Bool {
+        // discard any zalgo style text, by detecting maximum number of glyphs per character
+        for char in text.characters.enumerated() {
+            let scalarCount = String(char.element).unicodeScalars.count
+            if scalarCount > 4 {
+                Logger.warn("\(TAG) detected excessive diacriticals at \(char.element) scalarCount: \(scalarCount)")
+                return true
+            }
         }
+
+        return false
     }
 }

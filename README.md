@@ -11,7 +11,7 @@ Help us translate Signal! The translation effort happens on [Transifex](https://
 ## Contributing Code
 Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/WhisperSystems/Signal-iOS/wiki/Development-Guide)
 
-If you're new to the Signal-iOS codebase, we recommend going through our issues and picking out a simple bug to fix (check the "easy" label in our issues) in order to get yourself familiar.
+We recommend going through our issues and picking out something with the [help wanted](https://github.com/WhisperSystems/Signal-iOS/labels/help%20wanted) label.
 
 For larger changes and feature ideas, we ask that you propose it on the [unofficial Community Forum](https://whispersystems.discoursehosting.net) for a high-level discussion with the wider community before implementation.
 
@@ -33,6 +33,6 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Copyright 2014-2016 Open Whisper Systems
+Copyright 2014-2017 Open Whisper Systems
 
 Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html

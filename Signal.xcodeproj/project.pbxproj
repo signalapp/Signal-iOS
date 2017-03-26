@@ -20,7 +20,6 @@
 		348A08441E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */; };
 		348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */; };
 		348A08531E6C75590057E290 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A08521E6C75590057E290 /* SignalAttachment.swift */; };
-		348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		450573FE1E78A06D00615BB4 /* OWS103EnableVideoCalling.m in Sources */ = {isa = PBXBuildFile; fileRef = 450573FD1E78A06D00615BB4 /* OWS103EnableVideoCalling.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
@@ -647,7 +646,6 @@
 		348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSMessagesToolbarContentView.xib; sourceTree = "<group>"; };
 		348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
 		348A08521E6C75590057E290 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
-		348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallInterstitialViewController.swift; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		450573FC1E78A06D00615BB4 /* OWS103EnableVideoCalling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS103EnableVideoCalling.h; path = Migrations/OWS103EnableVideoCalling.h; sourceTree = "<group>"; };
@@ -2703,7 +2701,6 @@
 			isa = PBXGroup;
 			children = (
 				348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */,
-				348F3A4E1E4A533900750D44 /* CallInterstitialViewController.swift */,
 				4509E79B1DD6545B0025A59F /* CallViewController.swift */,
 				FC31962B1A06A2190094C78E /* FingerprintViewController.h */,
 				FC31962C1A06A2190094C78E /* FingerprintViewController.m */,
@@ -3198,7 +3195,6 @@
 				E197B61818BBEC1A00F073E5 /* RemoteIOAudio.m in Sources */,
 				B67ADDC41989FF8700E1A773 /* RPServerRequestsManager.m in Sources */,
 				348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */,
-				348F3A4F1E4A533900750D44 /* CallInterstitialViewController.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
 				453201251E71100C00F20761 /* DisplayableTextFilter.swift in Sources */,
 				76EB059418170B33006006FC /* HttpManager.m in Sources */,

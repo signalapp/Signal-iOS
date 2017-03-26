@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 #import "Signal-Swift.h"
 #import <25519/Curve25519.h>
 
@@ -61,8 +60,6 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
 
-    [self useOWSBackButton];
-
     // CallKit opt-out
     self.enableCallKitCell = [UITableViewCell new];
     self.enableCallKitCell.textLabel.text = NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE", @"Short table cell label");
@@ -70,7 +67,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.enableCallKitSwitch setOn:[[Environment getCurrent].preferences isCallKitEnabled]];
     [self.enableCallKitSwitch addTarget:self
                                  action:@selector(didToggleEnableCallKitSwitch:)
-                       forControlEvents:UIControlEventTouchUpInside];
+                       forControlEvents:UIControlEventValueChanged];
     self.enableCallKitCell.accessoryView = self.enableCallKitSwitch;
 
     // CallKit privacy
@@ -80,7 +77,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.enableCallKitPrivacySwitch setOn:![[Environment getCurrent].preferences isCallKitPrivacyEnabled]];
     [self.enableCallKitPrivacySwitch addTarget:self
                                         action:@selector(didToggleEnableCallKitPrivacySwitch:)
-                              forControlEvents:UIControlEventTouchUpInside];
+                              forControlEvents:UIControlEventValueChanged];
     self.enableCallKitPrivacyCell.accessoryView = self.enableCallKitPrivacySwitch;
 
     // Enable Screen Security Cell
@@ -92,7 +89,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.enableScreenSecuritySwitch setOn:[Environment.preferences screenSecurityIsEnabled]];
     [self.enableScreenSecuritySwitch addTarget:self
                                         action:@selector(didToggleScreenSecuritySwitch:)
-                              forControlEvents:UIControlEventTouchUpInside];
+                              forControlEvents:UIControlEventValueChanged];
 
     // Allow calls to connect directly vs. using TURN exclusively
     self.callsHideIPAddressCell = [UITableViewCell new];
@@ -103,7 +100,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.callsHideIPAddressSwitch setOn:[Environment.preferences doCallsHideIPAddress]];
     [self.callsHideIPAddressSwitch addTarget:self
                                       action:@selector(didToggleCallsHideIPAddressSwitch:)
-                            forControlEvents:UIControlEventTouchUpInside];
+                            forControlEvents:UIControlEventValueChanged];
 
     // Clear History Log Cell
     self.clearHistoryLogCell                = [[UITableViewCell alloc] init];
@@ -119,7 +116,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.blockOnIdentityChangeSwitch setOn:[Environment.preferences shouldBlockOnIdentityChange]];
     [self.blockOnIdentityChangeSwitch addTarget:self
                                          action:@selector(didToggleBlockOnIdentityChangeSwitch:)
-                               forControlEvents:UIControlEventTouchUpInside];
+                               forControlEvents:UIControlEventValueChanged];
 }
 
 #pragma mark - Table view data source

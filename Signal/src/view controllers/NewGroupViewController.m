@@ -12,7 +12,6 @@
 #import "TSOutgoingMessage.h"
 #import "UIImage+normalizeImage.h"
 #import "UIUtil.h"
-#import "UIViewController+OWS.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
@@ -101,7 +100,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    [self useOWSBackButton];
     
     contacts = self.contactsManager.signalContacts;
 

@@ -38,7 +38,7 @@ class AttachmentApprovalViewController: UIViewController {
 
         view.backgroundColor = UIColor.black
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.done,
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
             target:self,
             action:#selector(donePressed))
         self.navigationItem.title = NSLocalizedString("ATTACHMENT_APPROVAL_DIALOG_TITLE",

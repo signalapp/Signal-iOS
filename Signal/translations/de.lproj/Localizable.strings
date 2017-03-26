@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Annehmen";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Neue Nachricht! Zum Lesen App öffnen.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Neue Nachricht!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Anhang";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Anhang";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Dateityp: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Dateigröße: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Senden";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Herunterladen des Anhangs gescheitert. Für erneuten Versuch antippen.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Diese Nachricht ist zu lang zum Senden";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Fehler";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftige Nachrichten von %@ zu erhalten, jedoch wird es bereits fehlerhafte Nachrichten nicht wiederherstellen.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u Tage";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Zugestellt";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vor dem Senden musst du die neue Sicherheitsnummer akzeptieren.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Versand gescheitert. Für erneuten Versuch antippen.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Überprüfen der Sicherheitsnummer nicht erfolgreich!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Neue Nachricht";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Zugestellt";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Senden gescheitert. Für erneuten Versuch antippen.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Gesendet";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Wird hochgeladen …";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Für Einstellungen hier antippen";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal benötigt Zugriff auf deine Kamera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Entgangener Anruf von %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Entgangener Anruf von %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Entgangener Anruf von Signal-Nutzer.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Du hast einen Anruf von %@ erhalten.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Erscheinen von Signal-Vorschauen im App-Umschalter verhindern.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-Anrufintegration zeigt Signal-Anrufe innerhalb des Sperrbildschirms und der Anrufliste an. Falls iCloud aktiviert ist, wird die Anrufliste mit Apple geteilt. Optional können Kontaktname und -rufnummer angezeigt werden.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-Anrufintegration zeigt Signal-Anrufe auf dem Sperrbildschirm und der Systemanrufliste an. Optional kannst du Name und Rufnummer deines Kontakts anzeigen lassen. Falls iCloud aktiviert ist, wird diese Anrufliste mit Apple geteilt.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Anrufe";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signal wird aktualisiert …";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Wird hochgeladen …";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Zurück";

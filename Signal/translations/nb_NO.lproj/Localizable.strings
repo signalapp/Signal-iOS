@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Ny melding! Åpne appen for å lese den.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Ny melding!";
 
 /* No comment provided by engineer. */
@@ -51,6 +48,18 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Vedlegg";
+
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Vedlegg";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtype: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Filstørrelse: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Nedlasting av vedlegg feilet, trykk for å forsøke på nytt.";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Samtaleinnstillinger";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Denne meldingen er for lang til å kunne sendes.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Feil";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Tilbakestilling av din økt vil tillate deg å motta fremtidige meldinger fra %@, men det vil ikke gjenopprette allerede korrupte meldinger.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dager";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Levert";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Sist aktiv: %@";
@@ -325,9 +337,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Du må godkjenne de nye sikkerhetstallene før du kan sende.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Sending feilet. Trykk for å prøve igjen.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifisering av sikkerhetstall mislyktes!";
 
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ny melding";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Levert";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending feilet. Trykk for å prøve igjen.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sendt";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Laster opp...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Trykk for samtaleinnstillinger";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal trenger tilgang til ditt kamera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Tapt anrop fra %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Du mottok en anrop fra %@.";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Hindrer at innholdet i Signal vises som forhåndsvisning ved rask bytting mellom apper.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-integrering med CallKit viser oppringninger via Signal på låst skjerm, og i den vanlige samtalelisten på iPhone. Hvis iCloud også er slått på, vil samtalehistorikken din i Signal deles med Apples systemer. Du kan velge om du vil vise navn og telefonnummer.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-integrering med CallKit viser Signal-oppringninger på låst skjerm og i den vanlige samtalelisten på telefonen. Du kan selv velge om du vil vise navn og telefonnummer for kontakter. Hvis iCloud er skrudd på vil samtalehistorikk bli delt med Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
@@ -966,9 +990,6 @@
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Oppgraderer Signal ...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Laster opp...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Tilbake";

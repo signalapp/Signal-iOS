@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION" = "Разреши достъп";
 
 /* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal се нуждае от достъп до контактите ви. Ние не пазим контактите ви на нашите сървъри.";
+"AB_PERMISSION_MISSING_BODY" = "Сигнал се нуждае от достъп до контактите ви. Ние не пазим контактите ви на нашите сървъри.";
 
 /* Alert title when contacts disabled */
 "AB_PERMISSION_MISSING_TITLE" = "Съжаляваме!";
@@ -14,19 +14,16 @@
 "ACTION_REQUIRED_TITLE" = "Изисква се действие";
 
 /* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal се нуждае от достъп до контактите ви. Достъпа до контактите ви е ограничен. Можете да премахнете ограничението за Signal временно отивайки на Settings  >> General >> Restrictions >> Contacts >> Allow Changes.";
+"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Сигнал се нуждае от достъп до контактите ви. Достъпа до контактите ви е ограничен. Можете да премахнете ограничението за Сигнал временно от Settings  >> General >> Restrictions >> Contacts >> Allow Changes.";
 
 /* No comment provided by engineer. */
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Затвори";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Вече имате Signal акаунт?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Вече имате Сигнал акаунт?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Отговор";
-
-/* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Ново Съобщение! Отворете приложението да го прочетете.";
 
 /* No comment provided by engineer. */
 "APN_Message" = "Ново Съобщение!";
@@ -52,8 +49,20 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Прикачен файл";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+
 /* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Изтеглянето на прикачения файл се провали, кликни за повторен опит.";
+"ATTACHMENT_DOWNLOAD_FAILED" = "Изтеглянето на прикачения файл се провали, докосни за повторен опит.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Прикаченият файл се сваля";
@@ -83,10 +92,10 @@
 "CALL_STATUS_FORMAT" = "Сигнал %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можете да отговаряте на позвъняване директно от заключен екран и да виждате името и телефонния номер на входящото повикване ако промените настройките си.\nВижте в Поверителност в настройките  за детайли.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можете да отговаряте на позвъняване директно от заключен екран и да виждате името и телефонния номер на входящото повикване, ако промените настройките си.\nВижте в настройките на Поверителност за детайли.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Можете да виждате името и телефонния номер на входящото повикване ако промените настройките си.\nВижте в Поверителност в настройките  за детайли.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Можете да виждате името и телефонния номер на входящото повикване ако промените настройките си.\nВижте в настройките на Поверителност за детайли.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не Сега";
@@ -104,7 +113,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Сравнете с копираното";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Това ще нулира приложението чрез изтриване на съобщенията ви и ще ви  отпише от сървъра. Приложението ще се затвори след заличаване на данните.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Това ще нулира приложението, чрез изтриване на съобщенията ви и ще ви  отпише от сървъра. Приложението ще се затвори след заличаване на данните.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Сигурни ли сте че искате да изтриете профила си?";
@@ -133,6 +142,12 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Настройки на Разговор";
 
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Нулиране на вашата сесия ще ви позволи да получите бъдещи съобщения от %@, но няма да се възстановят вече повредени съобщения.";
 
@@ -144,9 +159,6 @@
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u дни";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Доставено";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последно активно: %@";
@@ -185,16 +197,16 @@
 "EDIT_ITEM_SHARE_ACTION" = "Сподели";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Здравей,\n\nНапоследък използвам приложението Signal за сигурен чат. Инсталирай си го и ти ако желаеш, и ще можем да си пишем сигурно, както и да си говорим чрез него.\n\nSignal е налично за iPhone и Android. Свали го от тук: %@\n\nSignal работи като другите програми за чат. Може да си изпращаме снимки и видео, да водим разговори, или да правим групов чат. Най хубавото е, че приложението е сигурно и никой не може да види това което си писал, или изпращал. Дори и тези които са създали Signal!\n\nМоже да прочетеш по-вече за Open Whisper Systems, хората които са създали Signal, тук: %@";
+"EMAIL_INVITE_BODY" = "Здравей,\n\nНапоследък използвам приложението Сигнал за сигурен чат. Инсталирай си го и ти ако желаеш, и ще можем да си пишем сигурно, както и да си говорим чрез него.\n\nСигнал е налично за iPhone и Android. Свали го от тук: %@\n\nСигнал работи като другите програми за чат. Може да си изпращаме снимки и видео, да водим разговори, или да правим групов чат. Най хубавото е, че приложението е сигурно и никой не може да види това което си писал, или изпращал. Дори и тези които са създали Сигнал!\n\nМоже да прочетеш по-вече за Open Whisper Systems, хората които са създали Сигнал, тук: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Нека преминем на Signal";
+"EMAIL_INVITE_SUBJECT" = "Нека преминем на Сигнал";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Натиснете бутона за ново съобщение.";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "Започнете първия си разговор със Signal!";
+"EMPTY_ARCHIVE_FIRST_TITLE" = "Започнете първия си разговор със Сигнал!";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TEXT" = "Можете да архивирате неактивни разговори за по-късно от вашите Входящи.";
@@ -203,7 +215,7 @@
 "EMPTY_ARCHIVE_TITLE" = "Почистване на вашите разговори.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Никой от контактите ви не ползва Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Никой от контактите ви не ползва Сигнал.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Защо не поканите някой?";
@@ -242,7 +254,7 @@
 "END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Съобщение от Сървъра:";
 
 /* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Номера не е регистриран със Signal или RedPhone!";
+"END_CALL_NO_SUCH_USER" = "Номера не е регистриран със Сигнал или RedPhone!";
 
 /* No comment provided by engineer. */
 "END_CALL_RECIPIENT_UNAVAILABLE" = "Получателя не е на разположение.";
@@ -272,10 +284,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не може да се изпрати поради остаряли лични данни.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal не успя да се свърже с интернет. Моля, опитайте от друга WiFi мрежа или чрез използване на мобилни данни.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Сигнал не успя да се свърже с интернет. Моля, опитайте от друга WiFi мрежа или чрез използване на мобилни данни.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Вашето устройство вече не е регистрирано към този номер. Трябва да изтриете и преинсталирате Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Вашето устройство вече не е регистрирано към този номер. Трябва да изтриете и преинсталирате Сигнал.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Грешка в сървъра. Моля, опитайте отново по-късно.";
@@ -314,19 +326,16 @@
 "ERROR_WAS_DETECTED_TITLE" = "О не!";
 
 /* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "За сега Signal може да бъде активен само на едно мобилно устройство с телефонен номер.";
+"EXISTING_USER_REGISTRATION_ALERT_BODY" = "За сега Сигнал може да бъде активен само на едно мобилно устройство с телефонен номер.";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Активирайки това %@ Signal ще се деактивира на всяко друго устройство което е асоциирано с този телефонен номер.";
+"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Активирайки това %@ Сигнал ще се деактивира на всяко друго устройство което е асоциирано с този телефонен номер.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Твърде много провали с този контакт. Моля, опитайте отново след малко.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Трябва да приемете новите номера за безопасност, преди да бъдете в състояние за изпращане.";
-
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Изпращането се провали. Докосни за повторно изпращане.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Неуспех при Проверка на Номерата за Безопасност!";
@@ -407,7 +416,7 @@
 "INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Не може да се покаже съобщение.";
 
 /* Text for button at the top of the contact picker */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Покани приятели в Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Покани приятели в Сигнал";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Търсене";
@@ -481,6 +490,18 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ново Съобщение";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Докосни тук за настройки";
 
@@ -499,7 +520,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal се нуждае от достъп до камерата ви.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Пропуснато обаждане от %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Получихте обаждане от %@.";
@@ -562,7 +586,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Поради известни грешки в изкачащите съобщения на Apple, превю на съобщения ще се показват само ако съобщението е получено в рамките на 30 секунди след като е било изпратено. В резултат на това броят съобщения на баджа на приложението може да е неточен.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Без име или съобщение";
+"NOTIFICATIONS_NONE" = "Без Име или Съобщение";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SECTION_BACKGROUND" = "Известявания";
@@ -571,10 +595,10 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Известия в приложението";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Име на подателя & съобщение";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Име & Съобщение";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Само името на подателя";
+"NOTIFICATIONS_SENDER_ONLY" = "Само Име на подателя";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Преглед";
@@ -608,19 +632,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Номера който сте копирали не изглежда коректен за този разговор.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не намери копиран номер за сигурност. Копирахте ли го коректно?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Сигнал не намери копиран номер за сигурност. Копирахте ли го коректно?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Всеки чифт потребители на Signal споделя различен номер за сигурност. Проверете дали %@ показва * твоя * различен номер за сигурност.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Всеки двойка потребители на Сигнал споделя различен номер за сигурност. Проверете дали %@ показва * твоя * различен номер за сигурност.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Вие ползвате стара версия на Signal. Трябва да обновите приложението преди верифициране.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Вие използвате стара версия на Сигнал. Трябва да обновите приложението преди верифициране.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Вашият партньор ползва стара версия на Signal. Той трябва да обнови приложението си преди верифициране.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Вашият партньор ползва стара версия на Сигнал. Той трябва да обнови приложението си преди верифициране.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Сканираните кодове не приличат на номерата за сигурност. Сигурни ли сте, че и двамата ползвате последната версия на Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Сканираните кодове не приличат на номерата за сигурност. Сигурни ли сте, че и двамата ползвате последната версия на Сигнал?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ако желаете да се провери сигурността на вашето шифроване от край до край с %@, сравнете цифрите по-горе с номерата на тяхното устройство.\n\nИли можете да сканирате кода на техния телефон, или да ги помолите те да сканират вашия.";
@@ -644,19 +668,19 @@
 "PUSH_REGISTER_TITLE" = "Изкачащи Известия";
 
 /* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal изисква изкачащите уведомления и звуци да бъдат разрешени за да работи коректно. Можете да ги настроите от Settings >> Notification Center >> Signal.";
+"PUSH_SETTINGS_MESSAGE" = "Сигнал изисква изкачащите уведомления и звуци да бъдат разрешени за да работи коректно. Можете да ги настроите от Settings >> Notification Center >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Ако сте доволен от използването на Signal за защитени разговори, можете да подкрепите нашия проект, като го оцените. Това няма да отнеме повече от минута, и ще помогне на другите да намерят сигурен начин за комуникация.";
+"RATING_MSG" = "Ако сте доволен от използването на Сигнал за защитени разговори, можете да подкрепите нашия проект, като го оцените. Това няма да отнеме повече от минута, и ще помогне на другите да намерят сигурен начин за комуникация.";
 
 /* No comment provided by engineer. */
-"RATING_RATE" = "Оцени Signal";
+"RATING_RATE" = "Оцени Сигнал";
 
 /* No comment provided by engineer. */
-"RATING_TITLE" = "Подкрепи Signal!";
+"RATING_TITLE" = "Подкрепи Сигнал!";
 
 /* No comment provided by engineer. */
 "REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Моля въведете валиден телефонен код на държавата";
@@ -665,7 +689,7 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Грешен код на държавата";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal ви позволява да водите защитени разговори със своите контакти. За да използвате Signal, моля позволете достъпа до контактите ви.";
+"REGISTER_CONTACTS_BODY" = "Сигнал ви позволява да водите защитени разговори със своите контакти. За да използвате Сигнал, моля позволете достъпа до контактите ви.";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_CONTINUE" = "Продължи";
@@ -725,13 +749,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Телефонният номер който се опитвате да регистрирате вече е регистриран на друг сървър, моля отпишете се от там и опитайте отново.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Пререгистър за известяване";
+"REREGISTER_FOR_PUSH" = "Регистрирай Отново";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Опитай Отново";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Нашите Signal Номера за Безопасност\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Нашите Сигнал Номера за Безопасност\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Номера за безопасност с %@ се променени. Докоснете, за да потвърдите.";
@@ -761,7 +785,7 @@
 "SEND_INVITE_FAILURE" = "Изпращането на покана се провали, моля опитайте по-късно.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Вие поканихте приятелят си да използва Signal!";
+"SEND_INVITE_SUCCESS" = "Вие поканихте приятелят си да използва Сигнал!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Изпрати покана чрез СМС до: %@";
@@ -770,13 +794,13 @@
 "SEND_SMS_CONFIRM_TITLE" = "Покани прияте с не толкова сигурният СМС?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Искате ли да поканите следния номер да използва Signal:";
+"SEND_SMS_INVITE_TITLE" = "Искате ли да поканите следния номер да използва Сигнал:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Относно";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Вкл. Регистриране на Грешки";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Вкл. запис на грешки";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Изпрати Регистрирани Грешки";
@@ -788,16 +812,16 @@
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Изисква вашето одобрение, преди да общувате с някой, който има нов номер за безопасност, често се случва от преинсталиране на приложението.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Вкл. Одобрение при Промяна";
+"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Одобрение при Промяна";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Настройки";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Винаги Маскирай Обажданията";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Маскирай Обажданията";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Маскиране на всички обаждания чрез сървърите на Сигнал с чел да защитите IP адреса си. Включването може да наруши качеството на разговора.  ";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Маскиране на всички обаждания, чрез сървърите на Сигнал с цел да скриете IP адреса си от този със който контактувате. Включването на тази функция може да наруши качеството на разговора.  ";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Изчисти Регистъра с История";
@@ -827,7 +851,7 @@
 "SETTINGS_INVITE_TITLE" = "Покани Приятели";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Можете да се свържете с мен използвайки Signal от @WhisperSystems, вземете го сега.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Можете да се свържете с мен използвайки Сигнал от @WhisperSystems, вземете го сега.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";
@@ -836,7 +860,7 @@
 "SETTINGS_NOTIFICATIONS" = "Известия";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Покажи Повикващите Име & Номер";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Покажи Име & Номер";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Интегрирани Повиквания";
@@ -854,7 +878,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Забрани превю на данни от Сигнал при заключен екран.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Интегрирани Повиквания показва Повиквания от Сигнал на заключен екран  и във историята с обаждания на телефона ви. Ако iCloud е включен, историята на обажданията ще бъде споделена със Apple. Така можете да разкриете номера на контакта ви и името му.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Повикване";
@@ -881,7 +905,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Покажи новите номера за безопасност";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u дни";
+"SINGLE_DAY_TIME_AMOUNT" = "%u ден";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_HOUR_TIME_AMOUNT" = "%u часа";
@@ -893,7 +917,7 @@
 "SINGLE_WEEK_TIME_AMOUNT" = "%u седмици";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Предлагам ти да си инсталираш Signal! Ето линка:";
+"SMS_INVITE_BODY" = "Предлагам ти да си инсталираш Сигнал! Ето линка:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Номерата ви за безопастност с %@ са потвърдени. Може да сте спокойни с вашата комуникация.";
@@ -932,13 +956,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Премахни \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal не успя да премахне това устройство.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Сигнал не успя да премахне това устройство.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Неименувано Устройство";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Не успяхте да се отпишете от Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "Не успяхте да се отпишете от Сигнал.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Получен е прикачен файл от неподдържан тип.";
@@ -965,10 +989,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Здравейте Безопасни Видео Обаждания!";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Обновяване на Signal ...";
-
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Качване...";
+"Upgrading Signal ..." = "Обновяване на Сигнал ...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Обратно";
@@ -995,7 +1016,7 @@
 "VERIFY_PRIVACY" = "Провери Номерата за Безопасност";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завърши настройките на Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завърши настройките на Сигнал Desktop.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "WEEKS_TIME_AMOUNT" = "%u седмици";

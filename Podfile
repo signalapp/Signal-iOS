@@ -8,7 +8,6 @@ target 'Signal' do
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL'
-    pod 'FFCircularProgressView',     '~> 0.5'
     pod 'SCWaveformView',             '~> 1.0'
     pod 'JSQMessagesViewController'
     pod 'PureLayout'
