@@ -3,7 +3,6 @@
 //
 
 #import "RegistrationViewController.h"
-
 #import "CodeVerificationViewController.h"
 #import "Environment.h"
 #import "LocalizableText.h"
@@ -12,6 +11,7 @@
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 #import "Util.h"
+#import "UIView+OWS.h"
 
 static NSString *const kCodeSentSegue = @"codeSent";
 
@@ -54,19 +54,53 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [_phoneNumberTextField becomeFirstResponder];
 }
 
-#pragma mark - Locale
+#pragma mark - Country
 
 - (void)populateDefaultCountryNameAndCode {
     NSLocale *locale      = NSLocale.currentLocale;
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
-    NSNumber *cc          = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
-
-    [_countryCodeButton setTitle:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, cc]
-                        forState:UIControlStateNormal];
-    [_countryNameButton setTitle:[PhoneNumberUtil countryNameFromCountryCode:countryCode]
-                        forState:UIControlStateNormal];
+    NSNumber *callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    [self updateCountryWithName:countryName
+                    callingCode:[NSString stringWithFormat:@"%@%@",
+                                 COUNTRY_CODE_PREFIX,
+                                 callingCode]
+                    countryCode:countryCode];
 }
 
+- (void)updateCountryWithName:(NSString *)countryName
+                  callingCode:(NSString *)callingCode
+                  countryCode:(NSString *)countryCode {
+    NSString *title = [NSString stringWithFormat:@"%@ (%@)",
+                       callingCode,
+                       countryCode.uppercaseString];
+    [_countryCodeButton setTitle:title
+                        forState:UIControlStateNormal];
+    
+    // In the absence of a rewrite to a programmatic layout,
+    // re-add the country code and name views in order to
+    // remove any layout constraints that apply to them.
+    UIView *superview = _countryCodeButton.superview;
+    [_countryNameButton removeFromSuperview];
+    [_countryCodeButton removeFromSuperview];
+    [_countryNameButton removeConstraints:_countryNameButton.constraints];
+    [_countryCodeButton removeConstraints:_countryCodeButton.constraints];
+
+    [superview addSubview:_countryNameButton];
+    [superview addSubview:_countryCodeButton];
+    [_countryNameButton autoVCenterInSuperview];
+    [_countryCodeButton autoVCenterInSuperview];
+    [_countryNameButton autoSetDimension:ALDimensionHeight toSize:26];
+    [_countryCodeButton autoSetDimension:ALDimensionHeight toSize:26];
+    [_countryNameButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
+    [_countryCodeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16];
+    [_countryNameButton autoSetDimension:ALDimensionWidth toSize:150];
+    [_countryCodeButton autoSetDimension:ALDimensionWidth toSize:150];
+    _countryNameButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _countryCodeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [superview layoutSubviews];
+}
 
 #pragma mark - Actions
 
@@ -213,8 +247,9 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 - (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue {
     CountryCodeViewController *vc = [segue sourceViewController];
-    [_countryCodeButton setTitle:vc.callingCodeSelected forState:UIControlStateNormal];
-    [_countryNameButton setTitle:vc.countryNameSelected forState:UIControlStateNormal];
+    [self updateCountryWithName:vc.countryNameSelected
+                    callingCode:vc.callingCodeSelected
+                    countryCode:vc.countryCodeSelected];
 
     // Reformat phone number
     NSString *digits = _phoneNumberTextField.text.digitsOnly;

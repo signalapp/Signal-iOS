@@ -56,6 +56,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
     _callingCodeSelected  = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
     _countryNameSelected  = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    _countryCodeSelected = countryCode;
     [self.searchBar resignFirstResponder];
     [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
 }
