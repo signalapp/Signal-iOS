@@ -117,33 +117,36 @@
 
     NSArray *countryCodes = NSLocale.ISOCountryCodes;
 
-    if (searchTerm.length > 0) {
-        countryCodes = [countryCodes filter:^int(NSString *countryCode) {
-            NSString *countryName = [self countryNameFromCountryCode:countryCode];
-            NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
+    countryCodes = [countryCodes filter:^int(NSString *countryCode) {
+        NSString *countryName = [self countryNameFromCountryCode:countryCode];
+        NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
 
-            if (callingCode == nil || [callingCode isEqualToString:@"+0"]) {
-                // Filter out countries without a valid calling code.
-                return NO;
-            }
-
-            if ([self name:countryName matchesQuery:searchTerm]) {
-                return YES;
-            }
-
-            if ([self name:countryCode matchesQuery:searchTerm]) {
-                return YES;
-            }
-
-            // We rely on the already internationalized string; as that is what
-            // the user would see entered (i.e. with COUNTRY_CODE_PREFIX).
-
-            if ([callingCode containsString:searchTerm]) {
-                return YES;
-            }
+        if (countryName.length < 1 || callingCode.length < 1 || [callingCode isEqualToString:@"+0"]) {
+            // Filter out countries without a valid calling code.
             return NO;
-        }];
-    }
+        }
+
+        if (searchTerm.length < 1) {
+            return YES;
+        }
+
+        if ([self name:countryName matchesQuery:searchTerm]) {
+            return YES;
+        }
+
+        if ([self name:countryCode matchesQuery:searchTerm]) {
+            return YES;
+        }
+
+        // We rely on the already internationalized string; as that is what
+        // the user would see entered (i.e. with COUNTRY_CODE_PREFIX).
+
+        if ([callingCode containsString:searchTerm]) {
+            return YES;
+        }
+
+        return NO;
+    }];
 
     return [self sortedCountryCodesByName:countryCodes];
 }
