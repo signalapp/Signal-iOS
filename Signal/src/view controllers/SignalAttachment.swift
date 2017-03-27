@@ -5,7 +5,7 @@
 import Foundation
 import MobileCoreServices
 
-enum SignalAttachmentError: Int {
+enum SignalAttachmentError: Error {
     case missingData
     case fileSizeTooLarge
     case invalidData
@@ -14,7 +14,26 @@ enum SignalAttachmentError: Int {
     case invalidFileFormat
 }
 
-enum TSImageQuality: Int {
+extension SignalAttachmentError: LocalizedError {
+    public var errorDescription: String {
+        switch self {
+        case .missingData:
+            return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
+        case .fileSizeTooLarge:
+            return NSLocalizedString("ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE", comment: "Attachment error message for attachments whose data exceed file size limits")
+        case .invalidData:
+            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_DATA", comment: "Attachment error message for attachments with invalid data")
+        case .couldNotParseImage:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE", comment: "Attachment error message for image attachments which cannot be parsed")
+        case .couldNotConvertToJpeg:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
+        case .invalidFileFormat:
+            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        }
+    }
+}
+
+enum TSImageQuality {
     case uncropped
     case high
     case medium
@@ -91,31 +110,28 @@ class SignalAttachment: NSObject {
         return error != nil
     }
 
-    var errorMessage: String? {
+    var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
             assert(false)
             return nil
         }
 
-        switch error {
-        case .missingData:
-            return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
-        case .fileSizeTooLarge:
-            return NSLocalizedString("ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE", comment: "Attachment error message for attachments whose data exceed file size limits")
-        case .invalidData:
-            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_DATA", comment: "Attachment error message for attachments with invalid data")
-        case .couldNotParseImage:
-            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE", comment: "Attachment error message for image attachments which cannot be parsed")
-        case .couldNotConvertToJpeg:
-            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
-        case .invalidFileFormat:
-            return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        return "\(error)"
+    }
+
+    var localizedErrorDescription: String? {
+        guard let error = self.error else {
+            // This method should only be called if there is an error.
+            assert(false)
+            return nil
         }
+
+        return "\(error.errorDescription)"
     }
 
     class var missingDataErrorMessage: String {
-        return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
+        return SignalAttachmentError.missingData.errorDescription
     }
 
     // Returns the MIME type for this attachment or nil if no MIME type

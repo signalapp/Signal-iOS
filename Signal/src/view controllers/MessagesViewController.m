@@ -1950,7 +1950,7 @@ typedef enum : NSUInteger {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                        self.tag,
                                                        __PRETTY_FUNCTION__,
-                                                       attachment ? [attachment errorMessage] : @"Missing data");
+                                                       attachment ? [attachment errorName] : @"Missing data");
                                              [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
@@ -1997,7 +1997,7 @@ typedef enum : NSUInteger {
                                               DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                         self.tag,
                                                         __PRETTY_FUNCTION__,
-                                                        attachment ? [attachment errorMessage] : @"Missing data");
+                                                        attachment ? [attachment errorName] : @"Missing data");
                                               [self showErrorAlertForAttachment:attachment];
                                               failedToPickAttachment(nil);
                                           } else {
@@ -2083,7 +2083,7 @@ typedef enum : NSUInteger {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",
                       self.tag,
                       __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorMessage] : @"Missing data");
+                      attachment ? [attachment errorName] : @"Missing data");
             [self showErrorAlertForAttachment:attachment];
         } else {
             [self sendMessageAttachment:attachment];
@@ -2319,7 +2319,7 @@ typedef enum : NSUInteger {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",
                       self.tag,
                       __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorMessage] : @"Missing data");
+                      attachment ? [attachment errorName] : @"Missing data");
             [self showErrorAlertForAttachment:attachment];
         } else {
             [self sendMessageAttachment:attachment];
@@ -2559,7 +2559,7 @@ typedef enum : NSUInteger {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
                   self.tag,
                   __PRETTY_FUNCTION__,
-                  attachment ? [attachment errorMessage] : @"Missing data");
+                  attachment ? [attachment errorName] : @"Missing data");
         [self showErrorAlertForAttachment:attachment];
     } else {
         __weak MessagesViewController *weakSelf = self;
@@ -2578,7 +2578,7 @@ typedef enum : NSUInteger {
     OWSAssert(attachment == nil || [attachment hasError]);
     
     NSString *errorMessage = (attachment
-                              ? [attachment errorMessage]
+                              ? [attachment localizedErrorDescription]
                               : [SignalAttachment missingDataErrorMessage]);
     
     DDLogError(@"%@ %s: %@",
