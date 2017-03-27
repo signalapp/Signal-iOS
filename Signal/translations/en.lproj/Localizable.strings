@@ -79,6 +79,12 @@
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
 
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "Call failed";
+
 /* Title for call interstitial view */
 "CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
 
