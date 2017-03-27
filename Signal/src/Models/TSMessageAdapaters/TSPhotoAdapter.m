@@ -113,6 +113,9 @@
     }
 
     if (action == @selector(copy:)) {
+        // We should always copy to the pasteboard as data, not an UIImage.
+        // The pasteboard should has as specific as UTI type as possible and
+        // data support should be far more general than UIImage support.
         OWSAssert(self.attachment.filePath.length > 0);
         NSString *fileExtension = [self.attachment.filePath pathExtension];
         NSArray *utiTypes = (__bridge_transfer NSArray *)UTTypeCreateAllIdentifiersForTag(
