@@ -4,6 +4,7 @@
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
 extern NSString *const OWSMimeTypeImagePng;
+extern NSString *const OWSMimeTypeOversizeTextMessage;
 
 @interface MIMETypeUtil : NSObject
 
