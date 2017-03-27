@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <UIKit/UIKit.h>
 
 @class CountryCodeViewController;
@@ -18,6 +22,7 @@
 @property (nonatomic, strong) IBOutlet UITableView *countryCodeTableView;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, assign) id<CountryCodeViewControllerDelegate> delegate;
+@property (nonatomic, strong) NSString *countryCodeSelected;
 @property (nonatomic, strong) NSString *callingCodeSelected;
 @property (nonatomic, strong) NSString *countryNameSelected;
 
