@@ -68,7 +68,8 @@
                 case NotificationNameNoPreview: {
                     notification.userInfo = @{ Signal_Call_UserInfo_Key : cThread.contactIdentifier };
                     notification.category = Signal_CallBack_Category;
-                    notification.alertBody = ([[Environment getCurrent].preferences isCallKitPrivacyEnabled]
+                    notification.alertBody = (([UIDevice currentDevice].supportsCallKit &&
+                                               [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
                                               ? [CallStrings missedCallNotificationBodyWithoutCallerName]
                                               : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], [thread name]]);
                     break;
@@ -136,7 +137,8 @@
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage = ([[Environment getCurrent].preferences isCallKitPrivacyEnabled]
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                             [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
                             ? [CallStrings missedCallNotificationBodyWithoutCallerName]
                             : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
             break;
