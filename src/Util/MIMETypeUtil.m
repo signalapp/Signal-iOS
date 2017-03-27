@@ -12,6 +12,7 @@
 
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
+NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 
 @implementation MIMETypeUtil
 
@@ -291,6 +292,8 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isBinaryData:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
+    } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+        return [MIMETypeUtil filePathForOversizeTextMessage:uniqueId inFolder:folder];
     }
 
     DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
@@ -342,6 +345,13 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 {
     return [[folder stringByAppendingFormat:@"/%@", uniqueId]
         stringByAppendingPathExtension:[self getSupportedExtensionFromBinaryDataMIMEType:contentType]];
+}
+
++ (NSString *)filePathForOversizeTextMessage:(NSString *)uniqueId inFolder:(NSString *)folder {
+    // This file extension is arbitrary - it should never be exposed to the user or
+    // be used outside the app.
+    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
+            stringByAppendingPathExtension:@"signal-text-message"];
 }
 
 #if TARGET_OS_IPHONE
