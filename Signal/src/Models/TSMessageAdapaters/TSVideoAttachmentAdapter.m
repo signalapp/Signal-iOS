@@ -246,6 +246,7 @@
     if ([self isVideo]) {
         if (action == @selector(copy:)) {
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            // TODO: This assumes all videos are mp4.
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4];
             return;
         } else if (action == NSSelectorFromString(@"save:")) {
@@ -260,7 +261,6 @@
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
 
             NSString *pasteboardType = [MIMETypeUtil getSupportedExtensionFromAudioMIMEType:self.contentType];
-            [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)UIPasteboardNameGeneral];
 
             if ([pasteboardType isEqualToString:@"mp3"]) {
                 [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMP3];

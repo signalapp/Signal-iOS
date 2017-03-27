@@ -7,6 +7,7 @@
 #import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @interface TSPhotoAdapter ()
 
@@ -112,7 +113,21 @@
     }
 
     if (action == @selector(copy:)) {
-        UIPasteboard.generalPasteboard.image = self.image;
+        // We should always copy to the pasteboard as data, not an UIImage.
+        // The pasteboard should has as specific as UTI type as possible and
+        // data support should be far more general than UIImage support.
+        OWSAssert(self.attachment.filePath.length > 0);
+        NSString *fileExtension = [self.attachment.filePath pathExtension];
+        NSArray *utiTypes = (__bridge_transfer NSArray *)UTTypeCreateAllIdentifiersForTag(
+            kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, (CFStringRef) @"public.image");
+        NSString *utiType = (NSString *)kUTTypeImage;
+        OWSAssert(utiTypes.count > 0);
+        if (utiTypes.count > 0) {
+            utiType = utiTypes[0];
+        }
+
+        NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
+        [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         return;
     } else if (action == NSSelectorFromString(@"save:")) {
         UIImageWriteToSavedPhotosAlbum(self.image, nil, nil, nil);
