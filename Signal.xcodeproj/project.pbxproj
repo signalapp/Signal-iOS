@@ -16,6 +16,8 @@
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
+		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
+		34802DD71E899CFB0032EA1D /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34802DD61E899CFB0032EA1D /* DebugUITableViewController.m */; };
 		348A08421E6A044E0057E290 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08411E6A044E0057E290 /* MessagesViewController.xib */; };
 		348A08441E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */; };
 		348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */; };
@@ -400,6 +402,10 @@
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34535D811E256BE9008A4747 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
+		345670FF1E89A5F1006EE662 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
+		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
+		34802DD51E899CFB0032EA1D /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
+		34802DD61E899CFB0032EA1D /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUITableViewController.m; sourceTree = "<group>"; };
 		348A08411E6A044E0057E290 /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
 		348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OWSMessagesToolbarContentView.xib; sourceTree = "<group>"; };
 		348A08501E6C73490057E290 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
@@ -1227,12 +1233,9 @@
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
-				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
-				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				B68EF9B51C0B1E7D009C3DCD /* Animated GIFS */,
 				B6DA6B051B8A2F9A00CA6F98 /* AppStoreRating.h */,
 				B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */,
-				FCFA64B11A24F29E0007FB87 /* UI Categories */,
 				76EB04C918170B33006006FC /* ArrayUtil.h */,
 				76EB04CA18170B33006006FC /* ArrayUtil.m */,
 				76EB04CF18170B33006006FC /* collections */,
@@ -1246,40 +1249,45 @@
 				B90418E5183E9DD40038554A /* DateUtil.m */,
 				76EB04E818170B33006006FC /* DictionaryUtil.h */,
 				76EB04E918170B33006006FC /* DictionaryUtil.m */,
+				453201241E71100C00F20761 /* DisplayableTextFilter.swift */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
 				BFB074C319A5611000F2947C /* FutureUtil.h */,
 				BFB074C419A5611000F2947C /* FutureUtil.m */,
+				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
+				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
 				BFB074C519A5611000F2947C /* ObservableValue.h */,
 				BFB074C619A5611000F2947C /* ObservableValue.m */,
 				76EB04EE18170B33006006FC /* Operation.h */,
 				76EB04EF18170B33006006FC /* Operation.m */,
+				45CD81F01DC03A22004C9430 /* OWSLogger.h */,
+				45CD81F11DC03A22004C9430 /* OWSLogger.m */,
+				45666F541D9B2827008FE134 /* OWSScrubbingLogFormatter.h */,
+				45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */,
+				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
+				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
+				450DF2041E0D74AC003D14BE /* Platform.swift */,
 				76EB04F018170B33006006FC /* protocols */,
 				76EB04F518170B33006006FC /* StringUtil.h */,
 				76EB04F618170B33006006FC /* StringUtil.m */,
 				76EB04F718170B33006006FC /* ThreadManager.h */,
 				76EB04F818170B33006006FC /* ThreadManager.m */,
+				345670FF1E89A5F1006EE662 /* ThreadUtil.h */,
+				345671001E89A5F1006EE662 /* ThreadUtil.m */,
 				76EB04F918170B33006006FC /* TimeUtil.h */,
 				76EB04FA18170B33006006FC /* TimeUtil.m */,
+				FCFA64B11A24F29E0007FB87 /* UI Categories */,
+				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
+				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
 				76EB04FB18170B33006006FC /* Util.h */,
-				76EB04FC18170B33006006FC /* Zid.h */,
-				76EB04FD18170B33006006FC /* Zid.m */,
-				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
-				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
-				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
-				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
-				45666F541D9B2827008FE134 /* OWSScrubbingLogFormatter.h */,
-				45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */,
-				45CD81F01DC03A22004C9430 /* OWSLogger.h */,
-				45CD81F11DC03A22004C9430 /* OWSLogger.m */,
-				450DF2041E0D74AC003D14BE /* Platform.swift */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
-				453201241E71100C00F20761 /* DisplayableTextFilter.swift */,
+				76EB04FC18170B33006006FC /* Zid.h */,
+				76EB04FD18170B33006006FC /* Zid.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1322,6 +1330,9 @@
 				340757C11E5602D6001F15DD /* AttachmentSharing.m */,
 				451764261DE939F300EDB8B9 /* ContactsPicker.swift */,
 				E94066141DFC5B7B00B15392 /* ContactsPicker.xib */,
+				34802DD51E899CFB0032EA1D /* DebugUITableViewController.h */,
+				34802DD61E899CFB0032EA1D /* DebugUITableViewController.m */,
+				4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */,
 				45514DE11DDFA183003EFF90 /* InviteFlow.swift */,
 				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
 				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
@@ -1330,7 +1341,6 @@
 				FC3196311A08141D0094C78E /* Settings */,
 				FC3196321A08142D0094C78E /* Signals */,
 				FCFD25791A1543D500F4C644 /* Signup */,
-				4505C2C41E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift */,
 			);
 			name = "View Controllers";
 			path = "view controllers";
@@ -2190,6 +2200,7 @@
 				45C681B71D305A580050903A /* OWSCall.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */,
 				45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
 				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
@@ -2289,6 +2300,7 @@
 				45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */,
 				76EB064818170B33006006FC /* Zid.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
+				34802DD71E899CFB0032EA1D /* DebugUITableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

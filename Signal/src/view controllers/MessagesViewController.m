@@ -61,6 +61,8 @@
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabaseView.h>
+#import "ThreadUtil.h"
+#import "DebugUITableViewController.h"
 
 @import Photos;
 
@@ -619,6 +621,10 @@ typedef enum : NSUInteger {
         self.navigationBarTitleView = [UIView new];
         [self.navigationBarTitleView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                                   action:@selector(navigationTitleTapped:)]];
+#ifdef DEBUG
+        [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                        action:@selector(navigationTitleLongPressed:)]];
+#endif
         
         self.navigationBarTitleLabel = [UILabel new];
         self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
@@ -868,28 +874,9 @@ typedef enum : NSUInteger {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
         }
 
-        TSOutgoingMessage *message;
-        OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-        if (configuration.isEnabled) {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:text
-                                                     attachmentIds:[NSMutableArray new]
-                                                  expiresInSeconds:configuration.durationSeconds];
-        } else {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:text];
-        }
-
-        [self.messageSender sendMessage:message
-            success:^{
-                DDLogInfo(@"%@ Successfully sent message.", self.tag);
-            }
-            failure:^(NSError *error) {
-                DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
-            }];
+        [ThreadUtil sendMessageWithText:text
+                               inThread:self.thread
+                          messageSender:self.messageSender];
         [self toggleDefaultKeyboard];
         [self finishSendingMessage];
     }
@@ -2015,6 +2002,13 @@ typedef enum : NSUInteger {
     OWSAssert([attachment mimeType].length > 0);
     
     DispatchMainThreadSafe(^{
+        DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+                     (unsigned long)attachment.data.length,
+                     [attachment mimeType]);
+        [ThreadUtil sendMessageWithAttachment:attachment
+                                     inThread:self.thread
+                                messageSender:self.messageSender];
+
         TSOutgoingMessage *message;
         OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
@@ -2030,20 +2024,6 @@ typedef enum : NSUInteger {
                                                        messageBody:nil
                                                      attachmentIds:[NSMutableArray new]];
         }
-        
-        DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                     (unsigned long)attachment.data.length,
-                     [attachment mimeType]);
-        [self.messageSender sendAttachmentData:attachment.data
-                                   contentType:[attachment mimeType]
-                                     inMessage:message
-                                       success:^{
-                                           DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
-                                       }
-                                       failure:^(NSError *error) {
-                                           DDLogError(
-                                                      @"%@ Failed to send message attachment with error: %@", self.tag, error);
-                                       }];
     });
 }
 
@@ -2538,6 +2518,15 @@ typedef enum : NSUInteger {
         [self showConversationSettings];
     }
 }
+
+#ifdef DEBUG
+- (void)navigationTitleLongPressed:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [DebugUITableViewController presentDebugUIForThread:self.thread
+                                         fromViewController:self];
+    }
+}
+#endif
 
 #pragma mark - JSQMessagesComposerTextViewPasteDelegate
 
