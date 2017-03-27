@@ -127,6 +127,7 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
+        DDLogInfo(@"%@ Submitting debug logs", self.tag);
         [DDLog flushLog];
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
