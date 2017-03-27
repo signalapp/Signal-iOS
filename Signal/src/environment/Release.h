@@ -8,9 +8,9 @@
 @interface Release : NSObject
 
 /// Connects to actual production infrastructure
-+ (Environment *)releaseEnvironmentWithLogging:(id<Logging>)logging;
++ (Environment *)releaseEnvironment;
 
-+ (Environment *)stagingEnvironmentWithLogging:(id<Logging>)logging;
++ (Environment *)stagingEnvironment;
 
 /// Fake environment with no logging
 + (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions;

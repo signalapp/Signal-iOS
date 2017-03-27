@@ -58,7 +58,6 @@
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */; };
-		453201251E71100C00F20761 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453201241E71100C00F20761 /* DisplayableTextFilter.swift */; };
 		45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 45387B031E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m */; };
 		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
@@ -135,8 +134,9 @@
 		45E1F3A31DEF1DF000852CF1 /* NoSignalContactsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */; };
 		45E1F3A51DEF20A100852CF1 /* NoSignalContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */; };
 		45E2E9201E153B3D00457AA0 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
+		45E615161E8C590B0018AD52 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */; };
+		45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
-		45E7A6A91E71CC2E00D44FB5 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453201241E71100C00F20761 /* DisplayableTextFilter.swift */; };
 		45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */; };
 		45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
 		45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
@@ -159,10 +159,8 @@
 		45FBC5D21DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
 		4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */; };
 		56EAA22E1901718F78C6DBB4 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */; };
-		701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
-		7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
 		70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -171,30 +169,11 @@
 		76EB058218170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
-		76EB060C18170B33006006FC /* CategorizingLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B318170B33006006FC /* CategorizingLogger.m */; };
-		76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B518170B33006006FC /* DecayingSampleEstimator.m */; };
-		76EB061018170B33006006FC /* EventWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B718170B33006006FC /* EventWindow.m */; };
-		76EB061218170B33006006FC /* LoggingUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B918170B33006006FC /* LoggingUtil.m */; };
-		76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C018170B33006006FC /* AnonymousConditionLogger.m */; };
-		76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C218170B33006006FC /* AnonymousOccurrenceLogger.m */; };
-		76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C418170B33006006FC /* AnonymousValueLogger.m */; };
-		76EB061A18170B33006006FC /* DiscardingLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C618170B33006006FC /* DiscardingLog.m */; };
-		76EB061C18170B33006006FC /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
-		76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D118170B33006006FC /* CyclicalBuffer.m */; };
-		76EB062418170B33006006FC /* PriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D318170B33006006FC /* PriorityQueue.m */; };
 		76EB062618170B33006006FC /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D518170B33006006FC /* Queue.m */; };
-		76EB063018170B33006006FC /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* Conversions.m */; };
-		76EB063218170B33006006FC /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* Crc32.m */; };
-		76EB063618170B33006006FC /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* DataUtil.m */; };
-		76EB063818170B33006006FC /* DictionaryUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* DictionaryUtil.m */; };
 		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
 		76EB063C18170B33006006FC /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04ED18170B33006006FC /* NumberUtil.m */; };
 		76EB063E18170B33006006FC /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EF18170B33006006FC /* Operation.m */; };
-		76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F418170B33006006FC /* AnonymousTerminator.m */; };
 		76EB064218170B33006006FC /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* StringUtil.m */; };
-		76EB064418170B33006006FC /* ThreadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F818170B33006006FC /* ThreadManager.m */; };
-		76EB064618170B33006006FC /* TimeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FA18170B33006006FC /* TimeUtil.m */; };
-		76EB064818170B33006006FC /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -241,26 +220,17 @@
 		B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
 		B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
 		B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */; };
-		B660F6D01C29868000687D6E /* DecayingSampleEstimatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6991C29868000687D6E /* DecayingSampleEstimatorTest.m */; };
-		B660F6D11C29868000687D6E /* EventWindowTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F69A1C29868000687D6E /* EventWindowTest.m */; };
 		B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F69C1C29868000687D6E /* PushManagerTest.m */; };
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
-		B660F6D51C29868000687D6E /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A11C29868000687D6E /* TestUtil.m */; };
-		B660F6D61C29868000687D6E /* ConversionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A41C29868000687D6E /* ConversionsTest.m */; };
-		B660F6D71C29868000687D6E /* Crc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A61C29868000687D6E /* Crc32Test.m */; };
 		B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A71C29868000687D6E /* CryptoToolsTest.m */; };
-		B660F6D91C29868000687D6E /* CyclicalBufferTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A91C29868000687D6E /* CyclicalBufferTest.m */; };
 		B660F6DA1C29868000687D6E /* ExceptionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AB1C29868000687D6E /* ExceptionsTest.m */; };
 		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
-		B660F6DC1C29868000687D6E /* FutureUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AE1C29868000687D6E /* FutureUtilTest.m */; };
 		B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AF1C29868000687D6E /* ObservableTest.m */; };
 		B660F6DF1C29868000687D6E /* QueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B21C29868000687D6E /* QueueTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
 		B660F7161C29988E00687D6E /* GroupContactsResult.m in Sources */ = {isa = PBXBuildFile; fileRef = B671B2451A93B238002BBD9D /* GroupContactsResult.m */; };
 		B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		B660F7181C29988E00687D6E /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
-		B660F7191C29988E00687D6E /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 701231B418ECAA4500D456C4 /* EvpMessageDigest.m */; };
-		B660F71A1C29988E00687D6E /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632618F70C0700D4A43F /* EvpSymetricUtil.m */; };
 		B660F71B1C29988E00687D6E /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
@@ -268,40 +238,19 @@
 		B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B660F7221C29988E00687D6E /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
 		B660F7561C29988E00687D6E /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
-		B660F7681C29988E00687D6E /* CategorizingLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B318170B33006006FC /* CategorizingLogger.m */; };
-		B660F7691C29988E00687D6E /* DecayingSampleEstimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B518170B33006006FC /* DecayingSampleEstimator.m */; };
-		B660F76A1C29988E00687D6E /* EventWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B718170B33006006FC /* EventWindow.m */; };
-		B660F76B1C29988E00687D6E /* LoggingUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04B918170B33006006FC /* LoggingUtil.m */; };
-		B660F76C1C29988E00687D6E /* AnonymousConditionLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C018170B33006006FC /* AnonymousConditionLogger.m */; };
-		B660F76D1C29988E00687D6E /* AnonymousOccurrenceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C218170B33006006FC /* AnonymousOccurrenceLogger.m */; };
-		B660F76E1C29988E00687D6E /* AnonymousValueLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C418170B33006006FC /* AnonymousValueLogger.m */; };
-		B660F76F1C29988E00687D6E /* DiscardingLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04C618170B33006006FC /* DiscardingLog.m */; };
 		B660F7701C29988E00687D6E /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B71C0B1EBD009C3DCD /* FLAnimatedImage.m */; };
 		B660F7711C29988E00687D6E /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */; };
 		B660F7721C29988E00687D6E /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B660F7751C29988E00687D6E /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
 		B660F7761C29988E00687D6E /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */; };
 		B660F7771C29988E00687D6E /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
-		B660F7781C29988E00687D6E /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04CA18170B33006006FC /* ArrayUtil.m */; };
-		B660F7791C29988E00687D6E /* CyclicalBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D118170B33006006FC /* CyclicalBuffer.m */; };
-		B660F77A1C29988E00687D6E /* PriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D318170B33006006FC /* PriorityQueue.m */; };
 		B660F77B1C29988E00687D6E /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D518170B33006006FC /* Queue.m */; };
-		B660F77C1C29988E00687D6E /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E118170B33006006FC /* Conversions.m */; };
-		B660F77D1C29988E00687D6E /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E318170B33006006FC /* Crc32.m */; };
-		B660F77E1C29988E00687D6E /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E718170B33006006FC /* DataUtil.m */; };
 		B660F77F1C29988E00687D6E /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
-		B660F7801C29988E00687D6E /* DictionaryUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04E918170B33006006FC /* DictionaryUtil.m */; };
 		B660F7811C29988E00687D6E /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
-		B660F7821C29988E00687D6E /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
 		B660F7831C29988E00687D6E /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04ED18170B33006006FC /* NumberUtil.m */; };
 		B660F7841C29988E00687D6E /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C619A5611000F2947C /* ObservableValue.m */; };
-		B660F7851C29988E00687D6E /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EF18170B33006006FC /* Operation.m */; };
-		B660F7861C29988E00687D6E /* AnonymousTerminator.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F418170B33006006FC /* AnonymousTerminator.m */; };
 		B660F7871C29988E00687D6E /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* StringUtil.m */; };
-		B660F7881C29988E00687D6E /* ThreadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F818170B33006006FC /* ThreadManager.m */; };
-		B660F7891C29988E00687D6E /* TimeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FA18170B33006006FC /* TimeUtil.m */; };
 		B660F78A1C29988E00687D6E /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
-		B660F78B1C29988E00687D6E /* Zid.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04FD18170B33006006FC /* Zid.m */; };
 		B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
 		B66B9F721AEA6D1100E2E609 /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F711AEA6D1100E2E609 /* NotificationSettingsViewController.m */; };
 		B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B9F7C1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m */; };
@@ -326,7 +275,6 @@
 		B97940271832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B97CBFA818860EA3008E0DE9 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		BFB074C719A5611000F2947C /* FutureUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C419A5611000F2947C /* FutureUtil.m */; };
 		BFB074C919A5611000F2947C /* ObservableValue.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB074C619A5611000F2947C /* ObservableValue.m */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -448,7 +396,6 @@
 		452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageFetcherJob.swift; path = Jobs/MessageFetcherJob.swift; sourceTree = "<group>"; };
 		4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMessagesCollectionViewCell+OWS.h"; sourceTree = "<group>"; };
 		4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMessagesCollectionViewCell+OWS.m"; sourceTree = "<group>"; };
-		453201241E71100C00F20761 /* DisplayableTextFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilter.swift; sourceTree = "<group>"; };
 		45387B021E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS102MoveLoggingPreferenceToUserDefaults.h; path = Migrations/OWS102MoveLoggingPreferenceToUserDefaults.h; sourceTree = "<group>"; };
 		45387B031E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS102MoveLoggingPreferenceToUserDefaults.m; path = Migrations/OWS102MoveLoggingPreferenceToUserDefaults.m; sourceTree = "<group>"; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -532,6 +479,7 @@
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSCallNotificationsAdaptee.h; path = UserInterface/OWSCallNotificationsAdaptee.h; sourceTree = "<group>"; };
 		45E2E91F1E153B3D00457AA0 /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = UserInterface/Strings.swift; sourceTree = "<group>"; };
+		45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilter.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45EB32CD1D7465C900735B2E /* OWSLinkedDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkedDevicesTableViewController.h; sourceTree = "<group>"; };
 		45EB32CE1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkedDevicesTableViewController.m; sourceTree = "<group>"; };
@@ -552,15 +500,10 @@
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
 		4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAnimatedAdapter.h; sourceTree = "<group>"; };
 		4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAnimatedAdapter.m; sourceTree = "<group>"; };
-		701231B318ECAA4500D456C4 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
-		701231B418ECAA4500D456C4 /* EvpMessageDigest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpMessageDigest.m; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
-		7038632518F70C0700D4A43F /* EvpSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpSymetricUtil.h; sourceTree = "<group>"; };
-		7038632618F70C0700D4A43F /* EvpSymetricUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EvpSymetricUtil.m; sourceTree = "<group>"; };
 		70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "171756__nenadsimic__picked-coin-echo-2.wav"; sourceTree = "<group>"; };
-		70E803ED18F6DD1400BF77BC /* EvpUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpUtil.h; sourceTree = "<group>"; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -573,60 +516,17 @@
 		76EB041918170B33006006FC /* PropertyListPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyListPreferences.m; sourceTree = "<group>"; };
 		76EB041A18170B33006006FC /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
 		76EB041B18170B33006006FC /* Release.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Release.m; sourceTree = "<group>"; };
-		76EB04B218170B33006006FC /* CategorizingLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategorizingLogger.h; sourceTree = "<group>"; };
-		76EB04B318170B33006006FC /* CategorizingLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategorizingLogger.m; sourceTree = "<group>"; };
-		76EB04B418170B33006006FC /* DecayingSampleEstimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecayingSampleEstimator.h; sourceTree = "<group>"; };
-		76EB04B518170B33006006FC /* DecayingSampleEstimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecayingSampleEstimator.m; sourceTree = "<group>"; };
-		76EB04B618170B33006006FC /* EventWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventWindow.h; sourceTree = "<group>"; };
-		76EB04B718170B33006006FC /* EventWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindow.m; sourceTree = "<group>"; };
-		76EB04B818170B33006006FC /* LoggingUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggingUtil.h; sourceTree = "<group>"; };
-		76EB04B918170B33006006FC /* LoggingUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggingUtil.m; sourceTree = "<group>"; };
-		76EB04BB18170B33006006FC /* ConditionLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConditionLogger.h; sourceTree = "<group>"; };
-		76EB04BC18170B33006006FC /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
-		76EB04BD18170B33006006FC /* OccurrenceLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OccurrenceLogger.h; sourceTree = "<group>"; };
-		76EB04BF18170B33006006FC /* AnonymousConditionLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnonymousConditionLogger.h; sourceTree = "<group>"; };
-		76EB04C018170B33006006FC /* AnonymousConditionLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnonymousConditionLogger.m; sourceTree = "<group>"; };
-		76EB04C118170B33006006FC /* AnonymousOccurrenceLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnonymousOccurrenceLogger.h; sourceTree = "<group>"; };
-		76EB04C218170B33006006FC /* AnonymousOccurrenceLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnonymousOccurrenceLogger.m; sourceTree = "<group>"; };
-		76EB04C318170B33006006FC /* AnonymousValueLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnonymousValueLogger.h; sourceTree = "<group>"; };
-		76EB04C418170B33006006FC /* AnonymousValueLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnonymousValueLogger.m; sourceTree = "<group>"; };
-		76EB04C518170B33006006FC /* DiscardingLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardingLog.h; sourceTree = "<group>"; };
-		76EB04C618170B33006006FC /* DiscardingLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardingLog.m; sourceTree = "<group>"; };
-		76EB04C718170B33006006FC /* ValueLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ValueLogger.h; sourceTree = "<group>"; };
-		76EB04C918170B33006006FC /* ArrayUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayUtil.h; sourceTree = "<group>"; };
-		76EB04CA18170B33006006FC /* ArrayUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayUtil.m; sourceTree = "<group>"; };
-		76EB04D018170B33006006FC /* CyclicalBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CyclicalBuffer.h; sourceTree = "<group>"; };
-		76EB04D118170B33006006FC /* CyclicalBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CyclicalBuffer.m; sourceTree = "<group>"; };
-		76EB04D218170B33006006FC /* PriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
-		76EB04D318170B33006006FC /* PriorityQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriorityQueue.m; sourceTree = "<group>"; };
 		76EB04D418170B33006006FC /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Queue.h; sourceTree = "<group>"; };
 		76EB04D518170B33006006FC /* Queue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Queue.m; sourceTree = "<group>"; };
-		76EB04E018170B33006006FC /* Conversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversions.h; sourceTree = "<group>"; };
-		76EB04E118170B33006006FC /* Conversions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversions.m; sourceTree = "<group>"; };
-		76EB04E218170B33006006FC /* Crc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32.h; sourceTree = "<group>"; };
-		76EB04E318170B33006006FC /* Crc32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Crc32.m; sourceTree = "<group>"; };
-		76EB04E618170B33006006FC /* DataUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtil.h; sourceTree = "<group>"; };
-		76EB04E718170B33006006FC /* DataUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUtil.m; sourceTree = "<group>"; };
-		76EB04E818170B33006006FC /* DictionaryUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DictionaryUtil.h; sourceTree = "<group>"; };
-		76EB04E918170B33006006FC /* DictionaryUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DictionaryUtil.m; sourceTree = "<group>"; };
 		76EB04EA18170B33006006FC /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
 		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		76EB04EC18170B33006006FC /* NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberUtil.h; sourceTree = "<group>"; };
 		76EB04ED18170B33006006FC /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
 		76EB04EE18170B33006006FC /* Operation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Operation.h; sourceTree = "<group>"; };
 		76EB04EF18170B33006006FC /* Operation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Operation.m; sourceTree = "<group>"; };
-		76EB04F118170B33006006FC /* Terminable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terminable.h; sourceTree = "<group>"; };
-		76EB04F318170B33006006FC /* AnonymousTerminator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnonymousTerminator.h; sourceTree = "<group>"; };
-		76EB04F418170B33006006FC /* AnonymousTerminator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnonymousTerminator.m; sourceTree = "<group>"; };
 		76EB04F518170B33006006FC /* StringUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtil.h; sourceTree = "<group>"; };
 		76EB04F618170B33006006FC /* StringUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtil.m; sourceTree = "<group>"; };
-		76EB04F718170B33006006FC /* ThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadManager.h; sourceTree = "<group>"; };
-		76EB04F818170B33006006FC /* ThreadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadManager.m; sourceTree = "<group>"; };
-		76EB04F918170B33006006FC /* TimeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeUtil.h; sourceTree = "<group>"; };
-		76EB04FA18170B33006006FC /* TimeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeUtil.m; sourceTree = "<group>"; };
 		76EB04FB18170B33006006FC /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
-		76EB04FC18170B33006006FC /* Zid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zid.h; sourceTree = "<group>"; };
-		76EB04FD18170B33006006FC /* Zid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zid.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Signal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -688,25 +588,15 @@
 		B646D1151AA5467E004133BA /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = translations/it_IT.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManagerTest.m; sourceTree = "<group>"; };
-		B660F6991C29868000687D6E /* DecayingSampleEstimatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecayingSampleEstimatorTest.m; sourceTree = "<group>"; };
-		B660F69A1C29868000687D6E /* EventWindowTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindowTest.m; sourceTree = "<group>"; };
 		B660F69C1C29868000687D6E /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManagerTest.m; sourceTree = "<group>"; };
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B660F6A01C29868000687D6E /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
-		B660F6A11C29868000687D6E /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
-		B660F6A31C29868000687D6E /* ConversionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversionsTest.h; sourceTree = "<group>"; };
-		B660F6A41C29868000687D6E /* ConversionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversionsTest.m; sourceTree = "<group>"; };
-		B660F6A51C29868000687D6E /* Crc32Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc32Test.h; sourceTree = "<group>"; };
-		B660F6A61C29868000687D6E /* Crc32Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Crc32Test.m; sourceTree = "<group>"; };
 		B660F6A71C29868000687D6E /* CryptoToolsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoToolsTest.m; sourceTree = "<group>"; };
-		B660F6A81C29868000687D6E /* CyclicalBufferTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CyclicalBufferTest.h; sourceTree = "<group>"; };
-		B660F6A91C29868000687D6E /* CyclicalBufferTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CyclicalBufferTest.m; sourceTree = "<group>"; };
 		B660F6AA1C29868000687D6E /* ExceptionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionsTest.h; sourceTree = "<group>"; };
 		B660F6AB1C29868000687D6E /* ExceptionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionsTest.m; sourceTree = "<group>"; };
 		B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtilTest.h; sourceTree = "<group>"; };
 		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
-		B660F6AE1C29868000687D6E /* FutureUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtilTest.m; sourceTree = "<group>"; };
 		B660F6AF1C29868000687D6E /* ObservableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableTest.m; sourceTree = "<group>"; };
 		B660F6B11C29868000687D6E /* QueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueueTest.h; sourceTree = "<group>"; };
 		B660F6B21C29868000687D6E /* QueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QueueTest.m; sourceTree = "<group>"; };
@@ -773,8 +663,6 @@
 		B97CBFA518860EA3008E0DE9 /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
 		B97CBFA618860EA3008E0DE9 /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		BFB074C319A5611000F2947C /* FutureUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FutureUtil.h; sourceTree = "<group>"; };
-		BFB074C419A5611000F2947C /* FutureUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FutureUtil.m; sourceTree = "<group>"; };
 		BFB074C519A5611000F2947C /* ObservableValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObservableValue.h; sourceTree = "<group>"; };
 		BFB074C619A5611000F2947C /* ObservableValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObservableValue.m; sourceTree = "<group>"; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -1091,11 +979,6 @@
 			children = (
 				7038632318F70C0700D4A43F /* CryptoTools.h */,
 				7038632418F70C0700D4A43F /* CryptoTools.m */,
-				701231B318ECAA4500D456C4 /* EvpMessageDigest.h */,
-				701231B418ECAA4500D456C4 /* EvpMessageDigest.m */,
-				7038632518F70C0700D4A43F /* EvpSymetricUtil.h */,
-				7038632618F70C0700D4A43F /* EvpSymetricUtil.m */,
-				70E803ED18F6DD1400BF77BC /* EvpUtil.h */,
 			);
 			path = crypto;
 			sourceTree = "<group>";
@@ -1111,7 +994,6 @@
 				70DBA29918CFE98500771DAD /* crypto */,
 				76EB041118170B33006006FC /* environment */,
 				76EB041D18170B33006006FC /* network */,
-				76EB04B118170B33006006FC /* profiling */,
 				B60959791C2C0FA9004E8797 /* rating */,
 				76EB04C818170B33006006FC /* util */,
 				45D231751DC7E8C50034FA89 /* Jobs */,
@@ -1192,73 +1074,18 @@
 			path = "../phone/signaling/number directory";
 			sourceTree = "<group>";
 		};
-		76EB04B118170B33006006FC /* profiling */ = {
-			isa = PBXGroup;
-			children = (
-				76EB04B218170B33006006FC /* CategorizingLogger.h */,
-				76EB04B318170B33006006FC /* CategorizingLogger.m */,
-				76EB04B418170B33006006FC /* DecayingSampleEstimator.h */,
-				76EB04B518170B33006006FC /* DecayingSampleEstimator.m */,
-				76EB04B618170B33006006FC /* EventWindow.h */,
-				76EB04B718170B33006006FC /* EventWindow.m */,
-				76EB04B818170B33006006FC /* LoggingUtil.h */,
-				76EB04B918170B33006006FC /* LoggingUtil.m */,
-				76EB04BA18170B33006006FC /* protocols */,
-			);
-			path = profiling;
-			sourceTree = "<group>";
-		};
-		76EB04BA18170B33006006FC /* protocols */ = {
-			isa = PBXGroup;
-			children = (
-				76EB04BB18170B33006006FC /* ConditionLogger.h */,
-				76EB04BC18170B33006006FC /* Logging.h */,
-				76EB04BD18170B33006006FC /* OccurrenceLogger.h */,
-				76EB04BE18170B33006006FC /* utilities */,
-				76EB04C718170B33006006FC /* ValueLogger.h */,
-			);
-			path = protocols;
-			sourceTree = "<group>";
-		};
-		76EB04BE18170B33006006FC /* utilities */ = {
-			isa = PBXGroup;
-			children = (
-				76EB04BF18170B33006006FC /* AnonymousConditionLogger.h */,
-				76EB04C018170B33006006FC /* AnonymousConditionLogger.m */,
-				76EB04C118170B33006006FC /* AnonymousOccurrenceLogger.h */,
-				76EB04C218170B33006006FC /* AnonymousOccurrenceLogger.m */,
-				76EB04C318170B33006006FC /* AnonymousValueLogger.h */,
-				76EB04C418170B33006006FC /* AnonymousValueLogger.m */,
-				76EB04C518170B33006006FC /* DiscardingLog.h */,
-				76EB04C618170B33006006FC /* DiscardingLog.m */,
-			);
-			path = utilities;
-			sourceTree = "<group>";
-		};
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
 				B68EF9B51C0B1E7D009C3DCD /* Animated GIFS */,
 				B6DA6B051B8A2F9A00CA6F98 /* AppStoreRating.h */,
 				B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */,
-				76EB04C918170B33006006FC /* ArrayUtil.h */,
-				76EB04CA18170B33006006FC /* ArrayUtil.m */,
 				76EB04CF18170B33006006FC /* collections */,
-				76EB04E018170B33006006FC /* Conversions.h */,
-				76EB04E118170B33006006FC /* Conversions.m */,
-				76EB04E218170B33006006FC /* Crc32.h */,
-				76EB04E318170B33006006FC /* Crc32.m */,
-				76EB04E618170B33006006FC /* DataUtil.h */,
-				76EB04E718170B33006006FC /* DataUtil.m */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
-				76EB04E818170B33006006FC /* DictionaryUtil.h */,
-				76EB04E918170B33006006FC /* DictionaryUtil.m */,
-				453201241E71100C00F20761 /* DisplayableTextFilter.swift */,
+				45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
-				BFB074C319A5611000F2947C /* FutureUtil.h */,
-				BFB074C419A5611000F2947C /* FutureUtil.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
@@ -1274,15 +1101,10 @@
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
-				76EB04F018170B33006006FC /* protocols */,
 				76EB04F518170B33006006FC /* StringUtil.h */,
 				76EB04F618170B33006006FC /* StringUtil.m */,
-				76EB04F718170B33006006FC /* ThreadManager.h */,
-				76EB04F818170B33006006FC /* ThreadManager.m */,
 				345670FF1E89A5F1006EE662 /* ThreadUtil.h */,
 				345671001E89A5F1006EE662 /* ThreadUtil.m */,
-				76EB04F918170B33006006FC /* TimeUtil.h */,
-				76EB04FA18170B33006006FC /* TimeUtil.m */,
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
 				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
 				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
@@ -1291,8 +1113,6 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
-				76EB04FC18170B33006006FC /* Zid.h */,
-				76EB04FD18170B33006006FC /* Zid.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1300,32 +1120,10 @@
 		76EB04CF18170B33006006FC /* collections */ = {
 			isa = PBXGroup;
 			children = (
-				76EB04D018170B33006006FC /* CyclicalBuffer.h */,
-				76EB04D118170B33006006FC /* CyclicalBuffer.m */,
-				76EB04D218170B33006006FC /* PriorityQueue.h */,
-				76EB04D318170B33006006FC /* PriorityQueue.m */,
 				76EB04D418170B33006006FC /* Queue.h */,
 				76EB04D518170B33006006FC /* Queue.m */,
 			);
 			path = collections;
-			sourceTree = "<group>";
-		};
-		76EB04F018170B33006006FC /* protocols */ = {
-			isa = PBXGroup;
-			children = (
-				76EB04F118170B33006006FC /* Terminable.h */,
-				76EB04F218170B33006006FC /* utilities */,
-			);
-			path = protocols;
-			sourceTree = "<group>";
-		};
-		76EB04F218170B33006006FC /* utilities */ = {
-			isa = PBXGroup;
-			children = (
-				76EB04F318170B33006006FC /* AnonymousTerminator.h */,
-				76EB04F418170B33006006FC /* AnonymousTerminator.m */,
-			);
-			path = utilities;
 			sourceTree = "<group>";
 		};
 		76EB04FE18170B33006006FC /* View Controllers */ = {
@@ -1486,11 +1284,9 @@
 				459C3F0E1C9B3A20003ACF51 /* TSMessageAdapters */,
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
-				B660F6981C29868000687D6E /* profiling */,
 				B660F69B1C29868000687D6E /* push */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
 				B660F6A01C29868000687D6E /* TestUtil.h */,
-				B660F6A11C29868000687D6E /* TestUtil.m */,
 				B660F6A21C29868000687D6E /* util */,
 			);
 			path = test;
@@ -1515,15 +1311,6 @@
 			path = contact;
 			sourceTree = "<group>";
 		};
-		B660F6981C29868000687D6E /* profiling */ = {
-			isa = PBXGroup;
-			children = (
-				B660F6991C29868000687D6E /* DecayingSampleEstimatorTest.m */,
-				B660F69A1C29868000687D6E /* EventWindowTest.m */,
-			);
-			path = profiling;
-			sourceTree = "<group>";
-		};
 		B660F69B1C29868000687D6E /* push */ = {
 			isa = PBXGroup;
 			children = (
@@ -1545,18 +1332,11 @@
 			isa = PBXGroup;
 			children = (
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
-				B660F6A31C29868000687D6E /* ConversionsTest.h */,
-				B660F6A41C29868000687D6E /* ConversionsTest.m */,
-				B660F6A51C29868000687D6E /* Crc32Test.h */,
-				B660F6A61C29868000687D6E /* Crc32Test.m */,
 				B660F6A71C29868000687D6E /* CryptoToolsTest.m */,
-				B660F6A81C29868000687D6E /* CyclicalBufferTest.h */,
-				B660F6A91C29868000687D6E /* CyclicalBufferTest.m */,
 				B660F6AA1C29868000687D6E /* ExceptionsTest.h */,
 				B660F6AB1C29868000687D6E /* ExceptionsTest.m */,
 				B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
-				B660F6AE1C29868000687D6E /* FutureUtilTest.m */,
 				B660F6AF1C29868000687D6E /* ObservableTest.m */,
 				B660F6B11C29868000687D6E /* QueueTest.h */,
 				B660F6B21C29868000687D6E /* QueueTest.m */,
@@ -2155,19 +1935,15 @@
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				A5509ECD1A69B1D600ABA4BC /* CountryCodeTableViewCell.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
-				76EB061218170B33006006FC /* LoggingUtil.m in Sources */,
-				76EB060E18170B33006006FC /* DecayingSampleEstimator.m in Sources */,
 				340757C21E5602D6001F15DD /* AttachmentSharing.m in Sources */,
 				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
 				458E38311D6682450094BD24 /* OWSQRCodeScanningViewController.m in Sources */,
 				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
-				76EB062418170B33006006FC /* PriorityQueue.m in Sources */,
 				3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
 				B6BADBE71B88D1AC0086A80D /* LockInteractionController.m in Sources */,
-				76EB061A18170B33006006FC /* DiscardingLog.m in Sources */,
 				45CD81F21DC03A22004C9430 /* OWSLogger.m in Sources */,
 				FCB11D931A12A4AA002F93FB /* FullImageViewController.m in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
@@ -2180,7 +1956,6 @@
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				348A08511E6C73490057E290 /* AttachmentApprovalViewController.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
-				453201251E71100C00F20761 /* DisplayableTextFilter.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
@@ -2191,17 +1966,13 @@
 				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				FCD274EB1A5AFDDB00202277 /* AboutTableViewController.m in Sources */,
 				FCFD257F1A154B2C00F4C644 /* RegistrationViewController.m in Sources */,
-				701231B518ECAA4500D456C4 /* EvpMessageDigest.m in Sources */,
-				76EB062218170B33006006FC /* CyclicalBuffer.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
 				B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */,
 				4509E79C1DD6545B0025A59F /* CallViewController.swift in Sources */,
 				34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
-				76EB060C18170B33006006FC /* CategorizingLogger.m in Sources */,
 				76EB058A18170B33006006FC /* Release.m in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
-				76EB061018170B33006006FC /* EventWindow.m in Sources */,
 				450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
 				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
@@ -2211,17 +1982,14 @@
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */,
 				45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
-				76EB061618170B33006006FC /* AnonymousOccurrenceLogger.m in Sources */,
 				450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
 				B6258B331C29E2E60014138E /* NotificationsManager.m in Sources */,
 				45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */,
-				76EB063018170B33006006FC /* Conversions.m in Sources */,
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
 				345671231E8B1618006EE662 /* OversizeTextMessageViewController.swift in Sources */,
 				B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
-				76EB064418170B33006006FC /* ThreadManager.m in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
@@ -2230,10 +1998,9 @@
 				A5D0699B1A50E9CB004CB540 /* ShowGroupMembersViewController.m in Sources */,
 				45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
 				FC31962D1A06A2190094C78E /* FingerprintViewController.m in Sources */,
-				76EB061418170B33006006FC /* AnonymousConditionLogger.m in Sources */,
 				FC3196301A0814130094C78E /* SettingsTableViewController.m in Sources */,
 				45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */,
-				7038632818F70C0700D4A43F /* EvpSymetricUtil.m in Sources */,
+				45E615161E8C590B0018AD52 /* DisplayableTextFilter.swift in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				FCAC965119FF0A6E0046DFC5 /* MessagesViewController.m in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
@@ -2250,17 +2017,13 @@
 				451764271DE939F300EDB8B9 /* ContactsPicker.swift in Sources */,
 				450573FE1E78A06D00615BB4 /* OWS103EnableVideoCalling.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
-				76EB063218170B33006006FC /* Crc32.m in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				458E38341D66873D0094BD24 /* OWSLinkDeviceViewController.m in Sources */,
-				76EB063618170B33006006FC /* DataUtil.m in Sources */,
 				45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+frontmostViewController.swift in Sources */,
 				452E3C8E1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */,
 				34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */,
-				76EB061818170B33006006FC /* AnonymousValueLogger.m in Sources */,
 				FC31962A1A067D8F0094C78E /* MessageComposeTableViewController.m in Sources */,
-				76EB061C18170B33006006FC /* ArrayUtil.m in Sources */,
 				FCD274E81A5AFDC900202277 /* AdvancedSettingsTableViewController.m in Sources */,
 				45F3AEB61DFDE7900080CE33 /* AvatarImageView.swift in Sources */,
 				7038632718F70C0700D4A43F /* CryptoTools.m in Sources */,
@@ -2271,10 +2034,8 @@
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
 				FCFD25821A154B3800F4C644 /* CodeVerificationViewController.m in Sources */,
 				453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */,
-				76EB064618170B33006006FC /* TimeUtil.m in Sources */,
 				45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				FC4FA0261A1B9DC600DA100A /* SignalsNavigationController.m in Sources */,
-				76EB063818170B33006006FC /* DictionaryUtil.m in Sources */,
 				45EB32CF1D7465C900735B2E /* OWSLinkedDevicesTableViewController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
@@ -2291,7 +2052,6 @@
 				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
-				BFB074C719A5611000F2947C /* FutureUtil.m in Sources */,
 				45E1F3A51DEF20A100852CF1 /* NoSignalContactsView.swift in Sources */,
 				FCD274E21A5AFD8000202277 /* PrivacySettingsTableViewController.m in Sources */,
 				45F170D61E315310003FC1F2 /* Weak.swift in Sources */,
@@ -2302,13 +2062,11 @@
 				45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				45C681BC1D305C080050903A /* OWSCallCollectionViewCell.m in Sources */,
-				76EB064018170B33006006FC /* AnonymousTerminator.m in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				34330A611E788EA900DF2FB9 /* AttachmentUploadView.m in Sources */,
 				45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */,
-				76EB064818170B33006006FC /* Zid.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
 				34802DD71E899CFB0032EA1D /* DebugUITableViewController.m in Sources */,
 			);
@@ -2332,8 +2090,6 @@
 				B660F7161C29988E00687D6E /* GroupContactsResult.m in Sources */,
 				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
-				B660F7191C29988E00687D6E /* EvpMessageDigest.m in Sources */,
-				B660F71A1C29988E00687D6E /* EvpSymetricUtil.m in Sources */,
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
 				B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */,
 				B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */,
@@ -2349,7 +2105,6 @@
 				452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */,
 				45BFFFA91D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */,
 				45C681C71D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
-				45E7A6A91E71CC2E00D44FB5 /* DisplayableTextFilter.swift in Sources */,
 				451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */,
 				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
@@ -2364,16 +2119,8 @@
 				451A13B21E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
 				45C681B81D305A580050903A /* OWSCall.m in Sources */,
 				45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
-				B660F7681C29988E00687D6E /* CategorizingLogger.m in Sources */,
-				B660F7691C29988E00687D6E /* DecayingSampleEstimator.m in Sources */,
-				B660F76A1C29988E00687D6E /* EventWindow.m in Sources */,
-				B660F76B1C29988E00687D6E /* LoggingUtil.m in Sources */,
-				B660F76C1C29988E00687D6E /* AnonymousConditionLogger.m in Sources */,
 				45DF5DF31DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				456AC8341E3A775E00A3C7FC /* Weak.swift in Sources */,
-				B660F76D1C29988E00687D6E /* AnonymousOccurrenceLogger.m in Sources */,
-				B660F76E1C29988E00687D6E /* AnonymousValueLogger.m in Sources */,
-				B660F76F1C29988E00687D6E /* DiscardingLog.m in Sources */,
 				B660F7701C29988E00687D6E /* FLAnimatedImage.m in Sources */,
 				B660F7711C29988E00687D6E /* FLAnimatedImageView.m in Sources */,
 				B660F7721C29988E00687D6E /* AppStoreRating.m in Sources */,
@@ -2381,53 +2128,34 @@
 				B660F7761C29988E00687D6E /* UIFont+OWS.m in Sources */,
 				B660F7771C29988E00687D6E /* UIImage+normalizeImage.m in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
-				B660F7781C29988E00687D6E /* ArrayUtil.m in Sources */,
-				B660F7791C29988E00687D6E /* CyclicalBuffer.m in Sources */,
-				B660F77A1C29988E00687D6E /* PriorityQueue.m in Sources */,
 				B660F77B1C29988E00687D6E /* Queue.m in Sources */,
-				B660F77C1C29988E00687D6E /* Conversions.m in Sources */,
-				B660F77D1C29988E00687D6E /* Crc32.m in Sources */,
-				B660F77E1C29988E00687D6E /* DataUtil.m in Sources */,
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F77F1C29988E00687D6E /* DateUtil.m in Sources */,
-				B660F7801C29988E00687D6E /* DictionaryUtil.m in Sources */,
 				B660F7811C29988E00687D6E /* FunctionalUtil.m in Sources */,
-				B660F7821C29988E00687D6E /* FutureUtil.m in Sources */,
 				B660F7831C29988E00687D6E /* NumberUtil.m in Sources */,
 				B660F7841C29988E00687D6E /* ObservableValue.m in Sources */,
-				B660F7851C29988E00687D6E /* Operation.m in Sources */,
-				B660F7861C29988E00687D6E /* AnonymousTerminator.m in Sources */,
 				B660F7871C29988E00687D6E /* StringUtil.m in Sources */,
 				45FBC5C91DF8575700E9B410 /* CallKitCallManager.swift in Sources */,
-				B660F7881C29988E00687D6E /* ThreadManager.m in Sources */,
-				B660F7891C29988E00687D6E /* TimeUtil.m in Sources */,
 				B660F78A1C29988E00687D6E /* UIUtil.m in Sources */,
-				B660F78B1C29988E00687D6E /* Zid.m in Sources */,
 				B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */,
 				456F6E211E2411B400FD2210 /* CallUIAdapter.swift in Sources */,
 				B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */,
 				456F6E221E24132D00FD2210 /* PeerConnectionClient.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
-				B660F6D61C29868000687D6E /* ConversionsTest.m in Sources */,
 				45F3AEB71DFDE7900080CE33 /* AvatarImageView.swift in Sources */,
 				B660F6DA1C29868000687D6E /* ExceptionsTest.m in Sources */,
 				45C9DEB91DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				452E3C8F1D935C77002A45B0 /* OWSConversationSettingsTableViewController.m in Sources */,
-				B660F6D71C29868000687D6E /* Crc32Test.m in Sources */,
-				B660F6D01C29868000687D6E /* DecayingSampleEstimatorTest.m in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
-				B660F6D11C29868000687D6E /* EventWindowTest.m in Sources */,
-				B660F6D51C29868000687D6E /* TestUtil.m in Sources */,
 				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
+				45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
 				45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				4505C2C01E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
-				B660F6D91C29868000687D6E /* CyclicalBufferTest.m in Sources */,
-				B660F6DC1C29868000687D6E /* FutureUtilTest.m in Sources */,
 				450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
 				4505C2C61E64977D00CEBF41 /* ExperienceUpgradesPageViewController.swift in Sources */,
 			);

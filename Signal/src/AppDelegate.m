@@ -4,9 +4,7 @@
 
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
-#import "CategorizingLogger.h"
 #import "CodeVerificationViewController.h"
-#import "DataUtil.h"
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
@@ -102,13 +100,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
-    // Initializing env logger
-    CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
-    [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
-    }];
-
     // Setting up environment
-    [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
+    [Environment setCurrent:[Release releaseEnvironment]];
 
     [UIUtil applySignalAppearence];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
@@ -233,7 +226,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogError(@"%@ Failed to register for remote notifications with error %@", self.tag, error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[NSData dataWithLength:32]];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
 #else
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 #endif
