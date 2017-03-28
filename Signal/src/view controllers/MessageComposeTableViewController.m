@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
 
 @property (nonatomic) BOOL isNoContactsViewVisible;
+@property (nonatomic) UIBarButtonItem *createGroupBarButtonItem;
 
 @end
 
@@ -114,7 +115,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    
+
+    self.createGroupBarButtonItem = self.navigationItem.rightBarButtonItem;
     self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
 
@@ -225,7 +227,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)hideBackgroundView {
     [[Environment preferences] setHasDeclinedNoContactsView:YES];
     
-//    [self showEmptyBackgroundView:NO];
     [self showEmptyBackgroundViewIfNecessary];
 }
 
@@ -266,13 +267,15 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
+        self.navigationItem.rightBarButtonItem = nil;
     } else {
         [self initializeRefreshControl];
         self.refreshControl.enabled = YES;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
+        self.navigationItem.rightBarButtonItem = self.createGroupBarButtonItem;
     }
-    
+
     [self.tableView reloadData];
 }
 
