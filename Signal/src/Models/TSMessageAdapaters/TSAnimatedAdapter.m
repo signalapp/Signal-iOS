@@ -94,20 +94,6 @@
     return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
 }
 
-- (BOOL)isImage {
-    return YES;
-}
-
-
-- (BOOL)isAudio {
-    return NO;
-}
-
-
-- (BOOL)isVideo {
-    return NO;
-}
-
 #pragma mark - OWSMessageEditing Protocol
 
 - (BOOL)canPerformEditingAction:(SEL)action

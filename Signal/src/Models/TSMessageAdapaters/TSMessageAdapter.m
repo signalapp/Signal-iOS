@@ -4,19 +4,20 @@
 
 #import "AttachmentSharing.h"
 #import "OWSCall.h"
+#import "Signal-Swift.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
+#import "TSGenericAttachmentAdapter.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
-#import "Signal-Swift.h"
+#import "TSOversizeTextAttachmentAdapter.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-
 
 @interface TSMessageAdapter ()
 
@@ -131,7 +132,25 @@
 
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
-                    if ([stream isAnimated]) {
+                    if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+                        NSData *textData = [NSData dataWithContentsOfURL:stream.mediaURL];
+                        NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                        // TODO: Tune this value.
+                        const NSUInteger kMaxTextDisplayLength = 256;
+                        NSString *displayText = fullText;
+                        if (fullText.length > kMaxTextDisplayLength) {
+                            // Trim whitespace before _AND_ after slicing the snipper from the string.
+                            NSString *snippet =
+                                [[[fullText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                                    substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
+                                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                            displayText =
+                                [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
+                                                               @"A display format for oversize text messages."),
+                                          snippet];
+                        }
+                        adapter.messageBody = displayText;
+                    } else if ([stream isAnimated]) {
                         adapter.mediaItem =
                             [[TSAnimatedAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
@@ -143,12 +162,18 @@
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
                             [interaction isKindOfClass:[TSOutgoingMessage class]];
                         break;
-                    } else {
+                    } else if ([stream isVideo]) {
                         adapter.mediaItem = [[TSVideoAttachmentAdapter alloc]
                             initWithAttachment:stream
                                       incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
                             [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        break;
+                    } else {
+                        adapter.mediaItem = [[TSGenericAttachmentAdapter alloc]
+                            initWithAttachment:stream
+                                      incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = YES;
                         break;
                     }
                 } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {

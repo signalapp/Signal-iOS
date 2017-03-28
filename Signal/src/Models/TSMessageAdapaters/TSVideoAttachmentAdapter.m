@@ -46,10 +46,6 @@
     return self;
 }
 
-- (BOOL)isImage {
-    return NO;
-}
-
 - (BOOL)isAudio {
     return [MIMETypeUtil isSupportedAudioMIMEType:_contentType];
 }

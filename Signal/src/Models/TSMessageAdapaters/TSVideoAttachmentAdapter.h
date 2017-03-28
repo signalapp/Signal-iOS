@@ -15,7 +15,6 @@
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
-- (BOOL)isImage;
 - (BOOL)isAudio;
 - (BOOL)isVideo;
 - (void)setAudioProgressFromFloat:(float)progress;

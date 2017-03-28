@@ -11,10 +11,6 @@
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
-- (BOOL)isImage;
-- (BOOL)isAudio;
-- (BOOL)isVideo;
-
 @property TSAttachmentStream *attachment;
 @property NSString *attachmentId;
 
