@@ -19,6 +19,7 @@
 @property TSMessageAdapter *messageAdapter;
 @property TSOutgoingMessage *message;
 @property (readonly) NSData *fakeAudioData;
+@property (readonly) NSData *fakeImageData;
 
 @end
 
@@ -34,6 +35,12 @@
 {
     NSString *fakeVideoString = @"RmFrZSBWaWRlbyBEYXRh";
     return [[NSData alloc] initWithBase64EncodedString:fakeVideoString options:0];
+}
+
+- (NSData *)fakeImageData
+{
+    NSString *fakeString = @"RmFrZUltYWdlRGF0YQ==";
+    return [[NSData alloc] initWithBase64EncodedString:fakeString options:0];
 }
 
 - (void)setUp
@@ -181,10 +188,11 @@
     [self.message.attachmentIds addObject:audioAttachment.uniqueId];
     [self.message save];
 
-    self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
-
     // Sanity Check
+    XCTAssertNil(error);
     XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:audioAttachment.filePath]);
+
+    self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(delete:)];
     XCTAssertNil([TSMessage fetchObjectWithUniqueID:self.message.uniqueId]);
@@ -206,13 +214,27 @@
     UIPasteboard.generalPasteboard.items = @[];
     XCTAssertNil(UIPasteboard.generalPasteboard.image);
 
-    // Grab some random existing image
-    UIImage *image = [UIImage imageNamed:@"savephoto"];
-    TSPhotoAdapter *photoAdapter = [[TSPhotoAdapter alloc] initWithImage:image];
+    NSError *error;
+    TSAttachmentStream *attachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    [attachment writeData:self.fakeAudioData error:&error];
+    [attachment save];
+
+    // Sanity Check
+    XCTAssertNil(error);
+    XCTAssert([[NSFileManager defaultManager] fileExistsAtPath:attachment.filePath]);
+
+    [self.message.attachmentIds addObject:attachment.uniqueId];
+    [self.message save];
+
+    TSPhotoAdapter *photoAdapter = [[TSPhotoAdapter alloc] initWithAttachment:attachment incoming:NO];
+    // assign random image, since photoAdapter expects an image.
+    photoAdapter.image = [UIImage imageNamed:@"savephoto"];
     self.messageAdapter.mediaItem = photoAdapter;
+
     [self.messageAdapter performEditingAction:@selector(copy:)];
 
-    XCTAssertNotNil(UIPasteboard.generalPasteboard.image);
+    NSData *copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeJPEG];
+    XCTAssertEqualObjects(self.fakeAudioData, copiedData);
 }
 
 - (void)testPerformCopyEditingActionWithVideoMessage
