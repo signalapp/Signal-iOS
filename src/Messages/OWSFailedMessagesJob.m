@@ -21,6 +21,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
 @end
 
+#pragma mark -
+
 @implementation OWSFailedMessagesJob
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager

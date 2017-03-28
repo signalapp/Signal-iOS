@@ -8,6 +8,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSAttachmentPointer
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // A TSAttachmentPointer is a yet-to-be-downloaded attachment.
+    // If this is an old TSAttachmentPointer from another session,
+    // we know that it failed to complete before the session completed.
+    if (![coder containsValueForKey:@"state"]) {
+        _state = TSAttachmentPointerStateFailed;
+    }
+
+    return self;
+}
+
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
@@ -20,8 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _digest = digest;
-    _failed = NO;
-    _downloading = NO;
+    _state = TSAttachmentPointerStateEnqueued;
     _relay = relay;
 
     return self;
