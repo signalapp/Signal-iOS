@@ -137,11 +137,11 @@
                         NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
                         // TODO: Tune this value.
                         const NSUInteger kMaxTextDisplayLength = 256;
-                        NSString *displayText = fullText;
-                        if (fullText.length > kMaxTextDisplayLength) {
+                        NSString *displayText = [[DisplayableTextFilter new] displayableText:fullText];
+                        if (displayText.length > kMaxTextDisplayLength) {
                             // Trim whitespace before _AND_ after slicing the snipper from the string.
                             NSString *snippet =
-                                [[[fullText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                                [[[displayText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
                                     substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
                                     stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
                             displayText =
