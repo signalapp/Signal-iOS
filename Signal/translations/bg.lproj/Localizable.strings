@@ -50,22 +50,43 @@
 "ATTACHMENT" = "Прикачен файл";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Прикачен файл";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Вид Файл: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер на файла: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Изпрати";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Изтеглянето на прикачения файл се провали, докосни за повторен опит.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Прикаченият файл се сваля";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Избери или направи снимка и я изпрати";
@@ -78,9 +99,6 @@
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Сигнал изисква достъп до микрофона ви за да работи коректно. Можете да разрешите достъпа от Settings >> Privacy >> Microphone >> Signal";
-
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Повикване ...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Повикване";
@@ -143,10 +161,10 @@
 "CONVERSATION_SETTINGS" = "Настройки на Разговор";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Това съобщение е твърде дълго, за да го изпратите.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Грешка";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Нулиране на вашата сесия ще ви позволи да получите бъдещи съобщения от %@, но няма да се възстановят вече повредени съобщения.";
@@ -412,9 +430,6 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Непълно входящо повикване от";
 
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Не може да се покаже съобщение.";
-
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Покани приятели в Сигнал";
 
@@ -491,16 +506,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ново Съобщение";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Доставено";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Изпращането се провали. Докосни за повторно изпращане.";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Изпратено";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "Качване...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Докосни тук за настройки";
@@ -520,10 +535,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal се нуждае от достъп до камерата ви.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Пропуснато обаждане от %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Пропуснато обаждане от Потребител на Сигнал.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Получихте обаждане от %@.";
@@ -878,7 +893,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Забрани превю на данни от Сигнал при заключен екран.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Интегрирането на обажданията с iOS показва Сигнал повикванията на заключен  екран, както и в историята на обажданията ви. Можете да позволите да се показват номера и името на потребителя. Ако iCloud е включен, историята с обаждания може да бъде споделена с Ейпъл.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Повикване";
@@ -933,9 +948,6 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Изтрий";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Не може да се осъществи разговор.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Разархивиране";

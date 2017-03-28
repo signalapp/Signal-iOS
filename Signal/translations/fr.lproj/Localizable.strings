@@ -50,22 +50,43 @@
 "ATTACHMENT" = "Pièce jointe";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Pièce jointe";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Type de fichier: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Taille du fichier: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Le téléchargement de la pièce jointe a échoué, appuyez pour réessayer.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Pièce jointe en téléchargement";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Choisissez ou prenez une photo puis envoyez-la";
@@ -78,9 +99,6 @@
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Le signal nécessite l'accès à votre microphone pour fonctionner correctement. Vous pouvez accorder cette autorisation dans l'application Paramètres >> Confidentialité >> Microphone >> Signal";
-
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Appel...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Appel";
@@ -143,10 +161,10 @@
 "CONVERSATION_SETTINGS" = "Paramètres de cette conversation";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Ce message est trop long à envoyer.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Erreur";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "La réinitialisation de votre session vous permettra de recevoir des messages futurs de %@ , mais elle ne récupérera pas les messages déjà corrompus.";
@@ -412,9 +430,6 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Appel entrant incomplet de";
 
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Impossible d'afficher le message.";
-
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des Amis à Signal";
 
@@ -491,16 +506,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nouveau message";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Reçu";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Échec de l'envoi. Taper ici pour réessayer.";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Envoyé";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "En cours de chargement...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Appuyez ici pour les paramètres";
@@ -520,10 +535,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d'accéder à votre appareil photo.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Appel manqué de %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Appel manqué de l'utilisateur Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Vous avez reçu un appel de %@.";
@@ -878,7 +893,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de signaux d'apparaître dans le commutateur d'applications.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact. Si iCloud est activé, cet historique d'appels sera partagé avec Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Appel";
@@ -934,9 +949,6 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Effacer";
 
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Impossible de placer l'appel.";
-
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Récupérer";
 
@@ -983,7 +995,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Glissez juste pour répondre";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend désormais en charge les appels vidéo sécurisés. Il suffit de commencer un appel comme normal, appuyez sur le bouton de la caméra, et vague salut.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend désormais en charge les appels vidéo sécurisés. Il suffit de commencer un appel normal, appuyez sur le bouton de l'appareil photo, et dites vous bonjour.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bonjour Appels vidéo sécurisés!";

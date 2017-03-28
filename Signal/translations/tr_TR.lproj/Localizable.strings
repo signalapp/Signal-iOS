@@ -50,22 +50,43 @@
 "ATTACHMENT" = "Ek";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Ek";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Dosya türü: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Dosya boyutu: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Gönder";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Dosya indirme başarısız oldu, tekrar denemek için dokun";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Ek indiriliyor";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Resim seçin ya da fotoğraf çekip gönderin";
@@ -77,10 +98,7 @@
 "ATTACHMENT_QUEUED" = "Yeni dosya, geri getirmek için kuyruğa eklendi";
 
 /* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
-
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Aranıyor...";
+"AUDIO_PERMISSION_MESSAGE" = "Signal'in doğru çalışması için mikrofonunuza erişmesi gerekmektedir. Bu izni uygulamanızın ayarlar bölümünden verebilirsiniz.\nGizlilik >> Mikrofon >> Signal";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Arayın";
@@ -92,10 +110,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Telefonunuzun kilit ekranından gelen aramaları cevaplayabilir, çagrının adını ve telefon numarasını görebilirsiniz. \n Ayrıntılı bilgi için gizlilik ayarlarına bakınız.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Ayarlarınızı değiştirirseniz, gelen çağrıların isim ve telefon numaralarını görebilirsiniz. \nAyrıntılar için gizlilik ayarlarına bakın.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Şimdi Değil";
@@ -143,10 +161,10 @@
 "CONVERSATION_SETTINGS" = "Konuşma ayarları";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Bu mesaj gönderilemeyecek kadar uzun.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Hata";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Oturumunuzu sıfırlamak gelecekteki mesajları %@'den almanıza izin verecek, ancak zaten bozulmuş mesajları kurtaramaz.";
@@ -281,7 +299,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mesajı gönderilmedi.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Eski gizlilik ayarları sebebi ile gönderilemedi.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Sinyal internete bağlanamadı. Lütfen başka bir WiFi ağından deneyin veya mobil veri kullanın.";
@@ -412,9 +430,6 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "kişisinden tamamlanmamış gelen arama";
 
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
-
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Signal'a arkadaş davet et";
 
@@ -491,16 +506,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Yeni İleti";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "İletildi";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Gönderilemedi. Tekrar denemek için tıkla";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Gönder";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "Yükleniyor...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Ayarlar için buraya tıkla.";
@@ -520,10 +535,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Sinyalin kameranıza erişmesi gerekiyor.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Cevapsız arama  %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Cevapsız arama Signal kullanıcısı";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "%@ aradı.";
@@ -934,9 +949,6 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Sil";
 
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
-
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Arşivden geri al";
 
@@ -977,7 +989,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Gizlilik ayarlarınız hakkında daha fazla bilgi edinin.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Cevaplamak için kaydır";

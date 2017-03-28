@@ -50,22 +50,43 @@
 "ATTACHMENT" = "ไฟล์แนบ";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "ไฟล์แนบ";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ชนิดไฟล์: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ขนาดไฟล์: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "การดาวน์โหลดไฟล์แนบล้มเหลว แตะเพื่อลองใหม่";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "กำลังดาวน์โหลดไฟล์แนบ";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "เลือกหรือถ่ายภาพแล้วส่ง";
@@ -78,9 +99,6 @@
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
-
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "กำลังโทร...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "โทร";
@@ -98,16 +116,16 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ไม่ใช่ตอนนี้";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "แสดงการตั้งค่าความเป็นส่วนตัว";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "ผู้ใช้ Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "เปรียบเทียบกับคลิปบอร์ด";
@@ -146,7 +164,7 @@
 "CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตวาระของคุณจะอนุญาตให้คุณรับข้อความในอนาคตจาก %@ แต่จะไม่กู้คืนข้อความใด ๆ ที่เสียหายไปแล้ว";
@@ -155,7 +173,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "เลือกรหัสประเทศ";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Create new group";
+"CREATE_NEW_GROUP" = "สร้างกลุ่มใหม่";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u วัน";
@@ -188,13 +206,13 @@
 "EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copy";
+"EDIT_ITEM_COPY_ACTION" = "คัดลอก";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "บันทึก";
 
 /* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
+"EDIT_ITEM_SHARE_ACTION" = "แบ่งปัน";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "เฮ้\n\nเมื่อเร็ว ๆ นี้ฉันได้ใช้ Signal เพื่อเก็บรักษาการสนทนาบน iPhone ของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งด้วย เพื่อให้เราสามารถมั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงโทรของเรา\n\nSignal ใช้งานได้บน iPhone และ Android รับเลยที่นี่: %@\n\nSignal ทำงานเหมือนกับแอปข้อความที่มีอยู่ของคุณ เราสามารถส่งรูปภาพและวิดีโอ โทรออก และเริ่มแชทกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครอื่นสามารถเห็นสิ่งเหล่านี้ ไม่แม้แต่ผู้คนที่สร้าง Signal!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้คนที่สร้าง Signal ได้ที่นี่: %@";
@@ -412,9 +430,6 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "สายโทรเข้าไม่สมบูรณ์จาก";
 
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "Unable to display message.";
-
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "เชิญเพื่อนมาใช้ Signal";
 
@@ -494,13 +509,13 @@
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว แตะเพื่อลองใหม่";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
@@ -815,7 +830,7 @@
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "ต้องได้รับการอนุมัติเมื่อมีการเปลี่ยนแปลง";
 
 /* Accessibility hint for the settings button */
-"SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
+"SETTINGS_BUTTON_ACCESSIBILITY" = "การตั้งค่า";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
@@ -934,9 +949,6 @@
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "ลบ";
 
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "ไม่สามารถวางสาย";
-
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "เลิกเก็บถาวร";
 
@@ -992,13 +1004,13 @@
 "Upgrading Signal ..." = "กำลังอัปเกรด Signal ...";
 
 /* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Back";
+"VERIFICATION_BACK_BUTTON" = "ย้อนกลับ";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "รหัสตรวจสอบ";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Call Me Instead";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "โทรหาฉันแทน";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";

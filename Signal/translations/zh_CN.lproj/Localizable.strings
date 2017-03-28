@@ -67,6 +67,27 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "正在下载附件";
 
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "选择或者新拍摄图片并发送";
 
@@ -78,9 +99,6 @@
 
 /* No comment provided by engineer. */
 "AUDIO_PERMISSION_MESSAGE" = "Signal需要访问您的麦克风以正常工作。请您到 设置 >> 隐私 >> 麦克风 >>Signal 授予访问权限。";
-
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "拨号中...";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "打电话";
@@ -411,9 +429,6 @@
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "未完成的来电，来自";
-
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "无法显示消息。";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用Signal";
@@ -933,9 +948,6 @@
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "删除";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "无法开始通话。";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "未存档";
