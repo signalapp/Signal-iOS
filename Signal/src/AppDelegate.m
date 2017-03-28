@@ -25,6 +25,7 @@
 #import <AxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -176,6 +177,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
         // sent before the app exited should be marked as failures.
         [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+        [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
 
         [AppStoreRating setupRatingLibrary];
     }];
