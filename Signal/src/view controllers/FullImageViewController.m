@@ -9,6 +9,8 @@
 #import "TSPhotoAdapter.h"
 #import "TSMessageAdapter.h"
 #import "TSAnimatedAdapter.h"
+#import "UIColor+OWS.h"
+#import "AttachmentSharing.h"
 
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 8.0f
@@ -46,6 +48,7 @@
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UIButton *shareButton;
+@property (nonatomic) UIView *contentView;
 
 @property (nonatomic) CGRect originRect;
 @property (nonatomic) BOOL isPresenting;
@@ -55,6 +58,8 @@
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic) TSInteraction *interaction;
 @property (nonatomic) id<OWSMessageData> messageItem;
+
+@property (nonatomic) UIToolbar *footerBar;
 
 @end
 
@@ -92,8 +97,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [self initializeBackground];
+    [self initializeContentViewAndFooterBar];
     [self initializeScrollView];
     [self initializeImageView];
     [self initializeGestureRecognizers];
@@ -121,13 +127,39 @@
     [self.backgroundView autoPinEdgesToSuperviewEdges];
 }
 
+- (void)initializeContentViewAndFooterBar {
+    self.contentView = [UIView new];
+    [self.backgroundView addSubview:self.contentView];
+    [self.contentView autoPinWidthToSuperview];
+    [self.contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    
+    self.footerBar = [UIToolbar new];
+    _footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
+    [self.footerBar setItems:@[
+                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                             target:self
+                                                                             action:@selector(shareWasPressed:)],
+                               ]
+                    animated:NO];
+    [self.backgroundView addSubview:self.footerBar];
+    [self.footerBar autoPinWidthToSuperview];
+    [self.footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.footerBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.contentView];
+}
+
+- (void)shareWasPressed:(id)sender {
+    DDLogInfo(@"%@: sharing image.", self.tag);
+
+    [AttachmentSharing showShareUIForURL:[self.attachment mediaURL]];
+}
+
 - (void)initializeScrollView {
     self.scrollView                  = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     self.scrollView.delegate         = self;
     self.scrollView.zoomScale        = 1.0f;
     self.scrollView.maximumZoomScale = kMaxZoomScale;
     self.scrollView.scrollEnabled    = NO;
-    [self.view addSubview:self.scrollView];
+    [self.contentView addSubview:self.scrollView];
 }
 
 - (void)initializeImageView {
@@ -274,6 +306,10 @@
                      animated:NO
                    completion:^{
                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                       // During the presentation animation, we want to seamlessly animate the image
+                       // from its location in the conversation view.  To do so, we need a
+                       // consistent coordinate system, so we pass the `originRect` in the
+                       // coordinate system of the window.
                        self.imageView.frame = [self.view convertRect:self.originRect
                                                             fromView:window];
                        
@@ -281,14 +317,19 @@
                          delay:0
                          options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
                          animations:^() {
-                           self.view.alpha      = 1.0f;
-                           self.imageView.frame = [self resizedFrameForImageView:self.image.size];
-                           self.imageView.center =
-                               CGPointMake(self.view.bounds.size.width / 2.0f,
-                                           self.view.bounds.size.height / 2.0f);
+                             self.view.alpha      = 1.0f;
+                             // During the presentation animation, we want to seamlessly animate the image
+                             // to its resting location in this view.  We use `resizedFrameForImageView`
+                             // to determine its size "at rest" in the content view, and then convert
+                             // from the content view's coordinate system to the root view coordinate
+                             // system because the image view is temporarily hosted by the root view during
+                             // the presentation animation.
+                             self.imageView.frame = [self resizedFrameForImageView:self.image.size];
+                             self.imageView.center = [self.contentView convertPoint:self.contentView.center
+                                                                           fromView:self.contentView];
                          }
                          completion:^(BOOL completed) {
-                           self.scrollView.frame = self.view.bounds;
+                           self.scrollView.frame = self.contentView.bounds;
                            [self.scrollView addSubview:self.imageView];
                            [self updateLayouts];
                            self.view.userInteractionEnabled = YES;
@@ -324,7 +365,7 @@
         return;
     }
 
-    self.scrollView.frame        = self.view.bounds;
+    self.scrollView.frame        = self.contentView.bounds;
     self.imageView.frame         = [self resizedFrameForImageView:self.image.size];
     self.scrollView.contentSize  = self.imageView.frame.size;
     self.scrollView.contentInset = [self contentInsetForScrollView:self.scrollView.zoomScale];
@@ -333,7 +374,7 @@
 #pragma mark - Resizing
 
 - (CGRect)resizedFrameForImageView:(CGSize)imageSize {
-    CGRect frame = self.view.bounds;
+    CGRect frame = self.contentView.bounds;
     CGSize screenSize =
         CGSizeMake(frame.size.width * self.scrollView.zoomScale, frame.size.height * self.scrollView.zoomScale);
     CGSize targetSize = screenSize;
@@ -442,6 +483,18 @@
                   error.localizedDescription,
                   __PRETTY_FUNCTION__);
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
