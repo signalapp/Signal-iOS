@@ -5,7 +5,7 @@
 import Foundation
 
 /**
- * Creates an outbound call via either Redphone or WebRTC depending on participant preferences.
+ * Creates an outbound call via WebRTC.
  */
 @objc class OutboundCallInitiator: NSObject {
     let TAG = "[OutboundCallInitiator]"

@@ -1,9 +1,11 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 #import "ConditionLogger.h"
 #import "OccurrenceLogger.h"
 #import "ValueLogger.h"
-
-@protocol JitterQueueNotificationReceiver;
 
 @protocol Logging <NSObject>
 
@@ -19,5 +21,4 @@
 /// not create a reference cycle.
 - (id<ValueLogger>)getValueLoggerForValue:(id)valueIdentity from:(id)sender;
 
-- (id<JitterQueueNotificationReceiver>)jitterQueueNotificationReceiver;
 @end

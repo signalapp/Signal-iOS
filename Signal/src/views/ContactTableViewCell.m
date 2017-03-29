@@ -1,8 +1,11 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
-#import "PhoneManager.h"
 #import "UIUtil.h"
 
 NS_ASSUME_NONNULL_BEGIN

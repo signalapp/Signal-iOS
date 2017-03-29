@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "Pastelog.h"

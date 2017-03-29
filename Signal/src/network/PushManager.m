@@ -4,13 +4,10 @@
 
 #import "PushManager.h"
 #import "AppDelegate.h"
-#import "InCallViewController.h"
 #import "NSData+ows_StripToken.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "NotificationTracker.h"
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
-#import "RPServerRequestsManager.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
 #import "TSAccountManager.h"
@@ -25,8 +22,6 @@
 
 @property TOCFutureSource *registerWithServerFutureSource;
 @property UIAlertView *missingPermissionsAlertView;
-@property (nonatomic, strong) NotificationTracker *notificationTracker;
-@property UILocalNotification *lastCallNotification;
 @property (nonatomic, retain) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -50,7 +45,6 @@
 - (instancetype)initDefault
 {
     return [self initWithContactsManager:[Environment getCurrent].contactsManager
-                     notificationTracker:[NotificationTracker notificationTracker]
                           networkManager:[Environment getCurrent].networkManager
                           storageManager:[TSStorageManager sharedManager]
                       callMessageHandler:[Environment getCurrent].callMessageHandler
@@ -59,7 +53,6 @@
 }
 
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                    notificationTracker:(NotificationTracker *)notificationTracker
                          networkManager:(TSNetworkManager *)networkManager
                          storageManager:(TSStorageManager *)storageManager
                      callMessageHandler:(OWSWebRTCCallMessageHandler *)callMessageHandler
@@ -74,8 +67,6 @@
     _contactsManager = contactsManager;
     _callUIAdapter = callService.callUIAdapter;
 
-    // DEPRECATED Redphone uses notification tracker.
-    _notificationTracker = notificationTracker;
     _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
                                                        storageManager:storageManager
                                                       contactsManager:contactsManager
@@ -110,76 +101,11 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
 
-    // DEPRECATED redphone
-    if ([self isRedPhonePush:userInfo]) {
-        ResponderSessionDescriptor *call;
-        if (![self.notificationTracker shouldProcessNotification:userInfo]) {
-            return;
-        }
-
-        @try {
-            call = [ResponderSessionDescriptor responderSessionDescriptorFromEncryptedRemoteNotification:userInfo];
-            DDLogDebug(@"Received remote notification. Parsed session descriptor: %@.", call);
-        } @catch (OperationFailed *ex) {
-            DDLogError(@"Error parsing remote notification. Error: %@.", ex);
-            return;
-        }
-
-        if (!call) {
-            DDLogError(@"Decryption of session descriptor failed");
-            return;
-        }
-
-        [Environment.phoneManager incomingCallWithSession:call];
-
-        if (![self applicationIsActive]) {
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-
-            NSString *callerId   = call.initiatorNumber.toE164;
-            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:callerId];
-            PropertyListPreferences *prefs = [Environment preferences];
-
-            notification.alertBody = @"☎️ ";
-
-            if ([prefs notificationPreviewType] == NotificationNoNameNoPreview) {
-                notification.alertBody =
-                    [notification.alertBody stringByAppendingString:NSLocalizedString(@"INCOMING_CALL", nil)];
-            } else {
-                notification.alertBody = [notification.alertBody
-                    stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"INCOMING_CALL_FROM", nil),
-                                                                       displayName]];
-            }
-
-            notification.category  = Signal_Call_Category;
-            notification.soundName = @"r.caf";
-
-            [self presentNotification:notification];
-            _lastCallNotification = notification;
-
-            if (_callBackgroundTask == UIBackgroundTaskInvalid) {
-                _callBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-                  [Environment.phoneManager backgroundTimeExpired];
-                  [self closeVOIPBackgroundTask];
-                }];
-            }
-        }
-    } else {
-        [self.messageFetcherJob runAsync];
-    }
+    [self.messageFetcherJob runAsync];
 }
 
 - (void)applicationDidBecomeActive {
     [self.messageFetcherJob runAsync];
-}
-
-- (UILocalNotification *)closeVOIPBackgroundTask {
-    [[UIApplication sharedApplication] endBackgroundTask:_callBackgroundTask];
-    _callBackgroundTask = UIBackgroundTaskInvalid;
-
-    UILocalNotification *notif = _lastCallNotification;
-    _lastCallNotification      = nil;
-
-    return notif;
 }
 
 /**
@@ -192,10 +118,6 @@
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
-
-    if ([self isRedPhonePush:userInfo]) {
-        [self application:application didReceiveRemoteNotification:userInfo];
-    }
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
       completionHandler(UIBackgroundFetchResultNewData);
@@ -259,24 +181,6 @@
                     completionHandler();
                 }];
         }
-    } else if ([identifier isEqualToString:Signal_Call_Accept_Identifier]) {
-        DDLogInfo(@"%@ received redphone accept action", self.tag);
-        [Environment.phoneManager answerCall];
-
-        completionHandler();
-    } else if ([identifier isEqualToString:Signal_Call_Decline_Identifier]) {
-        DDLogInfo(@"%@ received redphone decline action", self.tag);
-        [Environment.phoneManager hangupOrDenyCall];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-          completionHandler();
-        });
-    } else if ([identifier isEqualToString:Signal_CallBack_Identifier]) {
-        DDLogInfo(@"%@ received redphone callback action", self.tag);
-        NSString *contactId = notification.userInfo[Signal_Call_UserInfo_Key];
-        PhoneNumber *number = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:contactId];
-        Contact *contact = [self.contactsManager latestContactForPhoneNumber:number];
-        [Environment.phoneManager initiateOutgoingCallToContact:contact atRemoteNumber:number];
     } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]) {
         [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
     } else if ([identifier isEqualToString:PushManagerActionsAcceptCall]) {
@@ -345,17 +249,6 @@
 
           completionHandler();
         }];
-}
-
-- (BOOL)isRedPhonePush:(NSDictionary *)pushDict {
-    NSDictionary *aps  = pushDict[@"aps"];
-    NSString *category = aps[@"category"];
-
-    if ([category isEqualToString:Signal_Call_Category]) {
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 #pragma mark PushKit
@@ -461,49 +354,6 @@
     return messageCategory;
 }
 
-#pragma mark Redphone Calls
-
-- (UIUserNotificationCategory *)userNotificationsRPCallCategory
-{
-    UIMutableUserNotificationAction *action_accept = [UIMutableUserNotificationAction new];
-    action_accept.identifier                       = Signal_Call_Accept_Identifier;
-    action_accept.title                            = NSLocalizedString(@"ANSWER_CALL_BUTTON_TITLE", @"");
-    action_accept.activationMode                   = UIUserNotificationActivationModeForeground;
-    action_accept.destructive                      = NO;
-    action_accept.authenticationRequired           = NO;
-
-    UIMutableUserNotificationAction *action_decline = [UIMutableUserNotificationAction new];
-    action_decline.identifier                       = Signal_Call_Decline_Identifier;
-    action_decline.title                            = NSLocalizedString(@"REJECT_CALL_BUTTON_TITLE", @"");
-    action_decline.activationMode                   = UIUserNotificationActivationModeBackground;
-    action_decline.destructive                      = NO;
-    action_decline.authenticationRequired           = NO;
-
-    UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier                         = Signal_Call_Category;
-    [callCategory setActions:@[ action_accept, action_decline ] forContext:UIUserNotificationActionContextMinimal];
-    [callCategory setActions:@[ action_accept, action_decline ] forContext:UIUserNotificationActionContextDefault];
-
-    return callCategory;
-}
-
-- (UIUserNotificationCategory *)userNotificationsRPCallBackCategory
-{
-    UIMutableUserNotificationAction *callBackAction = [UIMutableUserNotificationAction new];
-    callBackAction.identifier                       = Signal_CallBack_Identifier;
-    callBackAction.title                            = [CallStrings callBackButtonTitle];
-    callBackAction.activationMode                   = UIUserNotificationActivationModeForeground;
-    callBackAction.destructive                      = NO;
-    callBackAction.authenticationRequired           = NO;
-
-    UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier                         = Signal_CallBack_Category;
-    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextMinimal];
-    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextDefault];
-
-    return callCategory;
-}
-
 #pragma mark - Signal Calls
 
 NSString *const PushManagerCategoriesIncomingCall = @"PushManagerCategoriesIncomingCall";
@@ -575,9 +425,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 {
     UIUserNotificationSettings *settings =
         [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                          categories:[NSSet setWithObjects:[self userNotificationsRPCallCategory],
-                                                            [self fullNewMessageNotificationCategory],
-                                                            [self userNotificationsRPCallBackCategory],
+                                          categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
                                                             [self signalIncomingCallCategory],
                                                             [self signalMissedCallCategory],
                                                             nil]];

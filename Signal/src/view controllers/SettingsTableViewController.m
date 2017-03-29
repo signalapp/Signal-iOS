@@ -3,16 +3,11 @@
 //
 
 #import "SettingsTableViewController.h"
-
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 #import "TSAccountManager.h"
 #import "UIUtil.h"
-
-#import "RPServerRequestsManager.h"
-
 #import "TSSocketManager.h"
-
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "NotificationSettingsViewController.h"

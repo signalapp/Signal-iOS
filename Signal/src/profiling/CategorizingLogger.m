@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "AnonymousConditionLogger.h"
 #import "AnonymousOccurrenceLogger.h"
 #import "AnonymousValueLogger.h"
@@ -50,41 +54,6 @@
         andLogError:^(NSString *text) {
           [self log:[NSString stringWithFormat:@"Error from %@", sender] details:text];
         }];
-}
-- (id<JitterQueueNotificationReceiver>)jitterQueueNotificationReceiver {
-    return self;
-}
-
-- (void)notifyCreated {
-    [self log:@"JitterQueue created" details:nil];
-}
-- (void)notifyArrival:(uint16_t)sequenceNumber {
-    [self log:@"JitterQueue arrival" details:[NSString stringWithFormat:@"sequence: %d", sequenceNumber]];
-}
-- (void)notifyDequeue:(uint16_t)sequenceNumber withRemainingEnqueuedItemCount:(NSUInteger)remainingCount {
-    [self log:@"JitterQueue dequeue"
-        details:[NSString
-                    stringWithFormat:@"sequence: %d, remaining: %lu", sequenceNumber, (unsigned long)remainingCount]];
-}
-- (void)notifyBadArrival:(uint16_t)sequenceNumber ofType:(enum JitterBadArrivalType)arrivalType {
-    [self log:@"JitterQueue bad arrival"
-        details:[NSString stringWithFormat:@"sequence: %d, arrival type: %d", sequenceNumber, arrivalType]];
-}
-- (void)notifyBadDequeueOfType:(enum JitterBadDequeueType)type {
-    [self log:@"JitterQueue bad dequeue" details:[NSString stringWithFormat:@"type: %d", type]];
-}
-- (void)notifyResyncFrom:(uint16_t)oldReadHeadSequenceNumber to:(uint16_t)newReadHeadSequenceNumber {
-    [self log:@"JitterQueue resync"
-        details:[NSString stringWithFormat:@"from: %d, to: %d", oldReadHeadSequenceNumber, newReadHeadSequenceNumber]];
-}
-- (void)notifyDiscardOverflow:(uint16_t)discardedSequenceNumber
-                resyncingFrom:(uint16_t)oldReadHeadSequenceNumber
-                           to:(uint16_t)newReadHeadSequenceNumber {
-    [self log:@"JitterQueue discard overflow"
-        details:[NSString stringWithFormat:@"discarded: %d, from: %d, to: %d",
-                                           discardedSequenceNumber,
-                                           oldReadHeadSequenceNumber,
-                                           newReadHeadSequenceNumber]];
 }
 
 @end

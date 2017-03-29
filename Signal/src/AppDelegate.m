@@ -6,14 +6,15 @@
 #import "AppStoreRating.h"
 #import "CategorizingLogger.h"
 #import "CodeVerificationViewController.h"
+#import "DataUtil.h"
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSStaleNotificationObserver.h"
+#import "Pastelog.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "Release.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
@@ -22,7 +23,6 @@
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
-#import "Pastelog.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
@@ -119,7 +119,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if ([TSAccountManager isRegistered]) {
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
-    [Environment.getCurrent initCallListener];
 
     [self setupTSKitEnv];
 
@@ -374,11 +373,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
-            DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing RedPhone call.", self.tag);
-            return NO;
-        }
-
         NSString *_Nullable phoneNumber = handle;
         if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
             phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
@@ -443,10 +437,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             }
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
-            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
-            return NO;
-        }
         if ([Environment getCurrent].callService.call != nil) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
             return NO;

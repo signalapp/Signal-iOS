@@ -441,7 +441,7 @@ protocol CallServiceObserver: class {
         Logger.verbose("\(TAG) receivedCallOffer for thread:\(thread)")
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard call == nil && !Environment.getCurrent().phoneManager.hasOngoingRedphoneCall() else {
+        guard call == nil else {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
             Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call)")
 

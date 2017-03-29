@@ -1,9 +1,12 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
-#import "JitterQueue.h"
 #import "Logging.h"
 
-@interface CategorizingLogger : NSObject <Logging, JitterQueueNotificationReceiver> {
-   @private
+@interface CategorizingLogger : NSObject <Logging> {
+@private
     NSMutableArray *callbacks;
    @private
     NSMutableDictionary *indexDic;

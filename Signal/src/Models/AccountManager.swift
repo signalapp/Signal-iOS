@@ -13,12 +13,10 @@ class AccountManager: NSObject {
     let TAG = "[AccountManager]"
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
-    let redPhoneAccountManager: RPAccountManager
 
-    required init(textSecureAccountManager: TSAccountManager, redPhoneAccountManager: RPAccountManager) {
+    required init(textSecureAccountManager: TSAccountManager) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
-        self.redPhoneAccountManager = redPhoneAccountManager
     }
 
     // MARK: registration
@@ -43,12 +41,6 @@ class AccountManager: NSObject {
             return self.registerForTextSecure(verificationCode: verificationCode)
         }.then {
             Logger.debug("\(self.TAG) successfully registered for TextSecure")
-            return self.fetchRedPhoneToken()
-        }.then { (redphoneToken: String) in
-            Logger.debug("\(self.TAG) successfully fetched redPhone token")
-            return self.registerForRedPhone(tsToken:redphoneToken)
-        }.then {
-            Logger.debug("\(self.TAG) successfully registered with RedPhone")
         }
     }
 
@@ -60,21 +52,6 @@ class AccountManager: NSObject {
         }
     }
 
-    private func fetchRedPhoneToken() -> Promise<String> {
-        return Promise { fulfill, reject in
-            self.textSecureAccountManager.obtainRPRegistrationToken(success:fulfill,
-                                                                    failure:reject)
-        }
-    }
-
-    private func registerForRedPhone(tsToken: String) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.redPhoneAccountManager.register(withTsToken:tsToken,
-                                                 success:fulfill,
-                                                 failure:reject)
-        }
-    }
-
     // MARK: Push Tokens
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
@@ -82,11 +59,6 @@ class AccountManager: NSObject {
             return self.updateTextSecurePushTokens(pushToken: pushToken, voipToken: voipToken)
         }.then {
             Logger.info("\(self.TAG) Successfully updated text secure push tokens.")
-            // TODO should be possible to do these in parallel. 
-            // We want to make sure that either can complete independently of the other.
-            return self.updateRedPhonePushTokens(pushToken:pushToken, voipToken:voipToken)
-        }.then {
-            Logger.info("\(self.TAG) Successfully updated red phone push tokens.")
             // TODO code cleanup - convert to `return Promise(value: nil)` and test
             return Promise { fulfill, _ in
                 fulfill()
@@ -100,15 +72,6 @@ class AccountManager: NSObject {
                                                                        voipToken:voipToken,
                                                                        success:fulfill,
                                                                        failure:reject)
-        }
-    }
-
-    private func updateRedPhonePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.redPhoneAccountManager.registerForPushNotifications(pushToken:pushToken,
-                                                                     voipToken:voipToken,
-                                                                     success:fulfill,
-                                                                     failure:reject)
         }
     }
 
