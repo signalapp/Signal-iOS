@@ -79,7 +79,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         [attachmentIds addObject:pointer.uniqueId];
 
-        if ([MIMETypeUtil isSupportedMIMEType:pointer.contentType]) {
+        // TODO: We need to revisit isSupportedMIMEType.
+        if ([MIMETypeUtil isSupportedMIMEType:pointer.contentType] ||
+            [pointer.contentType isEqualToString:OWSMimeTypeOversizeTextMessage] ||
+            [pointer.contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
             [pointer save];
             [supportedAttachmentPointers addObject:pointer];
             [supportedAttachmentIds addObject:pointer.uniqueId];

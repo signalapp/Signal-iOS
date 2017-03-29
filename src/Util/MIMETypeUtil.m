@@ -13,6 +13,7 @@
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
+NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
 @implementation MIMETypeUtil
 
@@ -294,6 +295,8 @@ NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
         return [MIMETypeUtil filePathForOversizeTextMessage:uniqueId inFolder:folder];
+    } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
+        return [MIMETypeUtil filePathForUnknownContent:uniqueId inFolder:folder];
     }
 
     DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
@@ -354,6 +357,13 @@ NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
             stringByAppendingPathExtension:@"signal-text-message"];
 }
 
++ (NSString *)filePathForUnknownContent:(NSString *)uniqueId inFolder:(NSString *)folder {
+    // This file extension is arbitrary - it should never be exposed to the user or
+    // be used outside the app.
+    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
+            stringByAppendingPathExtension:@"unknown"];
+}
+
 #if TARGET_OS_IPHONE
 
 + (NSString *)getSupportedImageMIMETypeFromImage:(UIImage *)image {
@@ -369,8 +379,25 @@ NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 + (NSString *)utiTypeForMIMEType:(NSString *)mimeType
 {
     CFStringRef utiType
-        = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
+    = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
     return (__bridge_transfer NSString *)utiType;
+}
+
++ (NSString *)fileExtensionForUTIType:(NSString *)utiType
+{
+    CFStringRef fileExtension
+    = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) utiType, kUTTagClassFilenameExtension);
+    return (__bridge_transfer NSString *)fileExtension;
+}
+
++ (NSString *)fileExtensionForMIMEType:(NSString *)mimeType
+{
+    NSString *utiType = [self utiTypeForMIMEType:mimeType];
+    if (!utiType) {
+        return nil;
+    }
+    NSString *fileExtension = [self fileExtensionForUTIType:utiType];
+    return fileExtension;
 }
 
 + (NSSet<NSString *> *)utiTypesForMIMETypes:(NSArray *)mimeTypes
