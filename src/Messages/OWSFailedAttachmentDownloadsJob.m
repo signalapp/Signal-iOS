@@ -2,9 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFailedMessagesJob.h"
-#import "TSMessage.h"
-#import "TSOutgoingMessage.h"
+#import "OWSFailedAttachmentDownloadsJob.h"
+#import "TSAttachmentPointer.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseQuery.h>
@@ -12,10 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const OWSFailedMessagesJobMessageStateColumn = @"message_state";
-static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_messages_on_message_state";
+static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateColumn = @"state";
+static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"index_attachment_downloads_on_state";
 
-@interface OWSFailedMessagesJob ()
+@interface OWSFailedAttachmentDownloadsJob ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 
@@ -23,7 +22,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
 #pragma mark -
 
-@implementation OWSFailedMessagesJob
+@implementation OWSFailedAttachmentDownloadsJob
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
 {
@@ -37,37 +36,37 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     return self;
 }
 
-- (NSArray<NSString *> *)fetchAttemptingOutMessageIds:(YapDatabaseConnection *)dbConnection
+- (NSArray<NSString *> *)fetchAttemptingOutAttachmentIds:(YapDatabaseConnection *)dbConnection
 {
-    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
+    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
 
-    NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ == %d",
-                                          OWSFailedMessagesJobMessageStateColumn,
-                                          (int)TSOutgoingMessageStateAttemptingOut];
+    NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ != %d",
+                                          OWSFailedAttachmentDownloadsJobAttachmentStateColumn,
+                                          (int)TSAttachmentPointerStateFailed];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
+        [[transaction ext:OWSFailedAttachmentDownloadsJobAttachmentStateIndex]
             enumerateKeysMatchingQuery:query
                             usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
-                                [messageIds addObject:key];
+                                [attachmentIds addObject:key];
                             }];
     }];
 
-    return [messageIds copy];
+    return [attachmentIds copy];
 }
 
-- (void)enumerateAttemptingOutMessagesWithBlock:(void (^_Nonnull)(TSOutgoingMessage *message))block
+- (void)enumerateAttemptingOutAttachmentsWithBlock:(void (^_Nonnull)(TSAttachmentPointer *attachment))block
 {
     YapDatabaseConnection *dbConnection = [self.storageManager newDatabaseConnection];
 
-    // Since we can't directly mutate the enumerated "attempting out" expired messages, we store only their ids in hopes
-    // of saving a little memory and then enumerate the (larger) TSMessage objects one at a time.
-    for (NSString *expiredMessageId in [self fetchAttemptingOutMessageIds:dbConnection]) {
-        TSOutgoingMessage *_Nullable message = [TSOutgoingMessage fetchObjectWithUniqueID:expiredMessageId];
-        if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            block(message);
+    // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
+    // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
+    for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIds:dbConnection]) {
+        TSAttachmentPointer *_Nullable attachment = [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId];
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            block(attachment);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.tag, message);
+            DDLogError(@"%@ unexpected object: %@", self.tag, attachment);
         }
     }
 }
@@ -75,21 +74,17 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (void)run
 {
     __block uint count = 0;
-    [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
+    [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
         // sanity check
-        OWSAssert(message.messageState == TSOutgoingMessageStateAttemptingOut);
-        if (message.messageState != TSOutgoingMessageStateAttemptingOut) {
-            DDLogError(@"%@ Refusing to mark as unsent message with state: %d", self.tag, (int)message.messageState);
-            return;
+        if (attachment.state != TSAttachmentPointerStateFailed) {
+            DDLogDebug(@"%@ marking attachment as failed", self.tag);
+            attachment.state = TSAttachmentPointerStateFailed;
+            [attachment save];
+            count++;
         }
-
-        DDLogDebug(@"%@ marking message as unsent", self.tag);
-        message.messageState = TSOutgoingMessageStateUnsent;
-        [message save];
-        count++;
     }];
 
-    DDLogDebug(@"%@ Marked %u messages as unsent", self.tag, count);
+    DDLogDebug(@"%@ Marked %u attachments as unsent", self.tag, count);
 }
 
 #pragma mark - YapDatabaseExtension
@@ -97,7 +92,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (YapDatabaseSecondaryIndex *)indexDatabaseExtension
 {
     YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
-    [setup addColumn:OWSFailedMessagesJobMessageStateColumn withType:YapDatabaseSecondaryIndexTypeInteger];
+    [setup addColumn:OWSFailedAttachmentDownloadsJobAttachmentStateColumn
+            withType:YapDatabaseSecondaryIndexTypeInteger];
 
     YapDatabaseSecondaryIndexHandler *handler =
         [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction,
@@ -105,12 +101,11 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
             NSString *collection,
             NSString *key,
             id object) {
-            if (![object isKindOfClass:[TSOutgoingMessage class]]) {
+            if (![object isKindOfClass:[TSAttachmentPointer class]]) {
                 return;
             }
-            TSOutgoingMessage *message = (TSOutgoingMessage *)object;
-
-            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.messageState);
+            TSAttachmentPointer *attachment = (TSAttachmentPointer *)object;
+            dict[OWSFailedAttachmentDownloadsJobAttachmentStateColumn] = @(attachment.state);
         }];
 
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
@@ -120,13 +115,13 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (void)blockingRegisterDatabaseExtensions
 {
     [self.storageManager.database registerExtension:[self indexDatabaseExtension]
-                                           withName:OWSFailedMessagesJobMessageStateIndex];
+                                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 
 - (void)asyncRegisterDatabaseExtensions
 {
     [self.storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                                withName:OWSFailedMessagesJobMessageStateIndex
+                                                withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
                                          completionBlock:^(BOOL ready) {
                                              if (ready) {
                                                  DDLogDebug(@"%@ completed registering extension async.", self.tag);

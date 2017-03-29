@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 // that represent downloaded incoming attachments.
 - (instancetype)initWithPointer:(TSAttachment *)pointer;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder;
+
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
 @end

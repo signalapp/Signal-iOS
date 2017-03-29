@@ -331,7 +331,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAttachment:(TSAttachmentPointer *)pointer isDownloadingInMessage:(nullable TSMessage *)message
 {
-    pointer.downloading = YES;
+    pointer.state = TSAttachmentPointerStateDownloading;
     [pointer save];
     if (message) {
         [message touch];
@@ -340,8 +340,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAttachment:(TSAttachmentPointer *)pointer didFailInMessage:(nullable TSMessage *)message
 {
-    pointer.downloading = NO;
-    pointer.failed = YES;
+    pointer.state = TSAttachmentPointerStateFailed;
     [pointer save];
     if (message) {
         [message touch];
