@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UISearchController *searchController;
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
-@property (nonatomic) UIBarButtonItem *addGroup;
 @property (nonatomic) UIView *loadingBackgroundView;
 
 @property (nonatomic, copy) NSArray<Contact *> *contacts;
@@ -42,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 // which are known to correspond to Signal accounts.
 @property (nonatomic, nonnull, readonly) NSMutableSet *phoneNumberAccountSet;
 
-@property (nonatomic) BOOL isBackgroundViewHidden;
+@property (nonatomic) BOOL isNoContactsViewVisible;
+@property (nonatomic) UIBarButtonItem *createGroupBarButtonItem;
 
 @end
 
@@ -115,7 +115,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    
+
+    self.createGroupBarButtonItem = self.navigationItem.rightBarButtonItem;
     self.navigationItem.rightBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
 
@@ -136,12 +137,10 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
 
-    if ([self.contacts count] == 0) {
-        [self showEmptyBackgroundView:YES];
-    }
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (UILabel *)createLabelWithFirstLine:(NSString *)firstLine andSecondLine:(NSString *)secondLine {
@@ -226,9 +225,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)hideBackgroundView {
-    self.isBackgroundViewHidden = YES;
+    [[Environment preferences] setHasDeclinedNoContactsView:YES];
     
-    [self showEmptyBackgroundView:NO];
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (void)presentInviteFlow
@@ -239,53 +238,45 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (void)showLoadingBackgroundView:(BOOL)show {
-    if (show && !self.isBackgroundViewHidden) {
-        _addGroup = self.navigationItem.rightBarButtonItem != nil ? _addGroup : self.navigationItem.rightBarButtonItem;
-        self.navigationItem.rightBarButtonItem = nil;
+    if (show) {
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView          = _loadingBackgroundView;
         self.refreshControl                    = nil;
         self.tableView.backgroundView.opaque   = YES;
     } else {
         [self initializeRefreshControl];
-        self.navigationItem.rightBarButtonItem =
-            self.navigationItem.rightBarButtonItem != nil ? self.navigationItem.rightBarButtonItem : _addGroup;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
     }
 }
 
+- (void)showEmptyBackgroundViewIfNecessary {
+    self.isNoContactsViewVisible = ([self.contacts count] == 0 &&
+                                    ![[Environment preferences] hasDeclinedNoContactsView]);
+}
 
-- (void)showEmptyBackgroundView:(BOOL)show {
-    if (show) {
+- (void)setIsNoContactsViewVisible:(BOOL)isNoContactsViewVisible {
+    if (isNoContactsViewVisible == _isNoContactsViewVisible) {
+        return;
+    }
+    
+    _isNoContactsViewVisible = isNoContactsViewVisible;
+
+    if (isNoContactsViewVisible) {
         self.refreshControl = nil;
-        _addGroup = self.navigationItem.rightBarButtonItem != nil ? _addGroup : self.navigationItem.rightBarButtonItem;
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"btnRefresh--white"]
-                                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(refreshContacts)];
-        self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(8, 8, 8, 8);
-
-
-        self.inviteCell.hidden = YES;
         self.searchController.searchBar.hidden = YES;
         self.tableView.backgroundView = self.noSignalContactsView;
         self.tableView.backgroundView.opaque   = YES;
+        self.navigationItem.rightBarButtonItem = nil;
     } else {
         [self initializeRefreshControl];
         self.refreshControl.enabled = YES;
-        self.navigationItem.rightBarButtonItem =
-            self.navigationItem.rightBarButtonItem != nil ? self.navigationItem.rightBarButtonItem : _addGroup;
         self.searchController.searchBar.hidden = NO;
         self.tableView.backgroundView          = nil;
-        self.inviteCell.hidden = NO;
+        self.navigationItem.rightBarButtonItem = self.createGroupBarButtonItem;
     }
-    
-    for (UITableViewCell *cell in self.tableView.visibleCells) {
-        cell.hidden = show;
-    }
+
+    [self.tableView reloadData];
 }
 
 #pragma mark - Initializers
@@ -330,7 +321,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
     [self.tableView reloadData];
 }
-
 
 #pragma mark - UISearchBarDelegate
 
@@ -533,7 +523,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return MessageComposeTableViewControllerSection_Count;
+    return (self.isNoContactsViewVisible
+            ? 0
+            : MessageComposeTableViewControllerSection_Count);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -596,14 +588,12 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
                                                 phoneNumber];
         return inviteViaSMSCell;
     } else if (indexPath.section == MessageComposeTableViewControllerSectionInviteFlow) {
-        self.inviteCell.hidden = NO;
         return self.inviteCell;
     } else {
         OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
         
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
-        cell.hidden = NO;
 
         [cell configureWithContact:[self contactForIndexPath:indexPath] contactsManager:self.contactsManager];
 
@@ -683,11 +673,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [self.refreshControl endRefreshing];
 
     [self showLoadingBackgroundView:NO];
-    if ([self.contacts count] == 0) {
-        [self showEmptyBackgroundView:YES];
-    } else {
-        [self showEmptyBackgroundView:NO];
-    }
+    
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (void)refreshContacts {
@@ -730,6 +717,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 }
 
 - (IBAction)closeAction:(id)sender {
+    [self.searchController setActive:NO];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

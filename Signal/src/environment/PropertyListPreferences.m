@@ -25,6 +25,7 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
+NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 
 @implementation PropertyListPreferences
 
@@ -164,6 +165,18 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
                                             forKey:PropertyListPreferencesKeyLastRunSignalVersion];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+- (BOOL)hasDeclinedNoContactsView
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView];
+    // Default to NO.
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setHasDeclinedNoContactsView:(BOOL)value
+{
+    [self setValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
 }
 
 #pragma mark - Calling
