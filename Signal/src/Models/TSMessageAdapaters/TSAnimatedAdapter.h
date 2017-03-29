@@ -5,6 +5,8 @@
 #import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQPhotoMediaItem.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSAttachmentStream;
 
 @interface TSAnimatedAdapter : JSQMediaItem <OWSMessageEditing>
@@ -15,3 +17,5 @@
 @property NSData *fileData;
 
 @end
+
+NS_ASSUME_NONNULL_END

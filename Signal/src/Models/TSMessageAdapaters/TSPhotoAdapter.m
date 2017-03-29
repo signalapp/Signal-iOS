@@ -9,13 +9,17 @@
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSPhotoAdapter ()
 
-@property (nonatomic) UIImageView *cachedImageView;
-@property (nonatomic) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
 
 @end
+
+#pragma mark -
 
 @implementation TSPhotoAdapter
 
@@ -126,3 +130,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,8 +1,11 @@
-//  Created by Frederic Jacobs on 17/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQVideoMediaItem.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
 
@@ -24,3 +27,5 @@
 - (void)resetAudioDuration;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -18,6 +18,8 @@
 #import "TSOutgoingMessage.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSMessageAdapter ()
 
 // ---
@@ -60,6 +62,7 @@
 
 @end
 
+#pragma mark -
 
 @implementation TSMessageAdapter
 
@@ -134,8 +137,8 @@
                     if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                         NSData *textData = [NSData dataWithContentsOfURL:stream.mediaURL];
                         NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-                        // TODO: Tune this value.
-                        const NSUInteger kMaxTextDisplayLength = 256;
+                        // Only show up to 2kb of text.
+                        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
                         NSString *displayText = [[DisplayableTextFilter new] displayableText:fullText];
                         if (displayText.length > kMaxTextDisplayLength) {
                             // Trim whitespace before _AND_ after slicing the snipper from the string.
@@ -152,27 +155,24 @@
                     } else if ([stream isAnimated]) {
                         adapter.mediaItem =
                             [[TSAnimatedAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     } else if ([stream isImage]) {
                         adapter.mediaItem =
                             [[TSPhotoAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     } else if ([stream isVideo]) {
                         adapter.mediaItem = [[TSVideoAttachmentAdapter alloc]
                             initWithAttachment:stream
                                       incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     } else {
                         adapter.mediaItem = [[TSGenericAttachmentAdapter alloc]
                             initWithAttachment:stream
                                       incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = YES;
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     }
                 } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
@@ -402,3 +402,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

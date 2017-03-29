@@ -13,15 +13,18 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSGenericAttachmentAdapter ()
 
-@property (nonatomic) UIView *cachedMediaView;
+@property (nonatomic, nullable) UIView *cachedMediaView;
 @property (nonatomic) TSAttachmentStream *attachment;
-@property (nonatomic) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
-@property (nonatomic) NSString *attachmentId;
 
 @end
+
+#pragma mark -
 
 @implementation TSGenericAttachmentAdapter
 
@@ -31,11 +34,15 @@
 
     if (self) {
         _attachment = attachment;
-        _attachmentId = attachment.uniqueId;
         _incoming = incoming;
     }
 
     return self;
+}
+
+- (NSString *)attachmentId
+{
+    return self.attachment.uniqueId;
 }
 
 - (void)clearCachedMediaViews
@@ -194,3 +201,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

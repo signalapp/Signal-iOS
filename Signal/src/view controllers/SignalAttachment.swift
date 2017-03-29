@@ -116,7 +116,7 @@ class SignalAttachment: NSObject {
     var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            assert(false)
+            assertionFailure()
             return nil
         }
 
@@ -126,7 +126,7 @@ class SignalAttachment: NSObject {
     var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            assert(false)
+            assertionFailure()
             return nil
         }
 
@@ -158,8 +158,8 @@ class SignalAttachment: NSObject {
     var fileExtension: String? {
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI ||
         dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
-            assert(false)
-            return ""
+            assertionFailure()
+            return nil
         }
 
         guard let fileExtension = UTTypeCopyPreferredTagWithClass(dataUTI as CFString,
