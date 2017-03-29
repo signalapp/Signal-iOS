@@ -155,12 +155,16 @@
                     TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
                     adapter.messageType          = TSInfoMessageAdapter;
 
-                    if (pointer.isDownloading) {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
-                    } else if (pointer.hasFailed) {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
-                    } else {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
+                    switch (pointer.state) {
+                        case TSAttachmentPointerStateEnqueued:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
+                            break;
+                        case TSAttachmentPointerStateDownloading:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
+                            break;
+                        case TSAttachmentPointerStateFailed:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
+                            break;
                     }
                 } else {
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
