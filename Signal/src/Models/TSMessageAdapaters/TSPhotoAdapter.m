@@ -105,6 +105,7 @@
 {
     NSString *actionString = NSStringFromSelector(action);
     if (!self.image) {
+        OWSAssert(NO);
         DDLogWarn(@"Refusing to perform '%@' action with nil image for %@: attachmentId=%@. (corrupted attachment?)",
             actionString,
             self.class,
