@@ -1,0 +1,12 @@
+#!/bin/bash
+
+git log -1 HEAD | grep -i FREEBIE > /dev/null
+
+if [[ $? -ne 0 ]]
+then
+  cat <<EOM
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! You forgot to include FREEBIE in your commit message. !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOM
+fi
