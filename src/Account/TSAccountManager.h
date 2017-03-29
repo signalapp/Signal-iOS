@@ -80,9 +80,6 @@ static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
                                           failure:(void (^)(NSError *error))failureHandler
     NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
 
-- (void)obtainRPRegistrationTokenWithSuccess:(void (^)(NSString *rpRegistrationToken))success
-                                     failure:(void (^)(NSError *error))failureBlock;
-
 #endif
 
 + (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock;
