@@ -10,6 +10,8 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation ThreadUtil
 
 + (void)sendMessageWithText:(NSString *)text inThread:(TSThread *)thread messageSender:(OWSMessageSender *)messageSender
@@ -95,3 +97,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

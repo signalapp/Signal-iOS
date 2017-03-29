@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSTableContents : NSObject
 
 @property (nonatomic) NSString *title;
-@property (nonatomic) NSMutableArray *sections;
+@property (nonatomic) NSMutableArray<OWSTableSection *> *sections;
 
 @end
 
@@ -23,12 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSTableContents
 
-- (void)addSection:(OWSTableSection *)section {
-    OWSAssert(section);
-    
-    if (!_sections) {
+-(instancetype)init {
+    if (self = [self init]) {
         _sections = [NSMutableArray new];
     }
+    return self;
+}
+
+- (void)addSection:(OWSTableSection *)section {
+    OWSAssert(section);
     
     [_sections addObject:section];
 }
@@ -40,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSTableSection : NSObject
 
 @property (nonatomic) NSString *title;
-@property (nonatomic) NSMutableArray *items;
+@property (nonatomic) NSMutableArray<OWSTableItem *> *items;
 
 @end
 
@@ -54,6 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
     section.title = title;
     section.items = [items mutableCopy];
     return section;
+}
+
+-(instancetype)init {
+    if (self = [self init]) {
+        _items = [NSMutableArray new];
+    }
+    return self;
 }
 
 - (void)addItem:(OWSTableItem *)item {
