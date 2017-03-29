@@ -69,6 +69,9 @@ class SignalAttachment: NSObject {
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
     let dataUTI: String
 
+    static let kOversizeTextAttachmentUTI = "org.whispersystems.oversize-text-attachment"
+    static let kUnknownTestAttachmentUTI = "org.whispersystems.unknown"
+
     var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()
@@ -113,7 +116,7 @@ class SignalAttachment: NSObject {
     var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            assert(false)
+            assertionFailure()
             return nil
         }
 
@@ -123,7 +126,7 @@ class SignalAttachment: NSObject {
     var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            assert(false)
+            assertionFailure()
             return nil
         }
 
@@ -137,6 +140,12 @@ class SignalAttachment: NSObject {
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
     var mimeType: String? {
+        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
+            return OWSMimeTypeOversizeTextMessage
+        }
+        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+            return OWSMimeTypeUnknownForTests
+        }
         let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType)
         guard mimeType != nil else {
             return nil
@@ -147,6 +156,12 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
+        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI ||
+        dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+            assertionFailure()
+            return nil
+        }
+
         guard let fileExtension = UTTypeCopyPreferredTagWithClass(dataUTI as CFString,
                                                                   kUTTagClassFilenameExtension) else {
             return nil
@@ -506,6 +521,19 @@ class SignalAttachment: NSObject {
                              dataUTI : dataUTI,
                              validUTISet : audioUTISet,
                              maxFileSize : kMaxFileSizeAudio)
+    }
+
+    // MARK: Oversize Text Attachments
+
+    // Factory method for oversize text attachments.
+    //
+    // NOTE: The attachment returned by this method may not be valid.
+    //       Check the attachment's error property.
+    public class func oversizeTextAttachment(text: String?) -> SignalAttachment {
+        return newAttachment(data : text?.data(using: .utf8),
+                             dataUTI : kOversizeTextAttachmentUTI,
+                             validUTISet : nil,
+                             maxFileSize : kMaxFileSizeGeneric)
     }
 
     // MARK: Generic Attachments

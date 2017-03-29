@@ -21,7 +21,7 @@ class AttachmentApprovalViewController: UIViewController {
         self.attachment = SignalAttachment.genericAttachment(data: nil,
                                                              dataUTI: kUTTypeContent as String)
         super.init(coder: aDecoder)
-        assert(false)
+        assertionFailure()
     }
 
     required init(attachment: SignalAttachment, successCompletion : @escaping () -> Void) {

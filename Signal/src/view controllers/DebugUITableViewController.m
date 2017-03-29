@@ -3,8 +3,9 @@
 //
 
 #import "DebugUITableViewController.h"
-#import "ThreadUtil.h"
 #import "Environment.h"
+#import "Signal-Swift.h"
+#import "ThreadUtil.h"
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -220,7 +221,7 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
     return self.class.tag;
 }
 
-#pragma mark - Factory and presentation
+#pragma mark - Factory Methods
 
 + (void)presentDebugUIForThread:(TSThread *)thread
              fromViewController:(UIViewController *)fromViewController {
@@ -232,10 +233,23 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
     
     [contents addSection:[OWSTableSection sectionWithTitle:@"Messages View"
                                                      items:@[
-                                                             [OWSTableItem actionWithTitle:@"Send 100 messages"
+                                                             [OWSTableItem actionWithTitle:@"Send 10 messages (1/sec.)"
+                                                                               actionBlock:^{
+                                                                                   [DebugUITableViewController sendTextMessage:10
+                                                                                                                        thread:thread];
+                                                                               }],
+                                                             [OWSTableItem actionWithTitle:@"Send 100 messages (1/sec.)"
                                                                                actionBlock:^{
                                                                                    [DebugUITableViewController sendTextMessage:100
                                                                                                                         thread:thread];
+                                                                               }],
+                                                             [OWSTableItem actionWithTitle:@"Send text/x-signal-plain"
+                                                                               actionBlock:^{
+                                                                                   [DebugUITableViewController sendOversizeTextMessage:thread];
+                                                                               }],
+                                                             [OWSTableItem actionWithTitle:@"Send unknown/mimetype"
+                                                                               actionBlock:^{
+                                                                                   [DebugUITableViewController sendUnknownMimetypeAttachment:thread];
                                                                                }],
                                                              ]]];
     
@@ -258,6 +272,39 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
                        [self sendTextMessage:counter - 1 thread:thread];
                    });
 }
+
++ (void)sendOversizeTextMessage:(TSThread *)thread {
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    NSString *message = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consequat, ligula et tincidunt mattis, nisl risus ultricies justo, vitae dictum augue risus vel ante. Suspendisse convallis bibendum lectus. Etiam molestie nisi ac orci sodales sollicitudin vitae eu quam. Morbi lacinia scelerisque risus. Quisque sagittis mauris enim, ac vestibulum dui commodo quis. Nullam at commodo nisl, ut pulvinar dui. Nunc tempus volutpat sagittis. Vestibulum eget maximus sem, sit amet tristique ex posuere.";
+    SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:message];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            messageSender:messageSender];
+}
+
++ (NSData*)createRandomNSDataOfSize:(size_t)size
+{
+    OWSAssert(size % 4 == 0);
+    
+    NSMutableData* data = [NSMutableData dataWithCapacity:size];
+    for (size_t i = 0; i < size / 4; ++i)
+    {
+        u_int32_t randomBits = arc4random();
+        [data appendBytes:(void *)&randomBits length:4];
+    }
+    return data;
+}
+
++ (void)sendUnknownMimetypeAttachment:(TSThread *)thread {
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    SignalAttachment *attachment = [SignalAttachment genericAttachmentWithData:[self createRandomNSDataOfSize:256]
+                                                                       dataUTI:SignalAttachment.kUnknownTestAttachmentUTI];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            messageSender:messageSender];
+}
+
+#pragma mark - Presentation
 
 - (void)presentFromViewController:(UIViewController *)fromViewController {
     OWSAssert(fromViewController);

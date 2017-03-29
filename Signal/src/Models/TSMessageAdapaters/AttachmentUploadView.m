@@ -79,6 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
+    [_maskLayer removeFromSuperlayer];
+    [_progressView removeFromSuperview];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

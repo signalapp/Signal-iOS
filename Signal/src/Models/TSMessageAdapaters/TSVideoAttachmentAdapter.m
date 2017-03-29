@@ -14,21 +14,22 @@
 #import <SCWaveformView.h>
 #define AUDIO_BAR_HEIGHT 36
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSVideoAttachmentAdapter ()
 
 @property (nonatomic) UIImage *image;
-@property (nonatomic) UIImageView *cachedImageView;
-@property (nonatomic) UIImageView *videoPlayButton;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
 @property (nonatomic) TSAttachmentStream *attachment;
-@property (nonatomic) UIProgressView *audioProgress;
-@property (nonatomic) SCWaveformView *waveform;
-@property (nonatomic) UIButton *audioPlayPauseButton;
-@property (nonatomic) UILabel *durationLabel;
-@property (nonatomic) UIView *audioBubble;
+@property (nonatomic, nullable) SCWaveformView *waveform;
+@property (nonatomic, nullable) UIButton *audioPlayPauseButton;
+@property (nonatomic, nullable) UILabel *durationLabel;
 @property (nonatomic) BOOL incoming;
-@property (nonatomic) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 
 @end
+
+#pragma mark -
 
 @implementation TSVideoAttachmentAdapter
 
@@ -44,10 +45,6 @@
         _incoming        = incoming;
     }
     return self;
-}
-
-- (BOOL)isImage {
-    return NO;
 }
 
 - (BOOL)isAudio {
@@ -117,17 +114,15 @@
                                                                         isOutgoing:self.appliesMediaViewMaskAsOutgoing];
             self.cachedImageView   = imageView;
             UIImage *img           = [UIImage imageNamed:@"play_button"];
-            _videoPlayButton       = [[UIImageView alloc] initWithImage:img];
-            _videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
-            [self.cachedImageView addSubview:_videoPlayButton];
+            UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:img];
+            videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
+            [self.cachedImageView addSubview:videoPlayButton];
 
             if (!_incoming) {
-                __weak TSVideoAttachmentAdapter *weakSelf = self;
                 self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
                                                                                    superview:imageView
                                                                      attachmentStateCallback:^(BOOL isAttachmentReady) {
-                                                                         weakSelf.videoPlayButton.hidden
-                                                                             = !isAttachmentReady;
+                                                                         videoPlayButton.hidden = !isAttachmentReady;
                                                                      }];
             }
         }
@@ -147,11 +142,11 @@
             self.waveform.progress = 0.0;
         }
 
-        _audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
-        _audioBubble.backgroundColor =
+        UIView *audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+        audioBubble.backgroundColor =
             [UIColor colorWithRed:10 / 255.0f green:130 / 255.0f blue:253 / 255.0f alpha:1.0f];
-        _audioBubble.layer.cornerRadius  = 18;
-        _audioBubble.layer.masksToBounds = YES;
+        audioBubble.layer.cornerRadius = 18;
+        audioBubble.layer.masksToBounds = YES;
 
         _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
         [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"]
@@ -170,7 +165,7 @@
         _durationLabel.textColor       = [UIColor whiteColor];
 
         if (_incoming) {
-            _audioBubble.backgroundColor =
+            audioBubble.backgroundColor =
                 [UIColor colorWithRed:229 / 255.0f green:228 / 255.0f blue:234 / 255.0f alpha:1.0f];
             _waveform.normalColor = [UIColor whiteColor];
             _waveform.progressColor =
@@ -180,21 +175,21 @@
             _durationLabel.textColor = [UIColor darkTextColor];
         }
 
-        [_audioBubble addSubview:_waveform];
-        [_audioBubble addSubview:_audioPlayPauseButton];
-        [_audioBubble addSubview:_durationLabel];
+        [audioBubble addSubview:_waveform];
+        [audioBubble addSubview:_audioPlayPauseButton];
+        [audioBubble addSubview:_durationLabel];
 
         if (!_incoming) {
             __weak TSVideoAttachmentAdapter *weakSelf = self;
             self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
-                                                                               superview:_audioBubble
+                                                                               superview:audioBubble
                                                                  attachmentStateCallback:^(BOOL isAttachmentReady) {
                                                                      weakSelf.audioPlayPauseButton.enabled
                                                                          = isAttachmentReady;
                                                                  }];
         }
 
-        return _audioBubble;
+        return audioBubble;
     } else {
         // Unknown media type.
         OWSAssert(0);
@@ -284,3 +279,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

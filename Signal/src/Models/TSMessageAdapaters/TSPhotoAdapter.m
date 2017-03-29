@@ -9,13 +9,17 @@
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSPhotoAdapter ()
 
-@property (nonatomic) UIImageView *cachedImageView;
-@property (nonatomic) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
 
 @end
+
+#pragma mark -
 
 @implementation TSPhotoAdapter
 
@@ -80,20 +84,6 @@
     return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
 }
 
-- (BOOL)isImage {
-    return YES;
-}
-
-
-- (BOOL)isAudio {
-    return NO;
-}
-
-
-- (BOOL)isVideo {
-    return NO;
-}
-
 #pragma mark - OWSMessageEditing Protocol
 
 - (BOOL)canPerformEditingAction:(SEL)action
@@ -140,3 +130,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
