@@ -10,29 +10,18 @@
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream {
     OWSAssert(stream);
 
-    NSString *filePath = stream.filePath;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSError *error;
-        NSData *data = [NSData dataWithContentsOfFile:filePath options:0 error:&error];
-        if (!data || error) {
-            DDLogError(@"%@ %s could not read data from attachment: %@.",
-                       self.tag,
-                       __PRETTY_FUNCTION__,
-                       error);
-            return;
-        }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [AttachmentSharing showShareUIForData:data];
-        });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [AttachmentSharing showShareUIForURL:stream.mediaURL];
     });
 }
 
-+ (void)showShareUIForData:(NSData *)data {
++ (void)showShareUIForURL:(NSURL *)url {
     AssertIsOnMainThread();
-    OWSAssert(data);
+    OWSAssert(url);
 
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[data, ]
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[
+                                                                                                                 url,
+                                                                                                                  ]
                                                                                          applicationActivities:@[
                                                                                                                  ]];
     

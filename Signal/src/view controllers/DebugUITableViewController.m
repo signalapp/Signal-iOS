@@ -247,9 +247,15 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
                                                                                actionBlock:^{
                                                                                    [DebugUITableViewController sendOversizeTextMessage:thread];
                                                                                }],
-                                                             [OWSTableItem actionWithTitle:@"Send unknown/mimetype"
+                                                             [OWSTableItem actionWithTitle:@"Send unknown mimetype"
                                                                                actionBlock:^{
-                                                                                   [DebugUITableViewController sendUnknownMimetypeAttachment:thread];
+                                                                                   [DebugUITableViewController sendRandomAttachment:thread
+                                                                                                                                uti:SignalAttachment.kUnknownTestAttachmentUTI];
+                                                                               }],
+                                                             [OWSTableItem actionWithTitle:@"Send pdf"
+                                                                               actionBlock:^{
+                                                                                   [DebugUITableViewController sendRandomAttachment:thread
+                                                                                                                                uti:(NSString *) kUTTypePDF];
                                                                                }],
                                                              ]]];
     
@@ -275,7 +281,11 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
 
 + (void)sendOversizeTextMessage:(TSThread *)thread {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    NSString *message = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consequat, ligula et tincidunt mattis, nisl risus ultricies justo, vitae dictum augue risus vel ante. Suspendisse convallis bibendum lectus. Etiam molestie nisi ac orci sodales sollicitudin vitae eu quam. Morbi lacinia scelerisque risus. Quisque sagittis mauris enim, ac vestibulum dui commodo quis. Nullam at commodo nisl, ut pulvinar dui. Nunc tempus volutpat sagittis. Vestibulum eget maximus sem, sit amet tristique ex posuere.";
+    NSMutableString *message = [NSMutableString new];
+    for (int i=0; i < 32; i++) {
+        [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac sodales. Aenean ut velit maximus, posuere sem a, accumsan nunc. Donec ullamcorper turpis lorem. Quisque dignissim purus eu placerat ultricies. Proin at urna eget mi semper congue. Aenean non elementum ex. Praesent pharetra quam at sem vestibulum, vestibulum ornare dolor elementum. Vestibulum massa tortor, scelerisque sit amet pulvinar a, rhoncus vitae nisl. Sed mi nunc, tempus at varius in, malesuada vitae dui. Vivamus efficitur pulvinar erat vitae congue. Proin vehicula turpis non felis congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere lorem, in rhoncus nisi."];
+    }
+    
     SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:message];
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
@@ -295,10 +305,11 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
     return data;
 }
 
-+ (void)sendUnknownMimetypeAttachment:(TSThread *)thread {
++ (void)sendRandomAttachment:(TSThread *)thread
+                         uti:(NSString *)uti {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     SignalAttachment *attachment = [SignalAttachment genericAttachmentWithData:[self createRandomNSDataOfSize:256]
-                                                                       dataUTI:SignalAttachment.kUnknownTestAttachmentUTI];
+                                                                       dataUTI:uti];
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                             messageSender:messageSender];
