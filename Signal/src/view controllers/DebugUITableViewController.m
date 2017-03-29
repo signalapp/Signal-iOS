@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSTableContents
 
 -(instancetype)init {
-    if (self = [self init]) {
+    if (self = [super init]) {
         _sections = [NSMutableArray new];
     }
     return self;
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 -(instancetype)init {
-    if (self = [self init]) {
+    if (self = [super init]) {
         _items = [NSMutableArray new];
     }
     return self;
