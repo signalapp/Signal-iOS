@@ -16,7 +16,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSOversizeTextAttachmentAdapter.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 @interface TSMessageAdapter ()
