@@ -1,12 +1,11 @@
 //
-//  TextSecureKitEnv.h
-//  Pods
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
-//  Created by Frederic Jacobs on 05/12/15.
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol;
+@class OWSMessageSender;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
 
@@ -14,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                            contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                             messageSender:(OWSMessageSender *)messageSender
                       notificationsManager:(id<NotificationsProtocol>)notificationsManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedEnv;
 + (void)setSharedEnv:(TextSecureKitEnv *)env;
 
-@property (nonatomic, readonly, strong) id<OWSCallMessageHandler> callMessageHandler;
-@property (nonatomic, readonly, strong) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic, readonly, strong) id<NotificationsProtocol> notificationsManager;
-
+@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
+@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) id<NotificationsProtocol> notificationsManager;
 
 @end
 

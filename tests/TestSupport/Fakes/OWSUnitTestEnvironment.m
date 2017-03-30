@@ -1,9 +1,11 @@
-//  Created by Michael Kirk on 12/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSUnitTestEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
+#import "OWSFakeMessageSender.h"
 #import "OWSFakeNotificationsManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [super initWithCallMessageHandler:[OWSFakeCallMessageHandler new]
                              contactsManager:[OWSFakeContactsManager new]
+                               messageSender:[OWSFakeMessageSender new]
                         notificationsManager:[OWSFakeNotificationsManager new]];
 }
 

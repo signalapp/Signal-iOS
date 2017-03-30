@@ -10,6 +10,7 @@
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
+#import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSMessageSender.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -37,40 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
-
-@end
-
-@interface OWSFakeMessageSender : OWSMessageSender
-
-@property (nonatomic, readonly) XCTestExpectation *expectation;
-
-@end
-
-@implementation OWSFakeMessageSender
-
-- (instancetype)initWithExpectation:(XCTestExpectation *)expectation
-{
-    self = [self init];
-    if (!self) {
-        return self;
-    }
-
-    _expectation = expectation;
-
-    return self;
-}
-
-- (void)sendTemporaryAttachmentData:(NSData *)attachmentData
-                        contentType:(NSString *)contentType
-                          inMessage:(TSOutgoingMessage *)outgoingMessage
-                            success:(void (^)())successHandler
-                            failure:(void (^)(NSError *error))failureHandler
-{
-
-    NSLog(@"Faking sendTemporyAttachmentData.");
-    [self.expectation fulfill];
-    successHandler();
-}
 
 @end
 
