@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <XCTest/XCTest.h>
 
@@ -20,6 +21,15 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessagesManager (Testing)
+
+// Private init for stubbing dependencies
+
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                        storageManager:(TSStorageManager *)storageManager
+                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                       contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         messageSender:(OWSMessageSender *)messageSender;
 
 // private method we are testing
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
