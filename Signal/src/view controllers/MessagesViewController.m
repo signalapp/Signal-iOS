@@ -1347,7 +1347,7 @@ typedef enum : NSUInteger {
 {
     id<OWSMessageData> messageItem = [self messageAtIndexPath:indexPath];
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-
+    
     switch (messageItem.messageType) {
         case TSOutgoingMessageAdapter: {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
@@ -1564,8 +1564,16 @@ typedef enum : NSUInteger {
             TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
             if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                 TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
+                // Tapping on incoming and outgoing unknown extensions should show the
+                // sharing UI.
                 if ([[messageItem media] isKindOfClass:[TSGenericAttachmentAdapter class]]) {
                     [AttachmentSharing showShareUIForAttachment:stream];
+                }
+                // Tapping on incoming and outgoing "oversize text messages" should show the
+                // "oversize text message" view.
+                if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+                    OversizeTextMessageViewController *messageVC = [[OversizeTextMessageViewController alloc] initWithMessage:message];
+                    [self.navigationController pushViewController:messageVC animated:YES];
                 }
             }
         }

@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #import "Asserts.h"
+#import "AttachmentSharing.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
@@ -49,6 +50,8 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>

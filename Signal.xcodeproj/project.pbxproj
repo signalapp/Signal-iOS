@@ -18,6 +18,7 @@
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
+		345671231E8B1618006EE662 /* OversizeTextMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345671221E8B1618006EE662 /* OversizeTextMessageViewController.swift */; };
 		34802DD71E899CFB0032EA1D /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34802DD61E899CFB0032EA1D /* DebugUITableViewController.m */; };
 		348A08421E6A044E0057E290 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08411E6A044E0057E290 /* MessagesViewController.xib */; };
 		348A08441E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 348A08431E6A1D2C0057E290 /* OWSMessagesToolbarContentView.xib */; };
@@ -407,6 +408,7 @@
 		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
 		345671081E8A9F5D006EE662 /* TSGenericAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGenericAttachmentAdapter.h; sourceTree = "<group>"; };
 		345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGenericAttachmentAdapter.m; sourceTree = "<group>"; };
+		345671221E8B1618006EE662 /* OversizeTextMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OversizeTextMessageViewController.swift; sourceTree = "<group>"; };
 		34802DD51E899CFB0032EA1D /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
 		34802DD61E899CFB0032EA1D /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUITableViewController.m; sourceTree = "<group>"; };
 		348A08411E6A044E0057E290 /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
@@ -1339,6 +1341,7 @@
 				45514DE11DDFA183003EFF90 /* InviteFlow.swift */,
 				B6BADBE51B88D1AC0086A80D /* LockInteractionController.h */,
 				B6BADBE61B88D1AC0086A80D /* LockInteractionController.m */,
+				345671221E8B1618006EE662 /* OversizeTextMessageViewController.swift */,
 				458E382F1D6682450094BD24 /* OWSQRCodeScanningViewController.h */,
 				458E38301D6682450094BD24 /* OWSQRCodeScanningViewController.m */,
 				FC3196311A08141D0094C78E /* Settings */,
@@ -2214,6 +2217,7 @@
 				45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */,
 				76EB063018170B33006006FC /* Conversions.m in Sources */,
 				FCAC963C19FEF9280046DFC5 /* SignalsViewController.m in Sources */,
+				345671231E8B1618006EE662 /* OversizeTextMessageViewController.swift in Sources */,
 				B66B9F7D1AEAF40500E2E609 /* NotificationSettingsOptionsViewController.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
