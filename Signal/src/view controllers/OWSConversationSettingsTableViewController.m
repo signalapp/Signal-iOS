@@ -124,10 +124,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 {
     _storageManager = [TSStorageManager sharedManager];
     _contactsManager = [Environment getCurrent].contactsManager;
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:_storageManager
-                                                      contactsManager:_contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
+    _messageSender = [Environment getCurrent].messageSender;
 }
 
 - (void)configureWithThread:(TSThread *)thread

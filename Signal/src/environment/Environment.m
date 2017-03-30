@@ -13,8 +13,6 @@
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 
-#define isRegisteredUserDefaultString @"isRegistered"
-
 static Environment *environment = nil;
 
 @implementation Environment
@@ -22,6 +20,10 @@ static Environment *environment = nil;
 @synthesize accountManager = _accountManager,
             callMessageHandler = _callMessageHandler,
             callService = _callService,
+            contactsManager = _contactsManager,
+            contactsUpdater = _contactsUpdater,
+            messageSender = _messageSender,
+            networkManager = _networkManager,
             notificationsManager = _notificationsManager,
             preferences = _preferences,
             outboundCallInitiator = _outboundCallInitiator;
@@ -112,6 +114,30 @@ static Environment *environment = nil;
     }
 
     return _outboundCallInitiator;
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    OWSAssert(_contactsManager != nil);
+    return _contactsManager;
+}
+
+- (ContactsUpdater *)contactsUpdater
+{
+    OWSAssert(_contactsUpdater != nil);
+    return _contactsUpdater;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    OWSAssert(_networkManager != nil);
+    return _networkManager;
+}
+
+- (OWSMessageSender *)messageSender
+{
+    OWSAssert(_messageSender != nil);
+    return _messageSender;
 }
 
 - (NotificationsManager *)notificationsManager

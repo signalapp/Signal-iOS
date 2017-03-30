@@ -58,11 +58,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)commonInit
 {
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                                       storageManager:[TSStorageManager sharedManager]
-                                                      contactsManager:[Environment getCurrent].contactsManager
-                                                      contactsUpdater:[Environment getCurrent].contactsUpdater];
-
+    _messageSender = [Environment getCurrent].messageSender;
     _contactsManager = [Environment getCurrent].contactsManager;
 
     [self observeNotifications];
