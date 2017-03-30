@@ -3,7 +3,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -29,6 +29,7 @@
 #import "TSContentAdapters.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
+#import "TSGenericAttachmentAdapter.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
@@ -1553,6 +1554,21 @@ typedef enum : NSUInteger {
         default:
             DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);
             break;
+    }
+
+    if (messageItem.messageType == TSOutgoingMessageAdapter ||
+        messageItem.messageType == TSIncomingMessageAdapter) {
+        TSMessage *message  = (TSMessage *)interaction;
+        if ([message hasAttachments]) {
+            NSString *attachmentID = message.attachmentIds[0];
+            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
+            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
+                if ([[messageItem media] isKindOfClass:[TSGenericAttachmentAdapter class]]) {
+                    [AttachmentSharing showShareUIForAttachment:stream];
+                }
+            }
+        }
     }
 }
 

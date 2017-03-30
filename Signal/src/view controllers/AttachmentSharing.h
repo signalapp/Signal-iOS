@@ -10,4 +10,6 @@
 
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream;
 
++ (void)showShareUIForURL:(NSURL *)url;
+
 @end

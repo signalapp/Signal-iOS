@@ -97,12 +97,6 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
-/* A message indicating that an attachment of unknown type was received. */
-"ATTACHMENT_UNKNOWN_TYPE" = "Unknown attachment received";
-
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
-
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 

@@ -85,11 +85,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont ows_regularFontWithSize:11.f];
 }
 
-- (UIFont *)fileTypeLabelFont
-{
-    return [UIFont ows_mediumFontWithSize:16.f];
-}
-
 - (UIView *)mediaView
 {
     if (_cachedMediaView == nil) {
@@ -132,10 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
         fileTypeLabel.text = fileExtension.uppercaseString;
         fileTypeLabel.textColor = textColor;
         fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        fileTypeLabel.font = [self fileTypeLabelFont];
+        fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+        fileTypeLabel.adjustsFontSizeToFitWidth = YES;
         CGRect fileTypeLabelFrame = CGRectZero;
         fileTypeLabelFrame.size = [fileTypeLabel sizeThatFits:CGSizeZero];
-        fileTypeLabelFrame.size.width = floor(MIN(self.iconSize * 0.5f, fileTypeLabelFrame.size.width));
+        fileTypeLabelFrame.size.width = ceil(MIN(self.iconSize * 0.45f, fileTypeLabelFrame.size.width));
         // Center on icon.
         fileTypeLabelFrame.origin.x
             = round(iconFrame.origin.x + (iconFrame.size.width - fileTypeLabelFrame.size.width) * 0.5f);
