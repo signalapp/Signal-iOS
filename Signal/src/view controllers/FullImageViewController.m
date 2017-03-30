@@ -136,9 +136,11 @@
     self.footerBar = [UIToolbar new];
     _footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
     [self.footerBar setItems:@[
+                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                              target:self
                                                                              action:@selector(shareWasPressed:)],
+                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                                ]
                     animated:NO];
     [self.backgroundView addSubview:self.footerBar];
