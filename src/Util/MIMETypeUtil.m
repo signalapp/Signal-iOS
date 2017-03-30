@@ -289,9 +289,11 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     } else if ([self isBinaryData:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-        // This file extension is arbitrary - it should never be exposed to the user or
+        // We need to use a ".txt" file extension since this file extension is used
+        // by UIActivityViewController to determine which kinds of sharing are
+        // appropriate for this text.
         // be used outside the app.
-        return [self filePathForData:uniqueId withFileExtension:@"signal-text-message" inFolder:folder];
+        return [self filePathForData:uniqueId withFileExtension:@"txt" inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.
