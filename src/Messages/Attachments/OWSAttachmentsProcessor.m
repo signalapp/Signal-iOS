@@ -79,20 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         [attachmentIds addObject:pointer.uniqueId];
 
-        // TODO: We need to revisit isSupportedMIMEType.
-        if ([MIMETypeUtil isSupportedMIMEType:pointer.contentType] ||
-            [pointer.contentType isEqualToString:OWSMimeTypeOversizeTextMessage] ||
-            [pointer.contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
-            [pointer save];
-            [supportedAttachmentPointers addObject:pointer];
-            [supportedAttachmentIds addObject:pointer.uniqueId];
-        } else {
-            DDLogError(@"%@ Received unsupported attachment of type: %@", self.tag, pointer.contentType);
-            TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:timestamp
-                                                                         inThread:thread
-                                                                      messageType:TSInfoMessageTypeUnsupportedMessage];
-            [infoMessage save];
-        }
+        [pointer save];
+        [supportedAttachmentPointers addObject:pointer];
+        [supportedAttachmentIds addObject:pointer.uniqueId];
     }
 
     _attachmentIds = [attachmentIds copy];

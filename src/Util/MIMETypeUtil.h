@@ -9,7 +9,6 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 
 @interface MIMETypeUtil : NSObject
 
-+ (BOOL)isSupportedMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedAudioMIMEType:(NSString *)contentType;
 + (BOOL)isSupportedImageMIMEType:(NSString *)contentType;
