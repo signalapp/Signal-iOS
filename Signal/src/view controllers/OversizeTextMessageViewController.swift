@@ -33,14 +33,12 @@ class OversizeTextMessageViewController: UIViewController {
             assert(false)
             return nil
         }
-        let attachmentIDRaw = message.attachmentIds[0]
-        guard attachmentIDRaw is String else {
+        guard let attachmentID = message.attachmentIds[0] as? String else {
             Logger.error("\(TAG) message attachment id is not a string.")
             assert(false)
             return nil
         }
-        let attachmentID = attachmentIDRaw as! String
-        guard let attachment = TSAttachment.fetch(withUniqueID:attachmentID) else {
+        guard let attachment = TSAttachment.fetch(withUniqueID:attachmentID) as? TSAttachmentStream else {
             Logger.error("\(TAG) could not load attachment.")
             assert(false)
             return nil
@@ -50,13 +48,7 @@ class OversizeTextMessageViewController: UIViewController {
             assert(false)
             return nil
         }
-        guard attachment is TSAttachmentStream else {
-            Logger.error("\(TAG) attachment has unexpected type.")
-            assert(false)
-            return nil
-        }
-        let stream = attachment as! TSAttachmentStream
-        return stream
+        return attachment
     }
 
     private func attachmentData() -> Data? {
@@ -112,7 +104,9 @@ class OversizeTextMessageViewController: UIViewController {
         let textView = UITextView()
         textView.textColor = UIColor.black
         textView.text = displayText()
-        textView.font = UIFont.ows_regularFont(withSize:14)
+        textView.font = UIFont.ows_dynamicTypeBody()
+        textView.isEditable = false
+        textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
         self.view.addSubview(textView)
         textView.autoPinWidthToSuperview()
         textView.autoPin(toTopLayoutGuideOf : self, withInset: 0)
@@ -144,7 +138,7 @@ class OversizeTextMessageViewController: UIViewController {
             assert(false)
             return
         }
-        
+
         AttachmentSharing.showShareUI(for:attachment.mediaURL())
     }
 }
