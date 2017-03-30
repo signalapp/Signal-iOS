@@ -17,6 +17,7 @@ PODS:
     - AFNetworking/NSURLSession
   - AxolotlKit (0.8.1):
     - 25519 (~> 2.0.1)
+    - CocoaLumberjack
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.8)
   - CocoaLumberjack (2.4.0):
@@ -128,7 +129,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 23a5d1b67afc4dd028198202e25fd2e06ce396d7
+    :commit: af1946846ab2826fafadb1886a80d1da8632f091
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
     :commit: 718164fbe509e902d6dfda9f3c33c0dfc11c5e19
@@ -140,7 +141,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  AxolotlKit: 240c7d761e4b1be9c6de78ebec498aaeedc978f4
+  AxolotlKit: a9530d6835baae0f204b1f6b9dd79b7901176f0d
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
