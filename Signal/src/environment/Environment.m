@@ -35,18 +35,16 @@ static Environment *environment = nil;
     environment = curEnvironment;
 }
 
-- (instancetype)initWithLogging:(id<Logging>)logging
-                contactsManager:(OWSContactsManager *)contactsManager
-                contactsUpdater:(ContactsUpdater *)contactsUpdater
-                 networkManager:(TSNetworkManager *)networkManager
-                  messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         networkManager:(TSNetworkManager *)networkManager
+                          messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _logging = logging;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
@@ -114,15 +112,6 @@ static Environment *environment = nil;
     }
 
     return _outboundCallInitiator;
-}
-
-+ (id<Logging>)logging {
-    // Many tests create objects that rely on Environment only for logging.
-    // So we bypass the nil check in getCurrent and silently don't log during unit testing, instead of failing hard.
-    if (environment == nil)
-        return nil;
-
-    return Environment.getCurrent.logging;
 }
 
 - (NotificationsManager *)notificationsManager

@@ -3,7 +3,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Logging.h"
 #import "PropertyListPreferences.h"
 #import "TSGroupModel.h"
 #import "TSStorageHeaders.h"
@@ -32,13 +31,11 @@
 
 @interface Environment : NSObject
 
-- (instancetype)initWithLogging:(id<Logging>)logging
-                contactsManager:(OWSContactsManager *)contactsManager
-                contactsUpdater:(ContactsUpdater *)contactsUpdater
-                 networkManager:(TSNetworkManager *)networkManager
-                  messageSender:(OWSMessageSender *)messageSender;
+- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         networkManager:(TSNetworkManager *)networkManager
+                          messageSender:(OWSMessageSender *)messageSender;
 
-@property (nonatomic, readonly) id<Logging> logging;
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
 @property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
@@ -57,7 +54,6 @@
 
 + (Environment *)getCurrent;
 + (void)setCurrent:(Environment *)curEnvironment;
-+ (id<Logging>)logging;
 
 + (PropertyListPreferences *)preferences;
 
