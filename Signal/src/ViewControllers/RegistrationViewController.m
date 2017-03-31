@@ -16,6 +16,8 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
 
+@property (nonatomic) NSString *lastCallingCode;
+
 @end
 
 @implementation RegistrationViewController
@@ -70,6 +72,9 @@ static NSString *const kCodeSentSegue = @"codeSent";
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
+
+    _lastCallingCode = callingCode;
+
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",
                        callingCode,
                        countryCode.uppercaseString];
@@ -123,8 +128,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber =
-        [NSString stringWithFormat:@"%@%@", _countryCodeButton.titleLabel.text, _phoneNumberTextField.text];
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _lastCallingCode, _phoneNumberTextField.text];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
 
     [_sendCodeButton setEnabled:NO];
