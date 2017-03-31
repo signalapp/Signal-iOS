@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = insertionText.length == 0;
-    NSUInteger cursorPositionAfterChange = left.length + center.length;
+    NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
     NSString *textAfterReformat =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
                                                      withSpecifiedCountryCodeString:countryCode];

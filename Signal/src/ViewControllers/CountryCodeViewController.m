@@ -61,7 +61,11 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
                                  countryName:_countryNameSelected
                                  callingCode:_callingCodeSelected];
     [self.searchBar resignFirstResponder];
-    [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
+    if (self.shouldDismissWithoutSegue) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -17,8 +17,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
 
-@property (nonatomic) NSString *lastCallingCode;
-@property (nonatomic) NSString *lastCountryCode;
+@property (nonatomic) NSString *callingCode;
 
 @end
 
@@ -77,8 +76,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
 
-    _lastCallingCode = callingCode;
-    _lastCountryCode = countryCode;
+    _callingCode = callingCode;
 
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",
                        callingCode,
@@ -133,7 +131,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _lastCallingCode, _phoneNumberTextField.text];
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, _phoneNumberTextField.text];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
 
     [_sendCodeButton setEnabled:NO];
@@ -196,7 +194,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [ViewControllerUtils phoneNumberTextField:textField
                 shouldChangeCharactersInRange:range
                             replacementString:insertionText
-                                  countryCode:_lastCountryCode];
+                                  countryCode:_callingCode];
 
     return NO; // inform our caller that we took care of performing the change
 }

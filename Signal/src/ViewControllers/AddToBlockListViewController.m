@@ -31,8 +31,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 
 @property (nonatomic) UIButton *blockButton;
 
-@property (nonatomic) NSString *lastCallingCode;
-@property (nonatomic) NSString *lastCountryCode;
+@property (nonatomic) NSString *callingCode;
 
 @end
 
@@ -194,9 +193,8 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
-    
-    _lastCallingCode = callingCode;
-    _lastCountryCode = countryCode;
+
+    _callingCode = callingCode;
 
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",
                        callingCode,
@@ -206,9 +204,9 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [_countryCodeButton layoutSubviews];
 }
 
-- (void)setLastCallingCode:(NSString *)lastCallingCode
+- (void)setcallingCode:(NSString *)callingCode
 {
-    _lastCallingCode = lastCallingCode;
+    _callingCode = callingCode;
 
     [self updateBlockButtonEnabling];
 }
@@ -216,11 +214,13 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 #pragma mark - Actions
 
 - (void)showCountryCodeView:(id)sender {
-    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
+    CountryCodeViewController *countryCodeController = [[UIStoryboard storyboardWithName:@"Registration" bundle:NULL]
+        instantiateViewControllerWithIdentifier:@"CountryCodeViewController"];
     countryCodeController.delegate = self;
-    [self presentViewController:countryCodeController
-                       animated:YES
-                     completion:[UIUtil modalCompletionBlock]];
+    countryCodeController.shouldDismissWithoutSegue = YES;
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:countryCodeController];
+    [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 - (void)blockButtonPressed:(id)sender
@@ -230,14 +230,13 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 
 - (void)tryToBlockPhoneNumber
 {
-    if ([self hasValidPhoneNumber]) {
+    if (![self hasValidPhoneNumber]) {
         return;
     }
 
-    NSString *possiblePhoneNumber =
-        [self.lastCallingCode stringByAppendingString:_phoneNumberTextField.text.digitsOnly];
+    NSString *possiblePhoneNumber = [self.callingCode stringByAppendingString:_phoneNumberTextField.text.digitsOnly];
     PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:possiblePhoneNumber];
-    OWSAssert(parsedPhoneNumber && parsedPhoneNumber.isValid);
+    OWSAssert(parsedPhoneNumber);
 
     [_blockingManager addBlockedPhoneNumber:[parsedPhoneNumber toE164]];
 
@@ -268,13 +267,15 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 // TODO: We could also do this in registration view.
 - (BOOL)hasValidPhoneNumber
 {
-    if (!self.lastCallingCode) {
+    if (!self.callingCode) {
         return NO;
     }
-    NSString *possiblePhoneNumber =
-        [self.lastCallingCode stringByAppendingString:_phoneNumberTextField.text.digitsOnly];
+    NSString *possiblePhoneNumber = [self.callingCode stringByAppendingString:_phoneNumberTextField.text.digitsOnly];
     PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:possiblePhoneNumber];
-    return parsedPhoneNumber && parsedPhoneNumber.isValid;
+    // It'd be nice to use [PhoneNumber isValid] but it always returns false for some countries
+    // (like afghanistan) and there doesn't seem to be a good way to determine beforehand
+    // which countries it can validate for without forking libPhoneNumber.
+    return parsedPhoneNumber && parsedPhoneNumber.toE164.length > 1;
 }
 
 - (void)updateBlockButtonEnabling
@@ -309,11 +310,10 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
 {
-
     [ViewControllerUtils phoneNumberTextField:textField
                 shouldChangeCharactersInRange:range
                             replacementString:insertionText
-                                  countryCode:_lastCountryCode];
+                                  countryCode:_callingCode];
 
     [self updateBlockButtonEnabling];
 

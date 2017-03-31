@@ -24,5 +24,6 @@
 @property (nonatomic) NSString *countryCodeSelected;
 @property (nonatomic) NSString *callingCodeSelected;
 @property (nonatomic) NSString *countryNameSelected;
+@property (nonatomic) BOOL shouldDismissWithoutSegue;
 
 @end
