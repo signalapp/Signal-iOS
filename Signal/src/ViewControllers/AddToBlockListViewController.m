@@ -25,7 +25,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 #pragma mark -
 
-// TODO: Add a list of contacts to make it easier to block contacts.
 @interface AddToBlockListViewController () <CountryCodeViewControllerDelegate,
     UITextFieldDelegate,
     UITableViewDataSource,
