@@ -12,6 +12,7 @@
 		450E3C9A1D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 450E3C991D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m */; };
 		4516E3E81DD153CC00DC4206 /* TSGroupThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4516E3E71DD153CC00DC4206 /* TSGroupThreadTest.m */; };
 		4516E3EA1DD1542300DC4206 /* TSContactThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4516E3E91DD1542300DC4206 /* TSContactThreadTest.m */; };
+		452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 452137221E8D6D2F0048FD10 /* OWSFakeMessageSender.m */; };
 		452EE6CF1D4A754C00E934BA /* TSThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 452EE6CE1D4A754C00E934BA /* TSThreadTest.m */; };
 		452EE6D51D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 452EE6D41D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m */; };
 		453E1FCF1DA8313100DDD7B7 /* OWSMessageSenderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 453E1FCE1DA8313100DDD7B7 /* OWSMessageSenderTest.m */; };
@@ -68,6 +69,8 @@
 		450E3C991D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDisappearingMessagesJobTest.m; path = ../../../tests/Messages/OWSDisappearingMessagesJobTest.m; sourceTree = "<group>"; };
 		4516E3E71DD153CC00DC4206 /* TSGroupThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSGroupThreadTest.m; path = ../../../tests/Contacts/TSGroupThreadTest.m; sourceTree = "<group>"; };
 		4516E3E91DD1542300DC4206 /* TSContactThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSContactThreadTest.m; path = ../../../tests/Contacts/TSContactThreadTest.m; sourceTree = "<group>"; };
+		452137211E8D6D2F0048FD10 /* OWSFakeMessageSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFakeMessageSender.h; path = ../../../tests/TestSupport/Fakes/OWSFakeMessageSender.h; sourceTree = "<group>"; };
+		452137221E8D6D2F0048FD10 /* OWSFakeMessageSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFakeMessageSender.m; path = ../../../tests/TestSupport/Fakes/OWSFakeMessageSender.m; sourceTree = "<group>"; };
 		452EE6CE1D4A754C00E934BA /* TSThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSThreadTest.m; path = ../../../tests/Contacts/TSThreadTest.m; sourceTree = "<group>"; };
 		452EE6D41D4AC43300E934BA /* OWSOrphanedDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanedDataCleanerTest.m; sourceTree = "<group>"; };
 		453E1FCE1DA8313100DDD7B7 /* OWSMessageSenderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSMessageSenderTest.m; path = ../../../tests/Messages/OWSMessageSenderTest.m; sourceTree = "<group>"; };
@@ -164,6 +167,8 @@
 				45AE484B1E072871004D96C2 /* OWSFakeCallMessageHandler.m */,
 				45AE484D1E072906004D96C2 /* OWSFakeNotificationsManager.h */,
 				45AE484E1E072906004D96C2 /* OWSFakeNotificationsManager.m */,
+				452137211E8D6D2F0048FD10 /* OWSFakeMessageSender.h */,
+				452137221E8D6D2F0048FD10 /* OWSFakeMessageSender.m */,
 			);
 			name = Fakes;
 			sourceTree = "<group>";
@@ -566,6 +571,7 @@
 				459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */,
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				453E1FDB1DA83EFB00DDD7B7 /* OWSFakeContactsUpdater.m in Sources */,
+				452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */,
 				D2AECE731DE8C3360068CE15 /* ContactSortingTest.m in Sources */,
 				453E1FD81DA83E1000DDD7B7 /* OWSFakeContactsManager.m in Sources */,
 				454021ED1D960ABF00F2126D /* OWSDisappearingMessageFinderTest.m in Sources */,

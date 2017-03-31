@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <XCTest/XCTest.h>
 
@@ -9,6 +10,7 @@
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
+#import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSMessageSender.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -21,46 +23,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessagesManager (Testing)
 
+// Private init for stubbing dependencies
+
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                        storageManager:(TSStorageManager *)storageManager
+                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                       contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         messageSender:(OWSMessageSender *)messageSender;
+
 // private method we are testing
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage;
 
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
-
-@end
-
-@interface OWSFakeMessageSender : OWSMessageSender
-
-@property (nonatomic, readonly) XCTestExpectation *expectation;
-
-@end
-
-@implementation OWSFakeMessageSender
-
-- (instancetype)initWithExpectation:(XCTestExpectation *)expectation
-{
-    self = [self init];
-    if (!self) {
-        return self;
-    }
-
-    _expectation = expectation;
-
-    return self;
-}
-
-- (void)sendTemporaryAttachmentData:(NSData *)attachmentData
-                        contentType:(NSString *)contentType
-                          inMessage:(TSOutgoingMessage *)outgoingMessage
-                            success:(void (^)())successHandler
-                            failure:(void (^)(NSError *error))failureHandler
-{
-
-    NSLog(@"Faking sendTemporyAttachmentData.");
-    [self.expectation fulfill];
-    successHandler();
-}
 
 @end
 

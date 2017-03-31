@@ -10,12 +10,14 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
 
 @implementation TextSecureKitEnv
 
-@synthesize callMessageHandler = _callMessageHandler;
-@synthesize contactsManager = _contactsManager;
-@synthesize notificationsManager = _notificationsManager;
+@synthesize callMessageHandler = _callMessageHandler,
+    contactsManager = _contactsManager,
+    messageSender = _messageSender,
+    notificationsManager = _notificationsManager;
 
 - (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                            contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                             messageSender:(OWSMessageSender *)messageSender
                       notificationsManager:(id<NotificationsProtocol>)notificationsManager
 {
     self = [super init];
@@ -25,6 +27,7 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
 
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
+    _messageSender = messageSender;
     _notificationsManager = notificationsManager;
 
     return self;
@@ -55,10 +58,14 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
 - (id<ContactsManagerProtocol>)contactsManager
 {
     NSAssert(_contactsManager, @"Trying to access the contactsManager before it's set.");
-
     return _contactsManager;
 }
 
+- (OWSMessageSender *)messageSender
+{
+    NSAssert(_messageSender, @"Trying to access the messageSender before it's set.");
+    return _messageSender;
+}
 
 - (id<NotificationsProtocol>)notificationsManager
 {

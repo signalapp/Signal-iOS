@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 11/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -20,14 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSMessagesManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
-                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
-
 + (instancetype)sharedManager;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
