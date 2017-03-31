@@ -35,3 +35,37 @@ NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X)); \
 #endif
 
 #endif
+
+#pragma mark - Singleton Asserts
+
+// The "singleton asserts" can be used to ensure
+// that we only create a singleton once.
+//
+// The simplest way to use them is the OWSSingletonAssert() macro.
+// It is intended to be used inside the singleton's initializer.
+//
+// If, however, a singleton has multiple possible initializers,
+// you need to:
+//
+// 1. Use OWSSingletonAssertFlag() outside the class definition.
+// 2. Use OWSSingletonAssertInit() in each initializer.
+#ifdef DEBUG
+
+#define OWSSingletonAssertFlag() static BOOL _isSingletonCreated = NO;
+
+#define OWSSingletonAssertInit()                                                                                       \
+    @synchronized([self class])                                                                                        \
+    {                                                                                                                  \
+        OWSAssert(!_isSingletonCreated);                                                                               \
+        _isSingletonCreated = YES;                                                                                     \
+    }
+
+#define OWSSingletonAssert() OWSSingletonAssertFlag() OWSSingletonAssertInit()
+
+#else
+
+#define OWSSingletonAssertFlag()
+#define OWSSingletonAssertInit()
+#define OWSSingletonAssert()
+
+#endif

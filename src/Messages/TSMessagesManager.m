@@ -105,7 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
     _blockingManager = [TSBlockingManager sharedManager];
-    
+
+    OWSSingletonAssert();
+
     return self;
 }
 

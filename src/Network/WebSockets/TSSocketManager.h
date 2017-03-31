@@ -1,9 +1,5 @@
 //
-//  TSSocketManager.h
-//  TextSecureiOS
-//
-//  Created by Frederic Jacobs on 17/05/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -22,6 +18,8 @@ extern NSString *const SocketClosedNotification;
 extern NSString *const SocketConnectingNotification;
 
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
+
+- (instancetype)init NS_UNAVAILABLE;
 
 + (void)becomeActiveFromForeground;
 + (void)becomeActiveFromBackgroundExpectMessage:(BOOL)expected;

@@ -129,6 +129,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
             [NSException raise:TSStorageManagerExceptionNameNoDatabase format:@"Failed to initialize database."];
         }
+
+        OWSSingletonAssert();
     }
 
     return self;

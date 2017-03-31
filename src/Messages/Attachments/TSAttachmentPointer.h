@@ -17,11 +17,13 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
  */
 @interface TSAttachmentPointer : TSAttachment
 
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
-                           relay:(NSString *)relay NS_DESIGNATED_INITIALIZER;
+                           relay:(NSString *)relay;
 
 @property (nonatomic, readonly) NSString *relay;
 @property (atomic) TSAttachmentPointerState state;
