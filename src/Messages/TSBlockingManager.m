@@ -33,7 +33,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
 @implementation TSBlockingManager
 
-+ (instancetype)sharedManager {
++ (instancetype)sharedManager
+{
     static TSBlockingManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -65,11 +66,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     _storageManager = storageManager;
     _messageSender = messageSender;
 
-    [self loadBlockedPhoneNumbers];
-
     return self;
 }
-
 
 - (void)addBlockedPhoneNumber:(NSString *)phoneNumber {
     OWSAssert(phoneNumber.length > 0);
@@ -77,14 +75,17 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.tag, phoneNumber);
 
     @synchronized (self) {
+        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+
         if ([_blockedPhoneNumberSet containsObject:phoneNumber]) {
+            // Ignore redundant changes.
             return;
         }
         
         [_blockedPhoneNumberSet addObject:phoneNumber];
     }
 
-    [self handleUpdate:NO];
+    [self handleUpdate];
 }
 
 - (void)removeBlockedPhoneNumber:(NSString *)phoneNumber {
@@ -93,23 +94,28 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.tag, phoneNumber);
 
     @synchronized (self) {
+        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+
         if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
+            // Ignore redundant changes.
             return;
         }
         
         [_blockedPhoneNumberSet removeObject:phoneNumber];
     }
 
-    [self handleUpdate:NO];
+    [self handleUpdate];
 }
 
-- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers skipSyncMessage:(BOOL)skipSyncMessage
+- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage
 {
     OWSAssert(blockedPhoneNumbers != nil);
 
     DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.tag, (int)blockedPhoneNumbers.count);
 
     @synchronized (self) {
+        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+
         NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
         if ([_blockedPhoneNumberSet isEqualToSet:newSet]) {
             return;
@@ -118,24 +124,35 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
         _blockedPhoneNumberSet = [newSet mutableCopy];
     }
 
-    [self handleUpdate:skipSyncMessage];
+    [self handleUpdate:sendSyncMessage];
 }
 
 - (NSArray<NSString *> *)blockedPhoneNumbers {
     @synchronized (self) {
+        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+
         return [_blockedPhoneNumberSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
     }
 }
 
 // This should be called every time the block list changes.
-- (void)handleUpdate:(BOOL)skipSyncMessage
+
+- (void)handleUpdate
+{
+    // By default, always send a sync message when the block list changes.
+    [self handleUpdate:YES];
+}
+
+- (void)handleUpdate:(BOOL)sendSyncMessage
 {
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
-    
-    [self saveBlockedPhoneNumbers:blockedPhoneNumbers];
+
+    [_storageManager setObject:blockedPhoneNumbers
+                        forKey:kTSStorageManager_BlockedPhoneNumbersKey
+                  inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (!skipSyncMessage) {
+        if (sendSyncMessage) {
             [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
         } else {
             // If this update came from an incoming blocklist sync message,
@@ -159,20 +176,14 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     });
 }
 
-- (void)saveBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
+// This method should only be called from within a synchronized block.
+- (void)lazyLoadBlockedPhoneNumbersIfNecessary
 {
-    OWSAssert(blockedPhoneNumbers);
+    if (_blockedPhoneNumberSet) {
+        // _blockedPhoneNumberSet has already been loaded, abort.
+        return;
+    }
 
-    DDLogInfo(@"%@ saveBlockedPhoneNumbers", self.tag);
-
-    [_storageManager setObject:blockedPhoneNumbers
-                        forKey:kTSStorageManager_BlockedPhoneNumbersKey
-                  inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
-}
-
-// We don't need to synchronize this method since it should only be called by the constructor.
-- (void)loadBlockedPhoneNumbers
-{
     NSArray<NSString *> *blockedPhoneNumbers = [_storageManager objectForKey:kTSStorageManager_BlockedPhoneNumbersKey
                                                                 inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: [NSArray new])];

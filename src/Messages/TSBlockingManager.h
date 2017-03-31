@@ -22,7 +22,7 @@ extern NSString * const kNSNotificationName_BlockedPhoneNumbersDidChange;
 
 // When updating the block list from a sync message, we don't
 // want to fire a sync message.
-- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers skipSyncMessage:(BOOL)skipSyncMessage;
+- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage;
 
 - (NSArray<NSString *> *)blockedPhoneNumbers;
 
