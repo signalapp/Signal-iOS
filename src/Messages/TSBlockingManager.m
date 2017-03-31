@@ -132,6 +132,18 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
         if (!skipSyncMessage) {
             [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
         } else {
+            // If this update came from an incoming blocklist sync message,
+            // update the "synced blocked phone numbers" state immediately,
+            // since we're now in sync.
+            //
+            // There could be data loss if both clients modify the block list
+            // at the same time, but:
+            //
+            // a) Block list changes will be rare.
+            // b) Conflicting block list changes will be even rarer.
+            // c) It's unlikely a user will make conflicting changes on two
+            //    devices around the same time.
+            // d) There isn't a good way to avoid this.
             [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
         }
 
@@ -186,6 +198,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send blocked phone numbers with error: %@", self.tag, error);
+
+            // TODO: We might want to retry more often than just app launch.
         }];
 }
 
