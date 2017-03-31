@@ -4,7 +4,6 @@
 
 #import "AddToBlockListViewController.h"
 #import "ContactTableViewCell.h"
-#import "ContactsUpdater.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
@@ -75,13 +74,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-
-    [self refreshContacts];
 }
 
 - (void)addNotificationListeners
@@ -481,17 +473,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
                                                    style:UIAlertActionStyleDefault
                                                  handler:nil]];
     [self presentViewController:controller animated:YES completion:nil];
-}
-
-- (void)refreshContacts
-{
-    [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.contactsManager.allContacts
-        success:^{
-            [self updateContacts];
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Error updating contacts", self.tag);
-        }];
 }
 
 #pragma mark - UIScrollViewDelegate

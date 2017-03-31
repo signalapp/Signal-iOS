@@ -4,7 +4,6 @@
 
 #import "BlockListViewController.h"
 #import "AddToBlockListViewController.h"
-#import "ContactsUpdater.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
@@ -52,13 +51,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
     [self addNotificationListeners];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-
-    [self refreshContacts];
 }
 
 - (void)addNotificationListeners
@@ -254,17 +246,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         self.contacts = self.contactsManager.signalContacts;
         [self.tableView reloadData];
     });
-}
-
-- (void)refreshContacts
-{
-    [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.contactsManager.allContacts
-        success:^{
-            [self updateContacts];
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Error updating contacts", self.tag);
-        }];
 }
 
 - (void)setContacts:(NSArray<Contact *> *)contacts
