@@ -1183,6 +1183,21 @@ typedef enum : NSUInteger {
     return 0.0f;
 }
 
+- (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
+                   layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout heightForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    if (![messageData isKindOfClass:[TSMessageAdapter class]]) {
+        return 0.0f;
+    }
+
+    TSMessageAdapter *message = (TSMessageAdapter *)messageData;
+    if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
+        return kJSQMessagesCollectionViewCellLabelHeightDefault;
+    }
+    return 0.0f;
+}
+
 - (BOOL)showDateAtIndexPath:(NSIndexPath *)indexPath {
     BOOL showDate = NO;
     if (indexPath.row == 0) {
@@ -1232,6 +1247,24 @@ typedef enum : NSUInteger {
         if ([nextMessage isKindOfClass:[TSOutgoingMessage class]]) {
             return (TSOutgoingMessage *)nextMessage;
         }
+    }
+    return nil;
+}
+
+- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    if (![messageData isKindOfClass:[TSMessageAdapter class]]) {
+        return nil;
+    }
+
+    TSMessageAdapter *message = (TSMessageAdapter *)messageData;
+    if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
+        NSString *_Nonnull name = [self.contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId];
+        NSAttributedString *senderNameString = [[NSAttributedString alloc] initWithString:name];
+
+        return senderNameString;
     }
     return nil;
 }
@@ -1289,12 +1322,6 @@ typedef enum : NSUInteger {
                                                          }];
             return result;
         }
-    } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
-        NSString *_Nonnull name = [self.contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId];
-        NSAttributedString *senderNameString = [[NSAttributedString alloc] initWithString:name];
-
-        return senderNameString;
     }
 
     return nil;
