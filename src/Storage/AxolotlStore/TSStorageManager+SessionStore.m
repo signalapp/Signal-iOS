@@ -1,9 +1,5 @@
 //
-//  TSStorageManager+SessionStore.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageManager+SessionStore.h"
@@ -11,6 +7,9 @@
 #define TSStorageManagerSessionStoreCollection @"TSStorageManagerSessionStoreCollection"
 
 @implementation TSStorageManager (SessionStore)
+
+
+#pragma mark - SessionStore
 
 - (SessionRecord *)loadSession:(NSString *)contactIdentifier deviceId:(int)deviceId {
     NSDictionary *dictionary =
@@ -80,9 +79,56 @@
     [self removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 }
 
+#pragma mark - util
 
 - (NSNumber *)keyForInt:(int)number {
     return [NSNumber numberWithInt:number];
+}
+
+#pragma mark - debug
+
+- (void)printAllSessions
+{
+    NSString *tag = @"[TSStorageManager (SessionStore)]";
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        DDLogDebug(@"%@ All Sessions:", tag);
+        [transaction
+            enumerateKeysAndObjectsInCollection:TSStorageManagerSessionStoreCollection
+                                     usingBlock:^(NSString *_Nonnull key,
+                                         id _Nonnull deviceSessionsObject,
+                                         BOOL *_Nonnull stop) {
+                                         if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
+                                             OWSAssert(NO);
+                                             DDLogError(
+                                                 @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
+                                             return;
+                                         }
+                                         NSDictionary *deviceSessions = (NSDictionary *)deviceSessionsObject;
+
+                                         DDLogDebug(@"%@     Sessions for recipient: %@", tag, key);
+                                         [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
+                                             id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
+                                             if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
+                                                 OWSAssert(NO);
+                                                 DDLogError(@"%@ Unexpected type: %@ in collection.",
+                                                     tag,
+                                                     sessionRecordObject);
+                                                 return;
+                                             }
+                                             SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;
+                                             SessionState *activeState = [sessionRecord sessionState];
+                                             NSArray<SessionState *> *previousStates =
+                                                 [sessionRecord previousSessionStates];
+                                             DDLogDebug(@"%@         Device: %@ SessionRecord: %@ activeSessionState: "
+                                                        @"%@ previousSessionStates: %@",
+                                                 tag,
+                                                 key,
+                                                 sessionRecord,
+                                                 activeState,
+                                                 previousStates);
+                                         }];
+                                     }];
+    }];
 }
 
 @end
