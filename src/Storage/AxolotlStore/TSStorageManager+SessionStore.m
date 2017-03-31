@@ -46,6 +46,13 @@
 }
 
 - (void)storeSession:(NSString *)contactIdentifier deviceId:(int)deviceId session:(SessionRecord *)session {
+    // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally this
+    // is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a SessionRecord from
+    // YapDB (initWithCoder:). However, because YapDB has an object cache, rather than fetching/deserializing, it's
+    // possible we'd get back *this* exact instance of the object (which, at this point, is still potentially "fresh"),
+    // thus we explicitly mark this instance as "unfresh", any time we save.
+    [session markAsUnFresh];
+
     NSMutableDictionary *dictionary =
         [[self dictionaryForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection] mutableCopy];
 
