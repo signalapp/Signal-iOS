@@ -288,6 +288,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
 
+    OWSSingletonAssert();
+
     return self;
 }
 

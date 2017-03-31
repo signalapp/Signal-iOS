@@ -25,6 +25,19 @@ NS_ASSUME_NONNULL_BEGIN
     return sharedInstance;
 }
 
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    return self;
+}
+
 - (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
 {
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);

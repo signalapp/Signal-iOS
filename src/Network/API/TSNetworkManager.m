@@ -43,6 +43,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     _signalService = signalService;
 
+    OWSSingletonAssert();
+
     return self;
 }
 

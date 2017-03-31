@@ -1,9 +1,5 @@
 //
-//  TSAccountManagement.h
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,6 +16,8 @@ static NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 @interface TSAccountManager : NSObject
 
 #pragma mark - Initializers
+
+- (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager;
