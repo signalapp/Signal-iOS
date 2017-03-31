@@ -73,7 +73,9 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
 - (void)addBlockedPhoneNumber:(NSString *)phoneNumber {
     OWSAssert(phoneNumber.length > 0);
-    
+
+    DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.tag, phoneNumber);
+
     @synchronized (self) {
         if ([_blockedPhoneNumberSet containsObject:phoneNumber]) {
             return;
@@ -87,7 +89,9 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
 - (void)removeBlockedPhoneNumber:(NSString *)phoneNumber {
     OWSAssert(phoneNumber.length > 0);
-    
+
+    DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.tag, phoneNumber);
+
     @synchronized (self) {
         if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
             return;
@@ -102,6 +106,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers skipSyncMessage:(BOOL)skipSyncMessage
 {
     OWSAssert(blockedPhoneNumbers != nil);
+
+    DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.tag, (int)blockedPhoneNumbers.count);
 
     @synchronized (self) {
         NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
@@ -157,6 +163,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 {
     OWSAssert(blockedPhoneNumbers);
 
+    DDLogInfo(@"%@ saveBlockedPhoneNumbers", self.tag);
+
     [_storageManager setObject:blockedPhoneNumbers
                         forKey:kTSStorageManager_BlockedPhoneNumbersKey
                   inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
@@ -176,6 +184,7 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
                          inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
     NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
+        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
         dispatch_async(dispatch_get_main_queue(), ^{
             [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
         });
@@ -191,13 +200,13 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
     [self.messageSender sendMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully sent blocked phone numbers", self.tag);
+            DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.tag);
 
             // Record the last set of "blocked phone numbers" which we successfully synced.
             [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
         }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send blocked phone numbers with error: %@", self.tag, error);
+            DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.tag, error);
 
             // TODO: We might want to retry more often than just app launch.
         }];
