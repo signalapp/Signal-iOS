@@ -143,7 +143,9 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     // Block Button Row
     UIView *blockButtonRow = [self createRowWithHeight:60 previousRow:borderRow2];
 
-    // TODO: Eventually
+    // TODO: Eventually we should make a view factory that will allow us to
+    //       create views with consistent appearance across the app and move
+    //       towards a "design language."
     _blockButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _blockButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [_blockButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

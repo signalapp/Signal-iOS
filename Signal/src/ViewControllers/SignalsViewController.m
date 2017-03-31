@@ -137,10 +137,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                object:nil];
     
     [self updateBarButtonItems];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self settingsButtonPressed:nil];
-    });
 }
 
 - (void)updateBarButtonItems {

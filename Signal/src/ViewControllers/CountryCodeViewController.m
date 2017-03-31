@@ -24,6 +24,11 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
     self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
     self.searchBar.delegate = self;
+    if (self.shouldDismissWithoutSegue) {
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                                                              target:self
+                                                                                                       action:@selector(dismissWasPressed:)];
+    }
 }
 
 #pragma mark - UITableViewDelegate
@@ -66,6 +71,10 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     } else {
         [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
     }
+}
+
+- (void)dismissWasPressed:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
