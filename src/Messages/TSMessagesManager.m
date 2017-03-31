@@ -542,8 +542,7 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogInfo(@"%@ Received `blocked` syncMessage.", self.tag);
         
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
-        [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers];
-
+        [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers skipSyncMessage:YES];
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
 
