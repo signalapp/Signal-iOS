@@ -52,6 +52,8 @@ static Environment *environment = nil;
     _networkManager = networkManager;
     _messageSender = messageSender;
 
+    OWSSingletonAssert();
+
     return self;
 }
 
