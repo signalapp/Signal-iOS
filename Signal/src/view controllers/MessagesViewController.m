@@ -1736,19 +1736,21 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-                                                                  style:UIAlertActionStyleDefault
-                                                                handler:^(UIAlertAction * _Nonnull action) {
-                                                                    [self.messageSender sendMessage:message
-                                                                        success:^{
-                                                                            DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
-                                                                        }
-                                                                        failure:^(NSError *_Nonnull error) {
-                                                                            DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
-                                                                        }];
-                                                                }];
-
-    [actionSheetController addAction:resendMessageAction];
+    if(![message.mostRecentFailureText isEqualToString:NSLocalizedString(@"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED", @"")]){
+        UIAlertAction *resendMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:^(UIAlertAction * _Nonnull action) {
+                                                                        [self.messageSender sendMessage:message
+                                                                                                success:^{
+                                                                                                    DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
+                                                                                                }
+                                                                                                failure:^(NSError *_Nonnull error) {
+                                                                                                    DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
+                                                                                                }];
+                                                                    }];
+        
+        [actionSheetController addAction:resendMessageAction];
+    }
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
