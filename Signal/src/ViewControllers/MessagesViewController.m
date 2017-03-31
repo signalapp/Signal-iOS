@@ -76,9 +76,6 @@
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
 
-static NSString *const OWSMessagesViewControllerSegueShowFingerprint = @"fingerprintSegue";
-static NSString *const OWSMessagesViewControllerSeguePushConversationSettings = @"OWSMessagesViewControllerSeguePushConversationSettings";
-
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
 typedef enum : NSUInteger {
@@ -819,7 +816,20 @@ typedef enum : NSUInteger {
     OWSFingerprint *fingerprint =
         [builder fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
     [self markAllMessagesAsRead];
-    [self performSegueWithIdentifier:OWSMessagesViewControllerSegueShowFingerprint sender:fingerprint];
+
+    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
+
+    UIViewController *viewController =
+        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+    if (![viewController isKindOfClass:[FingerprintViewController class]]) {
+        OWSAssert(NO);
+        DDLogError(@"%@ expecting fingerprint view controller, but got: %@", self.tag, viewController);
+        return;
+    }
+    FingerprintViewController *fingerprintViewController = (FingerprintViewController *)viewController;
+
+    [fingerprintViewController configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+    [self presentViewController:fingerprintViewController animated:YES completion:nil];
 }
 
 #pragma mark - Calls
@@ -1328,9 +1338,9 @@ typedef enum : NSUInteger {
         DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
         return;
     }
-    
-    OWSConversationSettingsTableViewController *settingsVC = [[UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:NULL]
-                                                              instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
+
+    OWSConversationSettingsTableViewController *settingsVC =
+        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
@@ -1845,30 +1855,6 @@ typedef enum : NSUInteger {
     
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
-
-#pragma mark - Navigation
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:OWSMessagesViewControllerSegueShowFingerprint]) {
-        if (![segue.destinationViewController isKindOfClass:[FingerprintViewController class]]) {
-            DDLogError(@"%@ Expected Fingerprint VC but got: %@", self.tag, segue.destinationViewController);
-            return;
-        }
-        FingerprintViewController *vc = (FingerprintViewController *)segue.destinationViewController;
-
-        if (![sender isKindOfClass:[OWSFingerprint class]]) {
-            DDLogError(@"%@ Attempting to segue to fingerprint VC without a valid fingerprint: %@", self.tag, sender);
-            return;
-        }
-        OWSFingerprint *fingerprint = (OWSFingerprint *)sender;
-
-        NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:fingerprint.theirStableId];
-        [vc configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
-    } else {
-        DDLogDebug(@"%@ Received segue: %@", self.tag, segue.identifier);
-    }
-}
-
 
 #pragma mark - UIImagePickerController
 
