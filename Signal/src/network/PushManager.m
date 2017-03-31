@@ -24,7 +24,6 @@
 @property UIAlertView *missingPermissionsAlertView;
 @property (nonatomic, retain) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
 @property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
@@ -44,44 +43,29 @@
 
 - (instancetype)initDefault
 {
-    return [self initWithContactsManager:[Environment getCurrent].contactsManager
-                          networkManager:[Environment getCurrent].networkManager
-                          storageManager:[TSStorageManager sharedManager]
-                      callMessageHandler:[Environment getCurrent].callMessageHandler
-                             callService:[Environment getCurrent].callService
-                         contactsUpdater:[Environment getCurrent].contactsUpdater];
+    return [self initWithNetworkManager:[Environment getCurrent].networkManager
+                         storageManager:[TSStorageManager sharedManager]
+                          callUIAdapter:[Environment getCurrent].callService.callUIAdapter
+                        messagesManager:[TSMessagesManager sharedManager]
+                          messageSender:[Environment getCurrent].messageSender];
 }
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                         networkManager:(TSNetworkManager *)networkManager
-                         storageManager:(TSStorageManager *)storageManager
-                     callMessageHandler:(OWSWebRTCCallMessageHandler *)callMessageHandler
-                            callService:(CallService *)callService
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
+                        storageManager:(TSStorageManager *)storageManager
+                         callUIAdapter:(CallUIAdapter *)callUIAdapter
+                       messagesManager:(TSMessagesManager *)messagesManager
+                         messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _contactsManager = contactsManager;
-    _callUIAdapter = callService.callUIAdapter;
-
-    _messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
-                                                       storageManager:storageManager
-                                                      contactsManager:contactsManager
-                                                      contactsUpdater:contactsUpdater];
-
-    TSMessagesManager *messagesManager = [[TSMessagesManager alloc] initWithNetworkManager:networkManager
-                                                                            storageManager:storageManager
-                                                                        callMessageHandler:callMessageHandler
-                                                                           contactsManager:contactsManager
-                                                                           contactsUpdater:contactsUpdater
-                                                                             messageSender:_messageSender];
+    _callUIAdapter = callUIAdapter;
+    _messageSender = messageSender;
 
     OWSSignalService *signalService = [OWSSignalService new];
     _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessagesManager:messagesManager
-                                                                 messageSender:_messageSender
                                                                 networkManager:networkManager
                                                                  signalService:signalService];
 

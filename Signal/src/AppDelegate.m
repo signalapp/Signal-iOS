@@ -100,8 +100,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
-    // Setting up environment
-    [Environment setCurrent:[Release releaseEnvironment]];
+    [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
@@ -114,7 +113,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
 
-    [self setupTSKitEnv];
 
     UIStoryboard *storyboard;
     if ([TSAccountManager isRegistered]) {
@@ -188,27 +186,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return YES;
 }
 
-- (void)setupTSKitEnv {
+- (void)setupEnvironment
+{
+    [Environment setCurrent:[Release releaseEnvironment]];
+
     // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
     [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionCipher]];
 
     TextSecureKitEnv *sharedEnv =
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
                                              contactsManager:[Environment getCurrent].contactsManager
+                                               messageSender:[Environment getCurrent].messageSender
                                         notificationsManager:[Environment getCurrent].notificationsManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabase];
 
-    OWSMessageSender *messageSender =
-        [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                          storageManager:[TSStorageManager sharedManager]
-                                         contactsManager:[Environment getCurrent].contactsManager
-                                         contactsUpdater:[Environment getCurrent].contactsUpdater];
-
     self.incomingMessageReadObserver =
         [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
-                                                         messageSender:messageSender];
+                                                         messageSender:[Environment getCurrent].messageSender];
     [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];
