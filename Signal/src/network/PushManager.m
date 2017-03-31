@@ -77,6 +77,8 @@
     _callBackgroundTask = UIBackgroundTaskInvalid;
     _currentNotifications = [NSMutableArray array];
 
+    OWSSingletonAssert();
+
     return self;
 }
 
