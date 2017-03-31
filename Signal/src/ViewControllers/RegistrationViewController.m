@@ -9,16 +9,20 @@
 #import "PhoneNumberUtil.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
-#import "Util.h"
 #import "UIView+OWS.h"
+#import "Util.h"
+#import "ViewControllerUtils.h"
 
 static NSString *const kCodeSentSegue = @"codeSent";
 
 @interface RegistrationViewController ()
 
 @property (nonatomic) NSString *lastCallingCode;
+@property (nonatomic) NSString *lastCountryCode;
 
 @end
+
+#pragma mark -
 
 @implementation RegistrationViewController
 
@@ -74,6 +78,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
                   countryCode:(NSString *)countryCode {
 
     _lastCallingCode = callingCode;
+    _lastCountryCode = countryCode;
 
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",
                        callingCode,
@@ -187,50 +192,12 @@ static NSString *const kCodeSentSegue = @"codeSent";
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText {
-    
-    // Phone numbers takes many forms.
-    //
-    // * We only want to let the user enter decimal digits.
-    // * The user shouldn't have to enter hyphen, parentheses or whitespace;
-    //   the phone number should be formatted automatically.
-    // * The user should be able to copy and paste freely.
-    // * Invalid input should be simply ignored.
-    //
-    // We accomplish this by being permissive and trying to "take as much of the user
-    // input as possible".
-    //
-    // * Always accept deletes.
-    // * Ignore invalid input.
-    // * Take partial input if possible.
-    
-    NSString *oldText = textField.text;
-    // Construct the new contents of the text field by:
-    // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
-    //    Filtering will remove non-decimal digit characters like hyphen "-".
-    NSString *left = [oldText substringToIndex:range.location].digitsOnly;
-    // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-    NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
-    // 3. Determining the "center" substring: the contents of the new insertion text.
-    NSString *center = insertionText.digitsOnly;
-    // 4. Construct the "raw" new text by concatenating left, center and right.
-    NSString *textAfterChange = [[left stringByAppendingString:center]
-                                 stringByAppendingString:right];
-    // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
-    // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
-    bool isJustDeletion = insertionText.length == 0;
-    NSUInteger cursorPositionAfterChange = left.length + center.length;
-    NSString *textAfterReformat =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
-                                                     withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
-    NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
-                                                                                 from:textAfterChange
-                                                                                   to:textAfterReformat
-                                                                    stickingRightward:isJustDeletion];
-    textField.text = textAfterReformat;
-    UITextPosition *pos =
-    [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
-    [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
-    
+
+    [ViewControllerUtils phoneNumberTextField:textField
+                shouldChangeCharactersInRange:range
+                            replacementString:insertionText
+                                  countryCode:_lastCountryCode];
+
     return NO; // inform our caller that we took care of performing the change
 }
 

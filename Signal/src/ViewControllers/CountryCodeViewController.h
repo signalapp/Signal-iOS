@@ -9,21 +9,20 @@
 @protocol CountryCodeViewControllerDelegate <NSObject>
 
 - (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)code
-                       forCountry:(NSString *)country;
-
-- (void)countryCodeViewControllerDidCancel:(CountryCodeViewController *)vc;
+             didSelectCountryCode:(NSString *)countryCode
+                      countryName:(NSString *)countryName
+                      callingCode:(NSString *)callingCode;
 
 @end
 
 @interface CountryCodeViewController
     : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchDisplayDelegate>
 
-@property (nonatomic, strong) IBOutlet UITableView *countryCodeTableView;
-@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
-@property (nonatomic, assign) id<CountryCodeViewControllerDelegate> delegate;
-@property (nonatomic, strong) NSString *countryCodeSelected;
-@property (nonatomic, strong) NSString *callingCodeSelected;
-@property (nonatomic, strong) NSString *countryNameSelected;
+@property (nonatomic) IBOutlet UITableView *countryCodeTableView;
+@property (nonatomic) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, weak) id<CountryCodeViewControllerDelegate> delegate;
+@property (nonatomic) NSString *countryCodeSelected;
+@property (nonatomic) NSString *callingCodeSelected;
+@property (nonatomic) NSString *countryNameSelected;
 
 @end

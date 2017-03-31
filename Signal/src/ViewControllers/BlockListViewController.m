@@ -3,42 +3,32 @@
 //
 
 #import "BlockListViewController.h"
-#import "DebugLogger.h"
-#import "Environment.h"
-#import "Pastelog.h"
-#import "PropertyListPreferences.h"
-#import "PushManager.h"
-#import "Signal-Swift.h"
-#import "TSAccountManager.h"
-#import <PromiseKit/AnyPromise.h>
+#import "UIFont+OWS.h"
+#import "PhoneNumber.h"
+#import "AddToBlockListViewController.h"
+#import <SignalServiceKit/TSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString * const kBlockListViewControllerCellIdentifier = @"kBlockListViewControllerCellIdentifier";
+
+// TODO: We should label phone numbers with contact names where possible.
 @interface BlockListViewController ()
 
-@property (nonatomic) UITableViewCell *enableLogCell;
-@property (nonatomic) UITableViewCell *submitLogCell;
-@property (nonatomic) UITableViewCell *registerPushCell;
-
-@property (nonatomic) UISwitch *enableLogSwitch;
-@property (nonatomic, readonly) BOOL supportsCallKit;
+@property (nonatomic, readonly) TSBlockingManager *blockingManager;
+@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
 @end
 
+#pragma mark -
+
 typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
-    BlockListViewControllerSectionLogging,
-    BlockListViewControllerSectionPushNotifications,
+    BlockListViewControllerSection_Add,
+    BlockListViewControllerSection_BlockList,
     BlockListViewControllerSection_Count // meta section
 };
 
 @implementation BlockListViewController
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
 
 - (instancetype)init
 {
@@ -48,26 +38,40 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 - (void)loadView
 {
     [super loadView];
+    
+    _blockingManager = [TSBlockingManager sharedManager];
+    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
-    self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
+    self.title = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"");
 
-    // Enable Log
-    self.enableLogCell = [[UITableViewCell alloc] init];
-    self.enableLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
-    self.enableLogCell.userInteractionEnabled = YES;
-    self.enableLogSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-    [self.enableLogSwitch setOn:[PropertyListPreferences loggingIsEnabled]];
-    [self.enableLogSwitch addTarget:self
-                             action:@selector(didToggleEnableLogSwitch:)
-                   forControlEvents:UIControlEventValueChanged];
-    self.enableLogCell.accessoryView = self.enableLogSwitch;
+    [self.tableView registerClass:[UITableViewCell class]
+           forCellReuseIdentifier:kBlockListViewControllerCellIdentifier];
 
-    // Send Log
-    self.submitLogCell = [[UITableViewCell alloc] init];
-    self.submitLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"");
+    [self addNotificationListeners];
+}
 
-    self.registerPushCell = [[UITableViewCell alloc] init];
-    self.registerPushCell.textLabel.text = NSLocalizedString(@"REREGISTER_FOR_PUSH", nil);
+- (void)addNotificationListeners
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockedPhoneNumbersDidChange:)
+                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    });
 }
 
 #pragma mark - Table view data source
@@ -79,27 +83,23 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-
-    BlockListViewControllerSection settingsSection = (BlockListViewControllerSection)section;
-    switch (settingsSection) {
-        case BlockListViewControllerSectionLogging:
-            return self.enableLogSwitch.isOn ? 2 : 1;
-        case BlockListViewControllerSectionPushNotifications:
+    switch (section) {
+        case BlockListViewControllerSection_Add:
             return 1;
+        case BlockListViewControllerSection_BlockList:
+            return (NSInteger) _blockedPhoneNumbers.count;
         default:
+            OWSAssert(0);
             return 0;
     }
 }
 
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    BlockListViewControllerSection settingsSection = (BlockListViewControllerSection)section;
-    switch (settingsSection) {
-        case BlockListViewControllerSectionLogging:
-            return NSLocalizedString(@"LOGGING_SECTION", nil);
-        case BlockListViewControllerSectionPushNotifications:
+    switch (section) {
+        case BlockListViewControllerSection_Add:
             return NSLocalizedString(
-                @"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
+                                     @"SETTINGS_BLOCK_LIST_HEADER_TITLE", @"A header title for the block list table.");
         default:
             return nil;
     }
@@ -107,64 +107,119 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    BlockListViewControllerSection settingsSection = (BlockListViewControllerSection)indexPath.section;
-    switch (settingsSection) {
-        case BlockListViewControllerSectionLogging:
-            switch (indexPath.row) {
-                case 0:
-                    return self.enableLogCell;
-                case 1:
-                    OWSAssert(self.enableLogSwitch.isOn);
-                    return self.submitLogCell;
-            }
-        case BlockListViewControllerSectionPushNotifications:
-            return self.registerPushCell;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kBlockListViewControllerCellIdentifier];
+    OWSAssert(cell);
+    
+    switch (indexPath.section) {
+        case BlockListViewControllerSection_Add:
+            cell.textLabel.text = NSLocalizedString(
+                                                    @"SETTINGS_BLOCK_LIST_ADD_BUTTON", @"A label for the 'add phone number' button in the block list table.");
+            cell.textLabel.font = [UIFont ows_mediumFontWithSize:18.f];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            break;
+        case BlockListViewControllerSection_BlockList: {
+            NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger) indexPath.item];
+            PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
+            // Try to parse and present the phone number in E164.
+            // It should already be in E164, so this should always work.
+            // If an invalid or unparsable phone number is already in the block list,
+            // present it as-is.
+            cell.textLabel.text = (parsedPhoneNumber
+                                   ? parsedPhoneNumber.toE164
+                                   : phoneNumber);
+            cell.textLabel.font = [UIFont ows_mediumFontWithSize:18.f];
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            break;
+        }
         default:
-            // Unknown section
-            OWSAssert(NO);
-            return nil;
+            OWSAssert(0);
+            return 0;
     }
+    
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
-        DDLogInfo(@"%@ Submitting debug logs", self.tag);
-        [DDLog flushLog];
-        [Pastelog submitLogs];
-    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        OWSSyncPushTokensJob *syncJob =
-            [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                               accountManager:[Environment getCurrent].accountManager
-                                                  preferences:[Environment preferences]];
-        syncJob.uploadOnlyIfStale = NO;
-        [syncJob run]
-            .then(^{
-                SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_SUCCESS", @"Alert title"), nil);
-            })
-            .catch(^(NSError *error) {
-                SignalAlertView(NSLocalizedString(@"REGISTRATION_BODY", @"Alert title"), error.localizedDescription);
-            });
-
-    } else {
-        DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
+    switch (indexPath.section) {
+        case BlockListViewControllerSection_Add:
+        {
+            AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+            NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+            NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
+            [self.navigationController pushViewController:vc animated:YES];
+            break;
+        }
+        case BlockListViewControllerSection_BlockList: {
+            NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
+            [self showUnblockActionSheet:phoneNumber];
+            break;
+        }
+        default:
+            OWSAssert(0);
     }
+}
+
+- (void)showUnblockActionSheet:(NSString *)phoneNumber
+{
+    OWSAssert(phoneNumber.length > 0);
+
+    PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
+    NSString *displayPhoneNumber = (parsedPhoneNumber ? parsedPhoneNumber.toE164 : phoneNumber);
+
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
+                                                     @"A format for the 'unblock phone number' action sheet title."),
+                                displayPhoneNumber];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    __weak BlockListViewController *weakSelf = self;
+    UIAlertAction *unblockAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [weakSelf unblockPhoneNumber:phoneNumber displayPhoneNumber:displayPhoneNumber];
+                }];
+    [actionSheetController addAction:unblockAction];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
+- (void)unblockPhoneNumber:(NSString *)phoneNumber displayPhoneNumber:(NSString *)displayPhoneNumber
+{
+    [_blockingManager removeBlockedPhoneNumber:phoneNumber];
+
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE",
+                                     @"The title of the 'phone number unblocked' alert in the block view.")
+                         message:[NSString stringWithFormat:NSLocalizedString(
+                                                                @"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT",
+                                                                @"The message format of the 'phone number unblocked' "
+                                                                @"alert in the block view. It is populated with the "
+                                                                @"blocked phone number."),
+                                           displayPhoneNumber]
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - Actions
 
-- (void)didToggleEnableLogSwitch:(UISwitch *)sender
+- (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    if (!sender.isOn) {
-        [[DebugLogger sharedLogger] wipeLogs];
-        [[DebugLogger sharedLogger] disableFileLogging];
-    } else {
-        [[DebugLogger sharedLogger] enableFileLogging];
-    }
+    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
-    [PropertyListPreferences setLoggingEnabled:sender.isOn];
     [self.tableView reloadData];
 }
 

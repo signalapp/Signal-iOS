@@ -10,7 +10,6 @@
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER    = @"CountryCodeTableViewCell";
 static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
 
-
 @interface CountryCodeViewController () {
     NSArray *_countryCodes;
 }
@@ -57,6 +56,10 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     _callingCodeSelected  = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
     _countryNameSelected  = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     _countryCodeSelected = countryCode;
+    [self.delegate countryCodeViewController:self
+                        didSelectCountryCode:_countryCodeSelected
+                                 countryName:_countryNameSelected
+                                 callingCode:_callingCodeSelected];
     [self.searchBar resignFirstResponder];
     [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
 }
