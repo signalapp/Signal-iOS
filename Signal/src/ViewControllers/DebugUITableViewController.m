@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -258,7 +259,14 @@ NSString * const kDebugUITableCellIdentifier = @"kDebugUITableCellIdentifier";
                                                                                                                                 uti:(NSString *) kUTTypePDF];
                                                                                }],
                                                              ]]];
-    
+
+    [contents addSection:[OWSTableSection sectionWithTitle:@"Print to Debug Log"
+                                                     items:@[ [OWSTableItem actionWithTitle:@"Print all sessions"
+                                                                                actionBlock:^{
+                                                                                    [[TSStorageManager sharedManager]
+                                                                                        printAllSessions];
+                                                                                }] ]]];
+
     DebugUITableViewController *viewController = [DebugUITableViewController new];
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
