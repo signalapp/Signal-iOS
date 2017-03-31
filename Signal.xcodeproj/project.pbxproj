@@ -55,6 +55,8 @@
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
 		34B3F8941E8DF1710035BE1A /* SignalsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8701E8DF1700035BE1A /* SignalsViewController.m */; };
 		34B3F8991E8DF1B90035BE1A /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */; };
+		34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */; };
+		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		450573FE1E78A06D00615BB4 /* OWS103EnableVideoCalling.m in Sources */ = {isa = PBXBuildFile; fileRef = 450573FD1E78A06D00615BB4 /* OWS103EnableVideoCalling.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
@@ -415,6 +417,10 @@
 		34B3F86F1E8DF1700035BE1A /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsViewController.h; sourceTree = "<group>"; };
 		34B3F8701E8DF1700035BE1A /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsViewController.m; sourceTree = "<group>"; };
 		34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageAdapterTest.m; sourceTree = "<group>"; };
+		34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
+		34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
+		34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
+		34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		450573FC1E78A06D00615BB4 /* OWS103EnableVideoCalling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS103EnableVideoCalling.h; path = Migrations/OWS103EnableVideoCalling.h; sourceTree = "<group>"; };
@@ -809,6 +815,8 @@
 				34B3F8381E8DF1700035BE1A /* AttachmentApprovalViewController.swift */,
 				34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */,
 				34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */,
+				34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */,
+				34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */,
 				34B3F83B1E8DF1700035BE1A /* CallViewController.swift */,
 				34B3F83C1E8DF1700035BE1A /* CodeVerificationViewController.h */,
 				34B3F83D1E8DF1700035BE1A /* CodeVerificationViewController.m */,
@@ -850,6 +858,8 @@
 				34B3F8611E8DF1700035BE1A /* OWSMessagesToolbarContentView.xib */,
 				34B3F8621E8DF1700035BE1A /* OWSQRCodeScanningViewController.h */,
 				34B3F8631E8DF1700035BE1A /* OWSQRCodeScanningViewController.m */,
+				34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */,
+				34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */,
 				34B3F8641E8DF1700035BE1A /* PrivacySettingsTableViewController.h */,
 				34B3F8651E8DF1700035BE1A /* PrivacySettingsTableViewController.m */,
 				34B3F8661E8DF1700035BE1A /* RegistrationViewController.h */,
@@ -2010,9 +2020,11 @@
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				45666F761D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
+				34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */,
 				FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */,
+				34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */,
 				45F2B1941D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */,
