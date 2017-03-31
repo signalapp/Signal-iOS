@@ -37,6 +37,7 @@
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
+#import "TSBlockingManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
+@property (nonatomic, readonly) TSBlockingManager *blockingManager;
 
 @end
 
@@ -102,7 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
-
+    _blockingManager = [TSBlockingManager sharedManager];
+    
     return self;
 }
 
@@ -504,37 +507,42 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             DDLogInfo(@"%@ Received request `Contacts` syncMessage.", self.tag);
-
+            
             OWSSyncContactsMessage *syncContactsMessage =
-                [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
-
+            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
+            
             [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncContactsMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.tag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
-                }];
-
+                                                contentType:OWSMimeTypeApplicationOctetStream
+                                                  inMessage:syncContactsMessage
+                                                    success:^{
+                                                        DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.tag);
+                                                    }
+                                                    failure:^(NSError *error) {
+                                                        DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
+                                                    }];
+            
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             DDLogInfo(@"%@ Received request `groups` syncMessage.", self.tag);
-
+            
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-
+            
             [self.messageSender sendTemporaryAttachmentData:[syncGroupsMessage buildPlainTextAttachmentData]
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncGroupsMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.tag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
-                }];
+                                                contentType:OWSMimeTypeApplicationOctetStream
+                                                  inMessage:syncGroupsMessage
+                                                    success:^{
+                                                        DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.tag);
+                                                    }
+                                                    failure:^(NSError *error) {
+                                                        DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
+                                                    }];
         } else {
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
+    } else if (syncMessage.hasBlocked) {
+        DDLogInfo(@"%@ Received `blocked` syncMessage.", self.tag);
+        
+        NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
+        [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
 
