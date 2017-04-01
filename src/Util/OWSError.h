@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeUserError = 2001,
     OWSErrorCodeNoSuchSignalRecipient = 777404,
     OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures = 777405,
+    OWSErrorCodeMessageSendFailedToBlocklist = 777406,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
@@ -30,5 +31,6 @@ extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError();
 extern NSError *OWSErrorMakeAssertionError();
 extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
+extern NSError *OWSErrorMakeMessageSendFailedToBlocklistError();
 
 NS_ASSUME_NONNULL_END

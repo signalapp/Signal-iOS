@@ -68,6 +68,10 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
     OWSSingletonAssert();
 
+    // Register this manager with the message sender.
+    // This is a circular dependency.
+    [messageSender setBlockingManager:self];
+
     return self;
 }
 

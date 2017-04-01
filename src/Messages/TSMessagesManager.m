@@ -159,6 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
 
     // TODO: Can we trust envelope.source to be properly formatted?
+    OWSAssert(envelope.source.length > 0);
     BOOL isEnvelopeBlocked = [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
     if (isEnvelopeBlocked) {
         DDLogInfo(@"%@ ignoring blocked envelope: %@", self.tag, envelope.source);
