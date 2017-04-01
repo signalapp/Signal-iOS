@@ -123,7 +123,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :path: ../SignalServiceKit
+    :path: "../SignalServiceKit"
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 

@@ -17,11 +17,13 @@
 
 @interface NotificationsManager ()
 
-@property SystemSoundID newMessageSound;
+@property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @end
+
+#pragma mark -
 
 @implementation NotificationsManager
 
