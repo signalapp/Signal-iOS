@@ -24,6 +24,7 @@
 #import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
+#import "TSBlockingManager.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
@@ -37,7 +38,6 @@
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
-#import "TSBlockingManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -157,6 +157,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+
+    // TODO: Can we trust envelope.source to be properly formatted?
+    BOOL isEnvelopeBlocked = [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
+    if (isEnvelopeBlocked) {
+        DDLogInfo(@"%@ ignoring blocked envelope: %@", self.tag, envelope.source);
+        return;
+    }
+
     @try {
         switch (envelope.type) {
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
