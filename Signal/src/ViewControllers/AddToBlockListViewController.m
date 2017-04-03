@@ -16,6 +16,7 @@
 #import "ViewControllerUtils.h"
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,6 +32,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     UITableViewDelegate>
 
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
 @property (nonatomic) UIButton *countryNameButton;
 @property (nonatomic) UIButton *countryCodeButton;
@@ -59,8 +61,9 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     self.view.backgroundColor = [UIColor whiteColor];
     
     _blockingManager = [OWSBlockingManager sharedManager];
+    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
     _contactsManager = [Environment getCurrent].contactsManager;
-    self.contacts = self.contactsManager.signalContacts;
+    self.contacts = [self filteredContacts];
 
     self.title = NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_TITLE", @"");
 
@@ -316,20 +319,63 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    // TODO: Once we have a list of contacts, we should update it here.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+
+        [self updateContacts];
+    });
 }
 
 - (void)signalRecipientsDidChange:(NSNotification *)notification
 {
-    [self updateContacts];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateContacts];
+    });
 }
 
 - (void)updateContacts
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.contacts = self.contactsManager.signalContacts;
-        [self.contactsTableView reloadData];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    self.contacts = [self filteredContacts];
+    [self.contactsTableView reloadData];
+}
+
+- (BOOL)isContactBlocked:(Contact *)contact
+{
+    if (contact.parsedPhoneNumbers.count < 1) {
+        return YES;
+    }
+
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+- (BOOL)isCurrentUserContact:(Contact *)contact
+{
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if ([[phoneNumber toE164] isEqualToString:[TSAccountManager localNumber]]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+- (NSArray<Contact *> *_Nonnull)filteredContacts
+{
+    NSMutableArray<Contact *> *result = [NSMutableArray new];
+    for (Contact *contact in self.contactsManager.signalContacts) {
+        if (![self isContactBlocked:contact] && ![self isCurrentUserContact:contact]) {
+            [result addObject:contact];
+        }
+    }
+    return result;
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
