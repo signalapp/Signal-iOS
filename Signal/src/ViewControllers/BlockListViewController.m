@@ -6,7 +6,7 @@
 #import "UIFont+OWS.h"
 #import "PhoneNumber.h"
 #import "AddToBlockListViewController.h"
-#import <SignalServiceKit/TSBlockingManager.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NSString * const kBlockListViewControllerCellIdentifier = @"kBlockListViewContro
 // TODO: We should label phone numbers with contact names where possible.
 @interface BlockListViewController ()
 
-@property (nonatomic, readonly) TSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
 @end
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 {
     [super loadView];
     
-    _blockingManager = [TSBlockingManager sharedManager];
+    _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     self.title = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"");

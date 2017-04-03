@@ -11,7 +11,7 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/TSBlockingManager.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 // TODO: Add a list of contacts to make it easier to block contacts.
 @interface AddToBlockListViewController () <CountryCodeViewControllerDelegate, UITextFieldDelegate>
 
-@property (nonatomic, readonly) TSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @property (nonatomic) UIButton *countryNameButton;
 @property (nonatomic) UIButton *countryCodeButton;
@@ -51,7 +51,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
    
     self.view.backgroundColor = [UIColor whiteColor];
     
-    _blockingManager = [TSBlockingManager sharedManager];
+    _blockingManager = [OWSBlockingManager sharedManager];
 
     self.title = NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_TITLE", @"");
 
