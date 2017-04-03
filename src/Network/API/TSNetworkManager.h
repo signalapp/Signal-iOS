@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSNetworkManager : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
 + (id)sharedManager;
 
 - (void)makeRequest:(TSRequest *)request

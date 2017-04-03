@@ -61,6 +61,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
+    OWSSingletonAssert();
+
     return self;
 }
 

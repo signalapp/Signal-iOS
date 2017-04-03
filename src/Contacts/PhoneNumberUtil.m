@@ -23,6 +23,8 @@
 
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
+
+        OWSSingletonAssert();
     }
 
     return self;

@@ -66,6 +66,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     _storageManager = storageManager;
     _messageSender = messageSender;
 
+    OWSSingletonAssert();
+
     return self;
 }
 

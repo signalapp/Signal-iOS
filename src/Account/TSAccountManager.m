@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     _networkManager = networkManager;
     _storageManager = storageManager;
 
+    OWSSingletonAssert();
+
     return self;
 }
 
