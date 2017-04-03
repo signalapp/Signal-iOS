@@ -7,10 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSStorageManager;
 @class OWSMessageSender;
 
-extern NSString * const kNSNotificationName_BlockedPhoneNumbersDidChange;
+extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 
 // This class can be safely accessed and used from any thread.
-@interface TSBlockingManager : NSObject
+@interface OWSBlockingManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 

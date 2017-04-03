@@ -5,6 +5,7 @@
 #import "OWSMessageSender.h"
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "OWSBlockingManager.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
@@ -257,6 +258,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
@@ -291,6 +293,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSSingletonAssert();
 
     return self;
+}
+
+- (void)setBlockingManager:(OWSBlockingManager *)blockingManager
+{
+    OWSAssert(blockingManager);
+    OWSAssert(!_blockingManager);
+
+    _blockingManager = blockingManager;
 }
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -516,10 +526,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             if (recipients.count == 0) {
                 if (error) {
-                    return failureHandler(error);
+                    failureHandler(error);
+                    return;
                 } else {
                     DDLogError(@"%@ Unknown error finding contacts", self.tag);
-                    return failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError());
+                    failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError());
+                    return;
                 }
             }
 
@@ -541,6 +553,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 ? self.storageManager.localNumber
                 : contactThread.contactIdentifier;
 
+            OWSAssert(recipientContactId.length > 0);
+            NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
+            if ([blockedPhoneNumbers containsObject:recipientContactId]) {
+                DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
+                NSError *error = OWSErrorMakeMessageSendFailedToBlocklistError();
+                failureHandler(error);
+                return;
+            }
+
             SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientContactId];
             if (!recipient) {
                 NSError *error;
@@ -554,14 +575,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
 
                     DDLogError(@"%@ contact lookup failed with error: %@", self.tag, error);
-                    return failureHandler(error);
+                    failureHandler(error);
+                    return;
                 }
             }
 
             if (!recipient) {
                 NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
                 DDLogWarn(@"recipient contact still not found after attempting lookup.");
-                return failureHandler(error);
+                failureHandler(error);
+                return;
             }
 
             [self sendMessage:message
@@ -609,11 +632,31 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self saveGroupMessage:message inThread:thread];
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
+    NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
+    int blockedCount = 0;
     for (SignalRecipient *rec in recipients) {
-        // we don't need to send the message to ourselves, but otherwise we send
-        if (![[rec uniqueId] isEqualToString:[TSStorageManager localNumber]]) {
-            [futures addObject:[self sendMessageFuture:message recipient:rec thread:thread]];
+        // We don't need to send the message to ourselves...
+        if ([rec.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+            continue;
         }
+        // ...or to anyone on our blocklist...
+        OWSAssert(rec.uniqueId.length > 0);
+        if ([blockedPhoneNumbers containsObject:rec.uniqueId]) {
+            DDLogInfo(@"%@ skipping group send to blocked contact: %@", self.tag, rec.uniqueId);
+            blockedCount++;
+            continue;
+        }
+
+        // ...otherwise we send.
+        [futures addObject:[self sendMessageFuture:message recipient:rec thread:thread]];
+    }
+
+    // If all recipients in the group are in our blocklist,
+    // there's nothing to do.
+    if (blockedCount > 0 && futures.count == 0) {
+        NSError *error = OWSErrorMakeMessageSendFailedToBlocklistError();
+        failureHandler(error);
+        return;
     }
 
     TOCFuture *completionFuture = futures.toc_thenAll;
