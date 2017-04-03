@@ -15,7 +15,6 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-#import "BlockListViewController.h"
 
 #define kProfileCellHeight 87.0f
 #define kStandardCellHeight 44.0f
@@ -23,16 +22,12 @@
 #define kNumberOfSections 4
 
 #define kRegisteredNumberRow 0
-
-typedef enum {
-    kInviteRow = 0,
-    kPrivacyRow = 1,
-    kNotificationRow = 2,
-    kLinkedDevices = 3, // we don't actually use this, instead we segue via Interface Builder
-    kAdvancedRow = 4,
-    kAboutRow = 5,
-    kBlockListRow = 6,
-} kGeneralSectionRows;
+#define kInviteRow 0
+#define kPrivacyRow 1
+#define kNotificationRow 2
+#define kLinkedDevices 3 // we don't actually use this, instead we segue via Interface Builder
+#define kAdvancedRow 4
+#define kAboutRow 5
 
 #define kNetworkRow 0
 #define kUnregisterRow 0
@@ -40,7 +35,7 @@ typedef enum {
 typedef enum {
     kRegisteredRows = 1,
     kNetworkStatusRows = 1,
-    kGeneralRows = 7,
+    kGeneralRows = 6,
     kUnregisterRows = 1,
 } kRowsForSection;
 
@@ -107,8 +102,6 @@ typedef enum {
     self.linkedDevicesLabel.text
         = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
     self.inviteLabel.text = NSLocalizedString(@"SETTINGS_INVITE_TITLE", @"Settings table view cell label");
-    self.blockListLabel.text
-        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];
@@ -149,6 +142,7 @@ typedef enum {
     }
 }
 
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
@@ -187,13 +181,6 @@ typedef enum {
                 }
                 case kAboutRow: {
                     AboutTableViewController *vc = [[AboutTableViewController alloc] init];
-                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-                    NSAssert(vc != nil, @"About View Controller must not be nil");
-                    [self.navigationController pushViewController:vc animated:YES];
-                    break;
-                }
-                case kBlockListRow: {
-                    BlockListViewController *vc = [[BlockListViewController alloc] init];
                     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
                     NSAssert(vc != nil, @"About View Controller must not be nil");
                     [self.navigationController pushViewController:vc animated:YES];

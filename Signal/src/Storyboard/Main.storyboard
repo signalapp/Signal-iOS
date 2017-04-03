@@ -788,7 +788,7 @@
         <scene sceneID="nF7-wR-ITu">
             <objects>
                 <navigationController storyboardIdentifier="SettingsNavigationController" id="u7y-N1-6Ba" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="OEe-gh-9Ii">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="OEe-gh-9Ii">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -997,29 +997,12 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="jQa-vx-tCW" style="IBUITableViewCellStyleDefault" id="dmR-bg-mCa" userLabel="Block List">
-                                        <rect key="frame" x="0.0" y="404" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dmR-bg-mCa" id="aTF-qk-Ae9">
-                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Block List" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jQa-vx-tCW" userLabel="Block List">
-                                                    <rect key="frame" x="15" y="0.0" width="325" height="43"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="FdD-MV-PUQ">
                                 <cells>
                                     <tableViewCell autoresizesSubviews="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="100" id="R82-FT-SEA" userLabel="Destroy Account Cell">
-                                        <rect key="frame" x="0.0" y="448" width="375" height="100"/>
+                                        <rect key="frame" x="0.0" y="404" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R82-FT-SEA" id="Ok9-fE-WhB">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="99"/>
@@ -1069,7 +1052,6 @@
                     <connections>
                         <outlet property="aboutLabel" destination="qeN-f1-cIQ" id="kmc-iU-NK5"/>
                         <outlet property="advancedLabel" destination="dkL-Nz-E6H" id="HUw-SB-apQ"/>
-                        <outlet property="blockListLabel" destination="jQa-vx-tCW" id="m54-NJ-dpu"/>
                         <outlet property="destroyAccountButton" destination="4Mk-ly-6fq" id="6Xj-Rb-kfF"/>
                         <outlet property="inviteLabel" destination="9FD-M0-WLe" id="TfU-b4-OtN"/>
                         <outlet property="linkedDevicesLabel" destination="hrc-lZ-NeA" id="VkD-E5-2kW"/>

@@ -824,7 +824,7 @@
 "SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
 
 /* Label for the block list row of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Block List";
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
