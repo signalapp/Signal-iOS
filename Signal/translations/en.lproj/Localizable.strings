@@ -100,23 +100,29 @@
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
-/* A format for the 'block phone number' action sheet title. */
+/* A format for the 'block user' action sheet title. */
 "BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
 
-/* A format for the 'unblock phone number' action sheet title. */
+/* A format for the 'unblock user' action sheet title. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
 
-/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Block user failed.";
 
-/* The title of the 'contact blocked' alert in the block view. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user blocked' alert. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
 
 /* A title for the contacts section of the blocklist view. */
 "BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
@@ -127,11 +133,17 @@
 /* The title of the 'phone number blocked' alert in the block view. */
 "BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
 
-/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Unblock user failed.";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user unblocked' alert. It is populated with the blocked phone number. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
 
-/* The title of the 'phone number unblocked' alert in the block view. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
@@ -192,6 +204,9 @@
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
 
 /* The message of the 'text message too large' alert. */
 "CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";

@@ -1,13 +1,15 @@
-//  Created by Michael Kirk on 9/21/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
+#import "OWSTableViewController.h"
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-@interface OWSConversationSettingsTableViewController : UITableViewController
+@interface OWSConversationSettingsTableViewController : OWSTableViewController
 
 - (void)configureWithThread:(TSThread *)thread;
 - (void)presentedModalWasDismissed;

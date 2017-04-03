@@ -34,41 +34,45 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = @"Debug: Conversation";
-    
-    [contents addSection:[OWSTableSection sectionWithTitle:@"Messages View"
-                                                     items:@[
-                                                             [OWSTableItem actionWithTitle:@"Send 10 messages (1/sec.)"
-                                                                               actionBlock:^{
-                                                                                   [DebugUITableViewController sendTextMessage:10
-                                                                                                                        thread:thread];
-                                                                               }],
-                                                             [OWSTableItem actionWithTitle:@"Send 100 messages (1/sec.)"
-                                                                               actionBlock:^{
-                                                                                   [DebugUITableViewController sendTextMessage:100
-                                                                                                                        thread:thread];
-                                                                               }],
-                                                             [OWSTableItem actionWithTitle:@"Send text/x-signal-plain"
-                                                                               actionBlock:^{
-                                                                                   [DebugUITableViewController sendOversizeTextMessage:thread];
-                                                                               }],
-                                                             [OWSTableItem actionWithTitle:@"Send unknown mimetype"
-                                                                               actionBlock:^{
-                                                                                   [DebugUITableViewController sendRandomAttachment:thread
-                                                                                                                                uti:SignalAttachment.kUnknownTestAttachmentUTI];
-                                                                               }],
-                                                             [OWSTableItem actionWithTitle:@"Send pdf"
-                                                                               actionBlock:^{
-                                                                                   [DebugUITableViewController sendRandomAttachment:thread
-                                                                                                                                uti:(NSString *) kUTTypePDF];
-                                                                               }],
-                                                             ]]];
+
+    [contents
+        addSection:[OWSTableSection
+                       sectionWithTitle:@"Messages View"
+                                  items:@[
+                                      [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
+                                                      actionBlock:^{
+                                                          [DebugUITableViewController sendTextMessage:10 thread:thread];
+                                                      }],
+                                      [OWSTableItem itemWithTitle:@"Send 100 messages (1/sec.)"
+                                                      actionBlock:^{
+                                                          [DebugUITableViewController sendTextMessage:100
+                                                                                               thread:thread];
+                                                      }],
+                                      [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
+                                                      actionBlock:^{
+                                                          [DebugUITableViewController sendOversizeTextMessage:thread];
+                                                      }],
+                                      [OWSTableItem
+                                          itemWithTitle:@"Send unknown mimetype"
+                                            actionBlock:^{
+                                                [DebugUITableViewController
+                                                    sendRandomAttachment:thread
+                                                                     uti:SignalAttachment.kUnknownTestAttachmentUTI];
+                                            }],
+                                      [OWSTableItem itemWithTitle:@"Send pdf"
+                                                      actionBlock:^{
+                                                          [DebugUITableViewController
+                                                              sendRandomAttachment:thread
+                                                                               uti:(NSString *)kUTTypePDF];
+                                                      }],
+                                  ]]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Print to Debug Log"
-                                                     items:@[ [OWSTableItem actionWithTitle:@"Print all sessions"
-                                                                                actionBlock:^{
-                                                                                    [[TSStorageManager sharedManager]
-                                                                                        printAllSessions];
-                                                                                }] ]]];
+                                                     items:@[ [OWSTableItem itemWithTitle:@"Print all sessions"
+                                                                              actionBlock:^{
+                                                                                  [[TSStorageManager sharedManager]
+                                                                                      printAllSessions];
+                                                                              }] ]]];
 
     DebugUITableViewController *viewController = [DebugUITableViewController new];
     viewController.contents = contents;

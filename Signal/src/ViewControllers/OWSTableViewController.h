@@ -32,15 +32,30 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 typedef NS_ENUM(NSInteger, OWSTableItemType) {
+    OWSTableItemTypeDefault,
     OWSTableItemTypeAction,
 };
 
 typedef void (^OWSTableActionBlock)();
+typedef UITableViewCell * (^OWSTableCustomCellBlock)();
 
 @interface OWSTableItem : NSObject
 
-+ (OWSTableItem *)actionWithTitle:(NSString *)title
-                      actionBlock:(OWSTableActionBlock)actionBlock;
++ (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
+                     customRowHeight:(CGFloat)customRowHeight
+                         actionBlock:(OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                          customRowHeight:(CGFloat)customRowHeight
+                              actionBlock:(OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                              actionBlock:(OWSTableActionBlock)actionBlock;
+
+- (UITableViewCell *)customCell;
+- (NSNumber *)customRowHeight;
 
 @end
 

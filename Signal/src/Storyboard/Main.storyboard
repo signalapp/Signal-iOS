@@ -446,18 +446,40 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="urv-62-RsD" kind="modal" id="wgA-Oo-kKq"/>
+                                            <segue destination="urv-62-RsD" kind="modal" identifier="OWSConversationSettingsTableViewControllerSegueSafetyNumbers" id="wgA-Oo-kKq"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" textLabel="NTW-lE-H66" imageView="cpX-fS-xEX" style="IBUITableViewCellStyleDefault" id="Lpy-OD-yA9">
+                                        <rect key="frame" x="0.0" y="144" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Lpy-OD-yA9" id="NhR-r7-vVa">
+                                            <rect key="frame" x="0.0" y="0.0" width="336" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Blocklist State" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NTW-lE-H66">
+                                                    <rect key="frame" x="62" y="0.0" width="274" height="43"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="ic_lock_outline" id="cpX-fS-xEX">
+                                                    <rect key="frame" x="15" y="5" width="32" height="32"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <color key="tintColor" red="0.054901960780000002" green="0.054901960780000002" blue="0.054901960780000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                </imageView>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="108" id="U6h-Xo-HEv">
-                                        <rect key="frame" x="0.0" y="144" width="375" height="108"/>
+                                        <rect key="frame" x="0.0" y="188" width="375" height="108"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="U6h-Xo-HEv" id="Nmz-2u-fOY">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="107"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disappearing Messages" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="qbY-qJ-enK" userLabel="Disappearing Messages">
-                                                    <rect key="frame" x="64" y="0.0" width="238" height="44"/>
+                                                    <rect key="frame" x="68" y="0.0" width="234" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="44" id="dT5-gx-pqJ"/>
                                                     </constraints>
@@ -475,7 +497,7 @@
                                                     </connections>
                                                 </switch>
                                                 <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_timer" translatesAutoresizingMaskIntoConstraints="NO" id="iRL-ZI-kXA">
-                                                    <rect key="frame" x="16" y="6" width="32" height="32"/>
+                                                    <rect key="frame" x="20" y="6" width="32" height="32"/>
                                                     <color key="tintColor" red="0.054901960780000002" green="0.054901960780000002" blue="0.054901960780000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="iRL-ZI-kXA" secondAttribute="height" multiplier="1:1" id="QMF-qg-bIc"/>
@@ -483,14 +505,14 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When enabled, messages sent and received in this conversation will disappear after they have been seen." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="zIg-K4-8lV">
-                                                    <rect key="frame" x="64" y="40" width="287" height="59"/>
+                                                    <rect key="frame" x="68" y="40" width="283" height="59"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="iRL-ZI-kXA" firstAttribute="leading" secondItem="Nmz-2u-fOY" secondAttribute="leading" constant="16" id="FsM-rL-dWt"/>
+                                                <constraint firstItem="iRL-ZI-kXA" firstAttribute="leading" secondItem="Nmz-2u-fOY" secondAttribute="leading" constant="20" id="FsM-rL-dWt"/>
                                                 <constraint firstItem="qbY-qJ-enK" firstAttribute="top" secondItem="Nmz-2u-fOY" secondAttribute="top" id="Hzt-Rw-yQA"/>
                                                 <constraint firstItem="zIg-K4-8lV" firstAttribute="top" secondItem="qbY-qJ-enK" secondAttribute="bottom" constant="-4" id="NGz-Yy-9uN"/>
                                                 <constraint firstItem="zIg-K4-8lV" firstAttribute="leading" secondItem="qbY-qJ-enK" secondAttribute="leading" id="PYG-46-cLa"/>
@@ -506,20 +528,20 @@
                                         <inset key="separatorInset" minX="63" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="76" id="3dL-aW-P1A">
-                                        <rect key="frame" x="0.0" y="252" width="375" height="76"/>
+                                        <rect key="frame" x="0.0" y="296" width="375" height="76"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3dL-aW-P1A" id="2a2-Po-p8O">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Messages disappear after 8 hours." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="c6Q-rV-1LO" userLabel="Keep messages for 8 hours.">
-                                                    <rect key="frame" x="64" y="6" width="303" height="32"/>
+                                                    <rect key="frame" x="68" y="6" width="299" height="32"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="4Hn-9p-qsR">
-                                                    <rect key="frame" x="62" y="38" width="295" height="31"/>
+                                                    <rect key="frame" x="66" y="38" width="291" height="31"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="D1q-zH-wtT"/>
                                                     </constraints>
@@ -528,7 +550,7 @@
                                                     </connections>
                                                 </slider>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_hourglass_empty" translatesAutoresizingMaskIntoConstraints="NO" id="X7n-1t-1Q7">
-                                                    <rect key="frame" x="16" y="6" width="32" height="32"/>
+                                                    <rect key="frame" x="20" y="6" width="32" height="32"/>
                                                     <color key="tintColor" red="0.054901960784313725" green="0.054901960784313725" blue="0.054901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="32" id="Pmb-2B-dEA"/>
@@ -544,7 +566,7 @@
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="bottom" secondItem="X7n-1t-1Q7" secondAttribute="bottom" id="WOE-pQ-2zh"/>
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="leading" secondItem="X7n-1t-1Q7" secondAttribute="trailing" constant="16" id="itv-VA-m3d"/>
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="top" secondItem="X7n-1t-1Q7" secondAttribute="top" id="oa2-QP-Lhu"/>
-                                                <constraint firstItem="X7n-1t-1Q7" firstAttribute="leading" secondItem="2a2-Po-p8O" secondAttribute="leading" constant="16" id="qNh-GB-pE2"/>
+                                                <constraint firstItem="X7n-1t-1Q7" firstAttribute="leading" secondItem="2a2-Po-p8O" secondAttribute="leading" constant="20" id="qNh-GB-pE2"/>
                                                 <constraint firstItem="4Hn-9p-qsR" firstAttribute="top" secondItem="c6Q-rV-1LO" secondAttribute="bottom" id="ssH-ql-B0K"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -555,7 +577,7 @@
                             <tableViewSection headerTitle="Group Management" id="z5m-Fe-GK8">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="NxZ-wa-xV9" style="IBUITableViewCellStyleDefault" id="XHr-b6-Gvn" userLabel="Update Group">
-                                        <rect key="frame" x="0.0" y="385" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="429" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XHr-b6-Gvn" id="Epj-vT-UYL">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
@@ -575,7 +597,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="geN-YN-TQg" style="IBUITableViewCellStyleDefault" id="w57-rz-BWN" userLabel="Leave Group">
-                                        <rect key="frame" x="0.0" y="429" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="473" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w57-rz-BWN" id="Pgy-Fc-U25">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
@@ -592,7 +614,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Zml-Zn-2fd" style="IBUITableViewCellStyleDefault" id="Dnq-Ko-46l" userLabel="Group Members">
-                                        <rect key="frame" x="0.0" y="473" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="517" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Dnq-Ko-46l" id="VRQ-31-E5Y">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
@@ -622,22 +644,21 @@
                     <navigationItem key="navigationItem" title="Conversation Settings" id="3Gh-BY-xJE"/>
                     <connections>
                         <outlet property="avatar" destination="7IV-AJ-aCS" id="9LA-fh-tIF"/>
+                        <outlet property="blocklistStateCell" destination="Lpy-OD-yA9" id="GZW-j4-F2n"/>
                         <outlet property="disappearingMessagesDurationCell" destination="3dL-aW-P1A" id="fZT-hN-ZNB"/>
                         <outlet property="disappearingMessagesDurationLabel" destination="c6Q-rV-1LO" id="dEt-U7-kFm"/>
                         <outlet property="disappearingMessagesDurationSlider" destination="4Hn-9p-qsR" id="nMT-B6-hzM"/>
                         <outlet property="disappearingMessagesSwitch" destination="0dO-mx-W3I" id="bBm-Lk-kgv"/>
-                        <outlet property="leaveGroupCell" destination="w57-rz-BWN" id="NhL-3S-t9C"/>
-                        <outlet property="listGroupMembersCell" destination="Dnq-Ko-46l" id="FF2-Vv-UPN"/>
                         <outlet property="nameLabel" destination="qCt-Cp-bFX" id="7yI-kh-cN6"/>
                         <outlet property="signalIdLabel" destination="tmV-r0-09O" id="jFP-hM-j3f"/>
                         <outlet property="toggleDisappearingMessagesCell" destination="U6h-Xo-HEv" id="a3T-jn-u7Z"/>
                         <outlet property="toggleDisappearingMessagesDescriptionLabel" destination="zIg-K4-8lV" id="bbK-a4-b6t"/>
                         <outlet property="toggleDisappearingMessagesTitleLabel" destination="qbY-qJ-enK" id="gMK-F9-7Ss"/>
-                        <outlet property="updateGroupCell" destination="XHr-b6-Gvn" id="JMz-e5-FNh"/>
                         <outlet property="verifyPrivacyCell" destination="Dzg-XO-ciX" id="kKQ-3F-uIp"/>
                         <outletCollection property="cellIcons" destination="eGH-Vc-aKx" id="QW6-1W-hpg"/>
                         <outletCollection property="cellIcons" destination="iRL-ZI-kXA" id="kct-Ug-2zB"/>
                         <outletCollection property="cellIcons" destination="X7n-1t-1Q7" id="sc6-6u-NOR"/>
+                        <outletCollection property="cellIcons" destination="cpX-fS-xEX" id="BZI-wV-O2B"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ftx-dN-loa" userLabel="First Responder" sceneMemberID="firstResponder"/>
