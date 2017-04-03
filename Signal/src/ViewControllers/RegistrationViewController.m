@@ -35,11 +35,14 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 
     _titleLabel.text = NSLocalizedString(@"REGISTRATION_TITLE_LABEL", @"");
-    [_countryNameButton setTitle:NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"")
-                        forState:UIControlStateNormal];
-    _phoneNumberTextField.placeholder = NSLocalizedString(@"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"");
-    [_phoneNumberButton setTitle:NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"")
-                        forState:UIControlStateNormal];
+    [_countryNameButton
+        setTitle:NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field")
+        forState:UIControlStateNormal];
+    _phoneNumberTextField.placeholder = NSLocalizedString(
+        @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
+    [_phoneNumberButton
+        setTitle:NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield")
+        forState:UIControlStateNormal];
     [_phoneNumberButton.titleLabel setAdjustsFontSizeToFitWidth:YES];
     [_sendCodeButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
     [_existingUserButton setTitle:NSLocalizedString(@"ALREADY_HAVE_ACCOUNT_BUTTON", @"registration button text")

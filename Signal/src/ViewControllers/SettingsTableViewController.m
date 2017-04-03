@@ -107,7 +107,8 @@ typedef enum {
     self.linkedDevicesLabel.text
         = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
     self.inviteLabel.text = NSLocalizedString(@"SETTINGS_INVITE_TITLE", @"Settings table view cell label");
-    self.blocklistLabel.text = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list row of the settings view");
+    self.blockListLabel.text
+        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];

@@ -83,8 +83,9 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     _countryNameButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [_countryNameButton setTitleColor:[UIColor blackColor]
                              forState:UIControlStateNormal];
-    [_countryNameButton setTitle:NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"")
-                        forState:UIControlStateNormal];
+    [_countryNameButton
+        setTitle:NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field")
+        forState:UIControlStateNormal];
     [_countryNameButton addTarget:self
                            action:@selector(showCountryCodeView:)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -116,7 +117,8 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     UILabel *phoneNumberLabel = [UILabel new];
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     phoneNumberLabel.textColor = [UIColor blackColor];
-    phoneNumberLabel.text = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"");
+    phoneNumberLabel.text
+        = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield");
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
     [phoneNumberLabel autoVCenterInSuperview];
@@ -125,7 +127,8 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     _phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:16.f];
     _phoneNumberTextField.textAlignment = NSTextAlignmentRight;
     _phoneNumberTextField.textColor = [UIColor ows_signalBrandBlueColor];
-    _phoneNumberTextField.placeholder = NSLocalizedString(@"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"");
+    _phoneNumberTextField.placeholder = NSLocalizedString(
+        @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
     _phoneNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
     _phoneNumberTextField.delegate = self;
     [_phoneNumberTextField addTarget:self
@@ -206,7 +209,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [_countryCodeButton layoutSubviews];
 }
 
-- (void)setcallingCode:(NSString *)callingCode
+- (void)setCallingCode:(NSString *)callingCode
 {
     _callingCode = callingCode;
 
@@ -233,6 +236,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 - (void)tryToBlockPhoneNumber
 {
     if (![self hasValidPhoneNumber]) {
+        OWSAssert(0);
         return;
     }
 
@@ -248,8 +252,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
                          message:[NSString
                                      stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
                                                           @"The message format of the 'phone number blocked' alert in "
-                                                          @"the block view. It is populated with the blocked phone "
-                                                          @"number."),
+                                                          @"the block view. Embeds {{the blocked phone number}}."),
                                      [parsedPhoneNumber toE164]]
                   preferredStyle:UIAlertControllerStyleAlert];
 

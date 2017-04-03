@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kBlockListViewControllerCellIdentifier = @"kBlockListViewControllerCellIdentifier";
-
 // TODO: We should label phone numbers with contact names where possible.
 @interface BlockListViewController ()
 
@@ -42,10 +40,8 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
-    self.title = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"");
-
-    [self.tableView registerClass:[UITableViewCell class]
-           forCellReuseIdentifier:kBlockListViewControllerCellIdentifier];
+    self.title
+        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
     [self addNotificationListeners];
 }
@@ -102,7 +98,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kBlockListViewControllerCellIdentifier];
+    UITableViewCell *cell = [UITableViewCell new];
     OWSAssert(cell);
     
     switch (indexPath.section) {

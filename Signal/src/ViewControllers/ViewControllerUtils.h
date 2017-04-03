@@ -8,8 +8,9 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// This convenience function can be used to reformat a phone number
-// text field as the types, pastes, etc.
+// This convenience function can be used to reformat the contents of
+// a phone number text field as the user modifies its text by typing,
+// pasting, etc.
 + (void)phoneNumberTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText

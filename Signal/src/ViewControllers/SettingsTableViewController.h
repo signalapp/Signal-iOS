@@ -1,9 +1,5 @@
 //
-//  SettingsTableViewController.h
-//  Signal
-//
-//  Created by Dylan Bourgeois on 03/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -19,7 +15,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *linkedDevicesLabel;
 @property (strong, nonatomic) IBOutlet UILabel *advancedLabel;
 @property (strong, nonatomic) IBOutlet UILabel *aboutLabel;
-@property (strong, nonatomic) IBOutlet UILabel *blocklistLabel;
+@property (strong, nonatomic) IBOutlet UILabel *blockListLabel;
 @property (strong, nonatomic) IBOutlet UILabel *inviteLabel;
 @property (strong, nonatomic) IBOutlet UIButton *destroyAccountButton;
 

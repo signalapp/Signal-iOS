@@ -3,8 +3,6 @@
 //
 
 #import "OWSTableViewController.h"
-//#import "Environment.h"
-//#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,14 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSTableContents
 
--(instancetype)init {
+- (instancetype)init
+{
     if (self = [super init]) {
         _sections = [NSMutableArray new];
     }
     return self;
 }
 
-- (void)addSection:(OWSTableSection *)section {
+- (void)addSection:(OWSTableSection *)section
+{
     OWSAssert(section);
     
     [_sections addObject:section];
@@ -45,28 +45,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSTableSection
 
-+ (OWSTableSection *)sectionWithTitle:(NSString *)title
-                                items:(NSArray *)items {
++ (OWSTableSection *)sectionWithTitle:(NSString *)title items:(NSArray<OWSTableItem *> *)items
+{
     OWSTableSection *section = [OWSTableSection new];
     section.title = title;
     section.items = [items mutableCopy];
     return section;
 }
 
--(instancetype)init {
+- (instancetype)init
+{
     if (self = [super init]) {
         _items = [NSMutableArray new];
     }
     return self;
 }
 
-- (void)addItem:(OWSTableItem *)item {
+- (void)addItem:(OWSTableItem *)item
+{
     OWSAssert(item);
-    
-    if (!_items) {
-        _items = [NSMutableArray new];
-    }
-    
+
     [_items addObject:item];
 }
 
@@ -77,8 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSTableItem ()
 
 @property (nonatomic) OWSTableItemType itemType;
-@property (nonatomic) NSString *title;
-@property (nonatomic) OWSTableActionBlock actionBlock;
+@property (nonatomic, nullable) NSString *title;
+@property (nonatomic, nullable) OWSTableActionBlock actionBlock;
 
 @end
 
@@ -86,8 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSTableItem
 
-+ (OWSTableItem *)actionWithTitle:(NSString *)title
-                      actionBlock:(OWSTableActionBlock)actionBlock {
++ (OWSTableItem *)actionWithTitle:(NSString *)title actionBlock:(OWSTableActionBlock)actionBlock
+{
     OWSAssert(title.length > 0);
     
     OWSTableItem *item = [OWSTableItem new];
@@ -105,7 +103,8 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 }
@@ -150,14 +149,16 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     OWSAssert(self.contents);
 
     OWSAssert(self.contents.sections.count > 0);
     return (NSInteger) self.contents.sections.count;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
+{
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
     OWSAssert(section.items.count > 0);
     return (NSInteger) section.items.count;
@@ -180,7 +181,8 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     OWSTableItem *item = [self itemForIndexPath:indexPath];
@@ -204,7 +206,8 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)fromViewController {
+- (void)presentFromViewController:(UIViewController *)fromViewController
+{
     OWSAssert(fromViewController);
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self];
@@ -217,7 +220,8 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
                                    completion:nil];
 }
 
-- (void)donePressed:(id)sender {
+- (void)donePressed:(id)sender
+{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

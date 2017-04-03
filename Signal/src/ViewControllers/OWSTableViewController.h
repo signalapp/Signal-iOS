@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class OWSTableItem;
 @class OWSTableSection;
 
@@ -19,10 +21,9 @@
 
 @interface OWSTableSection : NSObject
 
-@property (nonatomic) NSString *title;
+@property (nonatomic, nullable) NSString *title;
 
-+ (OWSTableSection *)sectionWithTitle:(NSString *)title
-                                items:(NSArray *)items;
++ (OWSTableSection *)sectionWithTitle:(NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
 - (void)addItem:(OWSTableItem *)item;
 
@@ -54,3 +55,5 @@ typedef void (^OWSTableActionBlock)();
 - (void)presentFromViewController:(UIViewController *)fromViewController;
 
 @end
+
+NS_ASSUME_NONNULL_END
