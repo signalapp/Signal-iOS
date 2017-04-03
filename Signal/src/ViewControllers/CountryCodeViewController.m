@@ -10,7 +10,6 @@
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER    = @"CountryCodeTableViewCell";
 static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
 
-
 @interface CountryCodeViewController () {
     NSArray *_countryCodes;
 }
@@ -25,6 +24,11 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
     self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
     self.searchBar.delegate = self;
+    if (self.shouldDismissWithoutSegue) {
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                                                              target:self
+                                                                                                       action:@selector(dismissWasPressed:)];
+    }
 }
 
 #pragma mark - UITableViewDelegate
@@ -57,8 +61,20 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
     _callingCodeSelected  = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
     _countryNameSelected  = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     _countryCodeSelected = countryCode;
+    [self.delegate countryCodeViewController:self
+                        didSelectCountryCode:_countryCodeSelected
+                                 countryName:_countryNameSelected
+                                 callingCode:_callingCodeSelected];
     [self.searchBar resignFirstResponder];
-    [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
+    if (self.shouldDismissWithoutSegue) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
+    }
+}
+
+- (void)dismissWasPressed:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

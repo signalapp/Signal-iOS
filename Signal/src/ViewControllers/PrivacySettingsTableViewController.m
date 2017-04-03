@@ -3,16 +3,17 @@
 //
 
 #import "PrivacySettingsTableViewController.h"
-
+#import "BlockListViewController.h"
 #import "Environment.h"
 #import "PropertyListPreferences.h"
-#import "UIUtil.h"
 #import "Signal-Swift.h"
+#import "UIUtil.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
+    PrivacySettingsTableViewControllerSectionIndexBlockList,
     PrivacySettingsTableViewControllerSectionIndexScreenSecurity,
     PrivacySettingsTableViewControllerSectionIndexCalling,
     PrivacySettingsTableViewControllerSectionIndexCallKit,
@@ -22,6 +23,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 };
 
 @interface PrivacySettingsTableViewController ()
+
+@property (nonatomic) UITableViewCell *blocklistCell;
 
 @property (nonatomic) UITableViewCell *enableCallKitCell;
 @property (nonatomic) UISwitch *enableCallKitSwitch;
@@ -59,6 +62,12 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
+
+    // Block List
+    self.blocklistCell = [UITableViewCell new];
+    self.blocklistCell.textLabel.text
+        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
+    self.blocklistCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     // CallKit opt-out
     self.enableCallKitCell = [UITableViewCell new];
@@ -127,6 +136,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
+        case PrivacySettingsTableViewControllerSectionIndexBlockList:
+            return 1;
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
             return 1;
         case PrivacySettingsTableViewControllerSectionIndexCalling:
@@ -167,6 +178,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
+        case PrivacySettingsTableViewControllerSectionIndexBlockList:
+            return self.blocklistCell;
         case PrivacySettingsTableViewControllerSectionIndexScreenSecurity:
             return self.enableScreenSecurityCell;
         case PrivacySettingsTableViewControllerSectionIndexCalling:
@@ -209,6 +222,13 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     switch (indexPath.section) {
+        case PrivacySettingsTableViewControllerSectionIndexBlockList: {
+            BlockListViewController *vc = [[BlockListViewController alloc] init];
+            NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+            NSAssert(vc != nil, @"About View Controller must not be nil");
+            [self.navigationController pushViewController:vc animated:YES];
+            break;
+        }
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog: {
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                                      message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION", @"Alert message before user confirms clearing history")
