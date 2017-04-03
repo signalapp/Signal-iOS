@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSBlockingManager.h"
+#import "OWSBlockingManager.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
 #import "TSStorageManager.h"
@@ -10,14 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kNSNotificationName_BlockedPhoneNumbersDidChange = @"kNSNotificationName_BlockedPhoneNumbersDidChange";
-NSString * const kTSStorageManager_BlockedPhoneNumbersCollection = @"kTSStorageManager_BlockedPhoneNumbersCollection";
+NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange = @"kNSNotificationName_BlockedPhoneNumbersDidChange";
+NSString *const kOWSBlockingManager_BlockedPhoneNumbersCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
 // This key is used to persist the current "blocked phone numbers" state.
-NSString * const kTSStorageManager_BlockedPhoneNumbersKey = @"kTSStorageManager_BlockedPhoneNumbersKey";
+NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
 // This key is used to persist the most recently synced "blocked phone numbers" state.
-NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageManager_SyncedBlockedPhoneNumbersKey";
+NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockingManager_SyncedBlockedPhoneNumbersKey";
 
-@interface TSBlockingManager ()
+@interface OWSBlockingManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -31,11 +31,11 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
 #pragma mark -
 
-@implementation TSBlockingManager
+@implementation OWSBlockingManager
 
 + (instancetype)sharedManager
 {
-    static TSBlockingManager *sharedMyManager = nil;
+    static OWSBlockingManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] initDefault];
@@ -48,11 +48,10 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
 
-    return [self initStorageManager:storageManager
-                      messageSender:messageSender];
+    return [self initWithStorageManager:storageManager messageSender:messageSender];
 }
 
-- (instancetype)initStorageManager:(TSStorageManager *)storageManager messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
 
@@ -62,7 +61,7 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
     OWSAssert(storageManager);
     OWSAssert(messageSender);
-    
+
     _storageManager = storageManager;
     _messageSender = messageSender;
 
@@ -75,38 +74,42 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     return self;
 }
 
-- (void)addBlockedPhoneNumber:(NSString *)phoneNumber {
+- (void)addBlockedPhoneNumber:(NSString *)phoneNumber
+{
     OWSAssert(phoneNumber.length > 0);
 
     DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.tag, phoneNumber);
 
-    @synchronized (self) {
+    @synchronized(self)
+    {
         [self lazyLoadBlockedPhoneNumbersIfNecessary];
 
         if ([_blockedPhoneNumberSet containsObject:phoneNumber]) {
             // Ignore redundant changes.
             return;
         }
-        
+
         [_blockedPhoneNumberSet addObject:phoneNumber];
     }
 
     [self handleUpdate];
 }
 
-- (void)removeBlockedPhoneNumber:(NSString *)phoneNumber {
+- (void)removeBlockedPhoneNumber:(NSString *)phoneNumber
+{
     OWSAssert(phoneNumber.length > 0);
 
     DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.tag, phoneNumber);
 
-    @synchronized (self) {
+    @synchronized(self)
+    {
         [self lazyLoadBlockedPhoneNumbersIfNecessary];
 
         if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
             // Ignore redundant changes.
             return;
         }
-        
+
         [_blockedPhoneNumberSet removeObject:phoneNumber];
     }
 
@@ -119,22 +122,25 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
     DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.tag, (int)blockedPhoneNumbers.count);
 
-    @synchronized (self) {
+    @synchronized(self)
+    {
         [self lazyLoadBlockedPhoneNumbersIfNecessary];
 
         NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
         if ([_blockedPhoneNumberSet isEqualToSet:newSet]) {
             return;
         }
-        
+
         _blockedPhoneNumberSet = [newSet mutableCopy];
     }
 
     [self handleUpdate:sendSyncMessage];
 }
 
-- (NSArray<NSString *> *)blockedPhoneNumbers {
-    @synchronized (self) {
+- (NSArray<NSString *> *)blockedPhoneNumbers
+{
+    @synchronized(self)
+    {
         [self lazyLoadBlockedPhoneNumbersIfNecessary];
 
         return [_blockedPhoneNumberSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
@@ -154,8 +160,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
 
     [_storageManager setObject:blockedPhoneNumbers
-                        forKey:kTSStorageManager_BlockedPhoneNumbersKey
-                  inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
+                        forKey:kOWSBlockingManager_BlockedPhoneNumbersKey
+                  inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (sendSyncMessage) {
@@ -190,15 +196,16 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
         return;
     }
 
-    NSArray<NSString *> *blockedPhoneNumbers = [_storageManager objectForKey:kTSStorageManager_BlockedPhoneNumbersKey
-                                                                inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
+    NSArray<NSString *> *blockedPhoneNumbers =
+        [_storageManager objectForKey:kOWSBlockingManager_BlockedPhoneNumbersKey
+                         inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: [NSArray new])];
 
     // If we haven't yet successfully synced the current "blocked phone numbers" changes,
     // try again to sync now.
     NSArray<NSString *> *syncedBlockedPhoneNumbers =
-        [_storageManager objectForKey:kTSStorageManager_SyncedBlockedPhoneNumbersKey
-                         inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
+        [_storageManager objectForKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                         inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
     NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
         DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
@@ -235,8 +242,8 @@ NSString *const kTSStorageManager_SyncedBlockedPhoneNumbersKey = @"kTSStorageMan
 
     // Record the last set of "blocked phone numbers" which we successfully synced.
     [_storageManager setObject:blockedPhoneNumbers
-                        forKey:kTSStorageManager_SyncedBlockedPhoneNumbersKey
-                  inCollection:kTSStorageManager_BlockedPhoneNumbersCollection];
+                        forKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                  inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
 }
 
 #pragma mark - Logging

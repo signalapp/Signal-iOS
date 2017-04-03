@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ContactsUpdater;
 @class OWSUploadingService;
 @class SignalRecipient;
-@class TSBlockingManager;
+@class OWSBlockingManager;
 @class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
@@ -32,7 +32,7 @@ NS_SWIFT_NAME(MessageSender)
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater;
 
-- (void)setBlockingManager:(TSBlockingManager *)blockingManager;
+- (void)setBlockingManager:(OWSBlockingManager *)blockingManager;
 
 /**
  * Send and resend text messages or resend messages with existing attachments.

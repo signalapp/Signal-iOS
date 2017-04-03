@@ -5,6 +5,7 @@
 #import "OWSMessageSender.h"
 #import "ContactsUpdater.h"
 #import "NSData+messagePadding.h"
+#import "OWSBlockingManager.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
@@ -17,7 +18,6 @@
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
-#import "TSBlockingManager.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -258,7 +258,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
-@property (nonatomic, readonly) TSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
@@ -295,7 +295,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return self;
 }
 
-- (void)setBlockingManager:(TSBlockingManager *)blockingManager
+- (void)setBlockingManager:(OWSBlockingManager *)blockingManager
 {
     OWSAssert(blockingManager);
     OWSAssert(!_blockingManager);
@@ -636,13 +636,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     int blockedCount = 0;
     for (SignalRecipient *rec in recipients) {
         // We don't need to send the message to ourselves...
-        if ([[rec uniqueId] isEqualToString:[TSStorageManager localNumber]]) {
+        if ([rec.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
             continue;
         }
         // ...or to anyone on our blocklist...
-        OWSAssert([rec uniqueId].length > 0);
-        if ([blockedPhoneNumbers containsObject:[rec uniqueId]]) {
-            DDLogInfo(@"%@ skipping group send to blocked contact: %@", self.tag, [rec uniqueId]);
+        OWSAssert(rec.uniqueId.length > 0);
+        if ([blockedPhoneNumbers containsObject:rec.uniqueId]) {
+            DDLogInfo(@"%@ skipping group send to blocked contact: %@", self.tag, rec.uniqueId);
             blockedCount++;
             continue;
         }

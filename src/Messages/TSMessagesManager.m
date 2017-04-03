@@ -10,6 +10,7 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
+#import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -24,7 +25,6 @@
 #import "OWSSyncGroupsMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
-#import "TSBlockingManager.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
-@property (nonatomic, readonly) TSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @end
 
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     _dbConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
-    _blockingManager = [TSBlockingManager sharedManager];
+    _blockingManager = [OWSBlockingManager sharedManager];
 
     OWSSingletonAssert();
 
@@ -158,7 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
 
-    // TODO: Can we trust envelope.source to be properly formatted?
     OWSAssert(envelope.source.length > 0);
     BOOL isEnvelopeBlocked = [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
     if (isEnvelopeBlocked) {
