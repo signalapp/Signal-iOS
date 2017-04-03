@@ -103,6 +103,8 @@
 -(instancetype)init {
     if (self = [super init]) {
         self.responseData = [NSMutableData data];
+
+        OWSSingletonAssert();
     }
     return self;
 }

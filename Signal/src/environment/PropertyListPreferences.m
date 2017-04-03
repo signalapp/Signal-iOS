@@ -29,6 +29,18 @@ NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDecli
 
 @implementation PropertyListPreferences
 
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    return self;
+}
+
 #pragma mark - Helpers
 
 - (void)clear {

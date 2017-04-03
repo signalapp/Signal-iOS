@@ -17,11 +17,13 @@
 
 @interface NotificationsManager ()
 
-@property SystemSoundID newMessageSound;
+@property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @end
+
+#pragma mark -
 
 @implementation NotificationsManager
 
@@ -36,6 +38,8 @@
 
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
+
+    OWSSingletonAssert();
 
     return self;
 }

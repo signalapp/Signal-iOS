@@ -41,6 +41,8 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
     _latestContactsById = @{};
     _avatarCache = [NSCache new];
 
+    OWSSingletonAssert();
+
     return self;
 }
 

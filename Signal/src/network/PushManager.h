@@ -39,6 +39,8 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 
 @interface PushManager : NSObject <PKPushRegistryDelegate>
 
+- (instancetype)init NS_UNAVAILABLE;
+
 + (PushManager *)sharedManager;
 
 /**
