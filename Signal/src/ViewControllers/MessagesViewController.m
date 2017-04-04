@@ -282,8 +282,6 @@ typedef enum : NSUInteger {
 
 - (void)addNotificationListeners
 {
-    // I have not added this to toggleObservers since I am
-    // not con
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
@@ -595,12 +593,7 @@ typedef enum : NSUInteger {
 
     if ([self isBlockedContactConversation]) {
         // If this a blocked 1:1 conversation, offer to unblock the user.
-        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:nil];
+        [self showUnblockContactUI:nil];
     } else {
         // If this a group conversation with at least one blocked member,
         // Show the block list view.
@@ -610,6 +603,18 @@ typedef enum : NSUInteger {
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
+}
+
+- (void)showUnblockContactUI:(BlockActionCompletionBlock)completionBlock
+{
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
+    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                     fromViewController:self
+                                        blockingManager:_blockingManager
+                                        contactsManager:_contactsManager
+                                        completionBlock:completionBlock];
 }
 
 - (BOOL)isBlockedContactConversation
@@ -979,16 +984,11 @@ typedef enum : NSUInteger {
 
     if ([self isBlockedContactConversation]) {
         __weak MessagesViewController *weakSelf = self;
-        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf callAction:nil];
-                                                }
-                                            }];
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf callAction:nil];
+            }
+        }];
         return;
     }
 
@@ -1009,20 +1009,15 @@ typedef enum : NSUInteger {
 {
     if ([self isBlockedContactConversation]) {
         __weak MessagesViewController *weakSelf = self;
-        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf didPressSendButton:button
-                                                                 withMessageText:text
-                                                                        senderId:senderId
-                                                               senderDisplayName:senderDisplayName
-                                                                            date:date];
-                                                }
-                                            }];
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPressSendButton:button
+                             withMessageText:text
+                                    senderId:senderId
+                           senderDisplayName:senderDisplayName
+                                        date:date];
+            }
+        }];
         return;
     }
 
@@ -2491,16 +2486,11 @@ typedef enum : NSUInteger {
 
     if ([self isBlockedContactConversation]) {
         __weak MessagesViewController *weakSelf = self;
-        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf didPressAccessoryButton:nil];
-                                                }
-                                            }];
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPressAccessoryButton:nil];
+            }
+        }];
         return;
     }
 
@@ -2739,16 +2729,11 @@ typedef enum : NSUInteger {
 
     if ([self isBlockedContactConversation]) {
         __weak MessagesViewController *weakSelf = self;
-        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf didPasteAttachment:attachment];
-                                                }
-                                            }];
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPasteAttachment:attachment];
+            }
+        }];
         return;
     }
 

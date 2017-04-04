@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^BlockAlertCompletionBlock)();
+
 @implementation BlockListUIUtils
 
 + (void)showBlockContactActionSheet:(Contact *)contact
@@ -27,10 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (phoneNumbers.count < 1) {
         DDLogError(@"%@ Contact has no phone numbers", self.tag);
         OWSAssert(0);
-        [self showBlockFailedAlert:fromViewController];
-        if (completionBlock) {
-            completionBlock(NO);
-        }
+        [self showBlockFailedAlert:fromViewController
+                   completionBlock:^{
+                       if (completionBlock) {
+                           completionBlock(NO);
+                       }
+                   }];
         return;
     }
     NSString *displayName = [contactsManager displayNameForContact:contact];
@@ -81,10 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
                     [self blockPhoneNumbers:phoneNumbers
                                 displayName:displayName
                          fromViewController:fromViewController
-                            blockingManager:blockingManager];
-                    if (completionBlock) {
-                        completionBlock(YES);
-                    }
+                            blockingManager:blockingManager
+                            completionBlock:^{
+                                if (completionBlock) {
+                                    completionBlock(YES);
+                                }
+                            }];
                 }];
     [actionSheetController addAction:unblockAction];
 
@@ -104,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
               displayName:(NSString *)displayName
        fromViewController:(UIViewController *)fromViewController
           blockingManager:(OWSBlockingManager *)blockingManager
+          completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(phoneNumbers.count > 0);
     OWSAssert(displayName.length > 0);
@@ -122,7 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         @"The message format of the 'user blocked' "
                                                         @"alert. Embeds {{the blocked user's name or phone number}}."),
                                    [self formatDisplayNameForAlertMessage:displayName]]
-            fromViewController:fromViewController];
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
@@ -153,10 +161,12 @@ NS_ASSUME_NONNULL_BEGIN
                     [BlockListUIUtils unblockPhoneNumber:phoneNumber
                                              displayName:displayName
                                       fromViewController:fromViewController
-                                         blockingManager:blockingManager];
-                    if (completionBlock) {
-                        completionBlock(NO);
-                    }
+                                         blockingManager:blockingManager
+                                         completionBlock:^{
+                                             if (completionBlock) {
+                                                 completionBlock(NO);
+                                             }
+                                         }];
                 }];
     [actionSheetController addAction:unblockAction];
 
@@ -176,6 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
                displayName:(NSString *)displayName
         fromViewController:(UIViewController *)fromViewController
            blockingManager:(OWSBlockingManager *)blockingManager
+           completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(phoneNumber.length > 0);
     OWSAssert(displayName.length > 0);
@@ -191,10 +202,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                         @"The message format of the 'user unblocked' "
                                                         @"alert. Embeds {{the blocked user's name or phone number}}."),
                                    [self formatDisplayNameForAlertMessage:displayName]]
-            fromViewController:fromViewController];
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 + (void)showBlockFailedAlert:(UIViewController *)fromViewController
+             completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(fromViewController);
 
@@ -202,10 +215,12 @@ NS_ASSUME_NONNULL_BEGIN
                                    @"The title of the 'block user failed' alert.")
                        message:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE",
                                    @"The title of the 'block user failed' alert.")
-            fromViewController:fromViewController];
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 + (void)showUnblockFailedAlert:(UIViewController *)fromViewController
+               completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(fromViewController);
 
@@ -213,12 +228,14 @@ NS_ASSUME_NONNULL_BEGIN
                                    @"The title of the 'unblock user failed' alert.")
                        message:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE",
                                    @"The title of the 'unblock user failed' alert.")
-            fromViewController:fromViewController];
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 + (void)showOkAlertWithTitle:(NSString *)title
                      message:(NSString *)message
           fromViewController:(UIViewController *)fromViewController
+             completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(title.length > 0);
     OWSAssert(message.length > 0);
@@ -229,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                    style:UIAlertActionStyleDefault
-                                                 handler:nil]];
+                                                 handler:completionBlock]];
     [fromViewController presentViewController:controller animated:YES completion:nil];
 }
 
