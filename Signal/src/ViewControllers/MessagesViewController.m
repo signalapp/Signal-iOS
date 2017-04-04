@@ -220,6 +220,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @property (nonatomic) NSCache *messageAdapterCache;
+@property (nonatomic) BOOL userHasScrolled;
 
 @end
 
@@ -527,6 +528,12 @@ typedef enum : NSUInteger {
     [self ensureBlockStateIndicator];
 }
 
+- (void)setUserHasScrolled:(BOOL)userHasScrolled {
+    _userHasScrolled = userHasScrolled;
+    
+    [self ensureBlockStateIndicator];
+}
+
 - (void)ensureBlockStateIndicator
 {
     // This method should be called rarely, so it's simplest to discard and
@@ -534,6 +541,10 @@ typedef enum : NSUInteger {
     [self.blockStateIndicator removeFromSuperview];
     self.blockStateIndicator = nil;
     
+    if (self.userHasScrolled) {
+        return;
+    }
+
     NSString *blockStateMessage = nil;
     if ([self isBlockedContactConversation]) {
         blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_CONTACT_BLOCKED",
@@ -725,6 +736,7 @@ typedef enum : NSUInteger {
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     self.inputToolbar.contentView.textView.editable = NO;
+    self.userHasScrolled = NO;
 }
 
 #pragma mark - Initiliazers
@@ -2779,6 +2791,13 @@ typedef enum : NSUInteger {
     [self presentViewController:controller
                        animated:YES
                      completion:nil];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.userHasScrolled = YES;
 }
 
 #pragma mark - Class methods
