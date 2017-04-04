@@ -15,6 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @protocol ContactsManagerProtocol;
 
+/**
+ * Useful for when you *sometimes* want to retry before giving up and calling the failure handler
+ * but *sometimes* we don't want to retry when we know it's a terminal failure, so we allow the
+ * caller to indicate this with isRetryable=NO.
+ */
+typedef void (^RetryableFailureHandler)(NSError *_Nonnull error, BOOL isRetryable);
+
 NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject {
 

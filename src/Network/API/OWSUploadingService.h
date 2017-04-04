@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageSender.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSOutgoingMessage;
@@ -20,7 +22,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
                        success:(void (^)())successHandler
-                       failure:(void (^)(NSError *error))failureHandler;
+                       failure:(RetryableFailureHandler)failureHandler;
 
 @end
 

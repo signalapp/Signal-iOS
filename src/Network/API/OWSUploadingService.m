@@ -6,6 +6,7 @@
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "OWSError.h"
+#import "OWSMessageSender.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
@@ -39,7 +40,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
                        success:(void (^)())successHandler
-                       failure:(void (^)(NSError *_Nonnull))failureHandler
+                       failure:(RetryableFailureHandler)failureHandler
 {
     if (attachmentStream.serverId) {
         DDLogDebug(@"%@ Attachment previously uploaded.", self.tag);
@@ -54,7 +55,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                 if (![responseObject isKindOfClass:[NSDictionary class]]) {
                     DDLogError(@"%@ unexpected response from server: %@", self.tag, responseObject);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                    return failureHandler(error);
+                    return failureHandler(error, YES);
                 }
 
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
@@ -65,7 +66,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                 NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
                 if (error) {
                     DDLogError(@"%@ Failed to read attachment data with error:%@", self.tag, error);
-                    return failureHandler(error);
+                    return failureHandler(error, YES);
                 }
 
                 NSData *encryptionKey;
@@ -95,7 +96,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to allocate attachment with error: %@", self.tag, error);
-            failureHandler(error);
+            failureHandler(error, YES);
         }];
 }
 
@@ -104,7 +105,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                       location:(NSString *)location
                   attachmentId:(NSString *)attachmentId
                        success:(void (^)())successHandler
-                       failure:(void (^)(NSError *error))failureHandler
+                       failure:(RetryableFailureHandler)failureHandler
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:location]];
     request.HTTPMethod = @"PUT";
@@ -126,7 +127,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
             OWSAssert([NSThread isMainThread]);
             if (error) {
                 [self fireProgressNotification:0 attachmentId:attachmentId];
-                return failureHandler(error);
+                return failureHandler(error, YES);
             }
 
             NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
@@ -134,7 +135,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
             if (!isValidResponse) {
                 DDLogError(@"%@ Unexpected server response: %d", self.tag, (int)statusCode);
                 NSError *invalidResponseError = OWSErrorMakeUnableToProcessServerResponseError();
-                return failureHandler(invalidResponseError);
+                return failureHandler(invalidResponseError, YES);
             }
 
             successHandler();
