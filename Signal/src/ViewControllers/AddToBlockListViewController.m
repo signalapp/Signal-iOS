@@ -3,7 +3,10 @@
 //
 
 #import "AddToBlockListViewController.h"
+#import "ContactTableViewCell.h"
 #import "CountryCodeViewController.h"
+#import "Environment.h"
+#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "StringUtil.h"
 #import "UIFont+OWS.h"
@@ -17,10 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockListViewControllerCellIdentifier";
 
+NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
+
 #pragma mark -
 
-// TODO: Add a list of contacts to make it easier to block contacts.
-@interface AddToBlockListViewController () <CountryCodeViewControllerDelegate, UITextFieldDelegate>
+@interface AddToBlockListViewController () <CountryCodeViewControllerDelegate,
+    UITextFieldDelegate,
+    UITableViewDataSource,
+    UITableViewDelegate>
 
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
@@ -31,19 +38,18 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
 
 @property (nonatomic) UIButton *blockButton;
 
+@property (nonatomic) UITableView *contactsTableView;
+
 @property (nonatomic) NSString *callingCode;
+
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic) NSArray<Contact *> *contacts;
 
 @end
 
 #pragma mark -
 
 @implementation AddToBlockListViewController
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
 
 - (void)loadView
 {
@@ -52,6 +58,8 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     self.view.backgroundColor = [UIColor whiteColor];
     
     _blockingManager = [OWSBlockingManager sharedManager];
+    _contactsManager = [Environment getCurrent].contactsManager;
+    self.contacts = self.contactsManager.signalContacts;
 
     self.title = NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_TITLE", @"");
 
@@ -62,11 +70,21 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [self addNotificationListeners];
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [self.navigationController.navigationBar setTranslucent:NO];
+}
+
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalRecipientsDidChange:)
+                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
                                                object:nil];
 }
 
@@ -164,6 +182,17 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [_blockButton autoSetDimension:ALDimensionWidth toSize:160];
     [_blockButton autoSetDimension:ALDimensionHeight toSize:40];
 
+    _contactsTableView = [UITableView new];
+    _contactsTableView.dataSource = self;
+    _contactsTableView.delegate = self;
+    [_contactsTableView registerClass:[ContactTableViewCell class]
+               forCellReuseIdentifier:kContactsTable_CellReuseIdentifier];
+    _contactsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:_contactsTableView];
+    [_contactsTableView autoPinWidthToSuperview];
+    [_contactsTableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:blockButtonRow withOffset:30];
+    [_contactsTableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
     [self updateBlockButtonEnabling];
 }
 
@@ -247,10 +276,11 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [_blockingManager addBlockedPhoneNumber:[parsedPhoneNumber toE164]];
 
     UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE",
+        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE",
                                      @"The title of the 'phone number blocked' alert in the block view.")
                          message:[NSString
-                                     stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                     stringWithFormat:NSLocalizedString(
+                                                          @"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT",
                                                           @"The message format of the 'phone number blocked' alert in "
                                                           @"the block view. Embeds {{the blocked phone number}}."),
                                      [parsedPhoneNumber toE164]]
@@ -295,6 +325,19 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     // TODO: Once we have a list of contacts, we should update it here.
 }
 
+- (void)signalRecipientsDidChange:(NSNotification *)notification
+{
+    [self updateContacts];
+}
+
+- (void)updateContacts
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.contacts = self.contactsManager.signalContacts;
+        [self.contactsTableView reloadData];
+    });
+}
+
 #pragma mark - CountryCodeViewControllerDelegate
 
 - (void)countryCodeViewController:(CountryCodeViewController *)vc
@@ -330,6 +373,113 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
     [textField resignFirstResponder];
     [self tryToBlockPhoneNumber];
     return NO;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return (NSInteger)self.contacts.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Contact *contact = self.contacts[(NSUInteger)indexPath.item];
+
+    ContactTableViewCell *cell = [_contactsTableView cellForRowAtIndexPath:indexPath];
+    if (!cell) {
+        cell = [ContactTableViewCell new];
+    }
+    [cell configureWithContact:contact contactsManager:self.contactsManager];
+    return cell;
+}
+
+- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return NSLocalizedString(
+        @"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE", @"A title for the contacts section of the blocklist view.");
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [ContactTableViewCell rowHeight];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    Contact *contact = self.contacts[(NSUInteger)indexPath.item];
+    [self showBlockActionSheet:contact];
+}
+
+- (void)showBlockActionSheet:(Contact *)contact
+{
+    OWSAssert(contact);
+
+    NSString *displayName = contact.fullName;
+
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_TITLE_FORMAT",
+                                                     @"A format for the 'block phone number' action sheet title."),
+                                displayName];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    __weak AddToBlockListViewController *weakSelf = self;
+    UIAlertAction *unblockAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [weakSelf blockContact:contact displayName:displayName];
+                }];
+    [actionSheetController addAction:unblockAction];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
+- (void)blockContact:(Contact *)contact displayName:(NSString *)displayName
+{
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if (phoneNumber.toE164.length > 0) {
+            [_blockingManager addBlockedPhoneNumber:phoneNumber.toE164];
+        }
+    }
+
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE",
+                                     @"The title of the 'contact blocked' alert in the block view.")
+                         message:[NSString stringWithFormat:NSLocalizedString(
+                                                                @"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                                                @"The message format of the 'contact blocked' "
+                                                                @"alert in the block view. It is populated with the "
+                                                                @"blocked contact's name."),
+                                           displayName]
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self.phoneNumberTextField resignFirstResponder];
 }
 
 #pragma mark - Logging

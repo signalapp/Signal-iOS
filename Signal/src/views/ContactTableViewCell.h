@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <UIKit/UIKit.h>
 #import "OWSContactsManager.h"
 
@@ -12,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 
 @interface ContactTableViewCell : UITableViewCell
+
++ (CGFloat)rowHeight;
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
 
