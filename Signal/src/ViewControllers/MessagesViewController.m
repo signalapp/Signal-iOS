@@ -524,6 +524,9 @@ typedef enum : NSUInteger {
                                                            ];
 
     [self ensureBlockStateIndicator];
+    
+    [self.collectionView.collectionViewLayout invalidateLayout];
+    [self.collectionView reloadData];
 }
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled {
