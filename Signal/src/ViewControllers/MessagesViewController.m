@@ -2,12 +2,14 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "MessagesViewController.h"
 #import "AppDelegate.h"
 #import "AttachmentSharing.h"
+#import "BlockListUIUtils.h"
+#import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
 #import "OWSCall.h"
@@ -34,6 +36,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
+#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
@@ -51,19 +54,18 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalRecipient.h>
-#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseView.h>
-#import "ThreadUtil.h"
-#import "DebugUITableViewController.h"
 
 @import Photos;
 
@@ -198,6 +200,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
+@property (nonatomic) UIButton *blockStateIndicator;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
@@ -213,6 +216,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @property (nonatomic) NSCache *messageAdapterCache;
 
@@ -270,6 +274,26 @@ typedef enum : NSUInteger {
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
+    _blockingManager = [OWSBlockingManager sharedManager];
+
+    [self addNotificationListeners];
+}
+
+- (void)addNotificationListeners
+{
+    // I have not added this to toggleObservers since I am
+    // not con
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockedPhoneNumbersDidChange:)
+                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
+}
+
+- (void)blockedPhoneNumbersDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self ensureBlockStateIndicator];
+    });
 }
 
 - (void)peekSetup {
@@ -500,6 +524,24 @@ typedef enum : NSUInteger {
                                                                                                                @"Short name for edit menu item to share contents of media message.")
                                                                                       action:shareSelector],
                                                            ];
+
+    [self ensureBlockStateIndicator];
+}
+
+- (void)ensureBlockStateIndicator
+{
+    [self.blockStateIndicator removeFromSuperview];
+    self.blockStateIndicator = nil;
+}
+
+
+- (BOOL)isBlockedContactConversation
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return NO;
+    }
+    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
 }
 
 - (void)startReadTimer {
@@ -693,7 +735,7 @@ typedef enum : NSUInteger {
                                                backItem,
                                                [[UIBarButtonItem alloc] initWithCustomView:self.navigationBarTitleView],
                                                ];
-    
+
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;
@@ -842,6 +884,21 @@ typedef enum : NSUInteger {
         return;
     }
 
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                         fromViewController:self
+                                            blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
+                                            completionBlock:^(BOOL isBlocked) {
+                                                if (!isBlocked) {
+                                                    [weakSelf callAction:nil];
+                                                }
+                                            }];
+        return;
+    }
+
     [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
@@ -857,6 +914,25 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                         fromViewController:self
+                                            blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
+                                            completionBlock:^(BOOL isBlocked) {
+                                                if (!isBlocked) {
+                                                    [weakSelf didPressSendButton:button
+                                                                 withMessageText:text
+                                                                        senderId:senderId
+                                                               senderDisplayName:senderDisplayName
+                                                                            date:date];
+                                                }
+                                            }];
+        return;
+    }
+
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     // Limit outgoing text messages to 64kb.
@@ -2319,6 +2395,22 @@ typedef enum : NSUInteger {
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
+
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                         fromViewController:self
+                                            blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
+                                            completionBlock:^(BOOL isBlocked) {
+                                                if (!isBlocked) {
+                                                    [weakSelf didPressAccessoryButton:nil];
+                                                }
+                                            }];
+        return;
+    }
+
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                                    message:nil
                                                                             preferredStyle:UIAlertControllerStyleActionSheet];
@@ -2551,7 +2643,22 @@ typedef enum : NSUInteger {
     DDLogError(@"%@ %s",
                self.tag,
                __PRETTY_FUNCTION__);
-    
+
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                         fromViewController:self
+                                            blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
+                                            completionBlock:^(BOOL isBlocked) {
+                                                if (!isBlocked) {
+                                                    [weakSelf didPasteAttachment:attachment];
+                                                }
+                                            }];
+        return;
+    }
+
     if (attachment == nil ||
         [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
