@@ -116,13 +116,13 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         case BlockListViewControllerSection_Add:
             cell.textLabel.text = NSLocalizedString(
                                                     @"SETTINGS_BLOCK_LIST_ADD_BUTTON", @"A label for the 'add phone number' button in the block list table.");
-            cell.textLabel.font = [UIFont ows_mediumFontWithSize:18.f];
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
         case BlockListViewControllerSection_BlockList: {
             NSString *displayName = [self displayNameForIndexPath:indexPath];
             cell.textLabel.text = displayName;
-            cell.textLabel.font = [UIFont ows_mediumFontWithSize:18.f];
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
             break;
         }
