@@ -437,9 +437,9 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
             return;
         }
         [BlockListUIUtils showBlockPhoneNumberActionSheet:self.thread.contactIdentifier
-                                              displayName:self.thread.name
                                        fromViewController:self
                                           blockingManager:_blockingManager
+                                          contactsManager:_contactsManager
                                           completionBlock:^(BOOL isBlocked) {
                                               // Update switch state if user cancels action.
                                               blockUserSwitch.on = isBlocked;
@@ -450,9 +450,9 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
             return;
         }
         [BlockListUIUtils showUnblockPhoneNumberActionSheet:self.thread.contactIdentifier
-                                                displayName:self.thread.name
                                          fromViewController:self
                                             blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
                                             completionBlock:^(BOOL isBlocked) {
                                                 // Update switch state if user cancels action.
                                                 blockUserSwitch.on = isBlocked;

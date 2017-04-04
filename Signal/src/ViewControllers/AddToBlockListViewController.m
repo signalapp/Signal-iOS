@@ -276,13 +276,14 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     __weak AddToBlockListViewController *weakSelf = self;
     [BlockListUIUtils showBlockPhoneNumberActionSheet:[parsedPhoneNumber toE164]
-                                          displayName:[parsedPhoneNumber toE164]
                                    fromViewController:self
                                       blockingManager:_blockingManager
+                                      contactsManager:_contactsManager
                                       completionBlock:^(BOOL isBlocked) {
                                           if (isBlocked) {
                                               // Clear phone number text field is block succeeds.
                                               weakSelf.phoneNumberTextField.text = nil;
+                                              [weakSelf.navigationController popViewControllerAnimated:YES];
                                           }
                                       }];
 }
@@ -409,11 +410,17 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
+    __weak AddToBlockListViewController *weakSelf = self;
     Contact *contact = self.contacts[(NSUInteger)indexPath.item];
     [BlockListUIUtils showBlockContactActionSheet:contact
                                fromViewController:self
                                   blockingManager:_blockingManager
-                                  completionBlock:nil];
+                                  contactsManager:_contactsManager
+                                  completionBlock:^(BOOL isBlocked) {
+                                      if (isBlocked) {
+                                          [weakSelf.navigationController popViewControllerAnimated:YES];
+                                      }
+                                  }];
 }
 
 #pragma mark - UIScrollViewDelegate

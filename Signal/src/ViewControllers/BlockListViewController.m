@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic) NSArray<Contact *> *contacts;
-@property (nonatomic) NSDictionary<NSString *, Contact *> *contactMap;
 
 @end
 
@@ -138,18 +137,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 - (NSString *)displayNameForIndexPath:(NSIndexPath *)indexPath
 {
     NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-    PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
-
-    // Try to parse and present the phone number in E164.
-    // It should already be in E164, so this should always work.
-    // If an invalid or unparsable phone number is already in the block list,
-    // present it as-is.
-    NSString *displayName = (parsedPhoneNumber ? parsedPhoneNumber.toE164 : phoneNumber);
-    Contact *contact = self.contactMap[displayName];
-    if (contact && [contact fullName].length > 0) {
-        displayName = [contact fullName];
-    }
-
+    NSString *displayName = [_contactsManager displayNameForPhoneIdentifier:phoneNumber];
     return displayName;
 }
 
@@ -168,11 +156,11 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         }
         case BlockListViewControllerSection_BlockList: {
             NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-            NSString *displayName = [self displayNameForIndexPath:indexPath];
             [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                                    displayName:displayName
                                              fromViewController:self
                                                 blockingManager:_blockingManager
+
+                                                contactsManager:_contactsManager
                                                 completionBlock:nil];
             break;
         }
@@ -201,22 +189,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         self.contacts = self.contactsManager.signalContacts;
         [self.tableView reloadData];
     });
-}
-
-- (void)setContacts:(NSArray<Contact *> *)contacts
-{
-    _contacts = contacts;
-
-    NSMutableDictionary<NSString *, Contact *> *contactMap = [NSMutableDictionary new];
-    for (Contact *contact in contacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            NSString *phoneNumberE164 = phoneNumber.toE164;
-            if (phoneNumberE164.length > 0) {
-                contactMap[phoneNumberE164] = contact;
-            }
-        }
-    }
-    self.contactMap = contactMap;
 }
 
 #pragma mark - Logging

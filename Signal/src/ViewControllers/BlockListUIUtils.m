@@ -3,6 +3,7 @@
 //
 
 #import "BlockListUIUtils.h"
+#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -14,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)showBlockContactActionSheet:(Contact *)contact
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
+                    contactsManager:(OWSContactsManager *)contactsManager
                     completionBlock:(BlockActionCompletionBlock)completionBlock
 {
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
@@ -29,19 +31,21 @@ NS_ASSUME_NONNULL_BEGIN
         }
         return;
     }
+    NSString *displayName = [contactsManager displayNameForContact:contact];
     [self showBlockPhoneNumbersActionSheet:phoneNumbers
-                               displayName:contact.fullName
+                               displayName:displayName
                         fromViewController:fromViewController
                            blockingManager:blockingManager
                            completionBlock:completionBlock];
 }
 
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
-                            displayName:(NSString *)displayName
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
+                        contactsManager:(OWSContactsManager *)contactsManager
                         completionBlock:(BlockActionCompletionBlock)completionBlock
 {
+    NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
     [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
                                displayName:displayName
                         fromViewController:fromViewController
@@ -61,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(blockingManager);
 
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_TITLE_FORMAT",
-                                                     @"A format for the 'block user' action sheet title."),
+                                                     @"A format for the 'block user' action sheet title. Embeds {{the "
+                                                     @"blocked user's name or phone number}}."),
                                 displayName];
 
     UIAlertController *actionSheetController =
@@ -69,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIAlertAction *unblockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-                  style:UIAlertActionStyleDefault
+                  style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
                     [self blockPhoneNumbers:phoneNumbers
                                 displayName:displayName
@@ -119,18 +124,20 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
-                              displayName:(NSString *)displayName
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager
+                          contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(BlockActionCompletionBlock)completionBlock
 {
     OWSAssert(phoneNumber.length > 0);
-    OWSAssert(displayName.length > 0);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
+    NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
+
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
-                                                     @"A format for the 'unblock user' action sheet title."),
+                                                     @"A format for the 'unblock user' action sheet title. Embeds "
+                                                     @"{{the blocked user's name or phone number}}."),
                                 displayName];
 
     UIAlertController *actionSheetController =
@@ -138,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIAlertAction *unblockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
-                  style:UIAlertActionStyleDefault
+                  style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
                     [BlockListUIUtils unblockPhoneNumber:phoneNumber
                                              displayName:displayName
@@ -179,8 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
                        message:[NSString
                                    stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT",
                                                         @"The message format of the 'user unblocked' "
-                                                        @"alert. It is populated with the "
-                                                        @"blocked phone number."),
+                                                        @"alert. Embeds {{the blocked user's name or phone number}}."),
                                    displayName]
             fromViewController:fromViewController];
 }
