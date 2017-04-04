@@ -7,6 +7,7 @@
 #import "AttachmentSharing.h"
 #import "BlockListUIUtils.h"
 #import "DebugUITableViewController.h"
+#import "BlockListViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -200,7 +201,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
-@property (nonatomic) UIButton *blockStateIndicator;
+@property (nonatomic) UIView *blockStateIndicator;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
@@ -530,10 +531,86 @@ typedef enum : NSUInteger {
 
 - (void)ensureBlockStateIndicator
 {
+    // This method should be called rarely, so it's simplest to discard and
+    // rebuild the indicator view every time.
     [self.blockStateIndicator removeFromSuperview];
     self.blockStateIndicator = nil;
+    
+    NSString *blockStateMessage = nil;
+    if ([self isBlockedContactConversation]) {
+        blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_CONTACT_BLOCKED",
+                                              @"Indicates that this 1:1 conversation has been blocked.");
+    } else {
+        int blockedGroupMemberCount = [self blockedGroupMemberCount];
+        if (blockedGroupMemberCount == 1) {
+            blockStateMessage = [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED_FORMAT",
+                                                                             @"Indicates that a single member of this group has been blocked."),
+                                 blockedGroupMemberCount];
+        } else if (blockedGroupMemberCount > 1) {
+            blockStateMessage = [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
+                                                                             @"Indicates that some members of this group has been blocked. Embeds "
+                                                                             @"{{the number of blocked user in this group}}."),
+                                 blockedGroupMemberCount];
+        }
+    }
+    
+    if (blockStateMessage) {
+        UILabel *label = [UILabel new];
+        label.font = [UIFont ows_mediumFontWithSize:14.f];
+        label.text = blockStateMessage;
+        label.textColor = [UIColor whiteColor];
+        
+        UIView * blockStateIndicator = [UIView new];
+        blockStateIndicator.backgroundColor = [UIColor ows_signalBrandBlueColor];
+        blockStateIndicator.layer.cornerRadius = 2.5f;
+        
+        // Use a shadow to "pop" the indicator above the other views.
+        blockStateIndicator.layer.shadowColor = [UIColor blackColor].CGColor;
+        blockStateIndicator.layer.shadowOffset = CGSizeMake(2, 3);
+        blockStateIndicator.layer.shadowRadius = 2.f;
+        blockStateIndicator.layer.shadowOpacity = 0.35f;
+        
+        [blockStateIndicator addSubview:label];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:15];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15];
+        
+        [blockStateIndicator addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                          action:@selector(blockStateIndicatorWasTapped:)]];
+        
+        [self.view addSubview:blockStateIndicator];
+        [blockStateIndicator autoHCenterInSuperview];
+        [blockStateIndicator autoPinToTopLayoutGuideOfViewController:self withInset:10];
+        [self.view layoutSubviews];
+        
+        self.blockStateIndicator = blockStateIndicator;
+    }
 }
+         
+- (void)blockStateIndicatorWasTapped:(UIGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        return;
+    }
 
+    if ([self isBlockedContactConversation]) {
+        // If this a blocked 1:1 conversation, offer to unblock the user.
+        NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                         fromViewController:self
+                                            blockingManager:_blockingManager
+                                            contactsManager:_contactsManager
+                                            completionBlock:nil];
+    } else {
+        // If this a group conversation with at least one blocked member,
+        // Show the block list view.
+        int blockedGroupMemberCount = [self blockedGroupMemberCount];
+        if (blockedGroupMemberCount > 0) {
+            BlockListViewController *vc = [[BlockListViewController alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    }
+}
 
 - (BOOL)isBlockedContactConversation
 {
@@ -542,6 +619,22 @@ typedef enum : NSUInteger {
     }
     NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
     return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
+}
+
+- (int)blockedGroupMemberCount
+{
+    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
+        return 0;
+    }
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    int blockedMemberCount = 0;
+    NSArray<NSString *> *blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    for (NSString *contactIdentifier in groupThread.groupModel.groupMemberIds) {
+        if ([blockedPhoneNumbers containsObject:contactIdentifier]) {
+            blockedMemberCount++;
+        }
+    }
+    return blockedMemberCount;
 }
 
 - (void)startReadTimer {

@@ -346,9 +346,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "Bummer!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
 
@@ -528,6 +525,15 @@
 
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "This user is blocked";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked user in this group}}. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED_FORMAT" = "1 Blocked Member of this Group";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked user in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "%d Blocked Members of this Group";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
@@ -969,9 +975,6 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
-
-/* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "We couldn't fetch an updated contact list from the server. Please try again later.";
 
 /* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Cancel";
