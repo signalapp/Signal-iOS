@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class Contact;
 @class OWSBlockingManager;
 @class OWSContactsManager;
@@ -18,18 +20,20 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
                     contactsManager:(OWSContactsManager *)contactsManager
-                    completionBlock:(BlockActionCompletionBlock)completionBlock;
+                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
                         contactsManager:(OWSContactsManager *)contactsManager
-                        completionBlock:(BlockActionCompletionBlock)completionBlock;
+                        completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager
                           contactsManager:(OWSContactsManager *)contactsManager
-                          completionBlock:(BlockActionCompletionBlock)completionBlock;
+                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 @end
+
+NS_ASSUME_NONNULL_END

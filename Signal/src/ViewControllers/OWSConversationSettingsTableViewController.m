@@ -426,6 +426,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
     if (![sender isKindOfClass:[UISwitch class]]) {
         DDLogError(@"%@ Unexpected sender for block user switch: %@", self.tag, sender);
+        OWSAssert(0);
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 

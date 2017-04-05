@@ -281,7 +281,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
                                       contactsManager:_contactsManager
                                       completionBlock:^(BOOL isBlocked) {
                                           if (isBlocked) {
-                                              // Clear phone number text field is block succeeds.
+                                              // Clear phone number text field if block succeeds.
                                               weakSelf.phoneNumberTextField.text = nil;
                                               [weakSelf.navigationController popViewControllerAnimated:YES];
                                           }

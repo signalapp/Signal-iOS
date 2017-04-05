@@ -159,7 +159,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
             [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
                                              fromViewController:self
                                                 blockingManager:_blockingManager
-
                                                 contactsManager:_contactsManager
                                                 completionBlock:nil];
             break;

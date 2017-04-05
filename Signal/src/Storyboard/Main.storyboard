@@ -479,7 +479,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disappearing Messages" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="qbY-qJ-enK" userLabel="Disappearing Messages">
-                                                    <rect key="frame" x="68" y="0.0" width="234" height="44"/>
+                                                    <rect key="frame" x="64" y="0.0" width="238" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="44" id="dT5-gx-pqJ"/>
                                                     </constraints>
@@ -497,7 +497,7 @@
                                                     </connections>
                                                 </switch>
                                                 <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_timer" translatesAutoresizingMaskIntoConstraints="NO" id="iRL-ZI-kXA">
-                                                    <rect key="frame" x="20" y="6" width="32" height="32"/>
+                                                    <rect key="frame" x="16" y="6" width="32" height="32"/>
                                                     <color key="tintColor" red="0.054901960780000002" green="0.054901960780000002" blue="0.054901960780000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="iRL-ZI-kXA" secondAttribute="height" multiplier="1:1" id="QMF-qg-bIc"/>
@@ -505,14 +505,14 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When enabled, messages sent and received in this conversation will disappear after they have been seen." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="zIg-K4-8lV">
-                                                    <rect key="frame" x="68" y="40" width="283" height="59"/>
+                                                    <rect key="frame" x="64" y="40" width="287" height="59"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="iRL-ZI-kXA" firstAttribute="leading" secondItem="Nmz-2u-fOY" secondAttribute="leading" constant="20" id="FsM-rL-dWt"/>
+                                                <constraint firstItem="iRL-ZI-kXA" firstAttribute="leading" secondItem="Nmz-2u-fOY" secondAttribute="leading" constant="16" id="FsM-rL-dWt"/>
                                                 <constraint firstItem="qbY-qJ-enK" firstAttribute="top" secondItem="Nmz-2u-fOY" secondAttribute="top" id="Hzt-Rw-yQA"/>
                                                 <constraint firstItem="zIg-K4-8lV" firstAttribute="top" secondItem="qbY-qJ-enK" secondAttribute="bottom" constant="-4" id="NGz-Yy-9uN"/>
                                                 <constraint firstItem="zIg-K4-8lV" firstAttribute="leading" secondItem="qbY-qJ-enK" secondAttribute="leading" id="PYG-46-cLa"/>
@@ -535,13 +535,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Messages disappear after 8 hours." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="c6Q-rV-1LO" userLabel="Keep messages for 8 hours.">
-                                                    <rect key="frame" x="68" y="6" width="299" height="32"/>
+                                                    <rect key="frame" x="64" y="6" width="303" height="32"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="4Hn-9p-qsR">
-                                                    <rect key="frame" x="66" y="38" width="291" height="31"/>
+                                                    <rect key="frame" x="62" y="38" width="295" height="31"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="D1q-zH-wtT"/>
                                                     </constraints>
@@ -550,7 +550,7 @@
                                                     </connections>
                                                 </slider>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="table_ic_hourglass_empty" translatesAutoresizingMaskIntoConstraints="NO" id="X7n-1t-1Q7">
-                                                    <rect key="frame" x="20" y="6" width="32" height="32"/>
+                                                    <rect key="frame" x="16" y="6" width="32" height="32"/>
                                                     <color key="tintColor" red="0.054901960784313725" green="0.054901960784313725" blue="0.054901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="32" id="Pmb-2B-dEA"/>
@@ -566,7 +566,7 @@
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="bottom" secondItem="X7n-1t-1Q7" secondAttribute="bottom" id="WOE-pQ-2zh"/>
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="leading" secondItem="X7n-1t-1Q7" secondAttribute="trailing" constant="16" id="itv-VA-m3d"/>
                                                 <constraint firstItem="c6Q-rV-1LO" firstAttribute="top" secondItem="X7n-1t-1Q7" secondAttribute="top" id="oa2-QP-Lhu"/>
-                                                <constraint firstItem="X7n-1t-1Q7" firstAttribute="leading" secondItem="2a2-Po-p8O" secondAttribute="leading" constant="20" id="qNh-GB-pE2"/>
+                                                <constraint firstItem="X7n-1t-1Q7" firstAttribute="leading" secondItem="2a2-Po-p8O" secondAttribute="leading" constant="16" id="qNh-GB-pE2"/>
                                                 <constraint firstItem="4Hn-9p-qsR" firstAttribute="top" secondItem="c6Q-rV-1LO" secondAttribute="bottom" id="ssH-ql-B0K"/>
                                             </constraints>
                                         </tableViewCellContentView>

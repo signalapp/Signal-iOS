@@ -41,18 +41,18 @@ typedef UITableViewCell * (^OWSTableCustomCellBlock)();
 
 @interface OWSTableItem : NSObject
 
-+ (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(OWSTableActionBlock)actionBlock;
++ (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
                      customRowHeight:(CGFloat)customRowHeight
-                         actionBlock:(OWSTableActionBlock)actionBlock;
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                           customRowHeight:(CGFloat)customRowHeight
-                              actionBlock:(OWSTableActionBlock)actionBlock;
+                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
-                              actionBlock:(OWSTableActionBlock)actionBlock;
+                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 - (UITableViewCell *)customCell;
 - (NSNumber *)customRowHeight;
