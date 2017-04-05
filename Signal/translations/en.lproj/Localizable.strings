@@ -347,7 +347,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
 
 /* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "ERROR_WAS_DETECTED_TITLE";
+"ERROR_WAS_DETECTED_TITLE" = "Bummer!";
 
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "At this time Signal can only be active on one mobile device per phone number.";
@@ -980,7 +980,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "TIMEOUT_CONTACTS_DETAIL";
+"TIMEOUT_CONTACTS_DETAIL" = "We couldn't fetch an updated contact list from the server. Please try again later.";
 
 /* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Cancel";
