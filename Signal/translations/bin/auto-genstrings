@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
+set -x
+
 TARGETS="Signal/src ../SignalServiceKit/src"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
