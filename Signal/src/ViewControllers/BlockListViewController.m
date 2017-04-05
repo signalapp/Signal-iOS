@@ -45,7 +45,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
     _contactsManager = [Environment getCurrent].contactsManager;
-    self.contacts = self.contactsManager.signalContacts;
+    self.contacts = [self.contactsManager.signalContacts copy];
 
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
@@ -190,7 +190,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 {
     OWSAssert([NSThread isMainThread]);
 
-    self.contacts = self.contactsManager.signalContacts;
+    self.contacts = [self.contactsManager.signalContacts copy];
     [self.tableView reloadData];
 }
 
