@@ -3,6 +3,7 @@
 //
 
 #import "AddToBlockListViewController.h"
+#import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
@@ -13,8 +14,8 @@
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
-#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -273,25 +274,18 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:possiblePhoneNumber];
     OWSAssert(parsedPhoneNumber);
 
-    [_blockingManager addBlockedPhoneNumber:[parsedPhoneNumber toE164]];
-
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE",
-                                     @"The title of the 'phone number blocked' alert in the block view.")
-                         message:[NSString
-                                     stringWithFormat:NSLocalizedString(
-                                                          @"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT",
-                                                          @"The message format of the 'phone number blocked' alert in "
-                                                          @"the block view. Embeds {{the blocked phone number}}."),
-                                     [parsedPhoneNumber toE164]]
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:nil]];
-    [self presentViewController:controller animated:YES completion:nil];
-
-    _phoneNumberTextField.text = nil;
+    __weak AddToBlockListViewController *weakSelf = self;
+    [BlockListUIUtils showBlockPhoneNumberActionSheet:[parsedPhoneNumber toE164]
+                                   fromViewController:self
+                                      blockingManager:_blockingManager
+                                      contactsManager:_contactsManager
+                                      completionBlock:^(BOOL isBlocked) {
+                                          if (isBlocked) {
+                                              // Clear phone number text field if block succeeds.
+                                              weakSelf.phoneNumberTextField.text = nil;
+                                              [weakSelf.navigationController popViewControllerAnimated:YES];
+                                          }
+                                      }];
 }
 
 - (void)textFieldDidChange:(id)sender
@@ -416,63 +410,17 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    Contact *contact = self.contacts[(NSUInteger)indexPath.item];
-    [self showBlockActionSheet:contact];
-}
-
-- (void)showBlockActionSheet:(Contact *)contact
-{
-    OWSAssert(contact);
-
-    NSString *displayName = contact.fullName;
-
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_TITLE_FORMAT",
-                                                     @"A format for the 'block phone number' action sheet title."),
-                                displayName];
-
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
     __weak AddToBlockListViewController *weakSelf = self;
-    UIAlertAction *unblockAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [weakSelf blockContact:contact displayName:displayName];
-                }];
-    [actionSheetController addAction:unblockAction];
-
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
-
-    [self presentViewController:actionSheetController animated:YES completion:nil];
-}
-
-- (void)blockContact:(Contact *)contact displayName:(NSString *)displayName
-{
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if (phoneNumber.toE164.length > 0) {
-            [_blockingManager addBlockedPhoneNumber:phoneNumber.toE164];
-        }
-    }
-
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE",
-                                     @"The title of the 'contact blocked' alert in the block view.")
-                         message:[NSString stringWithFormat:NSLocalizedString(
-                                                                @"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT",
-                                                                @"The message format of the 'contact blocked' "
-                                                                @"alert in the block view. It is populated with the "
-                                                                @"blocked contact's name."),
-                                           displayName]
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:nil]];
-    [self presentViewController:controller animated:YES completion:nil];
+    Contact *contact = self.contacts[(NSUInteger)indexPath.item];
+    [BlockListUIUtils showBlockContactActionSheet:contact
+                               fromViewController:self
+                                  blockingManager:_blockingManager
+                                  contactsManager:_contactsManager
+                                  completionBlock:^(BOOL isBlocked) {
+                                      if (isBlocked) {
+                                          [weakSelf.navigationController popViewControllerAnimated:YES];
+                                      }
+                                  }];
 }
 
 #pragma mark - UIScrollViewDelegate

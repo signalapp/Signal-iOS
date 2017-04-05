@@ -4,6 +4,7 @@
 
 #import "BlockListViewController.h"
 #import "AddToBlockListViewController.h"
+#import "BlockListUIUtils.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
@@ -19,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic) NSArray<Contact *> *contacts;
-@property (nonatomic) NSDictionary<NSString *, Contact *> *contactMap;
 
 @end
 
@@ -137,18 +137,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 - (NSString *)displayNameForIndexPath:(NSIndexPath *)indexPath
 {
     NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-    PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
-
-    // Try to parse and present the phone number in E164.
-    // It should already be in E164, so this should always work.
-    // If an invalid or unparsable phone number is already in the block list,
-    // present it as-is.
-    NSString *displayName = (parsedPhoneNumber ? parsedPhoneNumber.toE164 : phoneNumber);
-    Contact *contact = self.contactMap[displayName];
-    if (contact && [contact fullName].length > 0) {
-        displayName = [contact fullName];
-    }
-
+    NSString *displayName = [_contactsManager displayNameForPhoneIdentifier:phoneNumber];
     return displayName;
 }
 
@@ -167,63 +156,16 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         }
         case BlockListViewControllerSection_BlockList: {
             NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-            NSString *displayName = [self displayNameForIndexPath:indexPath];
-            [self showUnblockActionSheet:phoneNumber displayName:displayName];
+            [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
+                                             fromViewController:self
+                                                blockingManager:_blockingManager
+                                                contactsManager:_contactsManager
+                                                completionBlock:nil];
             break;
         }
         default:
             OWSAssert(0);
     }
-}
-
-- (void)showUnblockActionSheet:(NSString *)phoneNumber displayName:(NSString *)displayName
-{
-    OWSAssert(phoneNumber.length > 0);
-    OWSAssert(displayName.length > 0);
-
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
-                                                     @"A format for the 'unblock phone number' action sheet title."),
-                                displayName];
-
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    __weak BlockListViewController *weakSelf = self;
-    UIAlertAction *unblockAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [weakSelf unblockPhoneNumber:phoneNumber displayName:displayName];
-                }];
-    [actionSheetController addAction:unblockAction];
-
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
-
-    [self presentViewController:actionSheetController animated:YES completion:nil];
-}
-
-- (void)unblockPhoneNumber:(NSString *)phoneNumber displayName:(NSString *)displayName
-{
-    [_blockingManager removeBlockedPhoneNumber:phoneNumber];
-
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE",
-                                     @"The title of the 'phone number unblocked' alert in the block view.")
-                         message:[NSString stringWithFormat:NSLocalizedString(
-                                                                @"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT",
-                                                                @"The message format of the 'phone number unblocked' "
-                                                                @"alert in the block view. It is populated with the "
-                                                                @"blocked phone number."),
-                                           displayName]
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:nil]];
-    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - Actions
@@ -246,22 +188,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
         self.contacts = self.contactsManager.signalContacts;
         [self.tableView reloadData];
     });
-}
-
-- (void)setContacts:(NSArray<Contact *> *)contacts
-{
-    _contacts = contacts;
-
-    NSMutableDictionary<NSString *, Contact *> *contactMap = [NSMutableDictionary new];
-    for (Contact *contact in contacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            NSString *phoneNumberE164 = phoneNumber.toE164;
-            if (phoneNumberE164.length > 0) {
-                contactMap[phoneNumberE164] = contact;
-            }
-        }
-    }
-    self.contactMap = contactMap;
 }
 
 #pragma mark - Logging
