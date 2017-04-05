@@ -65,7 +65,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     _contactsManager = [Environment getCurrent].contactsManager;
     self.contacts = [self filteredContacts];
 
-    self.title = NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_TITLE", @"");
+    self.title = NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_TITLE", @"Title for the 'add to block list' view.");
 
     [self createViews];
     
@@ -98,8 +98,15 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 }
 
 - (void)createViews {
+
+    // Block Phone Number Title Row
+    UIView *blockPhoneNumberTitleRow =
+        [self createTitleRowWithText:NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE",
+                                         @"Title for the 'block phone number' section of the 'add to block list' view.")
+                         previousRow:nil];
+
     // Country Row
-    UIView *countryRow = [self createRowWithHeight:60 previousRow:nil];
+    UIView *countryRow = [self createRowWithHeight:60 previousRow:blockPhoneNumberTitleRow];
 
     _countryNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _countryNameButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
@@ -186,6 +193,15 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [_blockButton autoSetDimension:ALDimensionWidth toSize:160];
     [_blockButton autoSetDimension:ALDimensionHeight toSize:40];
 
+    // Separator Row
+    UIView *separatorRow = [self createRowWithHeight:10 previousRow:blockButtonRow];
+
+    // Block Contact Title Row
+    UIView *blockContactTitleRow =
+        [self createTitleRowWithText:NSLocalizedString(@"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE",
+                                         @"Title for the 'block contact' section of the 'add to block list' view.")
+                         previousRow:separatorRow];
+
     _contactsTableView = [UITableView new];
     _contactsTableView.dataSource = self;
     _contactsTableView.delegate = self;
@@ -194,10 +210,27 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     _contactsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:_contactsTableView];
     [_contactsTableView autoPinWidthToSuperview];
-    [_contactsTableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:blockButtonRow withOffset:30];
+    [_contactsTableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:blockContactTitleRow withOffset:10];
     [_contactsTableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     [self updateBlockButtonEnabling];
+}
+
+- (UIView *)createTitleRowWithText:(NSString *)text previousRow:(nullable UIView *)previousRow
+{
+    UIView *row = [self createRowWithHeight:40 previousRow:previousRow];
+
+    UILabel *label = [UILabel new];
+    label.text = text;
+    label.font = [UIFont ows_boldFontWithSize:20.f];
+    label.textColor = [UIColor colorWithWhite:0.2f alpha:1.f];
+    label.textAlignment = NSTextAlignmentCenter;
+    [row addSubview:label];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    return row;
 }
 
 - (UIView *)createRowWithHeight:(CGFloat)height previousRow:(nullable UIView *)previousRow
@@ -432,6 +465,11 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 #pragma mark - UITableViewDataSource
 
+- (BOOL)hasNoContacts
+{
+    return self.contacts.count == 0;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
@@ -439,11 +477,24 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (self.hasNoContacts) {
+        return 1;
+    }
     return (NSInteger)self.contacts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.hasNoContacts) {
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = NSLocalizedString(
+            @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        return cell;
+    }
+
     Contact *contact = self.contacts[(NSUInteger)indexPath.item];
 
     ContactTableViewCell *cell = [_contactsTableView cellForRowAtIndexPath:indexPath];
@@ -471,6 +522,10 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    if (self.hasNoContacts) {
+        return;
+    }
 
     __weak AddToBlockListViewController *weakSelf = self;
     Contact *contact = self.contacts[(NSUInteger)indexPath.item];
