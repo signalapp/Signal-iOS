@@ -71,16 +71,19 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableAttributedString *attributedText =
         [[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font] mutableCopy];
     if (self.isBlocked) {
-        // Add whitespace between the contact name and the blocked indicator.
-        [attributedText appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:nil]];
-        [attributedText appendAttributedString:[[NSAttributedString alloc]
-                                                   initWithString:NSLocalizedString(@"CONTACT_BLOCKED_INDICATOR",
-                                                                      @"An indicator that a contact has been blocked.")
-                                                       attributes:@{
-                                                           NSFontAttributeName : [UIFont
-                                                               ows_mediumFontWithSize:self.nameLabel.font.pointSize],
-                                                           NSForegroundColorAttributeName : [UIColor blackColor],
-                                                       }]];
+        UILabel *blockedLabel = [[UILabel alloc] init];
+        blockedLabel.textAlignment = NSTextAlignmentRight;
+        blockedLabel.text
+            = NSLocalizedString(@"CONTACT_BLOCKED_INDICATOR", @"An indicator that a contact has been blocked.");
+        blockedLabel.font = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
+        blockedLabel.textColor = [UIColor blackColor];
+        [self addSubview:blockedLabel];
+        [blockedLabel sizeToFit];
+        [blockedLabel autoVCenterInSuperview];
+        [blockedLabel autoPinEdgeToSuperviewMargin:ALEdgeRight];
+        [blockedLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.textLabel];
+
+        self.accessoryView = blockedLabel;
     }
     self.nameLabel.attributedText = attributedText;
     self.avatarView.image =
