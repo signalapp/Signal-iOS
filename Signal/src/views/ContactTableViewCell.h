@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactTableViewCell : UITableViewCell
 
+@property (nonatomic) BOOL isBlocked;
+
 + (CGFloat)rowHeight;
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
