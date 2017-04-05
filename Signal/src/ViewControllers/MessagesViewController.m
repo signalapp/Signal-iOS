@@ -2,12 +2,15 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "MessagesViewController.h"
 #import "AppDelegate.h"
 #import "AttachmentSharing.h"
+#import "BlockListUIUtils.h"
+#import "DebugUITableViewController.h"
+#import "BlockListViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
 #import "OWSCall.h"
@@ -34,6 +37,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
+#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
@@ -51,19 +55,18 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalRecipient.h>
-#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseView.h>
-#import "ThreadUtil.h"
-#import "DebugUITableViewController.h"
 
 @import Photos;
 
@@ -198,6 +201,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
+@property (nonatomic) UIView *blockStateIndicator;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
@@ -213,8 +217,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @property (nonatomic) NSCache *messageAdapterCache;
+@property (nonatomic) BOOL userHasScrolled;
 
 @end
 
@@ -270,6 +276,24 @@ typedef enum : NSUInteger {
     _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
+    _blockingManager = [OWSBlockingManager sharedManager];
+
+    [self addNotificationListeners];
+}
+
+- (void)addNotificationListeners
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockedPhoneNumbersDidChange:)
+                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
+}
+
+- (void)blockedPhoneNumbersDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self ensureBlockStateIndicator];
+    });
 }
 
 - (void)peekSetup {
@@ -500,6 +524,142 @@ typedef enum : NSUInteger {
                                                                                                                @"Short name for edit menu item to share contents of media message.")
                                                                                       action:shareSelector],
                                                            ];
+
+    [self ensureBlockStateIndicator];
+}
+
+- (void)setUserHasScrolled:(BOOL)userHasScrolled {
+    _userHasScrolled = userHasScrolled;
+    
+    [self ensureBlockStateIndicator];
+}
+
+- (void)ensureBlockStateIndicator
+{
+    // This method should be called rarely, so it's simplest to discard and
+    // rebuild the indicator view every time.
+    [self.blockStateIndicator removeFromSuperview];
+    self.blockStateIndicator = nil;
+    
+    if (self.userHasScrolled) {
+        return;
+    }
+
+    NSString *blockStateMessage = nil;
+    if ([self isBlockedContactConversation]) {
+        blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_CONTACT_BLOCKED",
+                                              @"Indicates that this 1:1 conversation has been blocked.");
+    } else if (isGroupConversation) {
+        int blockedGroupMemberCount = [self blockedGroupMemberCount];
+        if (blockedGroupMemberCount == 1) {
+            blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
+                                                  @"Indicates that a single member of this group has been blocked.");
+        } else if (blockedGroupMemberCount > 1) {
+            blockStateMessage = [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
+                                                                             @"Indicates that some members of this group has been blocked. Embeds "
+                                                                             @"{{the number of blocked users in this group}}."),
+                                 blockedGroupMemberCount];
+        }
+    }
+    
+    if (blockStateMessage) {
+        UILabel *label = [UILabel new];
+        label.font = [UIFont ows_mediumFontWithSize:14.f];
+        label.text = blockStateMessage;
+        label.textColor = [UIColor whiteColor];
+        
+        UIView * blockStateIndicator = [UIView new];
+        blockStateIndicator.backgroundColor = [UIColor ows_redColor];
+        blockStateIndicator.layer.cornerRadius = 2.5f;
+        
+        // Use a shadow to "pop" the indicator above the other views.
+        blockStateIndicator.layer.shadowColor = [UIColor blackColor].CGColor;
+        blockStateIndicator.layer.shadowOffset = CGSizeMake(2, 3);
+        blockStateIndicator.layer.shadowRadius = 2.f;
+        blockStateIndicator.layer.shadowOpacity = 0.35f;
+        
+        [blockStateIndicator addSubview:label];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:15];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15];
+        
+        [blockStateIndicator addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                          action:@selector(blockStateIndicatorWasTapped:)]];
+        
+        [self.view addSubview:blockStateIndicator];
+        [blockStateIndicator autoHCenterInSuperview];
+        [blockStateIndicator autoPinToTopLayoutGuideOfViewController:self withInset:10];
+        [self.view layoutSubviews];
+        
+        self.blockStateIndicator = blockStateIndicator;
+    }
+}
+         
+- (void)blockStateIndicatorWasTapped:(UIGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        return;
+    }
+
+    if ([self isBlockedContactConversation]) {
+        // If this a blocked 1:1 conversation, offer to unblock the user.
+        [self showUnblockContactUI:nil];
+    } else if (isGroupConversation) {
+        // If this a group conversation with at least one blocked member,
+        // Show the block list view.
+        int blockedGroupMemberCount = [self blockedGroupMemberCount];
+        if (blockedGroupMemberCount > 0) {
+            BlockListViewController *vc = [[BlockListViewController alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    }
+}
+
+- (void)showUnblockContactUI:(BlockActionCompletionBlock)completionBlock
+{
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
+    self.userHasScrolled = NO;
+    
+    // To avoid "noisy" animations (hiding the keyboard before showing
+    // the action sheet, re-showing it after), hide the keyboard before
+    // showing the "unblock" action sheet.
+    //
+    // Unblocking is a rare interaction, so it's okay to leave the keyboard
+    // hidden.
+    [self dismissKeyBoard];
+
+    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                     fromViewController:self
+                                        blockingManager:_blockingManager
+                                        contactsManager:_contactsManager
+                                        completionBlock:completionBlock];
+}
+
+- (BOOL)isBlockedContactConversation
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return NO;
+    }
+    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
+}
+
+- (int)blockedGroupMemberCount
+{
+    OWSAssert(isGroupConversation);
+    OWSAssert([self.thread isKindOfClass:[TSGroupThread class]]);
+    
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    int blockedMemberCount = 0;
+    NSArray<NSString *> *blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    for (NSString *contactIdentifier in groupThread.groupModel.groupMemberIds) {
+        if ([blockedPhoneNumbers containsObject:contactIdentifier]) {
+            blockedMemberCount++;
+        }
+    }
+    return blockedMemberCount;
 }
 
 - (void)startReadTimer {
@@ -585,6 +745,7 @@ typedef enum : NSUInteger {
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     self.inputToolbar.contentView.textView.editable = NO;
+    self.userHasScrolled = NO;
 }
 
 #pragma mark - Initiliazers
@@ -693,7 +854,7 @@ typedef enum : NSUInteger {
                                                backItem,
                                                [[UIBarButtonItem alloc] initWithCustomView:self.navigationBarTitleView],
                                                ];
-    
+
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;
@@ -842,6 +1003,16 @@ typedef enum : NSUInteger {
         return;
     }
 
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf callAction:nil];
+            }
+        }];
+        return;
+    }
+
     [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
@@ -857,6 +1028,36 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
+    [self didPressSendButton:button
+             withMessageText:text
+                    senderId:senderId
+           senderDisplayName:senderDisplayName
+                        date:date
+         updateKeyboardState:YES];
+}
+
+- (void)didPressSendButton:(UIButton *)button
+           withMessageText:(NSString *)text
+                  senderId:(NSString *)senderId
+         senderDisplayName:(NSString *)senderDisplayName
+                      date:(NSDate *)date
+       updateKeyboardState:(BOOL)updateKeyboardState
+{
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPressSendButton:button
+                             withMessageText:text
+                                    senderId:senderId
+                           senderDisplayName:senderDisplayName
+                                        date:date
+                         updateKeyboardState:NO];
+            }
+        }];
+        return;
+    }
+
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     // Limit outgoing text messages to 64kb.
@@ -888,7 +1089,10 @@ typedef enum : NSUInteger {
         [ThreadUtil sendMessageWithText:text
                                inThread:self.thread
                           messageSender:self.messageSender];
-        [self toggleDefaultKeyboard];
+        if (updateKeyboardState)
+        {
+            [self toggleDefaultKeyboard];
+        }
         [self finishSendingMessage];
     }
 }
@@ -2319,6 +2523,17 @@ typedef enum : NSUInteger {
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
+
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPressAccessoryButton:nil];
+            }
+        }];
+        return;
+    }
+
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                                    message:nil
                                                                             preferredStyle:UIAlertControllerStyleActionSheet];
@@ -2551,7 +2766,17 @@ typedef enum : NSUInteger {
     DDLogError(@"%@ %s",
                self.tag,
                __PRETTY_FUNCTION__);
-    
+
+    if ([self isBlockedContactConversation]) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showUnblockContactUI:^(BOOL isBlocked) {
+            if (!isBlocked) {
+                [weakSelf didPasteAttachment:attachment];
+            }
+        }];
+        return;
+    }
+
     if (attachment == nil ||
         [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
@@ -2594,6 +2819,13 @@ typedef enum : NSUInteger {
     [self presentViewController:controller
                        animated:YES
                      completion:nil];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.userHasScrolled = YES;
 }
 
 #pragma mark - Class methods
