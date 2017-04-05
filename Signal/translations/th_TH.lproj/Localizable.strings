@@ -71,22 +71,22 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดไฟล์แนบภาพ";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถแยกวิเคราะห์ไฟล์แนบภาพ";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "ไฟล์แนบมีเนื้อหาที่ไม่ถูกต้อง";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ไฟล์แนบมีรูปแบบไฟล์ที่ไม่ถูกต้อง";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "ไฟล์แนบว่างเปล่า";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "เลือกหรือถ่ายภาพแล้วส่ง";
@@ -98,40 +98,52 @@
 "ATTACHMENT_QUEUED" = "ไฟล์แนบถูกจัดคิวสำหรับดึงข้อมูล";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "ปิดกั้น";
 
-/* A format for the 'block phone number' action sheet title. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "ปิดกั้น %@?";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกปิดกั้น";
 
-/* A format for the 'unblock phone number' action sheet title. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกปิดกั้น %@?";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is already blocked.";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
 
-/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
 
-/* The title of the 'contact blocked' alert in the block view. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
 
-/* A title for the contacts section of the blocklist view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
 
-/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
-"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
 
-/* The title of the 'phone number blocked' alert in the block view. */
-"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "รายชื่อ";
 
-/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
 
-/* The title of the 'phone number unblocked' alert in the block view. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "โทร";
@@ -181,6 +193,9 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "ยืนยัน";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_BLOCKED_INDICATOR" = "(Blocked)";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "หมายเลขที่ยังไม่ลงทะเบียน";
 
@@ -193,8 +208,11 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "ตั้งค่าการสนทนา";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "ข้อความนี้ยาวเกินไปที่จะส่ง";
 
 /* The title of the 'text message too large' alert. */
 "CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "ข้อผิดพลาด";
@@ -295,8 +313,8 @@
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
-/* Error mesage indicating that message send failed due to blocklist */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to send message because you have blocked the user.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือใช้ข้อมูลมือถือ";
@@ -337,9 +355,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "ตัวเลขความปลอดภัยถูกเปลี่ยน แตะเพื่อตรวจสอบ";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "แย่จัง!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "ในขณะนี้ Signal สามารถทำงานได้บนหนึ่งอุปกรณ์มือถือต่อหมายเลขโทรศัพท์เท่านั้น";
 
@@ -365,7 +380,7 @@
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Attachment";
+"GENERIC_ATTACHMENT_LABEL" = "ไฟล์แนบ";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "เปลี่ยนภาพประจำตัวแล้ว";
@@ -520,6 +535,15 @@
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด...";
 
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
 
@@ -538,10 +562,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณ";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "สายที่ไม่ได้รับจาก %@";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "สายที่ไม่ได้รับจากผู้ใช้ Signal";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "คุณได้รับสายจาก %@";
@@ -647,7 +671,7 @@
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
 
 /* The title of the 'oversize text message' view. */
-"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "ข้อความ";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "นี่ดูเหมือนจะไม่ใช่ตัวเลขความปลอดภัยของคุณกับ %@ คุณกำลังตรวจสอบรายชื่อที่ถูกต้องหรือไม่?";
@@ -733,10 +757,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "ไม่สามารถลงทะเบียนการแจ้งเตือนแบบผลักใหม่";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "รหัสประเทศ";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "ป้อนหมายเลข";
 
 /* No comment provided by engineer. */
@@ -748,7 +772,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ไม่รองรับรูปแบบหมายเลขโทรศัพท์นี้ โปรดติดต่อฝ่ายสนับสนุน";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "หมายเลขโทรศัพท์";
 
 /* No comment provided by engineer. */
@@ -823,8 +847,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
-/* No comment provided by engineer. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกการดีบั๊ก";
@@ -836,12 +866,15 @@
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "เพิ่มหมายเลขโทรศัพท์";
 
 /* A header title for the block list table. */
 "SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
 
-/* Label for the block list row of the settings view */
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+
+/* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
@@ -896,7 +929,7 @@
 "SETTINGS_NOTIFICATIONS" = "การแจ้งเตือน";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "แสดงชื่อและหมายเลขของผู้โทร";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
@@ -962,9 +995,6 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "ตรวจสอบตัวเลขความปลอดภัยแล้ว!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "เราไม่สามารถดึงข้อมูลรายชื่อที่อัปเดตจากเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "ยกเลิก";
 
 /* No comment provided by engineer. */
@@ -1010,7 +1040,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "เรียนรู้เพิ่มเติมในการตั้งค่าความเป็นส่วนตัวของคุณ";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
@@ -1043,7 +1073,7 @@
 "VERIFICATION_HEADER" = "ตรวจสอบ";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifying: %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "กำลังตรวจสอบ: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "ตรวจสอบตัวเลขความปลอดภัย";

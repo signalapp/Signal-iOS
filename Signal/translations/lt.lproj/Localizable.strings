@@ -98,40 +98,52 @@
 "ATTACHMENT_QUEUED" = "Naujas priedas laukia eilėje, kad būtų gautas.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "Užblokuoti";
 
-/* A format for the 'block phone number' action sheet title. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Užblokuoti %@?";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Atblokuoti";
 
-/* A format for the 'unblock phone number' action sheet title. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Atblokuoti %@?";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is already blocked.";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Užblokuoti";
 
-/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
 
-/* The title of the 'contact blocked' alert in the block view. */
-"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Klaida";
 
-/* A title for the contacts section of the blocklist view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ buvo užblokuota(-as)";
 
-/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
-"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Naudotojas užblokuotas";
 
-/* The title of the 'phone number blocked' alert in the block view. */
-"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Kontaktai";
 
-/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
 
-/* The title of the 'phone number unblocked' alert in the block view. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Klaida";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ buvo atblokuota(-as).";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Naudotojas atblokuotas";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Skambinti";
@@ -181,6 +193,9 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Patvirtinti";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_BLOCKED_INDICATOR" = "(Blocked)";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistruotas numeris";
 
@@ -192,6 +207,9 @@
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Pokalbio nustatymai";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Užblokuoti šį naudotoją";
 
 /* The message of the 'text message too large' alert. */
 "CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Ši žinutė yra pernelyg ilga, kad būtų išsiųsta.";
@@ -295,8 +313,8 @@
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nepavyko išsiųsti dėl pasenusiųjų privatumo duomenų.";
 
-/* Error mesage indicating that message send failed due to blocklist */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to send message because you have blocked the user.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Prašome pabandyti iš kito bevielio (WiFi) tinklo arba naudoti mobiliuosius duomenis.";
@@ -337,9 +355,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Saugumo numeris pasikeitė. Bakstelėkite, kad patvirtintumėte.";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "O, ne!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "Šiuo metu programėlė Signal vienam telefono numeriui gali būti aktyvi tik viename mobiliajame įrenginyje.";
 
@@ -365,7 +380,7 @@
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Attachment";
+"GENERIC_ATTACHMENT_LABEL" = "Priedas";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avataras pasikeitė.";
@@ -520,6 +535,15 @@
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Įkeliama...";
 
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Jūs užblokavote šį naudotoją";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Jūs užblokavote %d šios grupės dalyvius(-ių)";
+
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Bakstelėkite čia, nustatymams rodyti";
 
@@ -644,10 +668,10 @@
 "OUTGOING_INCOMPLETE_CALL" = "Neužbaigtas išsiunčiamasis skambutis";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Bakstelėkite, norėdami pamatyti daugiau]";
 
 /* The title of the 'oversize text message' view. */
-"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Žinutė";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tai neatrodo kaip jūsų saugumo numeris, skirtas %@. Ar tikrai tvirtinate teisingą kontaktą?";
@@ -733,10 +757,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "Nepavyko iš naujo užsiregistruoti push pranešimams.";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Šalies kodas";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Įveskite numerį";
 
 /* No comment provided by engineer. */
@@ -748,7 +772,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Šis telefono numerio formatas yra nepalaikomas, susisiekite su palaikymu.";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefono numeris";
 
 /* No comment provided by engineer. */
@@ -823,8 +847,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Apie";
 
-/* No comment provided by engineer. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Įjungti derinimo žurnalą";
@@ -836,13 +866,16 @@
 "SETTINGS_ADVANCED_TITLE" = "Išplėstiniai";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Pridėti telefono numerį";
 
 /* A header title for the block list table. */
-"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Užblokuoti telefono numeriai";
 
-/* Label for the block list row of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Užblokuoti";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Reikalauja jūsų patvirtinimo, prieš susisiekiant su kuo nors, kas turi naują saugumo numerį, dažniausiai, dėl Signal įdiegimo iš naujo.";
@@ -960,9 +993,6 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Saugumo numeris patvirtintas!";
-
-/* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "Mums nepavyko iš serverio gauti atnaujinto kontaktų sąrašo. Prašome vėliau bandyti dar kartą.";
 
 /* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Atsisakyti";
