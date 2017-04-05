@@ -15,6 +15,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
@@ -27,6 +28,10 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 @property TSGroupThread *thread;
 @property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
 @property (nonatomic, readonly, strong) OWSContactsManager *contactsManager;
+
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+
 
 @end
 
@@ -61,6 +66,9 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _messageSender = [Environment getCurrent].messageSender;
     _contactsManager = [Environment getCurrent].contactsManager;
 
+    _blockingManager = [OWSBlockingManager sharedManager];
+    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+
     [self observeNotifications];
 }
 
@@ -70,6 +78,10 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                              selector:@selector(signalRecipientsDidChange:)
                                                  name:OWSContactsManagerSignalRecipientsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockedPhoneNumbersDidChange:)
+                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -78,15 +90,81 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 - (void)signalRecipientsDidChange:(NSNotification *)notification {
-    [self updateContacts];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateContacts];
+    });
+}
+
+- (void)blockedPhoneNumbersDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+
+        [self updateContacts];
+    });
 }
 
 - (void)updateContacts {
     AssertIsOnMainThread();
 
-    contacts = self.contactsManager.signalContacts;
+    contacts = [self filteredContacts];
 
     [self.tableView reloadData];
+}
+
+- (BOOL)isContactBlockedOrHidden:(Contact *)contact
+{
+    if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
+        return YES;
+    }
+
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+- (BOOL)isCurrentUserContact:(Contact *)contact
+{
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if ([[phoneNumber toE164] isEqualToString:[TSAccountManager localNumber]]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+- (BOOL)isContactInGroup:(Contact *)contact
+{
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if (_thread != nil && _thread.groupModel.groupMemberIds) {
+            // TODO: What if a contact has two phone numbers that
+            // correspond to signal account and one has been added
+            // to the group but not the other?
+            if ([_thread.groupModel.groupMemberIds containsObject:[phoneNumber toE164]]) {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
+}
+
+- (NSArray<Contact *> *_Nonnull)filteredContacts
+{
+    NSMutableArray<Contact *> *result = [NSMutableArray new];
+    for (Contact *contact in self.contactsManager.signalContacts) {
+        if (![self isContactBlockedOrHidden:contact] && ![self isCurrentUserContact:contact]
+            && ![self isContactInGroup:contact]) {
+            [result addObject:contact];
+        }
+    }
+    return [result copy];
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
@@ -96,25 +174,11 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-    
-    contacts = self.contactsManager.signalContacts;
 
+    contacts = [self filteredContacts];
 
     self.tableView.tableHeaderView.frame = CGRectMake(0, 0, 400, 44);
     self.tableView.tableHeaderView       = self.tableView.tableHeaderView;
-
-
-    contacts = [contacts filter:^int(Contact *contact) {
-      for (PhoneNumber *number in [contact parsedPhoneNumbers]) {
-          if ([[number toE164] isEqualToString:[TSAccountManager localNumber]]) {
-              // remove local number
-              return NO;
-          } else if (_thread != nil && _thread.groupModel.groupMemberIds) {
-              return ![_thread.groupModel.groupMemberIds containsObject:[number toE164]];
-          }
-      }
-      return YES;
-    }];
 
     [self initializeDelegates];
     [self initializeTableView];

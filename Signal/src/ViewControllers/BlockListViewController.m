@@ -45,7 +45,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
     _contactsManager = [Environment getCurrent].contactsManager;
-    self.contacts = self.contactsManager.signalContacts;
+    self.contacts = [self.contactsManager.signalContacts copy];
 
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
@@ -172,22 +172,26 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
-    [self.tableView reloadData];
+        [self.tableView reloadData];
+    });
 }
 
 - (void)signalRecipientsDidChange:(NSNotification *)notification
 {
-    [self updateContacts];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateContacts];
+    });
 }
 
 - (void)updateContacts
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.contacts = self.contactsManager.signalContacts;
-        [self.tableView reloadData];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    self.contacts = [self.contactsManager.signalContacts copy];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Logging
