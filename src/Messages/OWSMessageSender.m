@@ -575,7 +575,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
             if ([blockedPhoneNumbers containsObject:recipientContactId]) {
                 DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
-                NSError *error = OWSErrorMakeMessageSendFailedToBlocklistError();
+                NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.
                 failureHandler(error, NO);
                 return;

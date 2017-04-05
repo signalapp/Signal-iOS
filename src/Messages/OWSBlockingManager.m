@@ -167,7 +167,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
         if (sendSyncMessage) {
             [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
         } else {
-            // If this update came from an incoming blocklist sync message,
+            // If this update came from an incoming block list sync message,
             // update the "synced blocked phone numbers" state immediately,
             // since we're now in sync.
             //
