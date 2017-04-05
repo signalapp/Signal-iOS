@@ -68,25 +68,25 @@
 "ATTACHMENT_DOWNLOADING" = "S'està baixant el fitxer adjunt";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error en enviar l'adjunt";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "La imatge adjunta no s'ha pogut redimensionar.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "La imatge adjunta no s'ha pogut analitzar.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "El fitxer adjunt és massa gran.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "El contingut del fitxer adjunt no és vàlid.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "El format del fitxer adjunt no és vàlid.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "El fitxer adjunt és buit.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Trieu o feu una foto i, després, envieu-la";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "El fitxer adjunt s'ha posat en cua per obtindre'l.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "El Signal requereix accés al micròfon per a funcionar correctament. Podeu activar els permisos a la Configuració >> Privadesa >> Micròfon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Telefona";
@@ -110,10 +143,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Podeu contestar telefonades directament des de la pantalla de bloqueig i veure el nom i el telèfon de les telefonades entrants si canvieu la configuració.\n\nVegeu la configuració de privadesa per a més detalls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Podeu contestar telefonades directament des de la pantalla de bloqueig i veure el nom i el telèfon de les telefonades rebudes si canvieu la configuració.\n\nVegeu la configuració de privadesa per a més detalls.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Podeu veure el nom i el telèfon de les telefonades entrants si canvieu la configuració.\n\nVegeu la configuració de privadesa per a més detalls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Podeu veure el nom i el telèfon de les telefonades rebudes si canvieu la configuració.\n\nVegeu la configuració de privadesa per a més detalls.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ara no";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Completament buit.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Error al servidor.";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Finalitza";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Ha fallat la negociació.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Heu penjat.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Ha penjat.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Error en iniciar sessió.";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Missatge del servidor:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "El número no és registrat al Signal o al RedPhone.";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "El destinatari no es troba disponible.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Heu rebutjat la telefonada.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "S'ha rebutjat la telefonada.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Heu fet una altra telefonada.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupat.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "S'ha perdut la telefonada.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Ha fallat.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "No s'ha pogut enviar degut a dades de privadesa obsoletes.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "El Signal no s'ha pogut connectar a Internet. Proveu des d'altra xarxa WiFi o utilitzeu dades mòbils.";
@@ -364,6 +361,12 @@
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Acaba de crear el grup";
 
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "S'ha canviat l'avatar.";
 
@@ -422,10 +425,10 @@
 "IN_CALL_TERMINATED" = "Ha finalitzat.";
 
 /* notification body */
-"INCOMING_CALL" = "Telefonada entrant";
+"INCOMING_CALL" = "Telefonada rebuda";
 
 /* notification body */
-"INCOMING_CALL_FROM" = "Telefonada entrant de %@";
+"INCOMING_CALL_FROM" = "Telefonada rubuda de %@";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Telefonada incompleta de";
@@ -488,7 +491,7 @@
 "LOADING_CONTACTS_LABEL_LINE1" = "S'estan carregant els contactes.";
 
 /* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Espera un moment.";
+"LOADING_CONTACTS_LABEL_LINE2" = "Espereu un moment.";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registres";
@@ -635,10 +638,16 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha establit el temps dels missatges efímers en %@.";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "Telefonada sortint";
+"OUTGOING_CALL" = "Telefonada feta";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Telefonada sortint incompleta";
+"OUTGOING_INCOMPLETE_CALL" = "Telefonada feta incompleta";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %@. Esteu verificant el contacte correcte?";
@@ -716,7 +725,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Intenta-ho de nou";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Ho haveu provat massa vegades. Espereu un minut abans de tornar a provar-ho.";
+"REGISTER_RATE_LIMITING_BODY" = "Ho heu provat massa vegades. Espereu un minut abans de tornar a provar-ho.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Número registrat";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Quant a";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activa el registre de depuració";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avançada";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Sol·licita la vostra aprovació abans de comunicar-se amb qui tingui números de seguretat nous, habitualment degut a una nova instal·lació del Signal.";
@@ -980,25 +1001,25 @@
 "UNSUPPORTED_ATTACHMENT" = "El tipus del fitxer adjunt rebut no és compatible.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "El teu dispositiu no suporta aquesta característica.";
+"UNSUPPORTED_FEATURE_ERROR" = "El dispositiu no és compatible amb aquesta característica.";
 
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Actualitza";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Respondre telefonades des de la pantalla de bloqueig és fàcil amb la integració amb iOS. També es privat: qui vos telefona roman en l'anonimat.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Respondre telefonades des de la pantalla de bloqueig és fàcil amb la integració amb iOS. També és privat: qui vos telefona roman en l'anonimat.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Teniu més informació a la configuració.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Més informació a la configuració.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Llisca per respondre";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Llisqueu per respondre";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "El Signal és compatible amb les telefonades de vídeo segures. Feu una telefonada normal, toqueu el botó de la càmera i saludeu.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hola, Telefonades de Vídeo Segures!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Telefonades de Vídeo Segures!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "S'està actualitzant el Signal...";

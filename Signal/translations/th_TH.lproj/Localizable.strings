@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "ไฟล์แนบถูกจัดคิวสำหรับดึงข้อมูล";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "โทร";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "ว่างเปล่า";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "เซิร์ฟเวอร์ล้มเหลว!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "วาง";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Handshake ล้มเหลว!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "คุณได้วางสาย";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "เขาได้วางสาย";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "การเข้าสู่ระบบล้มเหลว!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "ข้อความจากเซิร์ฟเวอร์: ";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "หมายเลขไม่ได้ลงทะเบียนกับ Signal หรือ RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "ผู้รับไม่พร้อมใช้งาน";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "คุณได้ปฏิเสธสาย";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "สายถูกปฏิเสธ";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "คุณได้ต่อสายอื่น";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "ไม่ได้รับสาย";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือใช้ข้อมูลมือถือ";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "เสร็จสิ้นการสร้างกลุ่ม";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "เปลี่ยนภาพประจำตัวแล้ว";
@@ -640,6 +643,12 @@
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "สายโทรออกไม่สมบูรณ์";
 
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "นี่ดูเหมือนจะไม่ใช่ตัวเลขความปลอดภัยของคุณกับ %@ คุณกำลังตรวจสอบรายชื่อที่ถูกต้องหรือไม่?";
 
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกการดีบั๊ก";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "ต้องได้รับการอนุมัติจากคุณก่อนที่จะสื่อสารกับใครสักคนที่มีตัวเลขความปลอดภัยใหม่ โดยทั่วไปมาจากการติดตั้ง Signal ใหม่";

@@ -68,25 +68,25 @@
 "ATTACHMENT_DOWNLOADING" = "Descargando adjunto";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Fallo al enviar archivo adjunto";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Imposible modificar las dimensiones de la imagen.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Formato de imagen no reconocido.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Archivo adjunto demasiado grande.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Contenido inválido en archivo adjunto.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Formato inválido de archivo adjunto.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Archivo adjunto vacío.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Elige o toma una foto y envíala";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nuevo adjunto listo para descarga.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceder al micrófono para funcionar correctamente. Activa el acceso a Signal en la App Ajustes >> Privacidad >> Micrófono >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Llamada";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Limpio como una patena.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "¡Fallo en el servidor!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Finalizar";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Fallo al establecer contacto con el servidor";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Colgaste.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Tu contacto colgó.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "¡Fallo al iniciar sesión!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Aviso del servidor:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "¡Número no registrado en Signal o RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Contacto no disponible.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Has rechazado la llamada.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Llamada rechazada.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Has realizado otra llamada.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ocupado.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Llamada perdida.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Llamada fallida.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Imposible enviar: Claves de cifrado obsoletas.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba a conectarte desde otra red WiFi o usa la red de datos de tu operador.";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Grupo creado con éxito";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Cambio de imagen de grupo.";
@@ -538,7 +541,7 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Llamada perdida de %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Llamada perdida de Signal.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Llamada perdida en Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Has recibido una llamada de %@.";
@@ -639,6 +642,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Llamada realizada sin respuesta";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Esas no son las cifras de seguridad del chat con %@. ¿Estás identificando el contacto correcto?";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Acerca de Signal";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activar registro de depuración";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Signal requerirá tu confirmación antes de comunicarse con un contacto cuyas cifras de seguridad han cambiado. Esto suele ocurrir si tu contacto reinstala Signal.";

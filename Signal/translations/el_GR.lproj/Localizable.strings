@@ -8,7 +8,7 @@
 "AB_PERMISSION_MISSING_TITLE" = "Συγγνώμη!";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Αποδοχή νέου κωδικού ασφαλείας";
 
 /* No comment provided by engineer. */
 "ACTION_REQUIRED_TITLE" = "Απαιτείται ενέργειά σας";
@@ -20,7 +20,7 @@
 "ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Κλείσιμο";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Έχετε κιόλας λογαριασμό Signal;";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Απάντηση";
@@ -50,16 +50,16 @@
 "ATTACHMENT" = "Συνημμένο";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Συνημμένο";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Τύπος αρχείου: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Μέγεθος αρχείου: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Αποστολή";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Αποτυχία λήψης συνημμένου, αγγίξτε για να προσπαθήσετε ξανά.";
@@ -68,46 +68,79 @@
 "ATTACHMENT_DOWNLOADING" = "Λήψη συνημμένου";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Σφάλμα αποστολής συννημένου";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Το μέγεθος της συννημένης εικόνας δεν μπόρεσε ν' αλλαχτεί.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Η συννημένη εικόνα δεν μπόρεσε ν' αναλυθεί.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Το συννημένο παραείναι μεγάλο.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Το συννημένο δεν έχει σωστά δεδομένα.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Το συννημένο δεν έχει σωστό μορφότυπο.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Το συννημένο είναι κενό.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Διαλέξτε ή πάρτε φωτογραφία και στείλτε την.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "Συννημένο";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Νέο συνημμένο μπήκε στην αναμονή για λήψη.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
-"CALL_LABEL" = "Call";
+"CALL_LABEL" = "Κλήση";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Καμία απάντηση.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Το Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
@@ -116,16 +149,16 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Όχι Τώρα";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Άνοιγμα Ιδιωτικών Ρυθμήσεων";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Καλέστε πίσω";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Χρήστης Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
@@ -152,19 +185,19 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Μη καταχωρημένος αριθμός";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Κενή διεύθυνση email.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Κενός αριθμός τηλεφώνου.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ρυθμίσεις συνδιαλέξεων";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Το μήνυμα παραείναι μακρύ για να σταλεί.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Σφάλμα";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Η επαναφορά της συνεδρίας θα επιτρέψει τη λήψη μελλοντικών μηνυμάτων από τον χρήστη %@, αλλά δε θα διασώσει τυχόν ληφθέντα εσφαλμένα μηνύματα.";
@@ -173,7 +206,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "Επιλογή Κωδικού Χώρας";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Create new group";
+"CREATE_NEW_GROUP" = "Δημιούργηση καινούριας ομάδας";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u ημέρες";
@@ -206,19 +239,19 @@
 "EDIT_GROUP_ACTION" = "Edit Group";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copy";
+"EDIT_ITEM_COPY_ACTION" = "Αντιγραφή";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Αποθήκευση";
 
 /* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
+"EDIT_ITEM_SHARE_ACTION" = "Διαμοιρασμός";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Γειά,\n\nτελευταία χρησιμοποιώ το Signal για να κρατήσω τα μηνύματα στο iPhone μου ιδιωτικά. Θα ήθελα να το εγκαταστήσεις επίσης, για να είμαστε σίγουροι οτι μόνο εγώ και σύ μπορούμε να διαβάσουμε τα μηνύματα μας και να ακούσουμε τις συνομιλίες μας.\n\nΤο Signal υπάρχει για το iPhone και το Android εδώ: %@\n\nΔουλεύει σαν τη τωρινή σου εφαρμογή μηνυμάτων. Μπορούμε να στείλουμε φωτογραφίες και βίντεο, να κάνουμε κλήσεις, και ν' αρχήσουμε ομαδικές συνομιλίες. Το καλύτερο είναι οτι κανείς δεν θα μπορεί να τα δεί, ούτε καν αυτοί που έφτιαξαν το Signal!\n\nΜπορείς να διαβάσεις περισσότερα για τους Open Whisper Systems, τον οργανισμό που έφτιαξε το Signal, εδώ: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Ας χρησιμοποιήσουμε το Signal";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Αγγίξτε το κουμπί σύνθεσης";
@@ -233,10 +266,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Εκκαθάριση συνομιλιών";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Καμία απο τις επαφές σας δεν χρησιμοποιεί το Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Γιατί δεν προσκαλείτε κάποιον;";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Συμβουλή: Προσθέστε μία συνομιλία ως υπενθύμιση!";
@@ -250,56 +283,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Πεντακάθαρο.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Σφάλμα εξυπηρετητή!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Τερματισμός";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Αποτυχία χειραψίας";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Τερματίσατε την κλήση.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Τερμάτισαν την κλήση.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Η σύνδεση απέτυχε ";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Μήνυμα από τον εξυπηρετητή:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Ο αριθμός δεν είναι συνδεδεμένος με το Signal ή το RedPhone";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Ο συνδρομητής που καλέσατε δεν είναι διαθέσιμος.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Απορρίψατε την κληση";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Η κλήση απορρίφθηκε.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Πραγματοποιήσατε άλλη κλήση.";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "Κατελημμένο.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Αναπάντητη κλήση.";
-
-/* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Η κλήση απέτυχε.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Η επιστολή μηνύματος απέτυχε.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
@@ -308,13 +305,13 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Σφάλμα διακομιστή. Παρακαλώ δοκιμάστε αργότερα.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Κάποιο άγνωστο λάθος προέκυψε.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Η επαφή δεν χρησιμοποιεί Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Λήψη ίδιου μηνύματος.";
@@ -332,13 +329,13 @@
 "ERROR_MESSAGE_NO_SESSION" = "Δεν υπάρχει διαθέσιμή συνεδρία για αυτή την επαφή.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Ο κώδικας ασφαλείας άλλαξε.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Κάποιο άγνωστο λάθος προέκυψε.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed. Tap to verify.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Ο κώδικας ασφαλείας άλλαξε. Πατήστε για επαλήθευση.";
 
 /* No comment provided by engineer. */
 "ERROR_WAS_DETECTED_TITLE" = "Κρίμα!";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Η εικόνα άλλαξε.";
@@ -512,16 +515,16 @@
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Στάλθηκε";
 
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Πατήστε εδώ για ρυθμίσεις";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u minutes";
+"MINUTES_TIME_AMOUNT" = "%u λεπτά";
 
 /* notification title */
 "MISSED_CALL" = "Αναπάντητη κλήση";
@@ -532,25 +535,25 @@
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Το Signal χρειάζεται πρόσβαση στη κάμερά σας.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Αναπάντητη κλήση απο %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Αναπάντητη κλήση απο χρήστη Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Δεχτήκατε μία κλήση από %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ προσπάθησε να σας καλέσει.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Καλέσατε %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Προσπαθήσατε να καλέσετε τον/την %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Δεν μπορείτε να ταιριάξετε άλλες συσκευές.";
@@ -577,10 +580,10 @@
 "NETWORK_STATUS_TEXT" = "Μπορείτε να δείτε την κατάσταση του δικτύο κοιτώντας στην χρωματισμένη μπάρα πάνω από τα εισερχόμενά σας.";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Νέα συνομιλία με τον/την %@";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Διαλέξτε Φωτογραφία Ομάδας";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Νέο γκρουπ";
@@ -592,7 +595,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Εισαγωγή ανθρώπων";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Βρείτε επαφές μέσω αριθμού τηλεφώνου";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Αποτυχία αποστολής μηνύματος σε %@";
@@ -626,7 +629,7 @@
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
-"OPEN_SETTINGS_BUTTON" = "Settings";
+"OPEN_SETTINGS_BUTTON" = "Ρυθμίσεις";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
@@ -639,6 +642,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Για εμάς";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Ενεργοποίηση καταγραφής αποσφαλμάτωσης";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Για προχωρημένους";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
@@ -995,7 +1016,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Το Signal πλέον υποστηρίζει ασφαλείς βιντεοκλήσεις. Απλά κάντε μια κλήση Signal όπως συνήθως, πατήστε το κουμπί για το βίντεο, και χαμογελάστε.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";

@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "정보 검색을 위한 새 첨부파일 대기";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "시그널이 제대로 작동하기 위하여 당신의 마이크로폰에 액세스하여야 합니다. ";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "호출";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "진짜 대박 깨끗함.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "서버에 연결되지 않음";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "통화 종료";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "핸드셰이크 되지 않음";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "당신이 통화를 끊었습니다.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "상대방이 통화를 끊었습니다.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "로그인 되지 않음";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "서버로부터의 메세지:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Signal 또는 RedPhone에 등록되지 않은 번호입니다!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "응답 없음";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "당신이 통화를 거절했습니다.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "통화 거절됨";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "다른 통화를 하셨습니다.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "전화를 받지 못하였습니다.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "전화 실패됨.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "시그널이 인터네트에 접속불가능. 다른 Wifi 네트워크나 모바일 데이터를 사용하세요.";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "아바타 변경됨.";
@@ -640,6 +643,12 @@
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
 
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "정보";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "디버그 파일 활성화시키기";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "고급";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";

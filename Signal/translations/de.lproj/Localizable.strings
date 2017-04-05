@@ -68,25 +68,25 @@
 "ATTACHMENT_DOWNLOADING" = "Anhang wird heruntergeladen";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Fehler beim Senden des Anhangs";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Größe des Bildanhangs konnte nicht angepasst werden.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Bildanhang konnte nicht verarbeitet werden.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Anhang ist zu groß.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Anhang besitzt ungültige Inhalte.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Anhang besitzt ungültiges Dateiformat.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Anhang ist leer.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Bild auswählen oder aufnehmen und dann versenden";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Neuer Anhang zum Abruf bereit.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal benötigt Zugriff auf dein Mikrofon, um korrekt zu funktionieren. Du kannst diese Berechtigung über die iOS-Einstellungen erteilen: Einstellungen >> Datenschutz >> Mikrofon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Anrufen";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Absolut leer.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Serverfehler!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Beenden";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Aushandeln der Verbindung gescheitert!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Du hast aufgelegt.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Gesprächspartner hat aufgelegt.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Anmeldung gescheitert!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Nachricht vom Server:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Rufnummer nicht bei Signal oder RedPhone registriert!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Empfänger nicht verfügbar.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Du hast den Anruf abgelehnt.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Anruf abgelehnt.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Du hast einen weiteren Anruf getätigt.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Besetzt.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Entgangener Anruf.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Anruf gescheitert.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Senden nicht möglich aufgrund veralteter Schlüssel.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche ein anderes WLAN-Netzwerk oder verwende die mobile Datenverbindung.";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Gruppenerstellung abschließen";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar geändert.";
@@ -640,6 +643,12 @@
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Unvollständiger ausgehender Anruf";
 
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies scheint nicht deine Sicherheitsnummer mit %@ zu sein. Überprüfst du den richtigen Kontakt?";
 
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Über";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Diagnoseprotokoll aktivieren";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Erweitert";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Erfordert deine Zustimmung vor der Kommunikation mit jemandem mit einer neuen Sicherheitsnummer. Grund hierfür ist häufig eine Neuinstallation von Signal.";

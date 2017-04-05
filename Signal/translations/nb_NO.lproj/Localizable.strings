@@ -68,25 +68,25 @@
 "ATTACHMENT_DOWNLOADING" = "Vedlegg lastes ned";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Feil ved sending av vedlegg";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke endre størrelse for vedlagte bilde.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Vedlagte bilde kunne ikke håndteres.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Vedlegget er for stort.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Vedlegget har ugyldig innhold.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Vedlegget har et filformat som ikke støttes.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Vedlegget er tomt.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Velge eller ta et nytt bilde som skal sendes";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Nytt vedlegg i kø for å hentes.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal trenger tilgang til mikrofonen din for å fungere. Du kan gi tilgang i Innstillinger >> Personvern >> Mikrofon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Fullstendig rent og pent.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Server feilet!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Avslutt";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Handshake feilet!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Du la på.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Motparten la på.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Innlogging feilet!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Melding fra server:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Nummer ikke registrert hos Signal eller RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Mottaker utilgjengelig.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Du avviste anropet.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Samtale avvist.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Du ringte på nytt.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Opptatt.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Du gikk glipp av anropet.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oppringning mislyktes.";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kan ikke sende på grunn av problemer med oppdatering av private data.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal klarte ikke å koble seg til internett. Forsøk et annet trådløst nettverk, eller bruk mobildata.";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Fullfør oppretting av gruppe";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar endret.";
@@ -535,10 +538,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal trenger tilgang til ditt kamera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Tapt anrop fra %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Tapt anrop fra en Signal-bruker.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Du mottok en anrop fra %@.";
@@ -640,6 +643,12 @@
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Ufullstendig utgående anrop";
 
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ser ikke ut som dine sikkerhetstall som du deler med %@. Er det rett kontakt du forsøker å verifisere?";
 
@@ -716,7 +725,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Prøv igjen";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Vennligst vent noen minutter før du prøver igjen. Du har forsøkt for mange ganger på kort tid.";
+"REGISTER_RATE_LIMITING_BODY" = "Du har forsøkt for mange ganger. Vent et minutt før du forsøker igjen.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registrert Nummer";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Om";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på debug-logging";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avansert";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Det kreves din godkjenning før du kan kommunisere med noen som har endret sikkerhetstall – noe som kan skyldes at de har reinstallert Signal-appen.";
@@ -875,7 +896,7 @@
 "SETTINGS_NOTIFICATIONS" = "Varslinger";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Vis navn og nummer for innkommende samtaler.";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Vis navn og nummer for innkommende samtaler";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS-integrering med CallKit";

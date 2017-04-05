@@ -50,16 +50,16 @@
 "ATTACHMENT" = "Bifogad fil";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Bilaga";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtyp: %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Filstorlek: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Skicka";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Filen kunde inte laddas ner, tryck för att försöka igen.";
@@ -68,28 +68,28 @@
 "ATTACHMENT_DOWNLOADING" = "Laddar ner bifogad fil";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Fel vid sändning av bifogad fil";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Storleken på bildfilen kunde inte ändras.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kunde inte tolka bildfilen.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Den bifogade filen är för stor.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Den bifogade filen har ogiltigt innehåll.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Den bifogade filen har ogiltigt filformat.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Den bifogade filen är tom.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Välj eller ta ny bild och för att sen skicka";
+"ATTACHMENT_HINT" = "Välj eller ta ny bild och för att skicka";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bifogad fil";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Ny bifogad fil i kö för hämtning.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal behöver åtkomst till mikrofonen för att fungera. Du kan tillåta det i Inställningar >> Integritetsskydd >> Mikrofon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Ring";
@@ -110,10 +143,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Du kan svara på samtal direkt från din låsskärm och se namnet och telefonnumret för det inkommande samtalet ifall du ändrar dina inställningar\n\nSe inställningarna för integritetsskydd för detaljer.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Du kan se namnet och telefonnumret för inkommande samtal ifall du ändrar dina inställningar.\n\nSe inställningarna för integritetsskydd för detaljer.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Inte nu";
@@ -161,10 +194,10 @@
 "CONVERSATION_SETTINGS" = "Konversationsinställningar";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Det här meddelandet är för långt för att skicka.";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Fel";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte att återställa meddelanden som redan är korrupta.";
@@ -191,7 +224,7 @@
 "DISAPPEARING_MESSAGES" = "Meddelanden som försvinner";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Gör att meddelanden som skickats och tagits emot i denna konversation kommer försvinna efter att de lästs.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Gör att meddelanden som skickats och tagits emot i denna konversation kommer försvinna efter att de setts.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Just nu försvinner meddelanden efter %@";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Skinande rent och fint.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Serverfel!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Avsluta";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Fel vid handskakning!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Du la på.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "De la på.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Fel vid inloggning!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Meddelande från server:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Numret är inte registrerat hos Signal eller RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Mottagaren är inte tillgänglig.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Du avvisade samtalet.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Samtal avvisat.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Du gjorde ett annat samtal.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Upptaget.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Missade samtalet.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Samtalsfel.";
@@ -299,7 +293,10 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Kunde inte skicka meddelande.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunden inte sända på grund av gammalt privacy-data.";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte nå ut på internet. Försök igen från ett annat trådlöst nätverk eller använd mobildata.";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Slutför skapa grupp";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar ändrad.";
@@ -428,7 +431,7 @@
 "INCOMING_CALL_FROM" = "Inkommande samtal från %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Ofullständigt inkommande samtal från";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Bjud in vänner till Signal";
@@ -506,19 +509,19 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nytt meddelande";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Levererat";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Sändning misslyckades. Tryck här för att prova igen.";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Skickat";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "Laddar upp...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tryck här för inställningar";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuter";
@@ -535,10 +538,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal behöver åtkomst till din kamera.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missat samtal från %@";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missat samtal från Signalanvändare.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Du tog emot ett samtal från %@.";
@@ -638,7 +641,13 @@
 "OUTGOING_CALL" = "Utgående samtal";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Ofullständigt utgående samtal";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Det här ser inte ut som ditt säkerhetsnummer med %@. Bekräftar du rätt kontakt?\n";
@@ -716,7 +725,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Försök igen";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_BODY" = "Du har provat för ofta. Vänligen vänta en minut innan du provar igen.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registrerat nummer";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "Om";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Slå på debug-log";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avancerat";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Kräver ditt godkännande innan du kommunicerar med någon som har ett säkert nummer, vanligtvis från en ominstallation av Signal.";
@@ -833,10 +854,10 @@
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Inställningar";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vidarebefordra alltid samtal";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vidarebefordra alla samtal genom Signal-servern för att undvika att avslöja ditt IP-nummer till din kontakt. Detta kommer att reducera samtalskvaliteten.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Rensa historik";
@@ -875,7 +896,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notiser";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Visa uppringarens namn & nummer";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
@@ -890,10 +911,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Aktivera skärmsäkerhet";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Förhindra Signals förhandsvisning från att visas i app-bytaren.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration visar Signalsamtal på din låsskärm och i systemets samtalshistorik. Du kan välja att visa din kontakts namn och nummer. Ifall iCloud är påslaget kan denna samtalshistorik delas med Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
@@ -986,19 +1007,19 @@
 "UPDATE_BUTTON_TITLE" = "Uppdatera";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Svara på samtal från din låsskärm är enkelt med iOS call integration. Vi anonymiserar alltid uppringaren, så det är privat också.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Lär dig mer i inställningarna för integritetsskydd.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Svep för att svara";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nu stöd för säkra videosamtal. Påbörja ett samtal som vanligt, tryck på kameraknappen och vinka hej.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallå säkra videosamtal!";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Uppgraderar Signal ...";
@@ -1013,7 +1034,7 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring mig istället";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Skicka koden igen via sms";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Skicka koden igen via SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka verifieringskod";

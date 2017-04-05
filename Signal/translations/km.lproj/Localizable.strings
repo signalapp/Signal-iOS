@@ -50,16 +50,16 @@
 "ATTACHMENT" = "ឯកសារភ្ជាប់";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "ឯកសារភ្ជាប់";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ប្រភេទឯកសារ៖ %@";
 
 /* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ទំហំឯកសារ៖ %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "បញ្ជូន";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "ទាញយកឯកសារភ្ជាប់បរាជ័យ ចុចដើម្បីសាកល្បងម្តងទៀត។";
@@ -68,25 +68,25 @@
 "ATTACHMENT_DOWNLOADING" = "កំពុងទាញយកឯកសារភ្ជាប់";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "បញ្ហាបញ្ជូនឯកសារភ្ជាប់";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ឯកសារភ្ជាប់មិនអាចប្តូរទំហំបាន។";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ឯកសារភ្ជាប់មិនអាចញែកបាន។";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ឯកសារភ្ជាប់ធំពេក។";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "ឯកសារភ្ជាប់មានខ្លឹមសារមិនត្រឹមត្រូវ។";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ឯកសារភ្ជាប់មានទម្រង់មិនត្រឹមត្រូវ។";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "ឯកសារភ្ជាប់ទទេរ។";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "ជ្រើសរើស ឬថតរូបភាព និងបញ្ជូនវា";
@@ -97,8 +97,41 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "ឯកសារភ្ជាប់ថ្មីបានដាក់ជាជួរសម្រាប់ការទាញយក។";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal ត្រូវការចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេងរបស់អ្នកដើម្បីដំណើរការ។ អ្នកអាចផ្តល់សិទ្ធិនៅក្នុង ការកំណត់ >> ឯកជនភាព >> ប្រដាប់ស្រូបសំឡេង >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+
+/* A format for the 'block phone number' action sheet title. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock phone number' action sheet title. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The message format of the 'contact blocked' alert in the block view. It is populated with the blocked contact's name. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'contact blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_CONTACT_BLOCKED_ALERT_TITLE" = "Contact Blocked";
+
+/* A title for the contacts section of the blocklist view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The message format of the 'phone number blocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'phone number blocked' alert in the block view. */
+"BLOCK_LIST_VIEW_PHONE_NUMBER_BLOCKED_ALERT_TITLE" = "Phone Number Blocked";
+
+/* The message format of the 'phone number unblocked' alert in the block view. It is populated with the blocked phone number. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'phone number unblocked' alert in the block view. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Phone Number Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "ការហៅ";
@@ -161,10 +194,10 @@
 "CONVERSATION_SETTINGS" = "ការកំណត់ការសន្ទនា";
 
 /* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "សារនេះ វែងពេកសម្រាប់ផ្ញើ។";
 
 /* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "បញ្ហា";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ការកំណត់ការចូលប្រើប្រាស់របស់អ្នកឡើងវិញ នឹងអនុញ្ញាតអ្នក ឲ្យទទួលសារក្នុងពេលខាងមុខពី %@, ប៉ុន្តែ វានឹងមិនស្តារសារណាដែលខូចខាតទេ។";
@@ -250,47 +283,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "ស្អាតមែនទែន.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "ម៉ាស៊ីនមេបរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "បញ្ចប់";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "ការចាប់ដៃបរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "អ្នកបានដាក់ទូរស័ព្ទចុះ។";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "គេបានដាក់ទូរស័ព្ទចុះ។";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "ការចូលប្រើប្រាស់បរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "សារពីម៉ាស៊ីនមេ៖";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "លេខមិនបានចុះឈ្មោះជាមួយ Signal ឬ RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "អ្នកទទួលមិនទំនេរ។";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "អ្នកបានច្រានចោលការហៅ។";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "ការហៅត្រូវបានច្រានចោល។";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "អ្នកហៅទៅលេខផ្សេង។";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "រវល់";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "ខកការហៅ";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ការហៅបរាជ័យ";
@@ -300,6 +294,9 @@
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "មិនអាចបញ្ជូនដោយសារទិន្នន័យឯកជនចាស់ពេក។";
+
+/* Error mesage indicating that message send failed due to blocklist */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCKLIST" = "Message send failed due to blocklist.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal មិនអាចតភ្ជាប់ទៅកាន់អ៊ីនធើណែត។ សូមព្យាយាមពីបណ្តាញ WiFi ផ្សេង ឬប្រើប្រាស់ទិន្នន័យទូរស័ព្ទ។";
@@ -363,6 +360,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "ការបង្កើតក្រុមត្រូវបានបញ្ចប់";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "រូបតំណាងបានផ្លាស់ប្តូរ។";
@@ -506,16 +509,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "សារថ្មី";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "បានទទួល";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "បញ្ជូនបរាជ័យ។ ចុច ដើម្បីព្យាយាមម្តងទៀត។";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "បានបញ្ជូន";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "កំពុងបញ្ជូន...";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "ចុចទីនេះ សម្រាប់ការកំណត់";
@@ -535,10 +538,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal ត្រូវការចូលប្រើប្រាស់កាមេរ៉ារបស់អ្នក។";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "ខកការហៅពី %@។";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "ខកការហៅពី អ្នកប្រើប្រាស់ Signal ។";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "អ្នកបានទទួលការហៅមួយ ពី%@។";
@@ -639,6 +642,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "ការហៅចេញក្រៅមិនពេញលេញ";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "នេះទំនងមិនមែនជាលេខសុវត្ថិភាពរបស់អ្នក ជាមួយ%@ ទេ។ តើអ្នកបានផ្ទៀងផ្ទាត់លេខទំនាក់ទំនង ត្រឹមត្រូវហើយ?";
@@ -815,6 +824,9 @@
 "SETTINGS_ABOUT" = "អំពី";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Add to Block List";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "បើកកំណត់ត្រាកំហុស";
 
 /* No comment provided by engineer. */
@@ -822,6 +834,15 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "កម្រិតខ្ពស់";
+
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Phone Number";
+
+/* A header title for the block list table. */
+"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+
+/* Label for the block list row of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "ទាមទារការអនុញ្ញាតរបស់អ្នក មុនពេលទាក់ទងជាមួយអ្នកណាដែលមានលេខសុវត្ថិភាពថ្មី ជាធម្មតាពីការដំឡើង Signal ឡើងវិញ។";
@@ -893,7 +914,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលមុន Signal ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "សមាហរណកម្មការហៅ iOS បង្ហាញការហៅតាម Signal លើអេក្រង់ជាប់សោររបស់អ្នក និង ក្នុងបញ្ជីការហៅរបស់ប្រព័ន្ធ។ អ្នកអាចមានជម្រើសក្នុងការបង្ហាញឈ្មោះ និងលេខទំនាក់ទំនងរបស់អ្នក។ ប្រសិនបើ iCloud បានបើក ប្រវត្តិរបស់ការហៅនេះ នឹងត្រូវបានចែករំលែកជាមួយ Apple​ ដែរ។";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "ការហៅ";
