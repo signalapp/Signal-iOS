@@ -341,9 +341,10 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self.contactsTableView reloadData];
 }
 
-- (BOOL)isContactBlocked:(Contact *)contact
+- (BOOL)isContactBlockedOrHidden:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
         return YES;
     }
 
@@ -371,11 +372,11 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 {
     NSMutableArray<Contact *> *result = [NSMutableArray new];
     for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactBlocked:contact] && ![self isCurrentUserContact:contact]) {
+        if (![self isContactBlockedOrHidden:contact] && ![self isCurrentUserContact:contact]) {
             [result addObject:contact];
         }
     }
-    return result;
+    return [result copy];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate

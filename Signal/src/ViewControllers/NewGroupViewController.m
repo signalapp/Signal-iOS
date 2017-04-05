@@ -112,9 +112,10 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self.tableView reloadData];
 }
 
-- (BOOL)isContactBlocked:(Contact *)contact
+- (BOOL)isContactBlockedOrHidden:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
         return YES;
     }
 
@@ -158,12 +159,12 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 {
     NSMutableArray<Contact *> *result = [NSMutableArray new];
     for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactBlocked:contact] && ![self isCurrentUserContact:contact]
+        if (![self isContactBlockedOrHidden:contact] && ![self isCurrentUserContact:contact]
             && ![self isContactInGroup:contact]) {
             [result addObject:contact];
         }
     }
-    return result;
+    return [result copy];
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
