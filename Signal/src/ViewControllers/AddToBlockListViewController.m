@@ -341,17 +341,31 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self.contactsTableView reloadData];
 }
 
-- (BOOL)isContactBlockedOrHidden:(Contact *)contact
+- (BOOL)isContactBlocked:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
         // Hide contacts without any valid phone numbers.
-        return YES;
+        return NO;
     }
 
     for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
         if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
             return YES;
         }
+    }
+
+    return NO;
+}
+
+- (BOOL)isContactHidden:(Contact *)contact
+{
+    if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
+        return YES;
+    }
+
+    if ([self isCurrentUserContact:contact]) {
+        return YES;
     }
 
     return NO;
@@ -372,7 +386,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 {
     NSMutableArray<Contact *> *result = [NSMutableArray new];
     for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactBlockedOrHidden:contact] && ![self isCurrentUserContact:contact]) {
+        if (![self isContactHidden:contact]) {
             [result addObject:contact];
         }
     }
@@ -436,6 +450,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     if (!cell) {
         cell = [ContactTableViewCell new];
     }
+    cell.isBlocked = [self isContactBlocked:contact];
     [cell configureWithContact:contact contactsManager:self.contactsManager];
     return cell;
 }
@@ -459,6 +474,25 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     __weak AddToBlockListViewController *weakSelf = self;
     Contact *contact = self.contacts[(NSUInteger)indexPath.item];
+    if ([self isContactBlocked:contact]) {
+        NSString *displayName = [_contactsManager displayNameForContact:contact];
+        UIAlertController *controller = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE",
+                                         @"A title of the alert if user tries to block a user who is already blocked.")
+                             message:[NSString
+                                         stringWithFormat:NSLocalizedString(
+                                                              @"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                                              @"A format for the message of the alert if user tries to "
+                                                              @"block a user who is already blocked.  Embeds {{the "
+                                                              @"blocked user's name or phone number}}."),
+                                         displayName]
+                      preferredStyle:UIAlertControllerStyleAlert];
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:nil]];
+        [self presentViewController:controller animated:YES completion:nil];
+        return;
+    }
     [BlockListUIUtils showBlockContactActionSheet:contact
                                fromViewController:self
                                   blockingManager:_blockingManager

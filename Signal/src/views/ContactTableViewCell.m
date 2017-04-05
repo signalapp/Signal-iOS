@@ -68,7 +68,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
 {
-    self.nameLabel.attributedText = [contactsManager formattedFullNameForContact:contact font:self.nameLabel.font];
+    NSMutableAttributedString *attributedText =
+        [[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font] mutableCopy];
+    if (self.isBlocked) {
+        // Add whitespace between the contact name and the blocked indicator.
+        [attributedText appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:nil]];
+        [attributedText appendAttributedString:[[NSAttributedString alloc]
+                                                   initWithString:NSLocalizedString(@"CONTACT_BLOCKED_INDICATOR",
+                                                                      @"An indicator that a contact has been blocked.")
+                                                       attributes:@{
+                                                           NSFontAttributeName : [UIFont
+                                                               ows_mediumFontWithSize:self.nameLabel.font.pointSize],
+                                                           NSForegroundColorAttributeName : [UIColor blackColor],
+                                                       }]];
+    }
+    self.nameLabel.attributedText = attributedText;
     self.avatarView.image =
         [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
                                                        name:contact.fullName
