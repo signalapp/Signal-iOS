@@ -549,16 +549,15 @@ typedef enum : NSUInteger {
     if ([self isBlockedContactConversation]) {
         blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_CONTACT_BLOCKED",
                                               @"Indicates that this 1:1 conversation has been blocked.");
-    } else {
+    } else if (isGroupConversation) {
         int blockedGroupMemberCount = [self blockedGroupMemberCount];
         if (blockedGroupMemberCount == 1) {
-            blockStateMessage = [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED_FORMAT",
-                                                                             @"Indicates that a single member of this group has been blocked."),
-                                 blockedGroupMemberCount];
+            blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
+                                                  @"Indicates that a single member of this group has been blocked.");
         } else if (blockedGroupMemberCount > 1) {
             blockStateMessage = [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
                                                                              @"Indicates that some members of this group has been blocked. Embeds "
-                                                                             @"{{the number of blocked user in this group}}."),
+                                                                             @"{{the number of blocked users in this group}}."),
                                  blockedGroupMemberCount];
         }
     }
@@ -570,7 +569,7 @@ typedef enum : NSUInteger {
         label.textColor = [UIColor whiteColor];
         
         UIView * blockStateIndicator = [UIView new];
-        blockStateIndicator.backgroundColor = [UIColor ows_signalBrandBlueColor];
+        blockStateIndicator.backgroundColor = [UIColor ows_redColor];
         blockStateIndicator.layer.cornerRadius = 2.5f;
         
         // Use a shadow to "pop" the indicator above the other views.
@@ -605,7 +604,7 @@ typedef enum : NSUInteger {
     if ([self isBlockedContactConversation]) {
         // If this a blocked 1:1 conversation, offer to unblock the user.
         [self showUnblockContactUI:nil];
-    } else {
+    } else if (isGroupConversation) {
         // If this a group conversation with at least one blocked member,
         // Show the block list view.
         int blockedGroupMemberCount = [self blockedGroupMemberCount];
@@ -619,6 +618,16 @@ typedef enum : NSUInteger {
 - (void)showUnblockContactUI:(BlockActionCompletionBlock)completionBlock
 {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
+    self.userHasScrolled = NO;
+    
+    // To avoid "noisy" animations (hiding the keyboard before showing
+    // the action sheet, re-showing it after), hide the keyboard before
+    // showing the "unblock" action sheet.
+    //
+    // Unblocking is a rare interaction, so it's okay to leave the keyboard
+    // hidden.
+    [self dismissKeyBoard];
 
     NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
     [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
@@ -639,9 +648,9 @@ typedef enum : NSUInteger {
 
 - (int)blockedGroupMemberCount
 {
-    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
-        return 0;
-    }
+    OWSAssert(isGroupConversation);
+    OWSAssert([self.thread isKindOfClass:[TSGroupThread class]]);
+    
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
     NSArray<NSString *> *blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
@@ -1019,6 +1028,21 @@ typedef enum : NSUInteger {
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date
 {
+    [self didPressSendButton:button
+             withMessageText:text
+                    senderId:senderId
+           senderDisplayName:senderDisplayName
+                        date:date
+         updateKeyboardState:YES];
+}
+
+- (void)didPressSendButton:(UIButton *)button
+           withMessageText:(NSString *)text
+                  senderId:(NSString *)senderId
+         senderDisplayName:(NSString *)senderDisplayName
+                      date:(NSDate *)date
+       updateKeyboardState:(BOOL)updateKeyboardState
+{
     if ([self isBlockedContactConversation]) {
         __weak MessagesViewController *weakSelf = self;
         [self showUnblockContactUI:^(BOOL isBlocked) {
@@ -1027,7 +1051,8 @@ typedef enum : NSUInteger {
                              withMessageText:text
                                     senderId:senderId
                            senderDisplayName:senderDisplayName
-                                        date:date];
+                                        date:date
+                         updateKeyboardState:NO];
             }
         }];
         return;
@@ -1064,7 +1089,10 @@ typedef enum : NSUInteger {
         [ThreadUtil sendMessageWithText:text
                                inThread:self.thread
                           messageSender:self.messageSender];
-        [self toggleDefaultKeyboard];
+        if (updateKeyboardState)
+        {
+            [self toggleDefaultKeyboard];
+        }
         [self finishSendingMessage];
     }
 }
