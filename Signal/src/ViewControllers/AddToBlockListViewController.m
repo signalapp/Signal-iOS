@@ -222,8 +222,8 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     UILabel *label = [UILabel new];
     label.text = text;
-    label.font = [UIFont ows_boldFontWithSize:20.f];
-    label.textColor = [UIColor colorWithWhite:0.2f alpha:1.f];
+    label.font = [UIFont ows_mediumFontWithSize:20.f];
+    label.textColor = [UIColor colorWithWhite:0.3f alpha:1.f];
     label.textAlignment = NSTextAlignmentCenter;
     [row addSubview:label];
     [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
@@ -489,7 +489,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = NSLocalizedString(
             @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
         cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         return cell;
@@ -518,6 +518,16 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 }
 
 #pragma mark - UITableViewDelegate
+
+- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.hasNoContacts) {
+        // Don't let user select the "you have no contacts" cell.
+        return nil;
+    }
+
+    return indexPath;
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
