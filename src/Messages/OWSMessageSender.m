@@ -42,11 +42,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(major, minor)                                                          \
-    ([[NSProcessInfo processInfo]                                                                                      \
-        isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){                                                    \
-                                            .majorVersion = major, .minorVersion = minor, .patchVersion = 0 }])
-
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
  * getting proper keys, and retrying upon failure.
