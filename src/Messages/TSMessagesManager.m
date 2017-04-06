@@ -581,7 +581,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }];
 
-    [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
+    });
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
