@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
     return item;
 }
 
-- (UITableViewCell *)customCell
+- (nullable UITableViewCell *)customCell
 {
     if (_customCell) {
         return _customCell;
@@ -149,7 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (_customCellBlock) {
         return _customCellBlock();
     }
-    OWSAssert(0);
     return nil;
 }
 
