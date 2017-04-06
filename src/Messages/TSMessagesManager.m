@@ -251,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        dispatch_async([OWSDispatch sessionCipher], ^{
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
             NSData *plaintextData;
 
             @try {
@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        dispatch_async([OWSDispatch sessionCipher], ^{
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
             NSData *plaintextData;
             @try {
                 // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.

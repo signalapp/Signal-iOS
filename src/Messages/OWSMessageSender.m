@@ -993,7 +993,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             __block NSException *encryptionException;
             // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
             // operations.
-            dispatch_sync([OWSDispatch sessionCipher], ^{
+            dispatch_sync([OWSDispatch sessionStoreQueue], ^{
                 @try {
                     messageDict = [self encryptedMessageWithPlaintext:plainText
                                                           toRecipient:recipient.uniqueId
