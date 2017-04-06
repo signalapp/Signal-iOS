@@ -3,9 +3,7 @@
 //
 
 #import "MessageComposeTableViewController.h"
-
-#import <MessageUI/MessageUI.h>
-
+#import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
@@ -13,6 +11,7 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
+#import <MessageUI/MessageUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -536,6 +535,11 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             : MessageComposeTableViewControllerSection_Count);
 }
 
+- (BOOL)hasNoContacts
+{
+    return self.contacts.count == 0;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // This logic will determine which one (if any) of the following special controls
     // should be shown.  No more than one should be shown at a time.
@@ -566,6 +570,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         if (self.searchController.active) {
             return (NSInteger)[self.searchResults count];
         } else {
+            if (self.hasNoContacts) {
+                return 1;
+            }
             return (NSInteger)[self.contacts count];
         }
     }
@@ -599,17 +606,41 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
         return self.inviteCell;
     } else {
         OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
-        
+
+        if (!self.searchController.active && self.hasNoContacts)
+        {
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = NSLocalizedString(
+                @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
+            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            return cell;
+        }
+
         ContactTableViewCell *cell = (ContactTableViewCell *)[tableView
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
 
-        [cell configureWithContact:[self contactForIndexPath:indexPath] contactsManager:self.contactsManager];
+        Contact *contact = [self contactForIndexPath:indexPath];
+        cell.isBlocked = [self isContactBlocked:contact];
+        [cell configureWithContact:contact contactsManager:self.contactsManager];
 
         return cell;
     }
 }
 
 #pragma mark - Table View delegate
+
+- (nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == MessageComposeTableViewControllerSectionContacts && !self.searchController.active
+        && self.hasNoContacts) {
+        // Don't let user select the "you have no contacts" cell.
+        return nil;
+    }
+
+    return indexPath;
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -654,12 +685,36 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     } else {
         OWSAssert(indexPath.section == MessageComposeTableViewControllerSectionContacts)
 
-        NSString *identifier = [[[self contactForIndexPath:indexPath] textSecureIdentifiers] firstObject];
+            if (!self.searchController.active && self.hasNoContacts)
+        {
+            // TODO: We could do something here, like show the "invite contacts" UI.
+            return;
+        }
 
-        [self dismissViewControllerAnimated:YES
-                                 completion:^() {
-                                     [Environment messageIdentifier:identifier withCompose:YES];
-                                 }];
+        Contact *contact = [self contactForIndexPath:indexPath];
+        NSString *contactIdentifier = [[contact textSecureIdentifiers] firstObject];
+
+        __weak MessageComposeTableViewController *weakSelf = self;
+        void (^newContactConversationBlock)() = ^{
+            [weakSelf dismissViewControllerAnimated:YES
+                                         completion:^() {
+                                             [Environment messageIdentifier:contactIdentifier withCompose:YES];
+                                         }];
+        };
+
+        if ([self isContactBlocked:contact]) {
+            [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+                                             fromViewController:self
+                                                blockingManager:_blockingManager
+                                                contactsManager:_contactsManager
+                                                completionBlock:^(BOOL isBlocked) {
+                                                    if (!isBlocked) {
+                                                        newContactConversationBlock();
+                                                    }
+                                                }];
+        } else {
+            newContactConversationBlock();
+        }
     }
 }
 
@@ -683,11 +738,21 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [self.tableView reloadData];
 }
 
-- (BOOL)isContactBlockedOrHidden:(Contact *)contact
+- (BOOL)isContactHidden:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
         // Hide contacts without any valid phone numbers.
         return YES;
+    }
+
+    return NO;
+}
+
+- (BOOL)isContactBlocked:(Contact *)contact
+{
+    if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
+        return NO;
     }
 
     for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -703,7 +768,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 {
     NSMutableArray<Contact *> *result = [NSMutableArray new];
     for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactBlockedOrHidden:contact]) {
+        if (![self isContactHidden:contact]) {
             [result addObject:contact];
         }
     }
