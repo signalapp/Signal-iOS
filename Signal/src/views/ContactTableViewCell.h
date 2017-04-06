@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactTableViewCell : UITableViewCell
 
-@property (nonatomic) BOOL isBlocked;
+@property (nonatomic, nullable) NSString *accessoryMessage;
+
++ (nullable NSString *)reuseIdentifier;
 
 + (CGFloat)rowHeight;
 

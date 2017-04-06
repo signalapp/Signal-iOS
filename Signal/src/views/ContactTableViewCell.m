@@ -29,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (nullable NSString *)reuseIdentifier
+{
+    return NSStringFromClass(self.class);
+}
+
 - (nullable NSString *)reuseIdentifier
 {
     return NSStringFromClass(self.class);
@@ -70,11 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableAttributedString *attributedText =
         [[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font] mutableCopy];
-    if (self.isBlocked) {
+    if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
         blockedLabel.textAlignment = NSTextAlignmentRight;
-        blockedLabel.text
-            = NSLocalizedString(@"CONTACT_BLOCKED_INDICATOR", @"An indicator that a contact has been blocked.");
+        blockedLabel.text = self.accessoryMessage;
         blockedLabel.font = [UIFont ows_mediumFontWithSize:13.f];
         blockedLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
         [blockedLabel sizeToFit];
@@ -95,6 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super layoutSubviews];
     [UIUtil applyRoundedBorderToImageView:self.avatarView];
+}
+
+- (void)prepareForReuse
+{
+    self.accessoryMessage = nil;
+    self.accessoryView = nil;
+    self.accessoryType = UITableViewCellAccessoryNone;
 }
 
 @end

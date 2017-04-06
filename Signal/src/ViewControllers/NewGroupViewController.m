@@ -3,6 +3,8 @@
 //
 
 #import "NewGroupViewController.h"
+#import "BlockListUIUtils.h"
+#import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
 #import "OWSContactsManager.h"
@@ -107,16 +109,48 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)updateContacts {
     AssertIsOnMainThread();
 
+    // Snapshot selection state.
+    NSMutableSet *selectedContacts = [NSMutableSet set];
+    for (NSIndexPath *indexPath in [self.tableView indexPathsForSelectedRows]) {
+        Contact *contact = contacts[(NSUInteger)indexPath.row];
+        [selectedContacts addObject:contact];
+    }
+
     contacts = [self filteredContacts];
 
     [self.tableView reloadData];
+
+    // Restore selection state.
+    for (Contact *contact in selectedContacts) {
+        if ([contacts containsObject:contact]) {
+            NSInteger row = (NSInteger)[contacts indexOfObject:contact];
+            [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionNone];
+        }
+    }
 }
 
-- (BOOL)isContactBlockedOrHidden:(Contact *)contact
+- (BOOL)isContactHidden:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
         // Hide contacts without any valid phone numbers.
         return YES;
+    }
+
+    if ([self isCurrentUserContact:contact]) {
+        // We never want to add ourselves to a group.
+        return YES;
+    }
+
+    return NO;
+}
+
+- (BOOL)isContactBlocked:(Contact *)contact
+{
+    if (contact.parsedPhoneNumbers.count < 1) {
+        // Hide contacts without any valid phone numbers.
+        return NO;
     }
 
     for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -139,6 +173,17 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     return NO;
 }
 
+- (NSArray<Contact *> *_Nonnull)filteredContacts
+{
+    NSMutableArray<Contact *> *result = [NSMutableArray new];
+    for (Contact *contact in self.contactsManager.signalContacts) {
+        if (![self isContactHidden:contact]) {
+            [result addObject:contact];
+        }
+    }
+    return [result copy];
+}
+
 - (BOOL)isContactInGroup:(Contact *)contact
 {
     for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -153,18 +198,6 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     }
 
     return NO;
-}
-
-- (NSArray<Contact *> *_Nonnull)filteredContacts
-{
-    NSMutableArray<Contact *> *result = [NSMutableArray new];
-    for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactBlockedOrHidden:contact] && ![self isCurrentUserContact:contact]
-            && ![self isContactInGroup:contact]) {
-            [result addObject:contact];
-        }
-    }
-    return [result copy];
 }
 
 - (void)configWithThread:(TSGroupThread *)gThread {
@@ -421,39 +454,111 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SearchCell"];
-
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"GroupSearchCell"];
+    ContactTableViewCell *cell
+        = (ContactTableViewCell *)[tableView dequeueReusableCellWithIdentifier:[ContactTableViewCell reuseIdentifier]];
+    if (!cell) {
+        cell = [ContactTableViewCell new];
     }
 
-    NSUInteger row   = (NSUInteger)indexPath.row;
-    Contact *contact = contacts[row];
-
-    cell.textLabel.attributedText = [self.contactsManager formattedFullNameForContact:contact font:cell.textLabel.font];
-
-    tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
-    if ([[tableView indexPathsForSelectedRows] containsObject:indexPath]) {
-        [self adjustSelected:cell];
-    }
+    [self updateContentsOfCell:cell indexPath:indexPath];
 
     return cell;
 }
 
-#pragma mark - Table View delegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    [self adjustSelected:cell];
+- (void)updateContentsOfCell:(ContactTableViewCell *)cell indexPath:(NSIndexPath *)indexPath
+{
+    OWSAssert(cell);
+    OWSAssert(indexPath);
+
+    Contact *contact = contacts[(NSUInteger)indexPath.row];
+    BOOL isBlocked = [self isContactBlocked:contact];
+    BOOL isInGroup = [self isContactInGroup:contact];
+    BOOL isSelected = [[self.tableView indexPathsForSelectedRows] containsObject:indexPath];
+    // More than one of these conditions might be true.
+    // In order of priority...
+    cell.accessoryMessage = nil;
+    cell.accessoryView = nil;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    if (isInGroup) {
+        OWSAssert(!isSelected);
+        // ...if the user is already in the group, indicate that.
+        cell.accessoryMessage = NSLocalizedString(
+            @"CONTACT_CELL_IS_IN_GROUP", @"An indicator that a contact is a member of the current group.");
+    } else if (isSelected) {
+        // ...if the user is being added to the group, indicate that.
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else if (isBlocked) {
+        // ...if the user is blocked, indicate that.
+        cell.accessoryMessage
+            = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+    }
+    [cell configureWithContact:contact contactsManager:self.contactsManager];
 }
 
-- (void)adjustSelected:(UITableViewCell *)cell {
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [ContactTableViewCell rowHeight];
+}
+
+#pragma mark - Table View delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    Contact *contact = contacts[(NSUInteger)indexPath.row];
+    BOOL isBlocked = [self isContactBlocked:contact];
+    BOOL isInGroup = [self isContactInGroup:contact];
+    if (isInGroup) {
+        // Deselect.
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+        NSString *displayName = [_contactsManager displayNameForContact:contact];
+        UIAlertController *controller = [UIAlertController
+            alertControllerWithTitle:
+                NSLocalizedString(@"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE",
+                    @"A title of the alert if user tries to add a user to a group who is already in the group.")
+                             message:[NSString
+                                         stringWithFormat:
+                                             NSLocalizedString(@"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT",
+                                                 @"A format for the message of the alert if user tries to "
+                                                 @"add a user to a group who is already in the group.  Embeds {{the "
+                                                 @"blocked user's name or phone number}}."),
+                                         displayName]
+                      preferredStyle:UIAlertControllerStyleAlert];
+        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:nil]];
+        [self presentViewController:controller animated:YES completion:nil];
+        return;
+    } else if (isBlocked) {
+        // Deselect.
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+        __weak NewGroupViewController *weakSelf = self;
+        [BlockListUIUtils showUnblockContactActionSheet:contact
+                                     fromViewController:self
+                                        blockingManager:_blockingManager
+                                        contactsManager:_contactsManager
+                                        completionBlock:^(BOOL isStillBlocked) {
+                                            if (!isStillBlocked) {
+                                                // Re-select.
+                                                [weakSelf.tableView selectRowAtIndexPath:indexPath
+                                                                                animated:YES
+                                                                          scrollPosition:UITableViewScrollPositionNone];
+
+                                                ContactTableViewCell *cell = (ContactTableViewCell *)[weakSelf.tableView
+                                                    cellForRowAtIndexPath:indexPath];
+                                                [weakSelf updateContentsOfCell:cell indexPath:indexPath];
+                                            }
+                                        }];
+        return;
+    }
+
+    ContactTableViewCell *cell = (ContactTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [self updateContentsOfCell:cell indexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType    = UITableViewCellAccessoryNone;
+    ContactTableViewCell *cell = (ContactTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [self updateContentsOfCell:cell indexPath:indexPath];
 }
 
 #pragma mark - Text Field Delegate
