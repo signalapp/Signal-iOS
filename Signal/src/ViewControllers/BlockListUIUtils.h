@@ -16,6 +16,8 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 
 - (instancetype)init NS_UNAVAILABLE;
 
+#pragma mark - Block
+
 + (void)showBlockContactActionSheet:(Contact *)contact
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
@@ -27,6 +29,14 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                         blockingManager:(OWSBlockingManager *)blockingManager
                         contactsManager:(OWSContactsManager *)contactsManager
                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
+
+#pragma mark - Unblock
+
++ (void)showUnblockContactActionSheet:(Contact *)contact
+                   fromViewController:(UIViewController *)fromViewController
+                      blockingManager:(OWSBlockingManager *)blockingManager
+                      contactsManager:(OWSContactsManager *)contactsManager
+                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController

@@ -622,7 +622,13 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
             dequeueReusableCellWithIdentifier:MessageComposeTableViewControllerCellContact];
 
         Contact *contact = [self contactForIndexPath:indexPath];
-        cell.isBlocked = [self isContactBlocked:contact];
+        BOOL isBlocked = [self isContactBlocked:contact];
+        if (isBlocked) {
+            cell.accessoryMessage
+                = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+        } else {
+            OWSAssert(cell.accessoryMessage == nil);
+        }
         [cell configureWithContact:contact contactsManager:self.contactsManager];
 
         return cell;
