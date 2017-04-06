@@ -149,7 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (_customCellBlock) {
         return _customCellBlock();
     }
-    OWSAssert(0);
     return nil;
 }
 
