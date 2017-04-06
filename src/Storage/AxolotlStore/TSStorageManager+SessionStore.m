@@ -39,6 +39,9 @@ void AssertIsOnSessionStoreQueue()
 
 - (NSArray *)subDevicesSessions:(NSString *)contactIdentifier
 {
+    // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
+    // If we are going to start using it I'd want to re-verify it works as intended.
+    OWSAssert(NO);
     AssertIsOnSessionStoreQueue();
 
     NSDictionary *dictionary =
