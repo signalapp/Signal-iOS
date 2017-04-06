@@ -96,12 +96,11 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
     }
 }
 
-- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (nullable NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
     switch (section) {
         case BlockListViewControllerSection_Add:
-            return NSLocalizedString(
-                                     @"SETTINGS_BLOCK_LIST_HEADER_TITLE", @"A header title for the block list table.");
+            return NSLocalizedString(@"SETTINGS_BLOCK_LIST_FOOTER_TITLE", @"A footer title for the block list table.");
         default:
             return nil;
     }
