@@ -693,28 +693,10 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
         Contact *contact = [self contactForIndexPath:indexPath];
         NSString *contactIdentifier = [[contact textSecureIdentifiers] firstObject];
-
-        __weak MessageComposeTableViewController *weakSelf = self;
-        void (^newContactConversationBlock)() = ^{
-            [weakSelf dismissViewControllerAnimated:YES
-                                         completion:^() {
-                                             [Environment messageIdentifier:contactIdentifier withCompose:YES];
-                                         }];
-        };
-
-        if ([self isContactBlocked:contact]) {
-            [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                             fromViewController:self
-                                                blockingManager:_blockingManager
-                                                contactsManager:_contactsManager
-                                                completionBlock:^(BOOL isBlocked) {
-                                                    if (!isBlocked) {
-                                                        newContactConversationBlock();
-                                                    }
-                                                }];
-        } else {
-            newContactConversationBlock();
-        }
+        [self dismissViewControllerAnimated:YES
+                                 completion:^() {
+                                     [Environment messageIdentifier:contactIdentifier withCompose:YES];
+                                 }];
     }
 }
 
