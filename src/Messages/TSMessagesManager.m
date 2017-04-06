@@ -234,24 +234,24 @@ NS_ASSUME_NONNULL_BEGIN
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = messageEnvelope.source;
         int deviceId = messageEnvelope.sourceDevice;
-
-        if (![storageManager containsSession:recipientId deviceId:deviceId]) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSErrorMessage *errorMessage =
-                    [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
-                [errorMessage saveWithTransaction:transaction];
-            }];
-            return;
-        }
-
-        // DEPRECATED - Remove after all clients have been upgraded.
-        NSData *encryptedData = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
-        if (!encryptedData) {
-            DDLogError(@"Skipping message envelope which had no encrypted data");
-            return;
-        }
-
         dispatch_async([OWSDispatch sessionStoreQueue], ^{
+            if (![storageManager containsSession:recipientId deviceId:deviceId]) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    TSErrorMessage *errorMessage =
+                        [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
+                    [errorMessage saveWithTransaction:transaction];
+                }];
+                return;
+            }
+
+            // DEPRECATED - Remove after all clients have been upgraded.
+            NSData *encryptedData
+                = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
+            if (!encryptedData) {
+                DDLogError(@"Skipping message envelope which had no encrypted data");
+                return;
+            }
+
             NSData *plaintextData;
 
             @try {
