@@ -75,13 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
         blockedLabel.textAlignment = NSTextAlignmentRight;
         blockedLabel.text
             = NSLocalizedString(@"CONTACT_BLOCKED_INDICATOR", @"An indicator that a contact has been blocked.");
-        blockedLabel.font = [UIFont ows_mediumFontWithSize:self.nameLabel.font.pointSize];
-        blockedLabel.textColor = [UIColor blackColor];
-        [self addSubview:blockedLabel];
+        blockedLabel.font = [UIFont ows_mediumFontWithSize:13.f];
+        blockedLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
         [blockedLabel sizeToFit];
-        [blockedLabel autoVCenterInSuperview];
-        [blockedLabel autoPinEdgeToSuperviewMargin:ALEdgeRight];
-        [blockedLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.textLabel];
 
         self.accessoryView = blockedLabel;
     }
