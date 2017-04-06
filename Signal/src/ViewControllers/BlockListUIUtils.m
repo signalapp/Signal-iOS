@@ -14,6 +14,8 @@ typedef void (^BlockAlertCompletionBlock)();
 
 @implementation BlockListUIUtils
 
+#pragma mark - Block
+
 + (void)showBlockContactActionSheet:(Contact *)contact
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
@@ -133,18 +135,63 @@ typedef void (^BlockAlertCompletionBlock)();
                completionBlock:completionBlock];
 }
 
+#pragma mark - Unblock
+
++ (void)showUnblockContactActionSheet:(Contact *)contact
+                   fromViewController:(UIViewController *)fromViewController
+                      blockingManager:(OWSBlockingManager *)blockingManager
+                      contactsManager:(OWSContactsManager *)contactsManager
+                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
+    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+        if (phoneNumber.toE164.length > 0) {
+            [phoneNumbers addObject:phoneNumber.toE164];
+        }
+    }
+    if (phoneNumbers.count < 1) {
+        DDLogError(@"%@ Contact has no phone numbers", self.tag);
+        OWSAssert(0);
+        [self showUnblockFailedAlert:fromViewController
+                     completionBlock:^{
+                         if (completionBlock) {
+                             completionBlock(NO);
+                         }
+                     }];
+        return;
+    }
+    NSString *displayName = [contactsManager displayNameForContact:contact];
+    [self showUnblockPhoneNumbersActionSheet:phoneNumbers
+                                 displayName:displayName
+                          fromViewController:fromViewController
+                             blockingManager:blockingManager
+                             completionBlock:completionBlock];
+}
+
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager
                           contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumber.length > 0);
+    NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
+    [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
+                                 displayName:displayName
+                          fromViewController:fromViewController
+                             blockingManager:blockingManager
+                             completionBlock:completionBlock];
+}
+
++ (void)showUnblockPhoneNumbersActionSheet:(NSArray<NSString *> *)phoneNumbers
+                               displayName:(NSString *)displayName
+                        fromViewController:(UIViewController *)fromViewController
+                           blockingManager:(OWSBlockingManager *)blockingManager
+                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    OWSAssert(phoneNumbers.count > 0);
+    OWSAssert(displayName.length > 0);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
-    OWSAssert(contactsManager);
-
-    NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
 
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
                                                      @"A format for the 'unblock user' action sheet title. Embeds "
@@ -158,15 +205,15 @@ typedef void (^BlockAlertCompletionBlock)();
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
-                    [BlockListUIUtils unblockPhoneNumber:phoneNumber
-                                             displayName:displayName
-                                      fromViewController:fromViewController
-                                         blockingManager:blockingManager
-                                         completionBlock:^{
-                                             if (completionBlock) {
-                                                 completionBlock(NO);
-                                             }
-                                         }];
+                    [BlockListUIUtils unblockPhoneNumbers:phoneNumbers
+                                              displayName:displayName
+                                       fromViewController:fromViewController
+                                          blockingManager:blockingManager
+                                          completionBlock:^{
+                                              if (completionBlock) {
+                                                  completionBlock(NO);
+                                              }
+                                          }];
                 }];
     [actionSheetController addAction:unblockAction];
 
@@ -182,18 +229,21 @@ typedef void (^BlockAlertCompletionBlock)();
     [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-+ (void)unblockPhoneNumber:(NSString *)phoneNumber
-               displayName:(NSString *)displayName
-        fromViewController:(UIViewController *)fromViewController
-           blockingManager:(OWSBlockingManager *)blockingManager
-           completionBlock:(BlockAlertCompletionBlock)completionBlock
++ (void)unblockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                displayName:(NSString *)displayName
+         fromViewController:(UIViewController *)fromViewController
+            blockingManager:(OWSBlockingManager *)blockingManager
+            completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumber.length > 0);
+    OWSAssert(phoneNumbers.count > 0);
     OWSAssert(displayName.length > 0);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
-    [blockingManager removeBlockedPhoneNumber:phoneNumber];
+    for (NSString *phoneNumber in phoneNumbers) {
+        OWSAssert(phoneNumber.length > 0);
+        [blockingManager removeBlockedPhoneNumber:phoneNumber];
+    }
 
     [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE",
                                    @"The title of the 'user unblocked' alert.")
@@ -231,6 +281,8 @@ typedef void (^BlockAlertCompletionBlock)();
             fromViewController:fromViewController
                completionBlock:completionBlock];
 }
+
+#pragma mark - UI
 
 + (void)showOkAlertWithTitle:(NSString *)title
                      message:(NSString *)message
