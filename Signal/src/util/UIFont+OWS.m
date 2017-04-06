@@ -3,7 +3,6 @@
 //
 
 #import "UIFont+OWS.h"
-#import "iOSVersions.h"
 
 @implementation UIFont (OWS)
 
