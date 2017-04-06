@@ -67,12 +67,29 @@ NS_ASSUME_NONNULL_BEGIN
                                                       }],
                                   ]]];
 
-    [contents addSection:[OWSTableSection sectionWithTitle:@"Print to Debug Log"
-                                                     items:@[ [OWSTableItem itemWithTitle:@"Print all sessions"
-                                                                              actionBlock:^{
-                                                                                  [[TSStorageManager sharedManager]
-                                                                                      printAllSessions];
-                                                                              }] ]]];
+    [contents
+        addSection:[OWSTableSection
+                       sectionWithTitle:@"Session State"
+                                  items:@[
+                                      [OWSTableItem itemWithTitle:@"Print all sessions"
+                                                      actionBlock:^{
+                                                          dispatch_async([OWSDispatch sessionStoreQueue], ^{
+                                                              [[TSStorageManager sharedManager] printAllSessions];
+                                                          });
+                                                      }],
+                                      [OWSTableItem itemWithTitle:@"Delete session (Contact Thread Only)"
+                                                      actionBlock:^{
+                                                          if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                              DDLogError(@"Trying to delete session for group thread.");
+                                                              OWSAssert(NO);
+                                                          }
+                                                          dispatch_async([OWSDispatch sessionStoreQueue], ^{
+                                                              [[TSStorageManager sharedManager]
+                                                                  deleteAllSessionsForContact:thread.contactIdentifier];
+                                                          });
+                                                      }],
+
+                                  ]]];
 
     DebugUITableViewController *viewController = [DebugUITableViewController new];
     viewController.contents = contents;
