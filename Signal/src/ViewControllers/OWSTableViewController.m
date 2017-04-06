@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
     return item;
 }
 
-- (UITableViewCell *)customCell
+- (nullable UITableViewCell *)customCell
 {
     if (_customCell) {
         return _customCell;
