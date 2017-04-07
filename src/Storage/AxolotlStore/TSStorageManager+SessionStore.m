@@ -93,7 +93,8 @@ void AssertIsOnSessionStoreQueue()
 - (void)deleteSessionForContact:(NSString *)contactIdentifier deviceId:(int)deviceId
 {
     AssertIsOnSessionStoreQueue();
-
+    DDLogInfo(
+        @"[TSStorageManager (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
     NSMutableDictionary *dictionary =
         [[self dictionaryForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection] mutableCopy];
 
@@ -109,6 +110,7 @@ void AssertIsOnSessionStoreQueue()
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
 {
     AssertIsOnSessionStoreQueue();
+    DDLogInfo(@"[TSStorageManager (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
     [self removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 }
