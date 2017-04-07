@@ -109,9 +109,7 @@ typedef enum : NSUInteger {
 }
 
 - (BOOL)pasteBoardHasPossibleAttachment {
-    NSSet *pasteboardUTISet = [NSSet setWithArray:[UIPasteboard generalPasteboard].pasteboardTypes];
-    if ([UIPasteboard generalPasteboard].numberOfItems == 1 &&
-        [[SignalAttachment validInputUTISet] intersectsSet:pasteboardUTISet]) {
+    if ([SignalAttachment pasteboardHasPossibleAttachment]) {
         // We don't want to load/convert images more than once so we
         // only do a cursory validation pass at this time.
         return YES;
