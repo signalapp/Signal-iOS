@@ -77,17 +77,34 @@ NS_ASSUME_NONNULL_BEGIN
                                                               [[TSStorageManager sharedManager] printAllSessions];
                                                           });
                                                       }],
-                                      [OWSTableItem itemWithTitle:@"Delete session (Contact Thread Only)"
-                                                      actionBlock:^{
-                                                          if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                              DDLogError(@"Trying to delete session for group thread.");
-                                                              OWSAssert(NO);
-                                                          }
-                                                          dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                                              [[TSStorageManager sharedManager]
-                                                                  deleteAllSessionsForContact:thread.contactIdentifier];
-                                                          });
-                                                      }],
+                                      [OWSTableItem
+                                          itemWithTitle:@"Delete session (Contact Thread Only)"
+                                            actionBlock:^{
+                                                if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                    DDLogError(@"Refusing to delete session for group thread.");
+                                                    OWSAssert(NO);
+                                                    return;
+                                                }
+                                                TSContactThread *contactThread = (TSContactThread *)thread;
+                                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
+                                                    [[TSStorageManager sharedManager]
+                                                        deleteAllSessionsForContact:contactThread.contactIdentifier];
+                                                });
+                                            }],
+                                      [OWSTableItem
+                                          itemWithTitle:@"Send session reset (Contact Thread Only)"
+                                            actionBlock:^{
+                                                if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                    DDLogError(@"Refusing to reset session for group thread.");
+                                                    OWSAssert(NO);
+                                                    return;
+                                                }
+                                                TSContactThread *contactThread = (TSContactThread *)thread;
+                                                [OWSSessionResetJob
+                                                    runWithContactThread:contactThread
+                                                           messageSender:[Environment getCurrent].messageSender
+                                                          storageManager:[TSStorageManager sharedManager]];
+                                            }]
 
                                   ]]];
 
