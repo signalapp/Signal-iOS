@@ -73,6 +73,26 @@ typedef void (^BlockAlertCompletionBlock)();
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
+    NSString *localContactId = [TSAccountManager localNumber];
+    OWSAssert(localContactId.length > 0);
+    for (NSString *phoneNumber in phoneNumbers) {
+        OWSAssert(phoneNumber.length > 0);
+
+        if ([localContactId isEqualToString:phoneNumber]) {
+            [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
+                                           @"The title of the 'You can't block yourself' alert.")
+                               message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
+                                           @"The title of the 'You can't block yourself' alert.")
+                    fromViewController:fromViewController
+                       completionBlock:^{
+                           if (completionBlock) {
+                               completionBlock(NO);
+                           }
+                       }];
+            return;
+        }
+    }
+
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_TITLE_FORMAT",
                                                      @"A format for the 'block user' action sheet title. Embeds {{the "
                                                      @"blocked user's name or phone number}}."),
@@ -120,25 +140,8 @@ typedef void (^BlockAlertCompletionBlock)();
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
-    NSString *localContactId = [TSAccountManager localNumber];
-    OWSAssert(localContactId.length > 0);
     for (NSString *phoneNumber in phoneNumbers) {
         OWSAssert(phoneNumber.length > 0);
-
-        if ([localContactId isEqualToString:phoneNumber]) {
-            [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
-                                           @"The title of the 'You can't block yourself' alert.")
-                               message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
-                                           @"The title of the 'You can't block yourself' alert.")
-                    fromViewController:fromViewController
-                       completionBlock:^{
-                           if (completionBlock) {
-                               completionBlock(NO);
-                           }
-                       }];
-            return;
-        }
-
         [blockingManager addBlockedPhoneNumber:phoneNumber];
     }
 
