@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/31/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
@@ -37,19 +38,14 @@ class SessionResetJob: NSObject {
             message.save()
         }, failure: {error in
             Logger.error("\(self.TAG) failed to send EndSesionMessage with error: \(error.localizedDescription)")
-        });
+        })
     }
 
-    class func run(corruptedMessage: TSErrorMessage, contactThread: TSContactThread, messageSender: MessageSender, storageManager: TSStorageManager) {
+    class func run(contactThread: TSContactThread, messageSender: MessageSender, storageManager: TSStorageManager) {
         let job = self.init(recipientId: contactThread.contactIdentifier(),
                             thread: contactThread,
                             messageSender: messageSender,
                             storageManager: storageManager)
-        job.run()
-    }
-
-    class func run(recipientId: String, thread: TSThread, messageSender: MessageSender, storageManager: TSStorageManager) {
-        let job = self.init(recipientId: recipientId, thread: thread, messageSender: messageSender, storageManager: storageManager)
         job.run()
     }
 }
