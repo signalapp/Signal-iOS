@@ -46,9 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureProgrammatically
 {
+    const CGFloat kAvatarSize = 40.f;
     _avatarView = [UIImageView new];
     _avatarView.contentMode = UIViewContentModeScaleToFill;
     _avatarView.image = [UIImage imageNamed:@"empty-group-avatar"];
+    // applyRoundedBorderToImageView requires the avatar to have
+    // the correct size.
+    _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
@@ -59,8 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:8.f];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:40.f];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:40.f];
+    [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
