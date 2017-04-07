@@ -436,6 +436,8 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self updateCountryWithName:countryName
                     callingCode:callingCode
                     countryCode:countryCode];
+
+    [self textField:_phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
 }
 
 #pragma mark - UITextFieldDelegate
