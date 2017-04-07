@@ -471,6 +471,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     OWSAssert(indexPath);
 
     Contact *contact = contacts[(NSUInteger)indexPath.row];
+    OWSAssert(contact != nil);
+
     BOOL isBlocked = [self isContactBlocked:contact];
     BOOL isInGroup = [self isContactInGroup:contact];
     BOOL isSelected = [[self.tableView indexPathsForSelectedRows] containsObject:indexPath];
