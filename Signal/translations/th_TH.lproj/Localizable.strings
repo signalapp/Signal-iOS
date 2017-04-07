@@ -68,7 +68,7 @@
 "ATTACHMENT_DOWNLOADING" = "กำลังดาวน์โหลดไฟล์แนบ";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งไฟล์แนบ";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดไฟล์แนบภาพ";
@@ -77,7 +77,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถแยกวิเคราะห์ไฟล์แนบภาพ";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ไฟล์แนบใหญ่เกินไป";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "ไฟล์แนบมีเนื้อหาที่ไม่ถูกต้อง";
@@ -110,7 +110,7 @@
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกปิดกั้น %@?";
 
 /* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is already blocked.";
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ถูกปิดกั้นอยู่แล้ว";
 
 /* A title of the alert if user tries to block a user who is already blocked. */
 "BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
@@ -119,10 +119,10 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "ไม่สามารถปิดกั้นผู้ใช้";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
@@ -134,10 +134,10 @@
 "BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "รายชื่อ";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "ไม่สามารถเลิกปิดกั้นผู้ใช้";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
@@ -194,7 +194,10 @@
 "CONFIRMATION_TITLE" = "ยืนยัน";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_BLOCKED_INDICATOR" = "(Blocked)";
+"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "หมายเลขที่ยังไม่ลงทะเบียน";
@@ -209,7 +212,7 @@
 "CONVERSATION_SETTINGS" = "ตั้งค่าการสนทนา";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ปิดกั้นผู้ใช้นี้";
 
 /* The message of the 'text message too large' alert. */
 "CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "ข้อความนี้ยาวเกินไปที่จะส่ง";
@@ -255,6 +258,12 @@
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
+
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "คัดลอก";
@@ -314,7 +323,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Error mesage indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to send message because you have blocked the user.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือใช้ข้อมูลมือถือ";
@@ -536,13 +545,13 @@
 "MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด...";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้ปิดกั้นผู้ใช้นี้";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "คุณได้ปิดกั้น 1 สมาชิกของกลุ่มนี้";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "คุณได้ปิดกั้น %d สมาชิกของกลุ่มนี้";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
@@ -848,13 +857,13 @@
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "ปิดกั้นรายชื่อ";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "ปิดกั้นหมายเลขโทรศัพท์";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ปิดกั้น";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกการดีบั๊ก";
@@ -866,13 +875,13 @@
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "เพิ่มหมายเลขโทรศัพท์";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
 
-/* A header title for the block list table. */
-"SETTINGS_BLOCK_LIST_HEADER_TITLE" = "Blocked Phone Numbers";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blocked users will not be able to call you or send you messages.";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "คุณไม่มีรายชื่อบน Signal";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
@@ -944,7 +953,7 @@
 "SETTINGS_SCREEN_SECURITY" = "เปิดใช้งานความปลอดภัยหน้าจอ";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "ป้องกัน Signal จากการแสดงตัวอย่างในหน้าสลับแอป";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
@@ -1064,7 +1073,7 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "โทรหาฉันแทน";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "ส่งรหัสใหม่โดย SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "ส่งรหัสตรวจสอบ";
