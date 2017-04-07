@@ -972,6 +972,10 @@ typedef enum : NSUInteger {
 
 - (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
 {
+    // Ensure keyboard isn't hiding the "safety numbers changed" interaction when we
+    // return from FingerprintViewController.
+    [self dismissKeyBoard];
+
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
     OWSFingerprint *fingerprint =
