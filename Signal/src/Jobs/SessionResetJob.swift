@@ -26,6 +26,7 @@ class SessionResetJob: NSObject {
         Logger.info("\(TAG) Local user reset session.")
 
         OWSDispatch.sessionStoreQueue().async {
+            Logger.info("\(self.TAG) deleting sessions for recipient: \(self.recipientId)")
             self.storageManager.deleteAllSessions(forContact: self.recipientId)
 
             DispatchQueue.main.async {
@@ -33,15 +34,12 @@ class SessionResetJob: NSObject {
 
                 self.messageSender.send(endSessionMessage, success: {
                     Logger.info("\(self.TAG) successfully sent EndSession<essage.")
-
-                    Logger.info("\(self.TAG) deleting sessions for recipient: \(self.recipientId)")
-
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
                                                 messageType: TSInfoMessageType.typeSessionDidEnd)
                     message.save()
                 }, failure: {error in
-                    Logger.error("\(self.TAG) failed to send EndSesionMessage with error: \(error.localizedDescription)")
+                    Logger.error("\(self.TAG) failed to send EndSessionMessage with error: \(error.localizedDescription)")
                 })
             }
         }
