@@ -223,13 +223,7 @@ static NSString *const kCodeSentSegue = @"codeSent";
                     countryCode:vc.countryCodeSelected];
 
     // Reformat phone number
-    NSString *digits = _phoneNumberTextField.text.digitsOnly;
-    NSString *reformattedNumber =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:digits
-                                                     withSpecifiedCountryCodeString:_countryCodeButton.titleLabel.text];
-    _phoneNumberTextField.text = reformattedNumber;
-    UITextPosition *pos        = _phoneNumberTextField.endOfDocument;
-    [_phoneNumberTextField setSelectedTextRange:[_phoneNumberTextField textRangeFromPosition:pos toPosition:pos]];
+    [self textField:_phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
 }
 
 #pragma mark iPhone 5s or shorter
