@@ -245,6 +245,19 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
+    public class func pasteboardHasPossibleAttachment() -> Bool {
+        guard UIPasteboard.general.numberOfItems >= 1 else {
+            return false
+        }
+        // If pasteboard contains multiple items, use only the first.
+        let itemSet = IndexSet(integer:0)
+        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet:itemSet) else {
+            return false
+        }
+        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        return pasteboardUTISet.intersection(validInputUTISet).count > 0
+    }
+
     // Returns an attachment from the pasteboard, or nil if no attachment
     // can be found.
     //
