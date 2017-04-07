@@ -2002,10 +2002,10 @@ typedef enum : NSUInteger {
                                                                             return;
                                                                     }
                                                                     TSContactThread *contactThread = (TSContactThread *)self.thread;
-                                                                    [OWSSessionResetJob runWithCorruptedMessage:message
-                                                                                                  contactThread:contactThread
-                                                                                                  messageSender:self.messageSender
-                                                                                                 storageManager:self.storageManager];
+                                                                    [OWSSessionResetJob
+                                                                        runWithContactThread:contactThread
+                                                                               messageSender:self.messageSender
+                                                                              storageManager:self.storageManager];
                                                                }];
     [alertController addAction:resetSessionAction];
     
