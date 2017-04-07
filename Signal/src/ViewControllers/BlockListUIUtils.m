@@ -7,6 +7,7 @@
 #import "PhoneNumber.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -119,8 +120,25 @@ typedef void (^BlockAlertCompletionBlock)();
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
+    NSString *localContactId = [TSAccountManager localNumber];
+    OWSAssert(localContactId.length > 0);
     for (NSString *phoneNumber in phoneNumbers) {
         OWSAssert(phoneNumber.length > 0);
+
+        if ([localContactId isEqualToString:phoneNumber]) {
+            [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
+                                           @"The title of the 'You can't block yourself' alert.")
+                               message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
+                                           @"The title of the 'You can't block yourself' alert.")
+                    fromViewController:fromViewController
+                       completionBlock:^{
+                           if (completionBlock) {
+                               completionBlock(NO);
+                           }
+                       }];
+            return;
+        }
+
         [blockingManager addBlockedPhoneNumber:phoneNumber];
     }
 
