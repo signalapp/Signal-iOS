@@ -82,7 +82,7 @@ typedef void (^BlockAlertCompletionBlock)();
             [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
                                            @"The title of the 'You can't block yourself' alert.")
                                message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
-                                           @"The title of the 'You can't block yourself' alert.")
+                                           @"The message of the 'You can't block yourself' alert.")
                     fromViewController:fromViewController
                        completionBlock:^{
                            if (completionBlock) {
