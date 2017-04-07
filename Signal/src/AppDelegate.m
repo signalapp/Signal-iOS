@@ -191,7 +191,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [Environment setCurrent:[Release releaseEnvironment]];
 
     // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
-    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionCipher]];
+    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
 
     TextSecureKitEnv *sharedEnv =
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
