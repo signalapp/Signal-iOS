@@ -42,10 +42,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(major, minor)                                                          \
-    ([[NSProcessInfo processInfo]                                                                                      \
-        isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){                                                    \
-                                            .majorVersion = major, .minorVersion = minor, .patchVersion = 0 }])
+void AssertIsOnSendingQueue()
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+        dispatch_assert_queue([OWSDispatch sendingQueue]);
+    } // else, skip assert as it's a development convenience.
+}
 
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
@@ -729,6 +731,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failure:(RetryableFailureHandler)failureHandler
 {
     DDLogDebug(@"%@ sending message to service: %@", self.tag, message.debugDescription);
+    AssertIsOnSendingQueue();
 
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
         OWSAnalyticsError(@"Message send failed due to prekey update failures");
@@ -862,8 +865,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         return failureHandler(error, YES);
                     }
 
-                    [self handleMismatchedDevices:serializedResponse recipient:recipient];
-                    retrySend();
+                    [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
                     break;
                 }
                 case 410: {
@@ -876,8 +878,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         return failureHandler(error, YES);
                     }
 
-                    [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId];
-                    retrySend();
+                    [self handleStaleDevicesWithResponse:responseData
+                                             recipientId:recipient.uniqueId
+                                              completion:retrySend];
                     break;
                 }
                 default:
@@ -887,24 +890,29 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }];
 }
 
-- (void)handleMismatchedDevices:(NSDictionary *)dictionary recipient:(SignalRecipient *)recipient
+- (void)handleMismatchedDevices:(NSDictionary *)dictionary
+                      recipient:(SignalRecipient *)recipient
+                     completion:(void (^)())completionHandler
 {
     NSArray *extraDevices = [dictionary objectForKey:@"extraDevices"];
     NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
 
-    if (extraDevices && extraDevices.count > 0) {
-        for (NSNumber *extraDeviceId in extraDevices) {
-            [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        if (extraDevices && extraDevices.count > 0) {
+            for (NSNumber *extraDeviceId in extraDevices) {
+                [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
+            }
+
+            [recipient removeDevices:[NSSet setWithArray:extraDevices]];
         }
 
-        [recipient removeDevices:[NSSet setWithArray:extraDevices]];
-    }
+        if (missingDevices && missingDevices.count > 0) {
+            [recipient addDevices:[NSSet setWithArray:missingDevices]];
+        }
 
-    if (missingDevices && missingDevices.count > 0) {
-        [recipient addDevices:[NSSet setWithArray:missingDevices]];
-    }
-
-    [recipient save];
+        [recipient save];
+        completionHandler();
+    });
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -998,7 +1006,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             __block NSException *encryptionException;
             // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
             // operations.
-            dispatch_sync([OWSDispatch sessionCipher], ^{
+            dispatch_sync([OWSDispatch sessionStoreQueue], ^{
                 @try {
                     messageDict = [self encryptedMessageWithPlaintext:plainText
                                                           toRecipient:recipient.uniqueId
@@ -1178,7 +1186,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)handleStaleDevicesWithResponse:(NSData *)responseData recipientId:(NSString *)identifier
+- (void)handleStaleDevicesWithResponse:(NSData *)responseData
+                           recipientId:(NSString *)identifier
+                            completion:(void (^)())completionHandler
 {
     dispatch_async([OWSDispatch sendingQueue], ^{
         NSDictionary *serialization = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil];
@@ -1188,10 +1198,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        for (NSUInteger i = 0; i < [devices count]; i++) {
-            int deviceNumber = [devices[i] intValue];
-            [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
-        }
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
+            for (NSUInteger i = 0; i < [devices count]; i++) {
+                int deviceNumber = [devices[i] intValue];
+                [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
+            }
+            completionHandler();
+        });
     });
 }
 

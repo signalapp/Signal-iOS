@@ -234,24 +234,24 @@ NS_ASSUME_NONNULL_BEGIN
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = messageEnvelope.source;
         int deviceId = messageEnvelope.sourceDevice;
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
+            if (![storageManager containsSession:recipientId deviceId:deviceId]) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    TSErrorMessage *errorMessage =
+                        [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
+                    [errorMessage saveWithTransaction:transaction];
+                }];
+                return;
+            }
 
-        if (![storageManager containsSession:recipientId deviceId:deviceId]) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSErrorMessage *errorMessage =
-                    [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
-                [errorMessage saveWithTransaction:transaction];
-            }];
-            return;
-        }
+            // DEPRECATED - Remove after all clients have been upgraded.
+            NSData *encryptedData
+                = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
+            if (!encryptedData) {
+                DDLogError(@"Skipping message envelope which had no encrypted data");
+                return;
+            }
 
-        // DEPRECATED - Remove after all clients have been upgraded.
-        NSData *encryptedData = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
-        if (!encryptedData) {
-            DDLogError(@"Skipping message envelope which had no encrypted data");
-            return;
-        }
-
-        dispatch_async([OWSDispatch sessionCipher], ^{
             NSData *plaintextData;
 
             @try {
@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        dispatch_async([OWSDispatch sessionCipher], ^{
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
             NSData *plaintextData;
             @try {
                 // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
@@ -581,7 +581,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }];
 
-    [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
+    });
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope

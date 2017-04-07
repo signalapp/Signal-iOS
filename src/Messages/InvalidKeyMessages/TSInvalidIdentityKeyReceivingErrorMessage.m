@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 31/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "OWSFingerprint.h"
@@ -78,20 +79,25 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
+    // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
 
-    // Decrypt this and any old messages for the newly accepted key
-    NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
-        [self.thread receivedMessagesForInvalidKey:newKey];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Decrypt this and any old messages for the newly accepted key
+            NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
+                [self.thread receivedMessagesForInvalidKey:newKey];
 
-    for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [[TSMessagesManager sharedManager] handleReceivedEnvelope:errorMessage.envelope];
+            for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
+                [[TSMessagesManager sharedManager] handleReceivedEnvelope:errorMessage.envelope];
 
-        // Here we remove the existing error message because handleReceivedEnvelope will either
-        //  1.) succeed and create a new successful message in the thread or...
-        //  2.) fail and create a new identical error message in the thread.
-        [errorMessage remove];
-    }
+                // Here we remove the existing error message because handleReceivedEnvelope will either
+                //  1.) succeed and create a new successful message in the thread or...
+                //  2.) fail and create a new identical error message in the thread.
+                [errorMessage remove];
+            }
+        });
+    });
 }
 
 - (NSData *)newIdentityKey
