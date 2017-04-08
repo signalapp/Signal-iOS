@@ -17,6 +17,7 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -30,21 +31,24 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 @interface SignalsViewController ()
 
-@property (nonatomic, strong) YapDatabaseConnection *editingDbConnection;
-@property (nonatomic, strong) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, strong) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic) YapDatabaseConnection *editingDbConnection;
+@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) CellState viewingThreadsIn;
 @property (nonatomic) long inboxCount;
-@property (nonatomic, retain) UISegmentedControl *segmentedControl;
-@property (nonatomic, strong) id previewingContext;
+@property (nonatomic) UISegmentedControl *segmentedControl;
+@property (nonatomic) id previewingContext;
 
 // Dependencies
 
-@property (nonatomic, readonly, strong) AccountManager *accountManager;
+@property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ExperienceUpgradeFinder *experienceUpgradeFinder;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
-@property (nonatomic, readonly, strong) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+
+@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 
 @end
 
@@ -80,7 +84,29 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     _contactsManager = [Environment getCurrent].contactsManager;
     _messagesManager = [TSMessagesManager sharedManager];
     _messageSender = [Environment getCurrent].messageSender;
+    _blockingManager = [OWSBlockingManager sharedManager];
+    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+
     _experienceUpgradeFinder = [ExperienceUpgradeFinder new];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockedPhoneNumbersDidChange:)
+                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)blockedPhoneNumbersDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+
+        [self.tableView reloadData];
+    });
 }
 
 - (void)awakeFromNib
@@ -350,9 +376,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         cell = [InboxTableViewCell inboxTableViewCell];
     }
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [cell configureWithThread:thread contactsManager:self.contactsManager];
-    });
+    [cell configureWithThread:thread contactsManager:self.contactsManager blockedPhoneNumberSet:_blockedPhoneNumberSet];
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);

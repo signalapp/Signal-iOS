@@ -6,13 +6,14 @@
 #import "Environment.h"
 #import "OWSAvatarBuilder.h"
 #import "PropertyListPreferences.h"
+#import "Signal-Swift.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "Util.h"
-#import "Signal-Swift.h"
 #import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
 #import <JSQMessagesViewController/UIImage+JSQMessages.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,41 +50,56 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithThread:(TSThread *)thread
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
-    if (!_threadId || ![_threadId isEqualToString:thread.uniqueId]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.hidden = YES;
-        });
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(thread);
+    OWSAssert(contactsManager);
+    OWSAssert(blockedPhoneNumberSet);
+
+    BOOL isBlocked = NO;
+    if (!thread.isGroupThread) {
+        NSString *contactIdentifier = thread.contactIdentifier;
+        isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
 
     NSString *name = thread.name;
     if (name.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
         name = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
-    UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
     self.threadId = thread.uniqueId;
-    NSString *snippetLabel = [[DisplayableTextFilter new] displayableText:thread.lastMessageLabel];
+    NSString *snippetLabel = (isBlocked ? NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
+                                              @"A label for conversations with blocked users.")
+                                        : [[DisplayableTextFilter new] displayableText:thread.lastMessageLabel]);
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
-    NSUInteger unreadCount             = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
+    NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.nameLabel.text = name;
-        self.snippetLabel.text = snippetLabel;
-        self.timeLabel.attributedText = attributedDate;
-        self.contactPictureView.image = avatar;
-        [UIUtil applyRoundedBorderToImageView:_contactPictureView];
+    self.nameLabel.text = name;
+    self.snippetLabel.text = snippetLabel;
+    self.timeLabel.attributedText = attributedDate;
+    self.contactPictureView.image = nil;
+    [UIUtil applyRoundedBorderToImageView:_contactPictureView];
 
-        self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
 
-        if (thread.hasUnreadMessages) {
-            [self updateCellForUnreadMessage];
-        } else {
-            [self updateCellForReadMessage];
-        }
-        [self setUnreadMsgCount:unreadCount];
-        self.hidden = NO;
+    if (thread.hasUnreadMessages) {
+        [self updateCellForUnreadMessage];
+    } else {
+        [self updateCellForReadMessage];
+    }
+    [self setUnreadMsgCount:unreadCount];
+
+    NSString *threadIdCopy = thread.uniqueId;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([_threadId isEqualToString:threadIdCopy]) {
+                self.contactPictureView.image = avatar;
+            }
+        });
     });
 }
 

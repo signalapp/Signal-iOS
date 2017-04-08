@@ -1,5 +1,6 @@
-//  Created by Dylan Bourgeois on 27/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <UIKit/UIKit.h>
 #import "TSThread.h"
@@ -12,17 +13,20 @@ typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
 
 @interface InboxTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *nameLabel;
-@property (nonatomic, strong) IBOutlet UILabel *snippetLabel;
-@property (nonatomic, strong) IBOutlet UIImageView *contactPictureView;
-@property (nonatomic, strong) IBOutlet UILabel *timeLabel;
-@property (nonatomic, strong) IBOutlet UIView *contentContainerView;
-@property (nonatomic, retain) IBOutlet UIView *messageCounter;
-@property (nonatomic, retain) NSString *threadId;
+@property (nonatomic) IBOutlet UILabel *nameLabel;
+@property (nonatomic) IBOutlet UILabel *snippetLabel;
+@property (nonatomic) IBOutlet UIImageView *contactPictureView;
+@property (nonatomic) IBOutlet UILabel *timeLabel;
+@property (nonatomic) IBOutlet UIView *contentContainerView;
+@property (nonatomic) IBOutlet UIView *messageCounter;
+@property (nonatomic) NSString *threadId;
 
 + (instancetype)inboxTableViewCell;
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
+- (void)configureWithThread:(TSThread *)thread
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
+
 - (void)animateDisappear;
 
 @end
