@@ -358,7 +358,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
-    [self ensureSocketAliveForSeconds:kBackgroundKeepSocketAliveDurationSeconds];
+    [self requestSocketAliveForAtLeastSeconds:kBackgroundKeepSocketAliveDurationSeconds];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
@@ -525,7 +525,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     }
 }
 
-- (void)ensureSocketAliveForSeconds:(CGFloat)durationSeconds
+- (void)requestSocketAliveForAtLeastSeconds:(CGFloat)durationSeconds
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(durationSeconds > 0.f);
@@ -590,7 +590,12 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 + (void)requestSocketOpen
 {
     DispatchMainThreadSafe(^{
-        [[self sharedManager] ensureSocketAliveForSeconds:kBackgroundOpenSocketDurationSeconds];
+        // If the app is active and the user is registered, this will
+        // simply open the websocket.
+        //
+        // If the app is inactive, it will open the websocket for a
+        // period of time.
+        [[self sharedManager] requestSocketAliveForAtLeastSeconds:kBackgroundOpenSocketDurationSeconds];
     });
 }
 
@@ -673,7 +678,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     OWSAssert([NSThread isMainThread]);
 
     self.appIsActive = NO;
-    // TODO: It might be nice to use `ensureSocketAliveForSeconds:` to
+    // TODO: It might be nice to use `requestSocketAliveForAtLeastSeconds:` to
     //       keep the socket open for a few seconds after the app is
     //       inactivated.
     [self applyDesiredSocketState];
