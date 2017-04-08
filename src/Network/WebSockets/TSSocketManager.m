@@ -463,12 +463,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 - (void)setFetchingTaskIdentifier:(UIBackgroundTaskIdentifier)fetchingTaskIdentifier
 {
-    DDLogWarn(@"%s %lu (%d) -> %lu (%d)",
-        __PRETTY_FUNCTION__,
-        (unsigned long)_fetchingTaskIdentifier,
-        _fetchingTaskIdentifier != UIBackgroundTaskInvalid,
-        (unsigned long)fetchingTaskIdentifier,
-        fetchingTaskIdentifier != UIBackgroundTaskInvalid);
     _fetchingTaskIdentifier = fetchingTaskIdentifier;
 }
 
@@ -518,9 +512,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         return NO;
     }
 
-    DDLogInfo(
-        @"%s shouldSocketBeOpen?: %f", __PRETTY_FUNCTION__, [self.backgroundKeepAliveUntilDate timeIntervalSinceNow]);
-
     if (self.appIsActive) {
         // If app is active, keep web socket alive.
         return YES;
@@ -552,11 +543,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         // Set up state used to keep socket alive in background.
         self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
 
-        DDLogInfo(@"%s creating socket background expiration[%f]: %f",
-            __PRETTY_FUNCTION__,
-            durationSeconds,
-            [self.backgroundKeepAliveUntilDate timeIntervalSinceNow]);
-
         // To be defensive, clean up any existing backgroundKeepAliveTimer.
         [self.backgroundKeepAliveTimer invalidate];
         // Start a new timer that will fire every second while the socket is open in the background.
@@ -573,7 +559,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             OWSAssert([NSThread isMainThread]);
 
-            DDLogWarn(@"%s background task expired", __PRETTY_FUNCTION__);
+            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
 
             [self clearBackgroundState];
             [self applyDesiredSocketState];
@@ -585,18 +571,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         OWSAssert([self.backgroundKeepAliveTimer isValid]);
         OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
 
-        DDLogInfo(@"%s postponing socket background expiration[%f]?: %f -> %f",
-            __PRETTY_FUNCTION__,
-            durationSeconds,
-            [self.backgroundKeepAliveUntilDate timeIntervalSinceNow],
-            [[NSDate dateWithTimeIntervalSinceNow:durationSeconds] timeIntervalSinceNow]);
         if ([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
-            DDLogInfo(@"%s postponing socket background expiration[%f]: %f -> %f",
-                __PRETTY_FUNCTION__,
-                durationSeconds,
-                [self.backgroundKeepAliveUntilDate timeIntervalSinceNow],
-                [[NSDate dateWithTimeIntervalSinceNow:durationSeconds] timeIntervalSinceNow]);
-
             // Update state used to keep socket alive in background.
             self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
         }
@@ -614,14 +589,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 + (void)requestSocketOpen
 {
-    DDLogWarn(@"%s, ", __PRETTY_FUNCTION__);
-    DDLogWarn(@"%s active: %d, inactive: %d, background: %d, ",
-        __PRETTY_FUNCTION__,
-        [UIApplication sharedApplication].applicationState == UIApplicationStateActive,
-        [UIApplication sharedApplication].applicationState == UIApplicationStateInactive,
-        [UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
-    [DDLog flushLog];
-
     DispatchMainThreadSafe(^{
         [[self sharedManager] ensureSocketAliveForSeconds:kBackgroundOpenSocketDurationSeconds];
     });
@@ -651,8 +618,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)clearBackgroundState
 {
     OWSAssert([NSThread isMainThread]);
-
-    DDLogWarn(@"%s", __PRETTY_FUNCTION__);
 
     self.backgroundKeepAliveUntilDate = nil;
     [self.backgroundKeepAliveTimer invalidate];
@@ -698,7 +663,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
-    DDLogWarn(@"%s", __PRETTY_FUNCTION__);
 
     self.appIsActive = YES;
     [self applyDesiredSocketState];
@@ -707,7 +671,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
-    DDLogWarn(@"%s", __PRETTY_FUNCTION__);
 
     self.appIsActive = NO;
     // TODO: It might be nice to use `ensureSocketAliveForSeconds:` to
@@ -719,7 +682,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)registrationStateDidChange:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
-    DDLogWarn(@"%s", __PRETTY_FUNCTION__);
 
     [self applyDesiredSocketState];
 }

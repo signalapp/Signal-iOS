@@ -22,6 +22,8 @@ extern NSString *const SocketConnectingNotification;
 // open or connecting _and_ keep it open for at least N seconds.
 // If the app is in the background and the socket is already open or connecting this
 // might prolong how long we keep the socket open.
+//
+// This method can be called from any thread.
 + (void)requestSocketOpen;
 
 + (void)sendNotification;
