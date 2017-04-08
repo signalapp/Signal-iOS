@@ -20,11 +20,14 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 @property TOCFuture *futureAddressBook;
 @property ObservableValueController *observableContactsController;
 @property TOCCancelTokenSource *life;
-@property(atomic, copy) NSDictionary *latestContactsById;
+@property (atomic) NSDictionary *latestContactsById;
+@property (atomic) NSDictionary<NSString *, Contact *> *contactMap;
 
 @end
 
 @implementation OWSContactsManager
+
+@synthesize latestContactsById = _latestContactsById;
 
 - (void)dealloc {
     [_life cancel];
@@ -41,7 +44,44 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
     _latestContactsById = @{};
     _avatarCache = [NSCache new];
 
+    OWSSingletonAssert();
+
     return self;
+}
+
+- (NSDictionary *)latestContactsById
+{
+    @synchronized(self)
+    {
+        return _latestContactsById;
+    }
+}
+
+- (void)setLatestContactsById:(NSDictionary *)latestContactsById
+{
+    @synchronized(self)
+    {
+        _latestContactsById = [latestContactsById copy];
+
+        NSMutableDictionary<NSString *, Contact *> *contactMap = [NSMutableDictionary new];
+        for (Contact *contact in _latestContactsById.allValues) {
+            // The allContacts method seems to protect against non-contact instances
+            // in latestContactsById, so I've done the same here.  I'm not sure if
+            // this is a real issue.
+            OWSAssert([contact isKindOfClass:[Contact class]]);
+            if (![contact isKindOfClass:[Contact class]]) {
+                continue;
+            }
+
+            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+                NSString *phoneNumberE164 = phoneNumber.toE164;
+                if (phoneNumberE164.length > 0) {
+                    contactMap[phoneNumberE164] = contact;
+                }
+            }
+        }
+        self.contactMap = contactMap;
+    }
 }
 
 - (void)doAfterEnvironmentInitSetup {
@@ -377,22 +417,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return allContacts;
 }
 
-
-+ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString {
-    NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
-    NSArray *queryStrings         = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
-    NSArray *nameStrings          = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
-
-    return [queryStrings all:^int(NSString *query) {
-      if (query.length == 0)
-          return YES;
-      return [nameStrings any:^int(NSString *nameWord) {
-        NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
-        return [nameWord rangeOfString:query options:searchOpts].location != NSNotFound;
-      }];
-    }];
-}
-
 #pragma mark - Whisper User Management
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
@@ -430,6 +454,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     
     NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
     
+    return displayName;
+}
+
+- (NSString *_Nonnull)displayNameForContact:(Contact *)contact
+{
+    OWSAssert(contact);
+
+    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : self.unknownContactName;
+
     return displayName;
 }
 
@@ -487,14 +520,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     if (!identifier) {
         return nil;
     }
-    for (Contact *contact in self.allContacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            if ([phoneNumber.toE164 isEqualToString:identifier]) {
-                return contact;
-            }
-        }
-    }
-    return nil;
+    return self.contactMap[identifier];
 }
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier

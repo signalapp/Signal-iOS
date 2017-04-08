@@ -1,30 +1,34 @@
 //
-//  TSAnimatedAdapter.m
-//  Signal
-//
-//  Created by Mike Okner (@mikeokner) on 2015-09-01.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAnimatedAdapter.h"
+#import "AttachmentUploadView.h"
 #import "FLAnimatedImage.h"
-#import "TSAttachmentStream.h"
 #import "JSQMediaItem+OWS.h"
+#import "TSAttachmentStream.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSAnimatedAdapter ()
 
-@property (strong, nonatomic) UIImageView *cachedImageView;
-@property (strong, nonatomic) UIImage *image;
-@property (strong, nonatomic) TSAttachmentStream *attachment;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic) UIImage *image;
+@property (nonatomic) TSAttachmentStream *attachment;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic) BOOL incoming;
 
 @end
 
+#pragma mark -
+
 @implementation TSAnimatedAdapter
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment {
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming
+{
     self = [super init];
 
     if (self) {
@@ -33,6 +37,7 @@
         _attachmentId    = attachment.uniqueId;
         _image           = [attachment image];
         _fileData        = [NSData dataWithContentsOfURL:[attachment mediaURL]];
+        _incoming = incoming;
     }
 
     return self;
@@ -78,6 +83,12 @@
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;
+
+        if (!self.incoming) {
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                               superview:imageView
+                                                                 attachmentStateCallback:nil];
+        }
     }
 
     return self.cachedImageView;
@@ -85,20 +96,6 @@
 
 - (CGSize)mediaViewDisplaySize {
     return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
-}
-
-- (BOOL)isImage {
-    return YES;
-}
-
-
-- (BOOL)isAudio {
-    return NO;
-}
-
-
-- (BOOL)isVideo {
-    return NO;
 }
 
 #pragma mark - OWSMessageEditing Protocol
@@ -131,3 +128,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

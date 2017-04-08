@@ -13,15 +13,13 @@ class MessageFetcherJob: NSObject {
     // MARK: injected dependencies
     let networkManager: TSNetworkManager
     let messagesManager: TSMessagesManager
-    let messageSender: MessageSender
     let signalService: OWSSignalService
 
     var runPromises = [Double: Promise<Void>]()
 
-    init(messagesManager: TSMessagesManager, messageSender: MessageSender, networkManager: TSNetworkManager, signalService: OWSSignalService) {
+    init(messagesManager: TSMessagesManager, networkManager: TSNetworkManager, signalService: OWSSignalService) {
         self.messagesManager = messagesManager
         self.networkManager = networkManager
-        self.messageSender = messageSender
         self.signalService = signalService
     }
 

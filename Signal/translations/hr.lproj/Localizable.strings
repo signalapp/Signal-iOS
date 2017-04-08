@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Odgovori";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Nova poruka! Za čitanje otvorite aplikaciju.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Nova Poruka!";
 
 /* No comment provided by engineer. */
@@ -52,11 +49,44 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Privitak";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Privitak";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Veličina datoteke: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Šalji";
+
 /* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo, dodirnite za pokušaj.";
+"ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo, dodirni za pokušaj.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Preuzimanje privitka";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Greška kod slanja privitka";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Slike u privitku ne mogu biti smanjene.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Slike u privitku ne mogu biti raščlanjene.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Privitak je prevelik.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Privitak sadrži nevažeći sadržaj.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Privitak sadrži nevažeći format datoteke.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Privitak je prazan.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Odaberi ili uslikaj fotografiju i zatim je pošalji";
@@ -67,11 +97,59 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Novi privitak na čekanju za preuzimanje.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za ispravno funkcioniranje. Možete odobriti ovu dozvolu u aplikaciji Postavke >> Privatnost >> Mirkofon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Blokiraj";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Pozivanje...";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Blokiraj %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokiraj";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblokiraj %@?";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je već blokiran.";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Već blokiran";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokiraj";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Blokiranje korisnika nije uspjelo.";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Greška";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je blokiran";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Korisnik je blokiran";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Kontakti";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Deblokiranje korisnika nije uspjelo.";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Greška";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je deblokiran.";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Korisnik odblokiran";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Poziv";
@@ -82,8 +160,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Možete odgovarati na pozive direktno sa zaključanog zaslona i vidjeti imena i telefonske brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nVidi postavke privatnosti za detalje.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Možete vidjeti imena i brojeve pozivatelja ako izvršite promjene u vašim postavkama.\n\nVidi postavke privatnosti za detalje.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne sada";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Prikaži postavke privatnosti";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Povratni poziv";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal Korisnik";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Uporedi sa međuspremnikom";
@@ -106,6 +199,12 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Potvrdi";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "Blokiran";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "Član grupe";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistrirani broj";
 
@@ -118,17 +217,26 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Postavke razgovora";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Ova poruka je predugačka za slanje.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Greška";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Odaberi državni kôd";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Kreiraj novu grupu";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dana";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Isporučeno";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posljednja aktivnost: %@";
@@ -157,8 +265,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Uredi grupu";
 
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ je već član ove grupe.";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Već je član grupe.";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Kopiraj";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Spremi";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Podijeli";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nOdnedavno koristim Signal kako bi svoje razgovore na mom iPhoneu zadržao privatnim. Volio bi da ga i ti instaliraš, tako da budemo sigurni da samo ja i ti možemo čitati naše poruke i čuti naše razgovore.\n\nSignal je dostupan za iPhone i Android. Preuzmite ga ovdje : %@\n\nSignal radi kao tvoja postojeća aplikacija za razmjenu poruka. Možemo slati slike i video, vršiti pozive i započeti grupne razgovore. Najbolje stvar je što nitko drugi osim nas ništa od toga ne može vidjeti, pa čak ni ljudi koje čine Signal.\n\nMožeš pročitati više o Open Whisper System i Signalu, ljudima koji stoje iza ovog projekta, ovdje: %@";
@@ -167,7 +287,7 @@
 "EMAIL_INVITE_SUBJECT" = "Prebacimo se na Signal";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Dodirnite gumb za sastavljanje poruke.";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "Dodirni gumb za sastavljanje poruke.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Započnite vaš prvi razgovor na Signalu!";
@@ -196,53 +316,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Nema arhiviranih razgovora.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Serverska pogreška!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Kraj";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Pogreška kod rukovanja!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Prekinuli ste poziv.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Druga strana je prekinula poziv.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Neuspješna prijava!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Poruka sa servera:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Broj nije registriran na aplikaciji Signal kao niti na aplikaciji RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Primatelj nedostupan.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Odbili ste poziv.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Poziv odbijen.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Napravili ste dodatni poziv.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Zauzeto.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Propušten poziv.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Neuspjeli poziv.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo!";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nije moguće poslati zbog neažuiranih privatnih podatka.";
+
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Neuspješno slanje poruke korisniku jer ste ga blokirali.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nije u mogućnosti povezati se na internet. Molimo pokušajte sa drugom WiFi ili mobilnom mrežom.";
@@ -254,7 +341,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška servera. Molimo pokušajte kasnije ponovo.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo je do nepoznate greške.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ne koristi Signal.";
@@ -266,7 +353,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primaoca nije validan.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka je van sinkronizacije. Dodirnite za resetovanje sigurnosne sesije.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka je van sinkronizacije. Dodirni za resetovanje sigurnosne sesije.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Primljena poruka nije kompatibilna s ovom verzijom.";
@@ -278,13 +365,10 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj promijenjen.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate greške.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirnite za verifikaciju.";
-
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "Pažnja!";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirni za verifikaciju.";
 
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "U ovom trenutku Signal može biti aktivan samo na jednom mobilnom uređaju po telefonskom broju.";
@@ -298,9 +382,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Morate prihvatiti novi sigurnosni broj prije mogućnosti slanja.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Slanje nije uspjelo. Dodirnite za novi pokušaj.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja nije uspjela!";
 
@@ -309,6 +390,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Završi kreiranje grupe";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Privitak";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Fotografija profila promijenjena!";
@@ -339,9 +426,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Napuštanje grupe nije uspjelo";
-
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Postavke grupe";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Naslov je sada '%@'.";
@@ -454,6 +538,30 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Isporučeno";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo. Dodirni za novi pokušaj.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Poslano";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Prijenos...";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Blokirali ste ovog korisnika";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Blokirali ste 1 člana ove grupe";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Blokirali ste %d članova ove grupe";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Dodirni ovdje za postavke";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minuta";
 
@@ -469,7 +577,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Propušten poziv od %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Propušten poziv od %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Propušten poziv od Signal Korisnik.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Primili ste poziv od %@.";
@@ -555,7 +666,8 @@
 /* No comment provided by engineer. */
 "OK" = "Ok";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Postavke";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -569,6 +681,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Nedovršen odlazni poziv";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [Dodirni za više]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Poruka";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
@@ -607,13 +725,13 @@
 "PUSH_MANAGER_REPLY" = "Odgovor";
 
 /* Alert title */
-"PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za push obavijesti.";
+"PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za \"push\" obavijesti.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push obavijesti";
+"PUSH_REGISTER_TITLE" = "\"Push\" obavijesti";
 
 /* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal zahtijeva push notifikacije, upozorenja i zvukovi moraju biti omogućeni za ispravno funkcionisanje. Molimo izvršite izmjene u aplikaciji Postavke >> Obavijesti >> Signal.";
+"PUSH_SETTINGS_MESSAGE" = "Signal zahtijeva \"push\" notifikacije, upozorenja i zvukovi moraju biti omogućeni za ispravno funkcionisanje. Molimo izvršite izmjene u aplikaciji Postavke >> Obavijesti >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -646,18 +764,18 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Pokušajte ponovo";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Server trenutno ograničava količinu prijava, molimo pokušajte kasnije.";
+"REGISTER_RATE_LIMITING_BODY" = "Pokušali ste previše puta. Molimo pričekajte minut prije novog pokušaja.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registrirani broj";
 
 /* Alert title */
-"REGISTRATION_BODY" = "Neuspješna ponovna registracija za push obavijesti.";
+"REGISTRATION_BODY" = "Neuspješna ponovna registracija za \"push\" obavijesti.";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Državni kôd ";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Unesite broj";
 
 /* No comment provided by engineer. */
@@ -669,7 +787,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Telefonski broj u ovom formatu nije podržan, molimo kontaktirajte podršku.";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonski broj";
 
 /* No comment provided by engineer. */
@@ -694,7 +812,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonski broj koji pokušavate registrovati je već registrovan na drugom serveru, molimo odjavite ga i pokušajte ponovo.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Ponovno registruj push obavijesti";
+"REREGISTER_FOR_PUSH" = "Ponovno registruj \"push\" obavijesti";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Pokušaj";
@@ -744,8 +862,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaciji";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Koristi CallKit";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Blokiraj kontakt";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Blokiraj telefonski broj";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokiraj";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Omogući zapis o neispravnosti";
@@ -756,20 +880,32 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Omogući video pozive";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Dodaj...";
 
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Ne mogu se ažurirati vaša podešavanja.";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blokirani korisnici vas neće moći pozivati i slati vam poruke.";
 
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Pogreška";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nemate kontakata koji koriste Signal.";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blokiranje";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Zahtijeva vaše odobrenje prije komunikacije sa nekim tko ima novi sigurnosni broj, obično zbog reinstalacije Signala.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Zahtijeva odobrenje kod promjene";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Postavke";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Uvijek sakrij adresu";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Sakrij za sve pozive putem Signal poslužitelja kako bi izbjegli otkrivanje IP adrese vašem kontaktu. Omogućavanje će smanjiti kvalitetu poziva.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Očisti povijesne zapise";
@@ -799,13 +935,19 @@
 "SETTINGS_INVITE_TITLE" = "Pošalji pozivnicu prijateljima";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Možete me kontaktirati koristeći Signal od @WhisperSystems, preuzmite ga sada.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Povežimo se koristeći Signal od @WhisperSystems, preuzmite aplikaciju sada.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Postavke";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Obavijesti";
+
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Prikaži ime i broj pozivatelja";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS integracija poziva";
 
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Privatnost";
@@ -820,7 +962,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit vam dopušta da odgovorite na poziv direktno sa zaključanog zaslona. Imajte na umu da prilikom korištenja CallKit-a, Apple sinkronizira neke metapodatke o pozivima na vaš iCloud račun. ";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS integracija poziva omogućava prikaz Signal poziva na zaključanom zaslonu i povijest poziva unutar sistema u aplikaciji \"Telefon\". Po izboru možete omogućiti prikaz imena i brojeva vaših kontakata. Ako je omogućen iCloud, ova povijest poziva dijelit će se sa Apple-om.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Pozivanje";
@@ -868,16 +1010,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj verifikovan!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "Nismo mogli dohvatiti ažurirani popis kontakata sa servera. Molimo pokušajte ponovo kasnije.";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Otkaži";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Izbriši";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Nije moguće uspostaviti poziv.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Dearhiviraj";
@@ -915,14 +1051,26 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Ažuriraj";
 
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Odgovaranje na poziv sa zaključanog zaslona je jednostavno sa iOS integracijom poziva. Po zadanim postavkama vaš pozivatelj je anoniman.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Saznaj više u postavkama privatnosti.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Samo povucite prstom za odgovor";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal sada podržava sigurne video pozive. Dovoljno je da uspostavite uobičajen poziv i dotaknete ikonu kamere.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Pozdrav sigurnim video pozivima!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signal se nadograđuje...";
 
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Prijenos...";
-
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Promijeni broj";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Nazad";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikacijski kôd";
@@ -931,13 +1079,16 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Potvrdi pozivom";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo zatraži kôd";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo pošalji kôd SMS-om";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdi verifikacijski kôd";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Verifikacija";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Verifikacija: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifikacija sigurnosnog broja";

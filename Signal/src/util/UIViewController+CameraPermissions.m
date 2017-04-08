@@ -46,7 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (status == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
             if (granted) {
-                permissionsGrantedCallback();
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    permissionsGrantedCallback();
+                });
             }
         }];
     } else {

@@ -17,11 +17,13 @@
 
 @interface NotificationsManager ()
 
-@property SystemSoundID newMessageSound;
+@property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @end
+
+#pragma mark -
 
 @implementation NotificationsManager
 
@@ -37,46 +39,9 @@
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
 
+    OWSSingletonAssert();
+
     return self;
-}
-
-
-#pragma mark - Redphone Calls
-
-/**
- * Notify user for Redphone Call
- */
-- (void)notifyUserForCall:(TSCall *)call inThread:(TSThread *)thread {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        // Remove previous notification of call and show missed notification.
-        UILocalNotification *notif = [[PushManager sharedManager] closeVOIPBackgroundTask];
-        TSContactThread *cThread   = (TSContactThread *)thread;
-
-        if (call.callType == RPRecentCallTypeMissed) {
-            if (notif) {
-                [[UIApplication sharedApplication] cancelLocalNotification:notif];
-            }
-
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.soundName            = @"NewMessage.aifc";
-            switch (self.notificationPreviewType) {
-                case NotificationNoNameNoPreview: {
-                    notification.alertBody = [CallStrings missedCallNotificationBody];
-                    break;
-                }
-                case NotificationNamePreview:
-                case NotificationNameNoPreview: {
-                    notification.userInfo = @{ Signal_Call_UserInfo_Key : cThread.contactIdentifier };
-                    notification.category = Signal_CallBack_Category;
-                    notification.alertBody =
-                        [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], [thread name]];
-                    break;
-                }
-            }
-
-            [[PushManager sharedManager] presentNotification:notification];
-        }
-    }
 }
 
 #pragma mark - Signal Calls
@@ -135,8 +100,10 @@
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage =
-                [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName];
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                             [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                            ? [CallStrings missedCallNotificationBodyWithoutCallerName]
+                            : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
             break;
         }
     }

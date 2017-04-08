@@ -108,6 +108,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // Video
 
+    private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
@@ -192,7 +193,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
+        self.videoCaptureSession = videoSource.captureSession
         videoSource.useBackCamera = false
+
         let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
         self.localVideoTrack = localVideoTrack
 
@@ -220,8 +223,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.error("\(self.TAG)) trying to \(action) videoTrack which doesn't exist")
                 return
             }
+            guard let videoCaptureSession = self.videoCaptureSession else {
+                Logger.error("\(self.TAG) videoCaptureSession was unexpectedly nil")
+                assertionFailure()
+                return
+            }
 
             localVideoTrack.isEnabled = enabled
+
+            if enabled {
+                Logger.debug("\(self.TAG) in \(#function) starting videoCaptureSession")
+                videoCaptureSession.startRunning()
+            } else {
+                Logger.debug("\(self.TAG) in \(#function) stopping videoCaptureSession")
+                videoCaptureSession.stopRunning()
+            }
 
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self, weak localVideoTrack] in
@@ -440,7 +456,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         AssertIsOnMainThread()
         Logger.debug("\(TAG) in \(#function)")
 
-        PeerConnectionClient.signalingQueue.sync {
+        PeerConnectionClient.signalingQueue.async {
             assert(self.peerConnection != nil)
             self.terminateInternal()
         }
@@ -758,11 +774,13 @@ class HardenedRTCSessionDescription {
         var description = rtcSessionDescription.sdp
 
         // Enforce Constant bit rate.
-        description = description.replacingOccurrences(of: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", with: "$1;cbr=1\r\n")
+        let cbrRegex = try! NSRegularExpression(pattern:"(a=fmtp:111 ((?!cbr=).)*)\r?\n", options:.caseInsensitive)
+        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.characters.count), withTemplate: "$1;cbr=1\r\n")
 
         // Strip plaintext audio-level details
         // https://tools.ietf.org/html/rfc6464
-        description = description.replacingOccurrences(of: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", with: "")
+        let audioLevelRegex = try! NSRegularExpression(pattern:".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options:.caseInsensitive)
+        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.characters.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }

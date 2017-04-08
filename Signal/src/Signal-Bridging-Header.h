@@ -4,8 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "AppAudioManager.h"
 #import "Asserts.h"
+#import "AttachmentSharing.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
@@ -16,10 +16,9 @@
 #import "OWSError.h"
 #import "OWSLogger.h"
 #import "OWSWebRTCDataProtos.pb.h"
-#import "PhoneManager.h"
+#import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
@@ -31,6 +30,7 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
@@ -50,6 +50,8 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>

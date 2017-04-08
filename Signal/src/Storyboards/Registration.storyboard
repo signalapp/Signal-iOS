@@ -229,6 +229,7 @@
                     <connections>
                         <outlet property="countryCodeButton" destination="aSz-jb-g2o" id="HAe-2D-BxF"/>
                         <outlet property="countryNameButton" destination="Pu7-Ia-adg" id="PFU-m2-gzV"/>
+                        <outlet property="existingUserButton" destination="AqN-gc-h3O" id="XQz-rJ-HOP"/>
                         <outlet property="headerHeightConstraint" destination="EX0-kF-4ZZ" id="e8J-On-rOg"/>
                         <outlet property="phoneNumberButton" destination="OHo-Bz-J6X" id="V1H-FP-hcY"/>
                         <outlet property="phoneNumberTextField" destination="3dc-W2-Cct" id="xWc-E5-zL3"/>
@@ -285,7 +286,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="United states" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eyx-0e-8jI">
-                                            <rect key="frame" x="20" y="11" width="244" height="21.5"/>
+                                            <rect key="frame" x="20" y="11" width="244" height="22"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="244" id="n1j-cy-UCc"/>
                                             </constraints>
@@ -294,7 +295,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-5L-cqs">
-                                            <rect key="frame" x="237" y="12" width="64" height="19.5"/>
+                                            <rect key="frame" x="237" y="12" width="64" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="64" id="Esx-e5-KEm"/>
                                             </constraints>

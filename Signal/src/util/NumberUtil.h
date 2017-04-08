@@ -1,7 +1,8 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
-#import "ArrayUtil.h"
-#import "DataUtil.h"
-#import "DictionaryUtil.h"
 #import "StringUtil.h"
 
 @interface NumberUtil : NSObject

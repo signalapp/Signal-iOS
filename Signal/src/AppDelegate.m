@@ -4,16 +4,15 @@
 
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
-#import "CategorizingLogger.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSStaleNotificationObserver.h"
+#import "Pastelog.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RPAccountManager.h"
 #import "Release.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
@@ -22,9 +21,9 @@
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
-#import <PastelogKit/Pastelog.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -83,7 +82,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
-    loggingIsEnabled = Environment.preferences.loggingIsEnabled;
+    loggingIsEnabled = PropertyListPreferences.loggingIsEnabled;
 #endif
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
@@ -101,13 +100,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
-    // Initializing env logger
-    CategorizingLogger *logger = [CategorizingLogger categorizingLogger];
-    [logger addLoggingCallback:^(NSString *category, id details, NSUInteger index){
-    }];
-
-    // Setting up environment
-    [Environment setCurrent:[Release releaseEnvironmentWithLogging:logger]];
+    [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
     [[PushManager sharedManager] registerPushKitNotificationFuture];
@@ -119,9 +112,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if ([TSAccountManager isRegistered]) {
         [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
     }
-    [Environment.getCurrent initCallListener];
 
-    [self setupTSKitEnv];
 
     UIStoryboard *storyboard;
     if ([TSAccountManager isRegistered]) {
@@ -134,8 +125,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.window.rootViewController = [storyboard instantiateInitialViewController];
     [self.window makeKeyAndVisible];
 
-    [VersionMigrations performUpdateCheck]; // this call must be made after environment has been initialized because in
-                                            // general upgrade may depend on environment
+    // performUpdateCheck must be invoked after Environment has been initialized because
+    // upgrade process may depend on Environment.
+    [VersionMigrations performUpdateCheck];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -176,6 +168,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
         // sent before the app exited should be marked as failures.
         [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+        [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
 
         [AppStoreRating setupRatingLibrary];
     }];
@@ -193,27 +186,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return YES;
 }
 
-- (void)setupTSKitEnv {
+- (void)setupEnvironment
+{
+    [Environment setCurrent:[Release releaseEnvironment]];
+
     // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
-    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionCipher]];
+    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
 
     TextSecureKitEnv *sharedEnv =
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
                                              contactsManager:[Environment getCurrent].contactsManager
+                                               messageSender:[Environment getCurrent].messageSender
                                         notificationsManager:[Environment getCurrent].notificationsManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabase];
 
-    OWSMessageSender *messageSender =
-        [[OWSMessageSender alloc] initWithNetworkManager:[Environment getCurrent].networkManager
-                                          storageManager:[TSStorageManager sharedManager]
-                                         contactsManager:[Environment getCurrent].contactsManager
-                                         contactsUpdater:[Environment getCurrent].contactsUpdater];
-
     self.incomingMessageReadObserver =
         [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
-                                                         messageSender:messageSender];
+                                                         messageSender:[Environment getCurrent].messageSender];
     [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];
@@ -231,7 +222,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogError(@"%@ Failed to register for remote notifications with error %@", self.tag, error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[NSData dataWithLength:32]];
+    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
 #else
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 #endif
@@ -373,11 +364,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
-            DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing RedPhone call.", self.tag);
-            return NO;
-        }
-
         NSString *_Nullable phoneNumber = handle;
         if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
             phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
@@ -442,10 +428,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             }
         }
 
-        if ([Environment getCurrent].phoneManager.hasOngoingRedphoneCall) {
-            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing RedPhone call.", self.tag);
-            return NO;
-        }
         if ([Environment getCurrent].callService.call != nil) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
             return NO;

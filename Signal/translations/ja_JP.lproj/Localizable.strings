@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "応答";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "新着メッセージがありますのでアプリを起動してください。";
-
-/* No comment provided by engineer. */
 "APN_Message" = "新着メッセージがあります";
 
 /* No comment provided by engineer. */
@@ -52,11 +49,44 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "添付";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ファイルの種類：%@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ファイルのサイズ：%@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "添付ファイル取得失敗（タップでやり直し）";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "添付ファイルをダウンロード中";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "添付ファイルの送信でエラー";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "添付ファイルの画像の大きさを変更できませんでした";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "添付ファイルの画像を解析できませんでした";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "添付ファイルが大きすぎます";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "添付ファイルの内容が不正です";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "添付ファイルの形式が不正です";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "画像を選ぶか写真を撮って送信する";
@@ -67,11 +97,59 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "添付ファイルが取得予定に追加されました。";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signalがうまく機能するにはマイクへのアクセスが必要です。アクセスを許可するには，設定→プライバシー→マイク→Signal，と進んでください。";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "拒否する";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "呼出中";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "%@を拒否しますか";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "拒否を解除する";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@の拒否を解除しますか？";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@は拒否済みです";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "拒否済み";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "拒否する";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "拒否に失敗しました";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "エラー";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@を拒否しました";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否されているユーザー";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "連絡先";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "拒否の解除に失敗しました";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "エラー";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@の拒否が解除されました";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "拒否が解除されたユーザー";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "電話";
@@ -82,8 +160,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "設定を変えると，ロック画面から直接電話に出たり，相手の名前や番号を表示させることが可能になります。\n\n詳しくはプライバシー設定をご覧ください。";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "設定を変えると，着信相手の名前や番号を表示させることができます。\n\n詳しくはプライバシー設定をご覧ください。";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "今は結構です";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "プライバシー設定を表示する";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signalユーザー";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "クリップボードと比較する";
@@ -106,6 +199,12 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "了解";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "拒否済み";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "メンバー";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "未登録番号";
 
@@ -118,17 +217,26 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会話設定";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "この人を拒否する";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "メッセージが長すぎて送信できません";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "エラー";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "接触をリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "国番号を選択してください";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "新しいグループを作成する";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u日";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "配信済み";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終活動：%@";
@@ -152,13 +260,25 @@
 "DISAPPEARING_MESSAGES_LABEL" = "メッセージが消える時間の設定";
 
 /* Generic short text for button to dismiss a dialog */
-"DISMISS_BUTTON_TEXT" = "やめる";
+"DISMISS_BUTTON_TEXT" = "消す";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "グループを編集";
 
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@はすでにグループの一員です";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "すでにグループの一員です";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "コピー";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "保存する";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "共有";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "こんにちは。私は最近，携帯電話での会話・チャットをSignalというアプリで行っています。双方がこのアプリを使うと，会話内容が他人に漏れていないという確信が持てますので，あなたもインストールしませんか。iPhoneでもAndroidでも使えます。入手はこちらからです：%@\n\nSignalは普通のメッセージアプリと同じように使えます。写真や動画も送れますし，電話もできますし，３人以上でのチャットもできます。一番いいところは，通信内容が他人に見えないことです。アプリの制作者にも見えない仕組みになっています。\n\nSignalの制作者であるOpen Whisper Systemsについての詳細はここを見て下さい：%@";
@@ -196,53 +316,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "とてもキレイです";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "サーバーエラー";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "終了";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "ハンドシェイクに失敗しました";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "こちらが電話を切りました";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "相手が電話を切りました";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "ログインに失敗しました";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "サーバーからのメッセージ：";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "SignalやRedPhoneに登録されていない番号です";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "応答なし";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "こちらが通話を拒否しました";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "通話は拒否されました";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "続けて電話をかけました";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "話し中";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "通話失敗";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話に失敗しました";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "メッセージの送信に失敗しました";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "プライバシー情報が古くて送信できません。";
+
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "相手を拒否しているのでメッセージを送れませんでした";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "インターネットに接続できませんでした。Wi-Fiのネットワークを変えるか，モバイルデータ通信を使ってみてください。";
@@ -283,9 +370,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全番号が変わりました。タップして確認してください。";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "エラー！";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "今のところSignalは１つの電話番号につき１つの端末でしか有効になりません。";
 
@@ -298,9 +382,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "新しい安全番号を承諾しなければ送信を行うことはできません";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "送信失敗（タップでやり直し）";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "安全番号が確認できませんでした";
 
@@ -309,6 +390,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "グループ作成を完了する";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "？";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "添付ファイル";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "アイコンが変わりました";
@@ -339,9 +426,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "グループ離脱に失敗";
-
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "グループ設定";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
@@ -454,6 +538,30 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新しいメッセージ";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "配信済み";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "送信失敗：タップで再送";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "送信済み";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "アップロード中";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "この人を拒否しました";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "このグループの1人を拒否しました";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "このグループの%d人を拒否しました";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "タップで設定";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u分";
 
@@ -469,7 +577,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "カメラへのアクセスが必要です";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "%@ から不在着信";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "不在着信：%@";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Signalユーザから不在着信";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "%@ から着信";
@@ -555,7 +666,8 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "設定";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -569,6 +681,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "不完全発信";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [詳細はタップで]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "メッセージ";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@との安全番号ではないようです。連絡先が正しいか確認してください。";
@@ -646,7 +764,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "もう一度お願いします";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "ユーザーの増加スピードに制限を設けています。しばらくしてから再度試してください。";
+"REGISTER_RATE_LIMITING_BODY" = "急ぎすぎです。少し待ってから再試行してください。";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "登録番号";
@@ -654,10 +772,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "プッシュ通知の再登録に失敗しました";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国番号";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "番号を入力する";
 
 /* No comment provided by engineer. */
@@ -669,7 +787,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "サポートされていない形式の電話番号です。サポートに連絡してください。";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "電話番号";
 
 /* No comment provided by engineer. */
@@ -744,8 +862,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Signalについて";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "CallKitを使う";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "連絡先を拒否する";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "電話番号を拒否する";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "拒否する";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
@@ -756,20 +880,32 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "ビデオ電話（ベータ版）を有効にする";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "追加する";
 
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "設定を更新できませんでした";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "拒否された人はあなたに電話したりメッセージを送ることはできません";
 
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "エラー";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "連絡先がありません";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "拒否リスト";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新規の安全番号を持つ人（例えばSignalを再インストールした人）と通信する前にはあなたに承認を求めます。";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "変更の承認が必要";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "設定";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "IPアドレスを隠す";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "すべての通話をSignalサーバーに中継して，IPアドレスが相手に見えないようにします。ただし通話の質は下がります。";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "通信ログを削除";
@@ -807,6 +943,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "通知";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "相手の名前と番号を表示する";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "通話をiOSに統合する";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "プライバシー";
 
@@ -817,13 +959,13 @@
 "SETTINGS_SCREEN_SECURITY" = "画面表示を安全にする";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "アプリ切り替え画面でSignalのプレビューを表示しない（ロゴのみ表示）";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しない";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKitを使うと，ロック画面から直接電話に出ることができます。ただし，通話に関する情報の一部がAppleによってユーザのiCloudに同期されます。";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "通話をiOSに統合すると，Signalでの通話がiOSのロック画面や通話履歴に表示されます。通話相手の名前と番号を表示することも可能になります。ただしiCloudが有効の場合は，通話履歴がAppleと共有されます。";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "電話";
+"SETTINGS_SECTION_TITLE_CALLING" = "通話";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "スクリーン・セキュリティ";
@@ -868,16 +1010,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が確認できました！";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "連絡先の最新データをサーバーから取得できませんでした。しばらく待って再度お試しください。";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "キャンセル";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "削除";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "電話を掛けれませんでした";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "受信箱に戻す";
@@ -915,14 +1051,26 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "更新";
 
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "通話をiOSに統合することで，ロック画面から直接電話に出ることが可能になります。既定では通話の匿名化が行われますので，プライバシーも保たれます。";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "プライバシー設定で詳細を見る";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "スワイプで電話に出る";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "安全なビデオ電話が可能になりました。普通に通話を始めてから，カメラのマークを押してください。";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "安全なビデオ電話にようこそ！";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signalをアップグレードしています……";
 
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "アップロードしています……";
-
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "番号を変更する";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "もどる";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "認証コード";
@@ -931,13 +1079,16 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "電話で行う";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "コードを再発行する";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "SMSでコードを再送する";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "認証コードを入力する";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "認証";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "%@を確認中";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "安全番号の確認";

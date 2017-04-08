@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Ответить";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Новое сообщение! Откройте приложение, чтобы его прочесть.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Новое сообщение!";
 
 /* No comment provided by engineer. */
@@ -52,11 +49,44 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Вложение";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Не удалось скачать вложение. Коснитесь, чтобы повторить.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Вложение скачивается";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Сделать новую фотографию или выбрать одну из существующих и отправить её";
@@ -67,11 +97,59 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Новое вложение поставлено в очередь для скачивания.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Для правильной работы Signal необходим доступ к микрофону. Вы можете восстановить доступ в Настройках в разделе Конфиденциальность >> Микрофон >> Signal.";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Вызов...";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is already blocked.";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Позвонить";
@@ -82,8 +160,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Вы сможете отвечать на входящие вызовы, просматривать имена и телефонные номера вызывающих Вас абонентов непосредственно с экрана блокировки, если Вы изменяете свои настройки. \n\nПосмотрите настройки конфиденциальности Вашего устройства для деталей.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Вы сможете просматривать имена и телефонные номера вызывающих Вас абонентов, если Вы изменяете свои настройки. \n\nПосмотрите настройки конфиденциальности для деталей.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не сейчас";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Показать настройки приватности";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Перезвонить";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Абонент Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Сравнить с буфером";
@@ -106,6 +199,12 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Подтвердите";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незарегистрированный номер";
 
@@ -118,17 +217,26 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Настройки разговоров";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Перезапуск рабочей сессии исправит получение сообщений от пользователя %@ в дальнейшем, но не обеспечит доступ к уже скомпрометированным сообщениям.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Выберите код страны";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Создать новую группу";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u дн.";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Доставлено";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последняя активность: %@";
@@ -157,8 +265,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Изменить группу";
 
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Скопировать";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Сохранить";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Поделиться";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Привет!\n\nЯ использую Signal на айфоне для сохранения приватности моих сообщений. Если ты его установишь, доступ к нашей переписке и звонкам будет только у нас.\n\nSignal разрабатывается для айфонов и андроид-устройств. Ссылка для скачивания: %@\n\nSignal, как и другие приложения для переписки, поддерживает отправку картинок и видео, звонки и групповые чаты. Важное отличие – все это будет видно только собеседникам, даже создатели Signal не могут получить доступ к этой информации!\n\nПодробнее о людях из Open Whisper Systems, создающих Signal, тут: %@";
@@ -196,53 +316,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Всё чисто.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Сбой на сервере";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Завершить";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Не удалось инициализировать!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Вы повесили трубку.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Ваш собеседник повесил трубку.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Не удалось войти!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Сообщение с сервера:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Номер не зарегистрирован в Signal или RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Собеседник недоступен.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Вы отклонили звонок.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Звонок отклонён.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Вы начали другой звонок.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Занято.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Звонок пропущен.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Звонок не удался.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ошибка отправки сообщения.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не удалось отправить в связи с неактуальными данными приватности";
+
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Не удалось установить интернет-соединение. Пожалуйста, попробуйте соединиться через другую WiFi-сеть или используйте мобильный интернет.";
@@ -283,9 +370,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился. Нажмите для подтверждения.";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "Не повезло!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "В настоящий момент каждый номер телефона регистрируется в Signal только для одного устройства.";
 
@@ -298,9 +382,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Необходимо принять новый код безопасности перед отправкой.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Отправка не удалась. Нажмите для повторной попытки.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Ошибка проверки кода безопасности!";
 
@@ -309,6 +390,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Завершение создания группы";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Аватар изменён.";
@@ -339,9 +426,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Не удалось покинуть группу";
-
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Настройки группы";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Название изменено на «%@».";
@@ -377,7 +461,7 @@
 "INCOMING_CALL_FROM" = "Входящий звонок от %@";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Незавершенный входящий звонок от";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Пригласите друзей в Signal";
@@ -454,6 +538,30 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Новое сообщение";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Sent";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Прикoснитесь чтобы открыть настройки";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u мин.";
 
@@ -469,19 +577,22 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal необходим доступ к камере устройства.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Пропущенный звонок от %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Вы приняли звонок от %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "Пользователь %@ не смог дозвониться.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "Вы звонили  %@.";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "Вы не смогли дозвониться пользователю %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Вы не можете соединить больше устройств.";
@@ -555,7 +666,8 @@
 /* No comment provided by engineer. */
 "OK" = "Oк";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Настройки";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -568,7 +680,13 @@
 "OUTGOING_CALL" = "Исходящий звонок";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Незавершенный исходящий звонок";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не код безопасности для %@. Убедитесь, что подтверждаете соединение с верным пользователем.";
@@ -646,7 +764,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Попробуйте ещё раз";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "На данный момент сервер перегружен запросами на регистрацию, попробуйте позже.";
+"REGISTER_RATE_LIMITING_BODY" = "Слишком часто. Попробуйте через минуту";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Зарегистрированный номер";
@@ -654,10 +772,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "Не удалось перерегистрироваться для push-уведомлений.";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код страны";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Введите номер";
 
 /* No comment provided by engineer. */
@@ -669,7 +787,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Этот формат телефонного номера не поддерживается. Пожалуйста, обратитесь в поддержку.";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Телефонный номер";
 
 /* No comment provided by engineer. */
@@ -744,8 +862,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "О программе";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Использовать CallKit";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Включить журнал отладки";
@@ -756,20 +880,32 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Расширенные";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Разрешить видео-звонки";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
 
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Не удалось обновить настройки.";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blocked users will not be able to call you or send you messages.";
 
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Ошибка";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Требуется подтверждение соединения, так как код безопасности собеседника изменился, скорее всего из-за переустановки Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Подтвердите изменение";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Настройки";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Всегда пересылать вызовы";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Обрабатывать все вызовы через сервер Signal, чтобы избежать привязки Вашего IP-адреса к Вашему контакту. Включение уменьшит качество связи.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Стереть историю";
@@ -807,6 +943,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Уведомления";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Показывать имя и номер вызывающего абонента";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Интеграция вызовов с iOS";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Конфиденциальность";
 
@@ -817,10 +959,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Включить защиту экрана";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Запрещает появление превью Signal в переключателе приложений.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Запретить предпросмотр в переключателе приложений iOS";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit позволяет отвечать на звонки даже когда телефон заблокирован. Имейте ввиду, что при использовании CallKit, Apple синхронизирует некоторые данные о звонке с вашим iCloud-аккаунтом.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Звонки";
@@ -868,16 +1010,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Код подтвержден!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "Мы не смогли обновить список собеседников с сервера. Пожалуйста, попробуйте позже.";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Отменить";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Удалить";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Не удалось установить соединение.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Разархивировать";
@@ -915,29 +1051,44 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Обновить";
 
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Ответить на входящий звонок с экрана блокировки можно при включенной интеграции вызовов с iOS. Мы отключили это по умолчанию в целях соблюдения Вашей приватности";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Узнайте больше в настройках приватности. ";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите на Ответ";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Тепер Signal поддерживает приватные видео звонки. Просто начните вызов, прикаснитесь к кнопке камеры и смахните.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Добро пожаловать в Видео Звонки!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Обновление...";
 
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Загрузка...";
-
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Изменить номер";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Назад";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Код подтверждения";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Лучше позвоните мне";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Сообщить код посредством голосовой связи";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Запросить код заново";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Прислать код подтвеждения по SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Отправить код подтверждения";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Подтверждение";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Проверяется: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Подтвердить код безопасности";

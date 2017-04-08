@@ -4,18 +4,21 @@
 
 #import "AttachmentSharing.h"
 #import "OWSCall.h"
+#import "Signal-Swift.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
 #import "TSContentAdapters.h"
 #import "TSErrorMessage.h"
+#import "TSGenericAttachmentAdapter.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessageAdapter ()
 
@@ -59,6 +62,7 @@
 
 @end
 
+#pragma mark -
 
 @implementation TSMessageAdapter
 
@@ -120,42 +124,71 @@
     if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
         [interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSMessage *message  = (TSMessage *)interaction;
-        adapter.messageBody = message.body;
+        adapter.messageBody = [[DisplayableTextFilter new] displayableText:message.body];
 
         if ([message hasAttachments]) {
             for (NSString *attachmentID in message.attachmentIds) {
                 TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentID];
 
+                BOOL isIncomingAttachment = [interaction isKindOfClass:[TSIncomingMessage class]];
+
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
-                    if ([stream isAnimated]) {
-                        adapter.mediaItem = [[TSAnimatedAdapter alloc] initWithAttachment:stream];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                    if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+                        NSData *textData = [NSData dataWithContentsOfURL:stream.mediaURL];
+                        NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                        // Only show up to 2kb of text.
+                        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
+                        NSString *displayText = [[DisplayableTextFilter new] displayableText:fullText];
+                        if (displayText.length > kMaxTextDisplayLength) {
+                            // Trim whitespace before _AND_ after slicing the snipper from the string.
+                            NSString *snippet =
+                                [[[displayText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                                    substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
+                                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                            displayText =
+                                [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
+                                                               @"A display format for oversize text messages."),
+                                          snippet];
+                        }
+                        adapter.messageBody = displayText;
+                    } else if ([stream isAnimated]) {
+                        adapter.mediaItem =
+                            [[TSAnimatedAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     } else if ([stream isImage]) {
-                        adapter.mediaItem = [[TSPhotoAdapter alloc] initWithAttachment:stream];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem =
+                            [[TSPhotoAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
-                    } else {
+                    } else if ([stream isVideo]) {
                         adapter.mediaItem = [[TSVideoAttachmentAdapter alloc]
                             initWithAttachment:stream
                                       incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
-                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing =
-                            [interaction isKindOfClass:[TSOutgoingMessage class]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
+                        break;
+                    } else {
+                        adapter.mediaItem = [[TSGenericAttachmentAdapter alloc]
+                            initWithAttachment:stream
+                                      incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];
+                        adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
                     }
                 } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                     TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
                     adapter.messageType          = TSInfoMessageAdapter;
 
-                    if (pointer.isDownloading) {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
-                    } else if (pointer.hasFailed) {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
-                    } else {
-                        adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
+                    switch (pointer.state) {
+                        case TSAttachmentPointerStateEnqueued:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
+                            break;
+                        case TSAttachmentPointerStateDownloading:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
+                            break;
+                        case TSAttachmentPointerStateFailed:
+                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
+                            break;
                     }
                 } else {
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
@@ -174,7 +207,11 @@
         if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit ||
             adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
             // repurposing call display for info message stuff for group updates, ! adapter will know because the date
-            // is nil
+            // is nil.
+            //
+            // TODO: I suspect that we'll want a separate model
+            //       that conforms to <OWSMessageData> for info
+            //       messages.
             CallStatus status = 0;
             if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit) {
                 status = kGroupUpdateLeft;
@@ -352,4 +389,18 @@
     return NO;
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

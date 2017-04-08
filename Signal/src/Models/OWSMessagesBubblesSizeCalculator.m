@@ -1,8 +1,11 @@
-//  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
+#import "TSGenericAttachmentAdapter.h"
 #import "TSMessageAdapter.h"
 #import "UIFont+OWS.h"
 #import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.

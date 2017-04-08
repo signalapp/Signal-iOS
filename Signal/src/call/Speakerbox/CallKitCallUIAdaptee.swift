@@ -272,6 +272,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("\(TAG) Received \(#function) CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
+            Logger.error("\(self.TAG) in \(#function) trying to end unknown call with localId: \(action.callUUID)")
             action.fail()
             return
         }
@@ -340,7 +341,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(TAG) Timed out \(#function)")
+        Logger.debug("\(TAG) Timed out \(#function) while performing \(action)")
 
         // React to the action timeout if necessary, such as showing an error UI.
     }

@@ -3,18 +3,28 @@
 //
 
 #import "TSPhotoAdapter.h"
-#import "TSAttachmentStream.h"
+#import "AttachmentUploadView.h"
 #import "JSQMediaItem+OWS.h"
+#import "TSAttachmentStream.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface TSPhotoAdapter ()
 
-@property (strong, nonatomic) UIImageView *cachedImageView;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic) BOOL incoming;
+
 @end
+
+#pragma mark -
 
 @implementation TSPhotoAdapter
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment {
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming
+{
     self = [super initWithImage:attachment.image];
 
     if (!self) {
@@ -24,6 +34,7 @@
     _cachedImageView = nil;
     _attachment = attachment;
     _attachmentId = attachment.uniqueId;
+    _incoming = incoming;
 
     return self;
 }
@@ -58,6 +69,12 @@
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
         self.cachedImageView = imageView;
+
+        if (!self.incoming) {
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                               superview:imageView
+                                                                 attachmentStateCallback:nil];
+        }
     }
 
     return self.cachedImageView;
@@ -65,20 +82,6 @@
 
 - (CGSize)mediaViewDisplaySize {
     return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
-}
-
-- (BOOL)isImage {
-    return YES;
-}
-
-
-- (BOOL)isAudio {
-    return NO;
-}
-
-
-- (BOOL)isVideo {
-    return NO;
 }
 
 #pragma mark - OWSMessageEditing Protocol
@@ -92,6 +95,7 @@
 {
     NSString *actionString = NSStringFromSelector(action);
     if (!self.image) {
+        OWSAssert(NO);
         DDLogWarn(@"Refusing to perform '%@' action with nil image for %@: attachmentId=%@. (corrupted attachment?)",
             actionString,
             self.class,
@@ -100,7 +104,21 @@
     }
 
     if (action == @selector(copy:)) {
-        UIPasteboard.generalPasteboard.image = self.image;
+        // We should always copy to the pasteboard as data, not an UIImage.
+        // The pasteboard should has as specific as UTI type as possible and
+        // data support should be far more general than UIImage support.
+        OWSAssert(self.attachment.filePath.length > 0);
+        NSString *fileExtension = [self.attachment.filePath pathExtension];
+        NSArray *utiTypes = (__bridge_transfer NSArray *)UTTypeCreateAllIdentifiersForTag(
+            kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, (CFStringRef) @"public.image");
+        NSString *utiType = (NSString *)kUTTypeImage;
+        OWSAssert(utiTypes.count > 0);
+        if (utiTypes.count > 0) {
+            utiType = utiTypes[0];
+        }
+
+        NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
+        [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         return;
     } else if (action == NSSelectorFromString(@"save:")) {
         UIImageWriteToSavedPhotosAlbum(self.image, nil, nil, nil);
@@ -112,3 +130,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

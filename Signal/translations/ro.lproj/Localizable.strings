@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Răspunde";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "Mesaj Nou! Deschide aplicația pentru a citi.";
-
-/* No comment provided by engineer. */
 "APN_Message" = "Mesaj  Nou!";
 
 /* No comment provided by engineer. */
@@ -52,11 +49,44 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Atașament";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Atașament";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tip fișier: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Mărime fișier: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Trimite";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "Descărcarea atașamentului a eșuat, apasă pentru a reîncerca.";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "Atașamentul se descarcă";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Eroare la trimiterea atașamentului";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Atașamentul cu imagine nu a putut fi redimensionat.";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Atașamentul cu imagine nu a putut fi procesat.";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Atașamentul este prea mare.";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Atașamentul are conținutul invalid.";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Atașamentul are un format de fișier invalid.";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Atașamentul este gol.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Alege sau fă o poză și apoi trimite-o";
@@ -67,11 +97,59 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "Un nou atașament a fost pus în coada de descărcare.";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal are nevoie de acces la microfon pentru a funcționa corespunzător. Poți activa această permisiune din Configurări >> Intimitate >> Microfon >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Apel în curs...";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is already blocked.";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Sună";
@@ -82,8 +160,23 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Poți răspunde la apeluri direct din ecranul de blocare și să vezi numele și numărul de telefon pentru apelurile primite dacă îți schimbi setările.\n\n Uită-te la setările de confidențialitate pentru mai multe detalii.";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Poți vedea numele și numărul de telefon pentru apelurile primite dacă îți schimbi setările.\n\nUită-te la setările de confidențialitate pentru mai multe detalii.";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Nu acum";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Arată setările de confidențialitate";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Sună înapoi";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilizator Signal";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compară cu Clipboard";
@@ -106,6 +199,12 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Confirmă";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Număr Necunoscut";
 
@@ -118,17 +217,26 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Setări conversație";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Acest mesaj este prea lung pentru a putea fi trimis.";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Eroare";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetarea sesiunii tale v-a permite să primești în viitor mesaje de la %@, însă nu v-a putea recupera mesajele deja corupte.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = " Prefixul Țării";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "Creează grup nou";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u zile";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "Livrat";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Activ ultima oară: %@";
@@ -157,8 +265,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editează grupul";
 
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "Copiază";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Salvează";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "Partajează";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nRecent am început să folosesc Signal pentru a-mi păstra conversațiile private pe iPhone. Aș dori să-ți instalezi și tu aplicația, ca să fim siguri că numai noi doi putem citi mesajele sau să ascultăm apelurile.\n\nSignal este disponibil pentru iPhone și Android. Obține-l de aici:%@\n\nSignal funcționează ca și aplicația ta curentă de mesagerie. Putem trimite poze și video-uri, putem suna, și putem incepe chat-uri de grup. Cea mai bună parte este că nimeni altcineva nu poate vedea toate acestea, nici măcar oamenii care dezvoltă Signal!\n\nPoți afla mai multe despre Open Whisper Systems, oamenii care dezvoltă Signal, aici: %@";
@@ -196,53 +316,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Squeaky Freaking Clean.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "Eroare de server!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "Sfârşit";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "Inițierea a eșuat!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "Ai pus receptorul.";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "Apelatul a pus receptorul.";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "Autentificare eșuată!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "Mesaj de la server:";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "Număr neînregistrat în aplicația Signal sau RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "Apelatul nu este valabil.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "Ai Respins Apelul.";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "Apel respins.";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "Ai făcut un alt apel.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupat.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "Apel ratat.";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Apelul a eșuat.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Trimiterea mesajului a eșuat.";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Trimiterea a eșuat din cauza datelor vechi.";
+
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nu s-a putut conecta la internet. Te rog să incerci dintr-o altă rețea WiFi sau folosește datele mobile.";
@@ -283,9 +370,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numărul de siguranță s-a schimbat. Apasă pentru a verifica.";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "Opa!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "Momentan Signal poate fi activ doar pe un singur dispozitiv mobil per număr de telefon.";
 
@@ -298,9 +382,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Trebuie să accepți înainte noul număr de siguranță pentru a putea trimite mesaje.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "Trimitere eșuată. Apasă pentru a reîncerca.";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verificarea Numărului de Siguranță a eșuat!";
 
@@ -309,6 +390,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Grupul a fost creat";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar schimbat.";
@@ -339,9 +426,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "Părăsirea grupului a eșuat.";
-
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "Setări grup";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titlul este '%@' acum.";
@@ -454,6 +538,30 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Mesaj Nou";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "Trimis";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "Trimitere eșuată. Apasă pentru a reîncerca.";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "Trimis";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Se încarcă ...";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Apasă aici pentru setări";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u minute";
 
@@ -469,7 +577,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal are nevoie de acces la camera ta.";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "Apel ratat de la %@.";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Apel ratat de la %@.";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Apel ratat de la un utilizator Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Ai primit un apel de la %@.";
@@ -555,7 +666,8 @@
 /* No comment provided by engineer. */
 "OK" = "Ok";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "Setări";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -569,6 +681,12 @@
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "Apel de ieșire incomplet";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
@@ -646,7 +764,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Încearcă incă o data";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Serverul limitează momentan înregistrările, te rog încearcă mai târziu.";
+"REGISTER_RATE_LIMITING_BODY" = "Ai încercat de prea multe ori. Te rog așteaptă un minut înainte să încerci din nou.";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Număr înregistrat";
@@ -654,10 +772,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "Eroare la re-înregistrare pentru notificările push.";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Prefixul Țării";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Introduceți Numărul";
 
 /* No comment provided by engineer. */
@@ -669,7 +787,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Acest format de număr de telefon nu este suportat, te rog contactează suportul tehnic.";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Număr de Telefon";
 
 /* No comment provided by engineer. */
@@ -744,8 +862,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "Despre";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Activează CallKit";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activează Log-ul de depanare";
@@ -756,20 +880,32 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avansat";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Activează Apel Video";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
 
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Preferințele tale nu au putut fi actualizate.";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blocked users will not be able to call you or send you messages.";
 
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Eroare";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Este nevoie de aprobarea ta înainte de a comunica cu cineva care are un nou număr de siguranță, situație comună când se reinstalează Signal.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Cere aprobare la modificare";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "Setări";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Redirecționează întotdeauna apelurile";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirecționează toate apelurile către serverul Signal pentru a evita aflarea adresei IP de către contact tău. Activarea va reduce calitatea apelului.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Șterge log-urile cu istoric";
@@ -807,6 +943,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notificări";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Afișează numele și numărul apelantului";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrare apel iOS";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "Confidențialitate";
 
@@ -820,7 +962,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Previne previzualizare lui Signal în app switcher.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit îți permite să răspunzi la apeluri direct din ecranul de blocare. Fi conștient de faptul că atunci când se utilizează CallKit, Apple sincronizează unele metadate ale apelului la contul tău iCloud.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integrarea de apel iOS afișează apelurile Signal pe ecranul de blocare și în jurnalul de apeluri de sistem.  Poți afișa opțional numele și numărul de telefon al contactului tău. Dacă iCloud este activat, istoricul apelurilor va fi partajat cu Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Apel în curs";
@@ -868,16 +1010,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Numărul de Siguranță a fost verificat!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "Nu am putut recupera o listă actuala de contacte de la server. Te rog încearcă din nou mai târziu.";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "Anulează";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Șterge";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Apelul nu a putut fi efectuat.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Dezarhivare";
@@ -915,14 +1051,26 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "Actualizează";
 
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Preluarea apelurilor din ecranul de blocare este ușoară prin integrarea de apel iOS. Anonimizăm apelantul în mod implicit, asigurând confidențialitatea.";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Află mai multe în setările de confidențialitate.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Glisează pentru a răspunde";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal suportă acum apeluri video securizate. Trebuie doar să inițiezi un apel în mod normal, să apeși pe butonul de cameră și să faci cu mana.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bun venit la apeluri video securizate!";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Se actualizează Signal ...";
 
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "Se încarcă ...";
-
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "Schimbă Numărul";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "Înapoi";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Cod de Verificare";
@@ -931,13 +1079,16 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mai bine Sună-mă";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicită codul din nou";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Trimite codul din nou prin SMS";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Trimite codul de verificare";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "Verifică";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Se verifică: %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifică Numărul de Siguranță";

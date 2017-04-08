@@ -25,8 +25,21 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
+NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 
 @implementation PropertyListPreferences
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    return self;
+}
 
 #pragma mark - Helpers
 
@@ -110,12 +123,6 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     }
 }
 
-- (TSImageQuality)imageUploadQuality
-{
-    // always return average image quality
-    return TSImageQualityMedium;
-}
-
 - (void)setScreenSecurity:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyScreenSecurity toValue:@(flag)];
@@ -127,7 +134,7 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyHasRegisteredVoipPush toValue:@(enabled)];
 }
 
-- (BOOL)loggingIsEnabled
++ (BOOL)loggingIsEnabled
 {
     NSNumber *preference = [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyEnableDebugLog];
 
@@ -138,18 +145,13 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     }
 }
 
-- (void)setLoggingEnabled:(BOOL)flag
++ (void)setLoggingEnabled:(BOOL)flag
 {
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the
     // database initialization, and without logging it would be hard to track down.
     [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:PropertyListPreferencesKeyEnableDebugLog];
     [NSUserDefaults.standardUserDefaults synchronize];
-}
-
-- (nullable NSString *)lastRanVersion
-{
-    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
 }
 
 - (void)setHasSentAMessage:(BOOL)enabled
@@ -162,7 +164,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyHasArchivedAMessage toValue:@(enabled)];
 }
 
-- (NSString *)setAndGetCurrentVersion
++ (nullable NSString *)lastRanVersion
+{
+    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
+}
+
++ (NSString *)setAndGetCurrentVersion
 {
     NSString *currentVersion =
         [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
@@ -170,6 +177,18 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
                                             forKey:PropertyListPreferencesKeyLastRunSignalVersion];
     [NSUserDefaults.standardUserDefaults synchronize];
     return currentVersion;
+}
+
+- (BOOL)hasDeclinedNoContactsView
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView];
+    // Default to NO.
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setHasDeclinedNoContactsView:(BOOL)value
+{
+    [self setValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
 }
 
 #pragma mark - Calling
@@ -187,6 +206,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyCallKitEnabled toValue:@(flag)];
 }
 
+- (BOOL)isCallKitEnabledSet
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitEnabled];
+    return preference != nil;
+}
+
 - (BOOL)isCallKitPrivacyEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
@@ -196,6 +221,12 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag
 {
     [self setValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
+}
+
+- (BOOL)isCallKitPrivacySet
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyCallKitPrivacyEnabled];
+    return preference != nil;
 }
 
 #pragma mark direct call connectivity (non-TURN)

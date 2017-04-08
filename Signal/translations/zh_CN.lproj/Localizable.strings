@@ -26,9 +26,6 @@
 "ANSWER_CALL_BUTTON_TITLE" = "接听";
 
 /* No comment provided by engineer. */
-"APN_FETCHED_FAILED" = "有新的消息！打开应用以查看。";
-
-/* No comment provided by engineer. */
 "APN_Message" = "新消息！";
 
 /* No comment provided by engineer. */
@@ -52,11 +49,44 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "附件";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "附件";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "文件类型: %@";
+
+/* Format string for file size label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "文件大小: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "发送";
+
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOAD_FAILED" = "附件下载失败，请点击以重试。";
 
 /* No comment provided by engineer. */
 "ATTACHMENT_DOWNLOADING" = "正在下载附件";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "附件发送错误";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "无法调整图像附件大小。";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "无法读取图像附件。";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附件过大。";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "附件包含无效的内容。";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "附件格式无效。";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "附件是空的。";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "选择或者新拍摄图片并发送";
@@ -67,23 +97,86 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "新附件正在等待下载。";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to work properly. You can grant this permission in the Settings app >> Privacy >> Microphone >> Signal";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "加入黑名单";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "Calling...";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "把 %@ 加入黑名单？";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "从黑名单中移除";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "从黑名单中移除 %@ 吗？";
+
+/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ 已经在黑名单里了。";
+
+/* A title of the alert if user tries to block a user who is already blocked. */
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "已在黑名单";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "加入黑名单";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "加入黑名单失败。";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "错误";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ 已经在黑名单里了。";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "用户加入黑名单了";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+
+/* A title for the contacts section of the block list view. */
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "联系人";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "从黑名单中移除失败。";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "错误";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ 不在黑名单中。";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "用户从黑名单中移除了";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "打电话";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "没有应答。";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "如果您改变设置，您将可以直接在锁屏界面上看到来电人的名称与号码并且应答来电。\n\n更多信息请见隐私设置。";
+
+/* Reminder to the user of the benefits of disabling CallKit privacy. */
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "如果您改变设置，您将可以看到来电人的名称与手机号码。\n\n更多信息请见隐私设置。";
+
+/* Label for button that dismiss the call view's settings nag. */
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "以后";
+
+/* Label for button that shows the privacy settings */
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "显示隐私设置";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "回拨";
+
+/* The generic name used for calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal 用户";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "和剪切版相比较";
@@ -106,6 +199,12 @@
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "确认";
 
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+
+/* An indicator that a contact is a member of the current group. */
+"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "未注册的号码";
 
@@ -118,17 +217,26 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "聊天设置";
 
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "将用户加入黑名单";
+
+/* The message of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "该信息过长，无法发送。";
+
+/* The title of the 'text message too large' alert. */
+"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "错误";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "重置session后可以收到来自 %@的消息, 但是无法恢复已经被破坏的消息.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
 
+/* Accessibility label for the create group new group button */
+"CREATE_NEW_GROUP" = "创建新的组群";
+
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u 天";
-
-/* No comment provided by engineer. */
-"DELIVERED_MESSAGE_TEXT" = "已传达";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最新活动设备: %@";
@@ -157,8 +265,20 @@
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "编辑群聊";
 
+/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+
+/* A title of the alert if user tries to add a user to a group who is already in the group. */
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
+
+/* Short name for edit menu item to copy contents of media message. */
+"EDIT_ITEM_COPY_ACTION" = "复制";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "保存";
+
+/* Short name for edit menu item to share contents of media message. */
+"EDIT_ITEM_SHARE_ACTION" = "共享";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\n最近我在使用Signal以保持iPhone上的对话私密. 我希望你也能装上, 这样我们可以有信心只有我和你可以看到我们发的消息或者听到我们打的电话.\n\nSignal可以在iPhone和Android上使用. 可以在以下的链接下载: %@\n\nSignal像你用过的聊天软件一样工作. 我们可以发照片或者视频, 打电话, 也可以群聊. 最好的地方在于, 没任何其它人可以看到这些内容, 即使是做出Signal软件的人!\n\n你可以在以下的链接了解更多关于制作Signal的Open Whisper Systems: %@";
@@ -196,53 +316,20 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "空";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "服务器连接失败！";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "结束通话";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "握手信号交换失败！";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "您挂断了电话。";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "对方挂断了电话。";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "登录失败！";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "来自服务器的消息：";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "该号码尚未注册 Signal 或 RedPhone！";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "对方无法接听。";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "您拒绝了电话。";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "电话已挂断。";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "您重新拨打了电话。";
+/* Call setup status label */
+"END_CALL_RESPONDER_IS_BUSY" = "忙。";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "电话未接到。";
-
-/* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "呼叫失败。";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
+
+/* Error mesage indicating that message send is disabled due to prekey update failures */
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "由于隐私信息过时，无法发送。";
+
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal无法联网. 请尝试使用其它网络或者使用移动数据.";
@@ -254,10 +341,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候再试。";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occured.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "未知错误。";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "联系人不是Signal用户。";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一个重复的消息。";
@@ -283,9 +370,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全码已经改变. 点击验证.";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "悲剧了！";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "目前Signal一个号码只能同时在一台移动设备上使用.";
 
@@ -298,9 +382,6 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "在你能够发消息之前你必须接受新的安全码.";
 
-/* No comment provided by engineer. */
-"FAILED_SENDING_TEXT" = "发邮件失败了。再按一下。";
-
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "验证安全码失败!";
 
@@ -309,6 +390,12 @@
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "？";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "附件";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "头像更变成功。";
@@ -340,9 +427,6 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING_FAILED" = "无法退出组群";
 
-/* Accessibilty label for group settings */
-"GROUP_SETTINGS_LABEL" = "组群设置";
-
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "群组名称已改为 '%@'。";
 
@@ -368,7 +452,7 @@
 "IN_CALL_TALKING" = "安全连接已启用。";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "通话结束。";
 
 /* notification body */
 "INCOMING_CALL" = "来电";
@@ -377,13 +461,13 @@
 "INCOMING_CALL_FROM" = "来自 %@ 的来电";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "未完成的来电，来自";
 
 /* Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "搜索";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "邀请朋友";
@@ -454,6 +538,30 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新信息";
 
+/* message footer for delivered messages */
+"MESSAGE_STATUS_DELIVERED" = "已传达";
+
+/* message footer for failed messages */
+"MESSAGE_STATUS_FAILED" = "发送失败。点击以重试。";
+
+/* message footer for sent messages */
+"MESSAGE_STATUS_SENT" = "已发送";
+
+/* message footer while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "上传中…";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "该用户在您的黑名单中";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "群组中的 1 个成员在您的黑名单中";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "群组中的 %d 个成员在您的黑名单中。";
+
+/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "点击此处前往设置";
+
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u 分钟";
 
@@ -462,26 +570,29 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal needs access to your camera for video calls. You can grant this permission in the Settings app >> Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal视频通话需要访问您的相机。请您到 设置 >> 隐私 >> 相机 >>Signal 授予访问权限。";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal需要访问您的摄像头";
 
 /* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL" = "来自 %@ 的未接来电。";
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "来自 %@ 的未接来电。";
+
+/* notification title. */
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "来自Signal用户的未接来电。";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "您收到了 %@ 的来电。";
 
 /* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
+"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ 拨打了您的电话。";
 
 /* No comment provided by engineer. */
 "MSGVIEW_YOU_CALLED" = "您呼叫了 %@。";
 
 /* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
+"MSGVIEW_YOU_TRIED_TO_CALL" = "您拨打了%@的电话。";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "您无法匹配更多的设备。";
@@ -508,7 +619,7 @@
 "NETWORK_STATUS_TEXT" = "您可以通过收件箱上方的彩条来判断网络连接状态。";
 
 /* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "与%@开始新的对话。";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "设置组群照片";
@@ -523,7 +634,7 @@
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "添加成员";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "给 %@ 的消息发送失败。";
@@ -555,7 +666,8 @@
 /* No comment provided by engineer. */
 "OK" = "好";
 
-/* Button text which opens the settings app */
+/* Button text which opens the settings app
+   Label for button which opens the settings UI */
 "OPEN_SETTINGS_BUTTON" = "设置";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -568,7 +680,13 @@
 "OUTGOING_CALL" = "去电";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Incomplete outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "未完成的呼叫。";
+
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [点击查看更多]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "消息";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
@@ -646,7 +764,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "请重试";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "服务器目前正在限制注册次数，请稍后重试。";
+"REGISTER_RATE_LIMITING_BODY" = "您的尝试过于频繁。请等待一分钟后再重试。";
 
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "已注册号码";
@@ -654,10 +772,10 @@
 /* Alert title */
 "REGISTRATION_BODY" = "重新注册推送失败.";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国家编码";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "输入电话号码";
 
 /* No comment provided by engineer. */
@@ -669,7 +787,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "不支持这个电话号码格式，请联系支持。";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "电话号码";
 
 /* No comment provided by engineer. */
@@ -733,7 +851,7 @@
 "SEND_INVITE_SUCCESS" = "你已经邀请了你的朋友使用Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "通过SMS短信发送邀请至%@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "通过非加密的短信邀请好友？";
@@ -744,8 +862,14 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "关于";
 
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Use CallKit";
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "将用户加入黑名单";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "将号码加入黑名单";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "加入黑名单";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "启用调试日志";
@@ -756,20 +880,32 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "高级";
 
-/* This setting is used to switch between new-style WebRTC calling and old-style RedPhone calling. */
-"SETTINGS_ADVANCED_WEBRTC" = "Enable Video Calling";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
 
-/* The message of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_MESSAGE" = "Could not update your preferences.";
+/* A footer title for the block list table. */
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blocked users will not be able to call you or send you messages.";
 
-/* The title of the alert shown when updates to the WebRTC property fail. */
-"SETTINGS_ADVANCED_WEBRTC_FAILED_TITLE" = "Error";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何使用Signal的联系人。";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "黑名单";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "在和有新安全码的用户通讯之前需要你的批准, 通常实在重装Signal之后.";
 
 /* Table cell label */
 "SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "请求批准更改";
+
+/* Accessibility hint for the settings button */
+"SETTINGS_BUTTON_ACCESSIBILITY" = "设置";
+
+/* Table cell label */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "始终使用中继进行通话";
+
+/* User settings section footer, a detailed explanation */
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用Signal服务器对所有通话进行中继，以防止联系人获取您的IP地址。\n开启会降低通话质量。";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清空历史记录";
@@ -807,6 +943,12 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "通知";
 
+/* Label for 'CallKit privacy' preference */
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "显示呼叫者的名称与号码";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS 通话整合";
+
 /* No comment provided by engineer. */
 "SETTINGS_PRIVACY_TITLE" = "隐私";
 
@@ -817,13 +959,13 @@
 "SETTINGS_SCREEN_SECURITY" = "开启屏幕锁定功能";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "阻止Signal预览页面出现在应用切换窗口。";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "阻止Signal预览页面显示在应用切换窗口。";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "CallKit allows you to answer calls directly from your lockscreen. Be aware that when using CallKit, Apple syncs some call metadata to your iCloud account.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS 通话整合会在您的锁屏界面和系统通话记录中显示您的Signal通话记录。您可以选择显示您的联系人的名称与号码。如果您已开启iCloud，系统会与苹果公司共享该通话记录。";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "拨号中";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "屏幕安全";
@@ -868,16 +1010,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "安全码已验证!";
 
 /* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "无法从服务器获取最新联系人列表。请稍后重试。";
-
-/* No comment provided by engineer. */
 "TXT_CANCEL_TITLE" = "取消";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "删除";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "Unable to place call.";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "未存档";
@@ -915,14 +1051,26 @@
 /* No comment provided by engineer. */
 "UPDATE_BUTTON_TITLE" = "更新";
 
+/* Description of CallKit to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单的从锁屏应答来电。默认设置会隐藏呼叫人的信息，所以该信息会被保密。";
+
+/* button label shown once when when user upgrades app, in context of call kit */
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "更多信息请见您的隐私设置。";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑动即可应答";
+
+/* Description of video calling to upgrading (existing) users */
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已开始支持安全的视频通话。正常的开始Signal通话，点击相机按钮，对方即可看到您。";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "现推出安全的视频通话！";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "升级Signal…";
 
-/* message footer while attachment is uploading */
-"UPLOADING_MESSAGE_TEXT" = "上传中…";
-
-/* button text during registration to make corrections to your submitted phone number */
-"VERIFICATION_CHALLENGE_CHANGE_NUMBER" = "更换号码";
+/* button text for back button on verification view */
+"VERIFICATION_BACK_BUTTON" = "退后";
 
 /* Text field placeholder for SMS verification code during registration */
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "验证码";
@@ -931,13 +1079,16 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "通过电话呼叫我以获取验证码";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "重新获取验证码";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "重新通过SMS短信发送验证码";
 
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "提交验证码";
 
 /* Navigation title in the registration flow - during the sms code verification process. */
 "VERIFICATION_HEADER" = "验证";
+
+/* Label indicating the phone number currently being verified. */
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "验证中：%@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "验证安全码";

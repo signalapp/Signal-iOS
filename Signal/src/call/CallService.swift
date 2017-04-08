@@ -253,18 +253,6 @@ protocol CallServiceObserver: class {
         return  "CallServiceActiveCallNotification"
     }
 
-    class func presentCallInterstitialNotificationName() -> String {
-        return  "CallServicePresentCallInterstitialNotification"
-    }
-
-    class func dismissCallInterstitialNotificationName() -> String {
-        return  "CallServiceDismissCallInterstitialNotification"
-    }
-
-    class func callWasCancelledByInterstitialNotificationName() -> String {
-        return  "CallServiceCallWasCancelledByInterstitialNotification"
-    }
-
     // MARK: - Service Actions
 
     /**
@@ -396,7 +384,7 @@ protocol CallServiceObserver: class {
 
         // Insert missed call record
         if let callRecord = call.callRecord {
-            if (callRecord.callType == RPRecentCallTypeIncoming) {
+            if callRecord.callType == RPRecentCallTypeIncoming {
                 callRecord.updateCallType(RPRecentCallTypeMissed)
             }
         } else {
@@ -453,7 +441,7 @@ protocol CallServiceObserver: class {
         Logger.verbose("\(TAG) receivedCallOffer for thread:\(thread)")
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard call == nil && !Environment.getCurrent().phoneManager.hasOngoingRedphoneCall() else {
+        guard call == nil else {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
             Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call)")
 
@@ -1198,6 +1186,7 @@ protocol CallServiceObserver: class {
             call!.hasLocalVideo)
     }
 
+    //TODO only fire this when it's changed? as of right now it gets called whenever you e.g. lock the phone while it's incoming ringing.
     private func updateIsVideoEnabled() {
         AssertIsOnMainThread()
 

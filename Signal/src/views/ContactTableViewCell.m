@@ -1,9 +1,14 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
-#import "PhoneManager.h"
+#import "UIFont+OWS.h"
 #import "UIUtil.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,14 +21,75 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ContactTableViewCell
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self configureProgrammatically];
+    }
+    return self;
+}
+
++ (nullable NSString *)reuseIdentifier
+{
+    return NSStringFromClass(self.class);
+}
+
 - (nullable NSString *)reuseIdentifier
 {
     return NSStringFromClass(self.class);
 }
 
++ (CGFloat)rowHeight
+{
+    return 59.f;
+}
+
+- (void)configureProgrammatically
+{
+    const CGFloat kAvatarSize = 40.f;
+    _avatarView = [UIImageView new];
+    _avatarView.contentMode = UIViewContentModeScaleToFill;
+    _avatarView.image = [UIImage imageNamed:@"empty-group-avatar"];
+    // applyRoundedBorderToImageView requires the avatar to have
+    // the correct size.
+    _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
+    [self.contentView addSubview:_avatarView];
+
+    _nameLabel = [UILabel new];
+    _nameLabel.contentMode = UIViewContentModeLeft;
+    _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    [self.contentView addSubview:_nameLabel];
+
+    [_avatarView autoVCenterInSuperview];
+    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:8.f];
+    [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [_nameLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:_avatarView withOffset:12.f];
+
+    // Force layout, since imageView isn't being initally rendered on App Store optimized build.
+    [self layoutSubviews];
+}
+
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
 {
-    self.nameLabel.attributedText = [contactsManager formattedFullNameForContact:contact font:self.nameLabel.font];
+    NSMutableAttributedString *attributedText =
+        [[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font] mutableCopy];
+    if (self.accessoryMessage) {
+        UILabel *blockedLabel = [[UILabel alloc] init];
+        blockedLabel.textAlignment = NSTextAlignmentRight;
+        blockedLabel.text = self.accessoryMessage;
+        blockedLabel.font = [UIFont ows_mediumFontWithSize:13.f];
+        blockedLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        [blockedLabel sizeToFit];
+
+        self.accessoryView = blockedLabel;
+    }
+    self.nameLabel.attributedText = attributedText;
     self.avatarView.image =
         [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
                                                        name:contact.fullName
@@ -37,6 +103,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super layoutSubviews];
     [UIUtil applyRoundedBorderToImageView:self.avatarView];
+}
+
+- (void)prepareForReuse
+{
+    self.accessoryMessage = nil;
+    self.accessoryView = nil;
+    self.accessoryType = UITableViewCellAccessoryNone;
 }
 
 @end

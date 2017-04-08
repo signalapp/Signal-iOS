@@ -14,6 +14,10 @@ default: test
 
 ci: dependencies test
 
+update_dependencies:
+	pod update
+	carthage update --platform iOS
+
 dependencies:
 	cd $(WORKING_DIR) && \
 		git submodule update --init

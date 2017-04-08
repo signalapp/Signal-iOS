@@ -1,34 +1,35 @@
-//  Created by Frederic Jacobs on 17/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSVideoAttachmentAdapter.h"
+#import "AttachmentUploadView.h"
+#import "JSQMediaItem+OWS.h"
 #import "MIMETypeUtil.h"
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "JSQMediaItem+OWS.h"
-#import <FFCircularProgressView.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SCWaveformView.h>
 #define AUDIO_BAR_HEIGHT 36
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSVideoAttachmentAdapter ()
 
-@property UIImage *image;
-@property (strong, nonatomic) UIImageView *cachedImageView;
-@property (strong, nonatomic) UIImageView *videoPlayButton;
-@property (strong, nonatomic) CALayer *maskLayer;
-@property (strong, nonatomic) FFCircularProgressView *progressView;
-@property (strong, nonatomic) TSAttachmentStream *attachment;
-@property (strong, nonatomic) UIProgressView *audioProgress;
-@property (strong, nonatomic) SCWaveformView *waveform;
-@property (strong, nonatomic) UIButton *audioPlayPauseButton;
-@property (strong, nonatomic) UILabel *durationLabel;
-@property (strong, nonatomic) UIView *audioBubble;
+@property (nonatomic) UIImage *image;
+@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic) TSAttachmentStream *attachment;
+@property (nonatomic, nullable) SCWaveformView *waveform;
+@property (nonatomic, nullable) UIButton *audioPlayPauseButton;
+@property (nonatomic, nullable) UILabel *durationLabel;
 @property (nonatomic) BOOL incoming;
+@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 
 @end
+
+#pragma mark -
 
 @implementation TSVideoAttachmentAdapter
 
@@ -44,10 +45,6 @@
         _incoming        = incoming;
     }
     return self;
-}
-
-- (BOOL)isImage {
-    return NO;
 }
 
 - (BOOL)isAudio {
@@ -117,27 +114,17 @@
                                                                         isOutgoing:self.appliesMediaViewMaskAsOutgoing];
             self.cachedImageView   = imageView;
             UIImage *img           = [UIImage imageNamed:@"play_button"];
-            _videoPlayButton       = [[UIImageView alloc] initWithImage:img];
-            _videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
-            [self.cachedImageView addSubview:_videoPlayButton];
-            _videoPlayButton.hidden = YES;
-            _maskLayer              = [CALayer layer];
-            [_maskLayer setBackgroundColor:[UIColor blackColor].CGColor];
-            [_maskLayer setOpacity:0.4f];
-            [_maskLayer setFrame:self.cachedImageView.frame];
-            [self.cachedImageView.layer addSublayer:_maskLayer];
-            _progressView = [[FFCircularProgressView alloc]
-                initWithFrame:CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37)];
-            [_cachedImageView addSubview:_progressView];
-            if (_attachment.isDownloaded) {
-                _videoPlayButton.hidden = NO;
-                _maskLayer.hidden       = YES;
-                _progressView.hidden    = YES;
+            UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:img];
+            videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
+            [self.cachedImageView addSubview:videoPlayButton];
+
+            if (!_incoming) {
+                self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                                   superview:imageView
+                                                                     attachmentStateCallback:^(BOOL isAttachmentReady) {
+                                                                         videoPlayButton.hidden = !isAttachmentReady;
+                                                                     }];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(attachmentUploadProgress:)
-                                                         name:@"attachmentUploadProgress"
-                                                       object:nil];
         }
     } else if ([self isAudio]) {
         NSError *err = NULL;
@@ -155,11 +142,11 @@
             self.waveform.progress = 0.0;
         }
 
-        _audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
-        _audioBubble.backgroundColor =
+        UIView *audioBubble = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
+        audioBubble.backgroundColor =
             [UIColor colorWithRed:10 / 255.0f green:130 / 255.0f blue:253 / 255.0f alpha:1.0f];
-        _audioBubble.layer.cornerRadius  = 18;
-        _audioBubble.layer.masksToBounds = YES;
+        audioBubble.layer.cornerRadius = 18;
+        audioBubble.layer.masksToBounds = YES;
 
         _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
         [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"]
@@ -178,7 +165,7 @@
         _durationLabel.textColor       = [UIColor whiteColor];
 
         if (_incoming) {
-            _audioBubble.backgroundColor =
+            audioBubble.backgroundColor =
                 [UIColor colorWithRed:229 / 255.0f green:228 / 255.0f blue:234 / 255.0f alpha:1.0f];
             _waveform.normalColor = [UIColor whiteColor];
             _waveform.progressColor =
@@ -188,11 +175,24 @@
             _durationLabel.textColor = [UIColor darkTextColor];
         }
 
-        [_audioBubble addSubview:_waveform];
-        [_audioBubble addSubview:_audioPlayPauseButton];
-        [_audioBubble addSubview:_durationLabel];
+        [audioBubble addSubview:_waveform];
+        [audioBubble addSubview:_audioPlayPauseButton];
+        [audioBubble addSubview:_durationLabel];
 
-        return _audioBubble;
+        if (!_incoming) {
+            __weak TSVideoAttachmentAdapter *weakSelf = self;
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                               superview:audioBubble
+                                                                 attachmentStateCallback:^(BOOL isAttachmentReady) {
+                                                                     weakSelf.audioPlayPauseButton.enabled
+                                                                         = isAttachmentReady;
+                                                                 }];
+        }
+
+        return audioBubble;
+    } else {
+        // Unknown media type.
+        OWSAssert(0);
     }
     return self.cachedImageView;
 }
@@ -213,35 +213,6 @@
 
 - (NSUInteger)hash {
     return [super hash];
-}
-
-- (void)attachmentUploadProgress:(NSNotification *)notification {
-    NSDictionary *userinfo = [notification userInfo];
-    double progress        = [[userinfo objectForKey:@"progress"] doubleValue];
-    NSString *attachmentID = [userinfo objectForKey:@"attachmentID"];
-    if ([_attachmentId isEqualToString:attachmentID]) {
-        NSLog(@"is downloaded: %d", _attachment.isDownloaded);
-        if (!isnan(progress)) {
-            [_progressView setProgress:(float)progress];
-        }
-        if (progress >= 1) {
-            _maskLayer.hidden        = YES;
-            _progressView.hidden     = YES;
-            _videoPlayButton.hidden  = NO;
-            _attachment.isDownloaded = YES; // TODO isn't this redundant with attachment processor?
-            [[TSMessagesManager sharedManager]
-                    .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-              [_attachment saveWithTransaction:transaction];
-            }];
-        }
-    }
-    // set progress on bar
-}
-
-- (void)dealloc {
-    _image           = nil;
-    _cachedImageView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {
@@ -270,6 +241,7 @@
     if ([self isVideo]) {
         if (action == @selector(copy:)) {
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            // TODO: This assumes all videos are mp4.
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4];
             return;
         } else if (action == NSSelectorFromString(@"save:")) {
@@ -284,7 +256,6 @@
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
 
             NSString *pasteboardType = [MIMETypeUtil getSupportedExtensionFromAudioMIMEType:self.contentType];
-            [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)UIPasteboardNameGeneral];
 
             if ([pasteboardType isEqualToString:@"mp3"]) {
                 [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMP3];
@@ -308,3 +279,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

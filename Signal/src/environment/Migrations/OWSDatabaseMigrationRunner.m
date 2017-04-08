@@ -1,10 +1,12 @@
-//  Created by Michael Kirk on 9/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDatabaseMigrationRunner.h"
 #import "OWS100RemoveTSRecipientsMigration.h"
 #import "OWS101ExistingUsersBlockOnIdentityChange.h"
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
+#import "OWS103EnableVideoCalling.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
     return @[
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
         [[OWS101ExistingUsersBlockOnIdentityChange alloc] initWithStorageManager:self.storageManager],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager]
+        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
+        [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager]
     ];
 }
 

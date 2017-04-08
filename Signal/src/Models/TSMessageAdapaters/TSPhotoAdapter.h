@@ -1,20 +1,21 @@
-//  Created by Frederic Jacobs on 17/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQPhotoMediaItem.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
 
 @interface TSPhotoAdapter : JSQPhotoMediaItem <OWSMessageEditing>
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment;
-
-- (BOOL)isImage;
-- (BOOL)isAudio;
-- (BOOL)isVideo;
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
 @property TSAttachmentStream *attachment;
 @property NSString *attachmentId;
 
 @end
+
+NS_ASSUME_NONNULL_END
