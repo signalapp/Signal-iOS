@@ -229,10 +229,10 @@
                 // consistent between launches of the app.
                 //
                 // Therefore, we sort using simple hashes of the colors.
-                // The hashs are determined by getting the RGB components for each
-                // color, converting them to a byte, reversing the order of the bits
-                // in that byte (so that the pseudo-randomness of the _least_ significant
-                // bits predominates), then XOR-ing those transformed channels together.
+                // The hashs are constructed out of hashes for each RGB
+                // component of the color. The component hashes are
+                // constructed by XOR-ing the bytes in the floating-point
+                // representation of the component.
                 CGFloat red, green, blue, alpha;
                 BOOL success = [left getRed:&red green:&green blue:&blue alpha:&alpha];
                 OWSAssert(success);
