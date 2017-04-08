@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/19/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
@@ -27,7 +28,7 @@ class MessageFetcherJob: NSObject {
         Logger.debug("\(TAG) \(#function)")
         guard signalService.isCensored  else {
             Logger.debug("\(self.TAG) delegating message fetching to SocketManager since we're using normal transport.")
-            TSSocketManager.becomeActive(fromBackgroundExpectMessage: true)
+            TSSocketManager.requestSocketOpen()
             return
         }
 
@@ -35,10 +36,10 @@ class MessageFetcherJob: NSObject {
 
         let promiseId = NSDate().timeIntervalSince1970
         Logger.debug("\(self.TAG) starting promise: \(promiseId)")
-        let runPromise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> () in
+        let runPromise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> Void in
             for envelope in envelopes {
                 Logger.info("\(self.TAG) received envelope.")
-                self.messagesManager.handleReceivedEnvelope(envelope);
+                self.messagesManager.handleReceivedEnvelope(envelope)
 
                 self.acknowledgeDelivery(envelope: envelope)
             }
@@ -59,7 +60,7 @@ class MessageFetcherJob: NSObject {
     // use in DEBUG or wherever you can't receive push notifications to poll for messages.
     // Do not use in production.
     func startRunLoop(timeInterval: Double) {
-        Logger.error("\(TAG) Starting message fetch polling. This should not be used in production.");
+        Logger.error("\(TAG) Starting message fetch polling. This should not be used in production.")
         timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(runAsync), userInfo: nil, repeats: true)
     }
 
@@ -84,7 +85,7 @@ class MessageFetcherJob: NSObject {
             return nil
         }
 
-        let moreMessages = { () -> Bool in 
+        let moreMessages = { () -> Bool in
             if let responseMore = responseDict["more"] as? Bool {
                 return responseMore
             } else {
@@ -160,7 +161,7 @@ class MessageFetcherJob: NSObject {
 
             self.networkManager.makeRequest(
                 messagesRequest,
-                success: { (task: URLSessionDataTask?, responseObject: Any?) -> () in
+                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
                         Logger.error("\(self.TAG) response object had unexpected content")
                         return reject(OWSErrorMakeUnableToProcessServerResponseError())
@@ -168,7 +169,7 @@ class MessageFetcherJob: NSObject {
 
                     fulfill((envelopes: envelopes, more: more))
                 },
-                failure: { (task: URLSessionDataTask?, error: Error?) in
+                failure: { (_: URLSessionDataTask?, error: Error?) in
                     guard let error = error else {
                         Logger.error("\(self.TAG) error was surpringly nil. sheesh rough day.")
                         return reject(OWSErrorMakeUnableToProcessServerResponseError())
@@ -182,10 +183,10 @@ class MessageFetcherJob: NSObject {
     func acknowledgeDelivery(envelope: OWSSignalServiceProtosEnvelope) {
         let request = OWSAcknowledgeMessageDeliveryRequest(source: envelope.source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
-                                        success: { (task: URLSessionDataTask?, responseObject: Any?) -> () in
+                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
                                             Logger.debug("\(self.TAG) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
         },
-                                        failure: { (task: URLSessionDataTask?, error: Error?) in
+                                        failure: { (_: URLSessionDataTask?, error: Error?) in
                                             Logger.debug("\(self.TAG) acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(error)")
         })
     }

@@ -140,38 +140,33 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // At this point, potentially lengthy DB locking migrations could be running.
     // Avoid blocking app launch by putting all further possible DB access in async thread.
-    UIApplicationState launchState = application.applicationState;
-    [[TSAccountManager sharedInstance] ifRegistered:YES runAsync:^{
-        if (launchState == UIApplicationStateInactive) {
-            DDLogWarn(@"The app was launched from inactive");
-            [TSSocketManager becomeActiveFromForeground];
-        } else if (launchState == UIApplicationStateBackground) {
-            DDLogWarn(@"The app was launched from being backgrounded");
-            [TSSocketManager becomeActiveFromBackgroundExpectMessage:NO];
-        } else {
-            DDLogWarn(@"The app was launched in an unknown way");
-        }
+    [[TSAccountManager sharedInstance]
+        ifRegistered:YES
+            runAsync:^{
+                [TSSocketManager requestSocketOpen];
 
-        RTCInitializeSSL();
+                RTCInitializeSSL();
 
-        [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                  accountManager:[Environment getCurrent].accountManager
-                                     preferences:[Environment preferences]].then(^{
-            DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-        }).catch(^(NSError *_Nonnull error) {
-            DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-        });
+                [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                          accountManager:[Environment getCurrent].accountManager
+                                             preferences:[Environment preferences]]
+                    .then(^{
+                        DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
+                    })
+                    .catch(^(NSError *_Nonnull error) {
+                        DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
+                    });
 
-        // Clean up any messages that expired since last launch.
-        [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                // Clean up any messages that expired since last launch.
+                [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
 
-        // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-        // sent before the app exited should be marked as failures.
-        [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-        [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+                // sent before the app exited should be marked as failures.
+                [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
 
-        [AppStoreRating setupRatingLibrary];
-    }];
+                [AppStoreRating setupRatingLibrary];
+            }];
 
     [[TSAccountManager sharedInstance] ifRegistered:NO runAsync:^{
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -273,7 +268,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                // We're double checking that the app is active, to be sure since we
                                                // can't verify in production env due to code
                                                // signing.
-                                               [TSSocketManager becomeActiveFromForeground];
+                                               [TSSocketManager requestSocketOpen];
                                                [[Environment getCurrent].contactsManager verifyABPermission];
                                                
                                                // This will fetch new messages, if we're using domain
@@ -300,7 +295,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
           dispatch_sync(dispatch_get_main_queue(), ^{
               [self protectScreen];
               [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
-              [TSSocketManager resignActivity];
           });
       }
 
