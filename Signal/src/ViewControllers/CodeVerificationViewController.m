@@ -139,7 +139,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
                                                         @"Text field placeholder for SMS verification code during registration");
     _challengeTextField.font = [UIFont ows_lightFontWithSize:21.f];
     _challengeTextField.textAlignment = NSTextAlignmentCenter;
-    _challengeTextField.keyboardType = UIKeyboardTypePhonePad;
+    _challengeTextField.keyboardType = UIKeyboardTypeNumberPad;
     _challengeTextField.delegate    = self;
     [self.view addSubview:_challengeTextField];
     [_challengeTextField autoPinWidthToSuperviewWithMargin:kHMargin];
