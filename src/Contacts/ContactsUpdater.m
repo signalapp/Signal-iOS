@@ -94,10 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
         return;
     }
-    
+
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
                              success:^(NSSet<NSString *> *_Nonnull matchedIds) {
-                                 if (matchedIds.count == 1) {
+                                 if (matchedIds.count > 0) {
                                      NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
                                      for (NSString *identifier in matchedIds) {
                                          [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
