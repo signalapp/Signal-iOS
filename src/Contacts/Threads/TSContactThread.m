@@ -38,10 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
         // for immediate use, then ask ContactsUpdater to try to update it async.
         recipient =
             [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId
-                                                            relay:relay
-                                                    supportsVoice:YES
-                                                   // Default to NO; ContactsUpdater will try to update this property.
-                                                   supportsWebRTC:NO];
+                                                            relay:relay];
         [recipient saveWithTransaction:transaction];
 
         // Update recipient with Server record async.
