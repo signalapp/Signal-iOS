@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isAttachmentReady;
 
+@property (nonatomic) CGFloat lastProgress;
+
 @end
 
 #pragma mark -
@@ -100,10 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setLastProgress:(CGFloat)lastProgress
+{
+    _lastProgress = lastProgress;
+
+    [self ensureViewState];
+}
+
 - (void)ensureViewState
 {
-    _maskLayer.hidden = self.isAttachmentReady;
-    _progressView.hidden = self.isAttachmentReady;
+    _maskLayer.hidden = self.isAttachmentReady || self.lastProgress == 0;
+    _progressView.hidden = self.isAttachmentReady || self.lastProgress == 0;
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
@@ -114,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self.attachment.uniqueId isEqual:attachmentID]) {
         if (!isnan(progress)) {
             [_progressView setProgress:progress];
+            self.lastProgress = progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
             OWSAssert(0);
