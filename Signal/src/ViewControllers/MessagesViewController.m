@@ -773,17 +773,22 @@ typedef enum : NSUInteger {
         _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
         _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
         _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+        _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
     }
     // This method gets called multiple times, so it's important we re-layout the unread badge
     // with respect to the new backItem.
     [backItem.customView addSubview:_backButtonUnreadCountView];
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:0];
-    [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth toSize:unreadCountViewDiameter];
+    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:1];
     [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];
+    // We set a min width, but we will also pin to our subview label, so we can grow to accomodate multiple digits.
+    [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
+                                          toSize:unreadCountViewDiameter
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
 
     [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
-    [_backButtonUnreadCountLabel autoCenterInSuperview];
+    [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
+    [_backButtonUnreadCountLabel autoPinHeightToSuperview];
 
     // Initialize newly created unread count badge to accurately reflect the current unread count.
     [self updateBackButtonUnreadCount];
@@ -2715,7 +2720,6 @@ typedef enum : NSUInteger {
 
     OWSAssert(_backButtonUnreadCountLabel != nil);
     _backButtonUnreadCountLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
-    [_backButtonUnreadCountLabel sizeToFit];
 }
 
 #pragma mark 3D Touch Preview Actions
