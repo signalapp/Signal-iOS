@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Always use date, since we're creating these interactions after the fact
     // and back-dating them.
+    //
+    // By default [TSMessage receiptDateForSorting] will prefer to use receivedAtDate
+    // which is not back-dated.
     return self.date;
 }
 

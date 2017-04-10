@@ -49,7 +49,7 @@
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction relay:nil];
+        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
