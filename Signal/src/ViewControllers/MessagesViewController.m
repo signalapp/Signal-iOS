@@ -524,7 +524,8 @@ typedef enum : NSUInteger {
                                                            ];
 
     [self ensureBlockStateIndicator];
-    
+
+    // Avoid layout corrupt issues and out-of-date message subtitles.
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 }
