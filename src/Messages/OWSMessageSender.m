@@ -73,6 +73,8 @@ void AssertIsOnSendingQueue()
 
 @end
 
+#pragma mark -
+
 typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
     OWSSendMessageOperationStateNew,
     OWSSendMessageOperationStateExecuting,
@@ -85,7 +87,11 @@ typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
                      success:(void (^)())successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
+- (void)saveMessage:(TSOutgoingMessage *)message withError:(NSError *)error;
+
 @end
+
+#pragma mark -
 
 NSString *const OWSSendMessageOperationKeyIsExecuting = @"isExecuting";
 NSString *const OWSSendMessageOperationKeyIsFinished = @"isFinished";
@@ -102,6 +108,8 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 
 @end
+
+#pragma mark -
 
 @implementation OWSSendMessageOperation
 
@@ -228,6 +236,9 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             [self tryWithRemainingRetries:remainingRetries - 1];
         } else {
             DDLogWarn(@"%@ Too many failures. Giving up sending.", self.tag);
+
+            [self.messageSender saveMessage:self.message withError:error];
+
             self.failureHandler(error);
         }
     };
@@ -363,17 +374,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failureHandler
 {
     DDLogDebug(@"%@ sending message: %@", self.tag, message.debugDescription);
-    RetryableFailureHandler markAndFailureHandler = ^(NSError *error, BOOL isRetryable) {
-        // TODO do we really want to mark this as failed if we're still retrying?
-        [self saveMessage:message withError:error];
-        failureHandler(error, isRetryable);
-    };
 
     [self ensureAnyAttachmentsUploaded:message
-                               success:^() {
-                                   [self deliverMessage:message success:successHandler failure:markAndFailureHandler];
-                               }
-                               failure:markAndFailureHandler];
+        success:^() {
+            [self deliverMessage:message
+                         success:successHandler
+                         failure:^(NSError *error, BOOL isRetryable) {
+                             DDLogDebug(@"%@ Message send attempt failed: %@", self.tag, message.debugDescription);
+                             failureHandler(error, isRetryable);
+                         }];
+        }
+        failure:^(NSError *error, BOOL isRetryable) {
+            DDLogDebug(@"%@ Attachment upload attempt failed: %@", self.tag, message.debugDescription);
+            failureHandler(error, isRetryable);
+        }];
 }
 
 - (void)ensureAnyAttachmentsUploaded:(TSOutgoingMessage *)message
