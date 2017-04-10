@@ -117,7 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
         __block long outgoingMessageCount = 0;
         __block BOOL hasUnknownContactBlockOffer = NO;
 
-        NSMutableArray *blockOffers = [NSMutableArray new];
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:contactThread.uniqueId
                       usingBlock:^(
@@ -125,22 +124,25 @@ NS_ASSUME_NONNULL_BEGIN
 
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
                               hasUnknownContactBlockOffer = YES;
-                              [blockOffers addObject:object];
+                              // If there already is a block offer, abort.
+                              *stop = YES;
                           } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
                               TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
-                              if (!firstIncomingMessage ||
-                                  [[firstIncomingMessage receiptDateForSorting]
-                                      compare:[incomingMessage receiptDateForSorting]]
-                                      == NSOrderedDescending) {
+                              if (!firstIncomingMessage) {
                                   firstIncomingMessage = incomingMessage;
+                              } else {
+                                  OWSAssert([[firstIncomingMessage receiptDateForSorting]
+                                                compare:[incomingMessage receiptDateForSorting]]
+                                      == NSOrderedAscending);
                               }
                           } else if ([object isKindOfClass:[TSOutgoingMessage class]]) {
                               TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)object;
-                              if (!firstOutgoingMessage ||
-                                  [[firstOutgoingMessage receiptDateForSorting]
-                                      compare:[outgoingMessage receiptDateForSorting]]
-                                      == NSOrderedDescending) {
+                              if (!firstOutgoingMessage) {
                                   firstOutgoingMessage = outgoingMessage;
+                              } else {
+                                  OWSAssert([[firstOutgoingMessage receiptDateForSorting]
+                                                compare:[outgoingMessage receiptDateForSorting]]
+                                      == NSOrderedAscending);
                               }
                               outgoingMessageCount++;
                               if (outgoingMessageCount > kMaxOutgoingMessageCount) {
@@ -183,9 +185,6 @@ NS_ASSUME_NONNULL_BEGIN
         TSIncomingMessage *firstMessage = firstIncomingMessage;
         uint64_t blockOfferTimestamp = firstMessage.timestamp - 1;
 
-        // Create an error message we may or may not user.
-        // We create it eagerly to ensure that it's timestamps make it the
-        // first message in the thread.
         TSErrorMessage *errorMessage =
             [OWSUnknownContactBlockOfferMessage unknownContactBlockOfferMessage:blockOfferTimestamp
                                                                          thread:contactThread
