@@ -194,6 +194,8 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
     __weak OWSConversationSettingsTableViewController *weakSelf = self;
 
+    // First section.
+
     NSMutableArray *firstSectionItems = [NSMutableArray new];
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
         [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
@@ -209,10 +211,30 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
                                          }]];
     }
 
+    [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
+        weakSelf.toggleDisappearingMessagesCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        return weakSelf.toggleDisappearingMessagesCell;
+    }
+                                                       customRowHeight:108.f
+                                                           actionBlock:nil]];
+
+    if (self.disappearingMessagesSwitch.isOn) {
+        [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
+            weakSelf.disappearingMessagesDurationCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return weakSelf.disappearingMessagesDurationCell;
+        }
+                                                           customRowHeight:76.f
+                                                               actionBlock:nil]];
+    }
+
+    [contents addSection:[OWSTableSection sectionWithTitle:nil items:firstSectionItems]];
+
+    // Second section.
+
     if (!self.isGroupThread) {
         BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.signalId];
 
-        [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
+        OWSTableItem *item = [OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
             cell.textLabel.text = NSLocalizedString(
                 @"CONVERSATION_SETTINGS_BLOCK_THIS_USER", @"table cell label in conversation settings");
@@ -234,26 +256,17 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
             cell.accessoryView = blockUserSwitch;
             return cell;
         }
-                                                               actionBlock:nil]];
+                                                       actionBlock:nil];
+        OWSTableSection *section = [OWSTableSection sectionWithTitle:nil
+                                                               items:@[
+                                                                   item,
+                                                               ]];
+        section.footerTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_FOOTER_TITLE",
+            @"A footer title for the block user option in the conversation settings");
+        [contents addSection:section];
     }
 
-    [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
-        weakSelf.toggleDisappearingMessagesCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return weakSelf.toggleDisappearingMessagesCell;
-    }
-                                                       customRowHeight:108.f
-                                                           actionBlock:nil]];
-
-    if (self.disappearingMessagesSwitch.isOn) {
-        [firstSectionItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
-            weakSelf.disappearingMessagesDurationCell.selectionStyle = UITableViewCellSelectionStyleNone;
-            return weakSelf.disappearingMessagesDurationCell;
-        }
-                                                           customRowHeight:76.f
-                                                               actionBlock:nil]];
-    }
-
-    [contents addSection:[OWSTableSection sectionWithTitle:nil items:firstSectionItems]];
+    // Third section.
 
     if (self.isGroupThread) {
         NSArray *groupItems = @[
