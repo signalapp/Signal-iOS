@@ -173,11 +173,6 @@ typedef enum : NSUInteger {
 @interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate, OWSTextViewPasteDelegate> {
     UIImage *tappedImage;
     BOOL isGroupConversation;
-    
-    UIView *_unreadContainer;
-    UIImageView *_unreadBackground;
-    UILabel *_unreadLabel;
-    NSUInteger _unreadCount;
 }
 
 @property (nonatomic) TSThread *thread;
@@ -200,6 +195,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
 @property (nonatomic) UIView *blockStateIndicator;
+
+// Back Button Unread Count
+@property (nonatomic, readonly) UIView *backButtonUnreadCountView;
+@property (nonatomic, readonly) UILabel *backButtonUnreadCountLabel;
+@property (nonatomic, readonly) NSUInteger backButtonUnreadCount;
 
 @property (nonatomic) CGFloat previousCollectionViewFrameWidth;
 
@@ -681,8 +681,7 @@ typedef enum : NSUInteger {
     [self dismissKeyBoard];
     [self startReadTimer];
 
-    // TODO prep this sync one time before view loads so we don't have to repaint.
-    [self updateBackButtonAsync];
+    [self updateBackButtonUnreadCount];
 
     [self.inputToolbar.contentView.textView endEditing:YES];
 
@@ -692,26 +691,12 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updateBackButtonAsync {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSUInteger count = [self.messagesManager unreadMessagesCountExcept:self.thread];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self) {
-                [self setUnreadCount:count];
-            }
-        });
-    });
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
 
     // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
-
-    [_unreadContainer removeFromSuperview];
-    _unreadContainer = nil;
 
     [_audioPlayerPoller invalidate];
     [_audioPlayer stop];
@@ -776,6 +761,38 @@ typedef enum : NSUInteger {
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
+    const CGFloat unreadCountViewDiameter = 16;
+    if (_backButtonUnreadCountView == nil) {
+        _backButtonUnreadCountView = [UIView new];
+        _backButtonUnreadCountView.layer.cornerRadius = unreadCountViewDiameter / 2;
+        _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
+        _backButtonUnreadCountView.hidden = YES;
+        _backButtonUnreadCountView.userInteractionEnabled = NO;
+
+        _backButtonUnreadCountLabel = [UILabel new];
+        _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
+        _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
+        _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+        _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    // This method gets called multiple times, so it's important we re-layout the unread badge
+    // with respect to the new backItem.
+    [backItem.customView addSubview:_backButtonUnreadCountView];
+    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
+    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:1];
+    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];
+    // We set a min width, but we will also pin to our subview label, so we can grow to accomodate multiple digits.
+    [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
+                                          toSize:unreadCountViewDiameter
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
+
+    [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
+    [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
+    [_backButtonUnreadCountLabel autoPinHeightToSuperview];
+
+    // Initialize newly created unread count badge to accurately reflect the current unread count.
+    [self updateBackButtonUnreadCount];
+
 
     const CGFloat kTitleVSpacing = 0.f;
     if (!self.navigationBarTitleView) {
@@ -2324,7 +2341,7 @@ typedef enum : NSUInteger {
     // models in order to jump to the most recent commit.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
-    [self updateBackButtonAsync];
+    [self updateBackButtonUnreadCount];
 
     if (isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -2683,57 +2700,26 @@ typedef enum : NSUInteger {
 
 #pragma mark Unread Badge
 
-- (void)setUnreadCount:(NSUInteger)unreadCount {
-    if (_unreadCount != unreadCount) {
-        _unreadCount = unreadCount;
+- (void)updateBackButtonUnreadCount
+{
+    AssertIsOnMainThread();
+    self.backButtonUnreadCount = [self.messagesManager unreadMessagesCountExcept:self.thread];
+}
 
-        if (_unreadCount > 0) {
-            if (_unreadContainer == nil) {
-                static UIImage *backgroundImage = nil;
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                  UIGraphicsBeginImageContextWithOptions(CGSizeMake(17.0f, 17.0f), false, 0.0f);
-                  CGContextRef context = UIGraphicsGetCurrentContext();
-                  CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
-                  CGContextFillEllipseInRect(context, CGRectMake(0.0f, 0.0f, 17.0f, 17.0f));
-                  backgroundImage =
-                      [UIGraphicsGetImageFromCurrentImageContext() stretchableImageWithLeftCapWidth:8 topCapHeight:8];
-                  UIGraphicsEndImageContext();
-                });
-
-                _unreadContainer = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 10.0f, 10.0f)];
-                _unreadContainer.userInteractionEnabled = NO;
-                _unreadContainer.layer.zPosition        = 2000;
-                [self.navigationController.navigationBar addSubview:_unreadContainer];
-
-                _unreadBackground = [[UIImageView alloc] initWithImage:backgroundImage];
-                [_unreadContainer addSubview:_unreadBackground];
-
-                _unreadLabel                 = [[UILabel alloc] init];
-                _unreadLabel.backgroundColor = [UIColor clearColor];
-                _unreadLabel.textColor       = [UIColor whiteColor];
-                _unreadLabel.font            = [UIFont systemFontOfSize:12];
-                [_unreadContainer addSubview:_unreadLabel];
-            }
-            _unreadContainer.hidden = false;
-
-            _unreadLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
-            [_unreadLabel sizeToFit];
-
-            CGPoint offset = CGPointMake(17.0f, 2.0f);
-
-            _unreadBackground.frame =
-                CGRectMake(offset.x, offset.y, MAX(_unreadLabel.frame.size.width + 8.0f, 17.0f), 17.0f);
-            _unreadLabel.frame = CGRectMake(offset.x
-                    + (CGFloat)floor(
-                          (2.0 * (_unreadBackground.frame.size.width - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
-                offset.y + 1.0f,
-                _unreadLabel.frame.size.width,
-                _unreadLabel.frame.size.height);
-        } else if (_unreadContainer != nil) {
-            _unreadContainer.hidden = true;
-        }
+- (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
+{
+    AssertIsOnMainThread();
+    if (_backButtonUnreadCount == unreadCount) {
+        // No need to re-render same count.
+        return;
     }
+    _backButtonUnreadCount = unreadCount;
+
+    OWSAssert(_backButtonUnreadCountView != nil);
+    _backButtonUnreadCountView.hidden = unreadCount <= 0;
+
+    OWSAssert(_backButtonUnreadCountLabel != nil);
+    _backButtonUnreadCountLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
 }
 
 #pragma mark 3D Touch Preview Actions
