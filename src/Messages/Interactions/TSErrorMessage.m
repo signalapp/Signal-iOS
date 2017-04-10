@@ -1,9 +1,5 @@
 //
-//  TSErrorMessage.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 12/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -36,8 +32,14 @@
     }
 
     _errorType = errorMessageType;
-    // TODO Move this out of model class.
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:self inThread:thread];
+    // TODO: Move this out of model class.
+    //
+    //       For now, dispatch async to ensure we're not inside a transaction
+    //       and thereby avoid deadlock.
+    TSErrorMessage *errorMessage = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:thread];
+    });
 
     return self;
 }
@@ -47,7 +49,7 @@
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction relay:nil];
 
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
@@ -68,6 +70,8 @@
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange:
             return NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"");
+        case TSErrorMessageUnknownContactBlockOffer:
+            return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER", nil);
         default:
             return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
             break;
