@@ -447,6 +447,10 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(resetContentAndLayout)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
@@ -525,6 +529,11 @@ typedef enum : NSUInteger {
 
     [self ensureBlockStateIndicator];
 
+    [self resetContentAndLayout];
+}
+
+- (void)resetContentAndLayout
+{
     // Avoid layout corrupt issues and out-of-date message subtitles.
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
