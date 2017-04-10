@@ -48,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                           [DebugUITableViewController sendTextMessage:100
                                                                                                thread:thread];
                                                       }],
+                                      [OWSTableItem itemWithTitle:@"Send 1,000 messages (1/sec.)"
+                                                      actionBlock:^{
+                                                          [DebugUITableViewController sendTextMessage:1000
+                                                                                               thread:thread];
+                                                      }],
                                       [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                                                       actionBlock:^{
                                                           [DebugUITableViewController sendOversizeTextMessage:thread];
