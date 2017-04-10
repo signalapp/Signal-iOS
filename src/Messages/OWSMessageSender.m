@@ -148,6 +148,8 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
+        [strongSelf.messageSender saveMessage:strongSelf.message withError:error];
+
         DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
         aFailureHandler(error);
         [strongSelf markAsComplete];
@@ -236,8 +238,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             [self tryWithRemainingRetries:remainingRetries - 1];
         } else {
             DDLogWarn(@"%@ Too many failures. Giving up sending.", self.tag);
-
-            [self.messageSender saveMessage:self.message withError:error];
 
             self.failureHandler(error);
         }
