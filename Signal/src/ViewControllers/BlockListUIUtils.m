@@ -99,7 +99,10 @@ typedef void (^BlockAlertCompletionBlock)();
                                 [self formatDisplayNameForAlertTitle:displayName]];
 
     UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [UIAlertController alertControllerWithTitle:title
+                                            message:NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
+                                                                      @"An explanation of the consequences of blocking another user.")
+                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *unblockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")

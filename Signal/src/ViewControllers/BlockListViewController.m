@@ -100,8 +100,9 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 {
     switch (section) {
         case BlockListViewControllerSection_Add:
-            return NSLocalizedString(@"SETTINGS_BLOCK_LIST_FOOTER_TITLE", @"A footer title for the block list table.");
-        default:
+            return NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
+                                     @"An explanation of the consequences of blocking another user.");
+       default:
             return nil;
     }
 }

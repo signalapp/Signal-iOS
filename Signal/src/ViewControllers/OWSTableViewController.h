@@ -21,9 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSTableSection : NSObject
 
-@property (nonatomic, nullable) NSString *title;
+@property (nonatomic, nullable) NSString *headerTitle;
+@property (nonatomic, nullable) NSString *footerTitle;
 
-+ (OWSTableSection *)sectionWithTitle:(NSString *)title items:(NSArray<OWSTableItem *> *)items;
++ (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
 - (void)addItem:(OWSTableItem *)item;
 

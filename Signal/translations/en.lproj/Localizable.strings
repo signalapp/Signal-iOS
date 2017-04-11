@@ -97,6 +97,9 @@
 /* No comment provided by engineer. */
 "ATTACHMENT_QUEUED" = "New attachment queued for retrieval.";
 
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
@@ -882,9 +885,6 @@
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
-
-/* A footer title for the block list table. */
-"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Blocked users will not be able to call you or send you messages.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";

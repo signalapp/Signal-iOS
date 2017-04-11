@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSTableSection
 
-+ (OWSTableSection *)sectionWithTitle:(NSString *)title items:(NSArray<OWSTableItem *> *)items
++ (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items
 {
     OWSTableSection *section = [OWSTableSection new];
-    section.title = title;
+    section.headerTitle = title;
     section.items = [items mutableCopy];
     return section;
 }
@@ -224,7 +224,13 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
-    return section.title;
+    return section.headerTitle;
+}
+
+- (nullable NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)sectionIndex
+{
+    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    return section.footerTitle;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
