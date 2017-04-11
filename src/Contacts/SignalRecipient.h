@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 17/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSYapDatabaseObject.h"
 
@@ -8,9 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SignalRecipient : TSYapDatabaseObject
 
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                       relay:(nullable NSString *)relay
-                               supportsVoice:(BOOL)voiceCapable
-                              supportsWebRTC:(BOOL)supportsWebRTC;
+                                       relay:(nullable NSString *)relay;
 
 + (instancetype)selfRecipient;
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
@@ -23,9 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *relay;
 @property (nonatomic, retain) NSMutableOrderedSet *devices;
-@property BOOL supportsVoice;
+
+- (BOOL)supportsVoice;
 // This property indicates support for both WebRTC audio and video calls.
-@property BOOL supportsWebRTC;
+- (BOOL)supportsWebRTC;
 
 @end
 
