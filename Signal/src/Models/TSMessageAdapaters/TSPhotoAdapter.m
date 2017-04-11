@@ -124,9 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
         UIImageWriteToSavedPhotosAlbum(self.image, nil, nil, nil);
         return;
     }
-
+    
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
+    OWSAssert(NO);
 }
 
 @end

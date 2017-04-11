@@ -275,6 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *actionString = NSStringFromSelector(action);
         DDLogError(
             @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
+        OWSAssert(NO);
     }
 }
 

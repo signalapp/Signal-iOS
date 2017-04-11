@@ -312,6 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
         actionString,
         self.interaction.uniqueId,
         [self.mediaItem class]);
+    OWSAssert(NO);
 }
 
 - (TSAttachmentStream *)attachmentStream
