@@ -794,7 +794,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (remainingAttempts == 0) {
             DDLogWarn(
                 @"%@ Terminal failure to build any device messages. Giving up with exception:%@", self.tag, exception);
-            [self processException:exception outgoingMessage:message inThread:thread];
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             // Since we've already repeatedly failed to build messages, it's unlikely that repeating the whole process
             // will succeed.
@@ -1193,29 +1192,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             completionHandler();
         });
     });
-}
-
-- (void)processException:(NSException *)exception
-         outgoingMessage:(TSOutgoingMessage *)message
-                inThread:(TSThread *)thread
-{
-    DDLogWarn(@"%@ Got exception: %@", self.tag, exception);
-
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        // TODO: This error message is never created?
-        TSErrorMessage *errorMessage;
-
-        // TODO: Is this necessary?
-        //        if (message.groupMetaMessage == TSGroupMessageNone) {
-        //            // Only update this with exception if it is not a group message as group
-        //            // messages may except for one group
-        //            // send but not another and the UI doesn't know how to handle that
-        //            [message setMessageState:TSOutgoingMessageStateUnsent];
-        //            [message saveWithTransaction:transaction];
-        //        }
-
-        [errorMessage saveWithTransaction:transaction];
-    }];
 }
 
 #pragma mark - Logging
