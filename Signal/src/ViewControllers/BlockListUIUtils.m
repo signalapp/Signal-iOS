@@ -100,8 +100,8 @@ typedef void (^BlockAlertCompletionBlock)();
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:title
-                                            message:NSLocalizedString(@"BLOCK_LIST_BLOCK_ALERT_MESSAGE",
-                                                        @"The message of the 'block user' action sheet.")
+                                            message:NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
+                                                                      @"An explanation of the consequences of blocking another user.")
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *unblockAction = [UIAlertAction

@@ -261,8 +261,8 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
                                                                items:@[
                                                                    item,
                                                                ]];
-        section.footerTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_FOOTER_TITLE",
-            @"A footer title for the block user option in the conversation settings");
+        section.footerTitle = NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
+            @"An explanation of the consequences of blocking another user.");
         [contents addSection:section];
     }
 
