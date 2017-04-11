@@ -151,6 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
         _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
         [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"]
                                          forState:UIControlStateNormal];
+        _audioPlayPauseButton.enabled = NO;
 
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
         _durationLabel        = [[UILabel alloc] init];
@@ -180,13 +181,9 @@ NS_ASSUME_NONNULL_BEGIN
         [audioBubble addSubview:_durationLabel];
 
         if (!_incoming) {
-            __weak TSVideoAttachmentAdapter *weakSelf = self;
             self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
                                                                                superview:audioBubble
-                                                                 attachmentStateCallback:^(BOOL isAttachmentReady) {
-                                                                     weakSelf.audioPlayPauseButton.enabled
-                                                                         = isAttachmentReady;
-                                                                 }];
+                                                                 attachmentStateCallback:nil];
         }
 
         return audioBubble;
