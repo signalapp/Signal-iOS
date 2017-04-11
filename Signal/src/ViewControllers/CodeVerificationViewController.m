@@ -126,11 +126,15 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     _phoneNumberLabel = [UILabel new];
     _phoneNumberLabel.textColor = [UIColor ows_darkGrayColor];
     _phoneNumberLabel.font = [UIFont ows_regularFontWithSize:20.f];
+    _phoneNumberLabel.numberOfLines = 2;
+    _phoneNumberLabel.adjustsFontSizeToFitWidth = YES;
     [self.view addSubview:_phoneNumberLabel];
-    [_phoneNumberLabel autoHCenterInSuperview];
-    [_phoneNumberLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header
-                          withOffset:ScaleFromIPhone5To7Plus(25, 100)];
-    
+    [_phoneNumberLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(32)];
+    [_phoneNumberLabel autoPinEdge:ALEdgeTop
+                            toEdge:ALEdgeBottom
+                            ofView:header
+                        withOffset:ScaleFromIPhone5To7Plus(30, 100)];
+
     const CGFloat kHMargin = 36;
     
     _challengeTextField = [UITextField new];
