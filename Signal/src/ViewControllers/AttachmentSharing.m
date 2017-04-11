@@ -4,6 +4,7 @@
 
 #import "AttachmentSharing.h"
 #import "TSAttachmentStream.h"
+#import "UIUtil.h"
 
 @implementation AttachmentSharing
 
@@ -24,19 +25,22 @@
                                                                                                                   ]
                                                                                          applicationActivities:@[
                                                                                                                  ]];
-    
+
     [activityViewController setCompletionWithItemsHandler:^(UIActivityType __nullable activityType,
-                                                            BOOL completed,
-                                                            NSArray * __nullable returnedItems,
-                                                            NSError * __nullable activityError) {
-        
+        BOOL completed,
+        NSArray *__nullable returnedItems,
+        NSError *__nullable activityError) {
+
+        DDLogDebug(@"%@ applying signal appearence", self.tag);
+        [UIUtil applySignalAppearence];
+
         if (activityError) {
             DDLogInfo(@"%@ Failed to share with activityError: %@", self.tag, activityError);
         } else if (completed) {
             DDLogInfo(@"%@ Did share with activityType: %@", self.tag, activityType);
         }
     }];
-    
+
     // Find the frontmost presented UIViewController from which to present the
     // share view.
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
@@ -47,7 +51,10 @@
     OWSAssert(fromViewController);
     [fromViewController presentViewController:activityViewController
                                      animated:YES
-                                   completion:nil];
+                                   completion:^{
+                                       DDLogDebug(@"%@ applying default system appearence", self.tag);
+                                       [UIUtil applyDefaultSystemAppearence];
+                                   }];
 }
 
 #pragma mark - Logging
