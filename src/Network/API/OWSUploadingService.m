@@ -17,6 +17,10 @@ NSString *const kAttachmentUploadProgressNotification = @"kAttachmentUploadProgr
 NSString *const kAttachmentUploadProgressKey = @"kAttachmentUploadProgressKey";
 NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachmentIDKey";
 
+// Use a slightly non-zero value to ensure that the progress
+// indicator shows up as quickly as possible.
+static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
+
 @interface OWSUploadingService ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
@@ -42,11 +46,25 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                        success:(void (^)())successHandler
                        failure:(RetryableFailureHandler)failureHandler
 {
+    void (^successHandlerWrapper)() = ^{
+        [self fireProgressNotification:1 attachmentId:attachmentStream.uniqueId];
+
+        successHandler();
+    };
+
+    RetryableFailureHandler failureHandlerWrapper = ^(NSError *_Nonnull error, BOOL isRetryable) {
+        [self fireProgressNotification:0 attachmentId:attachmentStream.uniqueId];
+
+        failureHandler(error, isRetryable);
+    };
+
     if (attachmentStream.serverId) {
         DDLogDebug(@"%@ Attachment previously uploaded.", self.tag);
-        successHandler(outgoingMessage);
+        successHandlerWrapper(outgoingMessage);
         return;
     }
+
+    [self fireProgressNotification:kAttachmentUploadProgressTheta attachmentId:attachmentStream.uniqueId];
 
     TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
     [self.networkManager makeRequest:allocateAttachment
@@ -55,7 +73,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                 if (![responseObject isKindOfClass:[NSDictionary class]]) {
                     DDLogError(@"%@ unexpected response from server: %@", self.tag, responseObject);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                    return failureHandler(error, YES);
+                    return failureHandlerWrapper(error, YES);
                 }
 
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
@@ -66,7 +84,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                 NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
                 if (error) {
                     DDLogError(@"%@ Failed to read attachment data with error:%@", self.tag, error);
-                    return failureHandler(error, YES);
+                    return failureHandlerWrapper(error, YES);
                 }
 
                 NSData *encryptionKey;
@@ -88,15 +106,15 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
                                          attachmentStream.isUploaded = YES;
                                          [attachmentStream save];
 
-                                         successHandler();
+                                         successHandlerWrapper();
                                      }
-                                     failure:failureHandler];
+                                     failure:failureHandlerWrapper];
 
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to allocate attachment with error: %@", self.tag, error);
-            failureHandler(error, YES);
+            failureHandlerWrapper(error, YES);
         }];
 }
 
@@ -115,18 +133,16 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
     AFURLSessionManager *manager = [[AFURLSessionManager alloc]
         initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 
-    [self fireProgressNotification:0 attachmentId:attachmentId];
-
     NSURLSessionUploadTask *uploadTask;
     uploadTask = [manager uploadTaskWithRequest:request
         fromData:cipherText
         progress:^(NSProgress *_Nonnull uploadProgress) {
-            [self fireProgressNotification:uploadProgress.fractionCompleted attachmentId:attachmentId];
+            [self fireProgressNotification:MAX(kAttachmentUploadProgressTheta, uploadProgress.fractionCompleted)
+                              attachmentId:attachmentId];
         }
         completionHandler:^(NSURLResponse *_Nonnull response, id _Nullable responseObject, NSError *_Nullable error) {
             OWSAssert([NSThread isMainThread]);
             if (error) {
-                [self fireProgressNotification:0 attachmentId:attachmentId];
                 return failureHandler(error, YES);
             }
 
@@ -139,8 +155,6 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
             }
 
             successHandler();
-
-            [self fireProgressNotification:1 attachmentId:attachmentId];
         }];
 
     [uploadTask resume];
