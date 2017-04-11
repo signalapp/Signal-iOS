@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageEditing.h"
 #import <JSQMessagesViewController/JSQMessageData.h>
@@ -21,7 +22,6 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
 @property (nonatomic, readonly) TSMessageAdapterType messageType;
 @property (nonatomic, readonly) TSInteraction *interaction;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
-@property (nonatomic, readonly) BOOL isOutgoingAndDelivered;
 @property (nonatomic, readonly) BOOL shouldStartExpireTimer;
 @property (nonatomic, readonly) uint64_t expiresAtSeconds;
 @property (nonatomic, readonly) uint32_t expiresInSeconds;

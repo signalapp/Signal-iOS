@@ -1183,7 +1183,11 @@ typedef enum : NSUInteger {
                 return self.outgoingMessageFailedImageData;
             case TSOutgoingMessageStateAttemptingOut:
                 return self.currentlyOutgoingBubbleImageData;
-            default:
+            case TSOutgoingMessageStateSent_OBSOLETE:
+            case TSOutgoingMessageStateDelivered_OBSOLETE:
+                OWSAssert(0);
+                return self.outgoingBubbleImageData;
+            case TSOutgoingMessageStateSentToService:
                 return self.outgoingBubbleImageData;
         }
     }
@@ -1490,13 +1494,10 @@ typedef enum : NSUInteger {
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
             return [[NSAttributedString alloc] initWithString:NSLocalizedString(@"MESSAGE_STATUS_FAILED",
                                                                                 @"message footer for failed messages")];
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSent ||
-                   outgoingMessage.messageState == TSOutgoingMessageStateDelivered) {
-            NSString *text = (outgoingMessage.messageState == TSOutgoingMessageStateSent
-                              ? NSLocalizedString(@"MESSAGE_STATUS_SENT",
-                                                  @"message footer for sent messages")
-                              : NSLocalizedString(@"MESSAGE_STATUS_DELIVERED",
-                                                  @"message footer for delivered messages"));
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSentToService) {
+            NSString *text = (outgoingMessage.wasDelivered
+                    ? NSLocalizedString(@"MESSAGE_STATUS_DELIVERED", @"message footer for delivered messages")
+                    : NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages"));
             NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
 
             // Show when it's the last message in the thread
@@ -1507,9 +1508,7 @@ typedef enum : NSUInteger {
 
             // Or when the next message is *not* an outgoing sent/delivered message.
             TSOutgoingMessage *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (nextMessage &&
-                nextMessage.messageState != TSOutgoingMessageStateSent &&
-                nextMessage.messageState != TSOutgoingMessageStateDelivered) {
+            if (nextMessage && nextMessage.messageState != TSOutgoingMessageStateSentToService) {
                 [self updateLastDeliveredMessage:message];
                 return result;
             }
@@ -2706,7 +2705,7 @@ typedef enum : NSUInteger {
                                                    messageBody:@""
                                                  attachmentIds:[NSMutableArray new]];
         message.groupMetaMessage = TSGroupMessageUpdate;
-        message.customMessage = updateGroupInfo;
+        [message updateWithCustomMessage:updateGroupInfo];
     }];
 
     if (newGroupModel.groupImage) {
