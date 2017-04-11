@@ -2380,7 +2380,6 @@ typedef enum : NSUInteger {
         return;
     }
     
-    __block BOOL scrollToBottom = NO;
     const CGFloat kIsAtBottomTolerancePts = 5;
     BOOL wasAtBottom = (self.collectionView.contentOffset.y +
                         self.collectionView.bounds.size.height +
@@ -2390,7 +2389,12 @@ typedef enum : NSUInteger {
     // update is a new outgoing message AND we're already scrolled to
     // the bottom of the conversation, skip the scroll animation.
     __block BOOL shouldAnimateScrollToBottom = !wasAtBottom;
-    
+    // We want to scroll to the bottom if the user:
+    //
+    // a) already was at the bottom of the conversation.
+    // b) is inserting new interactions.
+    __block BOOL scrollToBottom = wasAtBottom;
+
     [self.collectionView performBatchUpdates:^{
       for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
           switch (rowChange.type) {
