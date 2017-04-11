@@ -131,10 +131,10 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否されているユーザー";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分は拒否できません";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "エラー";
 
 /* A title for the contacts section of the block list view. */
 "BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "連絡先";
@@ -863,13 +863,13 @@
 "SETTINGS_ABOUT" = "Signalについて";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "連絡先を拒否する";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "連絡先を拒否";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "電話番号を拒否する";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "電話番号を拒否";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "拒否する";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "通信拒否";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
@@ -884,13 +884,13 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "追加する";
 
 /* A footer title for the block list table. */
-"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "拒否された人はあなたに電話したりメッセージを送ることはできません";
+"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "拒否された人はあなたに対して通話やメッセージ送信ができなくなります";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "連絡先がありません";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "拒否リスト";
+"SETTINGS_BLOCK_LIST_TITLE" = "通信拒否リスト";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "新規の安全番号を持つ人（例えばSignalを再インストールした人）と通信する前にはあなたに承認を求めます。";

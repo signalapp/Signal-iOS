@@ -131,10 +131,10 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Uporabnik je blokiran";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Sebe ne morete blokirati.";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Napaka";
 
 /* A title for the contacts section of the block list view. */
 "BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Vsebina";
