@@ -9,7 +9,8 @@ target 'Signal' do
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'OpenSSL'
     pod 'SCWaveformView',             '~> 1.0'
-    pod 'JSQMessagesViewController'
+    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/position-edit-menu'
+    #pod 'JSQMessagesViewController'   path: '../JSQMessagesViewController'
     pod 'PureLayout'
     target 'SignalTests' do
         inherit! :search_paths
