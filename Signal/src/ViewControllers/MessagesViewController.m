@@ -2186,7 +2186,7 @@ typedef enum : NSUInteger {
                                              [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
-                                             [self sendMessageAttachment:attachment];
+                                             [self tryToSendAttachmentIfApproved:attachment];
                                          }
                                      } else {
                                          failedToPickAttachment(nil);
@@ -2233,7 +2233,7 @@ typedef enum : NSUInteger {
                                               [self showErrorAlertForAttachment:attachment];
                                               failedToPickAttachment(nil);
                                           } else {
-                                              [self sendMessageAttachment:attachment];
+                                              [self tryToSendAttachmentIfApproved:attachment];
                                           }
                                       }];
          }];
@@ -2242,35 +2242,32 @@ typedef enum : NSUInteger {
 
 - (void)sendMessageAttachment:(SignalAttachment *)attachment
 {
+    OWSAssert([NSThread isMainThread]);
     // TODO: Should we assume non-nil or should we check for non-nil?
     OWSAssert(attachment != nil);
     OWSAssert(![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);
-    
-    DispatchMainThreadSafe(^{
-        DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
-                     (unsigned long)attachment.data.length,
-                     [attachment mimeType]);
-        [ThreadUtil sendMessageWithAttachment:attachment
-                                     inThread:self.thread
-                                messageSender:self.messageSender];
 
-        TSOutgoingMessage *message;
-        OWSDisappearingMessagesConfiguration *configuration =
+    DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+        (unsigned long)attachment.data.length,
+        [attachment mimeType]);
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+
+    TSOutgoingMessage *message;
+    OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-        if (configuration.isEnabled) {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:nil
-                                                     attachmentIds:[NSMutableArray new]
-                                                  expiresInSeconds:configuration.durationSeconds];
-        } else {
-            message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                          inThread:self.thread
-                                                       messageBody:nil
-                                                     attachmentIds:[NSMutableArray new]];
-        }
-    });
+    if (configuration.isEnabled) {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:nil
+                                                 attachmentIds:[NSMutableArray new]
+                                              expiresInSeconds:configuration.durationSeconds];
+    } else {
+        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:self.thread
+                                                   messageBody:nil
+                                                 attachmentIds:[NSMutableArray new]];
+    }
 }
 
 - (NSURL *)videoTempFolder {
@@ -2311,7 +2308,7 @@ typedef enum : NSUInteger {
                       attachment ? [attachment errorName] : @"Missing data");
             [self showErrorAlertForAttachment:attachment];
         } else {
-            [self sendMessageAttachment:attachment];
+            [self tryToSendAttachmentIfApproved:attachment];
         }
         
         NSError *error;
@@ -2551,7 +2548,7 @@ typedef enum : NSUInteger {
                       attachment ? [attachment errorName] : @"Missing data");
             [self showErrorAlertForAttachment:attachment];
         } else {
-            [self sendMessageAttachment:attachment];
+            [self tryToSendAttachmentIfApproved:attachment];
         }
     }
 }
@@ -2772,34 +2769,42 @@ typedef enum : NSUInteger {
                self.tag,
                __PRETTY_FUNCTION__);
 
-    if ([self isBlockedContactConversation]) {
-        __weak MessagesViewController *weakSelf = self;
-        [self showUnblockContactUI:^(BOOL isBlocked) {
-            if (!isBlocked) {
-                [weakSelf didPasteAttachment:attachment];
-            }
-        }];
-        return;
-    }
+    [self tryToSendAttachmentIfApproved:attachment];
+}
 
-    if (attachment == nil ||
-        [attachment hasError]) {
-        DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                  self.tag,
-                  __PRETTY_FUNCTION__,
-                  attachment ? [attachment errorName] : @"Missing data");
-        [self showErrorAlertForAttachment:attachment];
-    } else {
-        __weak MessagesViewController *weakSelf = self;
-        UIViewController *viewController = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
-                                                                                      successCompletion:^{
-                                                                                          [weakSelf sendMessageAttachment:attachment];
-                                                                                      }];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        [self.navigationController presentViewController:navigationController
-                                                animated:YES
-                                              completion:nil];
-    }
+- (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
+{
+    DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+
+    DispatchMainThreadSafe(^{
+        if ([self isBlockedContactConversation]) {
+            __weak MessagesViewController *weakSelf = self;
+            [self showUnblockContactUI:^(BOOL isBlocked) {
+                if (!isBlocked) {
+                    [weakSelf tryToSendAttachmentIfApproved:attachment];
+                }
+            }];
+            return;
+        }
+
+        if (attachment == nil || [attachment hasError]) {
+            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                self.tag,
+                __PRETTY_FUNCTION__,
+                attachment ? [attachment errorName] : @"Missing data");
+            [self showErrorAlertForAttachment:attachment];
+        } else {
+            __weak MessagesViewController *weakSelf = self;
+            UIViewController *viewController =
+                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
+                                                           successCompletion:^{
+                                                               [weakSelf sendMessageAttachment:attachment];
+                                                           }];
+            UINavigationController *navigationController =
+                [[UINavigationController alloc] initWithRootViewController:viewController];
+            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+        }
+    });
 }
 
 - (void)showErrorAlertForAttachment:(SignalAttachment * _Nullable)attachment {
