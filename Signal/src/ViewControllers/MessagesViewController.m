@@ -2781,7 +2781,7 @@ typedef enum : NSUInteger {
             __weak MessagesViewController *weakSelf = self;
             [self showUnblockContactUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
-                    [weakSelf didPasteAttachment:attachment];
+                    [weakSelf tryToSendAttachmentIfApproved:attachment];
                 }
             }];
             return;
