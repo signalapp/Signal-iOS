@@ -256,6 +256,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canPerformEditingAction:(SEL)action
 {
+    if ([self attachmentStream] && ![self attachmentStream].isUploaded) {
+        return NO;
+    }
+
     // Deletes are always handled by TSMessageAdapter
     if (action == @selector(delete:)) {
         return YES;
