@@ -104,7 +104,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 
     UILabel *titleLabel = [UILabel new];
     titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.text = NSLocalizedString(@"VERIFICATION_HEADER", @"Navigation title in the registration flow - during the sms code verification process.");
+    titleLabel.text = [self phoneNumberText];
     titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
     [header addSubview:titleLabel];
     [titleLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
@@ -126,11 +126,15 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     _phoneNumberLabel = [UILabel new];
     _phoneNumberLabel.textColor = [UIColor ows_darkGrayColor];
     _phoneNumberLabel.font = [UIFont ows_regularFontWithSize:20.f];
+    _phoneNumberLabel.numberOfLines = 2;
+    _phoneNumberLabel.adjustsFontSizeToFitWidth = YES;
     [self.view addSubview:_phoneNumberLabel];
-    [_phoneNumberLabel autoHCenterInSuperview];
-    [_phoneNumberLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header
-                          withOffset:ScaleFromIPhone5To7Plus(25, 100)];
-    
+    [_phoneNumberLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(32)];
+    [_phoneNumberLabel autoPinEdge:ALEdgeTop
+                            toEdge:ALEdgeBottom
+                            ofView:header
+                        withOffset:ScaleFromIPhone5To7Plus(30, 100)];
+
     const CGFloat kHMargin = 36;
     
     _challengeTextField = [UITextField new];
@@ -227,12 +231,18 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
 }
 
-- (void)updatePhoneNumberLabel {
-    NSString *phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+- (NSString *)phoneNumberText
+{
     OWSAssert([TSAccountManager localNumber] != nil);
-    _phoneNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"VERIFICATION_PHONE_NUMBER_FORMAT",
-                                                                         @"Label indicating the phone number currently being verified."),
-                             phoneNumber];
+    return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+}
+
+- (void)updatePhoneNumberLabel
+{
+    _phoneNumberLabel.text =
+        [NSString stringWithFormat:NSLocalizedString(@"VERIFICATION_PHONE_NUMBER_FORMAT",
+                                       @"Label indicating the phone number currently being verified."),
+                  [self phoneNumberText]];
 }
 
 - (void)startActivityIndicator
