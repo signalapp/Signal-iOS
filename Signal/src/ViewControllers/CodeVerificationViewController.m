@@ -104,7 +104,7 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 
     UILabel *titleLabel = [UILabel new];
     titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.text = NSLocalizedString(@"VERIFICATION_HEADER", @"Navigation title in the registration flow - during the sms code verification process.");
+    titleLabel.text = [self phoneNumberText];
     titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
     [header addSubview:titleLabel];
     [titleLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
@@ -231,12 +231,18 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
     [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
 }
 
-- (void)updatePhoneNumberLabel {
-    NSString *phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+- (NSString *)phoneNumberText
+{
     OWSAssert([TSAccountManager localNumber] != nil);
-    _phoneNumberLabel.text = [NSString stringWithFormat:NSLocalizedString(@"VERIFICATION_PHONE_NUMBER_FORMAT",
-                                                                         @"Label indicating the phone number currently being verified."),
-                             phoneNumber];
+    return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+}
+
+- (void)updatePhoneNumberLabel
+{
+    _phoneNumberLabel.text =
+        [NSString stringWithFormat:NSLocalizedString(@"VERIFICATION_PHONE_NUMBER_FORMAT",
+                                       @"Label indicating the phone number currently being verified."),
+                  [self phoneNumberText]];
 }
 
 - (void)startActivityIndicator
