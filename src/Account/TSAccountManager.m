@@ -271,7 +271,12 @@ NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificati
             DDLogInfo(@"%@ Successfully unregistered", self.tag);
             success();
 
-            // The success handler should reset local storage.
+            // This is called from `[SettingsTableViewController proceedToUnregistration]` whose
+            // success handler calls `[Environment resetAppData]`.
+            // This method, after calling that success handler, fires
+            // `kNSNotificationName_RegistrationStateDidChange` which is only safe to fire after
+            // the data store is reset.
+
             [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
                                                                 object:nil
                                                               userInfo:nil];

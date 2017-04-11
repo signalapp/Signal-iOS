@@ -83,6 +83,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 // notification.
 @property (nonatomic) BOOL appIsActive;
 
+@property (nonatomic) BOOL hasObservedNotifications;
+
 @end
 
 #pragma mark -
@@ -105,6 +107,27 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
+    OWSSingletonAssert();
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+// We want to observe these notifications lazily to avoid accessing
+// the data store in [application: didFinishLaunchingWithOptions:].
+- (void)observeNotificationsIfNecessary
+{
+    if (self.hasObservedNotifications) {
+        return;
+    }
+    self.hasObservedNotifications = YES;
+
+    self.appIsActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -117,15 +140,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                                              selector:@selector(registrationStateDidChange:)
                                                  name:kNSNotificationName_RegistrationStateDidChange
                                                object:nil];
-
-    OWSSingletonAssert();
-
-    return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (instancetype)sharedManager {
@@ -461,11 +475,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                          [TSStorageManager serverAuthToken]];
 }
 
-- (void)setFetchingTaskIdentifier:(UIBackgroundTaskIdentifier)fetchingTaskIdentifier
-{
-    _fetchingTaskIdentifier = fetchingTaskIdentifier;
-}
-
 #pragma mark UI Delegates
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -590,6 +599,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 + (void)requestSocketOpen
 {
     DispatchMainThreadSafe(^{
+        [[self sharedManager] observeNotificationsIfNecessary];
+
         // If the app is active and the user is registered, this will
         // simply open the websocket.
         //
