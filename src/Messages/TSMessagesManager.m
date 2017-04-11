@@ -237,9 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
         if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
-            outgoingMessage.messageState = TSOutgoingMessageStateDelivered;
-
-            [outgoingMessage saveWithTransaction:transaction];
+            [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
         }
     }];
 }

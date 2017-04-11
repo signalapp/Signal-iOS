@@ -8,19 +8,56 @@
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
+
+@interface TSOutgoingMessage ()
+
+@property (atomic) TSOutgoingMessageState messageState;
+@property (atomic) BOOL hasSyncedTranscript;
+@property (atomic) NSString *customMessage;
+@property (atomic) NSString *mostRecentFailureText;
+@property (atomic) BOOL wasDelivered;
+// For outgoing, non-legacy group messages sent from this client, this
+// contains the list of recipients to whom the message has been sent.
+//
+// This collection can also be tested to avoid repeat delivery to the
+// same recipient.
+@property (atomic) NSArray<NSString *> *sentRecipients;
+
+@end
+
+#pragma mark -
+
 @implementation TSOutgoingMessage
+
+@synthesize sentRecipients = _sentRecipients;
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
+
     if (self) {
         if (!_attachmentFilenameMap) {
             _attachmentFilenameMap = [NSMutableDictionary new];
         }
+        
+        // Migrate message state.
+        if (_messageState == TSOutgoingMessageStateSent_OBSOLETE) {
+            _messageState = TSOutgoingMessageStateSentToService;
+        } else if (_messageState == TSOutgoingMessageStateDelivered_OBSOLETE) {
+            _messageState = TSOutgoingMessageStateSentToService;
+            _wasDelivered = YES;
+        }
+        if (!_sentRecipients) {
+            _sentRecipients = [NSArray new];
+        }
     }
+
     return self;
 }
 
@@ -85,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _messageState = TSOutgoingMessageStateAttemptingOut;
+    _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -117,19 +155,151 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldStartExpireTimer
 {
     switch (self.messageState) {
-        case TSOutgoingMessageStateSent:
-        case TSOutgoingMessageStateDelivered:
+        case TSOutgoingMessageStateSentToService:
             return self.isExpiringMessage;
         case TSOutgoingMessageStateAttemptingOut:
         case TSOutgoingMessageStateUnsent:
             return NO;
+        case TSOutgoingMessageStateSent_OBSOLETE:
+        case TSOutgoingMessageStateDelivered_OBSOLETE:
+            OWSAssert(0);
+            return self.isExpiringMessage;
     }
 }
 
-- (void)setSendingError:(NSError *)error
+#pragma mark - Update Methods
+
+- (void)applyChangeToSelfAndLatest:(YapDatabaseReadWriteTransaction *)transaction
+                       changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
 {
-    _mostRecentFailureText = error.localizedDescription;
+    OWSAssert(transaction);
+
+    changeBlock(self);
+
+    TSOutgoingMessage *latestMessage =
+        [transaction objectForKey:self.uniqueId inCollection:[TSOutgoingMessage collection]];
+    if (latestMessage) {
+        changeBlock(latestMessage);
+        [latestMessage saveWithTransaction:transaction];
+    } else {
+        // This message has not yet been saved.
+        [self saveWithTransaction:transaction];
+    }
 }
+
+- (void)updateWithSendingError:(NSError *)error
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatest:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 [message setMessageState:TSOutgoingMessageStateUnsent];
+                                 [message setMostRecentFailureText:error.localizedDescription];
+                             }];
+    }];
+}
+
+- (void)updateWithMessageState:(TSOutgoingMessageState)messageState
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatest:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 [message setMessageState:messageState];
+                             }];
+    }];
+}
+
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatest:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 [message setHasSyncedTranscript:hasSyncedTranscript];
+                             }];
+    }];
+}
+
+- (void)updateWithCustomMessage:(NSString *)customMessage
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatest:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 [message setCustomMessage:customMessage];
+                             }];
+    }];
+}
+
+- (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    [self applyChangeToSelfAndLatest:transaction
+                         changeBlock:^(TSOutgoingMessage *message) {
+                             [message setWasDelivered:YES];
+                         }];
+}
+
+- (void)updateWithWasDelivered
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateWithWasDeliveredWithTransaction:transaction];
+    }];
+}
+
+#pragma mark - Sent Recipients
+
+- (NSArray<NSString *> *)sentRecipients
+{
+    @synchronized(self)
+    {
+        return _sentRecipients;
+    }
+}
+
+- (void)setSentRecipients:(NSArray<NSString *> *)sentRecipients
+{
+    @synchronized(self)
+    {
+        _sentRecipients = [sentRecipients copy];
+    }
+}
+
+- (void)addSentRecipient:(NSString *)contactId
+{
+    @synchronized(self)
+    {
+        OWSAssert(_sentRecipients);
+        OWSAssert(contactId.length > 0);
+
+        NSMutableArray *sentRecipients = [_sentRecipients mutableCopy];
+        [sentRecipients addObject:contactId];
+        _sentRecipients = [sentRecipients copy];
+    }
+}
+
+- (BOOL)wasSentToRecipient:(NSString *)contactId
+{
+    OWSAssert(self.sentRecipients);
+    OWSAssert(contactId.length > 0);
+
+    return [self.sentRecipients containsObject:contactId];
+}
+
+- (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    [self applyChangeToSelfAndLatest:transaction
+                         changeBlock:^(TSOutgoingMessage *message) {
+                             [message addSentRecipient:contactId];
+                         }];
+}
+
+- (void)updateWithSentRecipient:(NSString *)contactId
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateWithSentRecipient:contactId transaction:transaction];
+    }];
+}
+
+#pragma mark -
 
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {

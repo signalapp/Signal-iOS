@@ -19,11 +19,11 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateAttemptingOut,
     // The failure state.
     TSOutgoingMessageStateUnsent,
-    // The message has been sent to the service, but not received by any recipient client.
-    TSOutgoingMessageStateSent,
-    // The message has been sent to the service and received by at least one recipient client.
-    // A recipient may have more than one client, and group message may have more than one recipient.
-    TSOutgoingMessageStateDelivered
+    // These two enum values have been combined into TSOutgoingMessageStateSentToService.
+    TSOutgoingMessageStateSent_OBSOLETE,
+    TSOutgoingMessageStateDelivered_OBSOLETE,
+    // The message has been sent to the service.
+    TSOutgoingMessageStateSentToService,
 };
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
@@ -53,9 +53,14 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic) TSOutgoingMessageState messageState;
-@property BOOL hasSyncedTranscript;
-@property NSString *customMessage;
+@property (atomic, readonly) TSOutgoingMessageState messageState;
+
+// The message has been sent to the service and received by at least one recipient client.
+// A recipient may have more than one client, and group message may have more than one recipient.
+@property (atomic, readonly) BOOL wasDelivered;
+
+@property (atomic, readonly) BOOL hasSyncedTranscript;
+@property (atomic, readonly) NSString *customMessage;
 @property (atomic, readonly) NSString *mostRecentFailureText;
 // A map of attachment id-to-filename.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
@@ -66,8 +71,6 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
  * sent as legacy message until we're confident no significant number of legacy clients exist in the wild.
  */
 @property (nonatomic, readonly) BOOL isLegacyMessage;
-
-- (void)setSendingError:(NSError *)error;
 
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.
@@ -104,6 +107,29 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
  */
 - (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
                                                                         filename:(nullable NSString *)filename;
+
+// TSOutgoingMessage are updated from many threads. We don't want to save
+// our local copy since it may be out of date.  Instead, we use these
+// "updateWith..." methods to:
+//
+// a) Update a property of the local copy.
+// b) Load an up-to-date instance of this model from from the data store.
+// c) Update and save that fresh instance.
+//
+// This isn't a perfect arrangement, but in practice this will prevent
+// data loss.
+- (void)updateWithMessageState:(TSOutgoingMessageState)messageState;
+- (void)updateWithSendingError:(NSError *)error;
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
+- (void)updateWithCustomMessage:(NSString *)customMessage;
+- (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithWasDelivered;
+
+#pragma mark - Sent Recipients
+
+- (BOOL)wasSentToRecipient:(NSString *)contactId;
+- (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSentRecipient:(NSString *)contactId;
 
 @end
 

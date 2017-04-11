@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSRecordTranscriptJob.h"
 #import "OWSAttachmentsProcessor.h"
@@ -85,8 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         attachmentIds:[NSMutableArray new]
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt];
-        textMessage.messageState = TSOutgoingMessageStateDelivered;
-        [textMessage save];
+        [textMessage updateWithWasDelivered];
     }
 }
 

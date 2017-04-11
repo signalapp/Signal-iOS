@@ -87,8 +87,6 @@ typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
                      success:(void (^)())successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
-- (void)saveMessage:(TSOutgoingMessage *)message withError:(NSError *)error;
-
 @end
 
 #pragma mark -
@@ -136,6 +134,9 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             OWSCAssert(NO);
             return;
         }
+
+        [message updateWithMessageState:TSOutgoingMessageStateSentToService];
+
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
         aSuccessHandler();
         [strongSelf markAsComplete];
@@ -148,7 +149,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        [strongSelf.messageSender saveMessage:strongSelf.message withError:error];
+        [strongSelf.message updateWithSendingError:error];
 
         DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
         aFailureHandler(error);
@@ -355,7 +356,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     AssertIsOnMainThread();
 
-    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
+    [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
                                                                                              success:successHandler
@@ -491,36 +492,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     //  2.) fail and create a new identical error message in the thread.
     [errorMessage remove];
 
-    if ([errorMessage.thread isKindOfClass:[TSContactThread class]]) {
-        return [self sendMessage:message success:successHandler failure:failureHandler];
-    }
-
-    // else it's a GroupThread
-    dispatch_async([OWSDispatch sendingQueue], ^{
-
-        // Avoid spamming entire group when resending failed message.
-        SignalRecipient *failedRecipient = [SignalRecipient fetchObjectWithUniqueID:errorMessage.recipientId];
-
-        // Normally marking as unsent is handled in sendMessage happy path, but beacuse we're skipping the common entry
-        // point to message sending in order to send to a single recipient, we have to handle it ourselves.
-        RetryableFailureHandler markAndFailureHandler = ^(NSError *error, BOOL isRetryable) {
-            [self saveMessage:message withError:error];
-            if (isRetryable) {
-                // FIXME: Fixing this will require a larger refactor. In the meanwhile, we don't
-                // retry message sending from accepting key-changes in a group. (Except for the inner retry logic w/ the
-                // messages API)
-                DDLogWarn(@"%@ Skipping retry for group-message failure during %s.", self.tag, __PRETTY_FUNCTION__);
-            }
-
-            failureHandler(error);
-        };
-
-        [self groupSend:@[ failedRecipient ]
-                message:message
-                 thread:message.thread
-                success:successHandler
-                failure:markAndFailureHandler];
-    });
+    return [self sendMessage:message success:successHandler failure:failureHandler];
 }
 
 - (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error
@@ -664,6 +636,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
+            DDLogInfo(@"Marking group message as sent to recipient: %@", recipient.uniqueId);
+            [message updateWithSentRecipient:recipient.uniqueId];
             [futureSource trySetResult:@1];
         }
         failure:^(NSError *error, BOOL isRetryable) {
@@ -683,14 +657,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self saveGroupMessage:message inThread:thread];
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
-    for (SignalRecipient *rec in recipients) {
+    for (SignalRecipient *recipient in recipients) {
         // We don't need to send the message to ourselves...
-        if ([rec.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+        if ([recipient.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+            continue;
+        }
+        if ([message wasSentToRecipient:recipient.uniqueId]) {
+            // Skip recipients we have already sent this message to (on an
+            // earlier retry, perhaps).
+            DDLogInfo(@"Skipping group message recipient; already sent: %@", recipient.uniqueId);
             continue;
         }
 
         // ...otherwise we send.
-        [futures addObject:[self sendMessageFuture:message recipient:rec thread:thread]];
+        [futures addObject:[self sendMessageFuture:message recipient:recipient thread:thread]];
     }
 
     TOCFuture *completionFuture = futures.toc_thenAll;
@@ -938,12 +918,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
 {
-    [self saveMessage:message withState:TSOutgoingMessageStateSent];
     if (message.shouldSyncTranscript) {
         // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
         //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
-
-        message.hasSyncedTranscript = YES;
+        [message updateWithHasSyncedTranscript:YES];
         [self sendSyncTranscriptForMessage:message];
     }
 
@@ -952,7 +930,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
 {
-    [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+    [message updateWithWasDelivered];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
     [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
@@ -1177,23 +1155,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return TSUnknownMessageType;
 }
 
-- (void)saveMessage:(TSOutgoingMessage *)message withState:(TSOutgoingMessageState)state
-{
-    message.messageState = state;
-    [message save];
-}
-
-- (void)saveMessage:(TSOutgoingMessage *)message withError:(NSError *)error
-{
-    message.messageState = TSOutgoingMessageStateUnsent;
-    [message setSendingError:error];
-    [message save];
-}
-
 - (void)saveGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
     if (message.groupMetaMessage == TSGroupMessageDeliver) {
-        [self saveMessage:message withState:message.messageState];
+        // TODO: Why is this necessary?
+        [message save];
     } else if (message.groupMetaMessage == TSGroupMessageQuit) {
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
@@ -1239,13 +1205,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: This error message is never created?
         TSErrorMessage *errorMessage;
 
-        if (message.groupMetaMessage == TSGroupMessageNone) {
-            // Only update this with exception if it is not a group message as group
-            // messages may except for one group
-            // send but not another and the UI doesn't know how to handle that
-            [message setMessageState:TSOutgoingMessageStateUnsent];
-            [message saveWithTransaction:transaction];
-        }
+        // TODO: Is this necessary?
+        //        if (message.groupMetaMessage == TSGroupMessageNone) {
+        //            // Only update this with exception if it is not a group message as group
+        //            // messages may except for one group
+        //            // send but not another and the UI doesn't know how to handle that
+        //            [message setMessageState:TSOutgoingMessageStateUnsent];
+        //            [message saveWithTransaction:transaction];
+        //        }
 
         [errorMessage saveWithTransaction:transaction];
     }];
