@@ -445,6 +445,9 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "You have left the group.";
 
+/* A label for conversations with blocked users. */
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
+
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "HOURS_TIME_AMOUNT" = "%u hours";
 
