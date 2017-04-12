@@ -2319,22 +2319,6 @@ typedef enum : NSUInteger {
         (unsigned long)attachment.data.length,
         [attachment mimeType]);
     [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-
-    TSOutgoingMessage *message;
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    if (configuration.isEnabled) {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:self.thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]
-                                              expiresInSeconds:configuration.durationSeconds];
-    } else {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:self.thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]];
-    }
 }
 
 - (NSURL *)videoTempFolder {

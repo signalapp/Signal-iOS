@@ -25,21 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(messageSender);
 
-    TSOutgoingMessage *message;
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    if (configuration.isEnabled) {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:thread
-                                                   messageBody:text
-                                                 attachmentIds:[NSMutableArray new]
-                                              expiresInSeconds:configuration.durationSeconds];
-    } else {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:thread
-                                                   messageBody:text];
-    }
-
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                         messageBody:text
+                                       attachmentIds:[NSMutableArray new]
+                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
     [messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.tag);
@@ -61,22 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(messageSender);
 
-    TSOutgoingMessage *message;
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    if (configuration.isEnabled) {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]
-                                              expiresInSeconds:configuration.durationSeconds];
-    } else {
-        message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                      inThread:thread
-                                                   messageBody:nil
-                                                 attachmentIds:[NSMutableArray new]];
-    }
-
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                         messageBody:nil
+                                       attachmentIds:[NSMutableArray new]
+                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
     [messageSender sendAttachmentData:attachment.data
         contentType:attachment.mimeType
         filename:attachment.filename
