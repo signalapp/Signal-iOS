@@ -174,9 +174,17 @@ class AttachmentApprovalViewController: UIViewController {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = NumberFormatter.Style.decimal
         let fileSizeLabel = UILabel()
+        let fileSize = attachment.data.count
+        let kOneKilobyte = 1024
+        let kOneMegabyte = kOneKilobyte * kOneKilobyte
+        let fileSizeText = (fileSize > kOneMegabyte
+            ? numberFormatter.string(from: NSNumber(value: fileSize / kOneMegabyte))! + " mb"
+            : (fileSize > kOneKilobyte
+                ? numberFormatter.string(from: NSNumber(value: fileSize / kOneKilobyte))! + " kb"
+                : numberFormatter.string(from: NSNumber(value: fileSize))!))
         fileSizeLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                              comment: "Format string for file size label in call interstitial view"),
-                                    numberFormatter.string(from: NSNumber(value: attachment.data.count))!)
+                                    fileSizeText)
 
         fileSizeLabel.textColor = UIColor.white
         fileSizeLabel.font = labelFont
