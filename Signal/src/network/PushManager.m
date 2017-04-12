@@ -163,7 +163,7 @@
                     failedSendNotif.alertBody =
                         [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
                     failedSendNotif.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
-                    [self presentNotification:failedSendNotif];
+                    [self presentNotification:failedSendNotif checkForCancel:NO];
                     completionHandler();
                 }];
         }
@@ -429,18 +429,32 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     return NO;
 }
 
-- (void)presentNotification:(UILocalNotification *)notification {
+- (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+    if (checkForCancel && threadId != nil) {
+        // The longer we wait, the more obsolete notifications we can suppress -
+        // but the more lag we introduce to notification delivery.
+        const CGFloat kDelaySeconds = 0.3f;
+        notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
+        notification.timeZone = [NSTimeZone localTimeZone];
+    }
+
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     [self.currentNotifications addObject:notification];
 }
 
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId {
+    OWSAssert([NSThread isMainThread]);
+
     NSMutableArray *toDelete = [NSMutableArray array];
     [self.currentNotifications enumerateObjectsUsingBlock:^(UILocalNotification *notif, NSUInteger idx, BOOL *stop) {
-      if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
-          [[UIApplication sharedApplication] cancelLocalNotification:notif];
-          [toDelete addObject:notif];
-      }
+        if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            [toDelete addObject:notif];
+        }
     }];
     [self.currentNotifications removeObjectsInArray:toDelete];
 }

@@ -66,7 +66,10 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 
 - (TOCFuture *)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
-- (void)presentNotification:(UILocalNotification *)notification;
+// If checkForCancel is set, the notification will be delayed for
+// a moment.  If a relevant cancel notification is received in that window,
+// the notification will not be displayed.
+- (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel;
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId;
 
 #pragma mark Push Notifications Delegate Methods

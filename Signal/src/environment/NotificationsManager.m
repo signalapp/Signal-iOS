@@ -136,7 +136,7 @@
         }
         notification.alertBody = alertBodyString;
 
-        [[PushManager sharedManager] presentNotification:notification];
+        [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
     } else {
         if ([Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
@@ -193,7 +193,7 @@
                 break;
         }
 
-        [[PushManager sharedManager] presentNotification:notification];
+        [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
     } else {
         if ([Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
