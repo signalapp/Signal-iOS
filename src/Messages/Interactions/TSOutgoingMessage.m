@@ -29,6 +29,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 // same recipient.
 @property (atomic) NSArray<NSString *> *sentRecipients;
 
+@property (atomic) TSGroupMetaMessage groupMetaMessage;
+
 @end
 
 #pragma mark -
@@ -148,8 +150,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:expireStartedAt
-                   groupMetaMessage:groupMetaMessage];
+                    expireStartedAt:expireStartedAt];
     if (!self) {
         return self;
     }
@@ -157,6 +158,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     _messageState = TSOutgoingMessageStateAttemptingOut;
     _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
+    _groupMetaMessage = groupMetaMessage;
 
     _attachmentFilenameMap = [NSMutableDictionary new];
 

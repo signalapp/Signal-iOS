@@ -77,6 +77,8 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 // A map of attachment id-to-filename.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
+@property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
+
 /**
  * Whether the message should be serialized as a modern aka Content, or the old style legacy message.
  * Sync and Call messsages must be sent as Content, but other old style DataMessage payloads should be
