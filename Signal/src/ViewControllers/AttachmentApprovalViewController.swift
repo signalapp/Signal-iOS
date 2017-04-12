@@ -69,9 +69,16 @@ class AttachmentApprovalViewController: UIViewController {
             createImagePreview(attachmentPreviewView:attachmentPreviewView)
         } else if attachment.isVideo {
             createVideoPreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isAudio {
+            createAudioPreview(attachmentPreviewView:attachmentPreviewView)
         } else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
         }
+    }
+
+    private func createAudioPreview(attachmentPreviewView: UIView) {
+        // TODO: Add audio player.
+        createGenericPreview(attachmentPreviewView:attachmentPreviewView)
     }
 
     private func createAnimatedPreview(attachmentPreviewView: UIView) {
