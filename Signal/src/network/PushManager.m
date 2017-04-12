@@ -23,7 +23,6 @@
 @property TOCFutureSource *registerWithServerFutureSource;
 @property UIAlertView *missingPermissionsAlertView;
 @property (nonatomic, retain) NSMutableArray *currentNotifications;
-@property (nonatomic, retain) NSMutableArray *pendingNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
@@ -76,8 +75,7 @@
                                                     cancelButtonTitle:NSLocalizedString(@"OK", @"")
                                                     otherButtonTitles:nil, nil];
     _callBackgroundTask = UIBackgroundTaskInvalid;
-    _currentNotifications = [NSMutableArray new];
-    _pendingNotifications = [NSMutableArray new];
+    _currentNotifications = [NSMutableArray array];
 
     OWSSingletonAssert();
 
@@ -437,55 +435,27 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
     NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
     if (checkForCancel && threadId != nil) {
-        [_pendingNotifications addObject:notification];
-
         // The longer we wait, the more obsolete notifications we can suppress -
         // but the more lag we introduce to notification delivery.
         const CGFloat kDelaySeconds = 0.3f;
-        dispatch_after(
-            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(NSEC_PER_SEC * kDelaySeconds)), dispatch_get_main_queue(), ^{
-                if (![_pendingNotifications containsObject:notification]) {
-                    DDLogVerbose(@"%@ notification was cancelled before it was presented: %@, %@",
-                                 self.tag,
-                                 notification.alertBody,
-                                 threadId);
-                } else {
-                    [_pendingNotifications removeObject:notification];
-                    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-                    [self.currentNotifications addObject:notification];
-                }
-            });
-    } else {
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        [self.currentNotifications addObject:notification];
+        notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
+        notification.timeZone = [NSTimeZone localTimeZone];
     }
+
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    [self.currentNotifications addObject:notification];
 }
 
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId {
     OWSAssert([NSThread isMainThread]);
 
-    // Cull matching pending notifications.
     NSMutableArray *toDelete = [NSMutableArray array];
-    [self.pendingNotifications enumerateObjectsUsingBlock:^(
-        UILocalNotification *notification, NSUInteger idx, BOOL *stop) {
-        NSString *notificationThreadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-        OWSAssert(notificationThreadId != nil);
-        if ([notificationThreadId isEqualToString:threadId]) {
-            DDLogError(@"%@ cancelling delayed notification: %@, %@", self.tag, notification.alertBody, threadId);
-            [toDelete addObject:notification];
+    [self.currentNotifications enumerateObjectsUsingBlock:^(UILocalNotification *notif, NSUInteger idx, BOOL *stop) {
+        if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
+            [[UIApplication sharedApplication] cancelLocalNotification:notif];
+            [toDelete addObject:notif];
         }
     }];
-    [self.pendingNotifications removeObjectsInArray:toDelete];
-
-    // Cull matching active notifications.
-    [toDelete removeAllObjects];
-    [self.currentNotifications
-        enumerateObjectsUsingBlock:^(UILocalNotification *notification, NSUInteger idx, BOOL *stop) {
-            if ([notification.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
-                [[UIApplication sharedApplication] cancelLocalNotification:notification];
-                [toDelete addObject:notification];
-            }
-        }];
     [self.currentNotifications removeObjectsInArray:toDelete];
 }
 
