@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import MediaPlayer
 
 class AttachmentApprovalViewController: UIViewController {
 
@@ -13,6 +14,8 @@ class AttachmentApprovalViewController: UIViewController {
     let attachment: SignalAttachment
 
     var successCompletion : (() -> Void)?
+
+    var videoPlayer: MPMoviePlayerController?
 
     // MARK: Initializers
 
@@ -62,6 +65,8 @@ class AttachmentApprovalViewController: UIViewController {
 
         if attachment.isImage {
             createImagePreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isVideo {
+            createVideoPreview(attachmentPreviewView:attachmentPreviewView)
         } else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
         }
@@ -72,17 +77,38 @@ class AttachmentApprovalViewController: UIViewController {
         if image == nil {
             image = UIImage(data:attachment.data)
         }
-        if image != nil {
-            let imageView = UIImageView(image:image)
-            imageView.layer.minificationFilter = kCAFilterTrilinear
-            imageView.layer.magnificationFilter = kCAFilterTrilinear
-            imageView.contentMode = .scaleAspectFit
-            attachmentPreviewView.addSubview(imageView)
-            imageView.autoPinWidthToSuperview()
-            imageView.autoPinHeightToSuperview()
-        } else {
+        guard image != nil else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
         }
+
+        let imageView = UIImageView(image:image)
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.contentMode = .scaleAspectFit
+        attachmentPreviewView.addSubview(imageView)
+        imageView.autoPinWidthToSuperview()
+        imageView.autoPinHeightToSuperview()
+    }
+
+    private func createVideoPreview(attachmentPreviewView: UIView) {
+        guard let dataUrl = attachment.getTemporaryDataUrl() else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        guard let videoPlayer = MPMoviePlayerController(contentURL:dataUrl) else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        videoPlayer.prepareToPlay()
+
+        videoPlayer.controlStyle = .default
+        videoPlayer.shouldAutoplay = false
+
+        attachmentPreviewView.addSubview(videoPlayer.view)
+        self.videoPlayer = videoPlayer
+        videoPlayer.view.autoPinWidthToSuperview()
+        videoPlayer.view.autoPinHeightToSuperview()
     }
 
     private func createGenericPreview(attachmentPreviewView: UIView) {
