@@ -86,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         attachmentIds:[NSMutableArray new]
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt];
+        // Since updateWithWasDelivered is a new message, updateWithWasDelivered will save it.
         [textMessage updateWithWasDelivered];
     }
 }

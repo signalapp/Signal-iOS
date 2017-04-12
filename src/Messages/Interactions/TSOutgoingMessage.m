@@ -189,6 +189,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithSendingError:(NSError *)error
 {
+    OWSAssert(error);
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatest:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -218,19 +220,28 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
+- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(customMessage);
+    OWSAssert(transaction);
+
+    [self applyChangeToSelfAndLatest:transaction
+                         changeBlock:^(TSOutgoingMessage *message) {
+                             [message setCustomMessage:customMessage];
+                         }];
+}
+
 - (void)updateWithCustomMessage:(NSString *)customMessage
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatest:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setCustomMessage:customMessage];
-                             }];
+        [self updateWithCustomMessage:customMessage transaction:transaction];
     }];
 }
 
 - (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
+
     [self applyChangeToSelfAndLatest:transaction
                          changeBlock:^(TSOutgoingMessage *message) {
                              [message setWasDelivered:YES];

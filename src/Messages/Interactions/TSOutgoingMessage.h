@@ -109,18 +109,30 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
                                                                         filename:(nullable NSString *)filename;
 
 // TSOutgoingMessage are updated from many threads. We don't want to save
-// our local copy since it may be out of date.  Instead, we use these
-// "updateWith..." methods to:
+// our local copy (this instance) since it may be out of date.  Instead, we
+// use these "updateWith..." methods to:
 //
-// a) Update a property of the local copy.
+// a) Update a property of this instance.
 // b) Load an up-to-date instance of this model from from the data store.
 // c) Update and save that fresh instance.
+// d) If this message hasn't yet been saved, save this local instance.
+//
+// After "updateWith...":
+//
+// a) An updated copy of this message will always have been saved in the
+//    data store.
+// b) The local property on this instance will always have been updated.
+// c) Other properties on this instance may be out of date.
+//
+// All mutable properties of this class have been made read-only to
+// prevent accidentally modifying them directly.
 //
 // This isn't a perfect arrangement, but in practice this will prevent
-// data loss.
+// data loss and will resolve all known issues.
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState;
 - (void)updateWithSendingError:(NSError *)error;
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
+- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 - (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasDelivered;
