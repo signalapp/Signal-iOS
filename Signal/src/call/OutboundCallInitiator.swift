@@ -54,7 +54,7 @@ import Foundation
             // Here the permissions are either granted or denied
             guard isGranted == true else {
                 Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
-                self.showAlertNoPermission()
+                self.showNoMicrophonePermissionAlert()
                 return
             }
             callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
@@ -63,13 +63,18 @@ import Foundation
     }
     
     /// Cleanup and present alert for no permissions
-    private func showAlertNoPermission() {
+    private func showNoMicrophonePermissionAlert() {
         let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment:"Alert Title")
         let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment:"Alert message")
         let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         let dismiss = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Generic short text for button to dismiss a dialog")
         let dismissAction = UIAlertAction(title: dismiss, style: .default)
+        let settingsString = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS", comment: "Settings button text")
+        let settingsAction = UIAlertAction(title: settingsString, style: .default) { _ in
+            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+        }
         alertController.addAction(dismissAction)
-        UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true, completion: nil)
+        alertController.addAction(settingsAction)
+        UIApplication.shared.frontmostViewController?.present(alertController, animated: true, completion: nil)
     }
 }
