@@ -6,8 +6,8 @@
 #import "AppDelegate.h"
 #import "AttachmentSharing.h"
 #import "BlockListUIUtils.h"
-#import "DebugUITableViewController.h"
 #import "BlockListViewController.h"
+#import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
@@ -23,6 +23,7 @@
 #import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
+#import "OWSUnknownContactBlockOfferMessage.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
@@ -383,6 +384,14 @@ typedef enum : NSUInteger {
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
 
     [self initializeToolbars];
+
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
+        [ThreadUtil createBlockOfferIfNecessary:contactThread
+                                 storageManager:self.storageManager
+                                contactsManager:self.contactsManager
+                                blockingManager:self.blockingManager];
+    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -2003,6 +2012,8 @@ typedef enum : NSUInteger {
 {
     if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
         [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
+    } else if ([message isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
+        [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
     } else if (message.errorType == TSErrorMessageInvalidMessage) {
         [self tappedCorruptedMessage:message];
     } else {
@@ -2050,45 +2061,80 @@ typedef enum : NSUInteger {
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
-    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:titleText
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:titleText
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleActionSheet];
+
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
                                                             style:UIAlertActionStyleCancel
                                                           handler:nil];
     [actionSheetController addAction:dismissAction];
 
-    UIAlertAction *showSafteyNumberAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-                                                                      style:UIAlertActionStyleDefault
-                                                                    handler:^(UIAlertAction * _Nonnull action) {
-                                                                        DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
-                                                                        [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
-                                                                                                    theirSignalId:errorMessage.theirSignalId];
-                                                                    }];
+    UIAlertAction *showSafteyNumberAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
+                                   [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
+                                                               theirSignalId:errorMessage.theirSignalId];
+                               }];
     [actionSheetController addAction:showSafteyNumberAction];
-    
-    UIAlertAction *acceptSafetyNumberAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
-                                                                        style:UIAlertActionStyleDefault
-                                                                      handler:^(UIAlertAction * _Nonnull action) {
-                                                                          DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
-                                                                          [errorMessage acceptNewIdentityKey];
-                                                                          if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
-                                                                              [self.messageSender
-                                                                               resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)
-                                                                               errorMessage
-                                                                               success:^{
-                                                                                   DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
-                                                                               }
-                                                                               failure:^(NSError *_Nonnull error) {
-                                                                                   DDLogError(@"%@ Failed to resend key-error message with error:%@",
-                                                                                              self.tag,
-                                                                                              error);
-                                                                               }];
-                                                                          }
-                                                                      }];
+
+    UIAlertAction *acceptSafetyNumberAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+                    [errorMessage acceptNewIdentityKey];
+                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
+                        [self.messageSender
+                            resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)errorMessage
+                            success:^{
+                                DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
+                            }
+                            failure:^(NSError *_Nonnull error) {
+                                DDLogError(@"%@ Failed to resend key-error message with error:%@", self.tag, error);
+                            }];
+                    }
+                }];
     [actionSheetController addAction:acceptSafetyNumberAction];
     
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
+- (void)tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)errorMessage
+{
+    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:errorMessage.contactId];
+    NSString *title =
+        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
+                                       @"Title format for action sheet that offers to block an unknown user."
+                                       @"Embeds {{the unknown user's name or phone number}}."),
+                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    UIAlertAction *blockAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
+                                           @"Action sheet that will block an unknown user.")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
+                                   [self.blockingManager addBlockedPhoneNumber:errorMessage.contactId];
+                                   // Delete the block offer.
+                                   [self.storageManager.dbConnection
+                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           [errorMessage removeWithTransaction:transaction];
+                                       }];
+                               }];
+    [actionSheetController addAction:blockAction];
+
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 

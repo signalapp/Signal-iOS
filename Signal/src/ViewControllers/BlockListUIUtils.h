@@ -44,6 +44,11 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                           contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
+#pragma mark - UI Utils
+
++ (NSString *)formatDisplayNameForAlertTitle:(NSString *)displayName;
++ (NSString *)formatDisplayNameForAlertMessage:(NSString *)displayName;
+
 @end
 
 NS_ASSUME_NONNULL_END
