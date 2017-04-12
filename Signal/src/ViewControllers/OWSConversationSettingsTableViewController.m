@@ -398,8 +398,7 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:gThread
-                                                                  messageBody:@""];
-    message.groupMetaMessage = TSGroupMessageQuit;
+                                                             groupMetaMessage:TSGroupMessageQuit];
     [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully left group.", self.tag);

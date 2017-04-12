@@ -309,11 +309,10 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                          TSOutgoingMessage *message =
                              [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                  inThread:self.thread
-                                                              messageBody:@""
-                                                            attachmentIds:[NSMutableArray new]];
+                                                         groupMetaMessage:TSGroupMessageNew];
 
-                         message.groupMetaMessage = TSGroupMessageNew;
-                         message.customMessage = NSLocalizedString(@"GROUP_CREATED", nil);
+                         // This will save the message.
+                         [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
                          if (model.groupImage) {
                              [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
                                                         contentType:OWSMimeTypeImagePng

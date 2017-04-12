@@ -2702,10 +2702,8 @@ typedef enum : NSUInteger {
         [groupThread saveWithTransaction:transaction];
         message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                       inThread:groupThread
-                                                   messageBody:@""
-                                                 attachmentIds:[NSMutableArray new]];
-        message.groupMetaMessage = TSGroupMessageUpdate;
-        [message updateWithCustomMessage:updateGroupInfo];
+                                              groupMetaMessage:TSGroupMessageUpdate];
+        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];
 
     if (newGroupModel.groupImage) {
