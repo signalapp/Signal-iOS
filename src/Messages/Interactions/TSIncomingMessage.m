@@ -47,7 +47,8 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:0];
+                    expireStartedAt:0
+                   groupMetaMessage:TSGroupMessageNone];
 
     if (!self) {
         return self;

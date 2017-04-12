@@ -8,6 +8,7 @@
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,7 +36,11 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
+@property (atomic) TSGroupMetaMessage groupMetaMessage;
+
 @end
+
+#pragma mark -
 
 @implementation TSMessage
 
@@ -89,6 +94,23 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt
 {
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:attachmentIds
+                  expiresInSeconds:expiresInSeconds
+                   expireStartedAt:expireStartedAt
+                  groupMetaMessage:TSGroupMessageNone];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+{
     self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
@@ -103,6 +125,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
     _receivedAtDate = [NSDate date];
+    _groupMetaMessage = groupMetaMessage;
 
     return self;
 }

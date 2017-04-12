@@ -25,7 +25,8 @@
                         messageBody:nil
                       attachmentIds:@[]
                    expiresInSeconds:0
-                    expireStartedAt:0];
+                    expireStartedAt:0
+                   groupMetaMessage:TSGroupMessageNone];
 
     if (!self) {
         return self;

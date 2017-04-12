@@ -19,7 +19,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageUnknownContactBlockOffer,
 };
 
--(instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;

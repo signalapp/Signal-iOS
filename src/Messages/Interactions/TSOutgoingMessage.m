@@ -111,12 +111,45 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt
 {
+    TSGroupMetaMessage groupMetaMessage
+        = ([thread isKindOfClass:[TSGroupThread class]] ? TSGroupMessageDeliver : TSGroupMessageNone);
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:attachmentIds
+                  expiresInSeconds:expiresInSeconds
+                   expireStartedAt:expireStartedAt
+                  groupMetaMessage:groupMetaMessage];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+{
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:@""
+                     attachmentIds:[NSMutableArray new]
+                  expiresInSeconds:0
+                   expireStartedAt:0
+                  groupMetaMessage:groupMetaMessage];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+{
     self = [super initWithTimestamp:timestamp
                            inThread:thread
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:expireStartedAt];
+                    expireStartedAt:expireStartedAt
+                   groupMetaMessage:groupMetaMessage];
     if (!self) {
         return self;
     }
@@ -125,11 +158,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
 
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        self.groupMetaMessage = TSGroupMessageDeliver;
-    } else {
-        self.groupMetaMessage = TSGroupMessageNone;
-    }
     _attachmentFilenameMap = [NSMutableDictionary new];
 
     OWSAssert(self.receivedAtDate);
@@ -169,15 +197,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 #pragma mark - Update Methods
 
-- (void)applyChangeToSelfAndLatest:(YapDatabaseReadWriteTransaction *)transaction
-                       changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
+- (void)applyChangeToSelfAndLatestOutgoingMessage:(YapDatabaseReadWriteTransaction *)transaction
+                                      changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
 {
     OWSAssert(transaction);
 
     changeBlock(self);
 
-    TSOutgoingMessage *latestMessage =
-        [transaction objectForKey:self.uniqueId inCollection:[TSOutgoingMessage collection]];
+    NSString *collection = [[self class] collection];
+    TSOutgoingMessage *latestMessage = [transaction objectForKey:self.uniqueId inCollection:collection];
     if (latestMessage) {
         changeBlock(latestMessage);
         [latestMessage saveWithTransaction:transaction];
@@ -192,31 +220,31 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(error);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatest:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setMessageState:TSOutgoingMessageStateUnsent];
-                                 [message setMostRecentFailureText:error.localizedDescription];
-                             }];
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setMessageState:TSOutgoingMessageStateUnsent];
+                                                [message setMostRecentFailureText:error.localizedDescription];
+                                            }];
     }];
 }
 
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatest:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setMessageState:messageState];
-                             }];
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setMessageState:messageState];
+                                            }];
     }];
 }
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatest:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setHasSyncedTranscript:hasSyncedTranscript];
-                             }];
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setHasSyncedTranscript:hasSyncedTranscript];
+                                            }];
     }];
 }
 
@@ -225,10 +253,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(customMessage);
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatest:transaction
-                         changeBlock:^(TSOutgoingMessage *message) {
-                             [message setCustomMessage:customMessage];
-                         }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setCustomMessage:customMessage];
+                                        }];
 }
 
 - (void)updateWithCustomMessage:(NSString *)customMessage
@@ -242,10 +270,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatest:transaction
-                         changeBlock:^(TSOutgoingMessage *message) {
-                             [message setWasDelivered:YES];
-                         }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setWasDelivered:YES];
+                                        }];
 }
 
 - (void)updateWithWasDelivered
@@ -297,10 +325,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
-    [self applyChangeToSelfAndLatest:transaction
-                         changeBlock:^(TSOutgoingMessage *message) {
-                             [message addSentRecipient:contactId];
-                         }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message addSentRecipient:contactId];
+                                        }];
 }
 
 - (void)updateWithSentRecipient:(NSString *)contactId

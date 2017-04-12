@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nullable, nonatomic) NSString *body;
-@property (nonatomic) TSGroupMetaMessage groupMetaMessage;
+@property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
@@ -58,7 +58,15 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_DESIGNATED_INITIALIZER;
+                  expireStartedAt:(uint64_t)expireStartedAt;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

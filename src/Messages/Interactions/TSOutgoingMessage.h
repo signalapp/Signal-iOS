@@ -35,6 +35,10 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds;
 
@@ -49,7 +53,15 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_DESIGNATED_INITIALIZER;
+                  expireStartedAt:(uint64_t)expireStartedAt;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt
+                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
