@@ -65,11 +65,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
 {
+    OWSAssert(0);
+
     return [self initWithTimestamp:timestamp inThread:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
+    OWSAssert(0);
+
     return [self initWithTimestamp:timestamp inThread:thread messageBody:nil];
 }
 
@@ -77,7 +81,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                          inThread:(nullable TSThread *)thread
                       messageBody:(nullable NSString *)body
 {
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:[NSMutableArray new]];
+    return [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:body
+                     attachmentIds:[NSMutableArray new]
+                  expiresInSeconds:0];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -85,6 +93,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
 {
+    OWSAssert(0);
+
     return [self initWithTimestamp:timestamp
                           inThread:thread
                        messageBody:body

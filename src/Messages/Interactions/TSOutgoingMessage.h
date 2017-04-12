@@ -6,11 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosAttachmentPointer;
-@class OWSSignalServiceProtosDataMessageBuilder;
-
-@interface TSOutgoingMessage : TSMessage
-
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:
     // a) Enqueued for sending.
@@ -26,8 +21,18 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateSentToService,
 };
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp;
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;
+typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
+    TSGroupMessageNone,
+    TSGroupMessageNew,
+    TSGroupMessageUpdate,
+    TSGroupMessageDeliver,
+    TSGroupMessageQuit
+};
+
+@class OWSSignalServiceProtosAttachmentPointer;
+@class OWSSignalServiceProtosDataMessageBuilder;
+
+@interface TSOutgoingMessage : TSMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
@@ -36,11 +41,6 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                  groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
