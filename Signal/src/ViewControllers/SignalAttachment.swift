@@ -54,8 +54,6 @@ enum TSImageQuality {
 // [SignalAttachment hasError] will be true for non-valid attachments.
 //
 // TODO: Perhaps do conversion off the main thread?
-// TODO: Show error on error.
-// TODO: Show progress on upload.
 class SignalAttachment: NSObject {
 
     static let TAG = "[SignalAttachment]"
@@ -195,8 +193,6 @@ class SignalAttachment: NSObject {
         return fileExtension.takeRetainedValue() as String
     }
 
-    private static let allowArbitraryAttachments = false
-
     // Returns the set of UTIs that correspond to valid _input_ image formats
     // for Signal attachments.
     //
@@ -209,17 +205,7 @@ class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
-        if allowArbitraryAttachments {
-            return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
-        } else {
-            // Until Android client can handle arbitrary attachments,
-            // restrict output.
-            return [
-                kUTTypeJPEG as String,
-                kUTTypeGIF as String,
-                kUTTypePNG as String
-            ]
-        }
+        return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
     }
 
     // Returns the set of UTIs that correspond to valid animated image formats
@@ -231,32 +217,13 @@ class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid video formats
     // for Signal attachments.
     private class var videoUTISet: Set<String> {
-        if allowArbitraryAttachments {
-            return MIMETypeUtil.supportedVideoUTITypes()
-        } else {
-            return [
-                kUTTypeMPEG4 as String
-            ]
-        }
+        return MIMETypeUtil.supportedVideoUTITypes()
     }
 
     // Returns the set of UTIs that correspond to valid audio formats
     // for Signal attachments.
     private class var audioUTISet: Set<String> {
-        if allowArbitraryAttachments {
-            return MIMETypeUtil.supportedAudioUTITypes()
-        } else {
-            return [
-                kUTTypeMP3 as String,
-                kUTTypeMPEG4Audio as String
-            ]
-        }
-    }
-
-    // Returns the set of UTIs that correspond to valid input formats
-    // for Signal attachments.
-    public class var validInputUTISet: Set<String> {
-        return inputImageUTISet.union(videoUTISet.union(audioUTISet))
+        return MIMETypeUtil.supportedAudioUTITypes()
     }
 
     public var isImage: Bool {
@@ -279,13 +246,7 @@ class SignalAttachment: NSObject {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return false
         }
-        // If pasteboard contains multiple items, use only the first.
-        let itemSet = IndexSet(integer:0)
-        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet:itemSet) else {
-            return false
-        }
-        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
-        return pasteboardUTISet.intersection(validInputUTISet).count > 0
+        return true
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment
@@ -330,9 +291,13 @@ class SignalAttachment: NSObject {
                 return audioAttachment(data : data, dataUTI : dataUTI)
             }
         }
-        // TODO: We could handle generic attachments at this point.
 
-        return nil
+        let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
+        guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
+            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            return nil
+        }
+        return genericAttachment(data : data, dataUTI : dataUTI)
     }
 
     // This method should only be called for dataUTIs that
