@@ -1231,6 +1231,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     DDLogWarn(@"%@ Got exception: %@", self.tag, exception);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // TODO: This error message is never created?
         TSErrorMessage *errorMessage;
 
         if (message.groupMetaMessage == TSGroupMessageNone) {
