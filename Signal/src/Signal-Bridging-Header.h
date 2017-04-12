@@ -7,6 +7,7 @@
 #import "Asserts.h"
 #import "AttachmentSharing.h"
 #import "Environment.h"
+#import "FLAnimatedImage.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSCallNotificationsAdaptee.h"

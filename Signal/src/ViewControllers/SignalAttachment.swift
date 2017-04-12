@@ -262,6 +262,10 @@ class SignalAttachment: NSObject {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
 
+    public var isAnimatedImage: Bool {
+        return SignalAttachment.animatedImageUTISet.contains(dataUTI)
+    }
+
     public var isVideo: Bool {
         return SignalAttachment.videoUTISet.contains(dataUTI)
     }

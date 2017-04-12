@@ -63,13 +63,29 @@ class AttachmentApprovalViewController: UIViewController {
 
         createButtonRow(attachmentPreviewView:attachmentPreviewView)
 
-        if attachment.isImage {
+        if attachment.isAnimatedImage {
+            createAnimatedPreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isImage {
             createImagePreview(attachmentPreviewView:attachmentPreviewView)
         } else if attachment.isVideo {
             createVideoPreview(attachmentPreviewView:attachmentPreviewView)
         } else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
         }
+    }
+
+    private func createAnimatedPreview(attachmentPreviewView: UIView) {
+        // Use Flipboard FLAnimatedImage library to display gifs
+        guard let animatedImage = FLAnimatedImage(gifData:attachment.data) else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        let animatedImageView = FLAnimatedImageView()
+        animatedImageView.animatedImage = animatedImage
+        animatedImageView.contentMode = .scaleAspectFit
+        attachmentPreviewView.addSubview(animatedImageView)
+        animatedImageView.autoPinWidthToSuperview()
+        animatedImageView.autoPinHeightToSuperview()
     }
 
     private func createImagePreview(attachmentPreviewView: UIView) {
