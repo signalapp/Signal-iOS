@@ -15,12 +15,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
+NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
+NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificationName_RegistrationStateDidChange";
+
 @interface TSAccountManager ()
 
 @property (nullable, nonatomic, retain) NSString *phoneNumberAwaitingVerification;
 @property (nonatomic, strong, readonly) TSStorageManager *storageManager;
 
 @end
+
+#pragma mark -
 
 @implementation TSAccountManager
 
@@ -71,6 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.storageManager storePhoneNumber:phoneNumber];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
+                                                        object:nil
+                                                      userInfo:nil];
 }
 
 + (nullable NSString *)localNumber
@@ -204,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
                 case 204: {
                     [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
                     [self didRegister];
-                    [TSSocketManager becomeActiveFromForeground];
+                    [TSSocketManager requestSocketOpen];
                     [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
                                                      success:successBlock
                                                      failure:failureBlock];
@@ -260,6 +270,16 @@ NS_ASSUME_NONNULL_BEGIN
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogInfo(@"%@ Successfully unregistered", self.tag);
             success();
+
+            // This is called from `[SettingsTableViewController proceedToUnregistration]` whose
+            // success handler calls `[Environment resetAppData]`.
+            // This method, after calling that success handler, fires
+            // `kNSNotificationName_RegistrationStateDidChange` which is only safe to fire after
+            // the data store is reset.
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
+                                                                object:nil
+                                                              userInfo:nil];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to unregister with error: %@", self.tag, error);

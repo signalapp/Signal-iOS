@@ -14,10 +14,22 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import "Threading.h"
 
-#define kWebSocketHeartBeat 30
-#define kWebSocketReconnectTry 5
-#define kBackgroundConnectTimer 25
-#define kBackgroundConnectKeepAlive 15
+typedef enum : NSUInteger {
+    kSocketStatusOpen,
+    kSocketStatusClosed,
+    kSocketStatusConnecting,
+} SocketStatus;
+
+static const CGFloat kSocketHeartbeatPeriodSeconds = 30.f;
+static const CGFloat kSocketReconnectDelaySeconds = 5.f;
+
+// If the app is in the background, it should keep the
+// websocket open if:
+//
+// a) It has received a notification in the last 25 seconds.
+static const CGFloat kBackgroundOpenSocketDurationSeconds = 25.f;
+// b) It has received a message over the socket in the last 15 seconds.
+static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
 
 NSString *const SocketOpenedNotification     = @"SocketOpenedNotification";
 NSString *const SocketClosedNotification     = @"SocketClosedNotification";
@@ -28,17 +40,50 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 @property (nonatomic, readonly) OWSSignalService *signalService;
 
-@property (nonatomic) NSTimer *pingTimer;
+// This class has a few "tiers" of state.
+//
+// The first tier is the actual websocket and the timers used
+// to keep it alive and connected.
+@property (nonatomic) SRWebSocket *websocket;
+@property (nonatomic) NSTimer *heartbeatTimer;
 @property (nonatomic) NSTimer *reconnectTimer;
 
+#pragma mark -
 
-@property (nonatomic) SRWebSocket *websocket;
+// The second tier is the status property.  We initiate changes
+// to the websocket by changing this property's value, and delegate
+// events from the websocket also update this value as the websocket's
+// state changes.
+//
+// Due to concurrency, this property can fall out of sync with the
+// websocket's actual state, so we're defensive and distrustful of
+// this property.
 @property (nonatomic) SocketStatus status;
 
+#pragma mark -
+
+// The third tier is the state that is used to determine what the
+// "desired" state of the websocket is.
+//
+// If we're keeping the socket open in the background, all three of these
+// properties will be set.  Otherwise (if the app is active or if we're not
+// trying to keep the socket open), all three should be clear.
+//
+// This represents how long we're trying to keep the socket open.
+@property (nonatomic) NSDate *backgroundKeepAliveUntilDate;
+// This timer is used to check periodically whether we should
+// close the socket.
+@property (nonatomic) NSTimer *backgroundKeepAliveTimer;
+// This is used to manage the iOS "background task" used to
+// keep the app alive in the background.
 @property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
 
-@property (nonatomic) NSTimer *backgroundKeepAliveTimer;
-@property (nonatomic) NSTimer *backgroundConnectTimer;
+// We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
+// because UIKit only provides a "will resign active" notification, not a "did resign active"
+// notification.
+@property (nonatomic) BOOL appIsActive;
+
+@property (nonatomic) BOOL hasObservedNotifications;
 
 @end
 
@@ -58,6 +103,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     _signalService = [OWSSignalService new];
     _status = kSocketStatusClosed;
+    _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
 
     [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
@@ -66,38 +112,53 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+// We want to observe these notifications lazily to avoid accessing
+// the data store in [application: didFinishLaunchingWithOptions:].
+- (void)observeNotificationsIfNecessary
+{
+    if (self.hasObservedNotifications) {
+        return;
+    }
+    self.hasObservedNotifications = YES;
+
+    self.appIsActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange:)
+                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                               object:nil];
+}
+
 + (instancetype)sharedManager {
     static TSSocketManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedMyManager                        = [[self alloc] init];
-      sharedMyManager.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
+        sharedMyManager = [self new];
     });
     return sharedMyManager;
 }
 
 #pragma mark - Manage Socket
 
-+ (void)becomeActive
-{
-    [[self sharedManager] becomeActive];
-}
-
-- (void)becomeActive
-{
-    OWSAssert([NSThread isMainThread]);
-
-    DispatchMainThreadSafe(^{
-        [self ensureWebsocket];
-    });
-}
-
-- (void)ensureWebsocket
+- (void)ensureWebsocketIsOpen
 {
     OWSAssert([NSThread isMainThread]);
     
     if (self.signalService.isCensored) {
-        DDLogWarn(@"%@ Refusing to start websocket in `becomeActive`.", self.tag);
+        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
         return;
     }
 
@@ -196,17 +257,17 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         case kSocketStatusOpen: {
             OWSAssert(self.status == kSocketStatusConnecting);
 
-            self.pingTimer = [NSTimer timerWithTimeInterval:kWebSocketHeartBeat
-                                                     target:self
-                                                   selector:@selector(webSocketHeartBeat)
-                                                   userInfo:nil
-                                                    repeats:YES];
-            
+            self.heartbeatTimer = [NSTimer timerWithTimeInterval:kSocketHeartbeatPeriodSeconds
+                                                          target:self
+                                                        selector:@selector(webSocketHeartBeat)
+                                                        userInfo:nil
+                                                         repeats:YES];
+
             // Additionally, we want the ping timer to work in the background too.
-            [[NSRunLoop mainRunLoop] addTimer:self.pingTimer forMode:NSDefaultRunLoopMode];
-            
-            [self.reconnectTimer invalidate];
-            self.reconnectTimer = nil;
+            [[NSRunLoop mainRunLoop] addTimer:self.heartbeatTimer forMode:NSDefaultRunLoopMode];
+
+            // If the socket is open, we don't need to worry about reconnecting.
+            [self clearReconnect];
             break;
         }
         case kSocketStatusConnecting: {
@@ -242,15 +303,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     self.websocket.delegate = nil;
     [self.websocket close];
     self.websocket = nil;
-    [self.pingTimer invalidate];
-    self.pingTimer = nil;
-}
-
-+ (void)resignActivity {
-    OWSAssert([NSThread isMainThread]);
-
-    DDLogWarn(@"resignActivity closing web socket");
-    [[self sharedManager] closeWebSocket];
+    [self.heartbeatTimer invalidate];
+    self.heartbeatTimer = nil;
 }
 
 - (void)closeWebSocket
@@ -287,9 +341,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     DDLogError(@"Websocket did fail with error: %@", error);
 
-    [self closeWebSocket];
-
-    [self scheduleRetry];
+    [self handleSocketFailure];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
@@ -317,7 +369,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
 
     [self sendWebSocketMessageAcknowledgement:message];
-    [self keepAliveBackground];
+
+    // If we receive a message over the socket while the app is in the background,
+    // prolong how long the socket stays open.
+    [self requestSocketAliveForAtLeastSeconds:kBackgroundKeepSocketAliveDurationSeconds];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
@@ -335,24 +390,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
-    }
-}
-
-- (void)keepAliveBackground {
-    OWSAssert([NSThread isMainThread]);
-    
-    [self.backgroundConnectTimer invalidate];
-
-    if (self.fetchingTaskIdentifier) {
-        [self.backgroundKeepAliveTimer invalidate];
-
-        self.backgroundKeepAliveTimer = [NSTimer timerWithTimeInterval:kBackgroundConnectKeepAlive
-                                                                target:self
-                                                              selector:@selector(backgroundTimeExpired)
-                                                              userInfo:nil
-                                                               repeats:NO];
-        // Additionally, we want the reconnect timer to work in the background too.
-        [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
     }
 }
 
@@ -378,7 +415,23 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     [self.websocket sendDataNoCopy:message.build.data error:&error];
     if (error) {
         DDLogWarn(@"Error while trying to write on websocket %@", error);
-        [self scheduleRetry];
+        [self handleSocketFailure];
+    }
+}
+
+- (void)handleSocketFailure
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self closeWebSocket];
+
+    if ([self shouldSocketBeOpen]) {
+        // If we should retry, use `ensureReconnect` to
+        // reconnect after a delay.
+        [self ensureReconnect];
+    } else {
+        // Otherwise clean up and align state.
+        [self applyDesiredSocketState];
     }
 }
 
@@ -395,26 +448,23 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     DDLogWarn(@"Websocket did close with code: %ld", (long)code);
 
-    [self closeWebSocket];
-
-    if (!wasClean && [self shouldKeepWebSocketAlive]) {
-        [self scheduleRetry];
-    }
+    [self handleSocketFailure];
 }
 
 - (void)webSocketHeartBeat {
     OWSAssert([NSThread isMainThread]);
 
-    if ([self shouldKeepWebSocketAlive]) {
+    if ([self shouldSocketBeOpen]) {
         NSError *error;
         [self.websocket sendPing:nil error:&error];
         if (error) {
             DDLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
-            [self scheduleRetry];
+            [self handleSocketFailure];
         }
     } else {
         DDLogWarn(@"webSocketHeartBeat closing web socket");
         [self closeWebSocket];
+        [self applyDesiredSocketState];
     }
 }
 
@@ -425,132 +475,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                          [TSStorageManager serverAuthToken]];
 }
 
-- (BOOL)shouldKeepWebSocketAlive {
-    OWSAssert([NSThread isMainThread]);
-
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-        // If app is active, keep web socket alive.
-        return YES;
-    } else if (self.backgroundKeepAliveTimer ||
-               self.backgroundConnectTimer ||
-               self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        // If app is doing any work in the background, keep web socket alive.
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-- (void)scheduleRetry {
-    OWSAssert([NSThread isMainThread]);
-   
-    if (![self shouldKeepWebSocketAlive]) {
-        // Don't bother retrying if app is inactive and not doing any background activity.
-        [self.reconnectTimer invalidate];
-        self.reconnectTimer = nil;
-    } else if (![self.reconnectTimer isValid]) {
-        // TODO: It'd be nice to do exponential backoff.
-        self.reconnectTimer = [NSTimer timerWithTimeInterval:kWebSocketReconnectTry
-                                                      target:[self class]
-                                                    selector:@selector(becomeActive)
-                                                    userInfo:nil
-                                                     repeats:YES];
-        // Additionally, we want the reconnect timer to work in the background too.
-        [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer forMode:NSDefaultRunLoopMode];
-    } else {
-        DDLogWarn(@"Not scheduling retry, valid timer");
-    }
-}
-
-#pragma mark - Background Connect
-
-+ (void)becomeActiveFromForeground {
-    DispatchMainThreadSafe(^{
-        [[self sharedManager] becomeActiveFromForeground];
-    });
-}
-
-- (void)becomeActiveFromForeground {
-    OWSAssert([NSThread isMainThread]);
-    
-    if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        [self closeBackgroundTask];
-    }
-    
-    [self becomeActive];
-}
-
-+ (void)becomeActiveFromBackgroundExpectMessage:(BOOL)expected {
-    DispatchMainThreadSafe(^{
-        [[TSSocketManager sharedManager] becomeActiveFromBackgroundExpectMessage:expected];
-    });
-}
-
-- (void)becomeActiveFromBackgroundExpectMessage:(BOOL)expected {
-    OWSAssert([NSThread isMainThread]);
-    
-    if (self.fetchingTaskIdentifier == UIBackgroundTaskInvalid) {
-        [self.backgroundConnectTimer invalidate];
-        self.backgroundConnectTimer = [NSTimer timerWithTimeInterval:kBackgroundConnectTimer
-                                                              target:self
-                                                            selector:@selector(backgroundConnectTimerExpired)
-                                                            userInfo:nil
-                                                             repeats:NO];
-        NSRunLoop *loop = [NSRunLoop mainRunLoop];
-        [loop addTimer:[TSSocketManager sharedManager].backgroundConnectTimer forMode:NSDefaultRunLoopMode];
-        
-        [self.backgroundKeepAliveTimer invalidate];
-        self.backgroundKeepAliveTimer = nil;
-        self.fetchingTaskIdentifier =
-        [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
-            
-            [TSSocketManager resignActivity];
-            [[TSSocketManager sharedManager] closeBackgroundTask];
-        }];
-        
-        [self becomeActive];
-    } else {
-        DDLogWarn(@"Got called to become active in the background but there was already a background task running.");
-    }
-}
-
-- (void)backgroundConnectTimerExpired {
-    OWSAssert([NSThread isMainThread]);
-
-    [self.backgroundConnectTimer invalidate];
-    self.backgroundConnectTimer = nil;
-    
-    [self backgroundTimeExpired];
-}
-
-- (void)backgroundTimeExpired {
-    OWSAssert([NSThread isMainThread]);
-    
-    if (![self shouldKeepWebSocketAlive]) {
-        [[self class] resignActivity];
-    }
-    [self closeBackgroundTask];
-}
-
-- (void)closeBackgroundTask {
-    OWSAssert([NSThread isMainThread]);
-
-    [self.backgroundKeepAliveTimer invalidate];
-    self.backgroundKeepAliveTimer = nil;
-    [self.backgroundConnectTimer invalidate];
-    self.backgroundConnectTimer = nil;
-
-    [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
-    self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-}
-
 #pragma mark UI Delegates
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
-                       context:(void *)context {
+                       context:(void *)context
+{
     if (context == kSocketStatusObservationContext) {
         [self notifyStatusChange];
     } else {
@@ -558,7 +489,8 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     }
 }
 
-- (void)notifyStatusChange {
+- (void)notifyStatusChange
+{
     switch (self.status) {
         case kSocketStatusOpen:
             [[NSNotificationCenter defaultCenter] postNotificationName:SocketOpenedNotification object:self];
@@ -574,8 +506,200 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     }
 }
 
-+ (void)sendNotification {
++ (void)sendNotification
+{
     [[self sharedManager] notifyStatusChange];
+}
+
+#pragma mark - Socket LifeCycle
+
+- (BOOL)shouldSocketBeOpen
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (![TSAccountManager isRegistered]) {
+        return NO;
+    }
+
+    if (self.appIsActive) {
+        // If app is active, keep web socket alive.
+        return YES;
+    } else if (self.backgroundKeepAliveUntilDate && [self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
+        OWSAssert(self.backgroundKeepAliveTimer);
+        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
+        // If app is doing any work in the background, keep web socket alive.
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)requestSocketAliveForAtLeastSeconds:(CGFloat)durationSeconds
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(durationSeconds > 0.f);
+
+    if (self.appIsActive) {
+        // If app is active, clean up state used to keep socket alive in background.
+        [self clearBackgroundState];
+    } else if (!self.backgroundKeepAliveUntilDate) {
+        OWSAssert(!self.backgroundKeepAliveUntilDate);
+        OWSAssert(!self.backgroundKeepAliveTimer);
+        OWSAssert(self.fetchingTaskIdentifier == UIBackgroundTaskInvalid);
+
+        DDLogInfo(@"%s activating socket in the background", __PRETTY_FUNCTION__);
+
+        // Set up state used to keep socket alive in background.
+        self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
+
+        // To be defensive, clean up any existing backgroundKeepAliveTimer.
+        [self.backgroundKeepAliveTimer invalidate];
+        // Start a new timer that will fire every second while the socket is open in the background.
+        // This timer will ensure we close the websocket when the time comes.
+        self.backgroundKeepAliveTimer = [NSTimer scheduledTimerWithTimeInterval:1.f
+                                                                         target:self
+                                                                       selector:@selector(backgroundKeepAliveFired)
+                                                                       userInfo:nil
+                                                                        repeats:YES];
+        // Additionally, we want the reconnect timer to work in the background too.
+        [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
+
+        self.fetchingTaskIdentifier =
+        [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            OWSAssert([NSThread isMainThread]);
+
+            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
+
+            [self clearBackgroundState];
+            [self applyDesiredSocketState];
+        }];
+    } else {
+        OWSAssert(self.backgroundKeepAliveUntilDate);
+        OWSAssert([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f);
+        OWSAssert(self.backgroundKeepAliveTimer);
+        OWSAssert([self.backgroundKeepAliveTimer isValid]);
+        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
+
+        if ([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
+            // Update state used to keep socket alive in background.
+            self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
+        }
+    }
+
+    [self applyDesiredSocketState];
+}
+
+- (void)backgroundKeepAliveFired
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self applyDesiredSocketState];
+}
+
++ (void)requestSocketOpen
+{
+    DispatchMainThreadSafe(^{
+        [[self sharedManager] observeNotificationsIfNecessary];
+
+        // If the app is active and the user is registered, this will
+        // simply open the websocket.
+        //
+        // If the app is inactive, it will open the websocket for a
+        // period of time.
+        [[self sharedManager] requestSocketAliveForAtLeastSeconds:kBackgroundOpenSocketDurationSeconds];
+    });
+}
+
+// This method aligns the socket state with the "desired" socket state.
+- (void)applyDesiredSocketState
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if ([self shouldSocketBeOpen]) {
+        if (self.status != kSocketStatusOpen) {
+            // If we want the socket to be open and it's not open,
+            // start up the reconnect timer immediately (don't wait for an error).
+            // There's little harm in it and this will make us more robust to edge
+            // cases.
+            [self ensureReconnect];
+        }
+        [self ensureWebsocketIsOpen];
+    } else {
+        [self clearBackgroundState];
+        [self clearReconnect];
+        [self closeWebSocket];
+    }
+}
+
+- (void)clearBackgroundState
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.backgroundKeepAliveUntilDate = nil;
+    [self.backgroundKeepAliveTimer invalidate];
+    self.backgroundKeepAliveTimer = nil;
+
+    if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
+        [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
+        self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
+    }
+}
+
+#pragma mark - Reconnect
+
+- (void)ensureReconnect
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert([self shouldSocketBeOpen]);
+
+    if (self.reconnectTimer) {
+        OWSAssert([self.reconnectTimer isValid]);
+    } else {
+        // TODO: It'd be nice to do exponential backoff.
+        self.reconnectTimer = [NSTimer timerWithTimeInterval:kSocketReconnectDelaySeconds
+                                                      target:self
+                                                    selector:@selector(applyDesiredSocketState)
+                                                    userInfo:nil
+                                                     repeats:YES];
+        // Additionally, we want the reconnect timer to work in the background too.
+        [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer forMode:NSDefaultRunLoopMode];
+    }
+}
+
+- (void)clearReconnect
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.reconnectTimer invalidate];
+    self.reconnectTimer = nil;
+}
+
+#pragma mark - Notifications
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.appIsActive = YES;
+    [self applyDesiredSocketState];
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.appIsActive = NO;
+    // TODO: It might be nice to use `requestSocketAliveForAtLeastSeconds:` to
+    //       keep the socket open for a few seconds after the app is
+    //       inactivated.
+    [self applyDesiredSocketState];
+}
+
+- (void)registrationStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self applyDesiredSocketState];
 }
 
 #pragma mark - Logging
