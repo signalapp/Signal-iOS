@@ -14,6 +14,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kContactsUpdaterErrorDomain = @"kContactsUpdaterErrorDomain";
+const NSInteger kContactsUpdaterRateLimitErrorCode = 413;
+
 @implementation ContactsUpdater
 
 + (instancetype)sharedUpdater {
@@ -206,7 +209,15 @@ NS_ASSUME_NONNULL_BEGIN
             success([NSSet setWithArray:attributesForIdentifier.allKeys]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
+              NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+              if (response.statusCode == 413) {
+                  NSString *const kContactsUpdaterErrorDomain = @"kContactsUpdaterErrorDomain";
+                  failure([NSError errorWithDomain:kContactsUpdaterErrorDomain
+                                              code:kContactsUpdaterRateLimitErrorCode
+                                          userInfo:nil]);
+              } else {
+                  failure(error);
+              }
           }];
     });
 }
