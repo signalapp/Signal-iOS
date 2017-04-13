@@ -128,6 +128,7 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosGroupContextType) {
   OWSSignalServiceProtosGroupContextTypeUpdate = 1,
   OWSSignalServiceProtosGroupContextTypeDeliver = 2,
   OWSSignalServiceProtosGroupContextTypeQuit = 3,
+  OWSSignalServiceProtosGroupContextTypeRequestInfo = 4,
 };
 
 BOOL OWSSignalServiceProtosGroupContextTypeIsValidValue(OWSSignalServiceProtosGroupContextType value);
@@ -373,18 +374,18 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @end
 
 #define Offer_id @"id"
-#define Offer_sessionDescription @"sessionDescription"
+#define Offer_description @"pb_description"
 @interface OWSSignalServiceProtosCallMessageOffer : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasId_:1;
-  BOOL hasSessionDescription_:1;
+  BOOL hasDescription_:1;
   UInt64 id;
-  NSString* sessionDescription;
+  NSString* pb_description;
 }
 - (BOOL) hasId;
-- (BOOL) hasSessionDescription;
+- (BOOL) hasDescription;
 @property (readonly) UInt64 id;
-@property (readonly, strong) NSString* sessionDescription;
+@property (readonly, strong) NSString* pb_description;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -426,25 +427,25 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosCallMessageOfferBuilder*) setId:(UInt64) value;
 - (OWSSignalServiceProtosCallMessageOfferBuilder*) clearId;
 
-- (BOOL) hasSessionDescription;
-- (NSString*) sessionDescription;
-- (OWSSignalServiceProtosCallMessageOfferBuilder*) setSessionDescription:(NSString*) value;
-- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearSessionDescription;
+- (BOOL) hasDescription;
+- (NSString*) pb_description;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setDescription:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearDescription;
 @end
 
 #define Answer_id @"id"
-#define Answer_sessionDescription @"sessionDescription"
+#define Answer_description @"pb_description"
 @interface OWSSignalServiceProtosCallMessageAnswer : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasId_:1;
-  BOOL hasSessionDescription_:1;
+  BOOL hasDescription_:1;
   UInt64 id;
-  NSString* sessionDescription;
+  NSString* pb_description;
 }
 - (BOOL) hasId;
-- (BOOL) hasSessionDescription;
+- (BOOL) hasDescription;
 @property (readonly) UInt64 id;
-@property (readonly, strong) NSString* sessionDescription;
+@property (readonly, strong) NSString* pb_description;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -486,10 +487,10 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosCallMessageAnswerBuilder*) setId:(UInt64) value;
 - (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearId;
 
-- (BOOL) hasSessionDescription;
-- (NSString*) sessionDescription;
-- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setSessionDescription:(NSString*) value;
-- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearSessionDescription;
+- (BOOL) hasDescription;
+- (NSString*) pb_description;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setDescription:(NSString*) value;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearDescription;
 @end
 
 #define IceUpdate_id @"id"
@@ -1278,16 +1279,19 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define AttachmentPointer_size @"size"
 #define AttachmentPointer_thumbnail @"thumbnail"
 #define AttachmentPointer_digest @"digest"
+#define AttachmentPointer_fileName @"fileName"
 @interface OWSSignalServiceProtosAttachmentPointer : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasId_:1;
   BOOL hasContentType_:1;
+  BOOL hasFileName_:1;
   BOOL hasKey_:1;
   BOOL hasThumbnail_:1;
   BOOL hasDigest_:1;
   BOOL hasSize_:1;
   UInt64 id;
   NSString* contentType;
+  NSString* fileName;
   NSData* key;
   NSData* thumbnail;
   NSData* digest;
@@ -1299,12 +1303,14 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasSize;
 - (BOOL) hasThumbnail;
 - (BOOL) hasDigest;
+- (BOOL) hasFileName;
 @property (readonly) UInt64 id;
 @property (readonly, strong) NSString* contentType;
 @property (readonly, strong) NSData* key;
 @property (readonly) UInt32 size;
 @property (readonly, strong) NSData* thumbnail;
 @property (readonly, strong) NSData* digest;
+@property (readonly, strong) NSString* fileName;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1370,6 +1376,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) digest;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) setDigest:(NSData*) value;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearDigest;
+
+- (BOOL) hasFileName;
+- (NSString*) fileName;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setFileName:(NSString*) value;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearFileName;
 @end
 
 #define GroupContext_id @"id"

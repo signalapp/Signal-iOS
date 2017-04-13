@@ -39,12 +39,12 @@ message Content {
 message CallMessage {
   message Offer {
     optional uint64 id          = 1;
-    optional string sessionDescription = 2;
+    optional string description = 2;
   }
 
   message Answer {
     optional uint64 id          = 1;
-    optional string sessionDescription = 2;
+    optional string description = 2;
   }
 
   message IceUpdate {
@@ -134,14 +134,16 @@ message AttachmentPointer {
   optional uint32  size        = 4;
   optional bytes   thumbnail   = 5;
   optional bytes   digest      = 6;
+  optional string  fileName    = 7;
 }
 
 message GroupContext {
   enum Type {
-    UNKNOWN = 0;
-    UPDATE  = 1;
-    DELIVER = 2;
-    QUIT    = 3;
+    UNKNOWN      = 0;
+    UPDATE       = 1;
+    DELIVER      = 2;
+    QUIT         = 3;
+    REQUEST_INFO = 4;
   }
   optional bytes             id      = 1;
   optional Type              type    = 2;

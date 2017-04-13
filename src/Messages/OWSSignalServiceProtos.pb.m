@@ -1180,7 +1180,7 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
 
 @interface OWSSignalServiceProtosCallMessageOffer ()
 @property UInt64 id;
-@property (strong) NSString* sessionDescription;
+@property (strong) NSString* pb_description;
 @end
 
 @implementation OWSSignalServiceProtosCallMessageOffer
@@ -1192,17 +1192,17 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
   hasId_ = !!_value_;
 }
 @synthesize id;
-- (BOOL) hasSessionDescription {
-  return !!hasSessionDescription_;
+- (BOOL) hasDescription {
+  return !!hasDescription_;
 }
-- (void) setHasSessionDescription:(BOOL) _value_ {
-  hasSessionDescription_ = !!_value_;
+- (void) setHasDescription:(BOOL) _value_ {
+  hasDescription_ = !!_value_;
 }
-@synthesize sessionDescription;
+@synthesize pb_description;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = 0L;
-    self.sessionDescription = @"";
+    self.pb_description = @"";
   }
   return self;
 }
@@ -1225,8 +1225,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (self.hasId) {
     [output writeUInt64:1 value:self.id];
   }
-  if (self.hasSessionDescription) {
-    [output writeString:2 value:self.sessionDescription];
+  if (self.hasDescription) {
+    [output writeString:2 value:self.pb_description];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -1240,8 +1240,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (self.hasId) {
     size_ += computeUInt64Size(1, self.id);
   }
-  if (self.hasSessionDescription) {
-    size_ += computeStringSize(2, self.sessionDescription);
+  if (self.hasDescription) {
+    size_ += computeStringSize(2, self.pb_description);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1281,8 +1281,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (self.hasId) {
     [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
   }
-  if (self.hasSessionDescription) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"sessionDescription", self.sessionDescription];
+  if (self.hasDescription) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"pb_description", self.pb_description];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -1290,8 +1290,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (self.hasId) {
     [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
   }
-  if (self.hasSessionDescription) {
-    [dictionary setObject: self.sessionDescription forKey: @"sessionDescription"];
+  if (self.hasDescription) {
+    [dictionary setObject: self.pb_description forKey: @"pb_description"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1306,8 +1306,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   return
       self.hasId == otherMessage.hasId &&
       (!self.hasId || self.id == otherMessage.id) &&
-      self.hasSessionDescription == otherMessage.hasSessionDescription &&
-      (!self.hasSessionDescription || [self.sessionDescription isEqual:otherMessage.sessionDescription]) &&
+      self.hasDescription == otherMessage.hasDescription &&
+      (!self.hasDescription || [self.pb_description isEqual:otherMessage.pb_description]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1315,8 +1315,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (self.hasId) {
     hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
   }
-  if (self.hasSessionDescription) {
-    hashCode = hashCode * 31 + [self.sessionDescription hash];
+  if (self.hasDescription) {
+    hashCode = hashCode * 31 + [self.pb_description hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1364,8 +1364,8 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   if (other.hasId) {
     [self setId:other.id];
   }
-  if (other.hasSessionDescription) {
-    [self setSessionDescription:other.sessionDescription];
+  if (other.hasDescription) {
+    [self setDescription:other.pb_description];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1393,7 +1393,7 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
         break;
       }
       case 18: {
-        [self setSessionDescription:[input readString]];
+        [self setDescription:[input readString]];
         break;
       }
     }
@@ -1415,27 +1415,27 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   resultOffer.id = 0L;
   return self;
 }
-- (BOOL) hasSessionDescription {
-  return resultOffer.hasSessionDescription;
+- (BOOL) hasDescription {
+  return resultOffer.hasDescription;
 }
-- (NSString*) sessionDescription {
-  return resultOffer.sessionDescription;
+- (NSString*) pb_description {
+  return resultOffer.pb_description;
 }
-- (OWSSignalServiceProtosCallMessageOfferBuilder*) setSessionDescription:(NSString*) value {
-  resultOffer.hasSessionDescription = YES;
-  resultOffer.sessionDescription = value;
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) setDescription:(NSString*) value {
+  resultOffer.hasDescription = YES;
+  resultOffer.pb_description = value;
   return self;
 }
-- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearSessionDescription {
-  resultOffer.hasSessionDescription = NO;
-  resultOffer.sessionDescription = @"";
+- (OWSSignalServiceProtosCallMessageOfferBuilder*) clearDescription {
+  resultOffer.hasDescription = NO;
+  resultOffer.pb_description = @"";
   return self;
 }
 @end
 
 @interface OWSSignalServiceProtosCallMessageAnswer ()
 @property UInt64 id;
-@property (strong) NSString* sessionDescription;
+@property (strong) NSString* pb_description;
 @end
 
 @implementation OWSSignalServiceProtosCallMessageAnswer
@@ -1447,17 +1447,17 @@ static OWSSignalServiceProtosCallMessageOffer* defaultOWSSignalServiceProtosCall
   hasId_ = !!_value_;
 }
 @synthesize id;
-- (BOOL) hasSessionDescription {
-  return !!hasSessionDescription_;
+- (BOOL) hasDescription {
+  return !!hasDescription_;
 }
-- (void) setHasSessionDescription:(BOOL) _value_ {
-  hasSessionDescription_ = !!_value_;
+- (void) setHasDescription:(BOOL) _value_ {
+  hasDescription_ = !!_value_;
 }
-@synthesize sessionDescription;
+@synthesize pb_description;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = 0L;
-    self.sessionDescription = @"";
+    self.pb_description = @"";
   }
   return self;
 }
@@ -1480,8 +1480,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (self.hasId) {
     [output writeUInt64:1 value:self.id];
   }
-  if (self.hasSessionDescription) {
-    [output writeString:2 value:self.sessionDescription];
+  if (self.hasDescription) {
+    [output writeString:2 value:self.pb_description];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -1495,8 +1495,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (self.hasId) {
     size_ += computeUInt64Size(1, self.id);
   }
-  if (self.hasSessionDescription) {
-    size_ += computeStringSize(2, self.sessionDescription);
+  if (self.hasDescription) {
+    size_ += computeStringSize(2, self.pb_description);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1536,8 +1536,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (self.hasId) {
     [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
   }
-  if (self.hasSessionDescription) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"sessionDescription", self.sessionDescription];
+  if (self.hasDescription) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"pb_description", self.pb_description];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -1545,8 +1545,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (self.hasId) {
     [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
   }
-  if (self.hasSessionDescription) {
-    [dictionary setObject: self.sessionDescription forKey: @"sessionDescription"];
+  if (self.hasDescription) {
+    [dictionary setObject: self.pb_description forKey: @"pb_description"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1561,8 +1561,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   return
       self.hasId == otherMessage.hasId &&
       (!self.hasId || self.id == otherMessage.id) &&
-      self.hasSessionDescription == otherMessage.hasSessionDescription &&
-      (!self.hasSessionDescription || [self.sessionDescription isEqual:otherMessage.sessionDescription]) &&
+      self.hasDescription == otherMessage.hasDescription &&
+      (!self.hasDescription || [self.pb_description isEqual:otherMessage.pb_description]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1570,8 +1570,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (self.hasId) {
     hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
   }
-  if (self.hasSessionDescription) {
-    hashCode = hashCode * 31 + [self.sessionDescription hash];
+  if (self.hasDescription) {
+    hashCode = hashCode * 31 + [self.pb_description hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1619,8 +1619,8 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   if (other.hasId) {
     [self setId:other.id];
   }
-  if (other.hasSessionDescription) {
-    [self setSessionDescription:other.sessionDescription];
+  if (other.hasDescription) {
+    [self setDescription:other.pb_description];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1648,7 +1648,7 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
         break;
       }
       case 18: {
-        [self setSessionDescription:[input readString]];
+        [self setDescription:[input readString]];
         break;
       }
     }
@@ -1670,20 +1670,20 @@ static OWSSignalServiceProtosCallMessageAnswer* defaultOWSSignalServiceProtosCal
   resultAnswer.id = 0L;
   return self;
 }
-- (BOOL) hasSessionDescription {
-  return resultAnswer.hasSessionDescription;
+- (BOOL) hasDescription {
+  return resultAnswer.hasDescription;
 }
-- (NSString*) sessionDescription {
-  return resultAnswer.sessionDescription;
+- (NSString*) pb_description {
+  return resultAnswer.pb_description;
 }
-- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setSessionDescription:(NSString*) value {
-  resultAnswer.hasSessionDescription = YES;
-  resultAnswer.sessionDescription = value;
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) setDescription:(NSString*) value {
+  resultAnswer.hasDescription = YES;
+  resultAnswer.pb_description = value;
   return self;
 }
-- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearSessionDescription {
-  resultAnswer.hasSessionDescription = NO;
-  resultAnswer.sessionDescription = @"";
+- (OWSSignalServiceProtosCallMessageAnswerBuilder*) clearDescription {
+  resultAnswer.hasDescription = NO;
+  resultAnswer.pb_description = @"";
   return self;
 }
 @end
@@ -5320,6 +5320,7 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 @property UInt32 size;
 @property (strong) NSData* thumbnail;
 @property (strong) NSData* digest;
+@property (strong) NSString* fileName;
 @end
 
 @implementation OWSSignalServiceProtosAttachmentPointer
@@ -5366,6 +5367,13 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   hasDigest_ = !!_value_;
 }
 @synthesize digest;
+- (BOOL) hasFileName {
+  return !!hasFileName_;
+}
+- (void) setHasFileName:(BOOL) _value_ {
+  hasFileName_ = !!_value_;
+}
+@synthesize fileName;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = 0L;
@@ -5374,6 +5382,7 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
     self.size = 0;
     self.thumbnail = [NSData data];
     self.digest = [NSData data];
+    self.fileName = @"";
   }
   return self;
 }
@@ -5411,6 +5420,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasDigest) {
     [output writeData:6 value:self.digest];
   }
+  if (self.hasFileName) {
+    [output writeString:7 value:self.fileName];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -5437,6 +5449,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasDigest) {
     size_ += computeDataSize(6, self.digest);
+  }
+  if (self.hasFileName) {
+    size_ += computeStringSize(7, self.fileName);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -5491,6 +5506,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasDigest) {
     [output appendFormat:@"%@%@: %@\n", indent, @"digest", self.digest];
   }
+  if (self.hasFileName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"fileName", self.fileName];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -5511,6 +5529,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasDigest) {
     [dictionary setObject: self.digest forKey: @"digest"];
+  }
+  if (self.hasFileName) {
+    [dictionary setObject: self.fileName forKey: @"fileName"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -5535,6 +5556,8 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
       (!self.hasThumbnail || [self.thumbnail isEqual:otherMessage.thumbnail]) &&
       self.hasDigest == otherMessage.hasDigest &&
       (!self.hasDigest || [self.digest isEqual:otherMessage.digest]) &&
+      self.hasFileName == otherMessage.hasFileName &&
+      (!self.hasFileName || [self.fileName isEqual:otherMessage.fileName]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -5556,6 +5579,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasDigest) {
     hashCode = hashCode * 31 + [self.digest hash];
+  }
+  if (self.hasFileName) {
+    hashCode = hashCode * 31 + [self.fileName hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -5618,6 +5644,9 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (other.hasDigest) {
     [self setDigest:other.digest];
   }
+  if (other.hasFileName) {
+    [self setFileName:other.fileName];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -5661,6 +5690,10 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
       }
       case 50: {
         [self setDigest:[input readData]];
+        break;
+      }
+      case 58: {
+        [self setFileName:[input readString]];
         break;
       }
     }
@@ -5760,6 +5793,22 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearDigest {
   resultAttachmentPointer.hasDigest = NO;
   resultAttachmentPointer.digest = [NSData data];
+  return self;
+}
+- (BOOL) hasFileName {
+  return resultAttachmentPointer.hasFileName;
+}
+- (NSString*) fileName {
+  return resultAttachmentPointer.fileName;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setFileName:(NSString*) value {
+  resultAttachmentPointer.hasFileName = YES;
+  resultAttachmentPointer.fileName = value;
+  return self;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearFileName {
+  resultAttachmentPointer.hasFileName = NO;
+  resultAttachmentPointer.fileName = @"";
   return self;
 }
 @end
@@ -6001,6 +6050,7 @@ BOOL OWSSignalServiceProtosGroupContextTypeIsValidValue(OWSSignalServiceProtosGr
     case OWSSignalServiceProtosGroupContextTypeUpdate:
     case OWSSignalServiceProtosGroupContextTypeDeliver:
     case OWSSignalServiceProtosGroupContextTypeQuit:
+    case OWSSignalServiceProtosGroupContextTypeRequestInfo:
       return YES;
     default:
       return NO;
@@ -6016,6 +6066,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
       return @"OWSSignalServiceProtosGroupContextTypeDeliver";
     case OWSSignalServiceProtosGroupContextTypeQuit:
       return @"OWSSignalServiceProtosGroupContextTypeQuit";
+    case OWSSignalServiceProtosGroupContextTypeRequestInfo:
+      return @"OWSSignalServiceProtosGroupContextTypeRequestInfo";
     default:
       return nil;
   }
