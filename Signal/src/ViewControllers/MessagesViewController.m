@@ -1098,22 +1098,21 @@ typedef enum : NSUInteger {
 
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
-    // Limit outgoing text messages to 16kb.
-    //
-    // We convert large text messages to attachments
-    // which are presented as normal text messages.
-    const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
-    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-        SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:text];
-        [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-    } else if (text.length > 0) {
+    if (text.length > 0) {
         if ([Environment.preferences soundInForeground]) {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
         }
-
-        [ThreadUtil sendMessageWithText:text
-                               inThread:self.thread
-                          messageSender:self.messageSender];
+        // Limit outgoing text messages to 16kb.
+        //
+        // We convert large text messages to attachments
+        // which are presented as normal text messages.
+        const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+        if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+            SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:text];
+            [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+        } else {
+            [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+        }
         if (updateKeyboardState)
         {
             [self toggleDefaultKeyboard];
