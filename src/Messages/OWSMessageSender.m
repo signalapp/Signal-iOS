@@ -437,6 +437,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     [self sendAttachmentData:attachmentData
                  contentType:contentType
+                    filename:nil
                    inMessage:message
                      success:successWithDeleteHandler
                      failure:failureWithDeleteHandler];
@@ -444,6 +445,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendAttachmentData:(NSData *)data
                contentType:(NSString *)contentType
+                  filename:(nullable NSString *)filename
                  inMessage:(TSOutgoingMessage *)message
                    success:(void (^)())successHandler
                    failure:(void (^)(NSError *error))failureHandler
@@ -467,6 +469,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [attachmentStream save];
         [message.attachmentIds addObject:attachmentStream.uniqueId];
+        if (filename) {
+            message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+        }
         [message save];
 
         dispatch_async(dispatch_get_main_queue(), ^{

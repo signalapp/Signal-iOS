@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSCallAnswerMessage.h"
 #import "OWSSignalServiceProtos.pb.h"

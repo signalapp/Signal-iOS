@@ -55,6 +55,7 @@ NS_SWIFT_NAME(MessageSender)
  */
 - (void)sendAttachmentData:(NSData *)attachmentData
                contentType:(NSString *)contentType
+                  filename:(nullable NSString *)filename
                  inMessage:(TSOutgoingMessage *)outgoingMessage
                    success:(void (^)())successHandler
                    failure:(void (^)(NSError *error))failureHandler;

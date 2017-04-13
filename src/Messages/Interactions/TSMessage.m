@@ -128,7 +128,6 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     }
 
     if (!_attachmentIds) {
-        // previously allowed nil _attachmentIds
         _attachmentIds = [NSMutableArray new];
     }
 

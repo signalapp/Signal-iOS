@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSSyncContactsMessage.h"
 #import "Contact.h"
@@ -39,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSSignalServiceProtosAttachmentPointer *attachmentProto =
-        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]];
+        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil];
 
     OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
         [OWSSignalServiceProtosSyncMessageContactsBuilder new];

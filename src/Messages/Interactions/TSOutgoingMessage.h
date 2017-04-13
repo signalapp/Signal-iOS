@@ -57,6 +57,8 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 @property BOOL hasSyncedTranscript;
 @property NSString *customMessage;
 @property (atomic, readonly) NSString *mostRecentFailureText;
+// A map of attachment id-to-filename.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
 /**
  * Whether the message should be serialized as a modern aka Content, or the old style legacy message.
@@ -94,10 +96,14 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
  * @param attachmentId
  *   id of an AttachmentStream containing the meta data used when populating the attachment proto
  *
+ * @param filename
+ *   optional filename of the attachment.
+ *
  * @return
  *      An attachment pointer protobuf suitable for including in various container protobuf builders
  */
-- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId;
+- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
+                                                                        filename:(nullable NSString *)filename;
 
 @end
 
