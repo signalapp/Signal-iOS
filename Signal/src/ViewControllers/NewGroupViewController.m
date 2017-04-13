@@ -317,6 +317,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                          if (model.groupImage) {
                              [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
                                                         contentType:OWSMimeTypeImagePng
+                                                           filename:nil
                                                           inMessage:message
                                                             success:popToThread
                                                             failure:removeThreadWithError];

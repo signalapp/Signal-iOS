@@ -22,7 +22,8 @@ class AttachmentApprovalViewController: UIViewController {
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         self.attachment = SignalAttachment.genericAttachment(data: nil,
-                                                             dataUTI: kUTTypeContent as String)
+                                                             dataUTI: kUTTypeContent as String,
+                                                             filename:nil)
         super.init(coder: aDecoder)
         assertionFailure()
     }

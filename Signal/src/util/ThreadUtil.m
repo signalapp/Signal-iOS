@@ -78,7 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [messageSender sendAttachmentData:attachment.data
-        contentType:[attachment mimeType]
+        contentType:attachment.mimeType
+        filename:attachment.filename
         inMessage:message
         success:^{
             DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);
