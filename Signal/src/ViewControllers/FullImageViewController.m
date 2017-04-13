@@ -92,7 +92,6 @@
 
 - (void)loadView {
     self.view = [AttachmentMenuView new];
-    self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
@@ -120,10 +119,7 @@
 #pragma mark - Initializers
 
 - (void)initializeBackground {
-    self.imageView.backgroundColor      = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
-    
     self.backgroundView                 = [UIView new];
-    self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     [self.view addSubview:self.backgroundView];
     [self.backgroundView autoPinEdgesToSuperviewEdges];
 }
@@ -318,7 +314,7 @@
                        // coordinate system of the window.
                        self.imageView.frame = [self.view convertRect:self.originRect
                                                             fromView:window];
-                       
+
                      [UIView animateWithDuration:0.25f
                          delay:0
                          options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
@@ -333,6 +329,7 @@
                              self.imageView.frame = [self resizedFrameForImageView:self.image.size];
                              self.imageView.center = [self.contentView convertPoint:self.contentView.center
                                                                            fromView:self.contentView];
+                             self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
                          }
                          completion:^(BOOL completed) {
                            self.scrollView.frame = self.contentView.bounds;
@@ -352,17 +349,24 @@
         [UIMenuController sharedMenuController].menuItems = self.oldMenuItems;
     }
 
+    _isPresenting = YES;
     self.view.userInteractionEnabled = NO;
+
+    self.scrollView.zoomScale = 1.0f;
+    self.imageView.center = [self.scrollView convertPoint:self.imageView.center toView:self.view];
+    [self.view addSubview:self.imageView];
+    self.view.backgroundColor = [UIColor clearColor];
+    self.backgroundView.backgroundColor = [UIColor clearColor];
+
     [UIView animateWithDuration:0.25f
         delay:0
         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveLinear
         animations:^() {
-          self.backgroundView.backgroundColor = [UIColor clearColor];
-          self.scrollView.alpha               = 0;
-          self.view.alpha                     = 0;
+            UIWindow *window = [UIApplication sharedApplication].keyWindow;
+            self.imageView.frame = [self.view convertRect:self.originRect fromView:window];
         }
         completion:^(BOOL completed) {
-          [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+            [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
         }];
 }
 
