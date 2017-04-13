@@ -302,7 +302,7 @@ class SignalAttachment: NSObject {
             assertionFailure()
             return nil
         }
-        return genericAttachment(data : data, dataUTI : dataUTI)
+        return genericAttachment(data : data, dataUTI : dataUTI, filename: nil)
     }
 
     // This method should only be called for dataUTIs that

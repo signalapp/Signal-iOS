@@ -2182,8 +2182,8 @@ typedef enum : NSUInteger {
 
     NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];
     if (!referenceURL) {
-        DDLogError(@"Could not retrieve reference URL for picked asset");
-        OWSAssert(0);
+        DDLogVerbose(@"Could not retrieve reference URL for picked asset");
+        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:nil];
         return;
     }
 
@@ -2357,24 +2357,25 @@ typedef enum : NSUInteger {
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
         NSData *videoData = [NSData dataWithContentsOfURL:compressedVideoUrl];
-        SignalAttachment *attachment =
-            [SignalAttachment videoAttachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
-        if (!attachment ||
-            [attachment hasError]) {
-            DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                      self.tag,
-                      __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorName] : @"Missing data");
-            [self showErrorAlertForAttachment:attachment];
-        } else {
-            [self tryToSendAttachmentIfApproved:attachment];
-        }
-        
-        NSError *error;
-        [[NSFileManager defaultManager] removeItemAtURL:compressedVideoUrl error:&error];
-        if (error) {
-            DDLogWarn(@"Failed to remove cached video file: %@", error.debugDescription);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SignalAttachment *attachment =
+                [SignalAttachment videoAttachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
+            if (!attachment || [attachment hasError]) {
+                DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                    self.tag,
+                    __PRETTY_FUNCTION__,
+                    attachment ? [attachment errorName] : @"Missing data");
+                [self showErrorAlertForAttachment:attachment];
+            } else {
+                [self tryToSendAttachmentIfApproved:attachment];
+            }
+
+            NSError *error;
+            [[NSFileManager defaultManager] removeItemAtURL:compressedVideoUrl error:&error];
+            if (error) {
+                DDLogWarn(@"Failed to remove cached video file: %@", error.debugDescription);
+            }
+        });
     }];
 }
 
