@@ -143,6 +143,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[TSAccountManager sharedInstance]
         ifRegistered:YES
             runAsync:^{
+                DDLogInfo(
+                    @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
+
                 [TSSocketManager requestSocketOpen];
 
                 RTCInitializeSSL();
@@ -172,6 +175,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         ifRegistered:NO
             runAsync:^{
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
                     [TSSocketManager requestSocketOpen];
 
                     UITapGestureRecognizer *gesture =
