@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeNoSuchSignalRecipient = 777404,
     OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures = 777405,
     OWSErrorCodeMessageSendFailedToBlockList = 777406,
+    OWSErrorCodeContactsUpdaterRateLimit = 777407,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);

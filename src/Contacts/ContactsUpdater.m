@@ -206,7 +206,13 @@ NS_ASSUME_NONNULL_BEGIN
             success([NSSet setWithArray:attributesForIdentifier.allKeys]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
+              NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+              if (response.statusCode == 413) {
+                  failure(OWSErrorWithCodeDescription(
+                      OWSErrorCodeContactsUpdaterRateLimit, OWSSignalServiceKitErrorDomain));
+              } else {
+                  failure(error);
+              }
           }];
     });
 }
