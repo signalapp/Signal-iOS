@@ -243,10 +243,7 @@ class SignalAttachment: NSObject {
     }
 
     public class func pasteboardHasPossibleAttachment() -> Bool {
-        guard UIPasteboard.general.numberOfItems >= 1 else {
-            return false
-        }
-        return true
+        return UIPasteboard.general.numberOfItems > 0
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment
@@ -267,7 +264,8 @@ class SignalAttachment: NSObject {
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    assertionFailure()
                     return nil
                 }
                 return imageAttachment(data : data, dataUTI : dataUTI)
@@ -276,7 +274,8 @@ class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    assertionFailure()
                     return nil
                 }
                 return videoAttachment(data : data, dataUTI : dataUTI)
@@ -285,7 +284,8 @@ class SignalAttachment: NSObject {
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    assertionFailure()
                     return nil
                 }
                 return audioAttachment(data : data, dataUTI : dataUTI)
@@ -294,7 +294,8 @@ class SignalAttachment: NSObject {
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
         guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            assertionFailure()
             return nil
         }
         return genericAttachment(data : data, dataUTI : dataUTI)
@@ -305,15 +306,18 @@ class SignalAttachment: NSObject {
     private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
         let itemSet = IndexSet(integer:0)
         guard let datas = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet) else {
-            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            assertionFailure()
             return nil
         }
         guard datas.count > 0 else {
-            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            assertionFailure()
             return nil
         }
         guard let data = datas[0] as? Data else {
-            Logger.verbose("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            assertionFailure()
             return nil
         }
         return data
