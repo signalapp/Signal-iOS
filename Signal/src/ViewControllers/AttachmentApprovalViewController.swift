@@ -183,7 +183,7 @@ class AttachmentApprovalViewController: UIViewController {
                 ? numberFormatter.string(from: NSNumber(value: fileSize / kOneKilobyte))! + " kb"
                 : numberFormatter.string(from: NSNumber(value: fileSize))!))
         fileSizeLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
-                                                             comment: "Format string for file size label in call interstitial view"),
+                                                             comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                                     fileSizeText)
 
         fileSizeLabel.textColor = UIColor.white

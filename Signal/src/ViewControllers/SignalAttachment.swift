@@ -126,7 +126,8 @@ class SignalAttachment: NSObject {
             do {
                 try data.write(to: fileUrl)
             } catch {
-                Logger.info("\(SignalAttachment.TAG) Could not write data to disk: \(dataUTI)")
+                Logger.error("\(SignalAttachment.TAG) Could not write data to disk: \(dataUTI)")
+                assertionFailure()
                 return nil
             }
             temporaryDataUrl = fileUrl
