@@ -133,32 +133,27 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)setupAddressBookIfNecessary
 {
-    @synchronized(self)
-    {
+    dispatch_async(ADDRESSBOOK_QUEUE, ^{
+        // De-bounce address book setup.
+        if (self.isContactsUpdateInFlight) {
+            return;
+        }
         // We only need to set up our address book once;
         // after that we only need to respond to onAddressBookChanged.
         if (self.addressBookReference) {
             return;
         }
-        // De-bounce address book setup.
-        if (self.isContactsUpdateInFlight) {
-            return;
-        }
         self.isContactsUpdateInFlight = YES;
-    }
 
-    dispatch_async(ADDRESSBOOK_QUEUE, ^{
         TOCFuture *future = [OWSContactsManager asyncGetAddressBook];
         [future thenDo:^(id addressBook) {
             // Success.
-            @synchronized(self)
-            {
-                OWSAssert(self.isContactsUpdateInFlight);
-                OWSAssert(!self.addressBookReference);
+            OWSAssert(self.isContactsUpdateInFlight);
+            OWSAssert(!self.addressBookReference);
 
-                self.addressBookReference = addressBook;
-                self.isContactsUpdateInFlight = NO;
-            }
+            self.addressBookReference = addressBook;
+            self.isContactsUpdateInFlight = NO;
+
             ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
             ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -167,13 +162,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }];
         [future catchDo:^(id failure) {
             // Failure.
-            @synchronized(self)
-            {
-                OWSAssert(self.isContactsUpdateInFlight);
-                OWSAssert(!self.addressBookReference);
+            OWSAssert(self.isContactsUpdateInFlight);
+            OWSAssert(!self.addressBookReference);
 
-                self.isContactsUpdateInFlight = NO;
-            }
+            self.isContactsUpdateInFlight = NO;
         }];
     });
 }
