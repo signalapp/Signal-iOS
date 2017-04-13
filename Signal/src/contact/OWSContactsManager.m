@@ -6,6 +6,7 @@
 #import "ContactsUpdater.h"
 #import "Environment.h"
 #import "Util.h"
+#import <SignalServiceKit/OWSError.h>
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
@@ -16,12 +17,13 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 
 @interface OWSContactsManager ()
 
-@property id addressBookReference;
-@property TOCFuture *futureAddressBook;
-@property ObservableValueController *observableContactsController;
-@property TOCCancelTokenSource *life;
+@property (atomic) id addressBookReference;
+@property (atomic) TOCFuture *futureAddressBook;
+@property (atomic) ObservableValueController *observableContactsController;
+@property (atomic) TOCCancelTokenSource *life;
 @property (atomic) NSDictionary *latestContactsById;
 @property (atomic) NSDictionary<NSString *, Contact *> *contactMap;
+@property (nonatomic) BOOL isContactsUpdateInFlight;
 
 @end
 
@@ -86,6 +88,7 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 
 - (void)doAfterEnvironmentInitSetup {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        OWSAssert(!self.contactStore);
         self.contactStore = [[CNContactStore alloc] init];
         [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
                                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
@@ -96,7 +99,7 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
                                     }];
     }
 
-    [self setupAddressBook];
+    [self setupAddressBookIfNecessary];
 
     [self.observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
       @synchronized(self) {
@@ -107,9 +110,7 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 }
 
 - (void)verifyABPermission {
-    if (!self.addressBookReference) {
-        [self setupAddressBook];
-    }
+    [self setupAddressBookIfNecessary];
 }
 
 #pragma mark - Address Book callbacks
@@ -131,34 +132,75 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 #pragma mark - Setup
 
-- (void)setupAddressBook {
+- (void)setupAddressBookIfNecessary
+{
     dispatch_async(ADDRESSBOOK_QUEUE, ^{
-      [[OWSContactsManager asyncGetAddressBook] thenDo:^(id addressBook) {
-        self.addressBookReference = addressBook;
-        ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
-        ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self handleAddressBookChanged];
-        });
-      }];
+        // De-bounce address book setup.
+        if (self.isContactsUpdateInFlight) {
+            return;
+        }
+        // We only need to set up our address book once;
+        // after that we only need to respond to onAddressBookChanged.
+        if (self.addressBookReference) {
+            return;
+        }
+        self.isContactsUpdateInFlight = YES;
+
+        TOCFuture *future = [OWSContactsManager asyncGetAddressBook];
+        [future thenDo:^(id addressBook) {
+            // Success.
+            OWSAssert(self.isContactsUpdateInFlight);
+            OWSAssert(!self.addressBookReference);
+
+            self.addressBookReference = addressBook;
+            self.isContactsUpdateInFlight = NO;
+
+            ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
+            ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self handleAddressBookChanged];
+            });
+        }];
+        [future catchDo:^(id failure) {
+            // Failure.
+            OWSAssert(self.isContactsUpdateInFlight);
+            OWSAssert(!self.addressBookReference);
+
+            self.isContactsUpdateInFlight = NO;
+        }];
     });
 }
 
-- (void)intersectContacts {
+- (void)intersectContacts
+{
+    [self intersectContactsWithRetryDelay:1.f];
+}
+
+- (void)intersectContactsWithRetryDelay:(CGFloat)retryDelaySeconds
+{
+    void (^success)() = ^{
+        DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
+        [self fireSignalRecipientsDidChange];
+    };
+    void (^failure)(NSError *error) = ^(NSError *error) {
+        if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+            && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
+            DDLogError(@"Contact intersection hit rate limit with error: %@", error);
+            return;
+        }
+
+        DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+
+        // Retry with exponential backoff.
+        //
+        // TODO: Abort if another contact intersection succeeds in the meantime.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self intersectContactsWithRetryDelay:retryDelaySeconds * 2.f];
+        });
+    };
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
-                                                                           success:^{
-                                                                               DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
-                                                                               [self fireSignalRecipientsDidChange];
-                                                                           }
-                                                                           failure:^(NSError *error) {
-                                                                               DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
-                                                                               
-                                                                               [NSTimer scheduledTimerWithTimeInterval:60
-                                                                                                                target:self
-                                                                                                              selector:@selector(intersectContacts)
-                                                                                                              userInfo:nil
-                                                                                                               repeats:NO];
-                                                                           }];
+                                                                           success:success
+                                                                           failure:failure];
 }
 
 - (void)fireSignalRecipientsDidChange
