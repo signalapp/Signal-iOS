@@ -162,8 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendRandomAttachment:(TSThread *)thread
                          uti:(NSString *)uti {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    SignalAttachment *attachment = [SignalAttachment genericAttachmentWithData:[self createRandomNSDataOfSize:256]
-                                                                       dataUTI:uti];
+    SignalAttachment *attachment =
+        [SignalAttachment genericAttachmentWithData:[self createRandomNSDataOfSize:256] dataUTI:uti filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                             messageSender:messageSender];

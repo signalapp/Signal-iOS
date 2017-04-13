@@ -44,6 +44,7 @@
 #import "UIViewController+CameraPermissions.h"
 #import "UIViewController+OWS.h"
 #import <AddressBookUI/AddressBookUI.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
@@ -2176,10 +2177,36 @@ typedef enum : NSUInteger {
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-    OWSAssert([NSThread isMainThread]);
-    
     [UIUtil modalCompletionBlock]();
     [self resetFrame];
+
+    NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+    if (!referenceURL) {
+        DDLogError(@"Could not retrieve reference URL for picked asset");
+        OWSAssert(0);
+        return;
+    }
+
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *imageAsset) {
+        ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
+        NSString *filename = [imageRep filename];
+        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:filename];
+    };
+
+    ALAssetsLibrary *assetslibrary = [[ALAssetsLibrary alloc] init];
+    [assetslibrary assetForURL:referenceURL
+                   resultBlock:resultblock
+                  failureBlock:^(NSError *error) {
+                      DDLogError(@"Error retrieving filename for asset: %@", error);
+                      OWSAssert(0);
+                  }];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
+                         filename:(NSString *)filename
+{
+    OWSAssert([NSThread isMainThread]);
 
     void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
         DDLogError(@"failed to pick attachment with error: %@", error);
@@ -2192,20 +2219,22 @@ typedef enum : NSUInteger {
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self sendQualityAdjustedAttachmentForVideo:videoURL];
+                                     [self sendQualityAdjustedAttachmentForVideo:videoURL filename:filename];
                                  }];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
 
         UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
-        
+
         [self dismissViewControllerAnimated:YES
                                  completion:^{
                                      OWSAssert([NSThread isMainThread]);
                                      
                                      if (imageFromCamera) {
-                                         SignalAttachment *attachment = [SignalAttachment imageAttachmentWithImage:imageFromCamera
-                                                                                                           dataUTI:(NSString *) kUTTypeJPEG];
+                                         SignalAttachment *attachment =
+                                             [SignalAttachment imageAttachmentWithImage:imageFromCamera
+                                                                                dataUTI:(NSString *)kUTTypeJPEG
+                                                                               filename:filename];
                                          if (!attachment ||
                                              [attachment hasError]) {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
@@ -2247,9 +2276,9 @@ typedef enum : NSUInteger {
                  return failedToPickAttachment(assetFetchingError);
              }
              OWSAssert([NSThread isMainThread]);
-             
-             SignalAttachment *attachment = [SignalAttachment imageAttachmentWithData:imageData
-                                                                              dataUTI:dataUTI];
+
+             SignalAttachment *attachment =
+                 [SignalAttachment imageAttachmentWithData:imageData dataUTI:dataUTI filename:filename];
              [self dismissViewControllerAnimated:YES
                                       completion:^{
                                           OWSAssert([NSThread isMainThread]);
@@ -2312,7 +2341,8 @@ typedef enum : NSUInteger {
     return [NSURL fileURLWithPath:basePath];
 }
 
-- (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL {
+- (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL filename:(NSString *)filename
+{
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession =
         [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
@@ -2327,8 +2357,8 @@ typedef enum : NSUInteger {
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
         NSData *videoData = [NSData dataWithContentsOfURL:compressedVideoUrl];
-        SignalAttachment *attachment = [SignalAttachment videoAttachmentWithData:videoData
-                                                                         dataUTI:(NSString *) kUTTypeMPEG4];
+        SignalAttachment *attachment =
+            [SignalAttachment videoAttachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
         if (!attachment ||
             [attachment hasError]) {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",
@@ -2567,8 +2597,8 @@ typedef enum : NSUInteger {
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
     if (flag) {
         NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
-        SignalAttachment *attachment = [SignalAttachment audioAttachmentWithData:audioData
-                                                                         dataUTI:(NSString *) kUTTypeMPEG4Audio];
+        SignalAttachment *attachment =
+            [SignalAttachment audioAttachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
         if (!attachment ||
             [attachment hasError]) {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",
@@ -2671,6 +2701,7 @@ typedef enum : NSUInteger {
     if (newGroupModel.groupImage) {
         [self.messageSender sendAttachmentData:UIImagePNGRepresentation(newGroupModel.groupImage)
             contentType:OWSMimeTypeImagePng
+            filename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
