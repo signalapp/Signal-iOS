@@ -32,7 +32,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         Logger.verbose("\(TAG) handling offer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
+        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.description)
     }
 
     public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
@@ -40,7 +40,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         Logger.verbose("\(TAG) handling answer from caller:\(callerId)")
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
-        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
+        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.description)
     }
 
     public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
