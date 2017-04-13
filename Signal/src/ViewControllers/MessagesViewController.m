@@ -43,6 +43,7 @@
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
 #import "UIViewController+OWS.h"
+#import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
@@ -1681,7 +1682,8 @@ typedef enum : NSUInteger {
                         if ([messageMedia isVideo]) {
                             if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
                                 [self dismissKeyBoard];
-                                _videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
+                                self.videoPlayer =
+                                    [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
                                 [_videoPlayer prepareToPlay];
 
                                 [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1876,7 +1878,14 @@ typedef enum : NSUInteger {
 - (void)clearVideoPlayer {
     [_videoPlayer stop];
     [_videoPlayer.view removeFromSuperview];
-    _videoPlayer = nil;
+    self.videoPlayer = nil;
+}
+
+- (void)setVideoPlayer:(MPMoviePlayerController *)videoPlayer
+{
+    _videoPlayer = videoPlayer;
+
+    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:videoPlayer != nil];
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView

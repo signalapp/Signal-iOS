@@ -5,6 +5,7 @@
 #import "ViewControllerUtils.h"
 #import "PhoneNumber.h"
 #import "StringUtil.h"
+#import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -66,6 +67,29 @@ NS_ASSUME_NONNULL_BEGIN
     UITextPosition *pos =
         [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
+}
+
++ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore
+{
+    NSError *error = nil;
+    BOOL success = [[AVAudioSession sharedInstance]
+        setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord)error:&error];
+    OWSAssert(!error);
+    if (!success || error) {
+        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.tag, shouldIgnore);
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

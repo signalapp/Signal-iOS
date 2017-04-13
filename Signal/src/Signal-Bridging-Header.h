@@ -26,6 +26,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import "ViewControllerUtils.h"
 #import <JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <SignalServiceKit/Contact.h>
