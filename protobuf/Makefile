@@ -1,8 +1,7 @@
-# Assumes you've installed protobug-objc
-# see: https://github.com/alexeyxo/protobuf-objc
+# See README.md in this dir for prerequisite setup.
 
 PROTOC=protoc \
-		--plugin=/usr/local/bin/proto-gen-objc \
+		--plugin=/usr/local/bin/protoc-gen-objc \
 		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/" \
 		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/google/protobuf/" \
 		--proto_path='./'
