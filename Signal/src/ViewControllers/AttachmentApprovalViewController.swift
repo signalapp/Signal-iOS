@@ -43,12 +43,24 @@ class AttachmentApprovalViewController: UIViewController {
         view.backgroundColor = UIColor.black
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
-            target:self,
-            action:#selector(donePressed))
+                                                                target:self,
+                                                                action:#selector(donePressed))
         self.navigationItem.title = NSLocalizedString("ATTACHMENT_APPROVAL_DIALOG_TITLE",
                                                       comment: "Title for the 'attachment approval' dialog.")
 
         createViews()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(false)
     }
 
     // MARK: - Create Views
