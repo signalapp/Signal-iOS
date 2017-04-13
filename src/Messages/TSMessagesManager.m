@@ -404,21 +404,21 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         if (ignoreMessage) {
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
-            DDLogDebug(@"%@ Received message from group that I left or don't know about, ignoring", self.tag);
+            DDLogInfo(@"%@ Received message from group that I left or don't know about, ignoring", self.tag);
             return;
         }
     }
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
-        DDLogVerbose(@"%@ Received end session message", self.tag);
+        DDLogInfo(@"%@ Received end session message", self.tag);
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
-        DDLogVerbose(@"%@ Received expiration timer update message", self.tag);
+        DDLogInfo(@"%@ Received expiration timer update message", self.tag);
         [self handleExpirationTimerUpdateMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
-        DDLogVerbose(@"%@ Received media message attachment", self.tag);
+        DDLogInfo(@"%@ Received media message attachment", self.tag);
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
-        DDLogVerbose(@"%@ Received data message.", self.tag);
+        DDLogInfo(@"%@ Received data message.", self.tag);
         [self handleReceivedTextMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
         if ([self isDataMessageGroupAvatarUpdate:dataMessage]) {
             DDLogVerbose(@"%@ Data message had group avatar attachment", self.tag);
