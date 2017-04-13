@@ -170,27 +170,28 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     });
 }
 
-- (void)intersectContacts {
-    [self intersectContactsWithRetryDelay:60];
-}
-
-- (void)intersectContactsWithRetryDelay:(CGFloat)retryDelaySeconds
+- (void)intersectContacts
 {
     void (^success)() = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
         [self fireSignalRecipientsDidChange];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
+
+        if ([error.domain isEqualToString:kContactsUpdaterErrorDomain]
+            && error.code == kContactsUpdaterRateLimitErrorCode) {
+            DDLogError(@"Contact intersection hit rate limit with error: %@", error);
+            return;
+        }
+
         DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
 
         // Retry with exponential backoff.
         //
-        // TODO: Abort if another contact
-        // intersection succeeds in the meantime.
-        dispatch_after(
-            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(retryDelaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self intersectContactsWithRetryDelay:retryDelaySeconds * 2.f];
-            });
+        // TODO: Abort if another contact intersection succeeds in the meantime.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self intersectContacts];
+        });
     };
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
                                                                            success:success
