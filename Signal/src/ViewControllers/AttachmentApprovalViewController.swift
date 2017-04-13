@@ -52,7 +52,7 @@ class AttachmentApprovalViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        super.viewWillAppear(animated)
 
         ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
     }
