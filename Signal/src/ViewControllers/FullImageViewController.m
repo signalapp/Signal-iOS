@@ -17,6 +17,8 @@
 
 #define kBackgroundAlpha 0.6f
 
+#define kToolbarHeight 44.0f
+
 // In order to use UIMenuController, the view from which it is
 // presented must have certain custom behaviors.
 @interface AttachmentMenuView : UIView
@@ -49,6 +51,8 @@
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UIButton *shareButton;
 @property (nonatomic) UIView *contentView;
+
+@property (nonatomic) NSLayoutConstraint *footerBottomConstraint;
 
 @property (nonatomic) CGRect originRect;
 @property (nonatomic) BOOL isPresenting;
@@ -129,6 +133,7 @@
     [self.backgroundView addSubview:self.contentView];
     [self.contentView autoPinWidthToSuperview];
     [self.contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:kToolbarHeight];
     
     self.footerBar = [UIToolbar new];
     _footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
@@ -142,8 +147,7 @@
                     animated:NO];
     [self.backgroundView addSubview:self.footerBar];
     [self.footerBar autoPinWidthToSuperview];
-    [self.footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-    [self.footerBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.contentView];
+    self.footerBottomConstraint = [self.footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:-kToolbarHeight];
 }
 
 - (void)shareWasPressed:(id)sender {
@@ -330,6 +334,8 @@
                              self.imageView.center = [self.contentView convertPoint:self.contentView.center
                                                                            fromView:self.contentView];
                              self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
+                             self.footerBottomConstraint.constant = 0;
+                             [self.view layoutIfNeeded];
                          }
                          completion:^(BOOL completed) {
                            self.scrollView.frame = self.contentView.bounds;
@@ -364,6 +370,11 @@
         animations:^() {
             UIWindow *window = [UIApplication sharedApplication].keyWindow;
             self.imageView.frame = [self.view convertRect:self.originRect fromView:window];
+            // This specifies bottom (it's a NSLayoutAttributeBottom constraint) instead of inset
+            // so we pass the negative of what we passed to
+            // autoPinToBottomLayoutGuideOfViewController:withInset: above.
+            self.footerBottomConstraint.constant = kToolbarHeight;
+            [self.view layoutIfNeeded];
         }
         completion:^(BOOL completed) {
             [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
