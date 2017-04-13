@@ -6,6 +6,7 @@
 #import "ContactsUpdater.h"
 #import "Environment.h"
 #import "Util.h"
+#import <SignalServiceKit/OWSError.h>
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
 
@@ -172,14 +173,18 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)intersectContacts
 {
+    [self intersectContactsWithRetryDelay:1.f];
+}
+
+- (void)intersectContactsWithRetryDelay:(CGFloat)retryDelaySeconds
+{
     void (^success)() = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
         [self fireSignalRecipientsDidChange];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
-
-        if ([error.domain isEqualToString:kContactsUpdaterErrorDomain]
-            && error.code == kContactsUpdaterRateLimitErrorCode) {
+        if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+            && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
             DDLogError(@"Contact intersection hit rate limit with error: %@", error);
             return;
         }
@@ -190,7 +195,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         //
         // TODO: Abort if another contact intersection succeeds in the meantime.
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self intersectContacts];
+            [self intersectContactsWithRetryDelay:retryDelaySeconds * 2.f];
         });
     };
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
