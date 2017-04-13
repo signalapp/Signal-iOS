@@ -75,7 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  key:attachmentProto.key
                                                                               digest:digest
                                                                          contentType:attachmentProto.contentType
-                                                                               relay:relay];
+                                                                               relay:relay
+                                                                            filename:attachmentProto.fileName];
 
         [attachmentIds addObject:pointer.uniqueId];
 

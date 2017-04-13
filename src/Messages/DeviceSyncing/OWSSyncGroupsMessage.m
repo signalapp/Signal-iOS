@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSSyncGroupsMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -25,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
             (unsigned long)self.attachmentIds.count);
     }
     OWSSignalServiceProtosAttachmentPointer *attachmentProto =
-        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]];
+        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil];
 
     OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
         [OWSSignalServiceProtosSyncMessageGroupsBuilder new];

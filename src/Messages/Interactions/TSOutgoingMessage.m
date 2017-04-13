@@ -15,7 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (self) {
+        if (!_attachmentFilenameMap) {
+            _attachmentFilenameMap = [NSMutableDictionary new];
+        }
+    }
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -86,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.groupMetaMessage = TSGroupMessageNone;
     }
+    _attachmentFilenameMap = [NSMutableDictionary new];
 
     OWSAssert(self.receivedAtDate);
 
@@ -142,7 +149,8 @@ NS_ASSUME_NONNULL_BEGIN
             case TSGroupMessageNew: {
                 if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                     attachmentWasGroupAvatar = YES;
-                    [groupBuilder setAvatar:[self buildAttachmentProtoForAttachmentId:self.attachmentIds[0]]];
+                    [groupBuilder
+                        setAvatar:[self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil]];
                 }
 
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
@@ -160,7 +168,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId]];
+            NSString *filename = self.attachmentFilenameMap[attachmentId];
+            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:filename]];
         }
         [builder setAttachmentsArray:attachments];
     }
@@ -191,7 +200,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
+                                                                        filename:(nullable NSString *)filename
 {
+    OWSAssert(attachmentId.length > 0);
+
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
         DDLogError(@"Unexpected type for attachment builder: %@", attachment);
@@ -202,6 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
     [builder setId:attachmentStream.serverId];
     [builder setContentType:attachmentStream.contentType];
+    [builder setFileName:filename];
     [builder setKey:attachmentStream.encryptionKey];
     [builder setDigest:attachmentStream.digest];
 

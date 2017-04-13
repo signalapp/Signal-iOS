@@ -29,11 +29,11 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (BOOL)isVideo:(NSString *)contentType;
 + (BOOL)isAudio:(NSString *)contentType;
 
-+ (NSString *)filePathForAttachment:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
-+ (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
-+ (NSString *)filePathForVideo:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
-+ (NSString *)filePathForAudio:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
-+ (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
+// filename is optional and should not be trusted.
++ (NSString *)filePathForAttachment:(NSString *)uniqueId
+                         ofMIMEType:(NSString *)contentType
+                           filename:(nullable NSString *)filename
+                           inFolder:(NSString *)folder;
 
 + (NSURL *)simLinkCorrectExtensionOfFile:(NSURL *)mediaURL ofMIMEType:(NSString *)contentType;
 

@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
+// A map of attachment id-to-filename.
 @property (nullable, nonatomic) NSString *body;
 @property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 @property (nonatomic) uint32_t expiresInSeconds;

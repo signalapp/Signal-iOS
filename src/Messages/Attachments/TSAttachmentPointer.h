@@ -21,9 +21,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
-                           relay:(NSString *)relay NS_DESIGNATED_INITIALIZER;
+                           relay:(NSString *)relay
+                        filename:(nullable NSString *)filename NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSString *relay;
+@property (nonatomic, readonly, nullable) NSString *filename;
 @property (atomic) TSAttachmentPointerState state;
 
 // Though now required, `digest` may be null for pre-existing records or from

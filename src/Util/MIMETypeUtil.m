@@ -261,7 +261,65 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
 + (NSString *)filePathForAttachment:(NSString *)uniqueId
                          ofMIMEType:(NSString *)contentType
-                           inFolder:(NSString *)folder {
+                           filename:(nullable NSString *)filename
+                           inFolder:(NSString *)folder
+{
+    NSString *kDefaultFileExtension = @"bin";
+
+    if (filename.length > 0) {
+        NSString *normalizedFilename =
+            [filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        // Ensure that the filename is a valid filesystem name,
+        // replacing invalid characters with an underscore.
+        for (NSCharacterSet *invalidCharacterSet in @[
+                 [NSCharacterSet whitespaceCharacterSet],
+                 [NSCharacterSet newlineCharacterSet],
+                 [NSCharacterSet illegalCharacterSet],
+                 [NSCharacterSet controlCharacterSet],
+                 [NSCharacterSet characterSetWithCharactersInString:@"<>|\\:()&;?*"],
+             ]) {
+            normalizedFilename = [[normalizedFilename componentsSeparatedByCharactersInSet:invalidCharacterSet]
+                componentsJoinedByString:@"_"];
+        }
+
+        NSString *fileExtension = [[normalizedFilename pathExtension]
+            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *filenameWithoutExtension = [[[normalizedFilename lastPathComponent] stringByDeletingPathExtension]
+            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+        // If the filename has not file extension, deduce one
+        // from the MIME type.
+        if (fileExtension.length < 1) {
+            fileExtension = [self fileExtensionForMIMEType:contentType];
+            if (fileExtension.length < 1) {
+                fileExtension = kDefaultFileExtension;
+            }
+        }
+        fileExtension = [fileExtension lowercaseString];
+
+        if (filenameWithoutExtension.length > 0) {
+            // Store the file in a subdirectory whose name is the uniqueId of this attachment,
+            // to avoid collisions between multiple attachments with the same name.
+            NSString *attachmentFolderPath = [folder stringByAppendingPathComponent:uniqueId];
+            NSError *error = nil;
+            BOOL attachmentFolderPathExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFolderPath];
+            if (!attachmentFolderPathExists) {
+                [[NSFileManager defaultManager] createDirectoryAtPath:attachmentFolderPath
+                                          withIntermediateDirectories:YES
+                                                           attributes:nil
+                                                                error:&error];
+                if (error) {
+                    DDLogError(@"Failed to create attachment directory: %@", error);
+                    OWSAssert(0);
+                    return nil;
+                }
+            }
+            return [attachmentFolderPath
+                stringByAppendingPathComponent:[NSString
+                                                   stringWithFormat:@"%@.%@", filenameWithoutExtension, fileExtension]];
+        }
+    }
+
     if ([self isVideo:contentType]) {
         return [MIMETypeUtil filePathForVideo:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isAudio:contentType]) {
@@ -291,7 +349,7 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
     DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
     // Use a fallback file extension.
-    return [self filePathForData:uniqueId withFileExtension:@"bin" inFolder:folder];
+    return [self filePathForData:uniqueId withFileExtension:kDefaultFileExtension inFolder:folder];
 }
 
 + (NSURL *)simLinkCorrectExtensionOfFile:(NSURL *)mediaURL ofMIMEType:(NSString *)contentType {

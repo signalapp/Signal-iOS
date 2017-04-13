@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                           digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay
+                        filename:(nullable NSString *)filename
 {
     self = [super initWithServerId:serverId encryptionKey:key contentType:contentType];
     if (!self) {
@@ -39,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
     _relay = relay;
+    _filename = filename;
 
     return self;
 }
