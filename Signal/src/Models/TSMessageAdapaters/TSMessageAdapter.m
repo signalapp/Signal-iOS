@@ -162,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [[TSPhotoAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
                         adapter.mediaItem.appliesMediaViewMaskAsOutgoing = !isIncomingAttachment;
                         break;
-                    } else if ([stream isVideo]) {
+                    } else if ([stream isVideo] || [stream isAudio]) {
                         adapter.mediaItem = [[TSVideoAttachmentAdapter alloc]
                             initWithAttachment:stream
                                       incoming:[interaction isKindOfClass:[TSIncomingMessage class]]];

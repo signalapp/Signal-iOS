@@ -1722,7 +1722,8 @@ typedef enum : NSUInteger {
                                     NSIndexPath *indexPathI = [NSIndexPath indexPathForRow:i inSection:0];
                                     id<OWSMessageData> message = [self messageAtIndexPath:indexPathI];
 
-                                    if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage) {
+                                    if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage &&
+                                        [[message media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
                                         TSVideoAttachmentAdapter *msgMedia
                                             = (TSVideoAttachmentAdapter *)[message media];
                                         if ([msgMedia isAudio]) {
