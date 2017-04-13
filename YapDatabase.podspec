@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
     ss.subspec 'Core' do |ssc|
       ssc.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DYAP_STANDARD_SQLITE' }
       ssc.library = 'sqlite3'
-      ssc.dependency 'CocoaLumberjack', '~> 2'
+      ssc.dependency 'CocoaLumberjack', '~> 3'
       ssc.source_files = 'YapDatabase/*.{h,m,mm,c}', 'YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}', 'YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}'
       ssc.private_header_files = 'YapDatabase/Internal/*.h', 'YapDatabase/Extensions/Protocol/Internal/*.h'
     end
@@ -132,7 +132,7 @@ Pod::Spec.new do |s|
     ss.subspec 'Core' do |ssc|
       ssc.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
       ssc.dependency 'SQLCipher', '>= 3.4.0'
-      ssc.dependency 'CocoaLumberjack', '~> 2'
+      ssc.dependency 'CocoaLumberjack', '~> 3'
       ssc.source_files = 'YapDatabase/*.{h,m,mm,c}', 'YapDatabase/{Internal,Utilities}/*.{h,m,mm,c}', 'YapDatabase/Extensions/Protocol/**/*.{h,m,mm,c}'
       ssc.private_header_files = 'YapDatabase/Internal/*.h', 'YapDatabase/Extensions/Protocol/Internal/*.h'
     end
