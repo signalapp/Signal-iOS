@@ -14,9 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kContactsUpdaterErrorDomain = @"kContactsUpdaterErrorDomain";
-const NSInteger kContactsUpdaterRateLimitErrorCode = 413;
-
 @implementation ContactsUpdater
 
 + (instancetype)sharedUpdater {
@@ -211,10 +208,8 @@ const NSInteger kContactsUpdaterRateLimitErrorCode = 413;
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
               if (response.statusCode == 413) {
-                  NSString *const kContactsUpdaterErrorDomain = @"kContactsUpdaterErrorDomain";
-                  failure([NSError errorWithDomain:kContactsUpdaterErrorDomain
-                                              code:kContactsUpdaterRateLimitErrorCode
-                                          userInfo:nil]);
+                  failure(OWSErrorWithCodeDescription(
+                      OWSErrorCodeContactsUpdaterRateLimit, OWSSignalServiceKitErrorDomain));
               } else {
                   failure(error);
               }

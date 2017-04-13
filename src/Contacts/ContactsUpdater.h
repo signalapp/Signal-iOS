@@ -6,9 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kContactsUpdaterErrorDomain;
-extern const NSInteger kContactsUpdaterRateLimitErrorCode;
-
 @class Contact;
 
 @interface ContactsUpdater : NSObject
