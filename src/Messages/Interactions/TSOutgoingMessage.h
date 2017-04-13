@@ -57,6 +57,7 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 @property BOOL hasSyncedTranscript;
 @property NSString *customMessage;
 @property (atomic, readonly) NSString *mostRecentFailureText;
+// A map of attachment id-to-filename.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
 /**

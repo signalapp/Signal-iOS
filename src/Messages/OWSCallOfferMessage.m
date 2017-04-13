@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSCallOfferMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -26,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosCallMessageOfferBuilder *builder = [OWSSignalServiceProtosCallMessageOfferBuilder new];
 
     builder.id = self.callId;
-    [builder setDescription:self.sessionDescription];
+    builder.sessionDescription = self.sessionDescription;
 
     return [builder build];
 }

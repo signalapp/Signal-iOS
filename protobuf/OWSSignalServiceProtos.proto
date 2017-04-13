@@ -39,12 +39,16 @@ message Content {
 message CallMessage {
   message Offer {
     optional uint64 id          = 1;
-    optional string description = 2;
+	// We've renamed the description field on iOS to avoid
+	// conflicts with [NSObject description].
+    optional string sessionDescription = 2;
   }
 
   message Answer {
     optional uint64 id          = 1;
-    optional string description = 2;
+	// We've renamed the description field on iOS to avoid
+	// conflicts with [NSObject description].
+    optional string sessionDescription = 2;
   }
 
   message IceUpdate {

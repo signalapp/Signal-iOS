@@ -272,14 +272,19 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
         // Ensure that the filename is a valid filesystem name,
         // replacing invalid characters with an underscore.
         for (NSCharacterSet *invalidCharacterSet in @[
-                 [NSCharacterSet whitespaceCharacterSet],
-                 [NSCharacterSet newlineCharacterSet],
+                 [NSCharacterSet whitespaceAndNewlineCharacterSet],
                  [NSCharacterSet illegalCharacterSet],
                  [NSCharacterSet controlCharacterSet],
-                 [NSCharacterSet characterSetWithCharactersInString:@"<>|\\:()&;?*"],
+                 [NSCharacterSet characterSetWithCharactersInString:@"<>|\\:()&;?*/~"],
              ]) {
             normalizedFilename = [[normalizedFilename componentsSeparatedByCharactersInSet:invalidCharacterSet]
                 componentsJoinedByString:@"_"];
+        }
+        
+        // Remove leading periods to prevent hidden files,
+        // "." and ".." special file names.
+        while ([normalizedFilename hasPrefix:@"."]) {
+            normalizedFilename = [normalizedFilename substringFromIndex:1];
         }
 
         NSString *fileExtension = [[normalizedFilename pathExtension]
