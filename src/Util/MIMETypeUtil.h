@@ -24,11 +24,6 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType;
 + (NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType;
 
-+ (NSString *)getSupportedMIMETypeFromVideoFile:(NSString *)supportedVideoFile;
-+ (NSString *)getSupportedMIMETypeFromAudioFile:(NSString *)supportedAudioFile;
-+ (NSString *)getSupportedMIMETypeFromImageFile:(NSString *)supportedImageFile;
-+ (NSString *)getSupportedMIMETypeFromAnimatedFile:(NSString *)supportedImageFile;
-
 + (BOOL)isAnimated:(NSString *)contentType;
 + (BOOL)isImage:(NSString *)contentType;
 + (BOOL)isVideo:(NSString *)contentType;
@@ -41,11 +36,6 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder;
 
 + (NSURL *)simLinkCorrectExtensionOfFile:(NSURL *)mediaURL ofMIMEType:(NSString *)contentType;
-
-#if TARGET_OS_IPHONE
-+ (NSString *)getSupportedImageMIMETypeFromImage:(UIImage *)image;
-+ (BOOL)getIsSupportedTypeFromImage:(UIImage *)image;
-#endif
 
 + (NSSet<NSString *> *)supportedVideoUTITypes;
 + (NSSet<NSString *> *)supportedAudioUTITypes;

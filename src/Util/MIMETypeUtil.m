@@ -237,22 +237,6 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-+ (NSString *)getSupportedMIMETypeFromVideoFile:(NSString *)supportedVideoFile {
-    return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:[supportedVideoFile pathExtension]];
-}
-
-+ (NSString *)getSupportedMIMETypeFromAudioFile:(NSString *)supportedAudioFile {
-    return [[self supportedAudioExtensionTypesToMIMETypes] objectForKey:[supportedAudioFile pathExtension]];
-}
-
-+ (NSString *)getSupportedMIMETypeFromImageFile:(NSString *)supportedImageFile {
-    return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:[supportedImageFile pathExtension]];
-}
-
-+ (NSString *)getSupportedMIMETypeFromAnimatedFile:(NSString *)supportedAnimatedFile {
-    return [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:[supportedAnimatedFile pathExtension]];
-}
-
 #pragma mark full attachment utilities
 + (BOOL)isAnimated:(NSString *)contentType {
     return [MIMETypeUtil isSupportedAnimatedMIMEType:contentType];
@@ -363,18 +347,6 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 {
     return [[folder stringByAppendingFormat:@"/%@", uniqueId] stringByAppendingPathExtension:fileExtension];
 }
-
-#if TARGET_OS_IPHONE
-
-+ (NSString *)getSupportedImageMIMETypeFromImage:(UIImage *)image {
-    return [image contentType];
-}
-
-+ (BOOL)getIsSupportedTypeFromImage:(UIImage *)image {
-    return [image isSupportedImageType];
-}
-
-#endif
 
 + (NSString *)utiTypeForMIMEType:(NSString *)mimeType
 {
