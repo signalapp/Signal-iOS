@@ -110,12 +110,9 @@ typedef enum : NSUInteger {
 }
 
 - (BOOL)pasteBoardHasPossibleAttachment {
-    if ([SignalAttachment pasteboardHasPossibleAttachment]) {
-        // We don't want to load/convert images more than once so we
-        // only do a cursory validation pass at this time.
-        return YES;
-    }
-    return NO;
+    // We don't want to load/convert images more than once so we
+    // only do a cursory validation pass at this time.
+    return [SignalAttachment pasteboardHasPossibleAttachment];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

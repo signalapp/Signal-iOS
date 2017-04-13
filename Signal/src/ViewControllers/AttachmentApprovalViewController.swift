@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import MediaPlayer
 
 class AttachmentApprovalViewController: UIViewController {
 
@@ -13,6 +14,8 @@ class AttachmentApprovalViewController: UIViewController {
     let attachment: SignalAttachment
 
     var successCompletion : (() -> Void)?
+
+    var videoPlayer: MPMoviePlayerController?
 
     // MARK: Initializers
 
@@ -60,11 +63,36 @@ class AttachmentApprovalViewController: UIViewController {
 
         createButtonRow(attachmentPreviewView:attachmentPreviewView)
 
-        if attachment.isImage {
+        if attachment.isAnimatedImage {
+            createAnimatedPreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isImage {
             createImagePreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isVideo {
+            createVideoPreview(attachmentPreviewView:attachmentPreviewView)
+        } else if attachment.isAudio {
+            createAudioPreview(attachmentPreviewView:attachmentPreviewView)
         } else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
         }
+    }
+
+    private func createAudioPreview(attachmentPreviewView: UIView) {
+        // TODO: Add audio player.
+        createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+    }
+
+    private func createAnimatedPreview(attachmentPreviewView: UIView) {
+        // Use Flipboard FLAnimatedImage library to display gifs
+        guard let animatedImage = FLAnimatedImage(gifData:attachment.data) else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        let animatedImageView = FLAnimatedImageView()
+        animatedImageView.animatedImage = animatedImage
+        animatedImageView.contentMode = .scaleAspectFit
+        attachmentPreviewView.addSubview(animatedImageView)
+        animatedImageView.autoPinWidthToSuperview()
+        animatedImageView.autoPinHeightToSuperview()
     }
 
     private func createImagePreview(attachmentPreviewView: UIView) {
@@ -72,17 +100,38 @@ class AttachmentApprovalViewController: UIViewController {
         if image == nil {
             image = UIImage(data:attachment.data)
         }
-        if image != nil {
-            let imageView = UIImageView(image:image)
-            imageView.layer.minificationFilter = kCAFilterTrilinear
-            imageView.layer.magnificationFilter = kCAFilterTrilinear
-            imageView.contentMode = .scaleAspectFit
-            attachmentPreviewView.addSubview(imageView)
-            imageView.autoPinWidthToSuperview()
-            imageView.autoPinHeightToSuperview()
-        } else {
+        guard image != nil else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
         }
+
+        let imageView = UIImageView(image:image)
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.contentMode = .scaleAspectFit
+        attachmentPreviewView.addSubview(imageView)
+        imageView.autoPinWidthToSuperview()
+        imageView.autoPinHeightToSuperview()
+    }
+
+    private func createVideoPreview(attachmentPreviewView: UIView) {
+        guard let dataUrl = attachment.getTemporaryDataUrl() else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        guard let videoPlayer = MPMoviePlayerController(contentURL:dataUrl) else {
+            createGenericPreview(attachmentPreviewView:attachmentPreviewView)
+            return
+        }
+        videoPlayer.prepareToPlay()
+
+        videoPlayer.controlStyle = .default
+        videoPlayer.shouldAutoplay = false
+
+        attachmentPreviewView.addSubview(videoPlayer.view)
+        self.videoPlayer = videoPlayer
+        videoPlayer.view.autoPinWidthToSuperview()
+        videoPlayer.view.autoPinHeightToSuperview()
     }
 
     private func createGenericPreview(attachmentPreviewView: UIView) {
@@ -125,9 +174,17 @@ class AttachmentApprovalViewController: UIViewController {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = NumberFormatter.Style.decimal
         let fileSizeLabel = UILabel()
+        let fileSize = attachment.data.count
+        let kOneKilobyte = 1024
+        let kOneMegabyte = kOneKilobyte * kOneKilobyte
+        let fileSizeText = (fileSize > kOneMegabyte
+            ? numberFormatter.string(from: NSNumber(value: fileSize / kOneMegabyte))! + " mb"
+            : (fileSize > kOneKilobyte
+                ? numberFormatter.string(from: NSNumber(value: fileSize / kOneKilobyte))! + " kb"
+                : numberFormatter.string(from: NSNumber(value: fileSize))!))
         fileSizeLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
-                                                             comment: "Format string for file size label in call interstitial view"),
-                                    numberFormatter.string(from: NSNumber(value: attachment.data.count))!)
+                                                             comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
+                                    fileSizeText)
 
         fileSizeLabel.textColor = UIColor.white
         fileSizeLabel.font = labelFont

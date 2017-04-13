@@ -64,6 +64,8 @@ class SignalAttachment: NSObject {
 
     let data: Data
 
+    internal var temporaryDataUrl: URL?
+
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
@@ -107,6 +109,30 @@ class SignalAttachment: NSObject {
         self.data = data
         self.dataUTI = dataUTI
         super.init()
+    }
+
+    // MARK: Methods
+
+    public func getTemporaryDataUrl() -> URL? {
+        if temporaryDataUrl == nil {
+            let directory = NSTemporaryDirectory()
+            guard let fileExtension = self.fileExtension else {
+                return nil
+            }
+            let fileName = NSUUID().uuidString + "." + fileExtension
+            guard let fileUrl = NSURL.fileURL(withPathComponents: [directory, fileName]) else {
+                return nil
+            }
+            do {
+                try data.write(to: fileUrl)
+            } catch {
+                Logger.error("\(SignalAttachment.TAG) Could not write data to disk: \(dataUTI)")
+                assertionFailure()
+                return nil
+            }
+            temporaryDataUrl = fileUrl
+        }
+        return temporaryDataUrl
     }
 
     var hasError: Bool {
@@ -235,6 +261,10 @@ class SignalAttachment: NSObject {
 
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
+    }
+
+    public var isAnimatedImage: Bool {
+        return SignalAttachment.animatedImageUTISet.contains(dataUTI)
     }
 
     public var isVideo: Bool {
