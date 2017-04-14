@@ -722,6 +722,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     [completionFuture catchDo:^(id failure) {
         // failure from toc_thenAll yields an array of failed Futures, rather than the future's failure.
+        NSError *firstRetryableError = nil;
+        NSError *firstNonRetryableError = nil;
+
         if ([failure isKindOfClass:[NSArray class]]) {
             NSArray *groupSendFutures = (NSArray *)failure;
             for (TOCFuture *groupSendFuture in groupSendFutures) {
@@ -735,15 +738,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         if ([error shouldBeIgnoredForGroups]) {
                             continue;
                         }
-                        return failureHandler(error);
+
+                        if ([error isRetryable] && !firstRetryableError) {
+                            firstRetryableError = error;
+                        } else if (![error isRetryable] && !firstNonRetryableError) {
+                            firstNonRetryableError = error;
+                        }
                     }
                 }
             }
         }
 
-        // If we only received errors that we should ignore,
-        // consider this send a success.
-        successHandler();
+        // If any of the group send errors are retryable, we want to retry.
+        // Therefore, prefer to propagate a retryable error.
+        if (firstRetryableError) {
+            return failureHandler(firstRetryableError);
+        } else if (firstNonRetryableError) {
+            return failureHandler(firstNonRetryableError);
+        } else {
+            // If we only received errors that we should ignore,
+            // consider this send a success.
+            successHandler();
+        }
     }];
 }
 
