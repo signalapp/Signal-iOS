@@ -368,8 +368,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
     DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
 
-    [self sendWebSocketMessageAcknowledgement:message];
-
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
     [self requestSocketAliveForAtLeastSeconds:kBackgroundKeepSocketAliveDurationSeconds];
@@ -381,15 +379,22 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
         if (!decryptedPayload) {
             DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
+            [self sendWebSocketMessageAcknowledgement:message];
             return;
         }
 
         OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
-        [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope];
-
+        [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope
+                                                       completion:^{
+                                                           // Don't acknowledge delivery until the envelope has been
+                                                           // processed.
+                                                           [self sendWebSocketMessageAcknowledgement:message];
+                                                       }];
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
+
+        [self sendWebSocketMessageAcknowledgement:message];
     }
 }
 
