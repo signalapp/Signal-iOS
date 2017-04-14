@@ -39,9 +39,10 @@ class MessageFetcherJob: NSObject {
         let runPromise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> Void in
             for envelope in envelopes {
                 Logger.info("\(self.TAG) received envelope.")
-                self.messagesManager.handleReceivedEnvelope(envelope)
-
-                self.acknowledgeDelivery(envelope: envelope)
+                self.messagesManager.handleReceivedEnvelope(envelope, completion: {
+                    // Don't acknowledge delivery until the envelope has been processed. 
+                    self.acknowledgeDelivery(envelope: envelope)
+                })
             }
             if more {
                 Logger.info("\(self.TAG) more messages, so recursing.")
