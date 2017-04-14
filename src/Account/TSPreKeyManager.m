@@ -95,9 +95,21 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
         BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
             || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
         if (shouldCheck) {
+            // Optimistically mark the prekeys as checked. This
+            // de-bounces prekey checks.
+            //
+            // If the check or key registration fails, the prekeys
+            // will be marked as _NOT_ checked.
+            //
+            // Note: [TSPreKeyManager checkPreKeys] will also
+            //       optimistically mark them as checked. This
+            //       redundancy is fine and precludes a race
+            //       condition.
+            lastPreKeyCheckTimestamp = [NSDate date];
+
             [[TSAccountManager sharedInstance] ifRegistered:YES
                                                    runAsync:^{
-                                                       [TSPreKeyManager refreshPreKeys];
+                                                       [TSPreKeyManager checkPreKeys];
                                                    }];
         }
     });
@@ -110,6 +122,9 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
     // We use prekeyQueue to serialize this logic and ensure that only
     // one thread is "registering" or "clearing" prekeys at a time.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+        // Mark the prekeys as checked every time we update.
+        lastPreKeyCheckTimestamp = [NSDate date];
+
         RefreshPreKeysMode modeCopy = mode;
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         ECKeyPair *identityKeyPair = [storageManager identityKeyPair];
@@ -165,6 +180,9 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 OWSAnalyticsError(@"Prekey update failed (%@): %@", description, error);
 
+                // Mark the prekeys as _NOT_ checked on failure.
+                [self markPreKeysAsNotChecked];
+
                 failureHandler(error);
 
                 NSInteger statusCode = 0;
@@ -181,7 +199,17 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
     });
 }
 
-+ (void)refreshPreKeys {
++ (void)checkPreKeys
+{
+    // Optimistically mark the prekeys as checked. This
+    // de-bounces prekey checks.
+    //
+    // If the check or key registration fails, the prekeys
+    // will be marked as _NOT_ checked.
+    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+        lastPreKeyCheckTimestamp = [NSDate date];
+    });
+
     // We want to update prekeys if either the one-time or signed prekeys need an update, so
     // we check the status of both.
     //
@@ -242,11 +270,6 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                     DDLogDebug(@"%@ Not updating prekeys.", self.tag);
                 }
             }
-            
-            // Update the prekey check timestamp on success.
-            dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-                lastPreKeyCheckTimestamp = [NSDate date];
-            });
 
             if (!didUpdatePreKeys) {
                 // If we didn't update the prekeys, our local "current signed key" state should
@@ -273,12 +296,25 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                     }
                     failure:^(NSURLSessionDataTask *task, NSError *error) {
                         DDLogWarn(@"%@ Could not retrieve current signed key from the service.", self.tag);
+
+                        // Mark the prekeys as _NOT_ checked on failure.
+                        [self markPreKeysAsNotChecked];
                     }];
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.tag);
+
+            // Mark the prekeys as _NOT_ checked on failure.
+            [self markPreKeysAsNotChecked];
         }];
+}
+
++ (void)markPreKeysAsNotChecked
+{
+    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+        lastPreKeyCheckTimestamp = nil;
+    });
 }
 
 + (void)clearSignedPreKeyRecords {
