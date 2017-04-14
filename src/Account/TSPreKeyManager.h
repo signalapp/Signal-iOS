@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, RefreshPreKeysMode) {
                         success:(void (^)())successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
-+ (void)refreshPreKeys;
++ (void)checkPreKeys;
 
 + (void)checkPreKeysIfNecessary;
 
