@@ -55,7 +55,7 @@
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
 
-/* Format string for file size label in call interstitial view */
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
@@ -160,6 +160,12 @@
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
 
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls. You can grant this permission in the Settings app.";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
+
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
@@ -228,12 +234,6 @@
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
-
-/* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
-
-/* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
