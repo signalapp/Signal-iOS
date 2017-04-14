@@ -122,7 +122,7 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
     // We use prekeyQueue to serialize this logic and ensure that only
     // one thread is "registering" or "clearing" prekeys at a time.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        // Mark the prekeys as checked every time we update.
+        // Mark the prekeys as checked every time we try to register prekeys.
         lastPreKeyCheckTimestamp = [NSDate date];
 
         RefreshPreKeysMode modeCopy = mode;
