@@ -209,6 +209,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 #pragma mark - Update Methods
 
+// This method does the work for the "updateWith..." methods.  Please see
+// the header for a discussion of those methods.
 - (void)applyChangeToSelfAndLatestOutgoingMessage:(YapDatabaseReadWriteTransaction *)transaction
                                       changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
 {
