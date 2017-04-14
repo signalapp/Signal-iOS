@@ -431,32 +431,34 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 - (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel
 {
-    OWSAssert([NSThread isMainThread]);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+        if (checkForCancel && threadId != nil) {
+            // The longer we wait, the more obsolete notifications we can suppress -
+            // but the more lag we introduce to notification delivery.
+            const CGFloat kDelaySeconds = 0.3f;
+            notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
+            notification.timeZone = [NSTimeZone localTimeZone];
+        }
 
-    NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-    if (checkForCancel && threadId != nil) {
-        // The longer we wait, the more obsolete notifications we can suppress -
-        // but the more lag we introduce to notification delivery.
-        const CGFloat kDelaySeconds = 0.3f;
-        notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
-        notification.timeZone = [NSTimeZone localTimeZone];
-    }
-
-    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-    [self.currentNotifications addObject:notification];
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        [self.currentNotifications addObject:notification];
+    });
 }
 
-- (void)cancelNotificationsWithThreadId:(NSString *)threadId {
-    OWSAssert([NSThread isMainThread]);
-
-    NSMutableArray *toDelete = [NSMutableArray array];
-    [self.currentNotifications enumerateObjectsUsingBlock:^(UILocalNotification *notif, NSUInteger idx, BOOL *stop) {
-        if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
-            [[UIApplication sharedApplication] cancelLocalNotification:notif];
-            [toDelete addObject:notif];
-        }
-    }];
-    [self.currentNotifications removeObjectsInArray:toDelete];
+- (void)cancelNotificationsWithThreadId:(NSString *)threadId
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableArray *toDelete = [NSMutableArray array];
+        [self.currentNotifications
+            enumerateObjectsUsingBlock:^(UILocalNotification *notif, NSUInteger idx, BOOL *stop) {
+                if ([notif.userInfo[Signal_Thread_UserInfo_Key] isEqualToString:threadId]) {
+                    [[UIApplication sharedApplication] cancelLocalNotification:notif];
+                    [toDelete addObject:notif];
+                }
+            }];
+        [self.currentNotifications removeObjectsInArray:toDelete];
+    });
 }
 
 + (NSString *)tag
