@@ -153,6 +153,7 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 
                 // Mark signed prekey as accepted by service.
                 [signedPreKey markAsAcceptedByService];
+                [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
 
                 // On success, update the "current" signed prekey state.
                 [storageManager setCurrentSignedPrekeyId:signedPreKey.Id];
