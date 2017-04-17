@@ -960,6 +960,7 @@ typedef enum : NSUInteger {
 {
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
     if (self.thread.isMuted) {
+        // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText
             appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@"\ue067  "
