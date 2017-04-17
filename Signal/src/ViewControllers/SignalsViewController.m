@@ -460,9 +460,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
-                                                                          messageBody:@""
-                                                                        attachmentIds:[NSMutableArray new]];
-            message.groupMetaMessage = TSGroupMessageQuit;
+                                                                     groupMetaMessage:TSGroupMessageQuit];
             [self.messageSender sendMessage:message
                                     success:^{
                                         [self dismissViewControllerAnimated:YES

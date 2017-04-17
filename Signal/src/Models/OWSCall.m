@@ -191,11 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (BOOL)isOutgoingAndDelivered
-{
-    return NO;
-}
-
 - (NSUInteger)messageHash
 {
     return self.hash;
