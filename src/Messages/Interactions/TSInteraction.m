@@ -104,7 +104,6 @@
 
     TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
 
-
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }
 

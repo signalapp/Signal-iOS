@@ -8,6 +8,7 @@
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,6 +37,8 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
 @end
+
+#pragma mark -
 
 @implementation TSMessage
 

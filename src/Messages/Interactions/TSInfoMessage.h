@@ -19,8 +19,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread;
 
-@property TSInfoMessageType messageType;
-@property NSString *customMessage;
+@property (atomic, readonly) TSInfoMessageType messageType;
+@property (atomic, readonly) NSString *customMessage;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

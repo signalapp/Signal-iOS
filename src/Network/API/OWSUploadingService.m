@@ -52,10 +52,10 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
         successHandler();
     };
 
-    RetryableFailureHandler failureHandlerWrapper = ^(NSError *_Nonnull error, BOOL isRetryable) {
+    RetryableFailureHandler failureHandlerWrapper = ^(NSError *_Nonnull error) {
         [self fireProgressNotification:0 attachmentId:attachmentStream.uniqueId];
 
-        failureHandler(error, isRetryable);
+        failureHandler(error);
     };
 
     if (attachmentStream.serverId) {
@@ -73,7 +73,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                 if (![responseObject isKindOfClass:[NSDictionary class]]) {
                     DDLogError(@"%@ unexpected response from server: %@", self.tag, responseObject);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                    return failureHandlerWrapper(error, YES);
+                    [error setIsRetryable:YES];
+                    return failureHandlerWrapper(error);
                 }
 
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
@@ -84,7 +85,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                 NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
                 if (error) {
                     DDLogError(@"%@ Failed to read attachment data with error:%@", self.tag, error);
-                    return failureHandlerWrapper(error, YES);
+                    [error setIsRetryable:YES];
+                    return failureHandlerWrapper(error);
                 }
 
                 NSData *encryptionKey;
@@ -114,7 +116,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             DDLogError(@"%@ Failed to allocate attachment with error: %@", self.tag, error);
-            failureHandlerWrapper(error, YES);
+            [error setIsRetryable:YES];
+            failureHandlerWrapper(error);
         }];
 }
 
@@ -143,7 +146,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
         completionHandler:^(NSURLResponse *_Nonnull response, id _Nullable responseObject, NSError *_Nullable error) {
             OWSAssert([NSThread isMainThread]);
             if (error) {
-                return failureHandler(error, YES);
+                [error setIsRetryable:YES];
+                return failureHandler(error);
             }
 
             NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
@@ -151,7 +155,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
             if (!isValidResponse) {
                 DDLogError(@"%@ Unexpected server response: %d", self.tag, (int)statusCode);
                 NSError *invalidResponseError = OWSErrorMakeUnableToProcessServerResponseError();
-                return failureHandler(invalidResponseError, YES);
+                [invalidResponseError setIsRetryable:YES];
+                return failureHandler(invalidResponseError);
             }
 
             successHandler();

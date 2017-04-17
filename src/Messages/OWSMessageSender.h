@@ -20,7 +20,23 @@ NS_ASSUME_NONNULL_BEGIN
  * but *sometimes* we don't want to retry when we know it's a terminal failure, so we allow the
  * caller to indicate this with isRetryable=NO.
  */
-typedef void (^RetryableFailureHandler)(NSError *_Nonnull error, BOOL isRetryable);
+typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
+
+// Message send error handling is slightly different for contact and group messages.
+//
+// For example, If one member of a group deletes their account, the group should
+// ignore errors when trying to send messages to this ex-member.
+@interface NSError (OWSMessageSender)
+
+- (BOOL)isRetryable;
+- (void)setIsRetryable:(BOOL)value;
+
+- (BOOL)shouldBeIgnoredForGroups;
+- (void)setShouldBeIgnoredForGroups:(BOOL)value;
+
+@end
+
+#pragma mark -
 
 NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject {

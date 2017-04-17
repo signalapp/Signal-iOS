@@ -39,6 +39,7 @@
 #import <AxolotlKit/SessionBuilder.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <TwistedOakCollapsingFutures/CollapsingFutures.h>
+#import <objc/runtime.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,6 +51,42 @@ void AssertIsOnSendingQueue()
     } // else, skip assert as it's a development convenience.
 #endif
 }
+
+static void *kNSError_MessageSender_IsRetryable = &kNSError_MessageSender_IsRetryable;
+static void *kNSError_MessageSender_ShouldBeIgnoredForGroups = &kNSError_MessageSender_ShouldBeIgnoredForGroups;
+
+@implementation NSError (OWSMessageSender)
+
+- (BOOL)isRetryable
+{
+    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_IsRetryable);
+    // This value should always be set for all errors by the time OWSSendMessageOperation
+    // queries it's value.  If not, default to retrying in production.
+    OWSAssert(value);
+    return value ? [value boolValue] : YES;
+}
+
+- (void)setIsRetryable:(BOOL)value
+{
+    objc_setAssociatedObject(self, kNSError_MessageSender_IsRetryable, @(value), OBJC_ASSOCIATION_COPY);
+}
+
+- (BOOL)shouldBeIgnoredForGroups
+{
+    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_ShouldBeIgnoredForGroups);
+    // This value will NOT always be set for all errors by the time we query it's value.
+    // Default to NOT ignoring.
+    return value ? [value boolValue] : NO;
+}
+
+- (void)setShouldBeIgnoredForGroups:(BOOL)value
+{
+    objc_setAssociatedObject(self, kNSError_MessageSender_ShouldBeIgnoredForGroups, @(value), OBJC_ASSOCIATION_COPY);
+}
+
+@end
+
+#pragma mark -
 
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
@@ -86,8 +123,6 @@ typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
 - (void)attemptToSendMessage:(TSOutgoingMessage *)message
                      success:(void (^)())successHandler
                      failure:(RetryableFailureHandler)failureHandler;
-
-- (void)saveMessage:(TSOutgoingMessage *)message withError:(NSError *)error;
 
 @end
 
@@ -136,6 +171,9 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             OWSCAssert(NO);
             return;
         }
+
+        [message updateWithMessageState:TSOutgoingMessageStateSentToService];
+
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
         aSuccessHandler();
         [strongSelf markAsComplete];
@@ -148,7 +186,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        [strongSelf.messageSender saveMessage:strongSelf.message withError:error];
+        [strongSelf.message updateWithSendingError:error];
 
         DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
         aFailureHandler(error);
@@ -225,10 +263,10 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 {
     DDLogDebug(@"%@ remainingRetries: %lu", self.tag, (unsigned long)remainingRetries);
 
-    RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error, BOOL isRetryable) {
+    RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
         DDLogInfo(@"%@ Sending failed.", self.tag);
 
-        if (!isRetryable) {
+        if (![error isRetryable]) {
             DDLogInfo(@"%@ Skipping retry due to terminal error: %@", self.tag, error);
             self.failureHandler(error);
             return;
@@ -355,7 +393,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     AssertIsOnMainThread();
 
-    [self saveMessage:message withState:TSOutgoingMessageStateAttemptingOut];
+    [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
                                                                                              success:successHandler
@@ -379,14 +417,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         success:^() {
             [self deliverMessage:message
                          success:successHandler
-                         failure:^(NSError *error, BOOL isRetryable) {
+                         failure:^(NSError *error) {
                              DDLogDebug(@"%@ Message send attempt failed: %@", self.tag, message.debugDescription);
-                             failureHandler(error, isRetryable);
+                             failureHandler(error);
                          }];
         }
-        failure:^(NSError *error, BOOL isRetryable) {
+        failure:^(NSError *error) {
             DDLogDebug(@"%@ Attachment upload attempt failed: %@", self.tag, message.debugDescription);
-            failureHandler(error, isRetryable);
+            failureHandler(error);
         }];
 }
 
@@ -406,7 +444,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         DDLogError(@"%@ Unable to find local saved attachment to upload.", self.tag);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         // Not finding local attachment is a terminal failure.
-        return failureHandler(error, NO);
+        [error setIsRetryable:NO];
+        return failureHandler(error);
     }
 
     [self.uploadingService uploadAttachmentStream:attachmentStream
@@ -491,36 +530,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     //  2.) fail and create a new identical error message in the thread.
     [errorMessage remove];
 
-    if ([errorMessage.thread isKindOfClass:[TSContactThread class]]) {
-        return [self sendMessage:message success:successHandler failure:failureHandler];
-    }
-
-    // else it's a GroupThread
-    dispatch_async([OWSDispatch sendingQueue], ^{
-
-        // Avoid spamming entire group when resending failed message.
-        SignalRecipient *failedRecipient = [SignalRecipient fetchObjectWithUniqueID:errorMessage.recipientId];
-
-        // Normally marking as unsent is handled in sendMessage happy path, but beacuse we're skipping the common entry
-        // point to message sending in order to send to a single recipient, we have to handle it ourselves.
-        RetryableFailureHandler markAndFailureHandler = ^(NSError *error, BOOL isRetryable) {
-            [self saveMessage:message withError:error];
-            if (isRetryable) {
-                // FIXME: Fixing this will require a larger refactor. In the meanwhile, we don't
-                // retry message sending from accepting key-changes in a group. (Except for the inner retry logic w/ the
-                // messages API)
-                DDLogWarn(@"%@ Skipping retry for group-message failure during %s.", self.tag, __PRETTY_FUNCTION__);
-            }
-
-            failureHandler(error);
-        };
-
-        [self groupSend:@[ failedRecipient ]
-                message:message
-                 thread:message.thread
-                success:successHandler
-                failure:markAndFailureHandler];
-    });
+    return [self sendMessage:message success:successHandler failure:failureHandler];
 }
 
 - (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error
@@ -564,16 +574,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self getRecipients:gThread.groupModel.groupMemberIds error:&error];
 
             if (recipients.count == 0) {
-                if (error) {
-                    // If not recipients were found, there's no reason to retry. It will just fail again.
-                    failureHandler(error, NO);
-                    return;
-                } else {
+                if (!error) {
                     DDLogError(@"%@ Unknown error finding contacts", self.tag);
-                    // If not recipients were found, there's no reason to retry. It will just fail again.
-                    failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError(), NO);
-                    return;
+                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
                 }
+                // If no recipients were found, there's no reason to retry. It will just fail again.
+                [error setIsRetryable:NO];
+                failureHandler(error);
+                return;
             }
 
             [self groupSend:recipients message:message thread:gThread success:successHandler failure:failureHandler];
@@ -594,13 +602,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 ? self.storageManager.localNumber
                 : contactThread.contactIdentifier;
 
+            // If we block a user, don't send 1:1 messages to them. The UI
+            // should prevent this from occurring, but in some edge cases
+            // you might, for example, have a pending outgoing message when
+            // you block them.
             OWSAssert(recipientContactId.length > 0);
             NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
             if ([blockedPhoneNumbers containsObject:recipientContactId]) {
                 DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
                 NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.
-                failureHandler(error, NO);
+                [error setIsRetryable:NO];
+                failureHandler(error);
                 return;
             }
 
@@ -619,7 +632,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     DDLogError(@"%@ contact lookup failed with error: %@", self.tag, error);
                     // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us
                     // to print redundant error messages.
-                    failureHandler(error, NO);
+                    [error setIsRetryable:NO];
+                    failureHandler(error);
                     return;
                 }
             }
@@ -629,7 +643,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 DDLogWarn(@"recipient contact still not found after attempting lookup.");
                 // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us to
                 // print redundant error messages.
-                failureHandler(error, NO);
+                [error setIsRetryable:NO];
+                failureHandler(error);
                 return;
             }
 
@@ -646,13 +661,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSAssert(NO);
 
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-            failureHandler(error, NO);
+            [error setIsRetryable:NO];
+            failureHandler(error);
         }
     });
 }
 
-/// For group sends, we're using chained futures to make the code more readable.
-
+// For group sends, we're using chained futures to make the code more readable.
 - (TOCFuture *)sendMessageFuture:(TSOutgoingMessage *)message
                        recipient:(SignalRecipient *)recipient
                           thread:(TSThread *)thread
@@ -664,10 +679,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
+            DDLogInfo(@"Marking group message as sent to recipient: %@", recipient.uniqueId);
+            [message updateWithSentRecipient:recipient.uniqueId];
             [futureSource trySetResult:@1];
         }
-        failure:^(NSError *error, BOOL isRetryable) {
-            // FIXME what to do WRT retryable here?
+        failure:^(NSError *error) {
             [futureSource trySetFailure:error];
         }];
 
@@ -683,14 +699,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self saveGroupMessage:message inThread:thread];
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
-    for (SignalRecipient *rec in recipients) {
+    for (SignalRecipient *recipient in recipients) {
         // We don't need to send the message to ourselves...
-        if ([rec.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+        if ([recipient.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+            continue;
+        }
+        if ([message wasSentToRecipient:recipient.uniqueId]) {
+            // Skip recipients we have already sent this message to (on an
+            // earlier retry, perhaps).
+            DDLogInfo(@"Skipping group message recipient; already sent: %@", recipient.uniqueId);
             continue;
         }
 
         // ...otherwise we send.
-        [futures addObject:[self sendMessageFuture:message recipient:rec thread:thread]];
+        [futures addObject:[self sendMessageFuture:message recipient:recipient thread:thread]];
     }
 
     TOCFuture *completionFuture = futures.toc_thenAll;
@@ -700,36 +722,54 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }];
 
     [completionFuture catchDo:^(id failure) {
-        // failure from toc_thenAll yeilds an array of failed Futures, rather than the future's failure.
-        if ([failure isKindOfClass:[NSArray class]]) {
-            NSArray *errors = (NSArray *)failure;
-            for (TOCFuture *failedFuture in errors) {
-                if (!failedFuture.hasFailed) {
-                    // If at least one send succeeded, don't show message as failed.
-                    // Else user will tap-to-resend to all recipients, including those that already received the
-                    // message.
-                    return successHandler();
-                }
-            }
+        // failure from toc_thenAll yields an array of failed Futures, rather than the future's failure.
+        NSError *firstRetryableError = nil;
+        NSError *firstNonRetryableError = nil;
 
-            // At this point, all recipients must have failed.
-            // But we have all this verbose type checking because TOCFuture doesn't expose type information.
-            id lastError = errors.lastObject;
-            if ([lastError isKindOfClass:[TOCFuture class]]) {
-                TOCFuture *failedFuture = (TOCFuture *)lastError;
-                if (failedFuture.hasFailed) {
-                    id failureResult = failedFuture.forceGetFailure;
+        if ([failure isKindOfClass:[NSArray class]]) {
+            NSArray *groupSendFutures = (NSArray *)failure;
+            for (TOCFuture *groupSendFuture in groupSendFutures) {
+                if (groupSendFuture.hasFailed) {
+                    id failureResult = groupSendFuture.forceGetFailure;
                     if ([failureResult isKindOfClass:[NSError class]]) {
-                        // Generally we assume that failures are retryable
-                        return failureHandler((NSError *)failureResult, YES);
+                        NSError *error = failureResult;
+                        // Some errors should be ignored when sending messages
+                        // to groups.  See discussion on
+                        // NSError (OWSMessageSender) category.
+                        if ([error shouldBeIgnoredForGroups]) {
+                            continue;
+                        }
+
+                        if ([error isRetryable] && !firstRetryableError) {
+                            firstRetryableError = error;
+                        } else if (![error isRetryable] && !firstNonRetryableError) {
+                            firstNonRetryableError = error;
+                        }
                     }
                 }
             }
         }
 
-        DDLogWarn(@"%@ Unexpected generic failure: %@", self.tag, failure);
-        OWSAssert(NO);
-        return failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError(), YES);
+        // If any of the group send errors are retryable, we want to retry.
+        // Therefore, prefer to propagate a retryable error.
+        if (firstRetryableError) {
+            return failureHandler(firstRetryableError);
+        } else if (firstNonRetryableError) {
+            return failureHandler(firstNonRetryableError);
+        } else {
+            // If we only received errors that we should ignore,
+            // consider this send a success, unless the message could
+            // not be sent to any recipient.
+            if (message.sentRecipientsCount == 0) {
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
+                    NSLocalizedString(@"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
+                        @"Error indicating that an outgoing message had no valid recipients."));
+                [error setIsRetryable:NO];
+                failureHandler(error);
+            } else {
+                successHandler();
+            }
+        }
     }];
 }
 
@@ -771,7 +811,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }];
 
         DDLogError(@"%@ Message send failed due to repeated inability to update prekeys.", self.tag);
-        return failureHandler(OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(), YES);
+        NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
+        [error setIsRetryable:YES];
+        return failureHandler(error);
     }
 
     if (remainingAttempts <= 0) {
@@ -779,7 +821,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         DDLogError(@"%@ Unexpected generic failure.", self.tag);
         OWSAssert(NO);
 
-        return failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError(), YES);
+        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+        [error setIsRetryable:YES];
+        return failureHandler(error);
     }
     remainingAttempts -= 1;
 
@@ -799,7 +843,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     @"action sheet header when re-sending message which failed because of untrusted identity keys"));
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
-            return failureHandler(error, NO);
+            [error setIsRetryable:NO];
+            return failureHandler(error);
         }
 
         if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
@@ -808,17 +853,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     @"action sheet header when re-sending message which failed because of too many attempts"));
 
             // We're already rate-limited. No need to exacerbate the problem.
-            return failureHandler(error, NO);
+            [error setIsRetryable:NO];
+            return failureHandler(error);
         }
 
         if (remainingAttempts == 0) {
             DDLogWarn(
                 @"%@ Terminal failure to build any device messages. Giving up with exception:%@", self.tag, exception);
-            [self processException:exception outgoingMessage:message inThread:thread];
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             // Since we've already repeatedly failed to build messages, it's unlikely that repeating the whole process
             // will succeed.
-            return failureHandler(error, NO);
+            [error setIsRetryable:NO];
+            return failureHandler(error);
         }
     }
 
@@ -847,7 +893,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 if (remainingAttempts <= 0) {
                     // Since we've already repeatedly failed to send to the messaging API,
                     // it's unlikely that repeating the whole process will succeed.
-                    return failureHandler(error, NO);
+                    [error setIsRetryable:NO];
+                    return failureHandler(error);
                 }
 
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -866,13 +913,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     DDLogWarn(@"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by registering elsewhere?", self.tag);
                     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure, NSLocalizedString(@"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED", @"Error message when attempting to send message"));
                     // No need to retry if we've been de-authed.
-                    return failureHandler(error, NO);
+                    [error setIsRetryable:NO];
+                    return failureHandler(error);
                 }
                 case 404: {
                     [self unregisteredRecipient:recipient message:message thread:thread];
                     NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
                     // No need to retry if the recipient is not registered.
-                    return failureHandler(error, NO);
+                    [error setIsRetryable:NO];
+                    // If one member of a group deletes their account,
+                    // the group should ignore errors when trying to send
+                    // messages to this ex-member.
+                    [error setShouldBeIgnoredForGroups:YES];
+                    return failureHandler(error);
                 }
                 case 409: {
                     // Mismatched devices
@@ -883,20 +936,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
                     if (error) {
                         DDLogError(@"%@ Failed to serialize response of mismatched devices: %@", self.tag, error);
-                        return failureHandler(error, YES);
+                        [error setIsRetryable:YES];
+                        return failureHandler(error);
                     }
 
                     [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
                     break;
                 }
                 case 410: {
-                    // staledevices
+                    // Stale devices
                     DDLogWarn(@"Stale devices");
 
                     if (!responseData) {
                         DDLogWarn(@"Stale devices but server didn't specify devices in response.");
                         NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                        return failureHandler(error, YES);
+                        [error setIsRetryable:YES];
+                        return failureHandler(error);
                     }
 
                     [self handleStaleDevicesWithResponse:responseData
@@ -938,12 +993,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
 {
-    [self saveMessage:message withState:TSOutgoingMessageStateSent];
     if (message.shouldSyncTranscript) {
         // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
         //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
-
-        message.hasSyncedTranscript = YES;
+        [message updateWithHasSyncedTranscript:YES];
         [self sendSyncTranscriptForMessage:message];
     }
 
@@ -952,7 +1005,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
 {
-    [self saveMessage:message withState:TSOutgoingMessageStateDelivered];
+    [message updateWithWasDelivered];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
     [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
@@ -1004,13 +1057,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         success:^{
             DDLogInfo(@"Succesfully sent sync transcript.");
         }
-        failure:^(NSError *error, BOOL isRetryable) {
+        failure:^(NSError *error) {
             // FIXME: We don't yet honor the isRetryable flag here, since sendSyncTranscriptForMessage
             // isn't yet wrapped in our retryable SendMessageOperation. Addressing this would require
             // a refactor to the MessageSender. Note that we *do* however continue to respect the
             // OWSMessageSenderRetryAttempts, which is an "inner" retry loop, encompassing only the
             // messaging API.
-            DDLogInfo(@"Failed to send sync transcript:%@", error);
+            DDLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
         }];
 }
 
@@ -1177,23 +1230,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return TSUnknownMessageType;
 }
 
-- (void)saveMessage:(TSOutgoingMessage *)message withState:(TSOutgoingMessageState)state
-{
-    message.messageState = state;
-    [message save];
-}
-
-- (void)saveMessage:(TSOutgoingMessage *)message withError:(NSError *)error
-{
-    message.messageState = TSOutgoingMessageStateUnsent;
-    [message setSendingError:error];
-    [message save];
-}
-
 - (void)saveGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
     if (message.groupMetaMessage == TSGroupMessageDeliver) {
-        [self saveMessage:message withState:message.messageState];
+        // TODO: Why is this necessary?
+        [message save];
     } else if (message.groupMetaMessage == TSGroupMessageQuit) {
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
@@ -1227,28 +1268,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             completionHandler();
         });
     });
-}
-
-- (void)processException:(NSException *)exception
-         outgoingMessage:(TSOutgoingMessage *)message
-                inThread:(TSThread *)thread
-{
-    DDLogWarn(@"%@ Got exception: %@", self.tag, exception);
-
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        // TODO: This error message is never created?
-        TSErrorMessage *errorMessage;
-
-        if (message.groupMetaMessage == TSGroupMessageNone) {
-            // Only update this with exception if it is not a group message as group
-            // messages may except for one group
-            // send but not another and the UI doesn't know how to handle that
-            [message setMessageState:TSOutgoingMessageStateUnsent];
-            [message saveWithTransaction:transaction];
-        }
-
-        [errorMessage saveWithTransaction:transaction];
-    }];
 }
 
 #pragma mark - Logging

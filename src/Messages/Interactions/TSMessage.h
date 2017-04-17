@@ -12,19 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentPointer;
 
-typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
-    TSGroupMessageNone,
-    TSGroupMessageNew,
-    TSGroupMessageUpdate,
-    TSGroupMessageDeliver,
-    TSGroupMessageQuit
-};
-
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nullable, nonatomic) NSString *body;
-@property (nonatomic) TSGroupMetaMessage groupMetaMessage;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;

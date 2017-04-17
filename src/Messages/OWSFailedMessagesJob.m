@@ -84,8 +84,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         }
 
         DDLogDebug(@"%@ marking message as unsent", self.tag);
-        message.messageState = TSOutgoingMessageStateUnsent;
-        [message save];
+        [message updateWithMessageState:TSOutgoingMessageStateUnsent];
         count++;
     }];
 
