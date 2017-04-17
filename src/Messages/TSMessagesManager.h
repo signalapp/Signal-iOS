@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ContactsManagerProtocol;
 @protocol OWSCallMessageHandler;
 
+typedef void (^MessageManagerCompletionBlock)();
+
 @interface TSMessagesManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -27,18 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
-
-/**
- * Processes all kinds of incoming envelopes with a data message, along with any attachments.
- *
- * @returns
- *   If an incoming message is created, it will be returned. If it is, for example, a group update,
- *   no incoming message is created, so nil will be returned.
- */
-- (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                attachmentIds:(NSArray<NSString *> *)attachmentIds;
+- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                    completion:(nullable MessageManagerCompletionBlock)completion;
 
 /**
  * @returns

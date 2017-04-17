@@ -153,8 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                    completion:(nullable MessageManagerCompletionBlock)completionHandler
 {
     OWSAssert([NSThread isMainThread]);
+
+    // Ensure that completionHandler is called on the main thread,
+    // and handle the nil case.
+    MessageManagerCompletionBlock completion = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completionHandler) {
+                completionHandler();
+            }
+        });
+    };
 
     DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
 
@@ -162,6 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isEnvelopeBlocked = [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
     if (isEnvelopeBlocked) {
         DDLogInfo(@"%@ ignoring blocked envelope: %@", self.tag, envelope.source);
+        completion();
         return;
     }
 
@@ -175,8 +187,10 @@ NS_ASSUME_NONNULL_BEGIN
                                             DDLogError(
                                                 @"%@ handling secure message failed with error: %@", self.tag, error);
                                         }
+                                        completion();
                                     }];
-                break;
+                // Return to avoid double-acknowledging.
+                return;
             }
             case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
                 [self handlePreKeyBundleAsync:envelope
@@ -186,8 +200,10 @@ NS_ASSUME_NONNULL_BEGIN
                                            DDLogError(
                                                @"%@ handling pre-key bundle failed with error: %@", self.tag, error);
                                        }
+                                       completion();
                                    }];
-                break;
+                // Return to avoid double-acknowledging.
+                return;
             }
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
                 DDLogInfo(@"Received a delivery receipt");
@@ -207,8 +223,10 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } @catch (NSException *exception) {
-        DDLogWarn(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
+        DDLogError(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
     }
+
+    completion();
 }
 
 - (void)handleDeliveryReceipt:(OWSSignalServiceProtosEnvelope *)envelope
@@ -241,6 +259,8 @@ NS_ASSUME_NONNULL_BEGIN
                         [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
                     [errorMessage saveWithTransaction:transaction];
                 }];
+                DDLogError(@"Skipping message envelope for unknown session.");
+                completion(nil);
                 return;
             }
 
@@ -248,7 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *encryptedData
                 = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
             if (!encryptedData) {
-                DDLogError(@"Skipping message envelope which had no encrypted data");
+                DDLogError(@"Skipping message envelope which had no encrypted data.");
+                completion(nil);
                 return;
             }
 
@@ -297,6 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
         if (!encryptedData) {
             DDLogError(@"Skipping message envelope which had no encrypted data");
+            completion(nil);
             return;
         }
 
@@ -327,6 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self handleEnvelope:preKeyEnvelope plaintextData:plaintextData];
+                completion(nil);
             });
         });
     }
