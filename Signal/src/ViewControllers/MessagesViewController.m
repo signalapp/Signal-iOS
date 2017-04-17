@@ -220,6 +220,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
 
+@property (nonatomic) NSTimer *mutingTimer;
+
 @end
 
 @implementation MessagesViewController
@@ -738,6 +740,8 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
+    [self.mutingTimer invalidate];
+    self.mutingTimer = nil;
 }
 
 - (void)startExpirationTimerAnimations
@@ -828,10 +832,7 @@ typedef enum : NSUInteger {
         [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
         
         self.navigationBarSubtitleLabel = [UILabel new];
-        self.navigationBarSubtitleLabel.textColor = [UIColor colorWithWhite:0.9f alpha:1.f];
-        self.navigationBarSubtitleLabel.font = [UIFont ows_regularFontWithSize:9.f];
-        self.navigationBarSubtitleLabel.text = NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                                 @"The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation.");
+        [self updateNavigationBarSubtitleLabel];
         [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
     }
     
@@ -956,6 +957,41 @@ typedef enum : NSUInteger {
     }
     
     self.navigationItem.rightBarButtonItems = [barButtons copy];
+}
+
+- (void)updateNavigationBarSubtitleLabel
+{
+    NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
+    if (self.thread.isMuted) {
+        [subtitleText
+            appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:@"\ue067  "
+                                           attributes:@{
+                                               NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
+                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                           }]];
+    }
+    [subtitleText
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                      @"The subtitle for the messages view title indicates that the "
+                                                      @"title can be tapped to access settings for this conversation.")
+                                       attributes:@{
+                                           NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
+                                           NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                       }]];
+    self.navigationBarSubtitleLabel.attributedText = subtitleText;
+
+    [self.mutingTimer invalidate];
+    self.mutingTimer = nil;
+    if (self.thread.isMuted) {
+        // Every minute, check whether or not the mute state has changed.
+        self.mutingTimer = [NSTimer scheduledTimerWithTimeInterval:60.f
+                                                            target:self
+                                                          selector:@selector(updateNavigationBarSubtitleLabel)
+                                                          userInfo:nil
+                                                           repeats:YES];
+    }
 }
 
 - (void)initializeToolbars
@@ -2401,6 +2437,7 @@ typedef enum : NSUInteger {
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     [self updateBackButtonUnreadCount];
+    [self updateNavigationBarSubtitleLabel];
 
     if (isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
