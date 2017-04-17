@@ -65,15 +65,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
 {
-    OWSAssert(0);
-
     return [self initWithTimestamp:timestamp inThread:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
-    OWSAssert(0);
-
     return [self initWithTimestamp:timestamp inThread:thread messageBody:nil];
 }
 
@@ -93,8 +89,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
 {
-    OWSAssert(0);
-
     return [self initWithTimestamp:timestamp
                           inThread:thread
                        messageBody:body
@@ -334,6 +328,13 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(contactId.length > 0);
 
     return [self.sentRecipients containsObject:contactId];
+}
+
+- (NSUInteger)sentRecipientsCount
+{
+    OWSAssert(self.sentRecipients);
+
+    return self.sentRecipients.count;
 }
 
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction

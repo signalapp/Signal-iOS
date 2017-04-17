@@ -578,7 +578,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     DDLogError(@"%@ Unknown error finding contacts", self.tag);
                     error = OWSErrorMakeFailedToSendOutgoingMessageError();
                 }
-                // If not recipients were found, there's no reason to retry. It will just fail again.
+                // If no recipients were found, there's no reason to retry. It will just fail again.
                 [error setIsRetryable:NO];
                 failureHandler(error);
                 return;
@@ -609,6 +609,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSAssert(recipientContactId.length > 0);
             NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
             if ([blockedPhoneNumbers containsObject:recipientContactId]) {
+                DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
                 NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.
                 [error setIsRetryable:NO];
@@ -757,8 +758,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return failureHandler(firstNonRetryableError);
         } else {
             // If we only received errors that we should ignore,
-            // consider this send a success.
-            successHandler();
+            // consider this send a success, unless the message could
+            // not be sent to any recipient.
+            if (message.sentRecipientsCount == 0) {
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
+                    NSLocalizedString(@"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
+                        @"Error indicating that an outgoing message had no valid recipients."));
+                [error setIsRetryable:NO];
+                failureHandler(error);
+            } else {
+                successHandler();
+            }
         }
     }];
 }

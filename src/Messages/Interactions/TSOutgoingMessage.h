@@ -34,6 +34,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @interface TSOutgoingMessage : TSMessage
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                       messageBody:(nullable NSString *)body;
@@ -41,6 +45,11 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                  groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
@@ -153,6 +162,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 #pragma mark - Sent Recipients
 
+- (NSUInteger)sentRecipientsCount;
 - (BOOL)wasSentToRecipient:(NSString *)contactId;
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSentRecipient:(NSString *)contactId;
