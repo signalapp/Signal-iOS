@@ -149,6 +149,10 @@
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
+    if (thread.isMuted) {
+        return;
+    }
+
     NSString *messageDescription = message.description;
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {

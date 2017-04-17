@@ -3,8 +3,11 @@
 //
 
 #import "OWSTableViewController.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @interface OWSTableContents ()
 
@@ -156,6 +159,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSTableViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic) UITableView *tableView;
+
+@end
+
+#pragma mark -
+
 NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
@@ -166,11 +177,6 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.navigationController.navigationBar setTranslucent:NO];
 }
 
-- (instancetype)init
-{
-    return [super initWithStyle:UITableViewStyleGrouped];
-}
-
 - (void)loadView
 {
     [super loadView];
@@ -178,8 +184,15 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     OWSAssert(self.contents);
 
     self.title = self.contents.title;
-    
-    OWSAssert(self.tableView);
+
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView autoPinWidthToSuperview];
+    [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }
 
@@ -256,7 +269,37 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     if (item.customRowHeight) {
         return [item.customRowHeight floatValue];
     }
-    return [super tableView:tableView heightForRowAtIndexPath:indexPath];
+    return kOWSTable_DefaultCellHeight;
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)sectionIndex
+{
+    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    return section.customHeaderView;
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)sectionIndex
+{
+    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    return section.customFooterView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)sectionIndex
+{
+    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    if (section && section.customHeaderHeight) {
+        return [section.customHeaderHeight floatValue];
+    }
+    return UITableViewAutomaticDimension;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)sectionIndex
+{
+    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    if (section && section.customFooterHeight) {
+        return [section.customFooterHeight floatValue];
+    }
+    return UITableViewAutomaticDimension;
 }
 
 // Called before the user changes the selection. Return a new indexPath, or nil, to change the proposed selection.
