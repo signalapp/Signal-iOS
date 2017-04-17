@@ -2023,7 +2023,8 @@ typedef enum : NSUInteger {
             BOOL isMediaMessage = [messageItem isMediaMessage];
 
             if (isMediaMessage) {
-                if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
+                if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]] ||
+                    [[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
                     tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
@@ -2048,38 +2049,8 @@ typedef enum : NSUInteger {
                                                              initWithAttachment:attStream
                                                              fromRect:convertedRect
                                                              forInteraction:interaction
-                                                             messageItem:messageItem
-                                                             isAnimated:NO];
+                                                             messageItem:messageItem];
 
-                            [vc presentFromViewController:self];
-                        }
-                    }
-                } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
-                    // Show animated image full-screen
-                    TSAnimatedAdapter *messageMedia = (TSAnimatedAdapter *)[messageItem media];
-                    tappedImage                     = ((UIImageView *)[messageMedia mediaView]).image;
-                    if(tappedImage == nil) {
-                        DDLogWarn(@"tapped TSAnimatedAdapter with nil image");
-                    } else {
-                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
-                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
-                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
-                                                                    toView:window];
-
-                        __block TSAttachment *attachment = nil;
-                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                            attachment =
-                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
-                        }];
-                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                            TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
-                            FullImageViewController *vc =
-                            [[FullImageViewController alloc] initWithAttachment:attStream
-                                                                       fromRect:convertedRect
-                                                                 forInteraction:interaction
-                                                                    messageItem:messageItem
-                                                                     isAnimated:YES];
                             [vc presentFromViewController:self];
                         }
                     }

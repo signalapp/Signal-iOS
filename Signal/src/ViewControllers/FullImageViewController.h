@@ -12,8 +12,7 @@
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                           fromRect:(CGRect)rect
                     forInteraction:(TSInteraction *)interaction
-                       messageItem:(id<OWSMessageData>)messageItem
-                        isAnimated:(BOOL)animated;
+                       messageItem:(id<OWSMessageData>)messageItem;
 
 - (void)presentFromViewController:(UIViewController *)viewController;
 

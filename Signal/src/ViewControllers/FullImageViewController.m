@@ -56,7 +56,6 @@
 
 @property (nonatomic) CGRect originRect;
 @property (nonatomic) BOOL isPresenting;
-@property (nonatomic) BOOL isAnimated;
 @property (nonatomic) NSData *fileData;
 
 @property (nonatomic) TSAttachmentStream *attachment;
@@ -74,8 +73,7 @@
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                           fromRect:(CGRect)rect
                     forInteraction:(TSInteraction *)interaction
-                       messageItem:(id<OWSMessageData>)messageItem
-                        isAnimated:(BOOL)animated {
+                       messageItem:(id<OWSMessageData>)messageItem {
     self = [super initWithNibName:nil bundle:nil];
 
     if (self) {
@@ -83,7 +81,6 @@
         self.originRect  = rect;
         self.interaction = interaction;
         self.messageItem = messageItem;
-        self.isAnimated  = animated;
         self.fileData    = [NSData dataWithContentsOfURL:[attachment mediaURL]];
     }
 
@@ -166,7 +163,7 @@
 }
 
 - (void)initializeImageView {
-    if (self.isAnimated) {
+    if (self.attachment.isAnimated) {
         // Present the animated image using Flipboard/FLAnimatedImage
         FLAnimatedImage *animatedGif   = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
@@ -192,7 +189,7 @@
 }
 
 - (void)populateImageView:(UIImage *)image {
-    if (image && !self.isAnimated) {
+    if (image && !self.attachment.isAnimated) {
         self.imageView.image = image;
     }
 }
