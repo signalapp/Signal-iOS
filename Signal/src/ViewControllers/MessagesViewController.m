@@ -220,8 +220,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
 
-@property (nonatomic) NSTimer *mutingTimer;
-
 @end
 
 @implementation MessagesViewController
@@ -708,6 +706,7 @@ typedef enum : NSUInteger {
     if (_composeOnOpen && !self.inputToolbar.hidden) {
         [self popKeyBoard];
     }
+    [self updateNavigationBarSubtitleLabel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -740,8 +739,6 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
-    [self.mutingTimer invalidate];
-    self.mutingTimer = nil;
 }
 
 - (void)startExpirationTimerAnimations
@@ -981,17 +978,6 @@ typedef enum : NSUInteger {
                                            NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
                                        }]];
     self.navigationBarSubtitleLabel.attributedText = subtitleText;
-
-    [self.mutingTimer invalidate];
-    self.mutingTimer = nil;
-    if (self.thread.isMuted) {
-        // Every minute, check whether or not the mute state has changed.
-        self.mutingTimer = [NSTimer scheduledTimerWithTimeInterval:60.f
-                                                            target:self
-                                                          selector:@selector(updateNavigationBarSubtitleLabel)
-                                                          userInfo:nil
-                                                           repeats:YES];
-    }
 }
 
 - (void)initializeToolbars
