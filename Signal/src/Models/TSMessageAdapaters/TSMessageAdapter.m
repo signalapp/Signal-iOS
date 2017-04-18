@@ -177,18 +177,28 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                 } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                     TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                    adapter.messageType          = TSInfoMessageAdapter;
 
                     switch (pointer.state) {
                         case TSAttachmentPointerStateEnqueued:
+                            adapter.messageType = TSInfoMessageAdapter;
                             adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
                             break;
                         case TSAttachmentPointerStateDownloading:
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
+                            // Don't use infomessage adapter for downloading media.
+                            // TODO don't allow menu editing.
+                            adapter.mediaItem =
+                                [[DownloadingAttachmentAdapter alloc] initWithAttachmentPointer:pointer
+                                                                                 maskAsOutgoing:!isIncomingAttachment];
                             break;
                         case TSAttachmentPointerStateFailed:
                             adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
+                            adapter.messageType = TSInfoMessageAdapter;
                             break;
+                        default:
+                            adapter.messageType = TSInfoMessageAdapter;
+                            DDLogError(
+                                @"%@ unhandled attachment pointer state: %lu", self.tag, (unsigned long)pointer.state);
+                            OWSAssert(NO);
                     }
                 } else {
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
