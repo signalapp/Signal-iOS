@@ -1836,8 +1836,6 @@ typedef enum : NSUInteger {
             if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                 TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
 
-                // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
-                // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
                 if (pointer.state != TSAttachmentPointerStateDownloading) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:pointer

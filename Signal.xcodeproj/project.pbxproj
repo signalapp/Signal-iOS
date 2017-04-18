@@ -85,6 +85,7 @@
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C46901E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */; };
+		452EA0971EA662330078744B /* DownloadingAttachmentAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EA0961EA662330078744B /* DownloadingAttachmentAdapter.swift */; };
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */; };
@@ -455,6 +456,7 @@
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MesssagesBubblesSizeCalculatorTest.swift; path = Models/MesssagesBubblesSizeCalculatorTest.swift; sourceTree = "<group>"; };
+		452EA0961EA662330078744B /* DownloadingAttachmentAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadingAttachmentAdapter.swift; sourceTree = "<group>"; };
 		452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageFetcherJob.swift; path = Jobs/MessageFetcherJob.swift; sourceTree = "<group>"; };
 		4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMessagesCollectionViewCell+OWS.h"; sourceTree = "<group>"; };
 		4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMessagesCollectionViewCell+OWS.m"; sourceTree = "<group>"; };
@@ -1302,6 +1304,7 @@
 				B6A3EB4A1A423B3800B2236B /* TSPhotoAdapter.m */,
 				A5E9D4BA1A65FAD800E4481C /* TSVideoAttachmentAdapter.h */,
 				A5E9D4B91A65FAD800E4481C /* TSVideoAttachmentAdapter.m */,
+				452EA0961EA662330078744B /* DownloadingAttachmentAdapter.swift */,
 			);
 			name = TSMessageAdapters;
 			path = TSMessageAdapaters;
@@ -1992,6 +1995,7 @@
 				45C681C61D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.m in Sources */,
 				34B3F8861E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
+				452EA0971EA662330078744B /* DownloadingAttachmentAdapter.swift in Sources */,
 				34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */,
 				34B3F8321E8DF11D0035BE1A /* GroupContactsResult.m in Sources */,
 				45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
