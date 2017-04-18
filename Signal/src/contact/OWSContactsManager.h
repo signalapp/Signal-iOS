@@ -43,6 +43,8 @@ extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 
+- (BOOL)hasAddressBook;
+
 + (NSComparator _Nonnull)contactComparator;
 
 @end

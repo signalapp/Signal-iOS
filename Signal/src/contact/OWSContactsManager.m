@@ -587,6 +587,11 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return contact.image;
 }
 
+- (BOOL)hasAddressBook
+{
+    return self.addressBookReference;
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag
