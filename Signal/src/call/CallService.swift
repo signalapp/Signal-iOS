@@ -330,16 +330,9 @@ protocol CallServiceObserver: class {
 
             return race(timeout, callConnectedPromise)
         }.then {
-            guard self.call == call else {
-                throw CallError.obsoleteCall(description: "obsolete outgoing call connected")
-            }
-
-            Logger.info("\(self.TAG) outgoing call connected.")
-
-            // TODO: There must be a better way to return a fulfilled promise.
-            let (promise, fulfill, _) = Promise<Void>.pending()
-            fulfill()
-            return promise
+            Logger.info(self.call == call
+                ? "\(self.TAG) outgoing call connected."
+                : "\(self.TAG) obsolete outgoing call connected.")
         }.catch { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
@@ -443,8 +436,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            // Assume this event pertains to the current call.
-            handleFailedCurrentCall(error: .assertionError(description: "call unexpectedly nil in \(#function)"))
+            Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
             return
         }
 
@@ -542,15 +534,9 @@ protocol CallServiceObserver: class {
 
             return race(promise, timeout)
         }.then {
-            guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "obsolete incoming call connected")
-            }
-
-            Logger.info("\(self.TAG) incoming call connected.")
-
-            let (promise, fulfill, _) = Promise<Void>.pending()
-            fulfill()
-            return promise
+            Logger.info(self.call == newCall
+                ? "\(self.TAG) incoming call connected."
+                : "\(self.TAG) obsolete incoming call connected.")
         }.catch { error in
             guard self.call == newCall else {
                 Logger.debug("\(self.TAG) error for obsolete call: \(error)")
