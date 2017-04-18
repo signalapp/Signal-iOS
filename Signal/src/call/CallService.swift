@@ -74,8 +74,8 @@ enum CallError: Error {
     case assertionError(description: String)
     case disconnected
     case externalError(underlyingError: Error)
-    case timeout(description: String, call: SignalCall)
-    case obsoleteCall(description: String, call: SignalCall)
+    case timeout(description: String)
+    case obsoleteCall(description: String)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -292,7 +292,7 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
             }
 
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
@@ -306,7 +306,7 @@ protocol CallServiceObserver: class {
             return self.peerConnectionClient!.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
             }
 
             return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then {
@@ -316,7 +316,7 @@ protocol CallServiceObserver: class {
             }
         }.then {
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
             }
 
             let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
@@ -325,7 +325,7 @@ protocol CallServiceObserver: class {
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                throw CallError.timeout(description: "timed out waiting to receive call answer", call: call)
+                throw CallError.timeout(description: "timed out waiting to receive call answer")
             }
 
             return race(timeout, callConnectedPromise)
@@ -481,7 +481,7 @@ protocol CallServiceObserver: class {
         call = newCall
 
         let backgroundTask = UIApplication.shared.beginBackgroundTask {
-            let timeout = CallError.timeout(description: "background task time ran out before call connected.", call: newCall)
+            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
             DispatchQueue.main.async {
                 guard self.call == newCall else {
                     Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
@@ -497,7 +497,7 @@ protocol CallServiceObserver: class {
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call", call:newCall)
+                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
             }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
 
@@ -517,7 +517,7 @@ protocol CallServiceObserver: class {
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call", call:newCall)
+                throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
             Logger.debug("\(self.TAG) set the remote description")
 
@@ -527,7 +527,7 @@ protocol CallServiceObserver: class {
             return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then {
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call", call:newCall)
+                throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call")
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
@@ -535,7 +535,7 @@ protocol CallServiceObserver: class {
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                throw CallError.timeout(description: "timed out waiting for call to connect", call: newCall)
+                throw CallError.timeout(description: "timed out waiting for call to connect")
             }
 
             // This will be fulfilled (potentially) by the RTCDataChannel delegate method
@@ -544,7 +544,7 @@ protocol CallServiceObserver: class {
             return race(promise, timeout)
         }.then {
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "time out for obsolete incoming call", call:newCall)
+                throw CallError.obsoleteCall(description: "time out for obsolete incoming call")
             }
 
             Logger.info("\(self.TAG) incoming call connected.")
