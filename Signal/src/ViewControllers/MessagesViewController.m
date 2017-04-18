@@ -11,6 +11,7 @@
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
+#import "FullscreenVideoViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NSTimer+OWS.h"
 #import "NewGroupViewController.h"
@@ -1977,6 +1978,15 @@ typedef enum : NSUInteger {
     return 0.0f;
 }
 
+- (CGRect)collectionView:(JSQMessagesCollectionView *)collectionView
+          globalMediaFrameForIndexPath:(NSIndexPath *)indexPath {
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
+    OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+    return [cell.mediaView convertRect:cell.mediaView.bounds toView:window];
+}
+
+
 #pragma mark - Actions
 
 - (void)showConversationSettings
@@ -2031,12 +2041,7 @@ typedef enum : NSUInteger {
                     if(tappedImage == nil) {
                         DDLogWarn(@"tapped TSPhotoAdapter with nil image");
                     } else {
-                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-                        JSQMessagesCollectionViewCell *cell = (JSQMessagesCollectionViewCell *) [collectionView cellForItemAtIndexPath:indexPath];
-                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
-                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds
-                                                                    toView:window];
-                        
+
                         __block TSAttachment *attachment = nil;
                         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             attachment =
@@ -2044,6 +2049,10 @@ typedef enum : NSUInteger {
                         }];
 
                         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                            [self dismissKeyBoard];
+                            CGRect convertedRect = [self collectionView:collectionView
+                                           globalMediaFrameForIndexPath:indexPath];
+
                             TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
                             FullImageViewController *vc   = [[FullImageViewController alloc]
                                                              initWithAttachment:attStream
@@ -2070,27 +2079,12 @@ typedef enum : NSUInteger {
                         if ([messageMedia isVideo]) {
                             if ([fileManager fileExistsAtPath:[attStream.mediaURL path]]) {
                                 [self dismissKeyBoard];
-                                self.videoPlayer =
-                                    [[MPMoviePlayerController alloc] initWithContentURL:attStream.mediaURL];
-                                [_videoPlayer prepareToPlay];
-
-                                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                         selector:@selector(moviePlayerWillExitFullscreen:)
-                                                                             name:MPMoviePlayerWillExitFullscreenNotification
-                                                                           object:_videoPlayer];
-                                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                                         selector:@selector(moviePlayerDidExitFullscreen:)
-                                                                             name:MPMoviePlayerDidExitFullscreenNotification
-                                                                           object:_videoPlayer];
-
-                                _videoPlayer.controlStyle = MPMovieControlStyleDefault;
-                                _videoPlayer.shouldAutoplay = YES;
-                                [self.view addSubview:_videoPlayer.view];
-                                // We can't animate from the cell media frame;
-                                // MPMoviePlayerController will animate a crop of its
-                                // contents rather than scaling them.
-                                _videoPlayer.view.frame = self.view.bounds;
-                                [_videoPlayer setFullscreen:YES animated:NO];
+                                CGRect convertedRect = [self collectionView:collectionView
+                                               globalMediaFrameForIndexPath:indexPath];
+                                FullscreenVideoViewController *fvvc = [[FullscreenVideoViewController alloc]
+                                                                       initWithAttachment:attStream
+                                                                       fromRect:convertedRect];
+                                [fvvc presentFromViewController:self.navigationController];
                             }
                         } else if ([messageMedia isAudio]) {
                             if (self.audioAttachmentPlayer) {
@@ -2166,37 +2160,6 @@ typedef enum : NSUInteger {
             }
         }
     }
-}
-
-// There's more than one way to exit the fullscreen video playback.
-// There's a done button, a "toggle fullscreen" button and I think
-// there's some gestures too.  These fire slightly different notifications.
-// We want to hide & clean up the video player immediately in all of
-// these cases.
-- (void)moviePlayerWillExitFullscreen:(id)sender {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-
-    [self clearVideoPlayer];
-}
-
-// See comment on moviePlayerWillExitFullscreen:
-- (void)moviePlayerDidExitFullscreen:(id)sender {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-    
-    [self clearVideoPlayer];
-}
-
-- (void)clearVideoPlayer {
-    [_videoPlayer stop];
-    [_videoPlayer.view removeFromSuperview];
-    self.videoPlayer = nil;
-}
-
-- (void)setVideoPlayer:(MPMoviePlayerController *)videoPlayer
-{
-    _videoPlayer = videoPlayer;
-
-    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:videoPlayer != nil];
 }
 
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView

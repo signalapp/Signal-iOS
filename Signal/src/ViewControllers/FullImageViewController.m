@@ -15,7 +15,7 @@
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 8.0f
 
-#define kBackgroundAlpha 0.6f
+#define kBackgroundAlpha 0.7f
 
 #define kToolbarHeight 44.0f
 
@@ -144,7 +144,8 @@
                     animated:NO];
     [self.backgroundView addSubview:self.footerBar];
     [self.footerBar autoPinWidthToSuperview];
-    self.footerBottomConstraint = [self.footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:-kToolbarHeight];
+    self.footerBottomConstraint = [self.footerBar autoPinToBottomLayoutGuideOfViewController:self
+                                                                                   withInset:-kToolbarHeight];
 }
 
 - (void)shareWasPressed:(id)sender {
@@ -302,7 +303,6 @@
     self.view.userInteractionEnabled = NO;
     [self.view addSubview:self.imageView];
     self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    self.view.alpha             = 0;
 
     [viewController
         presentViewController:self
@@ -320,7 +320,6 @@
                          delay:0
                          options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
                          animations:^() {
-                             self.view.alpha      = 1.0f;
                              // During the presentation animation, we want to seamlessly animate the image
                              // to its resting location in this view.  We use `resizedFrameForImageView`
                              // to determine its size "at rest" in the content view, and then convert
@@ -358,7 +357,6 @@
     self.scrollView.zoomScale = 1.0f;
     self.imageView.center = [self.scrollView convertPoint:self.imageView.center toView:self.view];
     [self.view addSubview:self.imageView];
-    self.view.backgroundColor = [UIColor clearColor];
     self.backgroundView.backgroundColor = [UIColor clearColor];
 
     [UIView animateWithDuration:0.25f

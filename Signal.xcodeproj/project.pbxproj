@@ -214,6 +214,7 @@
 		76EB063E18170B33006006FC /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EF18170B33006006FC /* Operation.m */; };
 		76EB064218170B33006006FC /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04F618170B33006006FC /* StringUtil.m */; };
 		76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB052F18170B33006006FC /* ContactTableViewCell.m */; };
+		8BCE4BD11EA96BFA007B333A /* FullscreenVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE4BD01EA96BFA007B333A /* FullscreenVideoViewController.m */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -625,6 +626,8 @@
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Signal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BCE4BCF1EA96BFA007B333A /* FullscreenVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullscreenVideoViewController.h; sourceTree = "<group>"; };
+		8BCE4BD01EA96BFA007B333A /* FullscreenVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullscreenVideoViewController.m; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -891,6 +894,8 @@
 				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
 				34D5CCA71EAE3D30005515DB /* GroupViewHelper.h */,
 				34D5CCA81EAE3D30005515DB /* GroupViewHelper.m */,
+				8BCE4BCF1EA96BFA007B333A /* FullscreenVideoViewController.h */,
+				8BCE4BD01EA96BFA007B333A /* FullscreenVideoViewController.m */,
 				34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */,
 				34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */,
 				34B3F84B1E8DF1700035BE1A /* InboxTableViewCell.xib */,
@@ -2017,6 +2022,7 @@
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */,
+				8BCE4BD11EA96BFA007B333A /* FullscreenVideoViewController.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */,
 				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
