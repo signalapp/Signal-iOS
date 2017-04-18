@@ -87,7 +87,8 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 }
 
 - (void)doAfterEnvironmentInitSetup {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0) &&
+        !self.contactStore) {
         OWSAssert(!self.contactStore);
         self.contactStore = [[CNContactStore alloc] init];
         [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
