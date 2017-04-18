@@ -20,6 +20,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kAttachmentDownloadProgressNotification = @"kAttachmentDownloadProgressNotification";
+NSString *const kAttachmentDownloadProgressKey = @"kAttachmentDownloadProgressKey";
+NSString *const kAttachmentDownloadAttachmentIDKey = @"kAttachmentDownloadAttachmentIDKey";
+
+// Use a slightly non-zero value to ensure that the progress
+// indicator shows up as quickly as possible.
+static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
+
 @interface OWSAttachmentsProcessor ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
@@ -259,7 +267,10 @@ NS_ASSUME_NONNULL_BEGIN
                 abortDownload();
                 return;
             }
-            
+
+            [self fireProgressNotification:MAX(kAttachmentDownloadProgressTheta, progress.fractionCompleted)
+                              attachmentId:pointer.uniqueId];
+
             // We only need to check the content length header once.
             if (hasCheckedContentLength) {
                 return;
@@ -320,6 +331,19 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
             return failureHandler(task, error);
         }];
+}
+
+- (void)fireProgressNotification:(CGFloat)progress attachmentId:(NSString *)attachmentId
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+        [notificationCenter postNotificationName:kAttachmentDownloadProgressNotification
+                                          object:nil
+                                        userInfo:@{
+                                            kAttachmentDownloadProgressKey : @(progress),
+                                            kAttachmentDownloadAttachmentIDKey : attachmentId
+                                        }];
+    });
 }
 
 - (void)setAttachment:(TSAttachmentPointer *)pointer isDownloadingInMessage:(nullable TSMessage *)message
