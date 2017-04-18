@@ -712,12 +712,11 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 
 - (void)showMuteUnmuteActionSheet
 {
-    NSString *title;
+    // The "unmute" action sheet has no title or message; the
+    // action label speaks for itself.
+    NSString *title = nil;
     NSString *message = nil;
-    if (self.thread.isMuted) {
-        title = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_UNMUTE_ACTION_SHEET_TITLE", @"Title of the 'unmute this thread' action sheet.");
-    } else {
+    if (!self.thread.isMuted) {
         title = NSLocalizedString(
             @"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE", @"Title of the 'mute this thread' action sheet.");
         message = NSLocalizedString(

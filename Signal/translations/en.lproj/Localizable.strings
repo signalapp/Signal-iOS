@@ -265,9 +265,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
 
-/* Title of the 'unmute this thread' action sheet. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION_SHEET_TITLE" = "Unmute";
-
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
 
