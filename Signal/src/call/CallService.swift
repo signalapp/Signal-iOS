@@ -75,6 +75,7 @@ enum CallError: Error {
     case disconnected
     case externalError(underlyingError: Error)
     case timeout(description: String, call: SignalCall)
+    case obsoleteCall(description: String, call: SignalCall)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -290,6 +291,10 @@ protocol CallServiceObserver: class {
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
+            guard self.call == call else {
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+            }
+
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
@@ -300,12 +305,20 @@ protocol CallServiceObserver: class {
 
             return self.peerConnectionClient!.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
+            guard self.call == call else {
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+            }
+
             return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                 return self.messageSender.sendCallMessage(callMessage)
             }
         }.then {
+            guard self.call == call else {
+                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)", call:call))
+            }
+
             let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
             self.fulfillCallConnectedPromise = fulfill
 
@@ -317,15 +330,25 @@ protocol CallServiceObserver: class {
 
             return race(timeout, callConnectedPromise)
         }.then {
+            guard self.call == call else {
+                Logger.debug("\(self.TAG) obsolete call in \(#function)")
+                throw CallError.assertionError(description:"obsolete call in \(#function)")
+            }
+
             Logger.info("\(self.TAG) outgoing call connected.")
+
+            // TODO: There must be a better way to return a fulfilled promise.
+            let (promise, fulfill, _) = Promise<Void>.pending()
+            fulfill()
+            return promise
         }.catch { error in
             Logger.error("\(self.TAG) placing call failed with error: \(error)")
 
             if let callError = error as? CallError {
-                self.handleFailedCall(error: callError)
+                self.handleFailedCall(failedCall:call, error: callError)
             } else {
                 let externalError = CallError.externalError(underlyingError: error)
-                self.handleFailedCall(error: externalError)
+                self.handleFailedCall(failedCall:call, error: externalError)
             }
         }
     }
@@ -338,13 +361,12 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"call was unexpectedly nil in \(#function)"))
+            Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
             return
         }
 
         guard call.signalingId == callId else {
-            let description: String = "received answer for call: \(callId) but current call has id: \(call.signalingId)"
-            handleFailedCall(error: .assertionError(description: description))
+            Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
             return
         }
 
@@ -359,7 +381,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:call, error: CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)"))
             return
         }
 
@@ -368,10 +390,10 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
-                self.handleFailedCall(error: callError)
+                self.handleFailedCall(failedCall:call, error: callError)
             } else {
                 let externalError = CallError.externalError(underlyingError: error)
-                self.handleFailedCall(error: externalError)
+                self.handleFailedCall(failedCall:call, error: externalError)
             }
         }
     }
@@ -421,8 +443,14 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) \(#function) for thread: \(thread)")
         AssertIsOnMainThread()
 
+        // Assume this event pertains to the current call.
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description: "call unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall: self.call, error: .assertionError(description: "call unexpectedly nil in \(#function)"))
+            return
+        }
+
+        guard thread.contactIdentifier() == call.remotePhoneNumber else {
+            Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
             return
         }
 
@@ -443,7 +471,7 @@ protocol CallServiceObserver: class {
 
         guard call == nil else {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call)")
+            Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
 
             handleLocalBusyCall(newCall, thread: thread)
             return
@@ -456,9 +484,10 @@ protocol CallServiceObserver: class {
             let timeout = CallError.timeout(description: "background task time ran out before call connected.", call: newCall)
             DispatchQueue.main.async {
                 guard self.call == newCall else {
+                    Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
                     return
                 }
-                self.handleFailedCall(error: timeout)
+                self.handleFailedCall(failedCall:newCall, error: timeout)
             }
         }
 
@@ -468,7 +497,7 @@ protocol CallServiceObserver: class {
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             guard self.call == newCall else {
-                throw CallError.assertionError(description: "getIceServers() response for obsolete call")
+                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call", call:newCall)
             }
             assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
 
@@ -488,7 +517,7 @@ protocol CallServiceObserver: class {
             return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             guard self.call == newCall else {
-                throw CallError.assertionError(description: "negotiateSessionDescription() response for obsolete call")
+                throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call", call:newCall)
             }
             Logger.debug("\(self.TAG) set the remote description")
 
@@ -498,7 +527,7 @@ protocol CallServiceObserver: class {
             return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then {
             guard self.call == newCall else {
-                throw CallError.assertionError(description: "sendCallMessage() response for obsolete call")
+                throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call", call:newCall)
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage")
 
@@ -514,17 +543,25 @@ protocol CallServiceObserver: class {
 
             return race(promise, timeout)
         }.then {
+            guard self.call == newCall else {
+                throw CallError.obsoleteCall(description: "time out for obsolete incoming call", call:newCall)
+            }
+
             Logger.info("\(self.TAG) incoming call connected.")
+
+            let (promise, fulfill, _) = Promise<Void>.pending()
+            fulfill()
+            return promise
         }.catch { error in
             guard self.call == newCall else {
                 Logger.debug("\(self.TAG) error for obsolete call: \(error)")
                 return
             }
             if let callError = error as? CallError {
-                self.handleFailedCall(error: callError)
+                self.handleFailedCall(failedCall : newCall, error: callError)
             } else {
                 let externalError = CallError.externalError(underlyingError: error)
-                self.handleFailedCall(error: externalError)
+                self.handleFailedCall(failedCall : newCall, error: externalError)
             }
         }.always {
             Logger.debug("\(self.TAG) ending background task awaiting inbound call connection")
@@ -540,27 +577,27 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) called \(#function)")
 
         guard self.thread != nil else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?"))
+            handleFailedCall(failedCall : nil, error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?"))
             return
         }
 
         guard thread.contactIdentifier() == self.thread!.contactIdentifier() else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since the current call is for thread: \(self.thread!.uniqueId)"))
+            handleFailedCall(failedCall : nil, error: .assertionError(description: "ignoring remote ice update for thread: \(thread.uniqueId) since the current call is for thread: \(self.thread!.uniqueId)"))
             return
         }
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for callId: \(callId), since there is no current call."))
+            handleFailedCall(failedCall : nil, error: .assertionError(description: "ignoring remote ice update for callId: \(callId), since there is no current call."))
             return
         }
 
         guard call.signalingId == callId else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for call: \(callId) since the current call is: \(call.signalingId)"))
+            handleFailedCall(failedCall : nil, error: .assertionError(description: "ignoring remote ice update for call: \(callId) since the current call is: \(call.signalingId)"))
             return
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description: "ignoring remote ice update for thread: \(thread) since the current call hasn't initialized it's peerConnectionClient"))
+            handleFailedCall(failedCall: call, error: .assertionError(description: "ignoring remote ice update for thread: \(thread) since the current call hasn't initialized it's peerConnectionClient"))
             return
         }
 
@@ -575,17 +612,17 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description: "ignoring local ice candidate, since there is no current call."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description: "ignoring local ice candidate, since there is no current call."))
             return
         }
 
         guard call.state != .idle else {
-            handleFailedCall(error: .assertionError(description: "ignoring local ice candidate, since call is now idle."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description: "ignoring local ice candidate, since call is now idle."))
             return
         }
 
         guard let thread = self.thread else {
-            handleFailedCall(error: .assertionError(description: "ignoring local ice candidate, because there was no current TSContactThread."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description: "ignoring local ice candidate, because there was no current TSContactThread."))
             return
         }
 
@@ -616,12 +653,12 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) in \(#function)")
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call."))
             return
         }
 
         guard let thread = self.thread else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current thread."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current thread."))
             return
         }
 
@@ -655,7 +692,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:nil, error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
@@ -683,12 +720,12 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -704,7 +741,7 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) in \(#function)")
 
         guard self.call != nil else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
@@ -716,12 +753,12 @@ protocol CallServiceObserver: class {
         }
 
         guard let thread = self.thread else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
             return
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
             return
         }
 
@@ -744,7 +781,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
@@ -770,12 +807,12 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:nil, error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCall(failedCall:nil, error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -805,22 +842,22 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard self.call != nil else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
         guard call == self.call! else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
             return
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
             return
         }
 
         guard let thread = self.thread else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) missing thread in \(#function)"))
+            handleFailedCall(failedCall:call, error: .assertionError(description:"\(TAG) missing thread in \(#function)"))
             return
         }
 
@@ -855,12 +892,12 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
 
@@ -907,12 +944,12 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
 
@@ -940,7 +977,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            handleFailedCall(error: .assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
+            handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
             return
         }
 
@@ -950,7 +987,7 @@ protocol CallServiceObserver: class {
             let connected = message.connected!
 
             guard connected.id == call.signalingId else {
-                handleFailedCall(error: .assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+                handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
@@ -963,12 +1000,12 @@ protocol CallServiceObserver: class {
             let hangup = message.hangup!
 
             guard hangup.id == call.signalingId else {
-                handleFailedCall(error: .assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+                handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
             guard let thread = self.thread else {
-                handleFailedCall(error: .assertionError(description:"\(TAG) current contact thread is unexpectedly nil when receiving hangup DataChannelMessage"))
+                handleFailedCall(failedCall:self.call, error: .assertionError(description:"\(TAG) current contact thread is unexpectedly nil when receiving hangup DataChannelMessage"))
                 return
             }
 
@@ -1009,7 +1046,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        self.handleFailedCall(error: CallError.disconnected)
+        self.handleFailedCall(failedCall:nil, error: CallError.disconnected)
     }
 
     /**
@@ -1096,29 +1133,52 @@ protocol CallServiceObserver: class {
         }
     }
 
-    public func handleFailedCall(error: CallError) {
+    // TODO:
+//    private func handleFailedCall(error: CallError) {
+//        handleFailedCall(failedCall: nil, error: error)
+//    }
+//    
+//    private func handleFailedCall(callId: UInt64, error: CallError) {
+//        AssertIsOnMainThread()
+//        
+//        guard let call = self.call else {
+//            handleFailedCall(failedCall:nil, error: error)
+//            return
+//        }
+//        
+//        guard call.signalingId == callId else {
+//            handleFailedCall(failedCall:nil, error: error)
+//            return
+//        }
+//        
+//        handleFailedCall(failedCall: call, error: error)
+//    }
+
+    public func handleFailedCurrentCall(error: CallError) {
+        handleFailedCall(failedCall: self.call, error: error)
+    }
+
+    public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
         AssertIsOnMainThread()
         Logger.error("\(TAG) call failed with error: \(error)")
 
-        if let call = self.call {
-
-            if case .timeout(description: _, call: let timedOutCall) = error {
-                guard timedOutCall == call else {
-                    Logger.debug("Ignoring timeout for previous call")
-                    return
-                }
-            }
-
-            // It's essential to set call.state before terminateCall, because terminateCall nils self.call
-            call.error = error
-            call.state = .localFailure
-            self.callUIAdapter.failCall(call, error: error)
-        } else {
-            // This can happen when we receive an out of band signaling message (e.g. IceUpdate)
-            // after the call has ended
-            Logger.debug("\(TAG) in \(#function) but there was no call to fail.")
+        guard let failedCall = failedCall else {
+            Logger.debug("\(TAG) in \(#function) ignoring obsolete call.")
+            return
         }
 
+        // It's essential to set call.state before terminateCall, because terminateCall nils self.call
+        failedCall.error = error
+        failedCall.state = .localFailure
+        self.callUIAdapter.failCall(failedCall, error: error)
+
+        // Only terminate the current call if it is the current call.
+        guard failedCall == self.call else {
+            Logger.debug("\(TAG) in \(#function) ignoring obsolete call.")
+            return
+        }
+
+        // Only terminate the call if it is the current call.
         terminateCall()
     }
 

@@ -220,7 +220,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
         // since they are no longer valid.
-        callService.handleFailedCall(error: .providerReset)
+        callService.handleFailedCurrentCall(error: .providerReset)
 
         // Remove all calls from the app's list of calls.
         callManager.removeAllCalls()
