@@ -219,6 +219,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
+@property (nonatomic) BOOL callOnOpen;
 @property (nonatomic) BOOL peek;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -318,10 +319,18 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)configureForThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardAppearing {
-    _thread                        = thread;
-    isGroupConversation            = [self.thread isKindOfClass:[TSGroupThread class]];
-    _composeOnOpen                 = keyboardAppearing;
+- (void)configureForThread:(TSThread *)thread
+    keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
+        callOnViewAppearing:(BOOL)callOnViewAppearing
+{
+    if (callOnViewAppearing) {
+        keyboardOnViewAppearing = NO;
+    }
+
+    _thread = thread;
+    isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
+    _composeOnOpen = keyboardOnViewAppearing;
+    _callOnOpen = callOnViewAppearing;
 
     [self markAllMessagesAsRead];
 
@@ -719,6 +728,11 @@ typedef enum : NSUInteger {
     self.inputToolbar.contentView.textView.editable = YES;
     if (_composeOnOpen && !self.inputToolbar.hidden) {
         [self popKeyBoard];
+        _composeOnOpen = NO;
+    }
+    if (_callOnOpen) {
+        [self callAction:nil];
+        _callOnOpen = NO;
     }
     [self updateNavigationBarSubtitleLabel];
 }

@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
+
 @interface ContactTableViewCell ()
 
 @property (nonatomic) IBOutlet UILabel *nameLabel;
@@ -53,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     // applyRoundedBorderToImageView requires the avatar to have
     // the correct size.
     _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
+    _avatarView.layer.minificationFilter = kCAFilterTrilinear;
+    _avatarView.layer.magnificationFilter = kCAFilterTrilinear;
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
@@ -77,8 +81,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
 {
-    NSMutableAttributedString *attributedText =
-        [[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font] mutableCopy];
+    [self configureWithRecipientId:contact.textSecureIdentifiers.firstObject
+                        avatarName:contact.fullName
+                       displayName:[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font]
+                   contactsManager:contactsManager];
+}
+
+- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+{
+    [self
+        configureWithRecipientId:recipientId
+                      avatarName:@""
+                     displayName:[contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font]
+                 contactsManager:contactsManager];
+}
+
+- (void)configureWithRecipientId:(NSString *)recipientId
+                      avatarName:(NSString *)avatarName
+                     displayName:(NSAttributedString *)displayName
+                 contactsManager:(OWSContactsManager *)contactsManager
+{
+    NSMutableAttributedString *attributedText = [displayName mutableCopy];
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
         blockedLabel.textAlignment = NSTextAlignmentRight;
@@ -91,9 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.nameLabel.attributedText = attributedText;
     self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithContactId:contact.textSecureIdentifiers.firstObject
-                                                       name:contact.fullName
-                                            contactsManager:contactsManager] build];
+        [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId name:avatarName contactsManager:contactsManager]
+            build];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

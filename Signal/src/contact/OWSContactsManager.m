@@ -102,9 +102,10 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 
     [self setupAddressBookIfNecessary];
 
+    __weak OWSContactsManager *weakSelf = self;
     [self.observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
       @synchronized(self) {
-          [self setupLatestContacts:latestContacts];
+          [weakSelf setupLatestContacts:latestContacts];
       }
     }
                                                      untilCancelled:_life.token];
@@ -557,6 +558,16 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 
     return fullNameString;
+}
+
+- (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font
+{
+    NSDictionary<NSString *, id> *normalFontAttributes =
+        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_darkGrayColor] };
+
+    return [[NSAttributedString alloc]
+        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]
+            attributes:normalFontAttributes];
 }
 
 - (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {

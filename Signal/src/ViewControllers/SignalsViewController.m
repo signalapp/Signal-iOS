@@ -131,12 +131,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                object:nil];
     [self selectedInbox:self];
 
-    [[[Environment getCurrent] contactsManager]
-            .getObservableContacts watchLatestValue:^(id latestValue) {
-      [self.tableView reloadData];
+    __weak SignalsViewController *weakSelf = self;
+    [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
+        [weakSelf.tableView reloadData];
     }
-                                           onThread:[NSThread mainThread]
-                                     untilCancelled:nil];
+                                                                              onThread:[NSThread mainThread]
+                                                                        untilCancelled:nil];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -210,7 +210,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
         MessagesViewController *vc = [MessagesViewController new];
         TSThread *thread           = [self threadForIndexPath:indexPath];
-        [vc configureForThread:thread keyboardOnViewAppearing:NO];
+        [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
         [vc peekSetup];
 
         return vc;
@@ -524,12 +524,15 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     TSThread *thread = [self threadForIndexPath:indexPath];
-    [self presentThread:thread keyboardOnViewAppearing:NO];
+    [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 
-- (void)presentThread:(TSThread *)thread keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing {
+- (void)presentThread:(TSThread *)thread
+    keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
+        callOnViewAppearing:(BOOL)callOnViewAppearing
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
@@ -539,7 +542,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         }
         [self.navigationController popToRootViewControllerAnimated:YES];
 
-        [mvc configureForThread:thread keyboardOnViewAppearing:keyboardOnViewAppearing];
+        [mvc configureForThread:thread
+            keyboardOnViewAppearing:keyboardOnViewAppearing
+                callOnViewAppearing:callOnViewAppearing];
         [self.navigationController pushViewController:mvc animated:YES];
     });
 }
