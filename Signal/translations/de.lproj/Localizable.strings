@@ -62,16 +62,16 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Senden";
 
 /* Generic name label when downloading an attachment with no known name. */
-"ATTACHMENT_DOWNLOADING_DEFAULT_ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_DOWNLOADING_DEFAULT_ATTACHMENT_LABEL" = "Anhang";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Gescheitert. Für erneuten Versuch antippen.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Wird heruntergeladen …";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "In Wartereihe";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fehler beim Senden des Anhangs";
@@ -239,34 +239,34 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Diesen Benutzer blockieren";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stummschalten";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stummschalten";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stummgeschaltet";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Für einen Tag stummschalten";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Für eine Stunde stummschalten";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Für eine Minute stummschalten";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Für eine Woche stummschalten";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Für ein Jahr stummschalten";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "bis %@";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Stummschaltung aufheben";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftige Nachrichten von %@ zu erhalten, jedoch wird es bereits fehlerhafte Nachrichten nicht wiederherstellen.";
@@ -377,7 +377,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche ein anderes WLAN-Netzwerk oder verwende die mobile Datenverbindung.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachrichtenversand gescheitert, da keine gültigen Empfänger vorhanden.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Dieses Gerät ist für deine Rufnummer nicht mehr registriert. Du musst Signal entfernen und erneut installieren.";
@@ -464,16 +464,16 @@
 "GROUP_MEMBER_LEFT" = "%@ hat die Gruppe verlassen.";
 
 /* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Call";
+"GROUP_MEMBERS_CALL" = "Anrufen";
 
 /* header for table which lists the members of this group thread */
 "GROUP_MEMBERS_HEADER" = "Gruppenmitglieder";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Send Message";
+"GROUP_MEMBERS_SEND_MESSAGE" = "Nachricht senden";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Kontaktinfo";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Gruppe %@ wird verlassen";
@@ -611,10 +611,10 @@
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Du hast diesen Benutzer blockiert";
 
 /* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Download Failed.";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Herunterladen gescheitert.";
 
 /* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Download Again";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Erneut herunterladen";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Du hast 1 Mitglied dieser Gruppe blockiert";
@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du hast die maximale Anzahl an Geräten erreicht, die du derzeit mit deinem Benutzerkonto verknüpfen kannst. Bitte entferne ein Gerät oder versuche es später erneut.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Bitte überprüfe, ob du online bist, und versuche es erneut.";
@@ -827,7 +827,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Willkommen!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
+"REGISTER_FAILED_TRY_AGAIN" = "Erneut versuchen";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Zu viele Versuche. Bitte warte eine Minute vor einem erneuten Versuch.";
@@ -905,7 +905,7 @@
 "SECURE_SESSION_RESET" = "Verschlüsselung neu gestartet.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "Erneut senden";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Senden";

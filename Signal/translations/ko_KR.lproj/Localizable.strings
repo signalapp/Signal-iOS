@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently pair with your account. Please remove a device or try again to pair it later.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check you're online and try again.";

@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вие сте достигнали максимума на устройства които можете да сдвоите с вашия акаунт. Моля, премахнете дадено устройство или опитайте отново да го сдвоите по-късно.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Моля проверете дали сте онлайн и опитайте от ново.";

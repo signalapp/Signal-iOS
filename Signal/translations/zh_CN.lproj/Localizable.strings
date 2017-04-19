@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "您已经匹配使用的设备到达当前账号的上限。请移除一个设备后重新尝试匹配。";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "请检查您的网络连接并重试。";

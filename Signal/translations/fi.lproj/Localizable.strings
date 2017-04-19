@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Sinulla on nyt käytössä enimmäismäärä yhdistettyjä laitteita, etkä voi lisätä enempää, ellet poista joitakin aiemmin yhdistämistäsi laitteista.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Tarkista että verkkoyhteytesi on päällä ja yritä uudelleen.";

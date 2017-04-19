@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Você excedeu o limite de dispositivos que podem ser emparelhados com a sua conta. Por favor, remova o dispositivo ou tente emparelhá-lo mais tarde. ";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Por favor, verifique se você está online e tente de novo.";

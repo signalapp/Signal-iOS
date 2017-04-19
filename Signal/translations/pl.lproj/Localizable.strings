@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Osiągnąłeś maksymalną liczbę urządzeń, które możesz obecnie sparować ze swoim kontem. Usuń urządzenie lub spróbuj sparować je później.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Sprawdź czy jesteś online i spróbuj ponownie.";

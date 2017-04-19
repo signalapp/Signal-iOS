@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "شما به حداکثر وسیله‌هایی که در حال حاضر می‌توانید به حسابتان متصل کنید رسیده‌اید. لطفاً یک وسیله را حذف کرده یا بعداً برای متصل کردن آن مجدداً تلاش کنید.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "لطفاً آنلاین بودن خود را چک کرده و دوباره امتحان کنید.";

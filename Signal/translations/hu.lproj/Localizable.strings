@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Elérted a fiókoddal párosítható maximum eszközök számát. Kérlek távolíts el egy eszközt, vagy próbáljd meg később ismét a párosítást.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Kérlek, ellenőrizd az internet kapcsolatodat, és próbáld újra.";

@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Keni arritur maximumin e paisjeve që mund të lidhni me llogarinë tuaj. Fshini një paisje apo provoni lidhjen më vonë.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Ju lutemi kontrolloni nëse jeni të lidhur në internet dhe provoni sërish.";

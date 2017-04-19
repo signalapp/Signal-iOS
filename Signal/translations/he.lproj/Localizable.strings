@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "הגעת למספר המרבי של מכשירים שאפשר לשייך לחשבון שלך. נא להסיר מכשיר ולנסות לשייך שוב.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "נא לבדוק את החיבור לרשת ולנסות שוב.";

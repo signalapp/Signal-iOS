@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Jūs pasiekėte didžiausią, įrenginių su kuriais galima suporuoti savo paskyrą, skaičių. Prašome pašalinti įrenginį arba vėliau pabandyti jį suporuoti dar kartą.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Patikrinkite ar esate prisijungę prie interneto ir bandykite dar kartą.";

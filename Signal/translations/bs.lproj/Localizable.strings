@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosegli ste maksimalan uređaja koje možete trenutno upariti sa vašim računom. Molimo vas da uklonite uređaj ili pokušajte kasnije upariti ponovo.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Molimo provjerite da li ste na mreži i pokušajte ponovo.";

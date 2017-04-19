@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "لقد وصلت للحد اﻷقصى من اﻷجهزة المرتبطة بحسابك. من فضلك أزل جهاز أو حاول مرة أخرى لاحقًا.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "من فضلك تأكد من اتصالك بالانترنت وحاول مرة أخرى.";

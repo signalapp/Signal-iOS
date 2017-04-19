@@ -664,7 +664,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้มาถึงขีดจำกัดจำนวนอุปกรณ์สูงสุดที่คุณสามารถจับคู่กับบัญชีของคุณได้ในขณะนี้ โปรดเอาอุปกรณ์ออกหรือลองอีกครั้งเพื่อจับคู่ในภายหลัง";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "โปรดตรวจสอบว่าคุณกำลังออนไลน์และลองอีกครั้ง";
