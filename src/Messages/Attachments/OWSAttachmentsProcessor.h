@@ -1,6 +1,12 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const kAttachmentDownloadProgressNotification;
+extern NSString *const kAttachmentDownloadProgressKey;
+extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 @class TSMessage;
 @class TSThread;
