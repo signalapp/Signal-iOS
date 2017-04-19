@@ -70,15 +70,42 @@ NS_ASSUME_NONNULL_BEGIN
         name = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
     self.threadId = thread.uniqueId;
-    NSString *snippetLabel = (isBlocked ? NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
-                                              @"A label for conversations with blocked users.")
-                                        : [[DisplayableTextFilter new] displayableText:thread.lastMessageLabel]);
+    NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
+    if (isBlocked) {
+        // If thread is blocked, don't show a snippet or mute status.
+        [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
+                                                                                                         @"A label for conversations with blocked users.")
+                                                                            attributes:@{
+                                                                                         NSFontAttributeName : [UIFont ows_mediumFontWithSize:12],
+                                                                                         NSForegroundColorAttributeName : [UIColor ows_blackColor],
+                                                                                         }]];
+    } else {
+        if ([thread isMuted]) {
+            [snippetText appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:@"\ue067  "
+                                                 attributes:@{
+                                                              NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
+                                                              NSForegroundColorAttributeName : (thread.hasUnreadMessages
+                                                                                                ? [UIColor colorWithWhite:0.1f alpha:1.f]
+                                                                                                : [UIColor lightGrayColor]),
+                                                              }]];
+        }
+        [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:[[DisplayableTextFilter new] displayableText:thread.lastMessageLabel]
+                                                                            attributes:@{
+                                                                                         NSFontAttributeName : (thread.hasUnreadMessages
+                                                                                                                ? [UIFont ows_mediumFontWithSize:12]
+                                                                                                                : [UIFont ows_regularFontWithSize:12]),
+                                                                                         NSForegroundColorAttributeName : (thread.hasUnreadMessages
+                                                                                                                           ? [UIColor ows_blackColor]
+                                                                                                                           : [UIColor lightGrayColor]),
+                                                                                         }]];
+    }
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
     self.nameLabel.text = name;
-    self.snippetLabel.text = snippetLabel;
+    self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
     self.contactPictureView.image = nil;
     [UIUtil applyRoundedBorderToImageView:_contactPictureView];
@@ -106,16 +133,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateCellForUnreadMessage {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
     _nameLabel.textColor    = [UIColor ows_blackColor];
-    _snippetLabel.font      = [UIFont ows_mediumFontWithSize:12];
-    _snippetLabel.textColor = [UIColor ows_blackColor];
     _timeLabel.textColor    = [UIColor ows_materialBlueColor];
 }
 
 - (void)updateCellForReadMessage {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
     _nameLabel.textColor    = [UIColor ows_blackColor];
-    _snippetLabel.font      = [UIFont ows_regularFontWithSize:12];
-    _snippetLabel.textColor = [UIColor lightGrayColor];
     _timeLabel.textColor    = [UIColor ows_darkGrayColor];
 }
 
