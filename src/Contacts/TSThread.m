@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSDate *archivalDate;
 @property (nonatomic) NSDate *lastMessageDate;
 @property (nonatomic, copy) NSString *messageDraft;
-@property (atomic) NSDate *mutedUntilDate;
+@property (atomic, nullable) NSDate *mutedUntilDate;
 
 - (TSInteraction *)lastInteraction;
 

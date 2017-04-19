@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL isMuted;
-@property (atomic, readonly) NSDate *mutedUntilDate;
+@property (atomic, readonly, nullable) NSDate *mutedUntilDate;
 
 // This model may be updated from many threads. We don't want to save
 // our local copy (this instance) since it may be out of date.  Instead, we
