@@ -55,17 +55,23 @@
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Failo tipas: %@";
 
-/* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Failo dydis: %@";
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Dydis: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Siųsti";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "Nepavyko atsisiųsti priedo. Bakstelėkite, kad pabandytumėte dar kartą.";
+/* Generic name label when downloading an attachment with no known name. */
+"ATTACHMENT_DOWNLOADING_DEFAULT_ATTACHMENT_LABEL" = "Attachment";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOADING" = "Priedas yra atsiunčiamas";
+/* Status label when an attachment download has failed. */
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
+
+/* Status label when an attachment is currently downloading */
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading...";
+
+/* Status label when an attachment is enqueued, but hasn't yet started downloading */
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Klaida, siunčiant priedą";
@@ -94,8 +100,8 @@
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Priedas";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_QUEUED" = "Naujas priedas laukia eilėje, kad būtų gautas.";
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_BEHAVIOR_EXPLANATION" = "Užblokuoti naudotojai negalės jums skambinti ar siųsti žinutes.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Užblokuoti";
@@ -130,7 +136,7 @@
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Naudotojas užblokuotas";
 
-/* The title of the 'You can't block yourself' alert. */
+/* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Jūs negalite užblokuoti save.";
 
 /* The title of the 'You can't block yourself' alert. */
@@ -150,6 +156,18 @@
 
 /* The title of the 'user unblocked' alert. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Naudotojas atblokuotas";
+
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Užblokuoti";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Užblokuoti %@?";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Tam, kad galėtų skambinti, Signal reikia prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų programėlėje.";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "Reikalinga prieiga prie mikrofono";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Skambinti";
@@ -220,11 +238,35 @@
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Užblokuoti šį naudotoją";
 
-/* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "Ši žinutė yra pernelyg ilga, kad būtų išsiųsta.";
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
 
-/* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Klaida";
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Jūsų seanso atstatymas leis jums ateityje gauti žinutes nuo %@, tačiau jis neatkurs jokias jau pažeistas žinutes.";
@@ -334,6 +376,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Prašome pabandyti iš kito bevielio (WiFi) tinklo arba naudoti mobiliuosius duomenis.";
 
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Jūsų įrenginys daugiau nebėra priregistruotas prie jūsų telefono numerio. Jūs privalote pašalinti ir iš naujo įdiegti Signal.";
 
@@ -418,8 +463,17 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ išėjo iš grupės. ";
 
+/* Button label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Call";
+
 /* header for table which lists the members of this group thread */
 "GROUP_MEMBERS_HEADER" = "Grupės dalyviai";
+
+/* Button label for the 'send message to group member' button */
+"GROUP_MEMBERS_SEND_MESSAGE" = "Send Message";
+
+/* Button label for the 'show contact info' button */
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Išeinama iš grupės %@";
@@ -435,6 +489,9 @@
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Jūs išėjote iš grupės.";
+
+/* A label for conversations with blocked users. */
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Užblokuotas";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "HOURS_TIME_AMOUNT" = "%u val.";
@@ -553,6 +610,12 @@
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Jūs užblokavote šį naudotoją";
 
+/* Action sheet title after tapping on failed download. */
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Download Failed.";
+
+/* Action sheet button text */
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Download Again";
+
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Jūs užblokavote 1 šios grupės dalyvį";
 
@@ -599,6 +662,9 @@
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Jūs pasiekėte didžiausią, įrenginių su kuriais galima suporuoti savo paskyrą, skaičių. Prašome pašalinti įrenginį arba vėliau pabandyti jį suporuoti dar kartą.";
+
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted threads.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Patikrinkite ar esate prisijungę prie interneto ir bandykite dar kartą.";
@@ -761,7 +827,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Sveiki!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Bandyti dar kartą";
+"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Jūs bandėte pernelyg dažnai. Prieš bandydami dar kartą, palaukite minutėlę.";
@@ -839,7 +905,7 @@
 "SECURE_SESSION_RESET" = "Saugusis seansas buvo atstatytas.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Siųsti dar kartą";
+"SEND_AGAIN_BUTTON" = "Send Again";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Siųsti";
@@ -882,9 +948,6 @@
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Pridėti…";
-
-/* A footer title for the block list table. */
-"SETTINGS_BLOCK_LIST_FOOTER_TITLE" = "Užblokuoti naudotojai negalės jums skambinti ar siųsti žinutes.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Signal kontaktų.";
@@ -1021,6 +1084,9 @@
 /* In Inbox view, last message label for thread with corrupted attachment. */
 "UNKNOWN_ATTACHMENT_LABEL" = "Nežinomas priedas";
 
+/* No comment provided by engineer. */
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Naudotojo nėra jūsų kontaktų sąraše. Ar norėtumėte užblokuoti šį naudotoją?";
+
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Nežinomas kontaktas";
 
@@ -1084,11 +1150,8 @@
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pateikti patvirtinimo kodą";
 
-/* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "Patvirtinti";
-
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Patvirtinama: %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Įveskite patvirtinimo kodą, kurį mes išsiuntėme jums į %@.";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Patvirtinti saugumo numerį";
