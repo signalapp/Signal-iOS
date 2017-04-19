@@ -1201,6 +1201,15 @@ typedef enum : NSUInteger {
     // JSQM does some setup in super method
     [super collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
 
+
+    // Don't show menu for in-progress downloads.
+    // We don't want to give the user the wrong idea that deleting would "cancel" the download.
+    id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
+    if ([message.media isKindOfClass:[AttachmentPointerAdapter class]]) {
+        AttachmentPointerAdapter *attachmentPointerAdapter = (AttachmentPointerAdapter *)message.media;
+        return attachmentPointerAdapter.attachmentPointer.state == TSAttachmentPointerStateFailed;
+    }
+
     // Super method returns false for media methods. We want menu for *all* items
     return YES;
 }
@@ -1856,14 +1865,31 @@ typedef enum : NSUInteger {
                             }
                         }
                     }
+                } else if ([messageItem.media isKindOfClass:[AttachmentPointerAdapter class]]) {
+                    AttachmentPointerAdapter *attachmentPointerAdadpter = (AttachmentPointerAdapter *)messageItem.media;
+                    TSAttachmentPointer *attachmentPointer = attachmentPointerAdadpter.attachmentPointer;
+                    // Restart failed downloads
+                    if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                        if (![interaction isKindOfClass:[TSMessage class]]) {
+                            DDLogError(@"%@ Expected attachment downloads from an instance of message, but found: %@", self.tag, interaction);
+                            OWSAssert(NO);
+                            return;
+                        }
+                        TSMessage *message = (TSMessage *)interaction;
+                        [self handleFailedDownloadTapForMessage:message attachmentPointer:attachmentPointer];
+                    } else {
+                        DDLogVerbose(@"%@ Ignoring tap for attachment pointer %@ with state %lu",
+                            self.tag,
+                            attachmentPointer,
+                            (unsigned long)attachmentPointer.state);
+                    }
+                } else {
+                    DDLogDebug(@"%@ Unhandled tap on 'media item' with media: %@", self.tag, messageItem.media);
                 }
             }
         } break;
         case TSErrorMessageAdapter:
             [self handleErrorMessageTap:(TSErrorMessage *)interaction];
-            break;
-        case TSInfoMessageAdapter:
-            [self handleWarningTap:interaction];
             break;
         case TSCallAdapter:
             break;
@@ -1890,41 +1916,6 @@ typedef enum : NSUInteger {
                 if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                     OversizeTextMessageViewController *messageVC = [[OversizeTextMessageViewController alloc] initWithMessage:message];
                     [self.navigationController pushViewController:messageVC animated:YES];
-                }
-            }
-        }
-    }
-}
-
-- (void)handleWarningTap:(TSInteraction *)interaction
-{
-    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-
-        for (NSString *attachmentId in message.attachmentIds) {
-            __block TSAttachment *attachment;
-
-            [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-              attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-            }];
-
-            if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-
-                // FIXME possible for pointer to get stuck in isDownloading state if app is closed while downloading.
-                // see: https://github.com/WhisperSystems/Signal-iOS/issues/1254
-                if (pointer.state != TSAttachmentPointerStateDownloading) {
-                    OWSAttachmentsProcessor *processor =
-                        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:pointer
-                                                                    networkManager:self.networkManager];
-                    [processor fetchAttachmentsForMessage:message
-                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
-                            DDLogInfo(
-                                @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);
-                        }
-                        failure:^(NSError *_Nonnull error) {
-                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.tag, error);
-                        }];
                 }
             }
         }
@@ -2041,6 +2032,50 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark Bubble User Actions
+
+- (void)handleFailedDownloadTapForMessage:(TSMessage *)message
+                        attachmentPointer:(TSAttachmentPointer *)attachmentPointer
+{
+    UIAlertController *actionSheetController = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE", comment
+                                                   : "Action sheet title after tapping on failed download.")
+                         message:nil
+                  preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                                                  style:UIAlertActionStyleDestructive
+                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                    [message remove];
+                                                                }];
+    [actionSheetController addAction:deleteMessageAction];
+
+    UIAlertAction *resendMessageAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    OWSAttachmentsProcessor *processor =
+                        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                                    networkManager:self.networkManager];
+                    [processor fetchAttachmentsForMessage:message
+                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                            DDLogInfo(
+                                @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);
+                        }
+                        failure:^(NSError *_Nonnull error) {
+                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.tag, error);
+                        }];
+                }];
+
+    [actionSheetController addAction:resendMessageAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message {
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:message.mostRecentFailureText

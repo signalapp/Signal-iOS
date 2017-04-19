@@ -177,19 +177,9 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                 } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
                     TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                    adapter.messageType          = TSInfoMessageAdapter;
-
-                    switch (pointer.state) {
-                        case TSAttachmentPointerStateEnqueued:
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_QUEUED", nil);
-                            break;
-                        case TSAttachmentPointerStateDownloading:
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOADING", nil);
-                            break;
-                        case TSAttachmentPointerStateFailed:
-                            adapter.messageBody = NSLocalizedString(@"ATTACHMENT_DOWNLOAD_FAILED", nil);
-                            break;
-                    }
+                    adapter.mediaItem =
+                        [[AttachmentPointerAdapter alloc] initWithAttachmentPointer:pointer
+                                                                         isIncoming:isIncomingAttachment];
                 } else {
                     DDLogError(@"We retrieved an attachment that doesn't have a known type : %@",
                                NSStringFromClass([attachment class]));
