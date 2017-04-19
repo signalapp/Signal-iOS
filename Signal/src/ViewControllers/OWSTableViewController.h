@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const CGFloat kOWSTable_DefaultCellHeight;
+
 @class OWSTableItem;
 @class OWSTableSection;
 
@@ -23,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *headerTitle;
 @property (nonatomic, nullable) NSString *footerTitle;
+
+@property (nonatomic, nullable) UIView *customHeaderView;
+@property (nonatomic, nullable) UIView *customFooterView;
+@property (nonatomic, nullable) NSNumber *customHeaderHeight;
+@property (nonatomic, nullable) NSNumber *customFooterHeight;
 
 + (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
@@ -62,9 +69,10 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 #pragma mark -
 
-@interface OWSTableViewController : UITableViewController
+@interface OWSTableViewController : UIViewController
 
 @property (nonatomic) OWSTableContents *contents;
+@property (nonatomic, readonly) UITableView *tableView;
 
 #pragma mark - Presentation
 

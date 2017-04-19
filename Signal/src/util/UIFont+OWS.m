@@ -70,6 +70,11 @@
     return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
 }
 
++ (UIFont *)ows_footnoteFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+}
+
 + (UIFont *)ows_dynamicTypeTitle2Font {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
