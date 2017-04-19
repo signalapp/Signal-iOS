@@ -10,15 +10,18 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSThread ()
 
-@property (nonatomic, retain) NSDate *creationDate;
+@property (nonatomic) NSDate *creationDate;
 @property (nonatomic, copy) NSDate *archivalDate;
-@property (nonatomic, retain) NSDate *lastMessageDate;
+@property (nonatomic) NSDate *lastMessageDate;
 @property (nonatomic, copy) NSString *messageDraft;
+@property (atomic, nullable) NSDate *mutedUntilDate;
 
 - (TSInteraction *)lastInteraction;
 
@@ -293,6 +296,46 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread    = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     thread.messageDraft = draftString;
     [thread saveWithTransaction:transaction];
+}
+
+#pragma mark - Muted
+
+- (BOOL)isMuted
+{
+    NSDate *mutedUntilDate = self.mutedUntilDate;
+    NSDate *now = [NSDate date];
+    return (mutedUntilDate != nil &&
+            [mutedUntilDate timeIntervalSinceDate:now] > 0);
+}
+
+// This method does the work for the "updateWith..." methods.  Please see
+// the header for a discussion of those methods.
+- (void)applyChangeToSelfAndLatestThread:(YapDatabaseReadWriteTransaction *)transaction
+                             changeBlock:(void (^)(TSThread *))changeBlock
+{
+    OWSAssert(transaction);
+    
+    changeBlock(self);
+    
+    NSString *collection = [[self class] collection];
+    TSThread *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+    if (latestInstance) {
+        changeBlock(latestInstance);
+        [latestInstance saveWithTransaction:transaction];
+    } else {
+        // This message has not yet been saved.
+        [self saveWithTransaction:transaction];
+    }
+}
+
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestThread:transaction
+                                            changeBlock:^(TSThread *thread) {
+                                                [thread setMutedUntilDate:mutedUntilDate];
+                                            }];
+    }];
 }
 
 #pragma mark - Logging

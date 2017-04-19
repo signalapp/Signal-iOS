@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSYapDatabaseObject.h"
 #import <UIKit/UIKit.h>
@@ -144,6 +145,32 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param transaction Database transaction.
  */
 - (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+@property (atomic, readonly) BOOL isMuted;
+@property (atomic, readonly, nullable) NSDate *mutedUntilDate;
+
+// This model may be updated from many threads. We don't want to save
+// our local copy (this instance) since it may be out of date.  Instead, we
+// use these "updateWith..." methods to:
+//
+// a) Update a property of this instance.
+// b) Load an up-to-date instance of this model from from the data store.
+// c) Update and save that fresh instance.
+// d) If this instance hasn't yet been saved, save this local instance.
+//
+// After "updateWith...":
+//
+// a) An updated copy of this instance will always have been saved in the
+//    data store.
+// b) The local property on this instance will always have been updated.
+// c) Other properties on this instance may be out of date.
+//
+// All mutable properties of this class have been made read-only to
+// prevent accidentally modifying them directly.
+//
+// This isn't a perfect arrangement, but in practice this will prevent
+// data loss and will resolve all known issues.
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate;
 
 @end
 
