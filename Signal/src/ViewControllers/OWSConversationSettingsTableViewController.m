@@ -30,11 +30,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const OWSConversationSettingsTableViewControllerSegueUpdateGroup =
-    @"OWSConversationSettingsTableViewControllerSegueUpdateGroup";
-static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupMembers =
-    @"OWSConversationSettingsTableViewControllerSegueShowGroupMembers";
-
 @interface OWSConversationSettingsTableViewController ()
 
 @property (nonatomic) TSThread *thread;
@@ -168,31 +163,50 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
     firstSection.customHeaderHeight = @(100.f);
 
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [firstSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        [firstSection
+            addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                UITableViewCell *cell = [UITableViewCell new];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-            UIImageView *iconView = [self viewForIconWithName:@"ic_lock_outline"];
-            [cell.contentView addSubview:iconView];
-            [iconView autoVCenterInSuperview];
-            [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
+                UIImageView *iconView = [self viewForIconWithName:@"ic_lock_outline"];
+                [cell.contentView addSubview:iconView];
+                [iconView autoVCenterInSuperview];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
 
-            UILabel *rowLabel = [UILabel new];
-            rowLabel.text = NSLocalizedString(@"VERIFY_PRIVACY", @"table cell label in conversation settings");
-            rowLabel.textColor = [UIColor blackColor];
-            rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [cell.contentView addSubview:rowLabel];
-            [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+                UILabel *rowLabel = [UILabel new];
+                rowLabel.text = NSLocalizedString(@"VERIFY_PRIVACY", @"table cell label in conversation settings");
+                rowLabel.textColor = [UIColor blackColor];
+                rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                [cell.contentView addSubview:rowLabel];
+                [rowLabel autoVCenterInSuperview];
+                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
 
-            return cell;
-        }
-                                  actionBlock:^{
-                                      [weakSelf performSegueWithIdentifier:
-                                                    @"OWSConversationSettingsTableViewControllerSegueSafetyNumbers"
-                                                                    sender:weakSelf];
-                                  }]];
+                return cell;
+            }
+                        actionBlock:^{
+                            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                            if (!strongSelf) {
+                                return;
+                            }
+                            FingerprintViewController *fingerprintViewController =
+                                [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
+                                    instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+
+                            OWSFingerprintBuilder *fingerprintBuilder =
+                                [[OWSFingerprintBuilder alloc] initWithStorageManager:strongSelf.storageManager
+                                                                      contactsManager:strongSelf.contactsManager];
+
+                            OWSFingerprint *fingerprint =
+                                [fingerprintBuilder fingerprintWithTheirSignalId:strongSelf.thread.contactIdentifier];
+
+                            [fingerprintViewController configureWithThread:strongSelf.thread
+                                                               fingerprint:fingerprint
+                                                               contactName:[strongSelf threadName]];
+                            fingerprintViewController.dismissDelegate = strongSelf;
+
+                            [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];
+                        }]];
     }
 
     [firstSection
@@ -311,8 +325,15 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
                 return cell;
             }
                 actionBlock:^{
-                    [weakSelf performSegueWithIdentifier:@"OWSConversationSettingsTableViewControllerSegueUpdateGroup"
-                                                  sender:weakSelf];
+                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                    NewGroupViewController *newGroupViewController =
+                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
+                            instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+                    [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
+                    [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
@@ -338,9 +359,15 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
                 return cell;
             }
                 actionBlock:^{
-                    [weakSelf
-                        performSegueWithIdentifier:@"OWSConversationSettingsTableViewControllerSegueShowGroupMembers"
-                                            sender:weakSelf];
+                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                    ShowGroupMembersViewController *showGroupMembersViewController =
+                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
+                            instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
+                    [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
+                    [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
                 }],
         ];
 
@@ -834,31 +861,6 @@ static NSString *const OWSConversationSettingsTableViewControllerSegueShowGroupM
 {
     [self.thread updateWithMutedUntilDate:value];
     [self.tableView reloadData];
-}
-
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.destinationViewController isKindOfClass:[FingerprintViewController class]]) {
-        FingerprintViewController *controller = (FingerprintViewController *)segue.destinationViewController;
-
-        OWSFingerprintBuilder *fingerprintBuilder =
-            [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager
-                                                  contactsManager:self.contactsManager];
-
-        OWSFingerprint *fingerprint = [fingerprintBuilder fingerprintWithTheirSignalId:self.thread.contactIdentifier];
-
-        [controller configureWithThread:self.thread fingerprint:fingerprint contactName:[self threadName]];
-        controller.dismissDelegate = self;
-    } else if ([segue.identifier isEqualToString:OWSConversationSettingsTableViewControllerSegueUpdateGroup]) {
-        NewGroupViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
-    } else if ([segue.identifier isEqualToString:OWSConversationSettingsTableViewControllerSegueShowGroupMembers]) {
-        ShowGroupMembersViewController *vc = [segue destinationViewController];
-        [vc configWithThread:(TSGroupThread *)self.thread];
-    }
 }
 
 #pragma mark - Logging
