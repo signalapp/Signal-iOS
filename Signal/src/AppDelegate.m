@@ -9,6 +9,7 @@
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
+#import "OWSContactsSyncing.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
 #import "PropertyListPreferences.h"
@@ -45,6 +46,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @property (nonatomic, retain) UIWindow *screenProtectionWindow;
 @property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
 @property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
+@property (nonatomic) OWSContactsSyncing *contactsSyncing;
 
 @end
 
@@ -185,6 +187,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 });
                 RTCInitializeSSL();
             }];
+
+    self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
+                                                                 messageSender:[Environment getCurrent].messageSender];
 
     return YES;
 }
