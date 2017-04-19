@@ -202,7 +202,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [actionSheetController
         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO",
                                                      @"Button label for the 'show contact info' button")
-                                           style:UIAlertActionStyleDestructive
+                                           style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *_Nonnull action) {
                                              [self showContactInfoViewForMember:indexPath];
                                          }]];
@@ -216,7 +216,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                              @"Button label for the 'unblock' button")
-                                                   style:UIAlertActionStyleDestructive
+                                                   style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
                                                          showUnblockContactActionSheet:contact
@@ -245,7 +245,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                              @"Button label for the 'unblock' button")
-                                                   style:UIAlertActionStyleDestructive
+                                                   style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
                                                          showUnblockPhoneNumberActionSheet:recipientId
@@ -274,14 +274,14 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         [actionSheetController
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
                                                          @"Button label for the 'send message to group member' button")
-                                               style:UIAlertActionStyleDestructive
+                                               style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
                                                  [self showConversationViewForMember:indexPath];
                                              }]];
         [actionSheetController
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
                                                          @"Button label for the 'call group member' button")
-                                               style:UIAlertActionStyleDestructive
+                                               style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
                                                  [self callMember:indexPath];
                                              }]];
@@ -363,7 +363,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (BOOL)isContactBlocked:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
+        // Do not consider contacts without any valid phone numbers to be blocked.
         return NO;
     }
 
