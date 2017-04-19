@@ -45,16 +45,23 @@ NS_ASSUME_NONNULL_BEGIN
     return self.attachment.uniqueId;
 }
 
+- (void)clearAllViews
+{
+    [_cachedMediaView removeFromSuperview];
+    _cachedMediaView = nil;
+    _attachmentUploadView = nil;
+}
+
 - (void)clearCachedMediaViews
 {
     [super clearCachedMediaViews];
-    _cachedMediaView = nil;
+    [self clearAllViews];
 }
 
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing
 {
     [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
-    _cachedMediaView = nil;
+    [self clearAllViews];
 }
 
 // TODO: Should we override hash or mediaHash?
@@ -194,6 +201,13 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *actionString = NSStringFromSelector(action);
         DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, [self class], self.attachmentId);
     }
+}
+
+#pragma mark - OWSMessageMediaAdapter
+
+- (void)setCellVisible:(BOOL)isVisible
+{
+    // Ignore.
 }
 
 @end

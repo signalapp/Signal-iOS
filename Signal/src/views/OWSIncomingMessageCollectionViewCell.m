@@ -1,9 +1,12 @@
-//  Created by Michael Kirk on 9/29/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSIncomingMessageCollectionViewCell.h"
+#import "FLAnimatedImageView.h"
 #import "OWSExpirationTimerView.h"
 #import "UIColor+OWS.h"
+#import <JSQMessagesViewController/JSQMediaItem.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +29,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super prepareForReuse];
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
+
+    [self.mediaAdapter setCellVisible:NO];
+    [self.mediaAdapter clearCachedMediaViews];
+    self.mediaAdapter = nil;
+}
+
+// pragma mark - OWSMessageCollectionViewCell
+
+- (void)setCellVisible:(BOOL)isVisible
+{
+    [self.mediaAdapter setCellVisible:isVisible];
 }
 
 // pragma mark - OWSExpirableMessageView

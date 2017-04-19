@@ -3,13 +3,14 @@
 //
 
 #import "OWSMessageEditing.h"
+#import "OWSMessageMediaAdapter.h"
 #import <JSQMessagesViewController/JSQVideoMediaItem.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
 
-@interface TSVideoAttachmentAdapter : JSQVideoMediaItem <OWSMessageEditing>
+@interface TSVideoAttachmentAdapter : JSQVideoMediaItem <OWSMessageEditing, OWSMessageMediaAdapter>
 
 @property NSString *attachmentId;
 @property (nonatomic, strong) NSString *contentType;

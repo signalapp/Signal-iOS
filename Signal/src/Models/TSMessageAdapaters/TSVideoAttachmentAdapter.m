@@ -47,10 +47,28 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)clearAllViews
+{
+    [_cachedImageView removeFromSuperview];
+    _cachedImageView = nil;
+    _attachmentUploadView = nil;
+}
+
+- (void)clearCachedMediaViews
+{
+    [super clearCachedMediaViews];
+    [self clearAllViews];
+}
+
+- (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing
+{
+    [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
+    [self clearAllViews];
+}
+
 - (BOOL)isAudio {
     return [MIMETypeUtil isSupportedAudioMIMEType:_contentType];
 }
-
 
 - (BOOL)isVideo {
     return [MIMETypeUtil isSupportedVideoMIMEType:_contentType];
@@ -212,11 +230,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [super hash];
 }
 
-- (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {
-    [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
-    _cachedImageView = nil;
-}
-
 #pragma mark - OWSMessageEditing Protocol
 
 - (BOOL)canPerformEditingAction:(SEL)action
@@ -274,6 +287,13 @@ NS_ASSUME_NONNULL_BEGIN
             @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
         OWSAssert(NO);
     }
+}
+
+#pragma mark - OWSMessageMediaAdapter
+
+- (void)setCellVisible:(BOOL)isVisible
+{
+    // Ignore.
 }
 
 @end
