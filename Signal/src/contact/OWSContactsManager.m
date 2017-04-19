@@ -589,7 +589,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (BOOL)hasAddressBook
 {
-    return self.addressBookReference;
+    return (BOOL)self.addressBookReference;
 }
 
 #pragma mark - Logging

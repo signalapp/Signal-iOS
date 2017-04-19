@@ -11,6 +11,8 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const kTSStorageManagerOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
 NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
     @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
@@ -56,6 +58,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
 - (void)sendSyncContactsMessageIfNecessary
 {
+    AssertIsOnMainThread();
+
     if (self.isRequestInFlight) {
         // De-bounce.  It's okay if we ignore some new changes;
         // `sendSyncContactsMessageIfPossible` is called fairly
@@ -104,6 +108,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
 - (void)sendSyncContactsMessageIfPossible
 {
+    AssertIsOnMainThread();
+
     if (![self.contactsManager hasAddressBook]) {
         // Don't bother until the contacts manager has finished setup.
         return;
@@ -130,3 +136,5 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
