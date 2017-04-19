@@ -292,7 +292,7 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
+                throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
@@ -306,7 +306,7 @@ protocol CallServiceObserver: class {
             return self.peerConnectionClient!.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
+                throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
             return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then {
@@ -316,7 +316,7 @@ protocol CallServiceObserver: class {
             }
         }.then {
             guard self.call == call else {
-                return Promise(error: CallError.obsoleteCall(description:"obsolete call in \(#function)"))
+                throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
             let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
@@ -688,6 +688,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
@@ -717,12 +718,14 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
@@ -806,12 +809,14 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
@@ -893,12 +898,14 @@ protocol CallServiceObserver: class {
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
@@ -947,12 +954,14 @@ protocol CallServiceObserver: class {
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
@@ -982,6 +991,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
+            assertionFailure("\(TAG) received data message, but there is no current call. Ignoring.")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
             return
         }
@@ -993,6 +1003,7 @@ protocol CallServiceObserver: class {
 
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
+                assertionFailure("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
                 handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
             }
@@ -1007,12 +1018,14 @@ protocol CallServiceObserver: class {
 
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
+                assertionFailure("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
                 handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
             guard let thread = self.thread else {
                 // This should never happen; return to a known good state.
+                assertionFailure("\(TAG) current contact thread is unexpectedly nil when receiving hangup DataChannelMessage")
                 handleFailedCurrentCall(error: .assertionError(description:"\(TAG) current contact thread is unexpectedly nil when receiving hangup DataChannelMessage"))
                 return
             }
