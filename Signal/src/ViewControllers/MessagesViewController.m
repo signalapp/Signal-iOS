@@ -111,10 +111,24 @@ typedef enum : NSUInteger {
     return YES;
 }
 
+- (BOOL)pasteBoardHasText
+{
+    if ([UIPasteboard generalPasteboard].numberOfItems < 1) {
+        return NO;
+    }
+    NSIndexSet *itemSet = [NSIndexSet indexSetWithIndex:0];
+    NSSet<NSString *> *utiTypes =
+        [NSSet setWithArray:[[UIPasteboard generalPasteboard] pasteboardTypesForItemSet:itemSet][0]];
+    return ([utiTypes containsObject:(NSString *)kUTTypeText] || [utiTypes containsObject:(NSString *)kUTTypePlainText]
+        ||
+        [utiTypes containsObject:(NSString *)kUTTypeUTF8PlainText] ||
+        [utiTypes containsObject:(NSString *)kUTTypeUTF16PlainText]);
+}
+
 - (BOOL)pasteBoardHasPossibleAttachment {
     // We don't want to load/convert images more than once so we
     // only do a cursory validation pass at this time.
-    return [SignalAttachment pasteboardHasPossibleAttachment];
+    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![self pasteBoardHasText]);
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
