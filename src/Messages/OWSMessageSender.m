@@ -391,6 +391,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssert(message);
     AssertIsOnMainThread();
 
     [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
@@ -523,12 +524,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                           success:(void (^)())successHandler
                           failure:(void (^)(NSError *error))failureHandler
 {
-    TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:errorMessage.messageId];
+    AssertIsOnMainThread();
+    OWSAssert(errorMessage);
+
+    NSString *failedMessageId = errorMessage.messageId;
 
     // Here we remove the existing error message because sending a new message will either
     //  1.) succeed and create a new successful message in the thread or...
     //  2.) fail and create a new identical error message in the thread.
     [errorMessage remove];
+
+    // The failedMessageId might be nil for transient, unsaved outgoing messages.
+    // See [TSOutgoingMessage saveWithTransaction:] for details of which messages
+    // we do not save.
+
+    if (!failedMessageId) {
+        return;
+    }
+
+    TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:failedMessageId];
+    OWSAssert(message);
 
     return [self sendMessage:message success:successHandler failure:failureHandler];
 }
