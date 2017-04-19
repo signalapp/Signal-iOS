@@ -39,14 +39,22 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)dealloc {
-    self.image       = nil;
+- (void)clearAllViews
+{
+    [_cachedImageView removeFromSuperview];
     _cachedImageView = nil;
+    _attachmentUploadView = nil;
+}
+
+- (void)clearCachedMediaViews
+{
+    [super clearCachedMediaViews];
+    [self clearAllViews];
 }
 
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {
     [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
-    _cachedImageView = nil;
+    [self clearAllViews];
 }
 
 #pragma mark - JSQMessageMediaData protocol
@@ -128,6 +136,13 @@ NS_ASSUME_NONNULL_BEGIN
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
     OWSAssert(NO);
+}
+
+#pragma mark - OWSMessageMediaAdapter
+
+- (void)setCellVisible:(BOOL)isVisible
+{
+    // Ignore.
 }
 
 @end

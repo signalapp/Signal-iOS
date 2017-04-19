@@ -14,8 +14,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAnimatedAdapter ()
+//<FLAnimatedImageViewDebugDelegate>
 
-@property (nonatomic, nullable) UIImageView *cachedImageView;
+@property (nonatomic, nullable) FLAnimatedImageView *cachedImageView;
 @property (nonatomic) UIImage *image;
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
@@ -43,22 +44,21 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)dealloc {
+- (void)clearAllViews
+{
+    [_cachedImageView removeFromSuperview];
     _cachedImageView = nil;
-    _attachment      = nil;
-    _attachmentId    = nil;
-    _image           = nil;
-    _fileData        = nil;
+    _attachmentUploadView = nil;
 }
 
 - (void)clearCachedMediaViews {
     [super clearCachedMediaViews];
-    _cachedImageView = nil;
+    [self clearAllViews];
 }
 
 - (void)setAppliesMediaViewMaskAsOutgoing:(BOOL)appliesMediaViewMaskAsOutgoing {
     [super setAppliesMediaViewMaskAsOutgoing:appliesMediaViewMaskAsOutgoing];
-    _cachedImageView = nil;
+    [self clearAllViews];
 }
 
 #pragma mark - NSObject
@@ -66,6 +66,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)hash
 {
     return super.hash ^ self.image.hash;
+}
+
+#pragma mark - OWSMessageMediaAdapter
+
+- (void)setCellVisible:(BOOL)isVisible
+{
+    if (isVisible) {
+        [self.cachedImageView startAnimating];
+    } else {
+        [self.cachedImageView stopAnimating];
+    }
 }
 
 #pragma mark - JSQMessageMediaData protocol

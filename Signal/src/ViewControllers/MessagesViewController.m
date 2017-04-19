@@ -21,6 +21,7 @@
 #import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSExpirableMessageView.h"
 #import "OWSIncomingMessageCollectionViewCell.h"
+#import "OWSMessageCollectionViewCell.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "OWSUnknownContactBlockOfferMessage.h"
@@ -1205,12 +1206,25 @@ typedef enum : NSUInteger {
 }
 
 - (void)collectionView:(UICollectionView *)collectionView
+       willDisplayCell:(UICollectionViewCell *)cell
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell conformsToProtocol:@protocol(OWSMessageCollectionViewCell)]) {
+        [((id<OWSMessageCollectionViewCell>)cell) setCellVisible:YES];
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView
     didEndDisplayingCell:(nonnull UICollectionViewCell *)cell
       forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     if ([cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
         id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
         [expirableView stopExpirationTimer];
+    }
+
+    if ([cell conformsToProtocol:@protocol(OWSMessageCollectionViewCell)]) {
+        [((id<OWSMessageCollectionViewCell>)cell) setCellVisible:NO];
     }
 }
 
@@ -1306,6 +1320,11 @@ typedef enum : NSUInteger {
         DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
         return cell;
     }
+
+    if ([message isMediaMessage] && [[message media] conformsToProtocol:@protocol(OWSMessageMediaAdapter)]) {
+        cell.mediaAdapter = (id<OWSMessageMediaAdapter>)[message media];
+    }
+
     [cell ows_didLoad];
     return cell;
 }
@@ -1321,6 +1340,11 @@ typedef enum : NSUInteger {
         DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
         return cell;
     }
+
+    if ([message isMediaMessage] && [[message media] conformsToProtocol:@protocol(OWSMessageMediaAdapter)]) {
+        cell.mediaAdapter = (id<OWSMessageMediaAdapter>)[message media];
+    }
+
     [cell ows_didLoad];
 
     if (message.isMediaMessage) {

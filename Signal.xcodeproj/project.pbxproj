@@ -431,6 +431,8 @@
 		34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34D5CC941EA6AFAD005515DB /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
 		34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
+		34D5CC981EA6EB79005515DB /* OWSMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageCollectionViewCell.h; sourceTree = "<group>"; };
+		34D5CC9B1EA6ED17005515DB /* OWSMessageMediaAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageMediaAdapter.h; sourceTree = "<group>"; };
 		34DFCB831E8E04B400053165 /* AddToBlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToBlockListViewController.h; sourceTree = "<group>"; };
 		34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToBlockListViewController.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
@@ -1257,6 +1259,7 @@
 				450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */,
 				450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */,
 				45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */,
+				34D5CC981EA6EB79005515DB /* OWSMessageCollectionViewCell.h */,
 				45F2B1921D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.h */,
 				45F2B1931D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m */,
 				45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */,
@@ -1296,6 +1299,7 @@
 				341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */,
 				45666ECE1D995B94008FE134 /* OWSMessageData.h */,
 				4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */,
+				34D5CC9B1EA6ED17005515DB /* OWSMessageMediaAdapter.h */,
 				4CE0E3751B95453C007210CF /* TSAnimatedAdapter.h */,
 				4CE0E3761B954546007210CF /* TSAnimatedAdapter.m */,
 				B6D3CBCE1C1376BE00C039DF /* TSContentAdapters.h */,
