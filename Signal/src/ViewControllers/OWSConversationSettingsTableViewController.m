@@ -403,15 +403,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSDate *mutedUntilDate = self.thread.mutedUntilDate;
         NSDate *now = [NSDate date];
         if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
-            NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
             NSCalendar *calendar = [NSCalendar currentCalendar];
-            [calendar setTimeZone:timeZone];
             NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
             NSDateComponents *muteUntilComponents = [calendar components:calendarUnits fromDate:mutedUntilDate];
             NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            dateFormatter.calendar = calendar;
-            dateFormatter.timeZone = timeZone;
             if (nowComponents.year != muteUntilComponents.year || nowComponents.month != muteUntilComponents.month
                 || nowComponents.day != muteUntilComponents.day) {
 
