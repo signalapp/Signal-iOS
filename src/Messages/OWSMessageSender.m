@@ -54,7 +54,12 @@ void AssertIsOnSendingQueue()
 
 static void *kNSError_MessageSender_IsRetryable = &kNSError_MessageSender_IsRetryable;
 static void *kNSError_MessageSender_ShouldBeIgnoredForGroups = &kNSError_MessageSender_ShouldBeIgnoredForGroups;
+static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
 
+// isRetryable and isFatal are opposites but not redundant.
+//
+// If a group message send fails, the send will be retried if any of the errors were retryable UNLESS
+// any of the errors were fatal.  Fatal errors trump retryable errors.
 @implementation NSError (OWSMessageSender)
 
 - (BOOL)isRetryable
@@ -82,6 +87,19 @@ static void *kNSError_MessageSender_ShouldBeIgnoredForGroups = &kNSError_Message
 - (void)setShouldBeIgnoredForGroups:(BOOL)value
 {
     objc_setAssociatedObject(self, kNSError_MessageSender_ShouldBeIgnoredForGroups, @(value), OBJC_ASSOCIATION_COPY);
+}
+
+- (BOOL)isFatal
+{
+    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_IsFatal);
+    // This value will NOT always be set for all errors by the time we query it's value.
+    // Default to NOT fatal.
+    return value ? [value boolValue] : NO;
+}
+
+- (void)setIsFatal:(BOOL)value
+{
+    objc_setAssociatedObject(self, kNSError_MessageSender_IsFatal, @(value), OBJC_ASSOCIATION_COPY);
 }
 
 @end
@@ -266,7 +284,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
         DDLogInfo(@"%@ Sending failed.", self.tag);
 
-        if (![error isRetryable]) {
+        if (![error isRetryable] || [error isFatal]) {
             DDLogInfo(@"%@ Skipping retry due to terminal error: %@", self.tag, error);
             self.failureHandler(error);
             return;
@@ -748,11 +766,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     id failureResult = groupSendFuture.forceGetFailure;
                     if ([failureResult isKindOfClass:[NSError class]]) {
                         NSError *error = failureResult;
+
                         // Some errors should be ignored when sending messages
                         // to groups.  See discussion on
                         // NSError (OWSMessageSender) category.
                         if ([error shouldBeIgnoredForGroups]) {
                             continue;
+                        }
+
+                        // Some errors should never be retried, in order to avoid
+                        // hitting rate limits, for example.  Unfortunately, since
+                        // group send retry is all-or-nothing, we need to fail
+                        // immediately even if some of the other recipients had
+                        // retryable errors.
+                        if ([error isFatal]) {
+                            failureHandler(error);
                         }
 
                         if ([error isRetryable] && !firstRetryableError) {
@@ -859,6 +887,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
             [error setIsRetryable:NO];
+            // Avoid the "Too many failures with this contact" error rate limiting.
+            [error setIsFatal:YES];
             return failureHandler(error);
         }
 
@@ -869,6 +899,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             // We're already rate-limited. No need to exacerbate the problem.
             [error setIsRetryable:NO];
+            // Avoid exacerbating the rate limiting.
+            [error setIsFatal:YES];
             return failureHandler(error);
         }
 
