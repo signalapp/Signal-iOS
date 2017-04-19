@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockListViewControllerCellIdentifier";
 
-NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
-
 #pragma mark -
 
 @interface AddToBlockListViewController () <CountryCodeViewControllerDelegate,

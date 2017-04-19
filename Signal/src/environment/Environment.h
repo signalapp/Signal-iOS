@@ -64,6 +64,7 @@
 
 + (void)messageThreadId:(NSString *)threadId;
 + (void)messageIdentifier:(NSString *)identifier withCompose:(BOOL)compose;
++ (void)callUserWithIdentifier:(NSString *)identifier;
 + (void)messageGroup:(TSGroupThread *)groupThread;
 
 @end

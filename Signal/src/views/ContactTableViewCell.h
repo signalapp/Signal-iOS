@@ -13,6 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const kContactsTable_CellReuseIdentifier;
+
 @class OWSContactsManager;
 
 @interface ContactTableViewCell : UITableViewCell
@@ -24,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGFloat)rowHeight;
 
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
+
+- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
 
 @end
 
