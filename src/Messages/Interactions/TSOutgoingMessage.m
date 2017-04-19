@@ -291,6 +291,17 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
+- (void)updateWithWasSentAndDelivered
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setMessageState:TSOutgoingMessageStateSentToService];
+                                                [message setWasDelivered:YES];
+                                            }];
+    }];
+}
+
 #pragma mark - Sent Recipients
 
 - (NSArray<NSString *> *)sentRecipients

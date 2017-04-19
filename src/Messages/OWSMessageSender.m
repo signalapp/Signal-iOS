@@ -1005,7 +1005,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
 {
-    [message updateWithWasDelivered];
+    [message updateWithWasSentAndDelivered];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
     [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
