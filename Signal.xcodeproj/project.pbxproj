@@ -36,7 +36,6 @@
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */; };
 		34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */; };
-		34B3F87A1E8DF1700035BE1A /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8431E8DF1700035BE1A /* DebugUITableViewController.m */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
 		34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */; };
 		34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* FullImageViewController.m */; };
@@ -70,6 +69,9 @@
 		34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */; };
 		34D5CCA91EAE3D30005515DB /* GroupViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* GroupViewHelper.m */; };
 		34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */; };
+		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
+		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
+		34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
 		34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */; };
 		34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E5671EC4B19400495BAC /* AudioProgressView.swift */; };
 		34F3089C1ECA4CDB00BB7697 /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F3089B1ECA4CDB00BB7697 /* TSUnreadIndicatorInteraction.m */; };
@@ -409,8 +411,6 @@
 		34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsPicker.xib; sourceTree = "<group>"; };
 		34B3F8401E8DF1700035BE1A /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
 		34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
-		34B3F8421E8DF1700035BE1A /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
-		34B3F8431E8DF1700035BE1A /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUITableViewController.m; sourceTree = "<group>"; };
 		34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
 		34B3F8451E8DF1700035BE1A /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
@@ -472,6 +472,12 @@
 		34D5CCAB1EAE7136005515DB /* OWSConversationSettingsViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewDelegate.h; sourceTree = "<group>"; };
 		34D5CCAF1EAE7E7F005515DB /* SelectRecipientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectRecipientViewController.h; sourceTree = "<group>"; };
 		34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectRecipientViewController.m; sourceTree = "<group>"; };
+		34D8C0231ED3673300188D7C /* DebugUIMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessages.h; sourceTree = "<group>"; };
+		34D8C0241ED3673300188D7C /* DebugUIMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMessages.m; sourceTree = "<group>"; };
+		34D8C0251ED3673300188D7C /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
+		34D8C0261ED3673300188D7C /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUITableViewController.m; sourceTree = "<group>"; };
+		34D8C0291ED3685800188D7C /* DebugUIContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIContacts.h; sourceTree = "<group>"; };
+		34D8C02A1ED3685800188D7C /* DebugUIContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIContacts.m; sourceTree = "<group>"; };
 		34DFCB831E8E04B400053165 /* AddToBlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToBlockListViewController.h; sourceTree = "<group>"; };
 		34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToBlockListViewController.m; sourceTree = "<group>"; };
 		34E3E5671EC4B19400495BAC /* AudioProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioProgressView.swift; sourceTree = "<group>"; };
@@ -894,8 +900,7 @@
 				340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */,
 				34B3F8401E8DF1700035BE1A /* CountryCodeViewController.h */,
 				34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */,
-				34B3F8421E8DF1700035BE1A /* DebugUITableViewController.h */,
-				34B3F8431E8DF1700035BE1A /* DebugUITableViewController.m */,
+				34D8C0221ED3673300188D7C /* DebugUI */,
 				34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */,
 				34B3F8451E8DF1700035BE1A /* FingerprintViewController.h */,
 				34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */,
@@ -988,6 +993,19 @@
 				34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */,
 			);
 			path = TSMessageAdapters;
+			sourceTree = "<group>";
+		};
+		34D8C0221ED3673300188D7C /* DebugUI */ = {
+			isa = PBXGroup;
+			children = (
+				34D8C0291ED3685800188D7C /* DebugUIContacts.h */,
+				34D8C02A1ED3685800188D7C /* DebugUIContacts.m */,
+				34D8C0231ED3673300188D7C /* DebugUIMessages.h */,
+				34D8C0241ED3673300188D7C /* DebugUIMessages.m */,
+				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
+				34D8C0261ED3673300188D7C /* DebugUITableViewController.m */,
+			);
+			path = DebugUI;
 			sourceTree = "<group>";
 		};
 		4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */ = {
@@ -2021,6 +2039,7 @@
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				34B3F8741E8DF1700035BE1A /* AttachmentSharing.m in Sources */,
 				A5509ECD1A69B1D600ABA4BC /* CountryCodeTableViewCell.m in Sources */,
+				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,
 				34B3F8831E8DF1700035BE1A /* MessagesViewController.m in Sources */,
@@ -2079,7 +2098,6 @@
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */,
 				3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */,
-				34B3F87A1E8DF1700035BE1A /* DebugUITableViewController.m in Sources */,
 				34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
 				34B3F8921E8DF1710035BE1A /* SignalAttachment.swift in Sources */,
@@ -2117,8 +2135,10 @@
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				450573FE1E78A06D00615BB4 /* OWS103EnableVideoCalling.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
+				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
+				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				34B3F8821E8DF1700035BE1A /* MessageComposeTableViewController.m in Sources */,
 				3453D8EA1EC0D4ED003F9E6F /* OWSAlerts.swift in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
