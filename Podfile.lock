@@ -41,7 +41,6 @@ PODS:
   - PureLayout (3.0.2)
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
-  - SCWaveformView (1.0.0)
   - SignalServiceKit (0.9.0):
     - '25519'
     - AFNetworking
@@ -115,7 +114,6 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/position-edit-menu`)
   - OpenSSL
   - PureLayout
-  - SCWaveformView (~> 1.0)
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
@@ -159,7 +157,6 @@ SPEC CHECKSUMS:
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
-  SCWaveformView: 52a96750255d817e300565a80c81fb643e233e07
   SignalServiceKit: 59a79a51b89b963ba94db30cc99ed5212da0bb9f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
@@ -167,6 +164,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: d5d74507dcd5be1d257c00c9dc00faa0aaa62907
+PODFILE CHECKSUM: 549de6756fe8eab98647be8561b3988361f62e85
 
 COCOAPODS: 1.2.1
