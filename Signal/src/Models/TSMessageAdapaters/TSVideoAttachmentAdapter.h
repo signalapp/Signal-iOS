@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSAudioAttachmentPlayer.h"
 #import "OWSMessageEditing.h"
 #import "OWSMessageMediaAdapter.h"
 #import <JSQMessagesViewController/JSQVideoMediaItem.h>
@@ -10,22 +11,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
 
-@interface TSVideoAttachmentAdapter : JSQVideoMediaItem <OWSMessageEditing, OWSMessageMediaAdapter>
+@interface TSVideoAttachmentAdapter
+    : JSQVideoMediaItem <OWSMessageEditing, OWSMessageMediaAdapter, OWSAudioAttachmentPlayerDelegate>
 
 @property NSString *attachmentId;
 @property (nonatomic, strong) NSString *contentType;
-@property (nonatomic) BOOL isAudioPlaying;
-@property (nonatomic) BOOL isPaused;
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
 - (BOOL)isAudio;
 - (BOOL)isVideo;
-- (void)setAudioProgressFromFloat:(float)progress;
-- (void)setAudioIconToPlay;
-- (void)setAudioIconToPause;
-- (void)setDurationOfAudio:(NSTimeInterval)duration;
-- (void)resetAudioDuration;
 
 @end
 

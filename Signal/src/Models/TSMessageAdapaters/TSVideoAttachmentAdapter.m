@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UILabel *durationLabel;
 @property (nonatomic) BOOL incoming;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
+@property (nonatomic) BOOL isAudioPlaying;
+@property (nonatomic) BOOL isPaused;
 
 @end
 
@@ -94,16 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
           [_waveform setNeedsDisplay];
       }
     });
-}
-
-- (void)resetAudioDuration {
-    NSError *err;
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:_attachment.mediaURL error:&err];
-    _durationLabel.text   = [self formatDuration:player.duration];
-}
-
-- (void)setDurationOfAudio:(NSTimeInterval)duration {
-    _durationLabel.text = [self formatDuration:duration];
 }
 
 - (void)setAudioIconToPlay {
