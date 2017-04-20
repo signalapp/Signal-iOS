@@ -284,24 +284,24 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
 //        textMessageButton = createButton(imageName:"message-active-wide",
 //                                                action:#selector(didPressTextMessage))
-        speakerPhoneButton = createButton(imageName:"speaker-inactive-wide",
+        speakerPhoneButton = createButton(imageName:"audio-call-speaker-inactive",
                                           action:#selector(didPressSpeakerphone))
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
-        audioModeMuteButton = createButton(imageName:"mute-unselected-wide",
+        audioModeMuteButton = createButton(imageName:"audio-call-mute-inactive",
                                            action:#selector(didPressMute))
         videoModeMuteButton = createButton(imageName:"video-mute-unselected",
                                            action:#selector(didPressMute))
-        audioModeVideoButton = createButton(imageName:"video-inactive-wide",
+        audioModeVideoButton = createButton(imageName:"audio-call-video-inactive",
                                             action:#selector(didPressVideo))
         videoModeVideoButton = createButton(imageName:"video-video-unselected",
                                             action:#selector(didPressVideo))
 
-        setButtonSelectedImage(button: audioModeMuteButton, imageName: "mute-selected-wide")
+        setButtonSelectedImage(button: audioModeMuteButton, imageName: "audio-call-mute-active")
         setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
-        setButtonSelectedImage(button: audioModeVideoButton, imageName: "video-active-wide")
+        setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
         setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
-        setButtonSelectedImage(button: speakerPhoneButton, imageName: "speaker-active-wide")
+        setButtonSelectedImage(button: speakerPhoneButton, imageName: "audio-call-speaker-active")
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
             [audioModeMuteButton, speakerPhoneButton, audioModeVideoButton ],

@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "mute-inactive-wide.png",
+      "filename" : "ic_video_inactive.png",
       "scale" : "1x"
     },
     {
