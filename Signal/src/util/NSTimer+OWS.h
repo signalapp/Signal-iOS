@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface NSTimer (OWS)
 
 // This method avoids the classic NSTimer retain cycle bug
@@ -13,3 +15,5 @@
                                         repeats:(BOOL)repeats;
 
 @end
+
+NS_ASSUME_NONNULL_END

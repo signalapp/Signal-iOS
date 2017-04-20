@@ -5,6 +5,8 @@
 #import "NSTimer+OWS.h"
 #import <objc/runtime.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface NSTimerProxy : NSObject
 
 @property (nonatomic, weak) id target;
@@ -32,12 +34,12 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
 
 @implementation NSTimer (OWS)
 
-- (NSTimerProxy *)proxy
+- (NSTimerProxy *)ows_proxy
 {
     return objc_getAssociatedObject(self, kNSTimer_OWS_Proxy);
 }
 
-- (void)setProxy:(NSTimerProxy *)proxy
+- (void)ows_setProxy:(NSTimerProxy *)proxy
 {
     OWSAssert(proxy);
 
@@ -58,8 +60,10 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
                                                     selector:@selector(timerFired:)
                                                     userInfo:userInfo
                                                      repeats:repeats];
-    [timer setProxy:proxy];
+    [timer ows_setProxy:proxy];
     return timer;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
