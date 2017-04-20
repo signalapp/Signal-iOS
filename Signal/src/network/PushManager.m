@@ -436,7 +436,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
         if (checkForCancel && threadId != nil) {
             // The longer we wait, the more obsolete notifications we can suppress -
             // but the more lag we introduce to notification delivery.
-            const CGFloat kDelaySeconds = 0.3f;
+            const CGFloat kDelaySeconds = 0.5f;
             notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
             notification.timeZone = [NSTimeZone localTimeZone];
         }
