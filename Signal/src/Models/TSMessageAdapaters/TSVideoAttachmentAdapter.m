@@ -9,9 +9,11 @@
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import "UIView+OWS.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SCWaveformView.h>
+
 #define AUDIO_BAR_HEIGHT 36
 
 NS_ASSUME_NONNULL_BEGIN
@@ -105,13 +107,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setAudioIconToPlay {
-    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"]
-                                     forState:UIControlStateNormal];
+    [_audioPlayPauseButton
+        setBackgroundImage:[UIImage imageNamed:(_incoming ? @"audio_play_button_blue" : @"audio_play_button")]
+                  forState:UIControlStateNormal];
 }
 
 - (void)setAudioIconToPause {
-    [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_pause_button_blue"]
-                                     forState:UIControlStateNormal];
+    [_audioPlayPauseButton
+        setBackgroundImage:[UIImage imageNamed:(_incoming ? @"audio_pause_button_blue" : @"audio_pause_button")]
+                  forState:UIControlStateNormal];
 }
 
 - (void)removeDurationLabel {
@@ -167,8 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
         audioBubble.layer.masksToBounds = YES;
 
         _audioPlayPauseButton = [[UIButton alloc] initWithFrame:CGRectMake(3, 3, 30, 30)];
-        [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button"]
-                                         forState:UIControlStateNormal];
         _audioPlayPauseButton.enabled = NO;
 
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
@@ -189,8 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
             _waveform.normalColor = [UIColor whiteColor];
             _waveform.progressColor =
                 [UIColor colorWithRed:107 / 255.0f green:185 / 255.0f blue:254 / 255.0f alpha:1.0f];
-            [_audioPlayPauseButton setBackgroundImage:[UIImage imageNamed:@"audio_play_button_blue"]
-                                             forState:UIControlStateNormal];
             _durationLabel.textColor = [UIColor darkTextColor];
         }
 
@@ -202,6 +202,12 @@ NS_ASSUME_NONNULL_BEGIN
             self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
                                                                                superview:audioBubble
                                                                  attachmentStateCallback:nil];
+        }
+
+        if (self.isAudioPlaying) {
+            [self setAudioIconToPause];
+        } else {
+            [self setAudioIconToPlay];
         }
 
         return audioBubble;

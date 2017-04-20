@@ -15,6 +15,7 @@
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
+		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
@@ -355,6 +356,8 @@
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		344F2F651E57A932000D9322 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "util/UIViewController+OWS.h"; sourceTree = "<group>"; };
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
+		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
+		34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioAttachmentPlayer.m; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34535D811E256BE9008A4747 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
 		345670FF1E89A5F1006EE662 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
@@ -871,6 +874,8 @@
 				34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */,
 				34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */,
 				34B3F85A1E8DF1700035BE1A /* OversizeTextMessageViewController.swift */,
+				34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */,
+				34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */,
 				34B3F85B1E8DF1700035BE1A /* OWSConversationSettingsTableViewController.h */,
 				34B3F85C1E8DF1700035BE1A /* OWSConversationSettingsTableViewController.m */,
 				34B3F85D1E8DF1700035BE1A /* OWSLinkDeviceViewController.h */,
@@ -1995,6 +2000,7 @@
 				450873C31D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
 				B6258B331C29E2E60014138E /* NotificationsManager.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
+				34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */,
 				34B3F87A1E8DF1700035BE1A /* DebugUITableViewController.m in Sources */,
