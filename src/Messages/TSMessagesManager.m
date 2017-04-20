@@ -271,6 +271,14 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
 
+            NSUInteger kMaxEncryptedDataLength = 250 * 1024;
+            if (encryptedData.length > kMaxEncryptedDataLength) {
+                DDLogError(@"Skipping message envelope with oversize encrypted data: %lu.",
+                    (unsigned long)encryptedData.length);
+                completion(nil);
+                return;
+            }
+
             NSData *plaintextData;
 
             @try {
