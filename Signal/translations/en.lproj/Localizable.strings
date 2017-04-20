@@ -421,9 +421,6 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
 
-/* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
-
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
 
@@ -666,6 +663,9 @@
 
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading...";
+
+/* A label for audio attachments of unknown type. */
+"MESSAGES_VIEW_AUDIO_TYPE_GENERIC" = "Audio";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";

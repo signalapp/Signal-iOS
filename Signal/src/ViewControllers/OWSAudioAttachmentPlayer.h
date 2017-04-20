@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPaused;
 - (void)setIsPaused:(BOOL)isPaused;
 
-- (void)setAudioProgressFromFloat:(float)progress;
 - (void)setAudioIconToPlay;
 - (void)setAudioIconToPause;
 

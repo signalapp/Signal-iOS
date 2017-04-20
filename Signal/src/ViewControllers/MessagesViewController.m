@@ -741,24 +741,7 @@ typedef enum : NSUInteger {
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     [self.audioAttachmentPlayer stop];
-
-    // reset all audio bars to 0
-    JSQMessagesCollectionView *collectionView = self.collectionView;
-    NSInteger num_bubbles                     = [self collectionView:collectionView numberOfItemsInSection:0];
-    for (NSInteger i = 0; i < num_bubbles; i++) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
-        if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage &&
-            [message isKindOfClass:[TSVideoAttachmentAdapter class]]) {
-            TSVideoAttachmentAdapter *msgMedia = (TSVideoAttachmentAdapter *)message.media;
-            if ([msgMedia isAudio]) {
-                msgMedia.isPaused       = NO;
-                msgMedia.isAudioPlaying = NO;
-                [msgMedia setAudioProgressFromFloat:0];
-                [msgMedia setAudioIconToPlay];
-            }
-        }
-    }
+    self.audioAttachmentPlayer = nil;
 
     [self cancelReadTimer];
     [self saveDraft];
