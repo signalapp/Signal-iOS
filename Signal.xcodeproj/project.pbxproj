@@ -1665,6 +1665,9 @@
 							com.apple.VPNLite = {
 								enabled = 0;
 							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 						};
 					};
 					D221A0A9169C9E5F00537ABF = {
