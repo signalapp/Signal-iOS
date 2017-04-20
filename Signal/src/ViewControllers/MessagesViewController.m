@@ -13,6 +13,7 @@
 #import "FullImageViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
+#import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
 #import "OWSCallCollectionViewCell.h"
 #import "OWSContactsManager.h"
@@ -201,8 +202,9 @@ typedef enum : NSUInteger {
 @property (nonatomic) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
 @property (nonatomic) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
 
-@property (nonatomic) NSTimer *audioPlayerPoller;
-@property (nonatomic) TSVideoAttachmentAdapter *currentMediaAdapter;
+@property (nonatomic) MPMoviePlayerController *videoPlayer;
+@property (nonatomic) AVAudioRecorder *audioRecorder;
+@property (nonatomic) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
 
 @property (nonatomic) NSTimer *readTimer;
 @property (nonatomic) UIView *navigationBarTitleView;
@@ -745,8 +747,7 @@ typedef enum : NSUInteger {
     // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
-    [_audioPlayerPoller invalidate];
-    [_audioPlayer stop];
+    [self.audioAttachmentPlayer stop];
 
     // reset all audio bars to 0
     JSQMessagesCollectionView *collectionView = self.collectionView;
@@ -1752,7 +1753,6 @@ typedef enum : NSUInteger {
                     // fileurl disappeared should look up in db as before. will do refactor
                     // full screen, check this setup with a .mov
                     TSVideoAttachmentAdapter *messageMedia = (TSVideoAttachmentAdapter *)[messageItem media];
-                    _currentMediaAdapter                   = messageMedia;
                     __block TSAttachment *attachment       = nil;
                     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                       attachment =
@@ -1788,81 +1788,19 @@ typedef enum : NSUInteger {
                                 [_videoPlayer setFullscreen:YES animated:NO];
                             }
                         } else if ([messageMedia isAudio]) {
-                            if (messageMedia.isAudioPlaying) {
-                                // if you had started playing an audio msg and now you're tapping it to pause
-                                messageMedia.isAudioPlaying = NO;
-                                [_audioPlayer pause];
-                                messageMedia.isPaused = YES;
-                                [_audioPlayerPoller invalidate];
-                                double current = [_audioPlayer currentTime] / [_audioPlayer duration];
-                                [messageMedia setAudioProgressFromFloat:(float)current];
-                                [messageMedia setAudioIconToPlay];
-                            } else {
-                                BOOL isResuming = NO;
-                                [_audioPlayerPoller invalidate];
-
-                                // loop through all the other bubbles and set their isPlaying to false
-                                NSInteger num_bubbles = [self collectionView:collectionView numberOfItemsInSection:0];
-                                for (NSInteger i = 0; i < num_bubbles; i++) {
-                                    NSIndexPath *indexPathI = [NSIndexPath indexPathForRow:i inSection:0];
-                                    id<OWSMessageData> message = [self messageAtIndexPath:indexPathI];
-
-                                    if (message.messageType == TSIncomingMessageAdapter && message.isMediaMessage &&
-                                        [[message media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
-                                        TSVideoAttachmentAdapter *msgMedia
-                                            = (TSVideoAttachmentAdapter *)[message media];
-                                        if ([msgMedia isAudio]) {
-                                            if (msgMedia == messageMedia && messageMedia.isPaused) {
-                                                isResuming = YES;
-                                            } else {
-                                                msgMedia.isAudioPlaying = NO;
-                                                msgMedia.isPaused       = NO;
-                                                [msgMedia setAudioIconToPlay];
-                                                [msgMedia setAudioProgressFromFloat:0];
-                                                [msgMedia resetAudioDuration];
-                                            }
-                                        }
-                                    }
+                            if (self.audioAttachmentPlayer) {
+                                if (self.audioAttachmentPlayer.mediaAdapter == messageMedia) {
+                                    // Tap to pause & unpause.
+                                    [self.audioAttachmentPlayer togglePlayState];
+                                    return;
                                 }
-
-                                if (isResuming) {
-                                    // if you had paused an audio msg and now you're tapping to resume
-                                    [_audioPlayer prepareToPlay];
-                                    [_audioPlayer play];
-                                    [messageMedia setAudioIconToPause];
-                                    messageMedia.isAudioPlaying = YES;
-                                    messageMedia.isPaused       = NO;
-                                    _audioPlayerPoller =
-                                        [NSTimer scheduledTimerWithTimeInterval:.05
-                                                                         target:self
-                                                                       selector:@selector(audioPlayerUpdated:)
-                                                                       userInfo:@{
-                                                                           @"adapter" : messageMedia
-                                                                       }
-                                                                        repeats:YES];
-                                } else {
-                                    // if you are tapping an audio msg for the first time to play
-                                    messageMedia.isAudioPlaying = YES;
-                                    NSError *error;
-                                    _audioPlayer =
-                                        [[AVAudioPlayer alloc] initWithContentsOfURL:attStream.mediaURL error:&error];
-                                    if (error) {
-                                        DDLogError(@"error: %@", error);
-                                    }
-                                    [_audioPlayer prepareToPlay];
-                                    [_audioPlayer play];
-                                    [messageMedia setAudioIconToPause];
-                                    _audioPlayer.delegate = self;
-                                    _audioPlayerPoller =
-                                        [NSTimer scheduledTimerWithTimeInterval:.05
-                                                                         target:self
-                                                                       selector:@selector(audioPlayerUpdated:)
-                                                                       userInfo:@{
-                                                                           @"adapter" : messageMedia
-                                                                       }
-                                                                        repeats:YES];
-                                }
+                                [self.audioAttachmentPlayer stop];
+                                self.audioAttachmentPlayer = nil;
                             }
+                            self.audioAttachmentPlayer =
+                                [[OWSAudioAttachmentPlayer alloc] initWithMediaAdapter:messageMedia
+                                                                    databaseConnection:self.uiDatabaseConnection];
+                            [self.audioAttachmentPlayer play];
                         }
                     }
                 } else if ([messageItem.media isKindOfClass:[AttachmentPointerAdapter class]]) {
@@ -2683,20 +2621,6 @@ typedef enum : NSUInteger {
     _audioRecorder.delegate = self;
     _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
-}
-
-- (void)audioPlayerUpdated:(NSTimer *)timer {
-    double current  = [_audioPlayer currentTime] / [_audioPlayer duration];
-    double interval = [_audioPlayer duration] - [_audioPlayer currentTime];
-    [_currentMediaAdapter setDurationOfAudio:interval];
-    [_currentMediaAdapter setAudioProgressFromFloat:(float)current];
-}
-
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    [_audioPlayerPoller invalidate];
-    [_currentMediaAdapter setAudioProgressFromFloat:0];
-    [_currentMediaAdapter setDurationOfAudio:_audioPlayer.duration];
-    [_currentMediaAdapter setAudioIconToPlay];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
