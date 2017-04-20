@@ -10,6 +10,7 @@
 #import "FLAnimatedImage.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
+#import "OWSAudioAttachmentPlayer.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
