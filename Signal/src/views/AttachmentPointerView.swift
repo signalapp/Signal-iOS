@@ -14,7 +14,7 @@ class AttachmentPointerView: UIView {
     let isIncoming: Bool
     let filename: String
     let attachmentPointer: TSAttachmentPointer
-    let genericFilename = NSLocalizedString("ATTACHMENT_DOWNLOADING_DEFAULT_ATTACHMENT_LABEL", comment: "Generic name label when downloading an attachment with no known name.")
+    let genericFilename = NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "Generic filename for an attachment with no known name")
 
     var progress: CGFloat = 0 {
         didSet {

@@ -186,7 +186,10 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate, OWSTextViewPasteDelegate> {
+@interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate,
+    OWSTextViewPasteDelegate,
+    UIDocumentMenuDelegate,
+    UIDocumentPickerDelegate> {
     UIImage *tappedImage;
     BOOL isGroupConversation;
 }
@@ -2182,6 +2185,87 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
+
+#pragma mark - Attachment Picking: Documents
+
+- (void)showAttachmentDocumentPicker
+{
+    NSString *allItems = (__bridge NSString *)kUTTypeData;
+    NSArray<NSString *> *documentTypes = @[ allItems ];
+    // UIDocumentPickerModeImport copies to a temp file within our container.
+    // It uses more memory than "open" but let's us avoid working with security scoped URLs.
+    UIDocumentPickerMode pickerMode = UIDocumentPickerModeImport;
+    UIDocumentMenuViewController *menuController =
+        [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
+    menuController.delegate = self;
+    [self presentViewController:menuController animated:YES completion:nil];
+}
+
+#pragma mark UIDocumentMenuDelegate
+
+- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu
+    didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
+{
+    documentPicker.delegate = self;
+    [self presentViewController:documentPicker animated:YES completion:nil];
+}
+
+#pragma mark UIDocumentPickerDelegate
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
+{
+    DDLogDebug(@"%@ Picked document at url: %@", self.tag, url);
+    NSData *attachmentData = [NSData dataWithContentsOfURL:url];
+
+    NSString *type;
+    NSError *error;
+    [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&error];
+    if (error) {
+        DDLogError(@"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, error);
+        OWSAssert(NO);
+    }
+
+    if (!type) {
+        DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
+        OWSAssert(NO);
+        type = (__bridge NSString *)kUTTypeData;
+    }
+
+    NSString *filename = url.lastPathComponent;
+    if (!filename) {
+        DDLogDebug(@"%@ Unable to determine filename from url: %@", self.tag, url);
+        OWSAssert(NO);
+        filename = NSLocalizedString(
+            @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
+    }
+
+    if (!attachmentData || attachmentData.length == 0) {
+        DDLogError(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
+        OWSAssert(NO);
+        UIAlertController *alertController = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
+                                         @"Alert title when picking a document fails for an unknown reason")
+                             message:nil
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:nil];
+        [alertController addAction:dismissAction];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self presentViewController:alertController animated:YES completion:nil];
+        });
+        return;
+    }
+
+    OWSAssert(attachmentData);
+    OWSAssert(type);
+    OWSAssert(filename);
+    SignalAttachment *attachment =
+        [[SignalAttachment alloc] initWithData:attachmentData dataUTI:type filename:filename];
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+}
+
 #pragma mark - UIImagePickerController
 
 /*
@@ -2680,7 +2764,16 @@ typedef enum : NSUInteger {
                                              [self chooseFromLibrary];
                                          }];
     [actionSheetController addAction:chooseMediaAction];
-    
+
+    UIAlertAction *chooseDocumentAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
+                                           @"action sheet button title when choosing attachment type")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   [self showAttachmentDocumentPicker];
+                               }];
+    [actionSheetController addAction:chooseDocumentAction];
+
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
