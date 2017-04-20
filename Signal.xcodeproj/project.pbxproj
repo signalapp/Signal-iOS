@@ -61,6 +61,7 @@
 		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */; };
 		34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */; };
+		34D5CCA61EA934A4005515DB /* NSTimer+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */; };
 		34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		450573FE1E78A06D00615BB4 /* OWS103EnableVideoCalling.m in Sources */ = {isa = PBXBuildFile; fileRef = 450573FD1E78A06D00615BB4 /* OWS103EnableVideoCalling.m */; };
@@ -438,6 +439,8 @@
 		34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
 		34D5CC981EA6EB79005515DB /* OWSMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageCollectionViewCell.h; sourceTree = "<group>"; };
 		34D5CC9B1EA6ED17005515DB /* OWSMessageMediaAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageMediaAdapter.h; sourceTree = "<group>"; };
+		34D5CCA41EA934A4005515DB /* NSTimer+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+OWS.h"; sourceTree = "<group>"; };
+		34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+OWS.m"; sourceTree = "<group>"; };
 		34DFCB831E8E04B400053165 /* AddToBlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToBlockListViewController.h; sourceTree = "<group>"; };
 		34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToBlockListViewController.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
@@ -1199,6 +1202,8 @@
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
+				34D5CCA41EA934A4005515DB /* NSTimer+OWS.h */,
+				34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
 				BFB074C519A5611000F2947C /* ObservableValue.h */,
@@ -2057,6 +2062,7 @@
 				34B3F88D1E8DF1700035BE1A /* OWSQRCodeScanningViewController.m in Sources */,
 				34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
+				34D5CCA61EA934A4005515DB /* NSTimer+OWS.m in Sources */,
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,

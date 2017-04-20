@@ -3,6 +3,7 @@
 //
 
 #import "OWSAudioAttachmentPlayer.h"
+#import "NSTimer+OWS.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSVideoAttachmentAdapter.h"
@@ -117,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.audioPlayer prepareToPlay];
     [self.audioPlayer play];
-    self.audioPlayerPoller = [NSTimer scheduledTimerWithTimeInterval:.05
-                                                              target:self
-                                                            selector:@selector(audioPlayerUpdated:)
-                                                            userInfo:nil
-                                                             repeats:YES];
+    self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
+                                                                  target:self
+                                                                selector:@selector(audioPlayerUpdated:)
+                                                                userInfo:nil
+                                                                 repeats:YES];
 }
 
 - (void)pause
