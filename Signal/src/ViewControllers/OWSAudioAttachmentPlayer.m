@@ -9,6 +9,8 @@
 #import "ViewControllerUtils.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSAudioAttachmentPlayer ()
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
@@ -111,7 +113,7 @@
     self.mediaAdapter.isPaused = YES;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    double current = [self.audioPlayer currentTime] / [_audioPlayer duration];
+    double current = [self.audioPlayer currentTime] / [self.audioPlayer duration];
     [self.mediaAdapter setAudioProgressFromFloat:(float)current];
     [self.mediaAdapter setAudioIconToPlay];
 }
@@ -123,7 +125,7 @@
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
     [self.mediaAdapter setAudioProgressFromFloat:0];
-    [self.mediaAdapter setDurationOfAudio:_audioPlayer.duration];
+    [self.mediaAdapter setDurationOfAudio:self.audioPlayer.duration];
     [self.mediaAdapter setAudioIconToPlay];
     self.mediaAdapter.isAudioPlaying = NO;
     self.mediaAdapter.isPaused = NO;
@@ -171,3 +173,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

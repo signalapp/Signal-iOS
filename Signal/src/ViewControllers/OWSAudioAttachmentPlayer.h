@@ -4,6 +4,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSVideoAttachmentAdapter;
 @class YapDatabaseConnection;
 
@@ -20,3 +22,5 @@
 - (void)togglePlayState;
 
 @end
+
+NS_ASSUME_NONNULL_END
