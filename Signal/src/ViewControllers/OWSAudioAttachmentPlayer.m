@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAudioAttachmentPlayer ()
 
-@property (nonatomic) TSAttachmentStream *attachmentStream;
+@property (nonatomic, readonly) NSURL *mediaUrl;
 
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
 @property (nonatomic, nullable) NSTimer *audioPlayerPoller;
@@ -24,20 +24,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAudioAttachmentPlayer
 
-- (instancetype)initWithMediaAdapter:(TSVideoAttachmentAdapter *)mediaAdapter
-                  databaseConnection:(YapDatabaseConnection *)databaseConnection
++ (NSURL *)mediaUrlForMediaAdapter:(TSVideoAttachmentAdapter *)mediaAdapter
+                databaseConnection:(YapDatabaseConnection *)databaseConnection
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
     OWSAssert(mediaAdapter);
     OWSAssert([mediaAdapter isAudio]);
     OWSAssert(mediaAdapter.attachmentId);
     OWSAssert(databaseConnection);
-
-    _mediaAdapter = mediaAdapter;
 
     __block TSAttachment *attachment = nil;
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -45,10 +38,35 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     OWSAssert(attachment);
 
+    TSAttachmentStream *attachmentStream = nil;
     if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-        self.attachmentStream = (TSAttachmentStream *)attachment;
+        attachmentStream = (TSAttachmentStream *)attachment;
     }
-    OWSAssert(self.attachmentStream);
+    OWSAssert(attachmentStream);
+
+    return attachmentStream.mediaURL;
+}
+
+- (instancetype)initWithMediaAdapter:(TSVideoAttachmentAdapter *)mediaAdapter
+                  databaseConnection:(YapDatabaseConnection *)databaseConnection
+{
+    return [self initWithMediaUrl:[OWSAudioAttachmentPlayer mediaUrlForMediaAdapter:mediaAdapter
+                                                                 databaseConnection:databaseConnection]
+                         delegate:mediaAdapter];
+}
+
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioAttachmentPlayerDelegate>)delegate
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSAssert(mediaUrl);
+    OWSAssert(delegate);
+
+    _delegate = delegate;
+    _mediaUrl = mediaUrl;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
@@ -74,20 +92,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)play
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert(![self.mediaAdapter isAudioPlaying]);
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(self.mediaUrl);
+    OWSAssert(![self.delegate isAudioPlaying]);
 
     [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:YES];
 
     [self.audioPlayerPoller invalidate];
 
-    self.mediaAdapter.isAudioPlaying = YES;
-    self.mediaAdapter.isPaused = NO;
-    [self.mediaAdapter setAudioIconToPause];
+    self.delegate.isAudioPlaying = YES;
+    self.delegate.isPaused = NO;
+    [self.delegate setAudioIconToPause];
 
     if (!self.audioPlayer) {
         NSError *error;
-        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.attachmentStream.mediaURL error:&error];
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
         if (error) {
             DDLogError(@"%@ error: %@", self.tag, error);
             [self stop];
@@ -107,35 +126,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pause
 {
-    OWSAssert(self.attachmentStream);
+    OWSAssert([NSThread isMainThread]);
 
-    self.mediaAdapter.isAudioPlaying = NO;
-    self.mediaAdapter.isPaused = YES;
+    self.delegate.isAudioPlaying = NO;
+    self.delegate.isPaused = YES;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
     double current = [self.audioPlayer currentTime] / [self.audioPlayer duration];
-    [self.mediaAdapter setAudioProgressFromFloat:(float)current];
-    [self.mediaAdapter setAudioIconToPlay];
+    [self.delegate setAudioProgressFromFloat:(float)current];
+    [self.delegate setAudioIconToPlay];
 }
 
 - (void)stop
 {
-    OWSAssert(self.attachmentStream);
+    OWSAssert([NSThread isMainThread]);
 
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    [self.mediaAdapter setAudioProgressFromFloat:0];
-    [self.mediaAdapter setDurationOfAudio:self.audioPlayer.duration];
-    [self.mediaAdapter setAudioIconToPlay];
-    self.mediaAdapter.isAudioPlaying = NO;
-    self.mediaAdapter.isPaused = NO;
+    [self.delegate setAudioProgressFromFloat:0];
+    [self.delegate setAudioIconToPlay];
+    self.delegate.isAudioPlaying = NO;
+    self.delegate.isPaused = NO;
 }
 
 - (void)togglePlayState
 {
-    OWSAssert(self.attachmentStream);
+    OWSAssert([NSThread isMainThread]);
 
-    if (self.mediaAdapter.isAudioPlaying) {
+    if (self.delegate.isAudioPlaying) {
         [self pause];
     } else {
         [self play];
@@ -146,17 +164,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)audioPlayerUpdated:(NSTimer *)timer
 {
+    OWSAssert([NSThread isMainThread]);
+
     OWSAssert(self.audioPlayer);
     OWSAssert(self.audioPlayerPoller);
 
     double current = [self.audioPlayer currentTime] / [self.audioPlayer duration];
-    double interval = [self.audioPlayer duration] - [self.audioPlayer currentTime];
-    [self.mediaAdapter setDurationOfAudio:interval];
-    [self.mediaAdapter setAudioProgressFromFloat:(float)current];
+    [self.delegate setAudioProgressFromFloat:(float)current];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
+    OWSAssert([NSThread isMainThread]);
+
     [self stop];
 }
 

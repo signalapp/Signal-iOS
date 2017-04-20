@@ -1789,7 +1789,8 @@ typedef enum : NSUInteger {
                             }
                         } else if ([messageMedia isAudio]) {
                             if (self.audioAttachmentPlayer) {
-                                if (self.audioAttachmentPlayer.mediaAdapter == messageMedia) {
+                                // Is this player associated with this media adapter?
+                                if (self.audioAttachmentPlayer.owner == messageMedia) {
                                     // Tap to pause & unpause.
                                     [self.audioAttachmentPlayer togglePlayState];
                                     return;
@@ -1800,6 +1801,8 @@ typedef enum : NSUInteger {
                             self.audioAttachmentPlayer =
                                 [[OWSAudioAttachmentPlayer alloc] initWithMediaAdapter:messageMedia
                                                                     databaseConnection:self.uiDatabaseConnection];
+                            // Associate the player with this media adapter.
+                            self.audioAttachmentPlayer.owner = messageMedia;
                             [self.audioAttachmentPlayer play];
                         }
                     }
