@@ -254,7 +254,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         let fileExtensionLabel = UILabel()
         fileExtensionLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
                                                                   comment: "Format string for file extension label in call interstitial view"),
-                                         fileExtension.capitalized)
+                                         fileExtension.uppercased())
 
         fileExtensionLabel.textColor = UIColor.white
         fileExtensionLabel.font = labelFont()
