@@ -38,6 +38,20 @@
     }
 }
 
+- (UIView *)rootViewInViewHierarchy:(UIView *)view
+{
+    OWSAssert(view);
+    UIResponder *responder = view;
+    UIView *lastView = nil;
+    while (responder) {
+        if ([responder isKindOfClass:[UIView class]]) {
+            lastView = (UIView *)responder;
+        }
+        responder = [responder nextResponder];
+    }
+    return lastView;
+}
+
 - (BOOL)isValidTouch:(NSSet<UITouch *> *)touches event:(UIEvent *)event
 {
     if (event.allTouches.count > 1) {
@@ -59,8 +73,10 @@
 
     // Ignore touches that start near the top or bottom edge of the screen;
     // they may be a system edge swipe gesture.
-    CGFloat distanceToTopEdge = MAX(0, location.y);
-    CGFloat distanceToBottomEdge = MAX(0, self.view.bounds.size.height - location.y);
+    UIView *rootView = [self rootViewInViewHierarchy:self.view];
+    CGPoint rootLocation = [touch locationInView:rootView];
+    CGFloat distanceToTopEdge = MAX(0, rootLocation.y);
+    CGFloat distanceToBottomEdge = MAX(0, rootView.bounds.size.height - rootLocation.y);
     CGFloat distanceToNearestEdge = MIN(distanceToTopEdge, distanceToBottomEdge);
     CGFloat kSystemEdgeSwipeTolerance = 50.f;
     if (distanceToNearestEdge < kSystemEdgeSwipeTolerance) {
