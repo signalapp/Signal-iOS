@@ -13,6 +13,7 @@
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -191,9 +192,8 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!strongSelf) {
                                 return;
                             }
-                            FingerprintViewController *fingerprintViewController =
-                                [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                                    instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+                            FingerprintViewController *fingerprintViewController = [[UIStoryboard main]
+                                instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
 
                             OWSFingerprintBuilder *fingerprintBuilder =
                                 [[OWSFingerprintBuilder alloc] initWithStorageManager:strongSelf.storageManager
@@ -332,8 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
                         return;
                     }
                     NewGroupViewController *newGroupViewController =
-                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                            instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
                     [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
                 }],
@@ -366,8 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
                         return;
                     }
                     ShowGroupMembersViewController *showGroupMembersViewController =
-                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                            instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
+                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
                     [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
                 }],
@@ -561,8 +559,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (sender.state == UIGestureRecognizerStateBegan || sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
-            NewGroupViewController *newGroupViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+            NewGroupViewController *newGroupViewController =
+                [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
             [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
 
             CGPoint location = [sender locationInView:self.avatarView];
