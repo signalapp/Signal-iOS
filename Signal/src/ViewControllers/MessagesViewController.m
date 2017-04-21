@@ -240,6 +240,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
+@property (nonatomic) BOOL userIsScrolling;
 
 @end
 
@@ -791,6 +792,7 @@ typedef enum : NSUInteger {
     [super viewDidDisappear:animated];
     self.inputToolbar.contentView.textView.editable = NO;
     self.userHasScrolled = NO;
+    self.userIsScrolling = NO;
 }
 
 #pragma mark - Initiliazers
@@ -2534,6 +2536,8 @@ typedef enum : NSUInteger {
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    OWSAssert([NSThread isMainThread]);
+
     // Currently, we update thread and message state every time
     // the database is modified.  That doesn't seem optimal, but
     // in practice it's efficient enough.
@@ -2598,53 +2602,55 @@ typedef enum : NSUInteger {
     __block BOOL scrollToBottom = wasAtBottom;
 
     [self.collectionView performBatchUpdates:^{
-      for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
-          switch (rowChange.type) {
-              case YapDatabaseViewChangeDelete: {
-                  [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+        for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+            switch (rowChange.type) {
+                case YapDatabaseViewChangeDelete: {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
 
-                  YapCollectionKey *collectionKey = rowChange.collectionKey;
-                  if (collectionKey.key) {
-                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
-                  }
-                  
-                  break;
-              }
-              case YapDatabaseViewChangeInsert: {
-                  [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                  scrollToBottom = YES;
-                  
-                  TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
-                  if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                      shouldAnimateScrollToBottom = YES;
-                  }
-                  break;
-              }
-              case YapDatabaseViewChangeMove: {
-                  [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                  [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                  break;
-              }
-              case YapDatabaseViewChangeUpdate: {
-                  YapCollectionKey *collectionKey = rowChange.collectionKey;
-                  if (collectionKey.key) {
-                      [self.messageAdapterCache removeObjectForKey:collectionKey.key];
-                  }
-                  [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                  break;
-              }
-          }
-      }
+                    YapCollectionKey *collectionKey = rowChange.collectionKey;
+                    if (collectionKey.key) {
+                        [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                    }
+
+                    break;
+                }
+                case YapDatabaseViewChangeInsert: {
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    scrollToBottom = YES;
+
+                    TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
+                    if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                        shouldAnimateScrollToBottom = YES;
+                    }
+                    break;
+                }
+                case YapDatabaseViewChangeMove: {
+                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    break;
+                }
+                case YapDatabaseViewChangeUpdate: {
+                    YapCollectionKey *collectionKey = rowChange.collectionKey;
+                    if (collectionKey.key) {
+                        [self.messageAdapterCache removeObjectForKey:collectionKey.key];
+                    }
+                    [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    break;
+                }
+            }
+        }
     }
         completion:^(BOOL success) {
-          if (!success) {
-              [self.collectionView.collectionViewLayout
-                  invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-              [self.collectionView reloadData];
-          }
-          if (scrollToBottom) {
-              [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
-          }
+            OWSAssert([NSThread isMainThread]);
+
+            if (!success) {
+                [self.collectionView.collectionViewLayout
+                    invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+                [self.collectionView reloadData];
+            }
+            if (scrollToBottom && self.userIsScrolling) {
+                [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
+            }
         }];
 }
 
@@ -3026,6 +3032,12 @@ typedef enum : NSUInteger {
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     self.userHasScrolled = YES;
+    self.userIsScrolling = YES;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    self.userIsScrolling = NO;
 }
 
 #pragma mark - Class methods
