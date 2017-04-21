@@ -244,6 +244,19 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     _addPeopleLabel.text            = NSLocalizedString(@"NEW_GROUP_REQUEST_ADDPEOPLE", @"");
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    if (self.shouldEditGroupNameOnAppear) {
+        [self.nameGroupTextField becomeFirstResponder];
+    } else if (self.shouldEditAvatarOnAppear) {
+        [self addGroupPhoto:nil];
+    }
+    self.shouldEditGroupNameOnAppear = NO;
+    self.shouldEditAvatarOnAppear = NO;
+}
+
 #pragma mark - Initializers
 
 - (void)initializeDelegates {

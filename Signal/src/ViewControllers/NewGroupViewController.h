@@ -1,9 +1,5 @@
 //
-//  NewGroupViewController.h
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -17,12 +13,16 @@
                                                       UITextFieldDelegate>
 
 - (void)configWithThread:(TSGroupThread *)thread;
-@property (nonatomic, strong) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) IBOutlet UITextField *nameGroupTextField;
-@property (nonatomic, strong) IBOutlet UIButton *groupImageButton;
-@property (nonatomic, strong) IBOutlet UIView *tapToDismissView;
-@property (nonatomic, strong) IBOutlet UILabel *addPeopleLabel;
-@property (nonatomic, strong) UIImage *groupImage;
-@property (nonatomic, strong) TSGroupModel *groupModel;
+
+@property (nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic) IBOutlet UITextField *nameGroupTextField;
+@property (nonatomic) IBOutlet UIButton *groupImageButton;
+@property (nonatomic) IBOutlet UIView *tapToDismissView;
+@property (nonatomic) IBOutlet UILabel *addPeopleLabel;
+@property (nonatomic) UIImage *groupImage;
+@property (nonatomic) TSGroupModel *groupModel;
+
+@property (nonatomic) BOOL shouldEditGroupNameOnAppear;
+@property (nonatomic) BOOL shouldEditAvatarOnAppear;
 
 @end

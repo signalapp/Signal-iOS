@@ -7,11 +7,13 @@
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "NewGroupViewController.h"
+#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -42,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
+@property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 
 @end
@@ -189,9 +192,8 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!strongSelf) {
                                 return;
                             }
-                            FingerprintViewController *fingerprintViewController =
-                                [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                                    instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+                            FingerprintViewController *fingerprintViewController = [[UIStoryboard main]
+                                instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
 
                             OWSFingerprintBuilder *fingerprintBuilder =
                                 [[OWSFingerprintBuilder alloc] initWithStorageManager:strongSelf.storageManager
@@ -330,8 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
                         return;
                     }
                     NewGroupViewController *newGroupViewController =
-                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                            instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
                     [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
                 }],
@@ -364,8 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
                         return;
                     }
                     ShowGroupMembersViewController *showGroupMembersViewController =
-                        [[UIStoryboard storyboardWithName:@"Main" bundle:NULL]
-                            instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
+                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
                     [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
                 }],
@@ -500,6 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(avatar);
     const CGFloat kAvatarSize = 68.f;
     UIImageView *avatarView = [[UIImageView alloc] initWithImage:avatar];
+    _avatarView = avatarView;
     avatarView.layer.borderColor = UIColor.clearColor.CGColor;
     avatarView.layer.masksToBounds = YES;
     avatarView.layer.cornerRadius = kAvatarSize / 2.0f;
@@ -543,7 +544,37 @@ NS_ASSUME_NONNULL_BEGIN
         [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     }
 
+    [firstSectionHeader
+        addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
+                                                                           action:@selector(conversationNameTouched:)]];
+    firstSectionHeader.userInteractionEnabled = YES;
+    for (UIView *subview in firstSectionHeader.subviews) {
+        subview.userInteractionEnabled = NO;
+    }
+
     return firstSectionHeader;
+}
+
+- (void)conversationNameTouched:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateBegan || sender.state == UIGestureRecognizerStateRecognized) {
+        if (self.isGroupThread) {
+            NewGroupViewController *newGroupViewController =
+                [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+            [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
+
+            CGPoint location = [sender locationInView:self.avatarView];
+            if (CGRectContainsPoint(self.avatarView.bounds, location)) {
+                newGroupViewController.shouldEditAvatarOnAppear = YES;
+            } else {
+                newGroupViewController.shouldEditGroupNameOnAppear = YES;
+            }
+
+            [self.navigationController pushViewController:newGroupViewController animated:YES];
+        } else {
+            // TODO: Edit 1:1 contact.
+        }
+    }
 }
 
 - (UIImageView *)viewForIconWithName:(NSString *)iconName
