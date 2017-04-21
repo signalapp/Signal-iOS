@@ -60,6 +60,7 @@
 @property (nonatomic) id<OWSMessageData> messageItem;
 
 @property (nonatomic) UIToolbar *footerBar;
+@property (nonatomic) NSArray *oldMenuItems;
 
 @end
 
@@ -257,6 +258,9 @@
                                [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
                                                           action:@selector(shareAttachment:)],
                                ];
+        if (!self.oldMenuItems) {
+            self.oldMenuItems = [UIMenuController sharedMenuController].menuItems;
+        }
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
         CGRect targetRect = CGRectMake(location.x,
@@ -342,6 +346,12 @@
 }
 
 - (void)dismiss {
+
+    // Restore the edit menu items if necessary.
+    if (self.oldMenuItems) {
+        [UIMenuController sharedMenuController].menuItems = self.oldMenuItems;
+    }
+
     self.view.userInteractionEnabled = NO;
     [UIView animateWithDuration:0.25f
         delay:0
