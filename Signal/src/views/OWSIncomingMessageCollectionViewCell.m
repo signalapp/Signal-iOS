@@ -30,8 +30,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.expirationTimerViewWidthConstraint.constant = 0.0f;
 
     [self.mediaAdapter setCellVisible:NO];
-    [self.mediaAdapter clearCachedMediaViews];
+
+    // Clear this adapter's views IFF this was the last cell to use this adapter.
+    [self.mediaAdapter clearCachedMediaViewsIfLastPresentingCell:self];
+    [_mediaAdapter setLastPresentingCell:nil];
+
     self.mediaAdapter = nil;
+}
+
+- (void)setMediaAdapter:(nullable id<OWSMessageMediaAdapter>)mediaAdapter
+{
+    _mediaAdapter = mediaAdapter;
+
+    // Mark this as the last cell to use this adapter.
+    [_mediaAdapter setLastPresentingCell:self];
 }
 
 // pragma mark - OWSMessageCollectionViewCell
