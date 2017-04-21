@@ -556,13 +556,20 @@ typedef enum : NSUInteger {
     // need to set them every time we enter this view.
     SEL saveSelector = NSSelectorFromString(@"save:");
     SEL shareSelector = NSSelectorFromString(@"share:");
-    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
-                                                                                                               @"Short name for edit menu item to save contents of media message.")
-                                                                                      action:saveSelector],
-                                                           [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
-                                                                                                               @"Short name for edit menu item to share contents of media message.")
-                                                                                      action:shareSelector],
-                                                           ];
+    [UIMenuController sharedMenuController].menuItems = @[
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
+                                              @"Short name for edit menu item to save contents of media message.")
+                                   action:saveSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
+                                              @"Short name for edit menu item to share contents of media message.")
+                                   action:shareSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
+                                              @"Short name for edit menu item to copy contents of media message.")
+                                   action:@selector(copy:)],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+                                              @"Short name for edit menu item to delete contents of media message.")
+                                   action:@selector(delete:)],
+    ];
 
     [self ensureBlockStateIndicator];
 
@@ -1720,7 +1727,7 @@ typedef enum : NSUInteger {
                                                              messageItem:messageItem
                                                              isAnimated:NO];
 
-                            [vc presentFromViewController:self.navigationController];
+                            [vc presentFromViewController:self];
                         }
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
@@ -1749,7 +1756,7 @@ typedef enum : NSUInteger {
                                                                  forInteraction:interaction
                                                                     messageItem:messageItem
                                                                      isAnimated:YES];
-                            [vc presentFromViewController:self.navigationController];
+                            [vc presentFromViewController:self];
                         }
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSVideoAttachmentAdapter class]]) {
