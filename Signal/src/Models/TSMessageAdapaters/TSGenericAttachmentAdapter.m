@@ -8,8 +8,7 @@
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
+#import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 
@@ -101,15 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
         CGSize viewSize = [self mediaViewDisplaySize];
         UIColor *textColor = (self.incoming ? [UIColor blackColor] : [UIColor whiteColor]);
 
-        JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-        JSQMessagesBubbleImage *bubbleImageData = (self.incoming
-                ? [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]]
-                : [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]]);
-        UIImage *bubbleImage = [bubbleImageData messageBubbleImage];
-        OWSAssert(bubbleImage);
-        UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:bubbleImage];
-        _cachedMediaView = bubbleImageView;
-        _cachedMediaView.frame = CGRectMake(0.f, 0.f, viewSize.width, viewSize.height);
+        _cachedMediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
+
+        _cachedMediaView.backgroundColor
+            = self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:_cachedMediaView
+                                                                    isOutgoing:!self.incoming];
 
         const CGFloat kBubbleTailWidth = 6.f;
         CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
