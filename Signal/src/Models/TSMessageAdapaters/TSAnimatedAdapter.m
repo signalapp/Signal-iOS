@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
+@property (nonatomic, nullable, weak) id lastCell;
 
 @end
 
@@ -76,6 +77,15 @@ NS_ASSUME_NONNULL_BEGIN
         [self.cachedImageView startAnimating];
     } else {
         [self.cachedImageView stopAnimating];
+    }
+}
+
+- (void)clearCachedMediaViewsIfLastCell:(id)cell
+{
+    OWSAssert(cell);
+
+    if (cell == self.lastCell) {
+        [self clearCachedMediaViews];
     }
 }
 
