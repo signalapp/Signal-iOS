@@ -88,8 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
         imageView.animatedImage        = animatedGif;
         CGSize size                    = [self mediaViewDisplaySize];
-        imageView.frame                = CGRectMake(0.0, 0.0, size.width, size.height);
         imageView.contentMode          = UIViewContentModeScaleAspectFill;
+        imageView.frame                = CGRectMake(0.0, 0.0, size.width, size.height);
         imageView.clipsToBounds        = YES;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
                                                                     isOutgoing:self.appliesMediaViewMaskAsOutgoing];
