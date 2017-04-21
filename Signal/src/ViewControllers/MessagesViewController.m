@@ -1209,7 +1209,7 @@ typedef enum : NSUInteger {
     // Don't show menu for in-progress downloads.
     // We don't want to give the user the wrong idea that deleting would "cancel" the download.
     id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
-    if ([message.media isKindOfClass:[AttachmentPointerAdapter class]]) {
+    if (message.isMediaMessage && [message.media isKindOfClass:[AttachmentPointerAdapter class]]) {
         AttachmentPointerAdapter *attachmentPointerAdapter = (AttachmentPointerAdapter *)message.media;
         return attachmentPointerAdapter.attachmentPointer.state == TSAttachmentPointerStateFailed;
     }
