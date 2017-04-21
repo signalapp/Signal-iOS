@@ -2200,7 +2200,7 @@ typedef enum : NSUInteger {
     NSString *allItems = (__bridge NSString *)kUTTypeData;
     NSArray<NSString *> *documentTypes = @[ allItems ];
     // UIDocumentPickerModeImport copies to a temp file within our container.
-    // It uses more memory than "open" but let's us avoid working with security scoped URLs.
+    // It uses more memory than "open" but lets us avoid working with security scoped URLs.
     UIDocumentPickerMode pickerMode = UIDocumentPickerModeImport;
     UIDocumentMenuViewController *menuController =
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
@@ -2270,7 +2270,7 @@ typedef enum : NSUInteger {
     OWSAssert(filename);
     SignalAttachment *attachment =
         [[SignalAttachment alloc] initWithData:attachmentData dataUTI:type filename:filename];
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    [self tryToSendAttachmentIfApproved:attachment];
 }
 
 #pragma mark - UIImagePickerController
