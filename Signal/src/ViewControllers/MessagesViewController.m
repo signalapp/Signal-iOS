@@ -563,12 +563,6 @@ typedef enum : NSUInteger {
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
                                               @"Short name for edit menu item to share contents of media message.")
                                    action:shareSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
-                                              @"Short name for edit menu item to copy contents of media message.")
-                                   action:@selector(copy:)],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-                                              @"Short name for edit menu item to delete contents of media message.")
-                                   action:@selector(delete:)],
     ];
 
     [self ensureBlockStateIndicator];
