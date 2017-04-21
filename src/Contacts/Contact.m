@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "Contact.h"
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
@@ -25,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _firstName = firstName;
-    _lastName = lastName;
+    _firstName = [self trimName:firstName];
+    _lastName = [self trimName:lastName];
     _uniqueId = [self.class uniqueIdFromABRecordId:record];
     _recordID = record;
     _userTextPhoneNumbers = phoneNumbers;
@@ -46,8 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _cnContact = contact;
-    _firstName = contact.givenName;
-    _lastName = contact.familyName;
+    _firstName = [self trimName:contact.givenName];
+    _lastName = [self trimName:contact.familyName];
     _uniqueId = contact.identifier;
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
@@ -73,6 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (NSString *)trimName:(NSString *)name
+{
+    return [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 }
 
 + (NSString *)uniqueIdFromABRecordId:(ABRecordID)recordId
