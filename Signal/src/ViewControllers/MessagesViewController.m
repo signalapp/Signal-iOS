@@ -2763,6 +2763,9 @@ typedef enum : NSUInteger {
                                                             handler:^(UIAlertAction * _Nonnull action) {
                                                                 [self takePictureOrVideo];
                                                             }];
+    UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    OWSAssert(takeMediaImage);
+    [takeMediaAction setValue:takeMediaImage forKey:@"image"];
     [actionSheetController addAction:takeMediaAction];
 
     UIAlertAction *chooseMediaAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
@@ -2770,6 +2773,9 @@ typedef enum : NSUInteger {
                                          handler:^(UIAlertAction * _Nonnull action) {
                                              [self chooseFromLibrary];
                                          }];
+    UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
+    OWSAssert(chooseMediaImage);
+    [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
     [actionSheetController addAction:chooseMediaAction];
 
     UIAlertAction *chooseDocumentAction =
@@ -2779,6 +2785,9 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self showAttachmentDocumentPicker];
                                }];
+    UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
+    OWSAssert(chooseDocumentImage);
+    [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
 
     [self presentViewController:actionSheetController animated:true completion:nil];
