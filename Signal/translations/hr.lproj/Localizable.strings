@@ -62,7 +62,7 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Šalji";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "Privitak";
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Neuspješno. Dodirni za pokušaj.";
@@ -101,7 +101,7 @@
 "ATTACHMENT_LABEL" = "Privitak";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Neuspješan odabir dokumenta.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokirani korisnici neće biti u mogućnosti da vas pozovu ili vam pošalju poruku.";
@@ -167,7 +167,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blokiraj %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls. You can grant this permission in the Settings app.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za upućivanje poziva. Možete odobriti ovu dozvolu u aplikaciji Postavke.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zahtijeva pristup mikrofonu";
@@ -269,7 +269,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %@";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Isključi utišavanje";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
@@ -380,7 +380,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nije u mogućnosti povezati se na internet. Molimo pokušajte sa drugom WiFi ili mobilnom mrežom.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Slanje poruke nije uspjelo zbog nedostatka valjanih primatelja.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Vaš uređaj više nije registriran za vaš telefonski broj. Morate ukloniti i ponovno instalirati Signal.";
@@ -593,7 +593,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
 /* action sheet button title when choosing attachment type */
-"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Document";
+"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Dokument";
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Foto Galerija";
@@ -670,7 +670,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosegli ste maksimalan uređaja koje možete trenutno upariti sa vašim računom. Molimo vas da uklonite uređaj ili pokušajte kasnije upariti ponovo.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Nećete primati obavijesti za utišane razgovore.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Molimo provjerite da li ste na mreži i pokušajte ponovo.";
@@ -911,7 +911,7 @@
 "SECURE_SESSION_RESET" = "Sigurna sesija je resetirana.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "Šalji ponovo";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Šalji";
@@ -944,10 +944,10 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokiraj";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Omogući zapis o neispravnosti";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Omogući zapis neispravnosti";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Podnesi zapis o neispravnosti";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Podnesi zapis neispravnosti";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
@@ -1091,7 +1091,7 @@
 "UNKNOWN_ATTACHMENT_LABEL" = "Nepoznat privitak";
 
 /* No comment provided by engineer. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Korisnik nije u vašim kontaktima. Da li želite blokirati ovog korisnika?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Nepoznat kontakt";
@@ -1157,7 +1157,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdi verifikacijski kôd";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Enter the verification code we sent to %@.";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite verifikacijski kôd koji smo poslali na %@.";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifikacija sigurnosnog broja";
