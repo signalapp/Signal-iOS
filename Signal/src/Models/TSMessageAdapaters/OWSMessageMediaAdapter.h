@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Cells will request that this adapter clear its cached media views,
 // but the adapter should only honor requests from the last cell to
 // use its views.
-- (void)setLastCell:(nullable id)cell;
-- (void)clearCachedMediaViewsIfLastCell:(id)cell;
+- (void)setLastPresentingCell:(nullable id)cell;
+- (void)clearCachedMediaViewsIfLastPresentingCell:(id)cell;
 
 @end
 

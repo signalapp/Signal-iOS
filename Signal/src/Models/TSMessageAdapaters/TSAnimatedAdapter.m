@@ -21,7 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
-@property (nonatomic, nullable, weak) id lastCell;
+
+// See comments on OWSMessageMediaAdapter.
+@property (nonatomic, nullable, weak) id lastPresentingCell;
 
 @end
 
@@ -80,11 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)clearCachedMediaViewsIfLastCell:(id)cell
+- (void)clearCachedMediaViewsIfLastPresentingCell:(id)cell
 {
     OWSAssert(cell);
 
-    if (cell == self.lastCell) {
+    if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
 }

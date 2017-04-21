@@ -32,8 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.mediaAdapter setCellVisible:NO];
 
     // Clear this adapter's views IFF this was the last cell to use this adapter.
-    [self.mediaAdapter clearCachedMediaViewsIfLastCell:self];
-    [_mediaAdapter setLastCell:nil];
+    [self.mediaAdapter clearCachedMediaViewsIfLastPresentingCell:self];
+    [_mediaAdapter setLastPresentingCell:nil];
 
     self.mediaAdapter = nil;
 }
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     _mediaAdapter = mediaAdapter;
 
     // Mark this as the last cell to use this adapter.
-    [_mediaAdapter setLastCell:self];
+    [_mediaAdapter setLastPresentingCell:self];
 }
 
 // pragma mark - OWSMessageCollectionViewCell
