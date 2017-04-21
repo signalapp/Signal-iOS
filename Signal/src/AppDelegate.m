@@ -133,6 +133,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    
+    BOOL shouldCreateAppStoreRating = remoteNotif == nil;
+    
     if (remoteNotif) {
         DDLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
@@ -169,8 +172,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-
-                [AppStoreRating setupRatingLibrary];
+                if (shouldCreateAppStoreRating)
+                {
+                    [AppStoreRating setupRatingLibrary];
+                }
             }];
 
     [[TSAccountManager sharedInstance]
