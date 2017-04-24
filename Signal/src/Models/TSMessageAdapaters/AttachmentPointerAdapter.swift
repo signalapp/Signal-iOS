@@ -40,6 +40,13 @@ class AttachmentPointerAdapter: JSQMediaItem, OWSMessageEditing {
         assertionFailure()
     }
 
+    // MARK: JSQ Overrides
+
+    override func mediaHash() -> UInt {
+        // In objc, `hash` returns NSUInteger, but in Swift it return an Int.
+        return UInt(bitPattern: self.attachmentPointer.uniqueId.hash)
+    }
+
     override func mediaViewDisplaySize() -> CGSize {
         return CGSize(width: 200, height: 90)
     }
