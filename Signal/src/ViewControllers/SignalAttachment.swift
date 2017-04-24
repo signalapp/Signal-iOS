@@ -174,11 +174,10 @@ class SignalAttachment: NSObject {
         if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
             return OWSMimeTypeUnknownForTests
         }
-        let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType)
-        guard mimeType != nil else {
+        guard let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType) else {
             return nil
         }
-        return mimeType?.takeRetainedValue() as? String
+        return mimeType.takeRetainedValue() as String
     }
 
     // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
