@@ -239,7 +239,7 @@
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Diesen Benutzer blockieren";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Benutzer blockieren";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stumm";
@@ -296,7 +296,7 @@
 "DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Wenn aktiviert, werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bei Aktivierung werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Derzeit verschwinden Nachrichten nach %@";
@@ -554,7 +554,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dieses Gerät wird in der Lage sein, deine Gruppen und Kontakte zu sehen, alle deine Nachrichten zu lesen und Nachrichten in deinem Namen zu versenden.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Dieses Gerät verknüpfen?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Gerät verknüpfen?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Erneut versuchen";
@@ -700,7 +700,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Neue Gruppe";
 
 /* No comment provided by engineer. */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Diese Gruppenunterhaltung benennen";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Gruppenunterhaltung benennen";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Personen hinzufügen";
@@ -875,7 +875,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Der von dir übermittelte Bestätigungscode stimmt nicht mit dem von uns gesendeten überein. Bitte nochmals überprüfen.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Dieses Gerät aktivieren";
+"REGISTRATION_VERIFY_DEVICE" = "Gerät aktivieren";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Ablehnen";

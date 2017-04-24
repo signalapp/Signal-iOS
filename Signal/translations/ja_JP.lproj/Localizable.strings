@@ -104,13 +104,13 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文書の選択に失敗しました";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "拒否したユーザーからは通話もメッセージも受け付けません";
+"BLOCK_BEHAVIOR_EXPLANATION" = "拒否すると通話もメッセージも受け付けません";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "拒否する";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "%@を拒否しますか";
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "%@を拒否しますか？";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "拒否を解除する";
@@ -137,10 +137,10 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@を拒否しました";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否されているユーザー";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否中の人";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分は拒否できません";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分自身は拒否できません";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "エラー";
@@ -155,10 +155,10 @@
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "エラー";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@の拒否が解除されました";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@の拒否を解除しました";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "拒否が解除されたユーザー";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "拒否を解除した人";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "拒否";
@@ -221,7 +221,7 @@
 "CONFIRMATION_TITLE" = "了解";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "拒否済み";
+"CONTACT_CELL_IS_BLOCKED" = "拒否中";
 
 /* An indicator that a contact is a member of the current group. */
 "CONTACT_CELL_IS_IN_GROUP" = "メンバー";
