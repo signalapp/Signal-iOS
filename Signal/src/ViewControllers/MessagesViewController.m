@@ -1013,6 +1013,7 @@ typedef enum : NSUInteger {
                                            NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
                                        }]];
     self.navigationBarSubtitleLabel.attributedText = subtitleText;
+    [self.navigationBarSubtitleLabel sizeToFit];
 }
 
 - (void)initializeToolbars
