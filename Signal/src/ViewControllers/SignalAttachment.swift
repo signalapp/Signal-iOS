@@ -181,6 +181,27 @@ class SignalAttachment: NSObject {
         return mimeType?.takeRetainedValue() as? String
     }
 
+    // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
+    // like: "signal-2017-04-24-095918.zip"
+    var filenameOrDefault: String {
+        if let filename = filename {
+            return filename
+        } else {
+            let kDefaultAttachmentName = "signal"
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd-HHmmss"
+            let dateString = dateFormatter.string(from: Date())
+
+            let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)"
+            if let fileExtension = self.fileExtension {
+                return "\(withoutExtension).\(fileExtension)"
+            }
+
+            return withoutExtension
+        }
+    }
+
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
