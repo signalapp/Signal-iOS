@@ -2263,8 +2263,7 @@ typedef enum : NSUInteger {
     OWSAssert(attachmentData);
     OWSAssert(type);
     OWSAssert(filename);
-    SignalAttachment *attachment =
-        [[SignalAttachment alloc] initWithData:attachmentData dataUTI:type filename:filename];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithData:attachmentData dataUTI:type filename:filename];
     [self tryToSendAttachmentIfApproved:attachment];
 }
 

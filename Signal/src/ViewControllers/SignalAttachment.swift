@@ -586,7 +586,25 @@ class SignalAttachment: NSObject {
                              dataUTI : dataUTI,
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
-            filename : filename)
+                             filename : filename)
+    }
+
+    // MARK: Attachments
+
+    // Factory method for attachments of any kind.
+    //
+    // NOTE: The attachment returned by this method may not be valid.
+    //       Check the attachment's error property.
+    public class func attachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+        if inputImageUTISet.contains(dataUTI) {
+            return imageAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else if videoUTISet.contains(dataUTI) {
+            return videoAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else if audioUTISet.contains(dataUTI) {
+            return audioAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else {
+            return genericAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        }
     }
 
     // MARK: Helper Methods
