@@ -42,8 +42,9 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (NSSet<NSString *> *)supportedImageUTITypes;
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
 
-+ (NSString *)utiTypeForMIMEType:(NSString *)mimeType;
-+ (NSString *)fileExtensionForUTIType:(NSString *)utiType;
-+ (NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
++ (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType;
++ (nullable NSString *)utiTypeForFileExtension:(NSString *)fileExtension;
++ (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType;
++ (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
 
 @end
