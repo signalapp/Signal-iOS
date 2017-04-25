@@ -528,7 +528,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
 - (void)presentThread:(TSThread *)thread
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
@@ -547,6 +546,67 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                 callOnViewAppearing:callOnViewAppearing];
         [self.navigationController pushViewController:mvc animated:YES];
     });
+}
+
+- (void)presentTopLevelModalViewController:(UIViewController *)viewController
+                          animateDismissal:(BOOL)animateDismissal
+                       animatePresentation:(BOOL)animatePresentation
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(viewController);
+
+    [self presentViewControllerWithBlock:^{
+        [self presentViewController:viewController animated:animatePresentation completion:nil];
+    }
+                        animateDismissal:animateDismissal];
+}
+
+- (void)pushTopLevelViewController:(UIViewController *)viewController
+                  animateDismissal:(BOOL)animateDismissal
+               animatePresentation:(BOOL)animatePresentation
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(viewController);
+
+    [self presentViewControllerWithBlock:^{
+        [self.navigationController pushViewController:viewController animated:animatePresentation];
+    }
+                        animateDismissal:animateDismissal];
+}
+
+- (void)presentViewControllerWithBlock:(void (^)())presentationBlock animateDismissal:(BOOL)animateDismissal
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(presentationBlock);
+
+    // Presenting a "top level" view controller has three steps:
+    //
+    // First, dismiss any presented modal.
+    // Second, pop to the root view controller if necessary.
+    // Third present the new view controller using presentationBlock.
+
+    // Define a block to perform the second step.
+    void (^dismissNavigationBlock)() = ^{
+        if (self.navigationController.viewControllers.lastObject != self) {
+            [CATransaction begin];
+            [CATransaction setCompletionBlock:^{
+                presentationBlock();
+            }];
+
+            [self.navigationController popToViewController:self animated:animateDismissal];
+
+            [CATransaction commit];
+        } else {
+            presentationBlock();
+        }
+    };
+
+    // Perform the first step.
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];
+    } else {
+        dismissNavigationBlock();
+    }
 }
 
 #pragma mark - Navigation

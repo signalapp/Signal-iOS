@@ -20,4 +20,11 @@
 - (NSNumber *)updateInboxCountLabel;
 - (void)composeNew;
 
+- (void)presentTopLevelModalViewController:(UIViewController *)viewController
+                          animateDismissal:(BOOL)animateDismissal
+                       animatePresentation:(BOOL)animatePresentation;
+- (void)pushTopLevelViewController:(UIViewController *)viewController
+                  animateDismissal:(BOOL)animateDismissal
+               animatePresentation:(BOOL)animatePresentation;
+
 @end

@@ -204,17 +204,16 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
-        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI ||
-        dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
-            assertionFailure()
+        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
+            return "txt"
+        }
+        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+            return "unknown"
+        }
+        guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType:dataUTI) else {
             return nil
         }
-
-        guard let fileExtension = UTTypeCopyPreferredTagWithClass(dataUTI as CFString,
-                                                                  kUTTagClassFilenameExtension) else {
-            return nil
-        }
-        return fileExtension.takeRetainedValue() as String
+        return fileExtension
     }
 
     // Returns the set of UTIs that correspond to valid _input_ image formats
@@ -250,6 +249,16 @@ class SignalAttachment: NSObject {
         return MIMETypeUtil.supportedAudioUTITypes()
     }
 
+    public class var textUTISet: Set<String> {
+        return [
+            kUTTypeText as String,
+            kUTTypePlainText as String,
+            kUTTypeUTF8PlainText as String,
+            kUTTypeUTF16PlainText as String,
+            kUTTypeURL as String,
+        ]
+    }
+
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
@@ -266,8 +275,24 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
+    public var isText: Bool {
+        return SignalAttachment.textUTISet.contains(dataUTI)
+    }
+
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
+    }
+
+    public class func pasteBoardHasText() -> Bool {
+        if UIPasteboard.general.numberOfItems < 1 {
+            return false
+        }
+        let itemSet = IndexSet(integer:0)
+        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet:itemSet) else {
+            return false
+        }
+        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        return pasteboardUTISet.intersection(textUTISet).count > 0
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment

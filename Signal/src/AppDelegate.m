@@ -15,6 +15,7 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Release.h"
+#import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
 #import "TSMessagesManager.h"
 #import "TSSocketManager.h"
@@ -294,6 +295,22 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
         DDLogInfo(@"Application opened with URL: %@", url);
+
+        [[TSAccountManager sharedInstance]
+            ifRegistered:YES
+                runAsync:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        SendExternalFileViewController *viewController = [SendExternalFileViewController new];
+                        viewController.attachment = attachment;
+                        UINavigationController *navigationController =
+                            [[UINavigationController alloc] initWithRootViewController:viewController];
+                        [[[Environment getCurrent] signalsViewController]
+                            presentTopLevelModalViewController:navigationController
+                                              animateDismissal:NO
+                                           animatePresentation:YES];
+                    });
+                }];
+
         return YES;
     } else {
         DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
