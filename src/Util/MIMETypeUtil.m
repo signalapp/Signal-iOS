@@ -1571,4 +1571,13 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return fileExtension;
 }
 
++ (NSString *)utiTypeForFileExtension:(NSString *)fileExtension
+{
+    OWSAssert(fileExtension.length > 0);
+
+    NSString *utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
+    return utiType;
+}
+
 @end
