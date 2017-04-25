@@ -137,6 +137,53 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
                                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
+#pragma mark - Debugging
+
+- (void)logSignedPreKeyReport
+{
+    NSString *tag = @"[TSStorageManager (SignedPreKeyStore)]";
+
+    NSNumber *currentId = [self currentSignedPrekeyId];
+    NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDate];
+    NSUInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCount];
+
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        __block int i = 0;
+
+        DDLogInfo(@"%@ SignedPreKeys Report:", tag);
+        DDLogInfo(@"%@   currentId: %@", tag, currentId);
+        DDLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
+        DDLogInfo(@"%@   prekeyUpdateFailureCount: %d", tag, prekeyUpdateFailureCount);
+
+        NSUInteger count = [transaction numberOfKeysInCollection:TSStorageManagerSignedPreKeyStoreCollection];
+        DDLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
+
+        [transaction
+            enumerateKeysAndObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection
+                                     usingBlock:^(
+                                         NSString *_Nonnull key, id _Nonnull signedPreKeyObject, BOOL *_Nonnull stop) {
+                                         i++;
+                                         if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
+                                             DDLogError(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
+                                                 tag,
+                                                 signedPreKeyObject);
+                                             OWSAssert(NO);
+                                             return;
+                                         }
+                                         SignedPreKeyRecord *signedPreKeyRecord
+                                             = (SignedPreKeyRecord *)signedPreKeyObject;
+                                         DDLogInfo(@"%@     #%d <SignedPreKeyRecord: id: %d, generatedAt: %@, "
+                                                   @"wasAcceptedByService:%@, signature: %@",
+                                             tag,
+                                             i,
+                                             signedPreKeyRecord.Id,
+                                             signedPreKeyRecord.generatedAt,
+                                             (signedPreKeyRecord.wasAcceptedByService ? @"YES" : @"NO"),
+                                             signedPreKeyRecord.signature);
+                                     }];
+    }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
