@@ -26,9 +26,9 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.attachment = SignalAttachment.genericAttachment(data: nil,
-                                                             dataUTI: kUTTypeContent as String,
-                                                             filename:nil)
+        self.attachment = SignalAttachment.attachment(data: nil,
+                                                      dataUTI: kUTTypeContent as String,
+                                                      filename:nil)
         super.init(coder: aDecoder)
         assertionFailure()
     }

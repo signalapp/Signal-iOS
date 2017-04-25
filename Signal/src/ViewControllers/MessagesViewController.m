@@ -1168,7 +1168,10 @@ typedef enum : NSUInteger {
         // which are presented as normal text messages.
         const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:text];
+            SignalAttachment *attachment =
+                [SignalAttachment attachmentWithData:[text dataUsingEncoding:NSUTF8StringEncoding]
+                                             dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
+                                            filename:nil];
             [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
@@ -2423,7 +2426,7 @@ typedef enum : NSUInteger {
              OWSAssert([NSThread isMainThread]);
 
              SignalAttachment *attachment =
-                 [SignalAttachment imageAttachmentWithData:imageData dataUTI:dataUTI filename:filename];
+                 [SignalAttachment attachmentWithData:imageData dataUTI:dataUTI filename:filename];
              [self dismissViewControllerAnimated:YES
                                       completion:^{
                                           OWSAssert([NSThread isMainThread]);
@@ -2488,7 +2491,7 @@ typedef enum : NSUInteger {
         NSData *videoData = [NSData dataWithContentsOfURL:compressedVideoUrl];
         dispatch_async(dispatch_get_main_queue(), ^{
             SignalAttachment *attachment =
-                [SignalAttachment videoAttachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
+                [SignalAttachment attachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
             if (!attachment || [attachment hasError]) {
                 DDLogWarn(@"%@ %s Invalid attachment: %@.",
                     self.tag,
@@ -2715,7 +2718,7 @@ typedef enum : NSUInteger {
     if (flag) {
         NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
         SignalAttachment *attachment =
-            [SignalAttachment audioAttachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
+            [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
         if (!attachment ||
             [attachment hasError]) {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",

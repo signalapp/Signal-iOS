@@ -263,6 +263,38 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         } else {
             DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
         }
+    } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
+        NSString *filename = url.lastPathComponent;
+        if ([filename stringByDeletingPathExtension].length < 1) {
+            DDLogError(@"Application opened with URL invalid filename: %@", url);
+            return NO;
+        }
+        NSString *fileExtension = [filename pathExtension];
+        if (fileExtension.length < 1) {
+            DDLogError(@"Application opened with URL missing file extension: %@", url);
+            return NO;
+        }
+        NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileExtension];
+        if (utiType.length < 1) {
+            DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
+            return NO;
+        }
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        if (!data) {
+            DDLogError(@"Application opened with URL with unloadable content: %@", url);
+            return NO;
+        }
+        SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
+        if (!attachment) {
+            DDLogError(@"Application opened with URL with invalid content: %@", url);
+            return NO;
+        }
+        if ([attachment hasError]) {
+            DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
+            return NO;
+        }
+        DDLogInfo(@"Application opened with URL: %@", url);
+        return YES;
     } else {
         DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }

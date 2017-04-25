@@ -353,7 +353,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         assert(dataUTI.characters.count > 0)
 
         assert(imageData != nil)
@@ -539,7 +539,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : videoUTISet,
@@ -553,7 +553,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : audioUTISet,
@@ -567,12 +567,12 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func oversizeTextAttachment(text: String?) -> SignalAttachment {
+    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
         return newAttachment(data : text?.data(using: .utf8),
                              dataUTI : kOversizeTextAttachmentUTI,
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
-            filename : nil)
+                             filename : nil)
     }
 
     // MARK: Generic Attachments
@@ -581,7 +581,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : nil,
