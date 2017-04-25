@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - message handling
+#pragma mark - Debugging
 
 - (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
@@ -144,13 +144,90 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@.%d, timestamp: %llu content.length: %lu>",
+    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@.%d, timestamp: %llu content.length: %lu />",
                      envelopeType,
                      envelope.source,
-                     envelope.sourceDevice,
+                     (unsigned int)envelope.sourceDevice,
                      envelope.timestamp,
                      (unsigned long)envelope.content.length];
 }
+
+/**
+ * We don't want to just log `content.description` because we'd potentially log message bodies for dataMesssages and
+ * sync transcripts
+ */
+- (NSString *)descriptionForContent:(OWSSignalServiceProtosContent *)content
+{
+    if (content.hasSyncMessage) {
+        return [NSString stringWithFormat:@"<SyncMessage: %@ />", [self descriptionForSyncMessage:content.syncMessage]];
+    } else if (content.hasDataMessage) {
+        return [NSString stringWithFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
+    } else if (content.hasCallMessage) {
+        return [NSString stringWithFormat:@"<CallMessage: %@ />", content.callMessage];
+    } else {
+        OWSAssert(NO);
+        return @"UnknownContent";
+    }
+}
+
+/**
+ * We don't want to just log `dataMessage.description` because we'd potentially log message contents
+ */
+- (NSString *)descriptionForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    NSMutableString *description = [NSMutableString new];
+
+    if (dataMessage.hasGroup) {
+        [description appendString:@"GroupDataMessage: "];
+    } else {
+        [description appendString:@"DataMessage: "];
+    }
+
+    if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
+        [description appendString:@"EndSession"];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
+        [description appendString:@"ExpirationTimerUpdate"];
+    } else if (dataMessage.attachments.count > 0) {
+        [description appendString:@"MessageWithAttachment"];
+    } else {
+        [description appendString:@"Plain"];
+    }
+
+    return [NSString stringWithFormat:@"<%@ />", description];
+}
+
+/**
+ * We don't want to just log `syncMessage.description` because we'd potentially log message contents in sent transcripts
+ */
+- (NSString *)descriptionForSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
+{
+    NSMutableString *description = [[NSMutableString alloc] initWithString:@"CallMessage: "];
+    if (syncMessage.hasSent) {
+        [description appendString:@"SentTranscript"];
+    } else if (syncMessage.hasRequest) {
+        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
+            [description appendString:@"ContactRequest"];
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
+            [description appendString:@"GroupRequest"];
+        } else {
+            // Shouldn't happen
+            OWSAssert(NO);
+            [description appendString:@"UnknownRequest"];
+        }
+    } else if (syncMessage.hasBlocked) {
+        [description appendString:@"Blocked"];
+    } else if (syncMessage.read.count > 0) {
+        [description appendString:@"ReadReceipt"];
+    } else {
+        // Shouldn't happen
+        OWSAssert(NO);
+        [description appendString:@"Unknown"];
+    }
+
+    return description;
+}
+
+#pragma mark - message handling
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                     completion:(nullable MessageManagerCompletionBlock)completionHandler
@@ -206,7 +283,6 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
-                DDLogInfo(@"Received a delivery receipt");
                 [self handleDeliveryReceipt:envelope];
                 break;
 
@@ -378,6 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
+        DDLogInfo(@"%@ handling content: <Content: %@>", self.tag, [self descriptionForContent:content]);
         if (content.hasSyncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
         } else if (content.hasDataMessage) {
@@ -390,6 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
         OWSSignalServiceProtosDataMessage *dataMessage =
             [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
+        DDLogInfo(@"%@ handling dataMessage: %@", self.tag, [self descriptionForDataMessage:dataMessage]);
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
     } else {
         DDLogWarn(@"%@ Ignoring envelope with neither DataMessage nor Content.", self.tag);
@@ -417,16 +495,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
-        DDLogInfo(@"%@ Received end session message", self.tag);
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
-        DDLogInfo(@"%@ Received expiration timer update message", self.tag);
         [self handleExpirationTimerUpdateMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
-        DDLogInfo(@"%@ Received media message attachment", self.tag);
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
-        DDLogInfo(@"%@ Received data message.", self.tag);
         [self handleReceivedTextMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
         if ([self isDataMessageGroupAvatarUpdate:dataMessage]) {
             DDLogVerbose(@"%@ Data message had group avatar attachment", self.tag);
@@ -439,13 +513,10 @@ NS_ASSUME_NONNULL_BEGIN
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
     if (callMessage.hasOffer) {
-        DDLogVerbose(@"%@ Received CallMessage with Offer.", self.tag);
         [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:incomingEnvelope.source];
     } else if (callMessage.hasAnswer) {
-        DDLogVerbose(@"%@ Received CallMessage with Answer.", self.tag);
         [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:incomingEnvelope.source];
     } else if (callMessage.iceUpdate.count > 0) {
-        DDLogVerbose(@"%@ Received CallMessage with %lu IceUpdates.", self.tag, (unsigned long)callMessage.iceUpdate.count);
         for (OWSSignalServiceProtosCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
             [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:incomingEnvelope.source];
         }
@@ -523,7 +594,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
     if (syncMessage.hasSent) {
-        DDLogInfo(@"%@ Received `sent` syncMessage, recording message transcript.", self.tag);
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
 
@@ -545,8 +615,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
-            DDLogInfo(@"%@ Received request `Contacts` syncMessage.", self.tag);
-            
             OWSSyncContactsMessage *syncContactsMessage =
             [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
             
@@ -561,8 +629,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                     }];
             
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
-            DDLogInfo(@"%@ Received request `groups` syncMessage.", self.tag);
-            
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             
             [self.messageSender sendTemporaryAttachmentData:[syncGroupsMessage buildPlainTextAttachmentData]
@@ -578,8 +644,6 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
     } else if (syncMessage.hasBlocked) {
-        DDLogInfo(@"%@ Received `blocked` syncMessage.", self.tag);
-        
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
     } else if (syncMessage.read.count > 0) {
