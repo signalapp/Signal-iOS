@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol ThreadViewHelperDelegate <NSObject>
 
 - (void)threadListDidChange;
@@ -24,3 +26,5 @@
 @property (nonatomic, readonly) NSMutableArray<TSThread *> *threads;
 
 @end
+
+NS_ASSUME_NONNULL_END

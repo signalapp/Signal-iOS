@@ -53,10 +53,10 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     const CGFloat kAvatarSize = 40.f;
     _avatarView = [UIImageView new];
     _avatarView.image = [UIImage imageNamed:@"empty-group-avatar"];
+    _avatarView.contentMode = UIViewContentModeScaleToFill;
     // applyRoundedBorderToImageView requires the avatar to have
     // the correct size.
     _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
-    _avatarView.contentMode = UIViewContentModeScaleToFill;
     _avatarView.layer.minificationFilter = kCAFilterTrilinear;
     _avatarView.layer.magnificationFilter = kCAFilterTrilinear;
     [self.contentView addSubview:_avatarView];

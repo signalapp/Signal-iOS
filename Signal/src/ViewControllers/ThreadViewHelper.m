@@ -10,6 +10,8 @@
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ThreadViewHelper ()
 
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -134,3 +136,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

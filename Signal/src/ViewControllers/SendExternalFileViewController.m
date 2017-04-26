@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
         = ScaleFromIPhone5To7Plus(40, 50);
     const CGFloat imageLabelSpacing = ScaleFromIPhone5To7Plus(5, 8);
     const CGFloat titleVSpacing = ScaleFromIPhone5To7Plus(10, 15);
-    const CGFloat contentVMargin = ScaleFromIPhone5To7Plus(20, 20);
+    const CGFloat contentVMargin = 20;
 
     UIView *header = [UIView new];
     header.backgroundColor = [UIColor whiteColor];
@@ -139,7 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
     label.text = [self formattedFileName];
     label.textColor = [UIColor ows_materialBlueColor];
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
-    label.lineBreakMode = NSLineBreakByTruncatingMiddle;
     return label;
 }
 
