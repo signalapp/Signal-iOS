@@ -80,6 +80,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (NSString *)formatFileSize:(unsigned long)fileSize
+{
+    const unsigned long kOneKilobyte = 1024;
+    const unsigned long kOneMegabyte = kOneKilobyte * kOneKilobyte;
+
+    NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
+    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    return (fileSize > kOneMegabyte
+            ? [[numberFormatter stringFromNumber:@(round(fileSize / (CGFloat)kOneMegabyte))]
+                  stringByAppendingString:@" mb"]
+            : (fileSize > kOneKilobyte
+                      ? [[numberFormatter stringFromNumber:@(round(fileSize / (CGFloat)kOneKilobyte))]
+                            stringByAppendingString:@" kb"]
+                      : [[numberFormatter stringFromNumber:@(fileSize)] stringByAppendingString:@" bytes"]));
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag
