@@ -41,10 +41,10 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "保管庫に移動";
+"ARCHIVE_ACTION" = "アーカイブ";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "保管庫";
+"ARCHIVE_NAV_BAR_TITLE" = "アーカイブ";
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
@@ -94,6 +94,9 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
 
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Attachment is of invalid type";
+
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "画像を選ぶか写真を撮って送信する";
 
@@ -102,6 +105,12 @@
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文書の選択に失敗しました";
+
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "拒否すると通話もメッセージも受け付けません";
@@ -326,10 +335,10 @@
 "EDIT_ITEM_SHARE_ACTION" = "共有";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "こんにちは。私は最近，携帯電話での会話・チャットをSignalというアプリで行っています。双方がこのアプリを使うと，会話内容が他人に漏れていないという確信が持てますので，あなたもインストールしませんか。iPhoneでもAndroidでも使えます。入手はこちらからです：%@\n\nSignalは普通のメッセージアプリと同じように使えます。写真や動画も送れますし，電話もできますし，３人以上でのチャットもできます。一番いいところは，通信内容が他人に見えないことです。アプリの制作者にも見えない仕組みになっています。\n\nSignalの制作者であるOpen Whisper Systemsについての詳細はここを見て下さい：%@";
+"EMAIL_INVITE_BODY" = "こんにちは。私は最近，携帯電話での会話・チャットをSignalというアプリで行っています。このアプリを使うと，会話内容が他人に傍受されないという安心感が持てますので，あなたもインストールしてみませんか？iPhoneでもAndroidでも使えます。こちらからインストールできます：%@\n\nSignalは普通のメッセージアプリと同じように使えます。写真や動画も送れますし，電話もできますし，３人以上でのチャットもできます。一番いいところは，通信内容が他人から傍受されないことです。アプリの制作者でさえ傍受できない仕組みになっており、非常に安全です。\n\nSignalの制作者であるOpen Whisper Systemsについての詳細はここを見て下さい：%@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Signalに乗り換えましょう";
+"EMAIL_INVITE_SUBJECT" = "チャットアプリをSignalに変更しましょう。";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "右上の記入ボタンを押して下さい";
@@ -699,7 +708,7 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "新しいグループ";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "グループに名前を付ける";
 
 /* No comment provided by engineer. */
@@ -915,6 +924,12 @@
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "送信";
+
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "招待の送信に失敗しました。後でもう一度行ってください。";
