@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSelectBlockedContact;
 
-- (nullable UIView *)createHeader:(UIView *)superview;
+- (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar;
 
 @end
 

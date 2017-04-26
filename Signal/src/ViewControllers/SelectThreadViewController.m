@@ -92,7 +92,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.delegate);
 
-    UIView *header = [self.delegate createHeader:self.view];
+    // Search
+    UISearchBar *searchBar = [UISearchBar new];
+    _searchBar = searchBar;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.delegate = self;
+    searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
+    searchBar.backgroundColor = [UIColor whiteColor];
+    [searchBar sizeToFit];
+
+    UIView *header = [self.delegate createHeaderWithSearchBar:searchBar];
 
     // Table
     _tableViewController = [OWSTableViewController new];
@@ -100,21 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
     _tableViewController.contents = [OWSTableContents new];
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
+    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
     if (header) {
-        [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
+        _tableViewController.tableView.tableHeaderView = header;
     } else {
-        [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        _tableViewController.tableView.tableHeaderView = searchBar;
     }
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    // Search
-    UISearchBar *searchBar = [UISearchBar new];
-    _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleProminent;
-    searchBar.delegate = self;
-    searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    [searchBar sizeToFit];
-    _tableViewController.tableView.tableHeaderView = searchBar;
 }
 
 #pragma mark - UISearchBarDelegate

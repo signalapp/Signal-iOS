@@ -57,22 +57,21 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable UIView *)createHeader:(UIView *)superview
+- (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar
 {
-    OWSAssert(superview)
+    OWSAssert(searchBar)
 
         const CGFloat imageSize
-        = ScaleFromIPhone5To7Plus(40, 40);
-    const CGFloat imageLabelSpacing = ScaleFromIPhone5To7Plus(5, 5);
-    const CGFloat titleVSpacing = ScaleFromIPhone5To7Plus(10, 10);
+        = ScaleFromIPhone5To7Plus(40, 50);
+    const CGFloat imageLabelSpacing = ScaleFromIPhone5To7Plus(5, 8);
+    const CGFloat titleVSpacing = ScaleFromIPhone5To7Plus(10, 15);
     const CGFloat contentVMargin = ScaleFromIPhone5To7Plus(20, 20);
 
     UIView *header = [UIView new];
-    [superview addSubview:header];
-    [header autoPinWidthToSuperview];
-    [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    header.backgroundColor = [UIColor whiteColor];
 
     UIView *titleLabel = [self createTitleLabel];
+    [titleLabel sizeToFit];
     [header addSubview:titleLabel];
     [titleLabel autoHCenterInSuperview];
     [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:contentVMargin];
@@ -80,14 +79,17 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *fileView = [UIView new];
     [header addSubview:fileView];
     [fileView autoHCenterInSuperview];
-    [fileView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:contentVMargin];
     [fileView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel withOffset:titleVSpacing];
 
-    UIImage *image = [UIImage imageNamed:@"file-thin-black-large"];
+    UIImage *image = [UIImage imageNamed:@"file-thin-black-filled-large"];
     OWSAssert(image);
     UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     imageView.layer.minificationFilter = kCAFilterTrilinear;
     imageView.layer.magnificationFilter = kCAFilterTrilinear;
+    imageView.layer.shadowColor = [UIColor blackColor].CGColor;
+    imageView.layer.shadowRadius = 2.f;
+    imageView.layer.shadowOpacity = 0.2f;
+    imageView.layer.shadowOffset = CGSizeMake(0.75f, 0.75f);
     [fileView addSubview:imageView];
     [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
     [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
@@ -100,6 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
     [fileNameLabel autoAlignAxis:ALAxisHorizontal toSameAxisOfView:imageView];
     [fileNameLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:imageView withOffset:imageLabelSpacing];
     [fileNameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
+
+    [header addSubview:searchBar];
+    [searchBar autoPinWidthToSuperview];
+    [searchBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:fileView withOffset:contentVMargin];
+    [searchBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    // UITableViewController.tableHeaderView must have its height set.
+    header.frame = CGRectMake(0,
+        0,
+        0,
+        (contentVMargin * 2 + titleLabel.frame.size.height + titleVSpacing + imageSize + searchBar.frame.size.height));
 
     return header;
 }
@@ -125,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *label = [UILabel new];
     label.text = [self formattedFileName];
     label.textColor = [UIColor ows_materialBlueColor];
-    label.font = [UIFont ows_regularFontWithSize:16.f];
+    label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
     label.lineBreakMode = NSLineBreakByTruncatingMiddle;
     return label;
 }
@@ -137,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.text
         = NSLocalizedString(@"SEND_EXTERNAL_FILE_HEADER_TITLE", @"Header title for the 'send external file' view.");
     label.textColor = [UIColor blackColor];
-    label.font = [UIFont ows_mediumFontWithSize:18.f];
+    label.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(18.f, 20.f)];
     return label;
 }
 

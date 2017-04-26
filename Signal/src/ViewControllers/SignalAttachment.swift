@@ -12,6 +12,7 @@ enum SignalAttachmentError: Error {
     case couldNotParseImage
     case couldNotConvertToJpeg
     case invalidFileFormat
+    case unknownType
 }
 
 extension SignalAttachmentError: LocalizedError {
@@ -29,6 +30,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
         case .invalidFileFormat:
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        case .unknownType:
+            return NSLocalizedString("ATTACHMENT_ERROR_UNKNOWN_TYPE", comment: "Attachment error message for attachments with an invalid file format")
         }
     }
 }
@@ -111,6 +114,10 @@ class SignalAttachment: NSObject {
         self.dataUTI = dataUTI
         self.filename = filename
         super.init()
+
+        if self.mimeType == nil {
+            error = .unknownType
+        }
     }
 
     // MARK: Methods
