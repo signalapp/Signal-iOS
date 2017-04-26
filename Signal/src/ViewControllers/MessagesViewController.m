@@ -2182,7 +2182,7 @@ typedef enum : NSUInteger {
 
 - (void)showAttachmentDocumentPicker
 {
-    NSString *allItems = (__bridge NSString *)kUTTypeData;
+    NSString *allItems = (__bridge NSString *)kUTTypeItem;
     NSArray<NSString *> *documentTypes = @[ allItems ];
     // UIDocumentPickerModeImport copies to a temp file within our container.
     // It uses more memory than "open" but lets us avoid working with security scoped URLs.
@@ -2209,11 +2209,43 @@ typedef enum : NSUInteger {
     NSData *attachmentData = [NSData dataWithContentsOfURL:url];
 
     NSString *type;
-    NSError *error;
-    [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&error];
-    if (error) {
-        DDLogError(@"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, error);
+    NSError *typeError;
+    [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&typeError];
+    if (typeError) {
+        DDLogError(
+            @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
         OWSAssert(NO);
+    }
+
+    NSNumber *isDirectory;
+    NSError *isDirectoryError;
+    [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
+    if (isDirectoryError) {
+        DDLogError(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+            self.tag,
+            url,
+            isDirectoryError);
+        OWSAssert(NO);
+    } else if ([isDirectory boolValue]) {
+        DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
+        UIAlertController *alertController = [UIAlertController
+            alertControllerWithTitle:
+                NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                    @"Alert title when picking a document fails because user picked a directory/bundle")
+                             message:
+                                 NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                     @"Alert body when picking a document fails because user picked a directory/bundle")
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:nil];
+        [alertController addAction:dismissAction];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self presentViewController:alertController animated:YES completion:nil];
+        });
+        return;
     }
 
     if (!type) {
