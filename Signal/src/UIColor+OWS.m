@@ -58,6 +58,11 @@
     return [UIColor colorWithRed:255. / 255.f green:56.f / 255.f blue:103.f / 255.f alpha:1.f];
 }
 
++ (UIColor *)ows_destructiveRedColor
+{
+    return [UIColor colorWithRed:0.98639106750488281 green:0.10408364236354828 blue:0.33135244250297546 alpha:1.f];
+}
+
 + (UIColor *)ows_errorMessageBorderColor
 {
     return [UIColor colorWithRed:195.f / 255.f green:0 blue:22.f / 255.f alpha:1.0f];
