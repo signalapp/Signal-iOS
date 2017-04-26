@@ -90,6 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
+    OWSAssert(self.delegate);
+
     UIView *header = [self.delegate createHeader:self.view];
 
     // Table
