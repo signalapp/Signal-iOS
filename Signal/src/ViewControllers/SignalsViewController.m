@@ -10,7 +10,6 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
@@ -164,19 +163,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                object:nil];
     
     [self updateBarButtonItems];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithData:[@"hi" dataUsingEncoding:NSUTF8StringEncoding]
-                                         dataUTI:(NSString *)kUTTypeText
-                                        filename:@"boink.txt"];
-
-        SendExternalFileViewController *viewController = [SendExternalFileViewController new];
-        viewController.attachment = attachment;
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:viewController];
-        [self presentTopLevelModalViewController:navigationController animateDismissal:NO animatePresentation:YES];
-    });
 }
 
 - (void)updateBarButtonItems {
