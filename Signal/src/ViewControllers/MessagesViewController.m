@@ -113,29 +113,16 @@ typedef enum : NSUInteger {
     return YES;
 }
 
-- (BOOL)pasteBoardHasText
+- (BOOL)pasteboardHasPossibleAttachment
 {
-    if ([UIPasteboard generalPasteboard].numberOfItems < 1) {
-        return NO;
-    }
-    NSIndexSet *itemSet = [NSIndexSet indexSetWithIndex:0];
-    NSSet<NSString *> *utiTypes =
-        [NSSet setWithArray:[[UIPasteboard generalPasteboard] pasteboardTypesForItemSet:itemSet][0]];
-    return ([utiTypes containsObject:(NSString *)kUTTypeText] || [utiTypes containsObject:(NSString *)kUTTypePlainText]
-        ||
-        [utiTypes containsObject:(NSString *)kUTTypeUTF8PlainText] ||
-        [utiTypes containsObject:(NSString *)kUTTypeUTF16PlainText]);
-}
-
-- (BOOL)pasteBoardHasPossibleAttachment {
     // We don't want to load/convert images more than once so we
     // only do a cursory validation pass at this time.
-    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![self pasteBoardHasText]);
+    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(paste:)) {
-        if ([self pasteBoardHasPossibleAttachment]) {
+        if ([self pasteboardHasPossibleAttachment]) {
             return YES;
         }
     }
@@ -143,7 +130,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)paste:(id)sender {
-    if ([self pasteBoardHasPossibleAttachment]) {
+    if ([self pasteboardHasPossibleAttachment]) {
         SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
         // Note: attachment might be nil or have an error at this point; that's fine.
         [self.textViewPasteDelegate didPasteAttachment:attachment];
@@ -1168,7 +1155,10 @@ typedef enum : NSUInteger {
         // which are presented as normal text messages.
         const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            SignalAttachment *attachment = [SignalAttachment oversizeTextAttachmentWithText:text];
+            SignalAttachment *attachment =
+                [SignalAttachment attachmentWithData:[text dataUsingEncoding:NSUTF8StringEncoding]
+                                             dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
+                                            filename:nil];
             [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
@@ -2423,7 +2413,7 @@ typedef enum : NSUInteger {
              OWSAssert([NSThread isMainThread]);
 
              SignalAttachment *attachment =
-                 [SignalAttachment imageAttachmentWithData:imageData dataUTI:dataUTI filename:filename];
+                 [SignalAttachment attachmentWithData:imageData dataUTI:dataUTI filename:filename];
              [self dismissViewControllerAnimated:YES
                                       completion:^{
                                           OWSAssert([NSThread isMainThread]);
@@ -2488,7 +2478,7 @@ typedef enum : NSUInteger {
         NSData *videoData = [NSData dataWithContentsOfURL:compressedVideoUrl];
         dispatch_async(dispatch_get_main_queue(), ^{
             SignalAttachment *attachment =
-                [SignalAttachment videoAttachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
+                [SignalAttachment attachmentWithData:videoData dataUTI:(NSString *)kUTTypeMPEG4 filename:filename];
             if (!attachment || [attachment hasError]) {
                 DDLogWarn(@"%@ %s Invalid attachment: %@.",
                     self.tag,
@@ -2715,7 +2705,7 @@ typedef enum : NSUInteger {
     if (flag) {
         NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
         SignalAttachment *attachment =
-            [SignalAttachment audioAttachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
+            [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
         if (!attachment ||
             [attachment hasError]) {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",

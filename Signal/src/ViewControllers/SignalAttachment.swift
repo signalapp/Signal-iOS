@@ -12,6 +12,7 @@ enum SignalAttachmentError: Error {
     case couldNotParseImage
     case couldNotConvertToJpeg
     case invalidFileFormat
+    case unknownType
 }
 
 extension SignalAttachmentError: LocalizedError {
@@ -29,6 +30,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
         case .invalidFileFormat:
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        case .unknownType:
+            return NSLocalizedString("ATTACHMENT_ERROR_UNKNOWN_TYPE", comment: "Attachment error message for attachments with an invalid file format")
         }
     }
 }
@@ -111,6 +114,10 @@ class SignalAttachment: NSObject {
         self.dataUTI = dataUTI
         self.filename = filename
         super.init()
+
+        if self.mimeType == nil {
+            error = .unknownType
+        }
     }
 
     // MARK: Methods
@@ -204,17 +211,16 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
-        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI ||
-        dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
-            assertionFailure()
+        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
+            return "txt"
+        }
+        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+            return "unknown"
+        }
+        guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType:dataUTI) else {
             return nil
         }
-
-        guard let fileExtension = UTTypeCopyPreferredTagWithClass(dataUTI as CFString,
-                                                                  kUTTagClassFilenameExtension) else {
-            return nil
-        }
-        return fileExtension.takeRetainedValue() as String
+        return fileExtension
     }
 
     // Returns the set of UTIs that correspond to valid _input_ image formats
@@ -250,6 +256,16 @@ class SignalAttachment: NSObject {
         return MIMETypeUtil.supportedAudioUTITypes()
     }
 
+    public class var textUTISet: Set<String> {
+        return [
+            kUTTypeText as String,
+            kUTTypePlainText as String,
+            kUTTypeUTF8PlainText as String,
+            kUTTypeUTF16PlainText as String,
+            kUTTypeURL as String,
+        ]
+    }
+
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
@@ -266,8 +282,24 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
+    public var isText: Bool {
+        return SignalAttachment.textUTISet.contains(dataUTI)
+    }
+
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
+    }
+
+    public class func pasteboardHasText() -> Bool {
+        if UIPasteboard.general.numberOfItems < 1 {
+            return false
+        }
+        let itemSet = IndexSet(integer:0)
+        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet:itemSet) else {
+            return false
+        }
+        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        return pasteboardUTISet.intersection(textUTISet).count > 0
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment
@@ -353,7 +385,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         assert(dataUTI.characters.count > 0)
 
         assert(imageData != nil)
@@ -539,7 +571,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : videoUTISet,
@@ -553,7 +585,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : audioUTISet,
@@ -567,12 +599,12 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func oversizeTextAttachment(text: String?) -> SignalAttachment {
+    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
         return newAttachment(data : text?.data(using: .utf8),
                              dataUTI : kOversizeTextAttachmentUTI,
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
-            filename : nil)
+                             filename : nil)
     }
 
     // MARK: Generic Attachments
@@ -581,7 +613,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : nil,

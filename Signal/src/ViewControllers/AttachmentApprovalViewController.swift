@@ -26,9 +26,9 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.attachment = SignalAttachment.genericAttachment(data: nil,
-                                                             dataUTI: kUTTypeContent as String,
-                                                             filename:nil)
+        self.attachment = SignalAttachment.attachment(data: nil,
+                                                      dataUTI: kUTTypeContent as String,
+                                                      filename:nil)
         super.init(coder: aDecoder)
         assertionFailure()
     }
@@ -217,7 +217,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
     private func createGenericPreview(attachmentPreviewView: UIView) {
         var subviews = [UIView]()
 
-        let imageView = createHeroImageView(imageName: "file-thin-black-large")
+        let imageView = createHeroImageView(imageName: "file-thin-black-filled-large")
         subviews.append(imageView)
 
         if let fileNameLabel = createFileNameLabel() {
@@ -245,6 +245,11 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         let imageView = UIImageView(image:image)
         imageView.layer.minificationFilter = kCAFilterTrilinear
         imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        let shadowScaling = 5.0
+        imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
+        imageView.layer.shadowOpacity = 0.25
+        imageView.layer.shadowOffset = CGSize(width: 0.75 * shadowScaling, height: 0.75 * shadowScaling)
         imageView.autoSetDimension(.width, toSize:imageSize)
         imageView.autoSetDimension(.height, toSize:imageSize)
 
