@@ -118,13 +118,22 @@ typedef enum : NSUInteger {
     if ([UIPasteboard generalPasteboard].numberOfItems < 1) {
         return NO;
     }
+
+    // Instead of simply checking `[[UIPasteboard generalPasteboard] hasStrings]`, we want to make sure we're
+    // only considering the *first* item in the pasteboard, since that's what we'll ultimately paste.
     NSIndexSet *itemSet = [NSIndexSet indexSetWithIndex:0];
-    NSSet<NSString *> *utiTypes =
+    NSSet<NSString *> *pastedUtiTypes =
         [NSSet setWithArray:[[UIPasteboard generalPasteboard] pasteboardTypesForItemSet:itemSet][0]];
-    return ([utiTypes containsObject:(NSString *)kUTTypeText] || [utiTypes containsObject:(NSString *)kUTTypePlainText]
-        ||
-        [utiTypes containsObject:(NSString *)kUTTypeUTF8PlainText] ||
-        [utiTypes containsObject:(NSString *)kUTTypeUTF16PlainText]);
+
+    NSSet<NSString *> *textUtiTypes = [NSSet setWithArray:@[
+        (NSString *)kUTTypeText,
+        (NSString *)kUTTypePlainText,
+        (NSString *)kUTTypeUTF8PlainText,
+        (NSString *)kUTTypeUTF16PlainText,
+        (NSString *)kUTTypeURL
+    ]];
+
+    return [pastedUtiTypes intersectsSet:textUtiTypes];
 }
 
 - (BOOL)pasteBoardHasPossibleAttachment {
