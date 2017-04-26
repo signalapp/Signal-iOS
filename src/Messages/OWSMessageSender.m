@@ -516,7 +516,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? data : [data copy]);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
-        TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:contentType];
+        TSAttachmentStream *attachmentStream =
+            [[TSAttachmentStream alloc] initWithContentType:contentType filename:filename];
 
         NSError *error;
         [attachmentStream writeData:dataCopy error:&error];
