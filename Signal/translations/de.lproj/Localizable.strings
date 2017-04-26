@@ -95,7 +95,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Anhang ist leer.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Attachment is of invalid type";
+"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Ungültiger Anhangstyp";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Bild auswählen oder aufnehmen und dann versenden";
@@ -107,10 +107,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Auswählen des Dokuments gescheitert.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal kann die Datei in der vorliegenden Form nicht verarbeiten. Versuche sie vor dem Versenden in eine ZIP-Datei umzuwandeln.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datei nicht unterstützt";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
@@ -926,10 +926,10 @@
 "SEND_BUTTON_TITLE" = "Senden";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Empfänger auswählen für:";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Datei senden";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Versenden der Einladung gescheitert. Bitte später erneut versuchen.";
