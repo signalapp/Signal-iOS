@@ -90,13 +90,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
+    UIView *header = [self.delegate createHeader:self.view];
+
     // Table
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.contents = [OWSTableContents new];
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
-    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    if (header) {
+        [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
+    } else {
+        [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    }
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     // Search
@@ -149,18 +155,16 @@ NS_ASSUME_NONNULL_BEGIN
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             if (!strongSelf) {
-                return (InboxTableViewCell *)nil;
+                return (ContactTableViewCell *)nil;
             }
 
-            InboxTableViewCell *cell = [InboxTableViewCell inboxTableViewCell];
-
-            [cell configureWithThread:thread
-                      contactsManager:strongSelf.contactsManager
-                blockedPhoneNumberSet:strongSelf.blockedPhoneNumberSet];
-
+            // To be consistent with the threads (above), we use ContactTableViewCell
+            // instead of InboxTableViewCell to present contacts and threads.
+            ContactTableViewCell *cell = [ContactTableViewCell new];
+            [cell configureWithThread:thread contactsManager:strongSelf.contactsManager];
             return cell;
         }
-                             customRowHeight:[InboxTableViewCell rowHeight]
+                             customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
                                  [weakSelf.delegate threadWasSelected:thread];
                              }]];
@@ -172,25 +176,21 @@ NS_ASSUME_NONNULL_BEGIN
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             if (!strongSelf) {
-                return (InboxTableViewCell *)nil;
+                return (ContactTableViewCell *)nil;
             }
 
-            // To be consistent with the threads (above), we use InboxTableViewCell
-            // instead of ContactTableViewCell to present contacts.
-            InboxTableViewCell *cell = [InboxTableViewCell inboxTableViewCell];
-
-            // TODO: Use ContactAccount.
-            NSString *recipientId = contact.textSecureIdentifiers.firstObject;
+            ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [strongSelf isContactBlocked:contact];
-
-            [cell configureWithContact:contact
-                           recipientId:recipientId
-                       contactsManager:strongSelf.contactsManager
-                             isBlocked:isBlocked];
-
+            if (isBlocked) {
+                cell.accessoryMessage
+                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+            } else {
+                OWSAssert(cell.accessoryMessage == nil);
+            }
+            [cell configureWithContact:contact contactsManager:strongSelf.contactsManager];
             return cell;
         }
-                             customRowHeight:[InboxTableViewCell rowHeight]
+                             customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
                                  [weakSelf contactWasSelected:contact];
                              }]];

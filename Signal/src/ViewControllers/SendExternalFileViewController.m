@@ -49,6 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (nullable UIView *)createHeader:(UIView *)superview
+{
+    return nil;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

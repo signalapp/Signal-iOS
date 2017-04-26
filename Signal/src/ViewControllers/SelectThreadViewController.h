@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSelectBlockedContact;
 
+- (nullable UIView *)createHeader:(UIView *)superview;
+
 @end
 
 #pragma mark -
