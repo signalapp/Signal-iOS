@@ -9,11 +9,15 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSThread.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SendExternalFileViewController () <SelectThreadViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
+
+#pragma mark -
 
 @implementation SendExternalFileViewController
 
@@ -35,25 +39,7 @@
     OWSAssert(self.attachment);
     OWSAssert(thread);
 
-    // We should have a valid filename.
-    OWSAssert(self.attachment.filename.length > 0);
-    NSString *fileExtension = [self.attachment.filename pathExtension].lowercaseString;
-    OWSAssert(fileExtension.length > 0);
-    NSSet<NSString *> *textExtensions = [NSSet setWithArray:@[
-        @"txt",
-        @"url",
-    ]];
-    NSString *text = nil;
-    if ([textExtensions containsObject:fileExtension]) {
-        text = [[NSString alloc] initWithData:self.attachment.data encoding:NSUTF8StringEncoding];
-        OWSAssert(text);
-    }
-
-    if (text) {
-        [ThreadUtil sendMessageWithText:text inThread:thread messageSender:self.messageSender];
-    } else {
-        [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
-    }
+    [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
 
     [Environment messageThreadId:thread.uniqueId];
 }
@@ -64,3 +50,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

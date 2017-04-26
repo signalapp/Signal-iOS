@@ -131,8 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)performEditingAction:(SEL)action
 {
     if (action == @selector(copy:)) {
-        UIPasteboard *pasteBoard = UIPasteboard.generalPasteboard;
-        [pasteBoard setData:self.fileData forPasteboardType:(__bridge NSString *)kUTTypeGIF];
+        UIPasteboard *pasteboard = UIPasteboard.generalPasteboard;
+        [pasteboard setData:self.fileData forPasteboardType:(__bridge NSString *)kUTTypeGIF];
     } else if (action == NSSelectorFromString(@"save:")) {
         NSData *photoData = self.fileData;
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];

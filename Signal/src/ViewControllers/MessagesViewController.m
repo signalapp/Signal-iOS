@@ -113,15 +113,16 @@ typedef enum : NSUInteger {
     return YES;
 }
 
-- (BOOL)pasteBoardHasPossibleAttachment {
+- (BOOL)pasteboardHasPossibleAttachment
+{
     // We don't want to load/convert images more than once so we
     // only do a cursory validation pass at this time.
-    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteBoardHasText]);
+    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     if (action == @selector(paste:)) {
-        if ([self pasteBoardHasPossibleAttachment]) {
+        if ([self pasteboardHasPossibleAttachment]) {
             return YES;
         }
     }
@@ -129,7 +130,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)paste:(id)sender {
-    if ([self pasteBoardHasPossibleAttachment]) {
+    if ([self pasteboardHasPossibleAttachment]) {
         SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
         // Note: attachment might be nil or have an error at this point; that's fine.
         [self.textViewPasteDelegate didPasteAttachment:attachment];

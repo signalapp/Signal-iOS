@@ -283,7 +283,7 @@ class SignalAttachment: NSObject {
         return UIPasteboard.general.numberOfItems > 0
     }
 
-    public class func pasteBoardHasText() -> Bool {
+    public class func pasteboardHasText() -> Bool {
         if UIPasteboard.general.numberOfItems < 1 {
             return false
         }

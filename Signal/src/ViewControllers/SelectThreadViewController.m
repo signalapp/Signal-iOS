@@ -360,21 +360,6 @@ NS_ASSUME_NONNULL_BEGIN
         return YES;
     }
 
-    if ([self isCurrentUserContact:contact]) {
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)isCurrentUserContact:(Contact *)contact
-{
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([[phoneNumber toE164] isEqualToString:[TSAccountManager localNumber]]) {
-            return YES;
-        }
-    }
-
     return NO;
 }
 

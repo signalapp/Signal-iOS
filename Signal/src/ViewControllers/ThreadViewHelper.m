@@ -118,7 +118,7 @@
         }
     }];
 
-    _threads = threads;
+    _threads = [threads copy];
 }
 
 #pragma mark - Logging
