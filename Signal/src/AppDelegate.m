@@ -369,9 +369,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:nil]];
-    [[Environment getCurrent].signalsViewController.presentedViewController presentViewController:controller
-                                                                                         animated:YES
-                                                                                       completion:nil];
+
+    [[Environment getCurrent].signalsViewController presentTopLevelModalViewController:controller
+                                                                      animateDismissal:YES
+                                                                   animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
