@@ -13,7 +13,6 @@
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSLogger.h"
@@ -75,3 +74,11 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <WebRTC/RTCEAGLVideoView.h>
+
+#import "FunctionalUtil.h"
+#import <Contacts/Contacts.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/PhoneNumber.h>
+#import "CollapsingFutures.h"
+#import "Contact.h"
+#import "ObservableValue.h"

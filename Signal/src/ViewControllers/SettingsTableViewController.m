@@ -11,7 +11,6 @@
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSContactsManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"

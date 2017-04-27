@@ -3,7 +3,7 @@
 //
 
 #import "OWSContactsSyncing.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>

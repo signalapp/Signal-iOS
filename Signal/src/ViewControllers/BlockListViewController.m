@@ -6,7 +6,7 @@
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "PhoneNumber.h"
 #import "UIFont+OWS.h"
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                 name:OWSContactsManager.SignalRecipientsDidChangeNotification
                                                object:nil];
 }
 

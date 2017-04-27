@@ -7,7 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "InboxTableViewCell.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                 name:OWSContactsManager.SignalRecipientsDidChangeNotification
                                                object:nil];
 }
 

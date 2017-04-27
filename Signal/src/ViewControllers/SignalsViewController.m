@@ -7,7 +7,6 @@
 #import "InboxTableViewCell.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"

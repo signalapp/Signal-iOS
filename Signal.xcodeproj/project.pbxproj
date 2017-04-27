@@ -197,7 +197,6 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
-		76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		76EB058218170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* PropertyListPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
@@ -258,7 +257,6 @@
 		B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AF1C29868000687D6E /* ObservableTest.m */; };
 		B660F6DF1C29868000687D6E /* QueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B21C29868000687D6E /* QueueTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
-		B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		B660F7181C29988E00687D6E /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		B660F71B1C29988E00687D6E /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
 		B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
@@ -314,6 +312,7 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		D6B052021E9C7AD6004545BC /* OWSContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B052011E9C7AD6004545BC /* OWSContactsManager.swift */; };
 		D6C9304E1E9B13D3006C2862 /* GroupContactsResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C9304D1E9B13D3006C2862 /* GroupContactsResult.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
@@ -584,8 +583,6 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		76EB040818170B33006006FC /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
-		76EB040918170B33006006FC /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		76EB041218170B33006006FC /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		76EB041318170B33006006FC /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		76EB041818170B33006006FC /* PropertyListPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyListPreferences.h; sourceTree = "<group>"; };
@@ -741,6 +738,7 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D6B052011E9C7AD6004545BC /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
 		D6C9304D1E9B13D3006C2862 /* GroupContactsResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupContactsResult.swift; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -1161,8 +1159,7 @@
 			isa = PBXGroup;
 			children = (
 				D6C9304D1E9B13D3006C2862 /* GroupContactsResult.swift */,
-				76EB040818170B33006006FC /* OWSContactsManager.h */,
-				76EB040918170B33006006FC /* OWSContactsManager.m */,
+				D6B052011E9C7AD6004545BC /* OWSContactsManager.swift */,
 				45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */,
 				45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */,
 			);
@@ -1988,6 +1985,7 @@
 				34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
 				4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */,
+				D6B052021E9C7AD6004545BC /* OWSContactsManager.swift in Sources */,
 				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
@@ -2011,7 +2009,6 @@
 				76EB058A18170B33006006FC /* Release.m in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
-				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
 				45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */,
 				45C681B71D305A580050903A /* OWSCall.m in Sources */,
@@ -2136,7 +2133,6 @@
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
 				452C46901E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
 				451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */,
-				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
 				B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */,

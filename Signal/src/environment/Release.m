@@ -4,7 +4,7 @@
 
 #import "Release.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSNetworkManager.h>

@@ -7,7 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "FunctionalUtil.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "SecurityUtils.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
@@ -78,7 +78,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                 name:OWSContactsManager.SignalRecipientsDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)

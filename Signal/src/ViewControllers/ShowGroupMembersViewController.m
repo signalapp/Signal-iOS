@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "Signal-Swift.h"
-#import "OWSContactsManager.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
