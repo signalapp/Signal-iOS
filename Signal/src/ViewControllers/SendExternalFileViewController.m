@@ -119,10 +119,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)formattedFileName
 {
+    // AppDelegate already verifies that this attachment has a valid filename.
+    //
+    // TODO: If we reuse this VC, for example to offer a "forward attachment to other thread",
+    //       feature, this assumption would no longer apply.
     OWSAssert(self.attachment) NSString *filename =
         [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     OWSAssert(filename.length > 0);
-    const NSUInteger kMaxFilenameLength = 50;
+    const NSUInteger kMaxFilenameLength = 20;
     if (filename.length > kMaxFilenameLength) {
         // Truncate the filename if necessary.
         //
