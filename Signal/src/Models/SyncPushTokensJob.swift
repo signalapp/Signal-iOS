@@ -1,11 +1,12 @@
-//  Created by Michael Kirk on 10/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
 
 @objc(OWSSyncPushTokensJob)
-class SyncPushTokensJob : NSObject {
+class SyncPushTokensJob: NSObject {
     let TAG = "[SyncPushTokensJob]"
     let pushManager: PushManager
     let accountManager: AccountManager
@@ -67,7 +68,7 @@ class SyncPushTokensJob : NSObject {
                     fulfill((pushToken:pushToken, voipToken:voipToken))
                 },
                 failure: reject
-            );
+            )
         }
     }
 
@@ -76,15 +77,14 @@ class SyncPushTokensJob : NSObject {
 
         if (pushToken != self.preferences.getPushToken()) {
             Logger.info("\(TAG) Recording new plain push token")
-            self.preferences.setPushToken(pushToken);
+            self.preferences.setPushToken(pushToken)
         }
 
         if (voipToken != self.preferences.getVoipToken()) {
             Logger.info("\(TAG) Recording new voip token")
-            self.preferences.setVoipToken(voipToken);
+            self.preferences.setVoipToken(voipToken)
         }
 
-        // TODO code cleanup: convert to `return Promise(value: nil)` and test.
-        return Promise { fulfill, reject in  fulfill(); }
+        return Promise(value: ())
     }
 }
