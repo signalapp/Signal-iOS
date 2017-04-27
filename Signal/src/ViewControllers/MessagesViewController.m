@@ -1025,7 +1025,7 @@ typedef enum : NSUInteger {
 {
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
-    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
 
     [self updateLoadEarlierVisible];
