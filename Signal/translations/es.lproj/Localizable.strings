@@ -94,9 +94,6 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Archivo adjunto vacío.";
 
-/* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Attachment is of invalid type";
-
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Elige o toma una foto y envíala";
 
@@ -107,10 +104,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Fallo al seleccionar documento.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal no puede enviar una carpeta. Prueba a comprimirla antes de enviarla. ";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Archivo no soportado";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Los contactos bloqueados no podrán llamarte ni enviarte mensajes.";
@@ -432,6 +429,21 @@
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Al activar este %@ se desactivarán todos los dispositivos registrados bajo este número de teléfono.";
+
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
@@ -926,10 +938,10 @@
 "SEND_BUTTON_TITLE" = "Enviar";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un contacto para:";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Enviar archivo";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Fallo al enviar invitación. Por favor, inténtalo más tarde.";

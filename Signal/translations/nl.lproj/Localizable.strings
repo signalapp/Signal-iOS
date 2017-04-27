@@ -94,9 +94,6 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Bijlage is leeg.";
 
-/* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Attachment is of invalid type";
-
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Kies of neem een foto en verzend ze";
 
@@ -107,10 +104,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Document kiezen mislukt.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal kan dit bestand niet verwerken. Probeer het in een zip-bestand te plaatsen vooraleer het te verzenden.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Bestand niet ondersteund";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers zullen je niet kunnen bellen of berichten sturen.";
@@ -432,6 +429,21 @@
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Deze %@ activeren zal Signal uitschakelen op andere apparaten die momenteel met dit telefoonnummer geassocieerd zijn.";
+
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel fouten bij dit contact. Probeer het later opnieuw.";
@@ -926,10 +938,10 @@
 "SEND_BUTTON_TITLE" = "Stuur";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Kies een ontvanger voor:";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Bestand sturen";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Uitnodiging sturen mislukt, probeer het later opnieuw.";
@@ -1130,7 +1142,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "Deregistreren van Signal mislukt.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Ontving een niet ondersteund formaat van bijlage.";
+"UNSUPPORTED_ATTACHMENT" = "Niet-ondersteund formaat van bijlage ontvangen.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";

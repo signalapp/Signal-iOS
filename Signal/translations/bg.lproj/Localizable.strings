@@ -94,9 +94,6 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
-/* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_UNKNOWN_TYPE" = "Attachment is of invalid type";
-
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Избери или направи снимка и я изпрати";
 
@@ -432,6 +429,21 @@
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Активирайки това %@ Сигнал ще се деактивира на всяко друго устройство което е асоциирано с този телефонен номер.";
+
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Твърде много провали с този контакт. Моля, опитайте отново след малко.";
