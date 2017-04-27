@@ -2216,6 +2216,11 @@ typedef enum : NSUInteger {
             @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
         OWSAssert(NO);
     }
+    if (!type) {
+        DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
+        OWSAssert(NO);
+        type = (__bridge NSString *)kUTTypeData;
+    }
 
     NSNumber *isDirectory;
     NSError *isDirectoryError;
@@ -2246,12 +2251,6 @@ typedef enum : NSUInteger {
             [self presentViewController:alertController animated:YES completion:nil];
         });
         return;
-    }
-
-    if (!type) {
-        DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
-        OWSAssert(NO);
-        type = (__bridge NSString *)kUTTypeData;
     }
 
     NSString *filename = url.lastPathComponent;
