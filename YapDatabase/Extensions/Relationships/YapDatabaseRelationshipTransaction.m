@@ -2204,7 +2204,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 		sqlite3_stmt *statement = [parentConnection findManualEdgeWithDstFileURLStatement];
 		if (statement == NULL) return nil;
 		
-		// SELECT "rowid", "rules" FROM "tableName"
+		// SELECT "rowid", "dst", "rules" FROM "tableName"
 		//   WHERE "src" = ? AND "name" = ? AND "dst" > INT64_MAX AND "manual" = 1;
 		//
 		// AKA: typeof(dst) IS BLOB
@@ -2625,17 +2625,29 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				edge->action = YDB_EdgeAction_Delete;
 				edge->flags |= YDB_EdgeFlags_SourceDeleted;
 				edge->flags |= YDB_EdgeFlags_BadSource;
+                if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+                {
+                    edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+                }
 			}
 			else if (srcDeleted)
 			{
 				edge->action = YDB_EdgeAction_Delete;
 				edge->flags |= YDB_EdgeFlags_SourceDeleted;
+                if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+                {
+                    edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+                }
 			}
 		}
 		else if ([parentConnection->deletedInfo ydb_containsKey:@(edge->sourceRowid)])
 		{
 			edge->action = YDB_EdgeAction_Delete;
 			edge->flags |= YDB_EdgeFlags_SourceDeleted;
+            if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+            {
+                edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+            }
 		}
 		
 		
@@ -2659,17 +2671,29 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				edge->action = YDB_EdgeAction_Delete;
 				edge->flags |= YDB_EdgeFlags_DestinationDeleted;
 				edge->flags |= YDB_EdgeFlags_BadDestination;
+                if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+                {
+                    edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+                }
 			}
 			else if (dstDeleted)
 			{
 				edge->action = YDB_EdgeAction_Delete;
 				edge->flags |= YDB_EdgeFlags_DestinationDeleted;
+                if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+                {
+                    edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+                }
 			}
 		}
 		else if ([parentConnection->deletedInfo ydb_containsKey:@(edge->destinationRowid)])
 		{
 			edge->action = YDB_EdgeAction_Delete;
 			edge->flags |= YDB_EdgeFlags_DestinationDeleted;
+            if (!(edge->state & YDB_EdgeState_HasEdgeRowid))
+            {
+                edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+            }
 		}
 	}
 }
@@ -6795,6 +6819,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 					edge->edgeRowid = pendingEdge->edgeRowid;
 					edge->state |= YDB_EdgeState_HasEdgeRowid;
 				}
+                else
+                {
+                    edge->flags |= YDB_EdgeFlags_EdgeNotInDatabase;
+                }
 				
 				[edges replaceObjectAtIndex:i withObject:edge];
 				return;
