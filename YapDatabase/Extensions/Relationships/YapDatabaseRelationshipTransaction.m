@@ -5515,6 +5515,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 				
 				int64_t edgeRowid = sqlite3_column_int64(statement, column_idx_rowid);
 				
+                edge = [parentConnection->edgeCache objectForKey:@(edgeRowid)];
 				if (edge)
 				{
 					edge->sourceRowid = srcRowid;
