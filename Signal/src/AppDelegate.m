@@ -265,6 +265,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
         }
     } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
+
+        if ([Environment getCurrent].callService.call != nil) {
+            DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.tag);
+            return NO;
+        }
+
         NSString *filename = url.lastPathComponent;
         if ([filename stringByDeletingPathExtension].length < 1) {
             DDLogError(@"Application opened with URL invalid filename: %@", url);
@@ -363,6 +369,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:nil]];
+
+    [[Environment getCurrent].signalsViewController presentTopLevelModalViewController:controller
+                                                                      animateDismissal:YES
+                                                                   animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
