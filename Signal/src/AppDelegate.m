@@ -287,17 +287,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                               @"unknown type.")];
             return NO;
         }
-        NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileExtension];
-        if (utiType.length < 1) {
+        
+        
+        NSString *utiType;
+        NSError *typeError;
+        [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
+        if (typeError) {
+            DDLogError(
+                       @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
+            OWSAssert(NO);
+        }
+        if (!utiType) {
+            DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
+            OWSAssert(NO);
+            utiType = (__bridge NSString *)kUTTypeData;
+        }
+        
+        NSNumber *isDirectory;
+        NSError *isDirectoryError;
+        [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
+        if (isDirectoryError) {
+            DDLogError(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+                       self.tag,
+                       url,
+                       isDirectoryError);
+            OWSAssert(NO);
+            return NO;
+        } else if ([isDirectory boolValue]) {
+            DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
             DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
-                                              @"Message for the alert indicating the 'export with signal' file had "
-                                              @"unknown type.")];
+            [self showErrorAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                                                            @"Alert title when picking a document fails because user picked a directory/bundle")
+                                  message:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                                            @"Alert body when picking a document fails because user picked a directory/bundle")];
             return NO;
         }
+        
         NSData *data = [NSData dataWithContentsOfURL:url];
         if (!data) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
