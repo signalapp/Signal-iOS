@@ -8,7 +8,6 @@
 #import "Environment.h"
 #import "InboxTableViewCell.h"
 #import "Signal-Swift.h"
-#import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
@@ -302,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Move this to contacts view helper.
     OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts:nonRedundantContacts];
-    NSArray<Contact *> *filteredContacts = [contactsSearcher filterWithString:searchString];
+    NSArray<Contact *> *filteredContacts = [contactsSearcher filterWith:searchString];
 
     return filteredContacts;
 }

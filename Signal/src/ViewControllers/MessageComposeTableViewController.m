@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
-#import "OWSContactsSearcher.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
@@ -343,7 +342,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)filterContentForSearchText:(NSString *)searchText
 {
     OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts: self.contacts];
-    self.searchResults = [contactsSearcher filterWithString:searchText];
+    self.searchResults = [contactsSearcher filterWith:searchText];
 
     NSMutableArray<NSString *> *searchPhoneNumbers = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
