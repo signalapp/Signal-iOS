@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL *mediaUrl;
 
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
+@property (nonatomic, nullable) NSTimer *audioPlayerPoller;
 
 @end
 
@@ -98,6 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:YES];
 
+    [self.audioPlayerPoller invalidate];
+
     self.delegate.isAudioPlaying = YES;
     self.delegate.isPaused = NO;
     [self.delegate setAudioIconToPause];
@@ -129,6 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.isAudioPlaying = NO;
     self.delegate.isPaused = YES;
     [self.audioPlayer pause];
+    [self.audioPlayerPoller invalidate];
+    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
     [self.delegate setAudioIconToPlay];
 }
 
@@ -137,6 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     [self.audioPlayer pause];
+    [self.audioPlayerPoller invalidate];
+    [self.delegate setAudioProgress:0 duration:0];
     [self.delegate setAudioIconToPlay];
     self.delegate.isAudioPlaying = NO;
     self.delegate.isPaused = NO;
@@ -154,6 +161,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Events
+
+- (void)audioPlayerUpdated:(NSTimer *)timer
+{
+    OWSAssert([NSThread isMainThread]);
+
+    OWSAssert(self.audioPlayer);
+    OWSAssert(self.audioPlayerPoller);
+
+    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
+}
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {

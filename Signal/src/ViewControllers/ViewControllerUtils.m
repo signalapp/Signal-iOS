@@ -90,13 +90,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
     numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-    return (fileSize > kOneMegabyte
-            ? [[numberFormatter stringFromNumber:@(round(fileSize / (CGFloat)kOneMegabyte))]
-                  stringByAppendingString:@" mb"]
-            : (fileSize > kOneKilobyte
-                      ? [[numberFormatter stringFromNumber:@(round(fileSize / (CGFloat)kOneKilobyte))]
-                            stringByAppendingString:@" kb"]
-                      : [[numberFormatter stringFromNumber:@(fileSize)] stringByAppendingString:@" bytes"]));
+
+    if (fileSize > kOneMegabyte * 10) {
+        return [[numberFormatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneMegabyte))]
+            stringByAppendingString:@" MB"];
+    } else if (fileSize > kOneKilobyte * 10) {
+        return [[numberFormatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneKilobyte))]
+            stringByAppendingString:@" KB"];
+    } else {
+        return [NSString stringWithFormat:@"%lu Bytes", fileSize];
+    }
 }
 
 #pragma mark - Alerts

@@ -410,7 +410,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         isAudioPaused = isPaused
     }
 
-    public func setAudioProgressFrom(_ progress: Float) {
+    public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
         // Ignore
     }
 
