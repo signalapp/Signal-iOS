@@ -18,37 +18,6 @@ typedef void (^BlockAlertCompletionBlock)();
 
 #pragma mark - Block
 
-+ (void)showBlockContactActionSheet:(Contact *)contact
-                 fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if (phoneNumber.toE164.length > 0) {
-            [phoneNumbers addObject:phoneNumber.toE164];
-        }
-    }
-    if (phoneNumbers.count < 1) {
-        DDLogError(@"%@ Contact has no phone numbers", self.tag);
-        OWSAssert(0);
-        [self showBlockFailedAlert:fromViewController
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock(NO);
-                       }
-                   }];
-        return;
-    }
-    NSString *displayName = [contactsManager displayNameForContact:contact];
-    [self showBlockPhoneNumbersActionSheet:phoneNumbers
-                               displayName:displayName
-                        fromViewController:fromViewController
-                           blockingManager:blockingManager
-                           completionBlock:completionBlock];
-}
-
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -175,37 +144,6 @@ typedef void (^BlockAlertCompletionBlock)();
 }
 
 #pragma mark - Unblock
-
-+ (void)showUnblockContactActionSheet:(Contact *)contact
-                   fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
-                      contactsManager:(OWSContactsManager *)contactsManager
-                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if (phoneNumber.toE164.length > 0) {
-            [phoneNumbers addObject:phoneNumber.toE164];
-        }
-    }
-    if (phoneNumbers.count < 1) {
-        DDLogError(@"%@ Contact has no phone numbers", self.tag);
-        OWSAssert(0);
-        [self showUnblockFailedAlert:fromViewController
-                     completionBlock:^{
-                         if (completionBlock) {
-                             completionBlock(NO);
-                         }
-                     }];
-        return;
-    }
-    NSString *displayName = [contactsManager displayNameForContact:contact];
-    [self showUnblockPhoneNumbersActionSheet:phoneNumbers
-                                 displayName:displayName
-                          fromViewController:fromViewController
-                             blockingManager:blockingManager
-                             completionBlock:completionBlock];
-}
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController

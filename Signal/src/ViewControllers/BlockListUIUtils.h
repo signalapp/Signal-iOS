@@ -19,14 +19,6 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 
 #pragma mark - Block
 
-// TODO: Still necessary?
-+ (void)showBlockContactActionSheet:(Contact *)contact
-                 fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
-
-// TODO: Still necessary?
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -41,14 +33,6 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 
 #pragma mark - Unblock
 
-// TODO: Still necessary?
-+ (void)showUnblockContactActionSheet:(Contact *)contact
-                   fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
-                      contactsManager:(OWSContactsManager *)contactsManager
-                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
-
-// TODO: Still necessary?
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager

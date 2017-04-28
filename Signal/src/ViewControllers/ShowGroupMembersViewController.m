@@ -154,9 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL isBlocked;
     if (contactAccount) {
-        Contact *contact = contactAccount.contact;
-
-        isBlocked = [helper isContactBlocked:contact];
+        isBlocked = [helper isRecipientIdBlocked:contactAccount.recipientId];
         if (isBlocked) {
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -164,11 +162,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
-                                                         showUnblockContactActionSheet:contact
-                                                                    fromViewController:self
-                                                                       blockingManager:helper.blockingManager
-                                                                       contactsManager:helper.contactsManager
-                                                                       completionBlock:nil];
+                                                         showUnblockContactAccountActionSheet:contactAccount
+                                                                           fromViewController:self
+                                                                              blockingManager:helper.blockingManager
+                                                                              contactsManager:helper.contactsManager
+                                                                              completionBlock:nil];
                                                  }]];
         } else {
             [actionSheetController
@@ -177,11 +175,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
-                                                         showBlockContactActionSheet:contact
-                                                                  fromViewController:self
-                                                                     blockingManager:helper.blockingManager
-                                                                     contactsManager:helper.contactsManager
-                                                                     completionBlock:nil];
+                                                         showBlockContactAccountActionSheet:contactAccount
+                                                                         fromViewController:self
+                                                                            blockingManager:helper.blockingManager
+                                                                            contactsManager:helper.contactsManager
+                                                                            completionBlock:nil];
                                                  }]];
         }
     } else {

@@ -4,7 +4,9 @@
 
 #import "SelectThreadViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
+#import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "InboxTableViewCell.h"
 #import "OWSContactsManager.h"
@@ -14,20 +16,18 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SelectThreadViewController () <OWSTableViewControllerDelegate, ThreadViewHelperDelegate, UISearchBarDelegate>
+@interface SelectThreadViewController () <OWSTableViewControllerDelegate,
+    ThreadViewHelperDelegate,
+    ContactsViewHelperDelegate,
+    UISearchBarDelegate>
 
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
-
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic) NSArray<Contact *> *contacts;
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 
@@ -51,16 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-    _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-    _contactsManager = [Environment getCurrent].contactsManager;
-    self.contacts = [self filteredContacts];
+    _contactsViewHelper = [ContactsViewHelper new];
+    _contactsViewHelper.delegate = self;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
     [self createViews];
-
-    [self addNotificationListeners];
 
     [self updateTableContents];
 }
@@ -69,23 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-}
-
-- (void)addNotificationListeners
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
-                                               object:nil];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)createViews
@@ -149,6 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTableContents
 {
     __weak SelectThreadViewController *weakSelf = self;
+    ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
     OWSTableSection *section = [OWSTableSection new];
 
@@ -163,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
             // To be consistent with the threads (above), we use ContactTableViewCell
             // instead of InboxTableViewCell to present contacts and threads.
             ContactTableViewCell *cell = [ContactTableViewCell new];
-            [cell configureWithThread:thread contactsManager:strongSelf.contactsManager];
+            [cell configureWithThread:thread contactsManager:helper.contactsManager];
             return cell;
         }
                              customRowHeight:[ContactTableViewCell rowHeight]
@@ -173,8 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Contacts
-    NSArray<Contact *> *filteredContacts = [self filteredContactsWithSearchText];
-    for (Contact *contact in filteredContacts) {
+    NSArray<ContactAccount *> *filteredContactAccounts = [self filteredContactAccountsWithSearchText];
+    for (ContactAccount *contactAccount in filteredContactAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             if (!strongSelf) {
@@ -182,19 +162,20 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
-            BOOL isBlocked = [strongSelf isContactBlocked:contact];
+            BOOL isBlocked = [helper isRecipientIdBlocked:contactAccount.recipientId];
             if (isBlocked) {
                 cell.accessoryMessage
                     = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
             } else {
                 OWSAssert(cell.accessoryMessage == nil);
             }
-            [cell configureWithContact:contact contactsManager:strongSelf.contactsManager];
+            // TODO: Use contact account
+            [cell configureWithContact:contactAccount.contact contactsManager:helper.contactsManager];
             return cell;
         }
                              customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
-                                 [weakSelf contactWasSelected:contact];
+                                 [weakSelf contactAccountWasSelected:contactAccount];
                              }]];
     }
 
@@ -215,33 +196,31 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.contents = contents;
 }
 
-- (void)contactWasSelected:(Contact *)contact
+- (void)contactAccountWasSelected:(ContactAccount *)contactAccount
 {
-    OWSAssert(contact);
+    OWSAssert(contactAccount);
     OWSAssert(self.delegate);
 
-    // TODO: Use ContactAccount.
-    NSString *recipientId = contact.textSecureIdentifiers.firstObject;
-    
-    if ([self isRecipientIdBlocked:recipientId] &&
-        ![self.delegate canSelectBlockedContact]) {
-        
+    ContactsViewHelper *helper = self.contactsViewHelper;
+
+    if ([helper isRecipientIdBlocked:contactAccount.recipientId] && ![self.delegate canSelectBlockedContact]) {
+
         __weak SelectThreadViewController *weakSelf = self;
-        [BlockListUIUtils showUnblockContactActionSheet:contact
-                                     fromViewController:self
-                                        blockingManager:self.blockingManager
-                                        contactsManager:self.contactsManager
-                                        completionBlock:^(BOOL isBlocked) {
-                                            if (!isBlocked) {
-                                                [weakSelf contactWasSelected:contact];
-                                            }
-                                        }];
+        [BlockListUIUtils showUnblockContactAccountActionSheet:contactAccount
+                                            fromViewController:self
+                                               blockingManager:helper.blockingManager
+                                               contactsManager:helper.contactsManager
+                                               completionBlock:^(BOOL isBlocked) {
+                                                   if (!isBlocked) {
+                                                       [weakSelf contactAccountWasSelected:contactAccount];
+                                                   }
+                                               }];
         return;
     }
 
     __block TSThread *thread = nil;
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+        thread = [TSContactThread getOrCreateThreadWithContactId:contactAccount.recipientId transaction:transaction];
     }];
     OWSAssert(thread);
 
@@ -278,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // TODO: Move this to contacts view helper.
-- (NSArray<Contact *> *)filteredContactsWithSearchText
+- (NSArray<ContactAccount *> *)filteredContactAccountsWithSearchText
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
@@ -293,87 +272,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *searchString = [self.searchBar text];
 
-    NSArray *nonRedundantContacts =
-        [self.contacts filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(Contact *contact,
-                                                       NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:contact.textSecureIdentifiers.firstObject];
+    ContactsViewHelper *helper = self.contactsViewHelper;
+    return [[helper contactAccountsMatchingSearchString:searchString]
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(ContactAccount *contactAccount,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return ![contactIdsToIgnore containsObject:contactAccount.recipientId];
         }]];
-
-    // TODO: Move this to contacts view helper.
-    OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts:nonRedundantContacts];
-    NSArray<Contact *> *filteredContacts = [contactsSearcher filterWithString:searchString];
-
-    return filteredContacts;
-}
-
-#pragma mark - Contacts and Blocking
-
-- (void)blockedPhoneNumbersDidChange:(id)notification
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-
-        [self updateContacts];
-    });
-}
-
-- (void)signalRecipientsDidChange:(NSNotification *)notification
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateContacts];
-    });
-}
-
-- (void)updateContacts
-{
-    OWSAssert([NSThread isMainThread]);
-
-    self.contacts = [self filteredContacts];
-    [self updateTableContents];
-}
-
-- (BOOL)isContactBlocked:(Contact *)contact
-{
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
-        return NO;
-    }
-    
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([_blockedPhoneNumberSet containsObject:phoneNumber.toE164]) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
-
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
-{
-    OWSAssert(recipientId.length > 0);
-    
-    return [_blockedPhoneNumberSet containsObject:recipientId];
-}
-
-- (BOOL)isContactHidden:(Contact *)contact
-{
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
-        return YES;
-    }
-
-    return NO;
-}
-
-- (NSArray<Contact *> *_Nonnull)filteredContacts
-{
-    NSMutableArray<Contact *> *result = [NSMutableArray new];
-    for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactHidden:contact]) {
-            [result addObject:contact];
-        }
-    }
-    return [result copy];
 }
 
 #pragma mark - Events
@@ -396,6 +300,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)threadListDidChange
 {
     [self updateTableContents];
+}
+
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
+{
+    [self updateTableContents];
+}
+
+- (BOOL)shouldHideLocalNumber
+{
+    return NO;
 }
 
 #pragma mark - Logging

@@ -56,6 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)localNumber;
 
+- (NSArray<ContactAccount *> *)contactAccountsMatchingSearchString:(NSString *)searchText;
+
 @end
 
 NS_ASSUME_NONNULL_END

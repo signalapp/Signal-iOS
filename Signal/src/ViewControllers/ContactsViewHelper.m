@@ -207,6 +207,55 @@ NS_ASSUME_NONNULL_BEGIN
     return [result copy];
 }
 
+- (BOOL)doesContactAccount:(ContactAccount *)contactAccount matchSearchTerm:(NSString *)searchTerm
+{
+    OWSAssert(contactAccount);
+    OWSAssert(searchTerm.length > 0);
+
+    if ([contactAccount.contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
+        return YES;
+    }
+
+    NSString *asPhoneNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
+    if (asPhoneNumber.length > 0 && [contactAccount.recipientId containsString:asPhoneNumber]) {
+        return YES;
+    }
+
+    return NO;
+}
+
+- (BOOL)doesContactAccount:(ContactAccount *)contactAccount matchSearchTerms:(NSArray<NSString *> *)searchTerms
+{
+    OWSAssert(contactAccount);
+    OWSAssert(searchTerms.count > 0);
+
+    for (NSString *searchTerm in searchTerms) {
+        if (![self doesContactAccount:contactAccount matchSearchTerm:searchTerm]) {
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
+- (NSArray<ContactAccount *> *)contactAccountsMatchingSearchString:(NSString *)searchText
+{
+
+    NSArray<NSString *> *searchTerms =
+        [[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    if (searchTerms.count < 1) {
+        return self.allRecipientContactAccounts;
+    }
+
+    return [self.allRecipientContactAccounts
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(ContactAccount *contactAccount,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return [self doesContactAccount:contactAccount matchSearchTerms:searchTerms];
+        }]];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
