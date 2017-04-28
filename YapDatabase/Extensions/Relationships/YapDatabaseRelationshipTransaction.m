@@ -2091,10 +2091,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 	// AKA: typeof(dst) IS BLOB
 	
 	int const column_idx_rowid  = SQLITE_COLUMN_START + 0;
-	int const column_idx_src    = SQLITE_COLUMN_START + 2;
-	int const column_idx_dst    = SQLITE_COLUMN_START + 3;
-	int const column_idx_rules  = SQLITE_COLUMN_START + 4;
-	int const column_idx_manual = SQLITE_COLUMN_START + 5;
+	int const column_idx_src    = SQLITE_COLUMN_START + 1;
+	int const column_idx_dst    = SQLITE_COLUMN_START + 2;
+	int const column_idx_rules  = SQLITE_COLUMN_START + 3;
+	int const column_idx_manual = SQLITE_COLUMN_START + 4;
 	
 	int const bind_idx_src = SQLITE_BIND_START + 0;
 	int const bind_idx_name = SQLITE_BIND_START + 1;
