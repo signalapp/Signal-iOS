@@ -52,11 +52,6 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [self.navigationController.navigationBar setTranslucent:NO];
 
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        BlockListViewController *vc = [[BlockListViewController alloc] init];
-        [self.navigationController pushViewController:vc animated:YES];
-    });
 }
 
 - (instancetype)init {

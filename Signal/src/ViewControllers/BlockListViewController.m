@@ -74,11 +74,6 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-        [self.navigationController pushViewController:vc animated:YES];
-    });
 }
 
 #pragma mark - Table view data source

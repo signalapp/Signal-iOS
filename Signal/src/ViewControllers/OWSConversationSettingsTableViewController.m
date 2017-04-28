@@ -140,29 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateTableContents];
-
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            OWSAssert(self.delegate);
-            UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
-            updateGroupViewController.delegate = self.delegate;
-            updateGroupViewController.thread = (TSGroupThread *)self.thread;
-            [self.navigationController pushViewController:updateGroupViewController animated:YES];
-        });
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        OWSAssert(self.delegate);
-    //        UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
-    //        updateGroupViewController.delegate = self.delegate;
-    //        [updateGroupViewController configWithThread:(TSGroupThread *)self.thread];
-    //        [self.navigationController pushViewController:updateGroupViewController animated:YES];
-    //    });
 }
 
 - (void)updateTableContents

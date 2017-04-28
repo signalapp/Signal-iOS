@@ -499,9 +499,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image);
 
     self.avatarView.image = image;
-    // TODO.
-    //    self.groupImageButton.imageView.layer.borderColor   = [[UIColor lightGrayColor] CGColor];
-    //    self.groupImageButton.imageView.layer.borderWidth   = 0.5f;
+    self.avatarView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.avatarView.layer.borderWidth = 0.5f;
     self.avatarView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
@@ -525,16 +524,6 @@ NS_ASSUME_NONNULL_BEGIN
                              NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit the new group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                             @"The label for the 'save' button in action sheets.")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     OWSAssert(self.delegate);
-
-                                                     [self createGroup];
-
-                                                     [self.delegate popAllConversationSettingsViews];
-                                                 }]];
     [controller
         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
                                                      @"The label for the 'discard' button in alerts and action sheets.")

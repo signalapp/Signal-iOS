@@ -163,15 +163,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                object:nil];
     
     [self updateBarButtonItems];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        //        [self settingsButtonPressed:nil];
-
-        [self performSegueWithIdentifier:@"composeNew" sender:self];
-
-        //        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        //        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
-    });
 }
 
 - (void)updateBarButtonItems {
@@ -297,12 +288,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     } else {
         [self displayAnyUnseenUpgradeExperience];
     }
-
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        //        [self performSegueWithIdentifier:@"composeNew" sender:self];
-    //        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-    //        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
-    //    });
 }
 
 #pragma mark - startup

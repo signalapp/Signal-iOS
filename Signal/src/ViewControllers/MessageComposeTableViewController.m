@@ -157,13 +157,6 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NewGroupViewController *newGroupViewController = [NewGroupViewController new];
-        //            [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-        //        [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
-        [self.navigationController pushViewController:newGroupViewController animated:YES];
-    });
 }
 
 - (void)viewWillAppear:(BOOL)animated

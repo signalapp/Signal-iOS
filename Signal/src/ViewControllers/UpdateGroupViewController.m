@@ -121,12 +121,6 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        AddToGroupViewController *viewController = [AddToGroupViewController new];
-        viewController.addToGroupDelegate = self;
-        [self.navigationController pushViewController:viewController animated:YES];
-    });
-
     [self updateTableContents];
 }
 
@@ -407,12 +401,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image);
 
     self.avatarView.image = image;
-    //    [self.avatarView setImage:image forState:UIControlStateNormal];
-    //    self.groupImageButton.imageView.layer.cornerRadius  = CGRectGetWidth([self.groupImageButton.imageView frame])
-    //    / 2.0f; self.groupImageButton.imageView.layer.masksToBounds = YES;
-    // TODO.
-    //    self.groupImageButton.imageView.layer.borderColor   = [[UIColor lightGrayColor] CGColor];
-    //    self.groupImageButton.imageView.layer.borderWidth   = 0.5f;
+    self.avatarView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.avatarView.layer.borderWidth = 0.5f;
     self.avatarView.contentMode = UIViewContentModeScaleAspectFill;
 }
 

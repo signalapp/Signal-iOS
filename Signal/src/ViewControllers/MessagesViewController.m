@@ -409,12 +409,6 @@ typedef enum : NSUInteger {
                                 contactsManager:self.contactsManager
                                 blockingManager:self.blockingManager];
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        //        [self performSegueWithIdentifier:@"composeNew" sender:self];
-        //        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        //        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
-        [self showConversationSettings];
-    });
 }
 
 - (void)viewDidLayoutSubviews
@@ -737,13 +731,6 @@ typedef enum : NSUInteger {
         _callOnOpen = NO;
     }
     [self updateNavigationBarSubtitleLabel];
-
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        //        [self performSegueWithIdentifier:@"composeNew" sender:self];
-    //        //        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-    //        //        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
-    //        [self showConversationSettings];
-    //    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

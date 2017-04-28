@@ -105,6 +105,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)shouldHideContacts
+{
+    return NO;
+}
+
 - (BOOL)shouldValidatePhoneNumbers
 {
     return NO;
