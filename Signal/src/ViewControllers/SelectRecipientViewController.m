@@ -248,9 +248,11 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         return;
     }
 
+    NSString *rawPhoneNumber = [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
+
     NSMutableArray<NSString *> *possiblePhoneNumbers = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:self.phoneNumberTextField.text.digitsOnly
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:rawPhoneNumber
                                               clientPhoneNumber:[TSStorageManager localNumber]]) {
         [possiblePhoneNumbers addObject:phoneNumber.toE164];
     }
@@ -258,6 +260,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         OWSAssert(0);
         return;
     }
+    // There should only be one phone number, since we're explicitly specifying
+    // a country code and therefore parsing a number in e164 format.
+    OWSAssert([possiblePhoneNumbers count] == 1);
 
     if ([self.delegate shouldValidatePhoneNumbers]) {
         // Show an alert while validating the recipient.
@@ -305,7 +310,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                                   }];
             }];
     } else {
-        // Use just the first phone number.
         NSString *recipientId = possiblePhoneNumbers[0];
         [self.delegate phoneNumberWasSelected:recipientId];
     }

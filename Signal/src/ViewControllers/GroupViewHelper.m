@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
 
     if (rawAvatar) {
-        // TODO: This is busted.
+        // TODO: There may be a bug here.
         UIImage *resizedAvatar = [rawAvatar resizedImageToFitInSize:CGSizeMake(100.00, 100.00) scaleIfSmaller:NO];
         [self.delegate groupAvatarDidChange:resizedAvatar];
     }

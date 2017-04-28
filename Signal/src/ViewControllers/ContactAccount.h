@@ -16,13 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 // An E164 value identifying the signal account.
 @property (nonatomic) NSString *recipientId;
 
-//// TODO:
-//@property (nonatomic) NSString *displayName;
-//
-//// TODO:
-//@property (nonatomic) NSAttributedString *attributedDisplayName;
-
-// TODO: This might be redundant.
 @property (nonatomic) BOOL isMultipleAccountContact;
 
 // For contacts with more than one signal account,

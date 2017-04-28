@@ -107,9 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
         if (contact.textSecureIdentifiers.count == 1) {
             ContactAccount *contactAccount = [ContactAccount new];
             contactAccount.contact = contact;
-            //            contactAccount.displayName = contact.fullName;
-            //            contactAccount.attributedDisplayName = [self.contactsManager
-            //            formattedFullNameForContact:contact];
             NSString *recipientId = contact.textSecureIdentifiers[0];
             contactAccount.recipientId = recipientId;
             [allRecipientContactAccounts addObject:contactAccount];
@@ -121,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                 contactAccount.contact = contact;
                 contactAccount.recipientId = recipientId;
                 contactAccount.isMultipleAccountContact = YES;
-                // TODO:
+                // TODO: Store the phone number's "label" if possible.
                 contactAccount.multipleAccountLabel = recipientId;
                 [allRecipientContactAccounts addObject:contactAccount];
                 contactAccountMap[recipientId] = contactAccount;
@@ -240,7 +237,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<ContactAccount *> *)contactAccountsMatchingSearchString:(NSString *)searchText
 {
-
     NSArray<NSString *> *searchTerms =
         [[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
             componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
