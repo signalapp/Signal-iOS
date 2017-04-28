@@ -22,6 +22,7 @@
 #import "TSStorageManager+Calling.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -274,23 +275,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSString *filename = url.lastPathComponent;
         if ([filename stringByDeletingPathExtension].length < 1) {
             DDLogError(@"Application opened with URL invalid filename: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
-                                              @"Message for the alert indicating the 'export with signal' file had an "
-                                              @"invalid filename.")];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
+                                       @"Message for the alert indicating the 'export with signal' file had an "
+                                       @"invalid filename.")];
             return NO;
         }
         NSString *fileExtension = [filename pathExtension];
         if (fileExtension.length < 1) {
             DDLogError(@"Application opened with URL missing file extension: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
-                                              @"Message for the alert indicating the 'export with signal' file had "
-                                              @"unknown type.")];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
+                                       @"Message for the alert indicating the 'export with signal' file had "
+                                       @"unknown type.")];
             return NO;
         }
         
@@ -322,41 +325,47 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         } else if ([isDirectory boolValue]) {
             DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
             DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [self showErrorAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                                                            @"Alert title when picking a document fails because user picked a directory/bundle")
-                                  message:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                                            @"Alert body when picking a document fails because user picked a directory/bundle")];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                        @"Alert title when picking a document fails because user picked a directory/bundle")
+                           message:
+                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
             return NO;
         }
         
         NSData *data = [NSData dataWithContentsOfURL:url];
         if (!data) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
-                                              @"Message for the alert indicating the 'export with signal' data "
-                                              @"couldn't be loaded.")];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
+                                       @"Message for the alert indicating the 'export with signal' data "
+                                       @"couldn't be loaded.")];
             return NO;
         }
         SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
-                                              @"Message for the alert indicating the 'export with signal' attachment "
-                                              @"couldn't be loaded.")];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
+                                       @"Message for the alert indicating the 'export with signal' attachment "
+                                       @"couldn't be loaded.")];
             return NO;
         }
         if ([attachment hasError]) {
             DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:[attachment errorName]];
+            [ViewControllerUtils
+                showAlertWithTitle:
+                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                           message:[attachment errorName]];
             return NO;
         }
         DDLogInfo(@"Application opened with URL: %@", url);
@@ -381,23 +390,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
-}
-
-- (void)showErrorAlertWithTitle:(NSString *)title message:(NSString *)message
-{
-    OWSAssert(title.length > 0);
-    OWSAssert(message.length > 0);
-
-    UIAlertController *controller =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:nil]];
-
-    [[Environment getCurrent].signalsViewController presentTopLevelModalViewController:controller
-                                                                      animateDismissal:YES
-                                                                   animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {

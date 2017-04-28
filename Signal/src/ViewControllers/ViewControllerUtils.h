@@ -20,4 +20,14 @@
 
 + (NSString *)formatFileSize:(unsigned long)fileSize;
 
+#pragma mark - Alerts
+
++ (UIAlertController *)showAlertWithTitle:(NSString *)title message:(NSString *)message;
+
++ (UIAlertController *)showAlertWithTitle:(NSString *)title
+                                  message:(NSString *)message
+                              buttonLabel:(NSString *)buttonLabel;
+
++ (UIViewController *)topMostController;
+
 @end

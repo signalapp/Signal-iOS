@@ -4,29 +4,30 @@
 
 #import "ShowGroupMembersViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
+#import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "GroupContactsResult.h"
 #import "OWSContactsManager.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSGroupModel.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue";
+@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate>
 
-@interface ShowGroupMembersViewController ()
+@property (nonatomic, readonly) TSGroupThread *thread;
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
-@property GroupContactsResult *groupContacts;
-@property TSGroupThread *thread;
-@property (nonatomic, readonly) OWSContactsManager *_Nonnull contactsManager;
-
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+@property (nonatomic, nullable) NSSet<NSString *> *memberRecipientIds;
 
 @end
+
+#pragma mark -
 
 @implementation ShowGroupMembersViewController
 
@@ -57,37 +58,20 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)commonInit
 {
-    _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
-    _contactsManager = [Environment getCurrent].contactsManager;
-
-    [self addNotificationListeners];
+    _contactsViewHelper = [ContactsViewHelper new];
+    _contactsViewHelper.delegate = self;
 }
 
-- (void)addNotificationListeners
+- (void)configWithThread:(TSGroupThread *)thread
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
-                                               object:nil];
-}
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
+    _thread = thread;
 
-- (void)blockedPhoneNumbersDidChange:(id)notification
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    OWSAssert(self.thread);
+    OWSAssert(self.thread.groupModel);
+    OWSAssert(self.thread.groupModel.groupMemberIds);
 
-        [self.tableView reloadData];
-    });
-}
-
-- (void)configWithThread:(TSGroupThread *)gThread {
-    _thread = gThread;
+    self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
 }
 
 - (void)viewDidLoad {
@@ -96,105 +80,66 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
     self.title = _thread.groupModel.groupName;
 
-    [self initializeTableView];
+    [self updateTableContents];
+}
 
-    self.groupContacts =
-        [[GroupContactsResult alloc] initWithMembersId:self.thread.groupModel.groupMemberIds without:nil];
+#pragma mark - Table Contents
+
+- (void)updateTableContents
+{
+    OWSAssert(self.thread);
+
+    OWSTableContents *contents = [OWSTableContents new];
+
     __weak ShowGroupMembersViewController *weakSelf = self;
-    [self.contactsManager.getObservableContacts watchLatestValue:^(id latestValue) {
-        ShowGroupMembersViewController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
+    ContactsViewHelper *helper = self.contactsViewHelper;
+
+    // Group Members
+
+    OWSTableSection *section = [OWSTableSection new];
+
+    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
+    [memberRecipientIds removeObject:[helper localNumber]];
+    for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            ShowGroupMembersViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return (ContactTableViewCell *)nil;
+            }
+
+            ContactTableViewCell *cell = [ContactTableViewCell new];
+            ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+            BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+            if (isBlocked) {
+                cell.accessoryMessage
+                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+            }
+
+            if (contactAccount) {
+                // TODO: Use the account label.
+                [cell configureWithContact:contactAccount.contact contactsManager:helper.contactsManager];
+            } else {
+                [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+            }
+
+            return cell;
         }
-        strongSelf.groupContacts =
-            [[GroupContactsResult alloc] initWithMembersId:strongSelf.thread.groupModel.groupMemberIds without:nil];
-        [strongSelf.tableView reloadData];
+                             customRowHeight:[ContactTableViewCell rowHeight]
+                             actionBlock:^{
+                                 [weakSelf didSelectRecipientId:recipientId];
+                             }]];
     }
-                                                        onThread:[NSThread mainThread]
-                                                  untilCancelled:nil];
+    [contents addSection:section];
+
+    self.contents = contents;
 }
 
-#pragma mark - Initializers
-
-- (void)initializeTableView {
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    [self.tableView registerClass:[ContactTableViewCell class]
-           forCellReuseIdentifier:kContactsTable_CellReuseIdentifier];
-}
-
-#pragma mark - Actions
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[self.groupContacts numberOfMembers] + 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)didSelectRecipientId:(NSString *)recipientId
 {
+    OWSAssert(recipientId.length > 0);
 
-    if (indexPath.row == 0) {
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text      = NSLocalizedString(@"GROUP_MEMBERS_HEADER", @"header for table which lists the members of this group thread");
-        cell.textLabel.textColor = [UIColor lightGrayColor];
-        cell.selectionStyle      = UITableViewCellSelectionStyleNone;
-        cell.userInteractionEnabled = NO;
-        return cell;
-    }
-
-    // Adjust index path for the header row.
-    indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
-
-    ContactTableViewCell *cell = [ContactTableViewCell new];
-
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self contactForIndexPath:indexPath];
-
-        BOOL isBlocked = [self isContactBlocked:contact];
-        if (isBlocked) {
-            cell.accessoryMessage
-                = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-        } else {
-            OWSAssert(cell.accessoryMessage == nil);
-        }
-        [cell configureWithContact:contact contactsManager:self.contactsManager];
-    } else {
-        NSString *recipientId = [self.groupContacts identifierForIndexPath:indexPath];
-        BOOL isBlocked = [self isRecipientIdBlocked:recipientId];
-        if (isBlocked) {
-            cell.accessoryMessage
-                = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-        } else {
-            OWSAssert(cell.accessoryMessage == nil);
-        }
-        [cell configureWithRecipientId:recipientId contactsManager:self.contactsManager];
-    }
-    return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.row == 0) {
-        return 45.f;
-    } else {
-        return [ContactTableViewCell rowHeight];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        OWSAssert(0);
-        return;
-    }
-
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    // Adjust index path for the header row.
-    indexPath = [NSIndexPath indexPathForRow:indexPath.row - 1 inSection:indexPath.section];
+    ContactsViewHelper *helper = self.contactsViewHelper;
+    ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -204,14 +149,14 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                      @"Button label for the 'show contact info' button")
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *_Nonnull action) {
-                                             [self showContactInfoViewForMember:indexPath];
+                                             [self showContactInfoViewForRecipientId:recipientId];
                                          }]];
 
     BOOL isBlocked;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self contactForIndexPath:indexPath];
+    if (contactAccount) {
+        Contact *contact = contactAccount.contact;
 
-        isBlocked = [self isContactBlocked:contact];
+        isBlocked = [helper isContactBlocked:contact];
         if (isBlocked) {
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -221,8 +166,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                      [BlockListUIUtils
                                                          showUnblockContactActionSheet:contact
                                                                     fromViewController:self
-                                                                       blockingManager:self.blockingManager
-                                                                       contactsManager:self.contactsManager
+                                                                       blockingManager:helper.blockingManager
+                                                                       contactsManager:helper.contactsManager
                                                                        completionBlock:nil];
                                                  }]];
         } else {
@@ -231,16 +176,16 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                              @"Button label for the 'block' button")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils showBlockContactActionSheet:contact
-                                                                                fromViewController:self
-                                                                                   blockingManager:self.blockingManager
-                                                                                   contactsManager:self.contactsManager
-                                                                                   completionBlock:nil];
+                                                     [BlockListUIUtils
+                                                         showBlockContactActionSheet:contact
+                                                                  fromViewController:self
+                                                                     blockingManager:helper.blockingManager
+                                                                     contactsManager:helper.contactsManager
+                                                                     completionBlock:nil];
                                                  }]];
         }
     } else {
-        NSString *recipientId = [self.groupContacts identifierForIndexPath:indexPath];
-        isBlocked = [self isRecipientIdBlocked:recipientId];
+        isBlocked = [helper isRecipientIdBlocked:recipientId];
         if (isBlocked) {
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -250,8 +195,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                      [BlockListUIUtils
                                                          showUnblockPhoneNumberActionSheet:recipientId
                                                                         fromViewController:self
-                                                                           blockingManager:self.blockingManager
-                                                                           contactsManager:self.contactsManager
+                                                                           blockingManager:helper.blockingManager
+                                                                           contactsManager:helper.contactsManager
                                                                            completionBlock:nil];
                                                  }]];
         } else {
@@ -263,8 +208,8 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                      [BlockListUIUtils
                                                          showBlockPhoneNumberActionSheet:recipientId
                                                                       fromViewController:self
-                                                                         blockingManager:self.blockingManager
-                                                                         contactsManager:self.contactsManager
+                                                                         blockingManager:helper.blockingManager
+                                                                         contactsManager:helper.contactsManager
                                                                          completionBlock:nil];
                                                  }]];
         }
@@ -276,14 +221,14 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                          @"Button label for the 'send message to group member' button")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showConversationViewForMember:indexPath];
+                                                 [self showConversationViewForRecipientId:recipientId];
                                              }]];
         [actionSheetController
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
                                                          @"Button label for the 'call group member' button")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self callMember:indexPath];
+                                                 [self callMember:recipientId];
                                              }]];
     }
 
@@ -295,15 +240,19 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-- (void)showContactInfoViewForMember:(NSIndexPath *)indexPath
+- (void)showContactInfoViewForRecipientId:(NSString *)recipientId
 {
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
+    OWSAssert(recipientId.length > 0);
+
+    ContactsViewHelper *helper = self.contactsViewHelper;
+    ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+
+    if (contactAccount) {
         ABPersonViewController *view = [[ABPersonViewController alloc] init];
 
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
-        view.displayedPerson
-            = ABAddressBookGetPersonWithRecordID(addressBookRef, contact.recordID); // Assume person is already defined.
+        // Assume person is already defined.
+        view.displayedPerson = ABAddressBookGetPersonWithRecordID(addressBookRef, contactAccount.contact.recordID);
         view.allowsActions = NO;
         view.allowsEditing = YES;
 
@@ -315,70 +264,41 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         CFErrorRef anError   = NULL;
 
         ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-        ABMultiValueAddValueAndLabel(phone,
-            (__bridge CFTypeRef)[self.tableView cellForRowAtIndexPath:indexPath].textLabel.text,
-            kABPersonPhoneMainLabel,
-            NULL);
+        ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)recipientId, kABPersonPhoneMainLabel, NULL);
 
         ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
         CFRelease(phone);
 
         if (!anError && aContact) {
-            view.displayedPerson           = aContact; // Assume person is already defined.
+            view.displayedPerson = aContact; // Assume person is already defined.
             view.allowsAddingToAddressBook = YES;
             [self.navigationController pushViewController:view animated:YES];
         }
     }
 }
 
-- (void)showConversationViewForMember:(NSIndexPath *)indexPath
+- (void)showConversationViewForRecipientId:(NSString *)recipientId
 {
-    NSString *recipientId;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
-        recipientId = [[contact textSecureIdentifiers] firstObject];
-    } else {
-        recipientId = [self.groupContacts identifierForIndexPath:indexPath];
-    }
+    OWSAssert(recipientId.length > 0);
+
     [Environment messageIdentifier:recipientId withCompose:YES];
 }
 
-- (void)callMember:(NSIndexPath *)indexPath
+- (void)callMember:(NSString *)recipientId
 {
-    NSString *recipientId;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
-        recipientId = [[contact textSecureIdentifiers] firstObject];
-    } else {
-        recipientId = [self.groupContacts identifierForIndexPath:indexPath];
-    }
     [Environment callUserWithIdentifier:recipientId];
 }
 
-- (Contact *)contactForIndexPath:(NSIndexPath *)indexPath {
-    Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
-    return contact;
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
+{
+    [self updateTableContents];
 }
 
-- (BOOL)isContactBlocked:(Contact *)contact
+- (BOOL)shouldHideLocalNumber
 {
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Do not consider contacts without any valid phone numbers to be blocked.
-        return NO;
-    }
-
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
-{
-    return [_blockedPhoneNumbers containsObject:recipientId];
+    return YES;
 }
 
 @end

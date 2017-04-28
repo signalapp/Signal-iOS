@@ -176,6 +176,38 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _contents = [OWSTableContents new];
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    _contents = [OWSTableContents new];
+
+    return self;
+}
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (!self) {
+        return self;
+    }
+
+    _contents = [OWSTableContents new];
+
+    return self;
+}
+
 - (void)loadView
 {
     [super loadView];
@@ -189,10 +221,10 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
-    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+    [self.tableView autoPinHeightToSuperview];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }

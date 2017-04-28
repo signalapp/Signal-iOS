@@ -6,7 +6,6 @@
 #import "BlockListUIUtils.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "NewGroupViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
@@ -17,6 +16,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import "UpdateGroupViewController.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -120,15 +120,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Lifecycle
 
-- (void)loadView
-{
-    // Initialize with empty contents. We'll populate the
-    // contents later.
-    self.contents = [OWSTableContents new];
-
-    [super loadView];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -149,6 +140,29 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateTableContents];
+
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OWSAssert(self.delegate);
+            UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+            updateGroupViewController.delegate = self.delegate;
+            updateGroupViewController.thread = (TSGroupThread *)self.thread;
+            [self.navigationController pushViewController:updateGroupViewController animated:YES];
+        });
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    //    dispatch_async(dispatch_get_main_queue(), ^{
+    //        OWSAssert(self.delegate);
+    //        UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+    //        updateGroupViewController.delegate = self.delegate;
+    //        [updateGroupViewController configWithThread:(TSGroupThread *)self.thread];
+    //        [self.navigationController pushViewController:updateGroupViewController animated:YES];
+    //    });
 }
 
 - (void)updateTableContents
@@ -331,10 +345,11 @@ NS_ASSUME_NONNULL_BEGIN
                     if (!strongSelf) {
                         return;
                     }
-                    NewGroupViewController *newGroupViewController =
-                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-                    [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
-                    [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
+                    OWSAssert(strongSelf.delegate);
+                    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+                    updateGroupViewController.delegate = strongSelf.delegate;
+                    updateGroupViewController.thread = (TSGroupThread *)strongSelf.thread;
+                    [strongSelf.navigationController pushViewController:updateGroupViewController animated:YES];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
@@ -548,29 +563,27 @@ NS_ASSUME_NONNULL_BEGIN
         addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
                                                                            action:@selector(conversationNameTouched:)]];
     firstSectionHeader.userInteractionEnabled = YES;
-    for (UIView *subview in firstSectionHeader.subviews) {
-        subview.userInteractionEnabled = NO;
-    }
 
     return firstSectionHeader;
 }
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
 {
-    if (sender.state == UIGestureRecognizerStateBegan || sender.state == UIGestureRecognizerStateRecognized) {
+    if (sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
-            NewGroupViewController *newGroupViewController =
-                [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-            [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
+            OWSAssert(self.delegate);
+            UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+            updateGroupViewController.delegate = self.delegate;
+            updateGroupViewController.thread = (TSGroupThread *)self.thread;
 
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                newGroupViewController.shouldEditAvatarOnAppear = YES;
+                updateGroupViewController.shouldEditAvatarOnAppear = YES;
             } else {
-                newGroupViewController.shouldEditGroupNameOnAppear = YES;
+                updateGroupViewController.shouldEditGroupNameOnAppear = YES;
             }
 
-            [self.navigationController pushViewController:newGroupViewController animated:YES];
+            [self.navigationController pushViewController:updateGroupViewController animated:YES];
         } else {
             // TODO: Edit 1:1 contact.
         }

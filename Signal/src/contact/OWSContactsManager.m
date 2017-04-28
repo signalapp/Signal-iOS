@@ -3,9 +3,10 @@
 //
 
 #import "OWSContactsManager.h"
-#import "ContactsUpdater.h"
+#import "ContactAccount.h"
 #import "Environment.h"
 #import "Util.h"
+#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 
 #define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
@@ -509,6 +510,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : self.unknownContactName;
 
     return displayName;
+}
+
+- (NSString *_Nonnull)displayNameForContactAccount:(ContactAccount *)contactAccount
+{
+    OWSAssert(contactAccount);
+
+    // TODO: We need to use the contact info label.
+    return (contactAccount.contact ? [self displayNameForContact:contactAccount.contact]
+                                   : [self displayNameForPhoneIdentifier:contactAccount.recipientId]);
 }
 
 - (NSAttributedString *_Nonnull)formattedFullNameForContact:(Contact *)contact font:(UIFont *_Nonnull)font

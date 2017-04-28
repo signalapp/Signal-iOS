@@ -7,6 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
+#import "NewGroupViewController.h"
 #import "OWSContactsSearcher.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
@@ -156,9 +157,17 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self createLoadingAndBackgroundViews];
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NewGroupViewController *newGroupViewController = [NewGroupViewController new];
+        //            [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
+        //        [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
+        [self.navigationController pushViewController:newGroupViewController animated:YES];
+    });
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
 
     [self showEmptyBackgroundViewIfNecessary];
@@ -739,7 +748,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (BOOL)isContactBlocked:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
+        // Do not consider contacts without any valid phone numbers to be blocked.
         return NO;
     }
 
@@ -781,6 +790,12 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (CGFloat)marginSize {
     return 20;
+}
+
+- (IBAction)showNewGroupView:(id)sender
+{
+    NewGroupViewController *newGroupViewController = [NewGroupViewController new];
+    [self.navigationController pushViewController:newGroupViewController animated:YES];
 }
 
 #pragma mark - UIScrollViewDelegate

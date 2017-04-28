@@ -3,6 +3,7 @@
 //
 
 #import "BlockListUIUtils.h"
+#import "ContactAccount.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import <SignalServiceKit/Contact.h>
@@ -56,6 +57,20 @@ typedef void (^BlockAlertCompletionBlock)();
 {
     NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
     [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
+                               displayName:displayName
+                        fromViewController:fromViewController
+                           blockingManager:blockingManager
+                           completionBlock:completionBlock];
+}
+
++ (void)showBlockContactAccountActionSheet:(ContactAccount *)contactAccount
+                        fromViewController:(UIViewController *)fromViewController
+                           blockingManager:(OWSBlockingManager *)blockingManager
+                           contactsManager:(OWSContactsManager *)contactsManager
+                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    NSString *displayName = [contactsManager displayNameForContactAccount:contactAccount];
+    [self showBlockPhoneNumbersActionSheet:@[ contactAccount.recipientId ]
                                displayName:displayName
                         fromViewController:fromViewController
                            blockingManager:blockingManager
@@ -200,6 +215,20 @@ typedef void (^BlockAlertCompletionBlock)();
 {
     NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
     [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
+                                 displayName:displayName
+                          fromViewController:fromViewController
+                             blockingManager:blockingManager
+                             completionBlock:completionBlock];
+}
+
++ (void)showUnblockContactAccountActionSheet:(ContactAccount *)contactAccount
+                          fromViewController:(UIViewController *)fromViewController
+                             blockingManager:(OWSBlockingManager *)blockingManager
+                             contactsManager:(OWSContactsManager *)contactsManager
+                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    NSString *displayName = [contactsManager displayNameForContactAccount:contactAccount];
+    [self showUnblockPhoneNumbersActionSheet:@[ contactAccount.recipientId ]
                                  displayName:displayName
                           fromViewController:fromViewController
                              blockingManager:blockingManager

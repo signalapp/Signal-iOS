@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 @class UIFont;
+@class ContactAccount;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
@@ -40,6 +41,7 @@ extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
+- (NSString *_Nonnull)displayNameForContactAccount:(ContactAccount *)contactAccount;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;

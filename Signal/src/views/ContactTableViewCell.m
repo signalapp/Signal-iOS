@@ -68,7 +68,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self.contentView addSubview:_nameLabel];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:8.f];
+    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 

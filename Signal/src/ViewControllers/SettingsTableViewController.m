@@ -105,6 +105,11 @@ typedef enum {
 
     [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                forState:UIControlStateNormal];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    });
 }
 
 - (void)viewWillAppear:(BOOL)animated

@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// A base class for views used to pick a single signal user, either by
+// entering a phone number or picking from your contacts.
 @interface SelectThreadViewController : UIViewController
 
 @property (nonatomic, weak) id<SelectThreadViewControllerDelegate> delegate;
