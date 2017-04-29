@@ -5,11 +5,20 @@
 #import "Contact.h"
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
+#import "TSAccountManager.h"
 #import "TSStorageManager.h"
 
 @import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface Contact ()
+
+@property (readonly, nonatomic) NSMutableDictionary<NSString *, NSNumber *> *phoneNumberTypeMap;
+
+@end
+
+#pragma mark -
 
 @implementation Contact
 
@@ -21,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
                                  andLastName:(nullable NSString *)lastName
                      andUserTextPhoneNumbers:(NSArray *)phoneNumbers
+                          phoneNumberTypeMap:(nullable NSDictionary<NSString *, NSNumber *> *)phoneNumberTypeMap
                                     andImage:(nullable UIImage *)image
                                 andContactID:(ABRecordID)record
 {
@@ -34,7 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
     _uniqueId = [self.class uniqueIdFromABRecordId:record];
     _recordID = record;
     _userTextPhoneNumbers = phoneNumbers;
-    _parsedPhoneNumbers = [self.class parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers];
+    _phoneNumberTypeMap = [NSMutableDictionary new];
+    _parsedPhoneNumbers =
+        [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberTypeMap:phoneNumberTypeMap];
     _image = image;
     // Not using emails for old AB style contacts.
     _emails = [NSMutableArray new];
@@ -55,14 +67,35 @@ NS_ASSUME_NONNULL_BEGIN
     _uniqueId = contact.identifier;
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
+    NSMutableDictionary<NSString *, NSNumber *> *phoneNumberTypeMap = [NSMutableDictionary new];
     for (CNLabeledValue *phoneNumberField in contact.phoneNumbers) {
         if ([phoneNumberField.value isKindOfClass:[CNPhoneNumber class]]) {
             CNPhoneNumber *phoneNumber = (CNPhoneNumber *)phoneNumberField.value;
             [phoneNumbers addObject:phoneNumber.stringValue];
+            if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeMobile);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberiPhone]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeIPhone);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMain]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeMain);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberHomeFax]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeHomeFAX);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberWorkFax]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeWorkFAX);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberOtherFax]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeOtherFAX);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberPager]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypePager);
+            } else {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeUnknown);
+            }
         }
     }
+
     _userTextPhoneNumbers = [phoneNumbers copy];
-    _parsedPhoneNumbers = [self.class parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers];
+    _phoneNumberTypeMap = [NSMutableDictionary new];
+    _parsedPhoneNumbers =
+        [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberTypeMap:phoneNumberTypeMap];
 
     NSMutableArray<NSString *> *emailAddresses = [NSMutableArray new];
     for (CNLabeledValue *emailField in contact.emailAddresses) {
@@ -91,16 +124,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif // TARGET_OS_IOS
 
-+ (NSArray<PhoneNumber *> *)parsedPhoneNumbersFromUserTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
+- (NSArray<PhoneNumber *> *)parsedPhoneNumbersFromUserTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
+                                                    phoneNumberTypeMap:(nullable NSDictionary<NSString *, NSNumber *> *)
+                                                                           phoneNumberTypeMap
 {
-    NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
+    OWSAssert(self.phoneNumberTypeMap);
+
+    NSMutableDictionary<NSString *, PhoneNumber *> *parsedPhoneNumberMap = [NSMutableDictionary new];
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
-        PhoneNumber *phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumberString];
-        if (phoneNumber) {
-            [parsedPhoneNumbers addObject:phoneNumber];
+        for (PhoneNumber *phoneNumber in
+            [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:phoneNumberString
+                                                  clientPhoneNumber:[TSAccountManager localNumber]]) {
+            parsedPhoneNumberMap[phoneNumber.toE164] = phoneNumber;
+            NSNumber *phoneNumberType = phoneNumberTypeMap[phoneNumberString];
+            if (phoneNumberType) {
+                self.phoneNumberTypeMap[phoneNumber.toE164] = phoneNumberType;
+            }
         }
     }
-    return [parsedPhoneNumbers copy];
+    return [parsedPhoneNumberMap.allValues sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (NSString *)fullName {
