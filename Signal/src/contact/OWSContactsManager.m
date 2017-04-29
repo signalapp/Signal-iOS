@@ -368,9 +368,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 - (Contact *)contactForRecord:(ABRecordRef)record {
     ABRecordID recordID = ABRecordGetRecordID(record);
 
-    NSString *firstName   = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonFirstNameProperty);
-    NSString *lastName    = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonLastNameProperty);
-    NSArray *phoneNumbers = [self phoneNumbersForRecord:record];
+    NSString *firstName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonFirstNameProperty);
+    NSString *lastName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonLastNameProperty);
+    NSDictionary<NSString *, NSNumber *> *phoneNumberTypeMap = [self phoneNumbersForRecord:record];
+    NSArray *phoneNumbers = [phoneNumberTypeMap.allKeys sortedArrayUsingSelector:@selector(compare:)];
 
     if (!firstName && !lastName) {
         NSString *companyName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonOrganizationProperty);
@@ -381,14 +382,14 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         }
     }
 
-    //    NSString *notes = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonNoteProperty);
-    //    NSArray *emails = [ContactsManager emailsForRecord:record];
-    NSData *image = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
-    UIImage *img = [UIImage imageWithData:image];
-    
+    NSData *imageData
+        = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
+    UIImage *img = [UIImage imageWithData:imageData];
+
     return [[Contact alloc] initWithContactWithFirstName:firstName
                                              andLastName:lastName
                                  andUserTextPhoneNumbers:phoneNumbers
+                                      phoneNumberTypeMap:phoneNumberTypeMap
                                                 andImage:img
                                             andContactID:recordID];
 }
@@ -419,27 +420,41 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
 }
 
-- (NSArray *)phoneNumbersForRecord:(ABRecordRef)record {
-    ABMultiValueRef numberRefs = ABRecordCopyValue(record, kABPersonPhoneProperty);
+- (NSDictionary<NSString *, NSNumber *> *)phoneNumbersForRecord:(ABRecordRef)record
+{
+    ABMultiValueRef phoneNumberRefs = NULL;
 
     @try {
-        NSArray *phoneNumbers = (__bridge_transfer NSArray *)ABMultiValueCopyArrayOfAllValues(numberRefs);
+        phoneNumberRefs = ABRecordCopyValue(record, kABPersonPhoneProperty);
 
-        if (phoneNumbers == nil)
-            phoneNumbers = @[];
+        CFIndex phoneNumberCount = ABMultiValueGetCount(phoneNumberRefs);
+        NSMutableDictionary<NSString *, NSNumber *> *result = [NSMutableDictionary new];
+        for (int i = 0; i < phoneNumberCount; i++) {
+            NSString *phoneNumberLabel = (__bridge_transfer NSString *)ABMultiValueCopyLabelAtIndex(phoneNumberRefs, i);
+            NSString *phoneNumber = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneNumberRefs, i);
 
-        NSMutableArray *numbers = [NSMutableArray array];
-
-        for (NSUInteger i = 0; i < phoneNumbers.count; i++) {
-            NSString *phoneNumber = phoneNumbers[i];
-            [numbers addObject:phoneNumber];
+            if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeMobile);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeIPhone);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeMain);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneHomeFAXLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeHomeFAX);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneWorkFAXLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeWorkFAX);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneOtherFAXLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypeOtherFAX);
+            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhonePagerLabel]) {
+                result[phoneNumber] = @(OWSPhoneNumberTypePager);
+            } else {
+                result[phoneNumber] = @(OWSPhoneNumberTypeUnknown);
+            }
         }
-
-        return numbers;
-
+        return [result copy];
     } @finally {
-        if (numberRefs) {
-            CFRelease(numberRefs);
+        if (phoneNumberRefs) {
+            CFRelease(phoneNumberRefs);
         }
     }
 }
@@ -597,6 +612,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
                                                  andLastName:nil
                                      andUserTextPhoneNumbers:@[ identifier ]
+                                          phoneNumberTypeMap:nil
                                                     andImage:nil
                                                 andContactID:0];
     }

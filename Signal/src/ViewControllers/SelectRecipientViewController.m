@@ -253,7 +253,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     NSMutableArray<NSString *> *possiblePhoneNumbers = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:rawPhoneNumber
-                                              clientPhoneNumber:[TSStorageManager localNumber]]) {
+                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
         [possiblePhoneNumbers addObject:phoneNumber.toE164];
     }
     if ([possiblePhoneNumbers count] < 1) {

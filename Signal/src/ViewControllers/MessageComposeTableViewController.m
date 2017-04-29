@@ -14,6 +14,7 @@
 #import "UIUtil.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -348,8 +349,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.searchResults = [contactsSearcher filterWithString:searchText];
 
     NSMutableArray<NSString *> *searchPhoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
-                                                                           clientPhoneNumber:[TSStorageManager localNumber]]) {
+    for (PhoneNumber *phoneNumber in
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
+                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
         [searchPhoneNumbers addObject:phoneNumber.toE164];
     }
     // text to a non-signal number if we have no results and a valid phone #

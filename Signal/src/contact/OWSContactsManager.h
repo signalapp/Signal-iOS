@@ -27,7 +27,6 @@ extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 - (nonnull ObservableValue *)getObservableContacts;
 
-- (nonnull NSArray *)getContactsFromAddressBook:(nonnull ABAddressBookRef)addressBook;
 - (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber;
 - (nullable Contact *)contactForPhoneIdentifier:(nullable NSString *)identifier;
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
