@@ -308,9 +308,9 @@ protocol CallServiceObserver: class {
             guard self.call == call else {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
-
             guard let peerConnectionClient = self.peerConnectionClient else {
-                throw CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)")
+                assertionFailure("Missing peerConnectionClient in \(#function)")
+                throw CallError.obsoleteCall(description:"Missing peerConnectionClient in \(#function)")
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
@@ -566,12 +566,12 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
         Logger.debug("\(TAG) called \(#function)")
 
-        guard self.thread != nil else {
+        guard let currentThread = self.thread else {
             Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?")
             return
         }
 
-        guard thread.contactIdentifier() == self.thread!.contactIdentifier() else {
+        guard thread.contactIdentifier() == currentThread.contactIdentifier() else {
             Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?")
             return
         }
@@ -746,12 +746,12 @@ protocol CallServiceObserver: class {
 
         Logger.debug("\(TAG) in \(#function)")
 
-        guard self.call != nil else {
+        guard let currentCall = self.call else {
             handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
-        guard call == self.call! else {
+        guard call == currentCall else {
             // This could conceivably happen if the other party of an old call was slow to send us their answer
             // and we've subsequently engaged in another call. Don't kill the current call, but just ignore it.
             Logger.warn("\(TAG) ignoring \(#function) for call other than current call")
@@ -851,12 +851,12 @@ protocol CallServiceObserver: class {
     func handleLocalHungupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        guard self.call != nil else {
+        guard let currentCall = self.call else {
             handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
-        guard call == self.call! else {
+        guard call == currentCall else {
             handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
             return
         }
@@ -1253,14 +1253,17 @@ protocol CallServiceObserver: class {
     private func shouldHaveLocalVideoTrack() -> Bool {
         AssertIsOnMainThread()
 
+        guard let call = self.call else {
+            return false
+        }
+
         // The iOS simulator doesn't provide any sort of camera capture
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
         // trying to open a local stream.
         return (!Platform.isSimulator &&
             UIApplication.shared.applicationState != .background &&
-            call != nil &&
-            call!.state == .connected &&
-            call!.hasLocalVideo)
+            call.state == .connected &&
+            call.hasLocalVideo)
     }
 
     //TODO only fire this when it's changed? as of right now it gets called whenever you e.g. lock the phone while it's incoming ringing.
