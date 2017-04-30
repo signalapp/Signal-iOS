@@ -229,6 +229,19 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
+- (OWSPhoneNumberType)phoneNumberTypeForPhoneNumber:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+    OWSAssert([self.textSecureIdentifiers containsObject:recipientId]);
+
+    NSNumber *value = self.phoneNumberTypeMap[recipientId];
+    OWSAssert(value);
+    if (!value) {
+        return OWSPhoneNumberTypeUnknown;
+    }
+    return (OWSPhoneNumberType)value.intValue;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

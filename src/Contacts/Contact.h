@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
 
 - (instancetype)initWithContact:(CNContact *)contact;
 
+- (OWSPhoneNumberType)phoneNumberTypeForPhoneNumber:(NSString *)recipientId;
+
 #endif // TARGET_OS_IOS
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
