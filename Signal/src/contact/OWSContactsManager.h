@@ -42,6 +42,8 @@ extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 - (NSString *)displayNameForContact:(Contact *)contact;
 - (NSString *_Nonnull)displayNameForContactAccount:(ContactAccount *)contactAccount;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
+- (NSAttributedString *_Nonnull)formattedDisplayNameForContactAccount:(ContactAccount *)contactAccount
+                                                                 font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
 

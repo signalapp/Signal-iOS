@@ -138,51 +138,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)configureWithContact:(Contact *)contact
-                 recipientId:(NSString *)recipientId
-             contactsManager:(OWSContactsManager *)contactsManager
-                   isBlocked:(BOOL)isBlocked
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(contact);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(contactsManager);
-
-    NSString *name = contact.fullName;
-    self.threadId = recipientId;
-    NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
-    if (isBlocked) {
-        // If thread is blocked, don't show a snippet or mute status.
-        [snippetText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
-                                                          @"A label for conversations with blocked users.")
-                                           attributes:@{
-                                               NSFontAttributeName : [UIFont ows_mediumFontWithSize:12],
-                                               NSForegroundColorAttributeName : [UIColor ows_blackColor],
-                                           }]];
-    }
-
-    self.nameLabel.text = name;
-    self.snippetLabel.attributedText = snippetText;
-    self.contactPictureView.image = [UIImage imageNamed:@"empty-group-avatar"];
-    [UIUtil applyRoundedBorderToImageView:_contactPictureView];
-
-    self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
-
-    [self updateCellForUnreadMessage];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *avatar = [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId
-                                                                         name:contact.fullName
-                                                              contactsManager:contactsManager] build];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.threadId isEqualToString:recipientId]) {
-                self.contactPictureView.image = avatar;
-            }
-        });
-    });
-}
 
 - (void)updateCellForUnreadMessage {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];

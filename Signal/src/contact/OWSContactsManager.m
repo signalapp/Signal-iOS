@@ -531,9 +531,40 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 {
     OWSAssert(contactAccount);
 
-    // TODO: We need to use the contact info label.
-    return (contactAccount.contact ? [self displayNameForContact:contactAccount.contact]
-                                   : [self displayNameForPhoneIdentifier:contactAccount.recipientId]);
+    NSString *baseName = (contactAccount.contact ? [self displayNameForContact:contactAccount.contact]
+                                                 : [self displayNameForPhoneIdentifier:contactAccount.recipientId]);
+    OWSAssert(contactAccount.isMultipleAccountContact == (contactAccount.multipleAccountLabel != nil));
+    if (contactAccount.multipleAccountLabel) {
+        return [NSString stringWithFormat:@"%@ (%@)", baseName, contactAccount.multipleAccountLabel];
+    } else {
+        return baseName;
+    }
+}
+
+- (NSAttributedString *_Nonnull)formattedDisplayNameForContactAccount:(ContactAccount *)contactAccount
+                                                                 font:(UIFont *_Nonnull)font
+{
+    OWSAssert(contactAccount);
+    OWSAssert(font);
+
+    NSAttributedString *baseName = [self formattedFullNameForContact:contactAccount.contact font:font];
+    OWSAssert(contactAccount.isMultipleAccountContact == (contactAccount.multipleAccountLabel != nil));
+    if (contactAccount.multipleAccountLabel) {
+        NSMutableAttributedString *result = [NSMutableAttributedString new];
+        [result appendAttributedString:baseName];
+        [result appendAttributedString:[[NSAttributedString alloc] initWithString:@" ("
+                                                                       attributes:@{
+                                                                           NSFontAttributeName : font,
+                                                                       }]];
+        [result appendAttributedString:[[NSAttributedString alloc] initWithString:contactAccount.multipleAccountLabel]];
+        [result appendAttributedString:[[NSAttributedString alloc] initWithString:@")"
+                                                                       attributes:@{
+                                                                           NSFontAttributeName : font,
+                                                                       }]];
+        return result;
+    } else {
+        return baseName;
+    }
 }
 
 - (NSAttributedString *_Nonnull)formattedFullNameForContact:(Contact *)contact font:(UIFont *_Nonnull)font

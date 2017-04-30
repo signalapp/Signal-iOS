@@ -3,6 +3,7 @@
 //
 
 #import "ContactTableViewCell.h"
+#import "ContactAccount.h"
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
@@ -86,6 +87,16 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self configureWithRecipientId:contact.textSecureIdentifiers.firstObject
                         avatarName:contact.fullName
                        displayName:[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font]
+                   contactsManager:contactsManager];
+}
+
+- (void)configureWithContactAccount:(ContactAccount *)contactAccount
+                    contactsManager:(OWSContactsManager *)contactsManager
+{
+    [self configureWithRecipientId:contactAccount.recipientId
+                        avatarName:contactAccount.contact.fullName
+                       displayName:[contactsManager formattedDisplayNameForContactAccount:contactAccount
+                                                                                     font:self.nameLabel.font]
                    contactsManager:contactsManager];
 }
 

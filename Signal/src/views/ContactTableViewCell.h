@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kContactsTable_CellReuseIdentifier;
 
 @class OWSContactsManager;
+@class ContactAccount;
 @class TSThread;
 
 @interface ContactTableViewCell : UITableViewCell
@@ -26,7 +27,11 @@ extern NSString *const kContactsTable_CellReuseIdentifier;
 
 + (CGFloat)rowHeight;
 
+// TODO: Remove this method once "new 1:1 conversation" view is converted to use ContactAccounts.
 - (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
+
+- (void)configureWithContactAccount:(ContactAccount *)contactAccount
+                    contactsManager:(OWSContactsManager *)contactsManager;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
 

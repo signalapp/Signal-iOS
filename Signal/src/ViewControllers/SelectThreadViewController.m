@@ -169,8 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 OWSAssert(cell.accessoryMessage == nil);
             }
-            // TODO: Use contact account
-            [cell configureWithContact:contactAccount.contact contactsManager:helper.contactsManager];
+            [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
             return cell;
         }
                              customRowHeight:[ContactTableViewCell rowHeight]

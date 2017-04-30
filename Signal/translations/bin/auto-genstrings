@@ -4,15 +4,6 @@ set -e
 
 SSK_DIR="../SignalServiceKit/src"
 
-pushd $SSK_DIR
-CURRENT_SSK_BRANCH=$(git status|awk 'NR==1{print $3}')
-if [ $CURRENT_SSK_BRANCH != "master" ]
-then
-  echo "[!] Error - SSK must be on master to be sure we're generating up-to-date strings"
-  exit 1
-fi
-popd
-
 TARGETS="Signal/src ${SSK_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"

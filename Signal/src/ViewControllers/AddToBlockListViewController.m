@@ -67,8 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([helper isRecipientIdBlocked:contactAccount.recipientId]) {
-        // TODO: Use the account label.
-        NSString *displayName = [helper.contactsManager displayNameForContact:contactAccount.contact];
+        NSString *displayName = [helper.contactsManager displayNameForContactAccount:contactAccount];
         UIAlertController *controller = [UIAlertController
             alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE",
                                          @"A title of the alert if user tries to block a "

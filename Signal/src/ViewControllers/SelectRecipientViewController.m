@@ -488,8 +488,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     } else {
                         OWSAssert(cell.accessoryMessage == nil);
                     }
-                    // TODO: Use the account label.
-                    [cell configureWithContact:contactAccount.contact contactsManager:helper.contactsManager];
+                    [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
                     return cell;
                 }
                                              customRowHeight:[ContactTableViewCell rowHeight]

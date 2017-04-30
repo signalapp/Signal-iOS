@@ -118,8 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                 contactAccount.contact = contact;
                 contactAccount.recipientId = recipientId;
                 contactAccount.isMultipleAccountContact = YES;
-                // TODO: Store the phone number's "label" if possible.
-                contactAccount.multipleAccountLabel = recipientId;
+                contactAccount.multipleAccountLabel = [self accountLabelForContact:contact recipientId:recipientId];
                 [allRecipientContactAccounts addObject:contactAccount];
                 contactAccountMap[recipientId] = contactAccount;
             }
@@ -129,6 +128,71 @@ NS_ASSUME_NONNULL_BEGIN
     self.contactAccountMap = [contactAccountMap copy];
 
     [self.delegate contactsViewHelperDidUpdateContacts];
+}
+
+- (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
+{
+    OWSAssert(contact);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert([contact.textSecureIdentifiers containsObject:recipientId]);
+
+    if (contact.textSecureIdentifiers.count <= 1) {
+        return nil;
+    }
+
+    // 1. Find the phone number type of this account.
+    OWSPhoneNumberType phoneNumberType = [contact phoneNumberTypeForPhoneNumber:recipientId];
+
+    NSString *phoneNumberLabel;
+    switch (phoneNumberType) {
+        case OWSPhoneNumberTypeMobile:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MOBILE", @"Label for 'Mobile' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeIPhone:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'IPhone' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeMain:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MAIN", @"Label for 'Main' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeHomeFAX:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME_FAX", @"Label for 'HomeFAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeWorkFAX:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK_FAX", @"Label for 'Work FAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeOtherFAX:
+            phoneNumberLabel
+                = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER_FAX", @"Label for 'Other FAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypePager:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_PAGER", @"Label for 'Pager' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeUnknown:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN", @"Label for 'Unknown' phone numbers.");
+            break;
+    }
+
+    // 2. Find all phone numbers for this contact of the same type.
+    NSMutableArray *phoneNumbersOfTheSameType = [NSMutableArray new];
+    for (NSString *textSecureIdentifier in contact.textSecureIdentifiers) {
+        if (phoneNumberType == [contact phoneNumberTypeForPhoneNumber:textSecureIdentifier]) {
+            [phoneNumbersOfTheSameType addObject:textSecureIdentifier];
+        }
+    }
+
+    OWSAssert([phoneNumbersOfTheSameType containsObject:recipientId]);
+    if (phoneNumbersOfTheSameType.count > 0) {
+        NSUInteger index =
+            [[phoneNumbersOfTheSameType sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+        phoneNumberLabel =
+            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
+                                           @"Format for phone number label with an index. Embeds {{Phone number label "
+                                           @"(e.g. 'home')}} and {{index, e.g. 2}}."),
+                      phoneNumberLabel,
+                      (int)index];
+    }
+
+    return phoneNumberLabel;
 }
 
 - (BOOL)isContactHidden:(Contact *)contact

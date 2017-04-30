@@ -116,8 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (contactAccount) {
-                // TODO: Use the account label.
-                [cell configureWithContact:contactAccount.contact contactsManager:helper.contactsManager];
+                [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
             } else {
                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
             }
