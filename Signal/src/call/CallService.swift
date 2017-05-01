@@ -303,13 +303,18 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = peerConnectionClient
 
-            return self.peerConnectionClient!.createOffer()
+            return peerConnectionClient.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
             guard self.call == call else {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
-            return self.peerConnectionClient!.setLocalSessionDescription(sessionDescription).then {
+            guard let peerConnectionClient = self.peerConnectionClient else {
+                throw CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)")
+                return
+            }
+
+            return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, offerMessage: offerMessage)
                 return self.messageSender.sendCallMessage(callMessage)
@@ -499,13 +504,14 @@ protocol CallServiceObserver: class {
             let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             Logger.debug("\(self.self.TAG) setting peerConnectionClient in \(#function)")
-            self.peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
+            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
+            self.peerConnectionClient = peerConnectionClient
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
-            return self.peerConnectionClient!.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
+            return peerConnectionClient.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
