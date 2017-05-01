@@ -3,7 +3,6 @@
 //
 
 #import "ThreadUtil.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -89,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    Contact *contact = [contactsManager contactForPhoneIdentifier:contactThread.contactIdentifier];
+    Contact *contact = [contactsManager contactFor:contactThread.contactIdentifier];
     if (contact) {
         // Only create block offers for non-contacts.
         return;

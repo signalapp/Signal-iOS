@@ -8,7 +8,6 @@
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"

@@ -2,7 +2,7 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 #import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSThread.h"

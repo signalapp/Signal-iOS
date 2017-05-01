@@ -3,7 +3,7 @@
 //
 
 #import "BlockListUIUtils.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "PhoneNumber.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>

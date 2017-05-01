@@ -7,8 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "InboxTableViewCell.h"
-#import "OWSContactsManager.h"
-#import "OWSContactsSearcher.h"
+#import "Signal-Swift.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
@@ -79,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                 name:OWSContactsManager.SignalRecipientsDidChangeNotification
                                                object:nil];
 }
 
@@ -302,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Move this to contacts view helper.
     OWSContactsSearcher *contactsSearcher = [[OWSContactsSearcher alloc] initWithContacts:nonRedundantContacts];
-    NSArray<Contact *> *filteredContacts = [contactsSearcher filterWithString:searchString];
+    NSArray<Contact *> *filteredContacts = [contactsSearcher filterWith:searchString];
 
     return filteredContacts;
 }

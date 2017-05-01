@@ -16,7 +16,6 @@
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
 #import "OWSCallCollectionViewCell.h"
-#import "OWSContactsManager.h"
 #import "OWSConversationSettingsTableViewController.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"

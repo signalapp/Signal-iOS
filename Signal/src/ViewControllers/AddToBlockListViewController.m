@@ -7,7 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "PhoneNumber.h"
 #import "StringUtil.h"
 #import "UIFont+OWS.h"
@@ -86,7 +86,7 @@ NSString * const kAddToBlockListViewControllerCellIdentifier = @"kAddToBlockList
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                                 name:OWSContactsManager.SignalRecipientsDidChangeNotification
                                                object:nil];
 }
 

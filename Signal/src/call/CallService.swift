@@ -498,7 +498,7 @@ protocol CallServiceObserver: class {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let unknownCaller = self.contactsManager.contact(forPhoneIdentifier: thread.contactIdentifier()) == nil
+            let unknownCaller = self.contactsManager.contact(for: thread.contactIdentifier()) == nil
 
             let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
 

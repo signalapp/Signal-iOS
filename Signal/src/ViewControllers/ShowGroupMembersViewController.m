@@ -6,8 +6,7 @@
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
-#import "GroupContactsResult.h"
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -151,7 +150,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
     ContactTableViewCell *cell = [ContactTableViewCell new];
 
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
+    if ([self.groupContacts isContactAt:indexPath]) {
         Contact *contact = [self contactForIndexPath:indexPath];
 
         BOOL isBlocked = [self isContactBlocked:contact];
@@ -163,7 +162,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
         }
         [cell configureWithContact:contact contactsManager:self.contactsManager];
     } else {
-        NSString *recipientId = [self.groupContacts identifierForIndexPath:indexPath];
+        NSString *recipientId = [self.groupContacts identifierFor:indexPath];
         BOOL isBlocked = [self isRecipientIdBlocked:recipientId];
         if (isBlocked) {
             cell.accessoryMessage
@@ -208,7 +207,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                          }]];
 
     BOOL isBlocked;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
+    if ([self.groupContacts isContactAt:indexPath]) {
         Contact *contact = [self contactForIndexPath:indexPath];
 
         isBlocked = [self isContactBlocked:contact];
@@ -239,7 +238,7 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
                                                  }]];
         }
     } else {
-        NSString *recipientId = [self.groupContacts identifierForIndexPath:indexPath];
+        NSString *recipientId = [self.groupContacts identifierFor:indexPath];
         isBlocked = [self isRecipientIdBlocked:recipientId];
         if (isBlocked) {
             [actionSheetController
@@ -297,10 +296,10 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 
 - (void)showContactInfoViewForMember:(NSIndexPath *)indexPath
 {
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
+    if ([self.groupContacts isContactAt:indexPath]) {
         ABPersonViewController *view = [[ABPersonViewController alloc] init];
 
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
+        Contact *contact = [self.groupContacts contactFor:indexPath];
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
         view.displayedPerson
             = ABAddressBookGetPersonWithRecordID(addressBookRef, contact.recordID); // Assume person is already defined.
@@ -334,11 +333,11 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)showConversationViewForMember:(NSIndexPath *)indexPath
 {
     NSString *recipientId;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
+    if ([self.groupContacts isContactAt:indexPath]) {
+        Contact *contact = [self.groupContacts contactFor:indexPath];
         recipientId = [[contact textSecureIdentifiers] firstObject];
     } else {
-        recipientId = [self.groupContacts identifierForIndexPath:indexPath];
+        recipientId = [self.groupContacts identifierFor:indexPath];
     }
     [Environment messageIdentifier:recipientId withCompose:YES];
 }
@@ -346,17 +345,17 @@ static NSString *const kUnwindToMessagesViewSegue = @"UnwindToMessagesViewSegue"
 - (void)callMember:(NSIndexPath *)indexPath
 {
     NSString *recipientId;
-    if ([self.groupContacts isContactAtIndexPath:indexPath]) {
-        Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
+    if ([self.groupContacts isContactAt:indexPath]) {
+        Contact *contact = [self.groupContacts contactFor:indexPath];
         recipientId = [[contact textSecureIdentifiers] firstObject];
     } else {
-        recipientId = [self.groupContacts identifierForIndexPath:indexPath];
+        recipientId = [self.groupContacts identifierFor:indexPath];
     }
     [Environment callUserWithIdentifier:recipientId];
 }
 
 - (Contact *)contactForIndexPath:(NSIndexPath *)indexPath {
-    Contact *contact = [self.groupContacts contactForIndexPath:indexPath];
+    Contact *contact = [self.groupContacts contactFor:indexPath];
     return contact;
 }
 

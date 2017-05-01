@@ -4,7 +4,6 @@
 
 #import "NotificationsManager.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"

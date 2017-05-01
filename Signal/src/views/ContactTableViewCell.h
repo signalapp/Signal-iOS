@@ -3,7 +3,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 
 /**
  *
