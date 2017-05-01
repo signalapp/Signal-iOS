@@ -8,14 +8,10 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import "CollapsingFutures.h"
 #import "Contact.h"
-#import "ObservableValue.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
-// TODO: Remove this.
-// TODO: Remove observableContactsController.
-extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 @class UIFont;
 @class SignalAccount;
@@ -32,8 +28,6 @@ extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 // ordered by display order.
 @property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
-- (nonnull ObservableValue *)getObservableContacts;
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(nullable NSString *)recipientId;
 

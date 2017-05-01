@@ -15,16 +15,12 @@ typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     @"OWSContactsManagerSignalAccountsDidChangeNotification";
-NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
-    @"OWSContactsManagerSignalRecipientsDidChangeNotification";
 
 @interface OWSContactsManager ()
 
 @property (atomic, nullable) CNContactStore *contactStore;
 @property (atomic) id addressBookReference;
 @property (atomic) TOCFuture *futureAddressBook;
-@property (atomic) ObservableValueController *observableContactsController;
-@property (atomic) TOCCancelTokenSource *life;
 @property (nonatomic) BOOL isContactsUpdateInFlight;
 // This reflects the contents of the device phone book and includes
 // contacts that do not correspond to any signal account.
@@ -37,18 +33,12 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 
 @implementation OWSContactsManager
 
-- (void)dealloc {
-    [_life cancel];
-}
-
 - (id)init {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _life = [TOCCancelTokenSource new];
-    _observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
     _avatarCache = [NSCache new];
     _allContacts = @[];
     _signalAccountMap = @{};
@@ -74,14 +64,6 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
     }
 
     [self setupAddressBookIfNecessary];
-
-    __weak OWSContactsManager *weakSelf = self;
-    [self.observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
-      @synchronized(self) {
-          [weakSelf updateSignalAccounts:latestContacts];
-      }
-    }
-                                                     untilCancelled:_life.token];
 }
 
 - (void)verifyABPermission {
@@ -100,9 +82,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)handleAddressBookChanged
 {
-    [self pullLatestAddressBook];
-    [self intersectContacts];
     [self.avatarCache removeAllObjects];
+    [self pullLatestAddressBook];
 }
 
 #pragma mark - Setup
@@ -155,7 +136,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 {
     void (^success)() = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
-        [self fireSignalRecipientsDidChange];
+        [self updateSignalAccounts];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
@@ -179,70 +160,82 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                                                            failure:failure];
 }
 
-- (void)fireSignalRecipientsDidChange
-{
-    AssertIsOnMainThread();
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalRecipientsDidChangeNotification
-                                                        object:nil];
-}
-
 - (void)pullLatestAddressBook {
-    CFErrorRef creationError        = nil;
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
-    checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError)localizedDescription]);
-    ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-      if (!granted) {
-          [OWSContactsManager blockingContactDialog];
-      }
+    dispatch_async(ADDRESSBOOK_QUEUE, ^{
+        CFErrorRef creationError = nil;
+        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
+        checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError)localizedDescription]);
+        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+            if (!granted) {
+                [OWSContactsManager blockingContactDialog];
+            }
+        });
+        NSArray<Contact *> *contacts = [self getContactsFromAddressBook:addressBookRef];
+        [self updateWithContacts:contacts];
     });
-    [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
 }
 
-- (void)updateSignalAccounts:(NSArray<Contact *> *)contacts
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts
 {
-    // This will happen off of the main thread.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
-    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
-    NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
-    for (Contact *contact in contacts) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            NSString *phoneNumberE164 = phoneNumber.toE164;
-            if (phoneNumberE164.length > 0) {
-                allContactsMap[phoneNumberE164] = contact;
+        NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
+        for (Contact *contact in contacts) {
+            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+                NSString *phoneNumberE164 = phoneNumber.toE164;
+                if (phoneNumberE164.length > 0) {
+                    allContactsMap[phoneNumberE164] = contact;
+                }
             }
         }
 
-        NSArray<SignalRecipient *> *signalRecipients = contact.signalRecipients;
-        for (SignalRecipient *signalRecipient in contact.signalRecipients) {
-            for (NSString *recipientId in
-                [contact.textSecureIdentifiers sortedArrayUsingSelector:@selector(compare:)]) {
-                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
-                signalAccount.contact = contact;
-                if (signalRecipients.count > 1) {
-                    signalAccount.isMultipleAccountContact = YES;
-                    signalAccount.multipleAccountLabel =
-                        [[self class] accountLabelForContact:contact recipientId:recipientId];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.allContacts = contacts;
+            self.allContactsMap = [allContactsMap copy];
+
+            [self intersectContacts];
+
+            [self updateSignalAccounts];
+        });
+    });
+}
+
+- (void)updateSignalAccounts
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+        NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
+        NSArray<Contact *> *contacts = self.allContacts;
+        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            for (Contact *contact in contacts) {
+                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
+                for (SignalRecipient *signalRecipient in
+                    [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
+                    SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
+                    signalAccount.contact = contact;
+                    if (signalRecipients.count > 1) {
+                        signalAccount.isMultipleAccountContact = YES;
+                        signalAccount.multipleAccountLabel =
+                            [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
+                    }
+                    if (signalAccountMap[signalAccount.recipientId]) {
+                        DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
+                        continue;
+                    }
+                    signalAccountMap[signalAccount.recipientId] = signalAccount;
+                    [signalAccounts addObject:signalAccount];
                 }
-                if (signalAccountMap[signalAccount.recipientId]) {
-                    DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
-                    continue;
-                }
-                signalAccountMap[signalAccount.recipientId] = signalAccount;
-                [signalAccounts addObject:signalAccount];
             }
-        }
-    }
+        }];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.allContacts = contacts;
-        self.signalAccountMap = [signalAccountMap copy];
-        self.signalAccounts = [signalAccounts copy];
-        self.allContactsMap = [allContactsMap copy];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.signalAccountMap = [signalAccountMap copy];
+            self.signalAccounts = [signalAccounts copy];
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
-                                                            object:nil];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
+                              object:nil];
+        });
     });
 }
 
@@ -371,12 +364,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-#pragma mark - Observables
-
-- (ObservableValue *)getObservableContacts {
-    return self.observableContactsController;
-}
-
 #pragma mark - Address Book utils
 
 + (TOCFuture *)asyncGetAddressBook {
@@ -405,8 +392,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return futureAddressBookSource.future;
 }
 
-- (NSArray *)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook {
+- (NSArray<Contact *> *)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook
+{
     CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+
     CFMutableArrayRef allPeopleMutable =
         CFArrayCreateMutableCopy(kCFAllocatorDefault, CFArrayGetCount(allPeople), allPeople);
 

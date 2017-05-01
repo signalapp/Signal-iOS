@@ -93,6 +93,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -105,6 +109,13 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     dispatch_async(dispatch_get_main_queue(), ^{
         _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
+        [self.tableView reloadData];
+    });
+}
+
+- (void)signalAccountsDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];
     });
 }
@@ -130,13 +141,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                  name:TSUIDatabaseConnectionDidUpdateNotification
                                                object:nil];
     [self selectedInbox:self];
-
-    __weak SignalsViewController *weakSelf = self;
-    [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
-        [weakSelf.tableView reloadData];
-    }
-                                                                              onThread:[NSThread mainThread]
-                                                                        untilCancelled:nil];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
