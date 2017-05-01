@@ -17,7 +17,6 @@ import Foundation
         if (self.hasExcessiveDiacriticals(text: text)) {
             Logger.warn("\(TAG) filtering text for excessive diacriticals.")
             let filteredText = text.folding(options: .diacriticInsensitive, locale: .current)
-            assert(!self.hasExcessiveDiacriticals(text: filteredText))
             return filteredText
         }
 
