@@ -71,6 +71,11 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     [_items addObject:item];
 }
 
+- (NSUInteger)itemCount
+{
+    return _items.count;
+}
+
 @end
 
 #pragma mark -
@@ -171,19 +176,15 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
-
 - (void)loadView
 {
     [super loadView];
     
     OWSAssert(self.contents);
 
-    self.title = self.contents.title;
+    if (self.contents.title.length > 0) {
+        self.title = self.contents.title;
+    }
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
@@ -194,6 +195,20 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    [self.navigationController.navigationBar setTranslucent:NO];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (OWSTableSection *)sectionForIndex:(NSInteger)sectionIndex
@@ -217,20 +232,27 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     return item;
 }
 
+- (void)setContents:(OWSTableContents *)contents
+{
+    OWSAssert(contents);
+
+    _contents = contents;
+
+    [self.tableView reloadData];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     OWSAssert(self.contents);
-
-    OWSAssert(self.contents.sections.count > 0);
     return (NSInteger) self.contents.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
-    OWSAssert(section.items.count > 0);
+    OWSAssert(section.items);
     return (NSInteger) section.items.count;
 }
 
@@ -354,6 +376,13 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)donePressed:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self.delegate tableViewDidScroll];
 }
 
 @end

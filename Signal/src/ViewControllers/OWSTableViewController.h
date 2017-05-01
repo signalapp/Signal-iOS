@@ -35,6 +35,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 - (void)addItem:(OWSTableItem *)item;
 
+- (NSUInteger)itemCount;
+
 @end
 
 #pragma mark -
@@ -69,7 +71,17 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 #pragma mark -
 
+@protocol OWSTableViewControllerDelegate <NSObject>
+
+- (void)tableViewDidScroll;
+
+@end
+
+#pragma mark -
+
 @interface OWSTableViewController : UIViewController
+
+@property (nonatomic, weak) id<OWSTableViewControllerDelegate> delegate;
 
 @property (nonatomic) OWSTableContents *contents;
 @property (nonatomic, readonly) UITableView *tableView;

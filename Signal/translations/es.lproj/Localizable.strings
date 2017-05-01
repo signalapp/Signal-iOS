@@ -103,6 +103,12 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Fallo al seleccionar documento.";
 
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal no puede enviar una carpeta. Prueba a comprimirla antes de enviarla. ";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Archivo no soportado";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Los contactos bloqueados no podrán llamarte ni enviarte mensajes.";
 
@@ -424,6 +430,21 @@
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Al activar este %@ se desactivarán todos los dispositivos registrados bajo este número de teléfono.";
 
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Nombre de archivo inválido.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Imposible cargar archivo.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Imposible cargar archivo.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Tipo de archivo desconocido.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Fallo";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
 
@@ -688,7 +709,7 @@
 "NETWORK_STATUS_OFFLINE" = "Desconectado";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_TEXT" = "Puedes comprobar el estado de la conexión simplemente observando la barra de progreso en la parte superior de la bandeja de entrada.";
+"NETWORK_STATUS_TEXT" = "Puedes comprobar el estado de la conexión con la barra de progreso en la parte superior de la bandeja de entrada.";
 
 /* Text for button to start a new conversation with a non-contact */
 "NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nuevo chat con %@";
@@ -699,7 +720,7 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nuevo grupo";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nombre del grupo";
 
 /* No comment provided by engineer. */
@@ -785,7 +806,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si quieres comprobar la seguridad del cifrado punto a punto con %@, compara las cifras de arriba con las mostradas en su dispositivo.\n\nTambién puedes escanear el código en el dispositivo de tu contacto o dejarle escanear el tuyo.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Comprobar cifras de seguridad";
+"PRIVACY_VERIFICATION_TITLE" = "Comprobar cifras seguridad";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continuar";
@@ -915,6 +936,12 @@
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Enviar";
+
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un contacto para:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Enviar archivo";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Fallo al enviar invitación. Por favor, inténtalo más tarde.";
@@ -1160,7 +1187,7 @@
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Introduce el código que hemos enviado a %@.";
 
 /* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "Comprobar cifras de seguridad";
+"VERIFY_PRIVACY" = "Cifras de seguridad del chat";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio.";

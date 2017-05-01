@@ -103,6 +103,12 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Eroare la selectarea documentului.";
 
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal nu poate folosi acest fișier așa cum e acum. Încearcă să-l faci zip înainte de a-l trimite.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fișier nesuportat";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Utilizatorii blocați nu vor putea să te sune sau să-ți trimită mesaje.";
 
@@ -424,6 +430,21 @@
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Activând acest %@ va dezactiva Signal pe orice alte dispozitive asociate momentan cu acest număr de telefon.";
 
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Nume de fișier invalid.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Fișierul nu a putut fi încărcat.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Fișierul nu a putut fi încărcat.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Tip necunoscut de fișier.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Eroare";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Prea multe erori pentru acest contact. Te rog încearcă din nou în curând.";
 
@@ -699,7 +720,7 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Grup Nou";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Denumește această conversație de grup";
 
 /* No comment provided by engineer. */
@@ -915,6 +936,12 @@
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Trimite";
+
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selectează un destinatar pentru:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Trimite fișier";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Invitația trimisă a eșuat, te rog încearcă din nou mai târziu.";

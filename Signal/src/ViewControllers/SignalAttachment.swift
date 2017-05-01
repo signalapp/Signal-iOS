@@ -167,34 +167,53 @@ class SignalAttachment: NSObject {
 
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
-    var mimeType: String? {
+    var mimeType: String {
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return OWSMimeTypeOversizeTextMessage
         }
         if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
             return OWSMimeTypeUnknownForTests
         }
-        let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType)
-        guard mimeType != nil else {
-            return nil
+        guard let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType) else {
+            return OWSMimeTypeApplicationOctetStream
         }
-        return mimeType?.takeRetainedValue() as? String
+        return mimeType.takeRetainedValue() as String
+    }
+
+    // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
+    // like: "signal-2017-04-24-095918.zip"
+    var filenameOrDefault: String {
+        if let filename = filename {
+            return filename
+        } else {
+            let kDefaultAttachmentName = "signal"
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd-HHmmss"
+            let dateString = dateFormatter.string(from: Date())
+
+            let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)"
+            if let fileExtension = self.fileExtension {
+                return "\(withoutExtension).\(fileExtension)"
+            }
+
+            return withoutExtension
+        }
     }
 
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
-        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI ||
-        dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
-            assertionFailure()
+        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
+            return "txt"
+        }
+        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+            return "unknown"
+        }
+        guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType:dataUTI) else {
             return nil
         }
-
-        guard let fileExtension = UTTypeCopyPreferredTagWithClass(dataUTI as CFString,
-                                                                  kUTTagClassFilenameExtension) else {
-            return nil
-        }
-        return fileExtension.takeRetainedValue() as String
+        return fileExtension
     }
 
     // Returns the set of UTIs that correspond to valid _input_ image formats
@@ -230,6 +249,16 @@ class SignalAttachment: NSObject {
         return MIMETypeUtil.supportedAudioUTITypes()
     }
 
+    public class var textUTISet: Set<String> {
+        return [
+            kUTTypeText as String,
+            kUTTypePlainText as String,
+            kUTTypeUTF8PlainText as String,
+            kUTTypeUTF16PlainText as String,
+            kUTTypeURL as String,
+        ]
+    }
+
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
@@ -246,8 +275,24 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
+    public var isText: Bool {
+        return SignalAttachment.textUTISet.contains(dataUTI)
+    }
+
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
+    }
+
+    public class func pasteboardHasText() -> Bool {
+        if UIPasteboard.general.numberOfItems < 1 {
+            return false
+        }
+        let itemSet = IndexSet(integer:0)
+        guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet:itemSet) else {
+            return false
+        }
+        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        return pasteboardUTISet.intersection(textUTISet).count > 0
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment
@@ -333,7 +378,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func imageAttachment(data imageData: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         assert(dataUTI.characters.count > 0)
 
         assert(imageData != nil)
@@ -519,7 +564,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func videoAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : videoUTISet,
@@ -533,7 +578,7 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func audioAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : audioUTISet,
@@ -547,12 +592,12 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func oversizeTextAttachment(text: String?) -> SignalAttachment {
+    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
         return newAttachment(data : text?.data(using: .utf8),
                              dataUTI : kOversizeTextAttachmentUTI,
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
-            filename : nil)
+                             filename : nil)
     }
 
     // MARK: Generic Attachments
@@ -561,12 +606,30 @@ class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    public class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+    private class func genericAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
         return newAttachment(data : data,
                              dataUTI : dataUTI,
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
-            filename : filename)
+                             filename : filename)
+    }
+
+    // MARK: Attachments
+
+    // Factory method for attachments of any kind.
+    //
+    // NOTE: The attachment returned by this method may not be valid.
+    //       Check the attachment's error property.
+    public class func attachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+        if inputImageUTISet.contains(dataUTI) {
+            return imageAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else if videoUTISet.contains(dataUTI) {
+            return videoAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else if audioUTISet.contains(dataUTI) {
+            return audioAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        } else {
+            return genericAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        }
     }
 
     // MARK: Helper Methods

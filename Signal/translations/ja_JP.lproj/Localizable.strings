@@ -41,10 +41,10 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "保管庫に移動";
+"ARCHIVE_ACTION" = "アーカイブ";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "保管庫";
+"ARCHIVE_NAV_BAR_TITLE" = "アーカイブ";
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
@@ -103,14 +103,20 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文書の選択に失敗しました";
 
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "拒否したユーザーからは通話もメッセージも受け付けません";
+"BLOCK_BEHAVIOR_EXPLANATION" = "拒否すると通話もメッセージも受け付けません";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "拒否する";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "%@を拒否しますか";
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "%@を拒否しますか？";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "拒否を解除する";
@@ -137,10 +143,10 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@を拒否しました";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否されているユーザー";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "拒否中の人";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分は拒否できません";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "自分自身は拒否できません";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "エラー";
@@ -155,10 +161,10 @@
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "エラー";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@の拒否が解除されました";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@の拒否を解除しました";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "拒否が解除されたユーザー";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "拒否を解除した人";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "拒否";
@@ -221,7 +227,7 @@
 "CONFIRMATION_TITLE" = "了解";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "拒否済み";
+"CONTACT_CELL_IS_BLOCKED" = "拒否中";
 
 /* An indicator that a contact is a member of the current group. */
 "CONTACT_CELL_IS_IN_GROUP" = "メンバー";
@@ -326,10 +332,10 @@
 "EDIT_ITEM_SHARE_ACTION" = "共有";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "こんにちは。私は最近，携帯電話での会話・チャットをSignalというアプリで行っています。双方がこのアプリを使うと，会話内容が他人に漏れていないという確信が持てますので，あなたもインストールしませんか。iPhoneでもAndroidでも使えます。入手はこちらからです：%@\n\nSignalは普通のメッセージアプリと同じように使えます。写真や動画も送れますし，電話もできますし，３人以上でのチャットもできます。一番いいところは，通信内容が他人に見えないことです。アプリの制作者にも見えない仕組みになっています。\n\nSignalの制作者であるOpen Whisper Systemsについての詳細はここを見て下さい：%@";
+"EMAIL_INVITE_BODY" = "こんにちは。私は最近，携帯電話での会話・チャットをSignalというアプリで行っています。このアプリを使うと，会話内容が他人に傍受されないという安心感が持てますので，あなたもインストールしてみませんか？iPhoneでもAndroidでも使えます。こちらからインストールできます：%@\n\nSignalは普通のメッセージアプリと同じように使えます。写真や動画も送れますし，電話もできますし，３人以上でのチャットもできます。一番いいところは，通信内容が他人から傍受されないことです。アプリの制作者でさえ傍受できない仕組みになっており、非常に安全です。\n\nSignalの制作者であるOpen Whisper Systemsについての詳細はここを見て下さい：%@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Signalに乗り換えましょう";
+"EMAIL_INVITE_SUBJECT" = "チャットアプリをSignalに変更しましょう。";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "右上の記入ボタンを押して下さい";
@@ -423,6 +429,21 @@
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "この%@を有効にすると，この電話番号に関係する他の端末のSignalは無効になります。";
+
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "この連絡先との連絡に失敗しました。しばらくしてから再度試してください。";
@@ -699,7 +720,7 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "新しいグループ";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "グループに名前を付ける";
 
 /* No comment provided by engineer. */
@@ -915,6 +936,12 @@
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "送信";
+
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "招待の送信に失敗しました。後でもう一度行ってください。";

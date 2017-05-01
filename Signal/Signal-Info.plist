@@ -6,6 +6,23 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Signal</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.archive</string>
+				<string>public.content</string>
+				<string>public.data</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleGetInfoString</key>
@@ -21,7 +38,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.11.0</string>
+	<string>2.11.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -38,7 +55,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.11.0.3</string>
+	<string>2.11.1.5</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

@@ -18,4 +18,6 @@
 
 + (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
 
++ (NSString *)formatFileSize:(unsigned long)fileSize;
+
 @end

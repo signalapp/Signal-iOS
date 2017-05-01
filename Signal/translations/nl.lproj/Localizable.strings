@@ -103,6 +103,12 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Document kiezen mislukt.";
 
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal kan dit bestand niet verwerken. Probeer het in een zip-bestand te plaatsen vooraleer het te verzenden.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Bestand niet ondersteund";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers zullen je niet kunnen bellen of berichten sturen.";
 
@@ -424,6 +430,21 @@
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Deze %@ activeren zal Signal uitschakelen op andere apparaten die momenteel met dit telefoonnummer geassocieerd zijn.";
 
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Ongeldige bestandsnaam.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Kon bestand niet laden.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Kon bestand niet laden.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Onbekend bestandstype.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Fout";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel fouten bij dit contact. Probeer het later opnieuw.";
 
@@ -699,7 +720,7 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nieuwe groep";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Benoem dit groepsgesprek";
 
 /* No comment provided by engineer. */
@@ -916,6 +937,12 @@
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Stuur";
 
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Kies een ontvanger voor:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Bestand sturen";
+
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Uitnodiging sturen mislukt, probeer het later opnieuw.";
 
@@ -1115,7 +1142,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "Deregistreren van Signal mislukt.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Ontving een niet ondersteund formaat van bijlage.";
+"UNSUPPORTED_ATTACHMENT" = "Niet-ondersteund formaat van bijlage ontvangen.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";

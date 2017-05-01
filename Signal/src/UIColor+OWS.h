@@ -8,6 +8,7 @@
 
 + (UIColor *)ows_signalBrandBlueColor;
 + (UIColor *)ows_materialBlueColor;
++ (UIColor *)ows_destructiveRedColor;
 + (UIColor *)ows_fadedBlueColor;
 + (UIColor *)ows_darkBackgroundColor;
 + (UIColor *)ows_darkGrayColor;

@@ -175,10 +175,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)intersectContacts
 {
-    [self intersectContactsWithRetryDelay:1.f];
+    [self intersectContactsWithRetryDelay:1];
 }
 
-- (void)intersectContactsWithRetryDelay:(CGFloat)retryDelaySeconds
+- (void)intersectContactsWithRetryDelay:(double)retryDelaySeconds
 {
     void (^success)() = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
@@ -196,9 +196,10 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         // Retry with exponential backoff.
         //
         // TODO: Abort if another contact intersection succeeds in the meantime.
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self intersectContactsWithRetryDelay:retryDelaySeconds * 2.f];
-        });
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(retryDelaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self intersectContactsWithRetryDelay:retryDelaySeconds * 2];
+            });
     };
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
                                                                            success:success

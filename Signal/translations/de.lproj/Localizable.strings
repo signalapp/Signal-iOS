@@ -103,6 +103,12 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Auswählen des Dokuments gescheitert.";
 
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal kann die Datei in der vorliegenden Form nicht verarbeiten. Versuche sie vor dem Versenden in eine ZIP-Datei umzuwandeln.";
+
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datei nicht unterstützt";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
 
@@ -239,7 +245,7 @@
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Diesen Benutzer blockieren";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Benutzer blockieren";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stumm";
@@ -296,7 +302,7 @@
 "DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Wenn aktiviert, werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Bei Aktivierung werden in dieser Unterhaltung gesendete und empfangene Nachrichten nach dem Lesen verschwinden.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Derzeit verschwinden Nachrichten nach %@";
@@ -423,6 +429,21 @@
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Die Aktivierung dieses %@s wird Signal auf jedem anderen mit dieser Rufnummer verknüpften Gerät deaktivieren.";
+
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Dateiname ungültig.";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Datei konnte nicht geladen werden.";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Datei konnte nicht geladen werden.";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Dateityp unbekannt.";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Fehler";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zu viele Fehler mit diesem Kontakt. Bitte in Kürze erneut versuchen.";
@@ -554,7 +575,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dieses Gerät wird in der Lage sein, deine Gruppen und Kontakte zu sehen, alle deine Nachrichten zu lesen und Nachrichten in deinem Namen zu versenden.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Dieses Gerät verknüpfen?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Gerät verknüpfen?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Erneut versuchen";
@@ -699,8 +720,8 @@
 /* No comment provided by engineer. */
 "NEW_GROUP_DEFAULT_TITLE" = "Neue Gruppe";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Diese Gruppenunterhaltung benennen";
+/* Placeholder text for group name field */
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Gruppenunterhaltung benennen";
 
 /* No comment provided by engineer. */
 "NEW_GROUP_REQUEST_ADDPEOPLE" = "Personen hinzufügen";
@@ -875,7 +896,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Der von dir übermittelte Bestätigungscode stimmt nicht mit dem von uns gesendeten überein. Bitte nochmals überprüfen.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Dieses Gerät aktivieren";
+"REGISTRATION_VERIFY_DEVICE" = "Gerät aktivieren";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Ablehnen";
@@ -915,6 +936,12 @@
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Senden";
+
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Empfänger auswählen für:";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Datei senden";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Versenden der Einladung gescheitert. Bitte später erneut versuchen.";

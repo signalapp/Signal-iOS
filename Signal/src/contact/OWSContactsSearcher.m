@@ -1,9 +1,5 @@
 //
-//  OWSContactsSearcher.m
-//  Signal
-//
-//  Created by Michael Kirk on 6/27/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsSearcher.h"
@@ -34,6 +30,7 @@
 
     NSString *formattedNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
 
+    // TODO: This assumes there's a single search term.
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(fullName contains[c] %@) OR (ANY parsedPhoneNumbers.toE164 contains[c] %@)", searchTerm, formattedNumber];
 
     return [self.contacts filteredArrayUsingPredicate:predicate];

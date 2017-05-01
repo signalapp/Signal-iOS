@@ -26,9 +26,9 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.attachment = SignalAttachment.genericAttachment(data: nil,
-                                                             dataUTI: kUTTypeContent as String,
-                                                             filename:nil)
+        self.attachment = SignalAttachment.attachment(data: nil,
+                                                      dataUTI: kUTTypeContent as String,
+                                                      filename:nil)
         super.init(coder: aDecoder)
         assertionFailure()
     }
@@ -45,15 +45,22 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = UIColor.white
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
                                                                 target:self,
                                                                 action:#selector(donePressed))
-        self.navigationItem.title = NSLocalizedString("ATTACHMENT_APPROVAL_DIALOG_TITLE",
-                                                      comment: "Title for the 'attachment approval' dialog.")
+        self.navigationItem.title = dialogTitle()
 
         createViews()
+    }
+
+    private func dialogTitle() -> String {
+        guard let filename = formattedFileName() else {
+            return NSLocalizedString("ATTACHMENT_APPROVAL_DIALOG_TITLE",
+                                     comment: "Title for the 'attachment approval' dialog.")
+        }
+        return filename
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -140,8 +147,9 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         audioPlayButton.autoSetDimension(.height, toSize:buttonSize)
         subviews.append(audioPlayButton)
 
-        if let fileExtensionLabel = createFileExtensionLabel() {
-            subviews.append(fileExtensionLabel)
+        let fileNameLabel = createFileNameLabel()
+        if let fileNameLabel = fileNameLabel {
+            subviews.append(fileNameLabel)
         }
 
         let fileSizeLabel = createFileSizeLabel()
@@ -149,6 +157,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
         let stackView = wrapViewsInVerticalStack(subviews:subviews)
         attachmentPreviewView.addSubview(stackView)
+        fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
     }
@@ -209,11 +218,12 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
     private func createGenericPreview(attachmentPreviewView: UIView) {
         var subviews = [UIView]()
 
-        let imageView = createHeroImageView(imageName: "file-icon-large")
+        let imageView = createHeroImageView(imageName: "file-thin-black-filled-large")
         subviews.append(imageView)
 
-        if let fileExtensionLabel = createFileExtensionLabel() {
-            subviews.append(fileExtensionLabel)
+        let fileNameLabel = createFileNameLabel()
+        if let fileNameLabel = fileNameLabel {
+            subviews.append(fileNameLabel)
         }
 
         let fileSizeLabel = createFileSizeLabel()
@@ -221,6 +231,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
         let stackView = wrapViewsInVerticalStack(subviews:subviews)
         attachmentPreviewView.addSubview(stackView)
+        fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
     }
@@ -236,6 +247,11 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         let imageView = UIImageView(image:image)
         imageView.layer.minificationFilter = kCAFilterTrilinear
         imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        let shadowScaling = 5.0
+        imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
+        imageView.layer.shadowOpacity = 0.25
+        imageView.layer.shadowOffset = CGSize(width: 0.75 * shadowScaling, height: 0.75 * shadowScaling)
         imageView.autoSetDimension(.width, toSize:imageSize)
         imageView.autoSetDimension(.height, toSize:imageSize)
 
@@ -246,44 +262,55 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         return UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(18, 24))
     }
 
-    private func createFileExtensionLabel() -> UIView? {
+    private func formattedFileExtension() -> String? {
         guard let fileExtension = attachment.fileExtension else {
             return nil
         }
 
-        let fileExtensionLabel = UILabel()
-        fileExtensionLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
-                                                                  comment: "Format string for file extension label in call interstitial view"),
-                                         fileExtension.uppercased())
+        return String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
+                                               comment: "Format string for file extension label in call interstitial view"),
+                      fileExtension.uppercased())
+    }
 
-        fileExtensionLabel.textColor = UIColor.white
-        fileExtensionLabel.font = labelFont()
-        fileExtensionLabel.textAlignment = .center
+    private func formattedFileName() -> String? {
+        guard let rawFilename = attachment.filename else {
+            return nil
+        }
+        let filename = rawFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        guard filename.characters.count > 0 else {
+            return nil
+        }
+        return filename
+    }
 
-        return fileExtensionLabel
+    private func createFileNameLabel() -> UIView? {
+        let filename = formattedFileName() ?? formattedFileExtension()
+
+        guard filename != nil else {
+            return nil
+        }
+
+        let label = UILabel()
+        label.text = filename
+        label.textColor = UIColor.ows_materialBlue()
+        label.font = labelFont()
+        label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingMiddle
+        return label
     }
 
     private func createFileSizeLabel() -> UIView {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = NumberFormatter.Style.decimal
-        let fileSizeLabel = UILabel()
+        let label = UILabel()
         let fileSize = attachment.data.count
-        let kOneKilobyte = 1024
-        let kOneMegabyte = kOneKilobyte * kOneKilobyte
-        let fileSizeText = (fileSize > kOneMegabyte
-            ? numberFormatter.string(from: NSNumber(value: fileSize / kOneMegabyte))! + " mb"
-            : (fileSize > kOneKilobyte
-                ? numberFormatter.string(from: NSNumber(value: fileSize / kOneKilobyte))! + " kb"
-                : numberFormatter.string(from: NSNumber(value: fileSize))!))
-        fileSizeLabel.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
+        label.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                              comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
-                                    fileSizeText)
+                                    ViewControllerUtils.formatFileSize(UInt(fileSize)))
 
-        fileSizeLabel.textColor = UIColor.white
-        fileSizeLabel.font = labelFont()
-        fileSizeLabel.textAlignment = .center
+        label.textColor = UIColor.ows_materialBlue()
+        label.font = labelFont()
+        label.textAlignment = .center
 
-        return fileSizeLabel
+        return label
     }
 
     private func createButtonRow(attachmentPreviewView: UIView) {
@@ -308,7 +335,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
         let cancelButton = createButton(title: NSLocalizedString("TXT_CANCEL_TITLE",
                                                                  comment: ""),
-                                        color : UIColor(rgbHex:0xff3B30),
+                                        color : UIColor.ows_destructiveRed(),
                                         action: #selector(cancelPressed))
         buttonRow.addSubview(cancelButton)
         cancelButton.autoPinEdge(toSuperviewEdge:.top)
@@ -317,7 +344,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
         let sendButton = createButton(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
                                                                comment: "Label for 'send' button in the 'attachment approval' dialog."),
-                                      color : UIColor(rgbHex:0x4CD964),
+                                      color : UIColor(rgbHex:0x2ecc71),
                                       action: #selector(sendPressed))
         buttonRow.addSubview(sendButton)
         sendButton.autoPinEdge(toSuperviewEdge:.top)
