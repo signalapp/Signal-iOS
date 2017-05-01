@@ -311,7 +311,6 @@ protocol CallServiceObserver: class {
 
             guard let peerConnectionClient = self.peerConnectionClient else {
                 throw CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)")
-                return
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
