@@ -50,13 +50,15 @@ import Foundation
         // Alternative way without prompting for permissions:
         // if AVAudioSession.sharedInstance().recordPermission() == .denied {
         AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
-            // Here the permissions are either granted or denied
-            guard isGranted == true else {
-                Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
-                self.showNoMicrophonePermissionAlert()
-                return
+            DispatchQueue.main.async {
+                // Here the permissions are either granted or denied
+                guard isGranted == true else {
+                    Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
+                    self.showNoMicrophonePermissionAlert()
+                    return
+                }
+                callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
             }
-            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
         }
         return true
     }
