@@ -199,8 +199,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
     NSArray<NSString *> *searchTerms =
-        [[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [[[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+            filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
+                                            NSDictionary<NSString *, id> *_Nullable bindings) {
+                return searchTerm.length > 0;
+            }]];
 
     if (searchTerms.count < 1) {
         return self.signalAccounts;

@@ -18,7 +18,7 @@
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;
 - (NSNumber *)updateInboxCountLabel;
-- (void)composeNew;
+- (IBAction)composeNew:(id)sender;
 
 - (void)presentTopLevelModalViewController:(UIViewController *)viewController
                           animateDismissal:(BOOL)animateDismissal

@@ -24,6 +24,7 @@
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
+		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
 		34B3F8711E8DF1700035BE1A /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8351E8DF1700035BE1A /* AboutTableViewController.m */; };
 		34B3F8721E8DF1700035BE1A /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8371E8DF1700035BE1A /* AdvancedSettingsTableViewController.m */; };
@@ -170,8 +171,6 @@
 		45D231781DC7E8F10034FA89 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		45DF5DF31DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
-		45E1F3A31DEF1DF000852CF1 /* NoSignalContactsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */; };
-		45E1F3A51DEF20A100852CF1 /* NoSignalContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */; };
 		45E2E9201E153B3D00457AA0 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
 		45E615161E8C590B0018AD52 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */; };
 		45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */; };
@@ -383,6 +382,8 @@
 		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
 		345671081E8A9F5D006EE662 /* TSGenericAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGenericAttachmentAdapter.h; sourceTree = "<group>"; };
 		345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGenericAttachmentAdapter.m; sourceTree = "<group>"; };
+		3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
+		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		3472229D1EB22FFE00E53955 /* AddToGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToGroupViewController.h; sourceTree = "<group>"; };
 		3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToGroupViewController.m; sourceTree = "<group>"; };
 		34B3F8341E8DF1700035BE1A /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
@@ -569,8 +570,6 @@
 		45CD81F11DC03A22004C9430 /* OWSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLogger.m; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SessionResetJob.swift; path = Jobs/SessionResetJob.swift; sourceTree = "<group>"; };
 		45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompareSafetyNumbersActivity.swift; sourceTree = "<group>"; };
-		45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NoSignalContactsView.xib; sourceTree = "<group>"; };
-		45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoSignalContactsView.swift; sourceTree = "<group>"; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSCallNotificationsAdaptee.h; path = UserInterface/OWSCallNotificationsAdaptee.h; sourceTree = "<group>"; };
@@ -903,6 +902,8 @@
 				34B3F8531E8DF1700035BE1A /* MessagesViewController.xib */,
 				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
 				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
+				3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */,
+				3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */,
 				34B3F8561E8DF1700035BE1A /* NotificationSettingsOptionsViewController.h */,
 				34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */,
 				34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */,
@@ -1300,8 +1301,6 @@
 				45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */,
 				4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */,
 				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
-				45E1F3A41DEF20A100852CF1 /* NoSignalContactsView.swift */,
-				45E1F3A21DEF1DF000852CF1 /* NoSignalContactsView.xib */,
 				45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */,
 				45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */,
 				45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */,
@@ -1787,7 +1786,6 @@
 				AD41D7B61A6F6F0600241130 /* play_button@2x.png in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
-				45E1F3A31DEF1DF000852CF1 /* NoSignalContactsView.xib in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
@@ -2058,6 +2056,7 @@
 				34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */,
+				3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */,
 				34B3F87A1E8DF1700035BE1A /* DebugUITableViewController.m in Sources */,
 				34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
@@ -2132,7 +2131,6 @@
 				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
-				45E1F3A51DEF20A100852CF1 /* NoSignalContactsView.swift in Sources */,
 				34B3F8721E8DF1700035BE1A /* AdvancedSettingsTableViewController.m in Sources */,
 				45F170D61E315310003FC1F2 /* Weak.swift in Sources */,
 				34B3F8891E8DF1700035BE1A /* OWSConversationSettingsTableViewController.m in Sources */,

@@ -92,7 +92,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
@@ -551,13 +551,13 @@
 "HOURS_TIME_AMOUNT" = "%u hours";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connecting...";
+"IN_CALL_CONNECTING" = "Connecting…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringing...";
+"IN_CALL_RINGING" = "Ringing…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Answered. Securing...";
+"IN_CALL_SECURING" = "Answered. Securing…";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "Secured. Active.";
@@ -574,7 +574,7 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
-/* Text for button at the top of the contact picker */
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
 
 /* Search */
@@ -629,12 +629,6 @@
 "LIST_GROUP_MEMBERS_ACTION" = "List Group Members";
 
 /* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "Loading your contacts.";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Sit tight.";
-
-/* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
 /* No comment provided by engineer. */
@@ -662,7 +656,7 @@
 "MESSAGE_STATUS_SENT" = "Sent";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "Uploading…";
 
 /* A label for audio attachments of unknown type. */
 "MESSAGES_VIEW_AUDIO_TYPE_GENERIC" = "Audio";
@@ -744,11 +738,11 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "You can check your network status by looking at the colored bar above your inbox.";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Add by phone number…";
+"NEW_GROUP_ADD_NON_CONTACT" = "Add by phone number";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
@@ -773,6 +767,12 @@
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
@@ -1028,7 +1028,7 @@
 "SEND_INVITE_SUCCESS" = "You've invited your friend to use Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Send Invite via SMS to: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invite a friend via insecure SMS?";
@@ -1063,6 +1063,9 @@
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
 
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "No Search Results";
+
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
@@ -1091,7 +1094,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Delete Account";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history ...) ? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "I'm sure.";
