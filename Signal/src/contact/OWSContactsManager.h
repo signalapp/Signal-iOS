@@ -2,12 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Contacts/Contacts.h>
-#import <Foundation/Foundation.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import "CollapsingFutures.h"
 #import "Contact.h"
+#import <SignalServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,12 +29,13 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
 
-- (void)verifyABPermission;
+#pragma mark - System Contact Fetching
+
+- (void)requestSystemContactsOnce;
+- (void)fetchSystemContactsIfAlreadyAuthorized;
 
 // TODO: Remove this method.
 - (NSArray<Contact *> *)signalContacts;
-
-- (void)doAfterEnvironmentInitSetup;
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
@@ -48,6 +45,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
 
+// TODO migrate to CNContact?
 - (BOOL)hasAddressBook;
 
 + (NSComparator _Nonnull)contactComparator;

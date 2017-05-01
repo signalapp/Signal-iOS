@@ -276,7 +276,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self checkIfEmptyView];
-
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
     [self updateInboxCountLabel];
     [[self tableView] reloadData];
 }
@@ -287,47 +289,13 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
-
-        [self didAppearForNewlyRegisteredUser];
+        [self ensureNotificationsUpToDate];
     } else {
         [self displayAnyUnseenUpgradeExperience];
     }
 }
 
 #pragma mark - startup
-
-- (void)didAppearForNewlyRegisteredUser
-{
-    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
-    switch (status) {
-        case kABAuthorizationStatusNotDetermined:
-        case kABAuthorizationStatusRestricted: {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                    message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
-
-            [controller
-                addAction:[UIAlertAction
-                              actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
-                                        style:UIAlertActionStyleCancel
-                                      handler:^(UIAlertAction *action) {
-                                          [self ensureNotificationsUpToDate];
-                                          [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-                                      }]];
-
-            [self presentViewController:controller animated:YES completion:nil];
-            break;
-        }
-        default: {
-            DDLogError(@"%@ Unexpected for new user to have kABAuthorizationStatus:%ld", self.tag, status);
-            [self ensureNotificationsUpToDate];
-            [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-
-            break;
-        }
-    }
-}
 
 - (void)displayAnyUnseenUpgradeExperience
 {
@@ -682,6 +650,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *sectionChanges = nil;
     NSArray *rowChanges     = nil;
+
+    // If the user hasn't already granted contact access
+    // we don't want to request until they receive a message.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
 
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
