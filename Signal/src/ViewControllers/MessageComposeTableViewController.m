@@ -165,6 +165,11 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 {
     [super viewWillAppear:animated];
 
+    // Make sure we have requested contact access at this point if, e.g.
+    // the user has no messages in their inbox and they choose to compose
+    // a message.
+    [self.contactsManager requestSystemContactsOnce];
+
     [self showEmptyBackgroundViewIfNecessary];
 }
 
@@ -729,6 +734,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.contacts = [self filteredContacts];
     [self updateSearchResultsForSearchController:self.searchController];
     [self.tableView reloadData];
+    // TODO revisit this after https://github.com/WhisperSystems/Signal-iOS/pull/2058 is merged
+    [self showEmptyBackgroundViewIfNecessary];
 }
 
 - (BOOL)isContactHidden:(Contact *)contact

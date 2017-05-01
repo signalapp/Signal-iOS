@@ -16,6 +16,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>

@@ -528,6 +528,10 @@ typedef enum : NSUInteger {
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
     [self startExpirationTimerAnimations];
 
+    // We should have already requested contact access at this point, so this should be a no-op
+    // unless it ever becomes possible to to load this VC without going via the SignalsViewController
+    [self.contactsManager requestSystemContactsOnce];
+
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];

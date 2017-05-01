@@ -116,7 +116,7 @@ DEPENDENCIES:
   - OpenSSL
   - PureLayout
   - SCWaveformView (~> 1.0)
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`, branch `mkirk/delay-contact-access`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
@@ -126,6 +126,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/position-edit-menu
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
+    :branch: mkirk/delay-contact-access
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
@@ -138,7 +139,7 @@ CHECKOUT OPTIONS:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: 77833e727a01d58a0191985294d43f32482f40eb
+    :commit: 74789d91168950329982d73ab2c255d1c4ae094c
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
@@ -167,6 +168,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: b1e43555a34a5298e23a045be96817a5ef0da58f
 
-PODFILE CHECKSUM: d5d74507dcd5be1d257c00c9dc00faa0aaa62907
+PODFILE CHECKSUM: 1f89e0286aa463dd7bd8eff39f52c5697edf19a9
 
 COCOAPODS: 1.2.1
