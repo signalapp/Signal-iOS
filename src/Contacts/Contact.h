@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
 @class CNContact;
 @class PhoneNumber;
 @class UIImage;
+@class SignalRecipient;
 
 @interface Contact : NSObject
 
@@ -47,6 +48,8 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
 #endif // TARGET_OS_IOS
 
 - (BOOL)isSignalContact;
+- (NSArray<SignalRecipient *> *)signalRecipients;
+// TODO: Remove this method.
 - (NSArray<NSString *> *)textSecureIdentifiers;
 
 #if TARGET_OS_IOS

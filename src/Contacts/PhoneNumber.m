@@ -257,4 +257,9 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self;
 }
 
+- (NSComparisonResult)compare:(PhoneNumber *)other
+{
+    return [self.toE164 compare:other.toE164];
+}
+
 @end

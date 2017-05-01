@@ -202,6 +202,22 @@ NS_ASSUME_NONNULL_BEGIN
     return [identifiers count] > 0;
 }
 
+- (NSArray<SignalRecipient *> *)signalRecipients
+{
+    __block NSMutableArray *result = [NSMutableArray array];
+
+    [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
+            SignalRecipient *signalRecipient =
+                [SignalRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction];
+            if (signalRecipient) {
+                [result addObject:signalRecipient];
+            }
+        }
+    }];
+    return [result copy];
+}
+
 - (NSArray<NSString *> *)textSecureIdentifiers {
     __block NSMutableArray *identifiers = [NSMutableArray array];
 

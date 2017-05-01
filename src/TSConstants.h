@@ -1,6 +1,5 @@
-//
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
-//
+//  Created by Frederic Jacobs on 28/10/14.
+//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
 
 #import <Foundation/Foundation.h>
 @class TSNumberVerifier;
@@ -22,11 +21,11 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 
 #define textSecureHTTPTimeOut 10
 
-//#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
-//#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
+#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
+#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
 
-#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
+//#define textSecureWebSocketAPI    @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+//#define textSecureServerURL       @"https://textsecure-service-staging.whispersystems.org/"
 
 #define textSecureGeneralAPI @"v1"
 #define textSecureAccountsAPI @"v1/accounts"
