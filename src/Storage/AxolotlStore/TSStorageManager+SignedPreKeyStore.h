@@ -30,6 +30,10 @@ extern NSString *const TSStorageManagerSignedPreKeyStoreCollection;
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value;
 - (void)clearFirstPrekeyUpdateFailureDate;
 
+#pragma mark - Debugging
+
+- (void)logSignedPreKeyReport;
+
 @end
 
 NS_ASSUME_NONNULL_END
