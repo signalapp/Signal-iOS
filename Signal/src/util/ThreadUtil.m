@@ -89,8 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    Contact *contact = [contactsManager contactForPhoneIdentifier:contactThread.contactIdentifier];
-    if (contact) {
+    SignalAccount *signalAccount = [contactsManager signalAccountForRecipientId:contactThread.contactIdentifier];
+    if (signalAccount) {
         // Only create block offers for non-contacts.
         return;
     }

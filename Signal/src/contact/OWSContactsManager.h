@@ -12,38 +12,46 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
+// TODO: Remove this.
+// TODO: Remove observableContactsController.
 extern NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification;
 
 @class UIFont;
-@class ContactAccount;
+@class SignalAccount;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-@property (nullable, strong) CNContactStore *contactStore;
-@property (nonnull, readonly, strong) NSCache<NSString *, UIImage *> *avatarCache;
+@property (nonnull, readonly) NSCache<NSString *, UIImage *> *avatarCache;
+
+// signalAccountMap and signalAccounts hold the same data.
+// signalAccountMap is for lookup. signalAccounts contains the accounts
+// ordered by display order.
+@property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 - (nonnull ObservableValue *)getObservableContacts;
 
-- (nullable Contact *)latestContactForPhoneNumber:(nullable PhoneNumber *)phoneNumber;
-- (nullable Contact *)contactForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable SignalAccount *)signalAccountForRecipientId:(nullable NSString *)recipientId;
+
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
 
 - (void)verifyABPermission;
 
-- (NSArray<Contact *> *)allContacts;
+// TODO: Remove this method.
 - (NSArray<Contact *> *)signalContacts;
 
 - (void)doAfterEnvironmentInitSetup;
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
-- (NSString *_Nonnull)displayNameForContactAccount:(ContactAccount *)contactAccount;
+- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
-- (NSAttributedString *_Nonnull)formattedDisplayNameForContactAccount:(ContactAccount *)contactAccount
-                                                                 font:(UIFont *_Nonnull)font;
+- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount
+                                                                font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
 

@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class ContactAccount;
+@class SignalAccount;
 
 @protocol SelectRecipientViewControllerDelegate <NSObject>
 
@@ -14,7 +14,7 @@
 
 - (void)phoneNumberWasSelected:(NSString *)phoneNumber;
 
-- (void)contactAccountWasSelected:(ContactAccount *)contactAccount;
+- (void)signalAccountWasSelected:(SignalAccount *)signalAccount;
 
 - (BOOL)shouldHideLocalNumber;
 

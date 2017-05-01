@@ -5,69 +5,46 @@
 #import "BlockListViewController.h"
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "OWSTableViewController.h"
 #import "PhoneNumber.h"
 #import "UIFont+OWS.h"
+#import "UIView+OWS.h"
 #import <SignalServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlockListViewController ()
+@interface BlockListViewController () <ContactsViewHelperDelegate>
 
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic) NSArray<Contact *> *contacts;
+@property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
 @end
 
 #pragma mark -
 
-typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
-    BlockListViewControllerSection_Add,
-    BlockListViewControllerSection_BlockList,
-    BlockListViewControllerSection_Count // meta section
-};
-
 @implementation BlockListViewController
-
-- (instancetype)init
-{
-    return [super initWithStyle:UITableViewStyleGrouped];
-}
 
 - (void)loadView
 {
     [super loadView];
-    
-    _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
-    _contactsManager = [Environment getCurrent].contactsManager;
-    self.contacts = [self.contactsManager.signalContacts copy];
+
+    _contactsViewHelper = [ContactsViewHelper new];
+    _contactsViewHelper.delegate = self;
 
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
-    [self addNotificationListeners];
-}
+    _tableViewController = [OWSTableViewController new];
+    [self.view addSubview:self.tableViewController.view];
+    [_tableViewController.view autoPinWidthToSuperview];
+    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
-- (void)addNotificationListeners
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
-                                               object:nil];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self updateTableContents];
 }
 
 - (void)viewDidLoad
@@ -78,120 +55,75 @@ typedef NS_ENUM(NSInteger, BlockListViewControllerSection) {
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (void)updateTableContents
 {
-    return BlockListViewControllerSection_Count;
-}
+    OWSTableContents *contents = [OWSTableContents new];
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    switch (section) {
-        case BlockListViewControllerSection_Add:
-            return 1;
-        case BlockListViewControllerSection_BlockList:
-            return (NSInteger) _blockedPhoneNumbers.count;
-        default:
-            OWSAssert(0);
-            return 0;
+    __weak BlockListViewController *weakSelf = self;
+    ContactsViewHelper *helper = self.contactsViewHelper;
+
+    // Add section
+
+    OWSTableSection *addSection = [OWSTableSection new];
+    addSection.footerTitle = NSLocalizedString(
+        @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+
+    [addSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = NSLocalizedString(
+            @"SETTINGS_BLOCK_LIST_ADD_BUTTON", @"A label for the 'add phone number' button in the block list table.");
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        return cell;
     }
-}
+                            actionBlock:^{
+                                AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+                                NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                                NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
+                                [weakSelf.navigationController pushViewController:vc animated:YES];
+                            }]];
+    [contents addSection:addSection];
 
-- (nullable NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    switch (section) {
-        case BlockListViewControllerSection_Add:
-            return NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
-                                     @"An explanation of the consequences of blocking another user.");
-       default:
-            return nil;
-    }
-}
+    // Blocklist section
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [UITableViewCell new];
-    OWSAssert(cell);
-    
-    switch (indexPath.section) {
-        case BlockListViewControllerSection_Add:
-            cell.textLabel.text = NSLocalizedString(
-                                                    @"SETTINGS_BLOCK_LIST_ADD_BUTTON", @"A label for the 'add phone number' button in the block list table.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            break;
-        case BlockListViewControllerSection_BlockList: {
-            NSString *displayName = [self displayNameForIndexPath:indexPath];
+    OWSTableSection *blocklistSection = [OWSTableSection new];
+    NSArray<NSString *> *blockedPhoneNumbers =
+        [helper.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
+    for (NSString *phoneNumber in blockedPhoneNumbers) {
+        [blocklistSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            // TODO: Use ContactTableViewCell.
+            UITableViewCell *cell = [UITableViewCell new];
+            NSString *displayName = [helper.contactsManager displayNameForPhoneIdentifier:phoneNumber];
             cell.textLabel.text = displayName;
             cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            break;
+            cell.textLabel.textColor = [UIColor blackColor];
+            return cell;
         }
-        default:
-            OWSAssert(0);
-            return 0;
+                                      actionBlock:^{
+                                          [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
+                                                                           fromViewController:weakSelf
+                                                                              blockingManager:helper.blockingManager
+                                                                              contactsManager:helper.contactsManager
+                                                                              completionBlock:nil];
+                                      }]];
     }
-    
-    return cell;
+    [contents addSection:blocklistSection];
+
+    self.tableViewController.contents = contents;
 }
 
-- (NSString *)displayNameForIndexPath:(NSIndexPath *)indexPath
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
 {
-    NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-    NSString *displayName = [_contactsManager displayNameForPhoneIdentifier:phoneNumber];
-    return displayName;
+    [self updateTableContents];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)shouldHideLocalNumber
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    switch (indexPath.section) {
-        case BlockListViewControllerSection_Add:
-        {
-            AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-            NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-            NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
-            [self.navigationController pushViewController:vc animated:YES];
-            break;
-        }
-        case BlockListViewControllerSection_BlockList: {
-            NSString *phoneNumber = _blockedPhoneNumbers[(NSUInteger)indexPath.item];
-            [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                             fromViewController:self
-                                                blockingManager:_blockingManager
-                                                contactsManager:_contactsManager
-                                                completionBlock:nil];
-            break;
-        }
-        default:
-            OWSAssert(0);
-    }
-}
-
-#pragma mark - Actions
-
-- (void)blockedPhoneNumbersDidChange:(id)notification
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
-
-        [self.tableView reloadData];
-    });
-}
-
-- (void)signalRecipientsDidChange:(NSNotification *)notification
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateContacts];
-    });
-}
-
-- (void)updateContacts
-{
-    OWSAssert([NSThread isMainThread]);
-
-    self.contacts = [self.contactsManager.signalContacts copy];
-    [self.tableView reloadData];
+    return YES;
 }
 
 #pragma mark - Logging

@@ -4,9 +4,9 @@
 
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "ContactsViewHelper.h"
 #import "OWSContactsManager.h"
+#import "SignalAccount.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,14 +60,14 @@ NS_ASSUME_NONNULL_BEGIN
                                       }];
 }
 
-- (void)contactAccountWasSelected:(ContactAccount *)contactAccount
+- (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:contactAccount.recipientId]) {
-        NSString *displayName = [helper.contactsManager displayNameForContactAccount:contactAccount];
+    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+        NSString *displayName = [helper.contactsManager displayNameForSignalAccount:signalAccount];
         UIAlertController *controller = [UIAlertController
             alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE",
                                          @"A title of the alert if user tries to block a "
@@ -88,15 +88,15 @@ NS_ASSUME_NONNULL_BEGIN
         [self presentViewController:controller animated:YES completion:nil];
         return;
     }
-    [BlockListUIUtils showBlockContactAccountActionSheet:contactAccount
-                                      fromViewController:self
-                                         blockingManager:helper.blockingManager
-                                         contactsManager:helper.contactsManager
-                                         completionBlock:^(BOOL isBlocked) {
-                                             if (isBlocked) {
-                                                 [weakSelf.navigationController popViewControllerAnimated:YES];
-                                             }
-                                         }];
+    [BlockListUIUtils showBlockSignalAccountActionSheet:signalAccount
+                                     fromViewController:self
+                                        blockingManager:helper.blockingManager
+                                        contactsManager:helper.contactsManager
+                                        completionBlock:^(BOOL isBlocked) {
+                                            if (isBlocked) {
+                                                [weakSelf.navigationController popViewControllerAnimated:YES];
+                                            }
+                                        }];
 }
 
 - (BOOL)shouldHideLocalNumber

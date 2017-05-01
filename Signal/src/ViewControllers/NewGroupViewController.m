@@ -4,7 +4,6 @@
 
 #import "NewGroupViewController.h"
 #import "AddToGroupViewController.h"
-#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -13,6 +12,7 @@
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
+#import "SignalAccount.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
 #import "UIUtil.h"
@@ -185,15 +185,15 @@ NS_ASSUME_NONNULL_BEGIN
     __weak NewGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    NSArray<ContactAccount *> *allRecipientContactAccounts = self.contactsViewHelper.allRecipientContactAccounts;
+    NSArray<SignalAccount *> *signalAccounts = self.contactsViewHelper.signalAccounts;
     NSMutableSet *nonContactMemberRecipientIds = [self.memberRecipientIds mutableCopy];
-    for (ContactAccount *contactAccount in allRecipientContactAccounts) {
-        [nonContactMemberRecipientIds removeObject:contactAccount.recipientId];
+    for (SignalAccount *signalAccount in signalAccounts) {
+        [nonContactMemberRecipientIds removeObject:signalAccount.recipientId];
     }
 
     // Non-contact Members
 
-    if (nonContactMemberRecipientIds.count > 0 || allRecipientContactAccounts.count < 1) {
+    if (nonContactMemberRecipientIds.count > 0 || signalAccounts.count < 1) {
 
         OWSTableSection *nonContactsSection = [OWSTableSection new];
         nonContactsSection.headerTitle = NSLocalizedString(
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                    ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+                    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
                     BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
                     BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
                     if (isCurrentMember) {
@@ -226,8 +226,8 @@ NS_ASSUME_NONNULL_BEGIN
                         OWSAssert(cell.accessoryMessage == nil);
                     }
 
-                    if (contactAccount) {
-                        [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
+                    if (signalAccount) {
+                        [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
                     } else {
                         [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
                     }
@@ -236,15 +236,15 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                             customRowHeight:[ContactTableViewCell rowHeight]
                             actionBlock:^{
-                                ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
-                                if (contactAccount) {
+                                SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+                                if (signalAccount) {
                                     [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForContactAccount:contactAccount
-                                                               fromViewController:weakSelf
-                                                                  contactsManager:helper.contactsManager
-                                                                     successBlock:^{
-                                                                         [weakSelf removeContactAccount:contactAccount];
-                                                                     }];
+                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
+                                                              fromViewController:weakSelf
+                                                                 contactsManager:helper.contactsManager
+                                                                    successBlock:^{
+                                                                        [weakSelf removeSignalAccount:signalAccount];
+                                                                    }];
                                 } else {
                                     [weakSelf.groupViewHelper
                                         showRemoveFromGroupAlertForRecipientId:recipientId
@@ -261,18 +261,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Contacts
 
-    OWSTableSection *contactAccountSection = [OWSTableSection new];
-    contactAccountSection.headerTitle = NSLocalizedString(
+    OWSTableSection *signalAccountSection = [OWSTableSection new];
+    signalAccountSection.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
-    if (allRecipientContactAccounts.count > 0) {
+    if (signalAccounts.count > 0) {
 
         if (nonContactMemberRecipientIds.count < 1) {
             // We always want to offer a way to add non-contacts.
-            [contactAccountSection addItem:[self createAddNonContactItem]];
+            [signalAccountSection addItem:[self createAddNonContactItem]];
         }
 
-        for (ContactAccount *contactAccount in allRecipientContactAccounts) {
-            [contactAccountSection
+        for (SignalAccount *signalAccount in signalAccounts) {
+            [signalAccountSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
                     if (!strongSelf) {
@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                    NSString *recipientId = contactAccount.recipientId;
+                    NSString *recipientId = signalAccount.recipientId;
                     BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
                     BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
                     if (isCurrentMember) {
@@ -295,29 +295,29 @@ NS_ASSUME_NONNULL_BEGIN
                         OWSAssert(cell.accessoryMessage == nil);
                     }
 
-                    [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
+                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
 
                     return cell;
                 }
                             customRowHeight:[ContactTableViewCell rowHeight]
                             actionBlock:^{
-                                NSString *recipientId = contactAccount.recipientId;
+                                NSString *recipientId = signalAccount.recipientId;
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
                                 if (isCurrentMember) {
                                     [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForContactAccount:contactAccount
-                                                               fromViewController:weakSelf
-                                                                  contactsManager:helper.contactsManager
-                                                                     successBlock:^{
-                                                                         [weakSelf removeContactAccount:contactAccount];
-                                                                     }];
+                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
+                                                              fromViewController:weakSelf
+                                                                 contactsManager:helper.contactsManager
+                                                                    successBlock:^{
+                                                                        [weakSelf removeSignalAccount:signalAccount];
+                                                                    }];
                                 } else {
                                     [weakSelf addRecipientId:recipientId];
                                 }
                             }]];
         }
     } else {
-        [contactAccountSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        [signalAccountSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
             cell.textLabel.text = NSLocalizedString(
                 @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
@@ -326,9 +326,9 @@ NS_ASSUME_NONNULL_BEGIN
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             return cell;
         }
-                                                                 actionBlock:nil]];
+                                                                actionBlock:nil]];
     }
-    [contents addSection:contactAccountSection];
+    [contents addSection:signalAccountSection];
 
     self.tableViewController.contents = contents;
 }
@@ -354,11 +354,11 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)removeContactAccount:(ContactAccount *)contactAccount
+- (void)removeSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
-    [self.memberRecipientIds removeObject:contactAccount.recipientId];
+    [self.memberRecipientIds removeObject:signalAccount.recipientId];
     [self updateTableContents];
 }
 

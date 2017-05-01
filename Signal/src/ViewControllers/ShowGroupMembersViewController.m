@@ -4,11 +4,11 @@
 
 #import "ShowGroupMembersViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "SignalAccount.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -108,15 +108,15 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
-            ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+            SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
             if (isBlocked) {
                 cell.accessoryMessage
                     = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
             }
 
-            if (contactAccount) {
-                [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
+            if (signalAccount) {
+                [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
             } else {
                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
             }
@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -152,8 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
 
     BOOL isBlocked;
-    if (contactAccount) {
-        isBlocked = [helper isRecipientIdBlocked:contactAccount.recipientId];
+    if (signalAccount) {
+        isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
         if (isBlocked) {
             [actionSheetController
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -161,11 +161,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
-                                                         showUnblockContactAccountActionSheet:contactAccount
-                                                                           fromViewController:self
-                                                                              blockingManager:helper.blockingManager
-                                                                              contactsManager:helper.contactsManager
-                                                                              completionBlock:nil];
+                                                         showUnblockSignalAccountActionSheet:signalAccount
+                                                                          fromViewController:self
+                                                                             blockingManager:helper.blockingManager
+                                                                             contactsManager:helper.contactsManager
+                                                                             completionBlock:nil];
                                                  }]];
         } else {
             [actionSheetController
@@ -174,11 +174,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [BlockListUIUtils
-                                                         showBlockContactAccountActionSheet:contactAccount
-                                                                         fromViewController:self
-                                                                            blockingManager:helper.blockingManager
-                                                                            contactsManager:helper.contactsManager
-                                                                            completionBlock:nil];
+                                                         showBlockSignalAccountActionSheet:signalAccount
+                                                                        fromViewController:self
+                                                                           blockingManager:helper.blockingManager
+                                                                           contactsManager:helper.contactsManager
+                                                                           completionBlock:nil];
                                                  }]];
         }
     } else {
@@ -242,14 +242,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
 
-    if (contactAccount) {
+    if (signalAccount) {
         ABPersonViewController *view = [[ABPersonViewController alloc] init];
 
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
         // Assume person is already defined.
-        view.displayedPerson = ABAddressBookGetPersonWithRecordID(addressBookRef, contactAccount.contact.recordID);
+        view.displayedPerson = ABAddressBookGetPersonWithRecordID(addressBookRef, signalAccount.contact.recordID);
         view.allowsActions = NO;
         view.allowsEditing = YES;
 

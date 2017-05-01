@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ContactAccount;
+@class SignalAccount;
 @class GroupViewHelper;
 @class OWSContactsManager;
 @class TSThread;
@@ -27,10 +27,10 @@ typedef void (^GroupViewSuccessBlock)();
 
 @property (nonatomic, weak) id<GroupViewHelperDelegate> delegate;
 
-- (void)showRemoveFromGroupAlertForContactAccount:(ContactAccount *)contactAccount
-                               fromViewController:(UIViewController *)fromViewController
-                                  contactsManager:(OWSContactsManager *)contactsManager
-                                     successBlock:(GroupViewSuccessBlock)successBlock;
+- (void)showRemoveFromGroupAlertForSignalAccount:(SignalAccount *)signalAccount
+                              fromViewController:(UIViewController *)fromViewController
+                                 contactsManager:(OWSContactsManager *)contactsManager
+                                    successBlock:(GroupViewSuccessBlock)successBlock;
 
 - (void)showRemoveFromGroupAlertForRecipientId:(NSString *)recipientId
                             fromViewController:(UIViewController *)fromViewController

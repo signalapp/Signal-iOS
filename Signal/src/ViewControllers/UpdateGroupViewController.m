@@ -5,7 +5,6 @@
 #import "UpdateGroupViewController.h"
 #import "AddToGroupViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -14,6 +13,7 @@
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
+#import "SignalAccount.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
 #import "UIUtil.h"
@@ -245,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+                SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
                 BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
                 BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
                 if (isPreviousMember) {
@@ -264,8 +264,8 @@ NS_ASSUME_NONNULL_BEGIN
                         @"EDIT_GROUP_NEW_MEMBER_LABEL", @"An indicator that a user is a new member of the group.");
                 }
 
-                if (contactAccount) {
-                    [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
+                if (signalAccount) {
+                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
                 } else {
                     [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
                 }
@@ -274,26 +274,26 @@ NS_ASSUME_NONNULL_BEGIN
             }
                         customRowHeight:[ContactTableViewCell rowHeight]
                         actionBlock:^{
-                            ContactAccount *contactAccount = [helper contactAccountForRecipientId:recipientId];
+                            SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
                             BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
                             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
                             if (isPreviousMember) {
                                 if (isBlocked) {
-                                    if (contactAccount) {
-                                        [weakSelf showUnblockAlertForContactAccount:contactAccount];
+                                    if (signalAccount) {
+                                        [weakSelf showUnblockAlertForSignalAccount:signalAccount];
                                     } else {
                                         [weakSelf showUnblockAlertForRecipientId:recipientId];
                                     }
                                 }
                             } else {
-                                if (contactAccount) {
+                                if (signalAccount) {
                                     [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForContactAccount:contactAccount
-                                                               fromViewController:weakSelf
-                                                                  contactsManager:helper.contactsManager
-                                                                     successBlock:^{
-                                                                         [weakSelf removeContactAccount:contactAccount];
-                                                                     }];
+                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
+                                                              fromViewController:weakSelf
+                                                                 contactsManager:helper.contactsManager
+                                                                    successBlock:^{
+                                                                        [weakSelf removeSignalAccount:signalAccount];
+                                                                    }];
                                 } else {
                                     [weakSelf.groupViewHelper
                                         showRemoveFromGroupAlertForRecipientId:recipientId
@@ -311,21 +311,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.contents = contents;
 }
 
-- (void)showUnblockAlertForContactAccount:(ContactAccount *)contactAccount
+- (void)showUnblockAlertForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
     __weak UpdateGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    [BlockListUIUtils showUnblockContactAccountActionSheet:contactAccount
-                                        fromViewController:self
-                                           blockingManager:helper.blockingManager
-                                           contactsManager:helper.contactsManager
-                                           completionBlock:^(BOOL isBlocked) {
-                                               if (!isBlocked) {
-                                                   [weakSelf updateTableContents];
-                                               }
-                                           }];
+    [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
+                                       fromViewController:self
+                                          blockingManager:helper.blockingManager
+                                          contactsManager:helper.contactsManager
+                                          completionBlock:^(BOOL isBlocked) {
+                                              if (!isBlocked) {
+                                                  [weakSelf updateTableContents];
+                                              }
+                                          }];
 }
 
 - (void)showUnblockAlertForRecipientId:(NSString *)recipientId
@@ -345,11 +345,11 @@ NS_ASSUME_NONNULL_BEGIN
                                         }];
 }
 
-- (void)removeContactAccount:(ContactAccount *)contactAccount
+- (void)removeSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
-    [self.memberRecipientIds removeObject:contactAccount.recipientId];
+    [self.memberRecipientIds removeObject:signalAccount.recipientId];
     [self updateTableContents];
 }
 

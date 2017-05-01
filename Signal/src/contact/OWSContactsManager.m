@@ -3,8 +3,8 @@
 //
 
 #import "OWSContactsManager.h"
-#import "ContactAccount.h"
 #import "Environment.h"
+#import "SignalAccount.h"
 #import "Util.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
@@ -13,24 +13,29 @@
 
 typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
 
+NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
+    @"OWSContactsManagerSignalAccountsDidChangeNotification";
 NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
     @"OWSContactsManagerSignalRecipientsDidChangeNotification";
 
 @interface OWSContactsManager ()
 
+@property (atomic, nullable) CNContactStore *contactStore;
 @property (atomic) id addressBookReference;
 @property (atomic) TOCFuture *futureAddressBook;
 @property (atomic) ObservableValueController *observableContactsController;
 @property (atomic) TOCCancelTokenSource *life;
-@property (atomic) NSDictionary *latestContactsById;
-@property (atomic) NSDictionary<NSString *, Contact *> *contactMap;
 @property (nonatomic) BOOL isContactsUpdateInFlight;
+// This reflects the contents of the device phone book and includes
+// contacts that do not correspond to any signal account.
+@property (atomic) NSArray<Contact *> *allContacts;
+@property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
+@property (atomic) NSArray<SignalAccount *> *signalAccounts;
+@property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 
 @end
 
 @implementation OWSContactsManager
-
-@synthesize latestContactsById = _latestContactsById;
 
 - (void)dealloc {
     [_life cancel];
@@ -44,47 +49,14 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
 
     _life = [TOCCancelTokenSource new];
     _observableContactsController = [ObservableValueController observableValueControllerWithInitialValue:nil];
-    _latestContactsById = @{};
     _avatarCache = [NSCache new];
+    _allContacts = @[];
+    _signalAccountMap = @{};
+    _signalAccounts = @[];
 
     OWSSingletonAssert();
 
     return self;
-}
-
-- (NSDictionary *)latestContactsById
-{
-    @synchronized(self)
-    {
-        return _latestContactsById;
-    }
-}
-
-- (void)setLatestContactsById:(NSDictionary *)latestContactsById
-{
-    @synchronized(self)
-    {
-        _latestContactsById = [latestContactsById copy];
-
-        NSMutableDictionary<NSString *, Contact *> *contactMap = [NSMutableDictionary new];
-        for (Contact *contact in _latestContactsById.allValues) {
-            // The allContacts method seems to protect against non-contact instances
-            // in latestContactsById, so I've done the same here.  I'm not sure if
-            // this is a real issue.
-            OWSAssert([contact isKindOfClass:[Contact class]]);
-            if (![contact isKindOfClass:[Contact class]]) {
-                continue;
-            }
-
-            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-                NSString *phoneNumberE164 = phoneNumber.toE164;
-                if (phoneNumberE164.length > 0) {
-                    contactMap[phoneNumberE164] = contact;
-                }
-            }
-        }
-        self.contactMap = contactMap;
-    }
 }
 
 - (void)doAfterEnvironmentInitSetup {
@@ -106,7 +78,7 @@ NSString *const OWSContactsManagerSignalRecipientsDidChangeNotification =
     __weak OWSContactsManager *weakSelf = self;
     [self.observableContactsController watchLatestValueOnArbitraryThread:^(NSArray *latestContacts) {
       @synchronized(self) {
-          [weakSelf setupLatestContacts:latestContacts];
+          [weakSelf updateSignalAccounts:latestContacts];
       }
     }
                                                      untilCancelled:_life.token];
@@ -227,10 +199,120 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     [self.observableContactsController updateValue:[self getContactsFromAddressBook:addressBookRef]];
 }
 
-- (void)setupLatestContacts:(NSArray *)contacts {
-    if (contacts) {
-        self.latestContactsById = [OWSContactsManager keyContactsById:contacts];
+- (void)updateSignalAccounts:(NSArray<Contact *> *)contacts
+{
+    // This will happen off of the main thread.
+
+    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
+    NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
+    for (Contact *contact in contacts) {
+        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+            NSString *phoneNumberE164 = phoneNumber.toE164;
+            if (phoneNumberE164.length > 0) {
+                allContactsMap[phoneNumberE164] = contact;
+            }
+        }
+
+        NSArray<SignalRecipient *> *signalRecipients = contact.signalRecipients;
+        for (SignalRecipient *signalRecipient in contact.signalRecipients) {
+
+            if (signalRecipients.count == 1) {
+                SignalAccount *signalAccount = [SignalAccount new];
+                signalAccount.signalRecipient = signalRecipient;
+                signalAccount.contact = contact;
+                signalAccountMap[signalAccount.recipientId] = signalAccount;
+                [signalAccounts addObject:signalAccount];
+            } else if (contact.textSecureIdentifiers.count > 1) {
+                for (NSString *recipientId in
+                    [contact.textSecureIdentifiers sortedArrayUsingSelector:@selector(compare:)]) {
+                    SignalAccount *signalAccount = [SignalAccount new];
+                    signalAccount.signalRecipient = signalRecipient;
+                    signalAccount.contact = contact;
+                    signalAccount.isMultipleAccountContact = YES;
+                    signalAccount.multipleAccountLabel =
+                        [[self class] accountLabelForContact:contact recipientId:recipientId];
+                    signalAccountMap[signalAccount.recipientId] = signalAccount;
+                    [signalAccounts addObject:signalAccount];
+                }
+            }
+        }
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.allContacts = contacts;
+        self.signalAccountMap = [signalAccountMap copy];
+        self.signalAccounts = [signalAccounts copy];
+        self.allContactsMap = [allContactsMap copy];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
+                                                            object:nil];
+    });
+}
+
++ (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
+{
+    OWSAssert(contact);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert([contact.textSecureIdentifiers containsObject:recipientId]);
+
+    if (contact.textSecureIdentifiers.count <= 1) {
+        return nil;
+    }
+
+    // 1. Find the phone number type of this account.
+    OWSPhoneNumberType phoneNumberType = [contact phoneNumberTypeForPhoneNumber:recipientId];
+
+    NSString *phoneNumberLabel;
+    switch (phoneNumberType) {
+        case OWSPhoneNumberTypeMobile:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MOBILE", @"Label for 'Mobile' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeIPhone:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'IPhone' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeMain:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MAIN", @"Label for 'Main' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeHomeFAX:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME_FAX", @"Label for 'HomeFAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeWorkFAX:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK_FAX", @"Label for 'Work FAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeOtherFAX:
+            phoneNumberLabel
+                = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER_FAX", @"Label for 'Other FAX' phone numbers.");
+            break;
+        case OWSPhoneNumberTypePager:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_PAGER", @"Label for 'Pager' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeUnknown:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN", @"Label for 'Unknown' phone numbers.");
+            break;
+    }
+
+    // 2. Find all phone numbers for this contact of the same type.
+    NSMutableArray *phoneNumbersOfTheSameType = [NSMutableArray new];
+    for (NSString *textSecureIdentifier in contact.textSecureIdentifiers) {
+        if (phoneNumberType == [contact phoneNumberTypeForPhoneNumber:textSecureIdentifier]) {
+            [phoneNumbersOfTheSameType addObject:textSecureIdentifier];
+        }
+    }
+
+    OWSAssert([phoneNumbersOfTheSameType containsObject:recipientId]);
+    if (phoneNumbersOfTheSameType.count > 0) {
+        NSUInteger index =
+            [[phoneNumbersOfTheSameType sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+        phoneNumberLabel =
+            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
+                                           @"Format for phone number label with an index. Embeds {{Phone number label "
+                                           @"(e.g. 'home')}} and {{index, e.g. 2}}."),
+                      phoneNumberLabel,
+                      (int)index];
+    }
+
+    return phoneNumberLabel;
 }
 
 + (void)blockingContactDialog {
@@ -394,28 +476,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                                             andContactID:recordID];
 }
 
-- (Contact * _Nullable)latestContactForPhoneNumber:(PhoneNumber *)phoneNumber {
-    NSArray *allContacts = [self allContacts];
-
-    ContactSearchBlock searchBlock = ^BOOL(Contact *contact, NSUInteger idx, BOOL *stop) {
-      for (PhoneNumber *number in contact.parsedPhoneNumbers) {
-          if ([self phoneNumber:number matchesNumber:phoneNumber]) {
-              *stop = YES;
-              return YES;
-          }
-      }
-      return NO;
-    };
-
-    NSUInteger contactIndex = [allContacts indexOfObjectPassingTest:searchBlock];
-
-    if (contactIndex != NSNotFound) {
-        return allContacts[contactIndex];
-    } else {
-        return nil;
-    }
-}
-
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2 {
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
 }
@@ -459,25 +519,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-+ (NSDictionary *)keyContactsById:(NSArray *)contacts {
-    return [contacts keyedBy:^id(Contact *contact) {
-      return @((int)contact.recordID);
-    }];
-}
-
-- (NSArray<Contact *> *_Nonnull)allContacts {
-    NSMutableArray *allContacts = [NSMutableArray array];
-
-    for (NSString *key in self.latestContactsById.allKeys) {
-        Contact *contact = [self.latestContactsById objectForKey:key];
-
-        if ([contact isKindOfClass:[Contact class]]) {
-            [allContacts addObject:contact];
-        }
-    }
-    return allContacts;
-}
-
 #pragma mark - Whisper User Management
 
 - (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
@@ -511,10 +552,12 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     if (!identifier) {
         return self.unknownContactName;
     }
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
-    
-    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
-    
+
+    // TODO: There's some overlap here with displayNameForSignalAccount.
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:identifier];
+
+    NSString *displayName = (signalAccount.contact.fullName.length > 0) ? signalAccount.contact.fullName : identifier;
+
     return displayName;
 }
 
@@ -527,36 +570,36 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
-- (NSString *_Nonnull)displayNameForContactAccount:(ContactAccount *)contactAccount
+- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
-    NSString *baseName = (contactAccount.contact ? [self displayNameForContact:contactAccount.contact]
-                                                 : [self displayNameForPhoneIdentifier:contactAccount.recipientId]);
-    OWSAssert(contactAccount.isMultipleAccountContact == (contactAccount.multipleAccountLabel != nil));
-    if (contactAccount.multipleAccountLabel) {
-        return [NSString stringWithFormat:@"%@ (%@)", baseName, contactAccount.multipleAccountLabel];
+    NSString *baseName = (signalAccount.contact ? [self displayNameForContact:signalAccount.contact]
+                                                : [self displayNameForPhoneIdentifier:signalAccount.recipientId]);
+    OWSAssert(signalAccount.isMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
+    if (signalAccount.multipleAccountLabel) {
+        return [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabel];
     } else {
         return baseName;
     }
 }
 
-- (NSAttributedString *_Nonnull)formattedDisplayNameForContactAccount:(ContactAccount *)contactAccount
-                                                                 font:(UIFont *_Nonnull)font
+- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount
+                                                                font:(UIFont *_Nonnull)font
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
     OWSAssert(font);
 
-    NSAttributedString *baseName = [self formattedFullNameForContact:contactAccount.contact font:font];
-    OWSAssert(contactAccount.isMultipleAccountContact == (contactAccount.multipleAccountLabel != nil));
-    if (contactAccount.multipleAccountLabel) {
+    NSAttributedString *baseName = [self formattedFullNameForContact:signalAccount.contact font:font];
+    OWSAssert(signalAccount.isMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
+    if (signalAccount.multipleAccountLabel) {
         NSMutableAttributedString *result = [NSMutableAttributedString new];
         [result appendAttributedString:baseName];
         [result appendAttributedString:[[NSAttributedString alloc] initWithString:@" ("
                                                                        attributes:@{
                                                                            NSFontAttributeName : font,
                                                                        }]];
-        [result appendAttributedString:[[NSAttributedString alloc] initWithString:contactAccount.multipleAccountLabel]];
+        [result appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabel]];
         [result appendAttributedString:[[NSAttributedString alloc] initWithString:@")"
                                                                        attributes:@{
                                                                            NSFontAttributeName : font,
@@ -627,16 +670,16 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             attributes:normalFontAttributes];
 }
 
-- (Contact * _Nullable)contactForPhoneIdentifier:(NSString * _Nullable)identifier {
-    if (!identifier) {
-        return nil;
-    }
-    return self.contactMap[identifier];
+- (nullable SignalAccount *)signalAccountForRecipientId:(nullable NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return self.signalAccountMap[recipientId];
 }
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier
 {
-    Contact *savedContact = [self contactForPhoneIdentifier:identifier];
+    Contact *savedContact = self.allContactsMap[identifier];
     if (savedContact) {
         return savedContact;
     } else {
@@ -649,9 +692,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
-
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
-    Contact *contact = [self contactForPhoneIdentifier:identifier];
+    Contact *contact = self.allContactsMap[identifier];
 
     return contact.image;
 }

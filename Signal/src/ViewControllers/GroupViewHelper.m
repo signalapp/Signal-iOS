@@ -23,17 +23,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Alerts
 
-- (void)showRemoveFromGroupAlertForContactAccount:(ContactAccount *)contactAccount
-                               fromViewController:(UIViewController *)fromViewController
-                                  contactsManager:(OWSContactsManager *)contactsManager
-                                     successBlock:(GroupViewSuccessBlock)successBlock
+- (void)showRemoveFromGroupAlertForSignalAccount:(SignalAccount *)signalAccount
+                              fromViewController:(UIViewController *)fromViewController
+                                 contactsManager:(OWSContactsManager *)contactsManager
+                                    successBlock:(GroupViewSuccessBlock)successBlock
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
     OWSAssert(fromViewController);
     OWSAssert(contactsManager);
     OWSAssert(successBlock);
 
-    NSString *displayName = [contactsManager displayNameForContactAccount:contactAccount];
+    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"EDIT_GROUP_REMOVE_MEMBER_ALERT_TITLE",

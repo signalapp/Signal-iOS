@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContactsViewHelper;
 @class Contact;
-@class ContactAccount;
+@class SignalAccount;
 
 @protocol ContactsViewHelperDelegate <NSObject>
 
@@ -28,18 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-// A list of all of the current user's contacts which have
-// at least one signal account.
-- (nullable NSArray<Contact *> *)allRecipientContacts;
+@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
-// A list of all of the current user's ContactAccounts.
-// See the comments on the ContactAccount class.
-//
-// The list is ordered by contact sorting (by OWSContactsManager)
-// and within contacts by phone number, alphabetically.
-- (nullable NSArray<ContactAccount *> *)allRecipientContactAccounts;
+@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
-- (nullable ContactAccount *)contactAccountForRecipientId:(NSString *)recipientId;
+- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 
 - (nullable NSArray<NSString *> *)blockedPhoneNumbers;
 
@@ -48,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Returns true if _any_ number associated with this contact
 // is blocked.
+//
+// TODO: Is this obsolete?
 - (BOOL)isContactBlocked:(Contact *)contact;
 
 // This method is faster than OWSBlockingManager but
@@ -56,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)localNumber;
 
-- (NSArray<ContactAccount *> *)contactAccountsMatchingSearchString:(NSString *)searchText;
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
 
 @end
 

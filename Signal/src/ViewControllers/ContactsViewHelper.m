@@ -3,9 +3,9 @@
 //
 
 #import "ContactsViewHelper.h"
-#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
+#import "SignalAccount.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -14,12 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper ()
 
-@property (nonatomic, nullable) NSArray<Contact *> *allRecipientContacts;
-@property (nonatomic, nullable) NSArray<ContactAccount *> *allRecipientContactAccounts;
-// A map of recipient id-to-contact account.
-@property (nonatomic, nullable) NSDictionary<NSString *, ContactAccount *> *contactAccountMap;
+@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
-@property (nonatomic, nullable) NSArray<NSString *> *blockedPhoneNumbers;
+@property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
 @end
 
@@ -38,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
-    [self updateContacts];
+    self.signalAccountMap = self.contactsManager.signalAccountMap;
+    self.signalAccounts = self.contactsManager.signalAccounts;
 
     [self observeNotifications];
 
@@ -48,8 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
@@ -62,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)signalRecipientsDidChange:(NSNotification *)notification
+- (void)signalAccountsDidChange:(NSNotification *)notification
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self updateContacts];
@@ -80,131 +79,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (nullable ContactAccount *)contactAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    return self.contactAccountMap[recipientId];
+    return self.signalAccountMap[recipientId];
 }
 
-- (void)updateContacts
+- (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
 {
     OWSAssert([NSThread isMainThread]);
 
-    self.allRecipientContacts = [self filteredContacts];
-}
-
-- (void)setAllRecipientContacts:(nullable NSArray<Contact *> *)allRecipientContacts
-{
-    OWSAssert([NSThread isMainThread]);
-
-    _allRecipientContacts = allRecipientContacts;
-
-    NSMutableArray<ContactAccount *> *allRecipientContactAccounts = [NSMutableArray new];
-    NSMutableDictionary<NSString *, ContactAccount *> *contactAccountMap = [NSMutableDictionary new];
-    for (Contact *contact in allRecipientContacts) {
-        if (contact.textSecureIdentifiers.count == 1) {
-            ContactAccount *contactAccount = [ContactAccount new];
-            contactAccount.contact = contact;
-            NSString *recipientId = contact.textSecureIdentifiers[0];
-            contactAccount.recipientId = recipientId;
-            [allRecipientContactAccounts addObject:contactAccount];
-            contactAccountMap[recipientId] = contactAccount;
-        } else if (contact.textSecureIdentifiers.count > 1) {
-            for (NSString *recipientId in
-                [contact.textSecureIdentifiers sortedArrayUsingSelector:@selector(compare:)]) {
-                ContactAccount *contactAccount = [ContactAccount new];
-                contactAccount.contact = contact;
-                contactAccount.recipientId = recipientId;
-                contactAccount.isMultipleAccountContact = YES;
-                contactAccount.multipleAccountLabel = [self accountLabelForContact:contact recipientId:recipientId];
-                [allRecipientContactAccounts addObject:contactAccount];
-                contactAccountMap[recipientId] = contactAccount;
-            }
-        }
-    }
-    self.allRecipientContactAccounts = [allRecipientContactAccounts copy];
-    self.contactAccountMap = [contactAccountMap copy];
-
-    [self.delegate contactsViewHelperDidUpdateContacts];
-}
-
-- (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
-{
-    OWSAssert(contact);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert([contact.textSecureIdentifiers containsObject:recipientId]);
-
-    if (contact.textSecureIdentifiers.count <= 1) {
-        return nil;
-    }
-
-    // 1. Find the phone number type of this account.
-    OWSPhoneNumberType phoneNumberType = [contact phoneNumberTypeForPhoneNumber:recipientId];
-
-    NSString *phoneNumberLabel;
-    switch (phoneNumberType) {
-        case OWSPhoneNumberTypeMobile:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MOBILE", @"Label for 'Mobile' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeIPhone:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'IPhone' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeMain:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MAIN", @"Label for 'Main' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeHomeFAX:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME_FAX", @"Label for 'HomeFAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeWorkFAX:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK_FAX", @"Label for 'Work FAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeOtherFAX:
-            phoneNumberLabel
-                = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER_FAX", @"Label for 'Other FAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypePager:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_PAGER", @"Label for 'Pager' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeUnknown:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN", @"Label for 'Unknown' phone numbers.");
-            break;
-    }
-
-    // 2. Find all phone numbers for this contact of the same type.
-    NSMutableArray *phoneNumbersOfTheSameType = [NSMutableArray new];
-    for (NSString *textSecureIdentifier in contact.textSecureIdentifiers) {
-        if (phoneNumberType == [contact phoneNumberTypeForPhoneNumber:textSecureIdentifier]) {
-            [phoneNumbersOfTheSameType addObject:textSecureIdentifier];
-        }
-    }
-
-    OWSAssert([phoneNumbersOfTheSameType containsObject:recipientId]);
-    if (phoneNumbersOfTheSameType.count > 0) {
-        NSUInteger index =
-            [[phoneNumbersOfTheSameType sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
-        phoneNumberLabel =
-            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
-                                           @"Format for phone number label with an index. Embeds {{Phone number label "
-                                           @"(e.g. 'home')}} and {{index, e.g. 2}}."),
-                      phoneNumberLabel,
-                      (int)index];
-    }
-
-    return phoneNumberLabel;
-}
-
-- (BOOL)isContactHidden:(Contact *)contact
-{
-    OWSAssert([NSThread isMainThread]);
-
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
-        return YES;
-    }
-
-    if ([self.delegate shouldHideLocalNumber] && [self isCurrentUserContact:contact]) {
+    if ([self.delegate shouldHideLocalNumber] && [self isCurrentUser:signalAccount]) {
         // We never want to add ourselves to a group.
         return YES;
     }
@@ -212,12 +99,17 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (BOOL)isCurrentUserContact:(Contact *)contact
+- (BOOL)isCurrentUser:(SignalAccount *)signalAccount
 {
     OWSAssert([NSThread isMainThread]);
 
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([[phoneNumber toE164] isEqualToString:[TSAccountManager localNumber]]) {
+    NSString *localNumber = [TSAccountManager localNumber];
+    if ([signalAccount.recipientId isEqualToString:localNumber]) {
+        return YES;
+    }
+
+    for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
+        if ([[phoneNumber toE164] isEqualToString:localNumber]) {
             return YES;
         }
     }
@@ -255,43 +147,48 @@ NS_ASSUME_NONNULL_BEGIN
     return [_blockedPhoneNumbers containsObject:recipientId];
 }
 
-- (NSArray<Contact *> *_Nonnull)filteredContacts
+- (void)updateContacts
 {
     AssertIsOnMainThread();
 
-    NSMutableArray<Contact *> *result = [NSMutableArray new];
-    for (Contact *contact in self.contactsManager.signalContacts) {
-        if (![self isContactHidden:contact]) {
-            [result addObject:contact];
+    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
+    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
+        if (![self isSignalAccountHidden:signalAccount]) {
+            signalAccountMap[signalAccount.recipientId] = signalAccount;
+            [signalAccounts addObject:signalAccount];
         }
     }
-    return [result copy];
+    self.signalAccountMap = signalAccountMap;
+    self.signalAccounts = signalAccounts;
+
+    [self.delegate contactsViewHelperDidUpdateContacts];
 }
 
-- (BOOL)doesContactAccount:(ContactAccount *)contactAccount matchSearchTerm:(NSString *)searchTerm
+- (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerm:(NSString *)searchTerm
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
     OWSAssert(searchTerm.length > 0);
 
-    if ([contactAccount.contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
+    if ([signalAccount.contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
         return YES;
     }
 
     NSString *asPhoneNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
-    if (asPhoneNumber.length > 0 && [contactAccount.recipientId containsString:asPhoneNumber]) {
+    if (asPhoneNumber.length > 0 && [signalAccount.recipientId containsString:asPhoneNumber]) {
         return YES;
     }
 
     return NO;
 }
 
-- (BOOL)doesContactAccount:(ContactAccount *)contactAccount matchSearchTerms:(NSArray<NSString *> *)searchTerms
+- (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerms:(NSArray<NSString *> *)searchTerms
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
     OWSAssert(searchTerms.count > 0);
 
     for (NSString *searchTerm in searchTerms) {
-        if (![self doesContactAccount:contactAccount matchSearchTerm:searchTerm]) {
+        if (![self doesSignalAccount:signalAccount matchSearchTerm:searchTerm]) {
             return NO;
         }
     }
@@ -299,20 +196,20 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (NSArray<ContactAccount *> *)contactAccountsMatchingSearchString:(NSString *)searchText
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
     NSArray<NSString *> *searchTerms =
         [[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
             componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     if (searchTerms.count < 1) {
-        return self.allRecipientContactAccounts;
+        return self.signalAccounts;
     }
 
-    return [self.allRecipientContactAccounts
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(ContactAccount *contactAccount,
+    return [self.signalAccounts
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [self doesContactAccount:contactAccount matchSearchTerms:searchTerms];
+            return [self doesSignalAccount:signalAccount matchSearchTerms:searchTerms];
         }]];
 }
 

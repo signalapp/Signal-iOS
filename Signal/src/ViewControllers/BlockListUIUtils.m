@@ -3,9 +3,9 @@
 //
 
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
+#import "SignalAccount.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -32,14 +32,14 @@ typedef void (^BlockAlertCompletionBlock)();
                            completionBlock:completionBlock];
 }
 
-+ (void)showBlockContactAccountActionSheet:(ContactAccount *)contactAccount
-                        fromViewController:(UIViewController *)fromViewController
-                           blockingManager:(OWSBlockingManager *)blockingManager
-                           contactsManager:(OWSContactsManager *)contactsManager
-                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                       fromViewController:(UIViewController *)fromViewController
+                          blockingManager:(OWSBlockingManager *)blockingManager
+                          contactsManager:(OWSContactsManager *)contactsManager
+                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForContactAccount:contactAccount];
-    [self showBlockPhoneNumbersActionSheet:@[ contactAccount.recipientId ]
+    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    [self showBlockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                displayName:displayName
                         fromViewController:fromViewController
                            blockingManager:blockingManager
@@ -159,14 +159,14 @@ typedef void (^BlockAlertCompletionBlock)();
                              completionBlock:completionBlock];
 }
 
-+ (void)showUnblockContactAccountActionSheet:(ContactAccount *)contactAccount
-                          fromViewController:(UIViewController *)fromViewController
-                             blockingManager:(OWSBlockingManager *)blockingManager
-                             contactsManager:(OWSContactsManager *)contactsManager
-                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                         fromViewController:(UIViewController *)fromViewController
+                            blockingManager:(OWSBlockingManager *)blockingManager
+                            contactsManager:(OWSContactsManager *)contactsManager
+                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForContactAccount:contactAccount];
-    [self showUnblockPhoneNumbersActionSheet:@[ contactAccount.recipientId ]
+    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                  displayName:displayName
                           fromViewController:fromViewController
                              blockingManager:blockingManager

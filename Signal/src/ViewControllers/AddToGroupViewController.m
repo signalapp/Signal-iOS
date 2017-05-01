@@ -4,9 +4,9 @@
 
 #import "AddToGroupViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "ContactsViewHelper.h"
 #import "OWSContactsManager.h"
+#import "SignalAccount.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,24 +66,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)contactAccountWasSelected:(ContactAccount *)contactAccount
+- (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
 
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:contactAccount.recipientId]) {
-        [BlockListUIUtils showUnblockContactAccountActionSheet:contactAccount
-                                            fromViewController:self
-                                               blockingManager:helper.blockingManager
-                                               contactsManager:helper.contactsManager
-                                               completionBlock:^(BOOL isBlocked) {
-                                                   if (isBlocked) {
-                                                       [weakSelf addToGroup:contactAccount.recipientId];
-                                                   }
-                                               }];
+    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
+                                           fromViewController:self
+                                              blockingManager:helper.blockingManager
+                                              contactsManager:helper.contactsManager
+                                              completionBlock:^(BOOL isBlocked) {
+                                                  if (isBlocked) {
+                                                      [weakSelf addToGroup:signalAccount.recipientId];
+                                                  }
+                                              }];
     } else {
-        [self addToGroup:contactAccount.recipientId];
+        [self addToGroup:signalAccount.recipientId];
     }
 }
 

@@ -3,10 +3,10 @@
 //
 
 #import "ContactTableViewCell.h"
-#import "ContactAccount.h"
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "SignalAccount.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -90,13 +90,12 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
                    contactsManager:contactsManager];
 }
 
-- (void)configureWithContactAccount:(ContactAccount *)contactAccount
-                    contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
 {
-    [self configureWithRecipientId:contactAccount.recipientId
-                        avatarName:contactAccount.contact.fullName
-                       displayName:[contactsManager formattedDisplayNameForContactAccount:contactAccount
-                                                                                     font:self.nameLabel.font]
+    [self configureWithRecipientId:signalAccount.recipientId
+                        avatarName:signalAccount.contact.fullName
+                       displayName:[contactsManager formattedDisplayNameForSignalAccount:signalAccount
+                                                                                    font:self.nameLabel.font]
                    contactsManager:contactsManager];
 }
 

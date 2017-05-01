@@ -4,7 +4,6 @@
 
 #import "SelectThreadViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactAccount.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -12,6 +11,7 @@
 #import "OWSContactsManager.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
+#import "SignalAccount.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -153,8 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Contacts
-    NSArray<ContactAccount *> *filteredContactAccounts = [self filteredContactAccountsWithSearchText];
-    for (ContactAccount *contactAccount in filteredContactAccounts) {
+    NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
+    for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             if (!strongSelf) {
@@ -162,19 +162,19 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
-            BOOL isBlocked = [helper isRecipientIdBlocked:contactAccount.recipientId];
+            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
             if (isBlocked) {
                 cell.accessoryMessage
                     = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
             } else {
                 OWSAssert(cell.accessoryMessage == nil);
             }
-            [cell configureWithContactAccount:contactAccount contactsManager:helper.contactsManager];
+            [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
             return cell;
         }
                              customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
-                                 [weakSelf contactAccountWasSelected:contactAccount];
+                                 [weakSelf signalAccountWasSelected:signalAccount];
                              }]];
     }
 
@@ -195,31 +195,31 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.contents = contents;
 }
 
-- (void)contactAccountWasSelected:(ContactAccount *)contactAccount
+- (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(contactAccount);
+    OWSAssert(signalAccount);
     OWSAssert(self.delegate);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    if ([helper isRecipientIdBlocked:contactAccount.recipientId] && ![self.delegate canSelectBlockedContact]) {
+    if ([helper isRecipientIdBlocked:signalAccount.recipientId] && ![self.delegate canSelectBlockedContact]) {
 
         __weak SelectThreadViewController *weakSelf = self;
-        [BlockListUIUtils showUnblockContactAccountActionSheet:contactAccount
-                                            fromViewController:self
-                                               blockingManager:helper.blockingManager
-                                               contactsManager:helper.contactsManager
-                                               completionBlock:^(BOOL isBlocked) {
-                                                   if (!isBlocked) {
-                                                       [weakSelf contactAccountWasSelected:contactAccount];
-                                                   }
-                                               }];
+        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
+                                           fromViewController:self
+                                              blockingManager:helper.blockingManager
+                                              contactsManager:helper.contactsManager
+                                              completionBlock:^(BOOL isBlocked) {
+                                                  if (!isBlocked) {
+                                                      [weakSelf signalAccountWasSelected:signalAccount];
+                                                  }
+                                              }];
         return;
     }
 
     __block TSThread *thread = nil;
     [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:contactAccount.recipientId transaction:transaction];
+        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
     }];
     OWSAssert(thread);
 
@@ -255,8 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-// TODO: Move this to contacts view helper.
-- (NSArray<ContactAccount *> *)filteredContactAccountsWithSearchText
+- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
@@ -272,10 +271,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *searchString = [self.searchBar text];
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    return [[helper contactAccountsMatchingSearchString:searchString]
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(ContactAccount *contactAccount,
+    return [[helper signalAccountsMatchingSearchString:searchString]
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:contactAccount.recipientId];
+            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
         }]];
 }
 
