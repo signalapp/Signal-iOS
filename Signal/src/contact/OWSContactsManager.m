@@ -216,25 +216,21 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
         NSArray<SignalRecipient *> *signalRecipients = contact.signalRecipients;
         for (SignalRecipient *signalRecipient in contact.signalRecipients) {
-
-            if (signalRecipients.count == 1) {
-                SignalAccount *signalAccount = [SignalAccount new];
-                signalAccount.signalRecipient = signalRecipient;
+            for (NSString *recipientId in
+                [contact.textSecureIdentifiers sortedArrayUsingSelector:@selector(compare:)]) {
+                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
-                signalAccountMap[signalAccount.recipientId] = signalAccount;
-                [signalAccounts addObject:signalAccount];
-            } else if (contact.textSecureIdentifiers.count > 1) {
-                for (NSString *recipientId in
-                    [contact.textSecureIdentifiers sortedArrayUsingSelector:@selector(compare:)]) {
-                    SignalAccount *signalAccount = [SignalAccount new];
-                    signalAccount.signalRecipient = signalRecipient;
-                    signalAccount.contact = contact;
+                if (signalRecipients.count > 1) {
                     signalAccount.isMultipleAccountContact = YES;
                     signalAccount.multipleAccountLabel =
                         [[self class] accountLabelForContact:contact recipientId:recipientId];
-                    signalAccountMap[signalAccount.recipientId] = signalAccount;
-                    [signalAccounts addObject:signalAccount];
                 }
+                if (signalAccountMap[signalAccount.recipientId]) {
+                    DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
+                    continue;
+                }
+                signalAccountMap[signalAccount.recipientId] = signalAccount;
+                [signalAccounts addObject:signalAccount];
             }
         }
     }
@@ -441,7 +437,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     NSArray *filteredContacts = [sortedPeople filteredArrayUsingPredicate:predicate];
 
     return [filteredContacts map:^id(id item) {
-      return [self contactForRecord:(__bridge ABRecordRef)item];
+        Contact *contact = [self contactForRecord:(__bridge ABRecordRef)item];
+        return contact;
     }];
 }
 

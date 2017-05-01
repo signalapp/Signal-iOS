@@ -15,12 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // New instances of SignalAccount for active accounts are
 // created every time we do a contacts intersection (e.g.
-// in response to a
+// in response to a change to the device contacts).
 @interface SignalAccount : NSObject
 
-@property (nonatomic) SignalRecipient *signalRecipient;
-
 // An E164 value identifying the signal account.
+//
+// This is the key property of this class and it
+// will always be non-null.
 @property (nonatomic, readonly) NSString *recipientId;
 
 // This property is optional and will not be set for
@@ -32,6 +33,19 @@ NS_ASSUME_NONNULL_BEGIN
 // For contacts with more than one signal account,
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabel;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
+
+- (instancetype)initWithRecipientId:(NSString *)recipientId;
+
+// In most cases this should be non-null. This should only
+// be non-null in the case where the SignalRecipient was
+// deleted before this property was accessed.
+//
+// NOTE: This may create a database transaction.
+- (nullable SignalRecipient *)signalRecipient;
 
 @end
 
