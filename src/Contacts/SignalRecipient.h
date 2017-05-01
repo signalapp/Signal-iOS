@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 // This property indicates support for both WebRTC audio and video calls.
 - (BOOL)supportsWebRTC;
 
+- (NSString *)recipientId;
+
+- (NSComparisonResult)compare:(SignalRecipient *)other;
+
 @end
 
 NS_ASSUME_NONNULL_END
