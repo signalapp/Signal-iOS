@@ -207,27 +207,36 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
         NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
         NSArray<Contact *> *contacts = self.allContacts;
+
+        // We use a transaction only to load the SignalRecipients for each contact,
+        // in order to avoid database deadlock.
+        NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
+            [NSMutableDictionary new];
         [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                for (SignalRecipient *signalRecipient in
-                    [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
-                    SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
-                    signalAccount.contact = contact;
-                    if (signalRecipients.count > 1) {
-                        signalAccount.hasMultipleAccountContact = YES;
-                        signalAccount.multipleAccountLabelText =
-                            [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
-                    }
-                    if (signalAccountMap[signalAccount.recipientId]) {
-                        DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
-                        continue;
-                    }
-                    signalAccountMap[signalAccount.recipientId] = signalAccount;
-                    [signalAccounts addObject:signalAccount];
-                }
+                contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
             }
         }];
+
+        for (Contact *contact in contacts) {
+            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
+            for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
+                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
+                signalAccount.contact = contact;
+                if (signalRecipients.count > 1) {
+                    signalAccount.hasMultipleAccountContact = YES;
+                    signalAccount.multipleAccountLabelText =
+                        [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
+                }
+                if (signalAccountMap[signalAccount.recipientId]) {
+                    DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
+                    continue;
+                }
+                signalAccountMap[signalAccount.recipientId] = signalAccount;
+                [signalAccounts addObject:signalAccount];
+            }
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
             self.signalAccountMap = [signalAccountMap copy];
