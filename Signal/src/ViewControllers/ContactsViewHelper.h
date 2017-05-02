@@ -37,15 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
-//
-// Returns true if _any_ number associated with this contact
-// is blocked.
-//
-// TODO: Is this obsolete?
-- (BOOL)isContactBlocked:(Contact *)contact;
-
-// This method is faster than OWSBlockingManager but
-// is only safe to be called on the main thread.
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 
 // NOTE: This method uses a transaction.

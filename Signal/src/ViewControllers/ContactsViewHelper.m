@@ -122,24 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSAccountManager localNumber];
 }
 
-- (BOOL)isContactBlocked:(Contact *)contact
-{
-    OWSAssert([NSThread isMainThread]);
-
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Do not consider contacts without any valid phone numbers to be blocked.
-        return NO;
-    }
-
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId
 {
     AssertIsOnMainThread();
