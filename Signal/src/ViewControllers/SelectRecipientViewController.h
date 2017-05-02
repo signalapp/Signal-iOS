@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class SignalAccount;
 
 @protocol SelectRecipientViewControllerDelegate <NSObject>
@@ -39,3 +41,5 @@
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @end
+
+NS_ASSUME_NONNULL_END

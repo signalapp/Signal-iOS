@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 // non-contact account.
 @property (nonatomic, nullable) Contact *contact;
 
-@property (nonatomic) BOOL isMultipleAccountContact;
+@property (nonatomic) BOOL hasMultipleAccountContact;
 
 // For contacts with more than one signal account,
 // this is a label for the account.

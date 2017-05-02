@@ -214,7 +214,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                     SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                     signalAccount.contact = contact;
                     if (signalRecipients.count > 1) {
-                        signalAccount.isMultipleAccountContact = YES;
+                        signalAccount.hasMultipleAccountContact = YES;
                         signalAccount.multipleAccountLabel =
                             [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
                     }
@@ -562,7 +562,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
     NSString *baseName = (signalAccount.contact ? [self displayNameForContact:signalAccount.contact]
                                                 : [self displayNameForPhoneIdentifier:signalAccount.recipientId]);
-    OWSAssert(signalAccount.isMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
+    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
     if (signalAccount.multipleAccountLabel) {
         return [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabel];
     } else {
@@ -577,7 +577,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     OWSAssert(font);
 
     NSAttributedString *baseName = [self formattedFullNameForContact:signalAccount.contact font:font];
-    OWSAssert(signalAccount.isMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
+    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
     if (signalAccount.multipleAccountLabel) {
         NSMutableAttributedString *result = [NSMutableAttributedString new];
         [result appendAttributedString:baseName];

@@ -28,6 +28,4 @@
                                   message:(NSString *)message
                               buttonLabel:(NSString *)buttonLabel;
 
-+ (UIViewController *)topMostController;
-
 @end

@@ -103,9 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ShowGroupMembersViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return (ContactTableViewCell *)nil;
-            }
+            OWSAssert(strongSelf);
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
@@ -165,7 +163,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           fromViewController:self
                                                                              blockingManager:helper.blockingManager
                                                                              contactsManager:helper.contactsManager
-                                                                             completionBlock:nil];
+                                                                             completionBlock:^(BOOL ignore) {
+                                                                                 [self updateTableContents];
+                                                                             }];
                                                  }]];
         } else {
             [actionSheetController
@@ -178,7 +178,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         fromViewController:self
                                                                            blockingManager:helper.blockingManager
                                                                            contactsManager:helper.contactsManager
-                                                                           completionBlock:nil];
+                                                                           completionBlock:^(BOOL ignore) {
+                                                                               [self updateTableContents];
+                                                                           }];
                                                  }]];
         }
     } else {
@@ -194,7 +196,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         fromViewController:self
                                                                            blockingManager:helper.blockingManager
                                                                            contactsManager:helper.contactsManager
-                                                                           completionBlock:nil];
+                                                                           completionBlock:^(BOOL ignore) {
+                                                                               [self updateTableContents];
+                                                                           }];
                                                  }]];
         } else {
             [actionSheetController
@@ -207,7 +211,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       fromViewController:self
                                                                          blockingManager:helper.blockingManager
                                                                          contactsManager:helper.contactsManager
-                                                                         completionBlock:nil];
+                                                                         completionBlock:^(BOOL ignore) {
+                                                                             [self updateTableContents];
+                                                                         }];
                                                  }]];
         }
     }

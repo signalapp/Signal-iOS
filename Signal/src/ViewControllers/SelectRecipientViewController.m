@@ -11,6 +11,7 @@
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
 #import "SignalAccount.h"
 #import "StringUtil.h"
 #import "UIFont+OWS.h"
@@ -244,6 +245,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     OWSAssert(self.delegate);
 
     if (![self hasValidPhoneNumber]) {
+        DDLogError(@"Invalid phone number was selected.");
         OWSAssert(0);
         return;
     }
@@ -257,6 +259,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [possiblePhoneNumbers addObject:phoneNumber.toE164];
     }
     if ([possiblePhoneNumbers count] < 1) {
+        DDLogError(@"Couldn't parse phone number.");
         OWSAssert(0);
         return;
     }
@@ -278,7 +281,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                                         handler:^(UIAlertAction *_Nonnull action) {
                                                             wasCancelled = YES;
                                                         }]];
-        [ViewControllerUtils.topMostController presentViewController:activityAlert animated:YES completion:nil];
+        [[UIApplication sharedApplication].frontmostViewController presentViewController:activityAlert
+                                                                                animated:YES
+                                                                              completion:nil];
 
         __weak SelectRecipientViewController *weakSelf = self;
         [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
@@ -353,6 +358,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
     [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
 
+    // Trigger the formatting logic with a no-op edit.
     [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
 }
 
@@ -377,7 +383,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    [self tryToSelectPhoneNumber];
+    if ([self hasValidPhoneNumber]) {
+        [self tryToSelectPhoneNumber];
+    }
     return NO;
 }
 
@@ -397,17 +405,14 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     const CGFloat kButtonRowHeight = 60;
     [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         SelectRecipientViewController *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return (UITableViewCell *)nil;
-        }
+        OWSAssert(strongSelf);
 
         UITableViewCell *cell = [UITableViewCell new];
 
         // Country Row
         UIView *countryRow = [self createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
-        [countryRow
-            addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                               action:@selector(countryRowTouched:)]];
+        [countryRow addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(countryRowTouched:)]];
 
         UILabel *countryCodeLabel = self.countryCodeLabel;
         [countryRow addSubview:countryCodeLabel];
@@ -421,9 +426,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         // Phone Number Row
         UIView *phoneNumberRow =
             [self createRowWithHeight:kPhoneNumberRowHeight previousRow:countryRow superview:cell.contentView];
-        [phoneNumberRow addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc]
-                                                 initWithTarget:self
-                                                         action:@selector(phoneNumberRowTouched:)]];
+        [phoneNumberRow
+            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                         action:@selector(phoneNumberRowTouched:)]];
 
         UILabel *phoneNumberLabel = self.phoneNumberLabel;
         [phoneNumberRow addSubview:phoneNumberLabel];
@@ -476,9 +481,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
             for (SignalAccount *signalAccount in signalAccounts) {
                 [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     SelectRecipientViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return (ContactTableViewCell *)nil;
-                    }
+                    OWSAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
                     BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];

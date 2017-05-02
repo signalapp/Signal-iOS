@@ -206,9 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             [nonContactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 NewGroupViewController *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return (ContactTableViewCell *)nil;
-                }
+                OWSAssert(strongSelf);
 
                 ContactTableViewCell *cell = [ContactTableViewCell new];
                 SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
@@ -262,9 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
             [signalAccountSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return (ContactTableViewCell *)nil;
-                    }
+                    OWSAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
 
@@ -439,7 +435,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSGroupModel *)makeGroup
 {
     NSString *title = self.groupNameTextField.text;
-    NSMutableArray *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
+    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
 

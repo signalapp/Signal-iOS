@@ -246,9 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
         [section
             addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UpdateGroupViewController *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return (ContactTableViewCell *)nil;
-                }
+                OWSAssert(strongSelf);
 
                 ContactTableViewCell *cell = [ContactTableViewCell new];
                 SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];

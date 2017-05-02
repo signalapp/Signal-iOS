@@ -5,6 +5,7 @@
 #import "ViewControllerUtils.h"
 #import "Environment.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
 #import "SignalsViewController.h"
 #import "StringUtil.h"
 #import <AVFoundation/AVFoundation.h>
@@ -117,21 +118,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [alert addAction:[UIAlertAction actionWithTitle:buttonLabel style:UIAlertActionStyleDefault handler:nil]];
 
-    [self.topMostController presentViewController:alert animated:YES completion:nil];
+    [[UIApplication sharedApplication].frontmostViewController presentViewController:alert animated:YES completion:nil];
 
     return alert;
-}
-
-+ (UIViewController *)topMostController
-{
-    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-
-    while (topController.presentedViewController) {
-        topController = topController.presentedViewController;
-    }
-
-    OWSAssert(topController);
-    return topController;
 }
 
 #pragma mark - Logging
