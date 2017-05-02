@@ -258,12 +258,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (IBAction)composeNew:(id)sender
 {
-    //    if (self.presentedViewController) {
-    //        [self dismissViewControllerAnimated:YES completion:nil];
-    //    }
-    //
-    //    [self.navigationController popToRootViewControllerAnimated:YES];
-
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
     [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
 }
