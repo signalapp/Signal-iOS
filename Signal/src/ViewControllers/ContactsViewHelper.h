@@ -35,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 
-- (nullable NSArray<NSString *> *)blockedPhoneNumbers;
-
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
 //
@@ -50,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 // is only safe to be called on the main thread.
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 
+// NOTE: This method uses a transaction.
 - (NSString *)localNumber;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;

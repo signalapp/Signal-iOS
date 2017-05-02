@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
-@property (nonatomic, nullable) NSMutableSet<NSString *> *memberRecipientIds;
+@property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)avatarTouched:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self showChangeGroupAvatarUI:nil];
+        [self showChangeGroupAvatarUI];
     }
 }
 
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak NewGroupViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
+    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
 
     NSArray<SignalAccount *> *signalAccounts = self.contactsViewHelper.signalAccounts;
     NSMutableSet *nonContactMemberRecipientIds = [self.memberRecipientIds mutableCopy];
@@ -204,57 +204,39 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSString *recipientId in
             [nonContactMemberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
 
-            [nonContactsSection
-                addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                    NewGroupViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return (ContactTableViewCell *)nil;
-                    }
-
-                    ContactTableViewCell *cell = [ContactTableViewCell new];
-                    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
-                    BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                    BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
-                    if (isCurrentMember) {
-                        // In the "contacts" section, we label members as such when editing an existing group.
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
-                    } else if (isBlocked) {
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                    } else {
-                        OWSAssert(cell.accessoryMessage == nil);
-                    }
-
-                    if (signalAccount) {
-                        [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
-                    } else {
-                        [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
-                    }
-
-                    return cell;
+            [nonContactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                NewGroupViewController *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return (ContactTableViewCell *)nil;
                 }
-                            customRowHeight:[ContactTableViewCell rowHeight]
-                            actionBlock:^{
-                                SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
-                                if (signalAccount) {
-                                    [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
-                                                              fromViewController:weakSelf
-                                                                 contactsManager:helper.contactsManager
-                                                                    successBlock:^{
-                                                                        [weakSelf removeSignalAccount:signalAccount];
-                                                                    }];
-                                } else {
-                                    [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForRecipientId:recipientId
-                                                            fromViewController:weakSelf
-                                                               contactsManager:helper.contactsManager
-                                                                  successBlock:^{
-                                                                      [weakSelf removeRecipientId:recipientId];
-                                                                  }];
-                                }
-                            }]];
+
+                ContactTableViewCell *cell = [ContactTableViewCell new];
+                SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
+                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
+                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                if (isCurrentMember) {
+                    // In the "contacts" section, we label members as such when editing an existing group.
+                    cell.accessoryMessage = NSLocalizedString(
+                        @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
+                } else if (isBlocked) {
+                    cell.accessoryMessage = NSLocalizedString(
+                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                } else {
+                    OWSAssert(cell.accessoryMessage == nil);
+                }
+
+                if (signalAccount) {
+                    [cell configureWithSignalAccount:signalAccount contactsManager:contactsViewHelper.contactsManager];
+                } else {
+                    [cell configureWithRecipientId:recipientId contactsManager:contactsViewHelper.contactsManager];
+                }
+
+                return cell;
+            }
+                                            customRowHeight:[ContactTableViewCell rowHeight]
+                                            actionBlock:^{
+                                                [weakSelf removeRecipientId:recipientId];
+                                            }]];
         }
         [contents addSection:nonContactsSection];
     }
@@ -267,7 +249,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (signalAccounts.count > 0) {
 
         if (nonContactMemberRecipientIds.count < 1) {
-            // We always want to offer a way to add non-contacts.
+            // If the group contains any non-contacts or has not contacts,
+            // the "add non-contact user" will show up in the previous section
+            // of the table. However, it's more attractive to hide that section
+            // for the common case where people want to create a group from just
+            // their contacts.  Therefore, when that section is hidden, we want
+            // to allow people to add non-contacts.
             [signalAccountSection addItem:[self createAddNonContactItem]];
         }
 
@@ -282,8 +269,8 @@ NS_ASSUME_NONNULL_BEGIN
                     ContactTableViewCell *cell = [ContactTableViewCell new];
 
                     NSString *recipientId = signalAccount.recipientId;
-                    BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                    BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                    BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
+                    BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                     if (isCurrentMember) {
                         // In the "contacts" section, we label members as such when editing an existing group.
                         cell.accessoryMessage = NSLocalizedString(
@@ -295,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
                         OWSAssert(cell.accessoryMessage == nil);
                     }
 
-                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                    [cell configureWithSignalAccount:signalAccount contactsManager:contactsViewHelper.contactsManager];
 
                     return cell;
                 }
@@ -304,13 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 NSString *recipientId = signalAccount.recipientId;
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
                                 if (isCurrentMember) {
-                                    [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
-                                                              fromViewController:weakSelf
-                                                                 contactsManager:helper.contactsManager
-                                                                    successBlock:^{
-                                                                        [weakSelf removeSignalAccount:signalAccount];
-                                                                    }];
+                                    [weakSelf removeRecipientId:recipientId];
                                 } else {
                                     [weakSelf addRecipientId:recipientId];
                                 }
@@ -354,14 +335,6 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)removeSignalAccount:(SignalAccount *)signalAccount
-{
-    OWSAssert(signalAccount);
-
-    [self.memberRecipientIds removeObject:signalAccount.recipientId];
-    [self updateTableContents];
-}
-
 - (void)removeRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
@@ -395,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldEditGroupNameOnAppear) {
         [self.groupNameTextField becomeFirstResponder];
     } else if (self.shouldEditAvatarOnAppear) {
-        [self showChangeGroupAvatarUI:nil];
+        [self showChangeGroupAvatarUI];
     }
     self.shouldEditGroupNameOnAppear = NO;
     self.shouldEditAvatarOnAppear = NO;
@@ -475,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Group Avatar
 
-- (void)showChangeGroupAvatarUI:(nullable id)sender
+- (void)showChangeGroupAvatarUI
 {
     [self.groupViewHelper showChangeGroupAvatarUI];
 }
@@ -586,6 +559,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)recipientIdWasAdded:(NSString *)recipientId
 {
     [self addRecipientId:recipientId];
+}
+
+- (BOOL)isRecipientGroupMember:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return [self.memberRecipientIds containsObject:recipientId];
 }
 
 @end

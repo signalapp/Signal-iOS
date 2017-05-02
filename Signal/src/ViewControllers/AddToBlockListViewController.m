@@ -60,6 +60,14 @@ NS_ASSUME_NONNULL_BEGIN
                                       }];
 }
 
+- (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
+{
+    OWSAssert(signalAccount);
+
+    ContactsViewHelper *helper = self.contactsViewHelper;
+    return ![helper isRecipientIdBlocked:signalAccount.recipientId];
+}
+
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssert(signalAccount);
@@ -67,25 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
-        NSString *displayName = [helper.contactsManager displayNameForSignalAccount:signalAccount];
-        UIAlertController *controller = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE",
-                                         @"A title of the alert if user tries to block a "
-                                         @"user who is already blocked.")
-                             message:[NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_ALREADY_"
-                                                                                  @"BLOCKED_ALERT_MESSAGE_"
-                                                                                  @"FORMAT",
-                                                                    @"A format for the message of the alert "
-                                                                    @"if user tries to "
-                                                                    @"block a user who is already blocked.  "
-                                                                    @"Embeds {{the "
-                                                                    @"blocked user's name or phone number}}."),
-                                               displayName]
-                      preferredStyle:UIAlertControllerStyleAlert];
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:nil]];
-        [self presentViewController:controller animated:YES completion:nil];
+        OWSAssert(0);
         return;
     }
     [BlockListUIUtils showBlockSignalAccountActionSheet:signalAccount
@@ -112,6 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldValidatePhoneNumbers
 {
     return NO;
+}
+
+- (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
+{
+    return nil;
 }
 
 #pragma mark - Logging

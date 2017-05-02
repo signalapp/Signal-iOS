@@ -66,13 +66,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
+{
+    OWSAssert(signalAccount);
+
+    return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId];
+}
+
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssert(signalAccount);
 
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
+        OWSAssert(0);
+
+        return;
+    } else if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
                                               blockingManager:helper.blockingManager
@@ -108,6 +119,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldValidatePhoneNumbers
 {
     return YES;
+}
+
+- (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
+{
+    OWSAssert(signalAccount);
+
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
+        return NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
+    }
+
+    return nil;
 }
 
 #pragma mark - Logging

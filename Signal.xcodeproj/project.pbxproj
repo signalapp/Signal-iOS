@@ -128,7 +128,6 @@
 		45794E861E00620000066731 /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
 		45843D1F1D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
 		45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */; };
-		45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */; };
 		45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
 		45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
@@ -528,7 +527,6 @@
 		45794E851E00620000066731 /* CallUIAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallUIAdapter.swift; path = UserInterface/CallUIAdapter.swift; sourceTree = "<group>"; };
 		45843D1D1D2236B30013E85A /* OWSContactsSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSearcher.h; sourceTree = "<group>"; };
 		45843D1E1D2236B30013E85A /* OWSContactsSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcher.m; sourceTree = "<group>"; };
-		45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSearcherTest.m; sourceTree = "<group>"; };
 		45847E861E4283C30080EAB3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactAvatarBuilder.h; sourceTree = "<group>"; };
 		45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactAvatarBuilder.m; sourceTree = "<group>"; };
@@ -1434,7 +1432,6 @@
 			isa = PBXGroup;
 			children = (
 				B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */,
-				45843D211D223BA10013E85A /* OWSContactsSearcherTest.m */,
 				954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */,
 			);
 			path = contact;
@@ -2196,7 +2193,6 @@
 				45AE48521E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
 				453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */,
-				45843D221D223BA10013E85A /* OWSContactsSearcherTest.m in Sources */,
 				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				45FBC5D21DF8592E00E9B410 /* SignalCall.swift in Sources */,
 				451A13B21E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,

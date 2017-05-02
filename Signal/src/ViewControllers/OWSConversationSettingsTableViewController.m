@@ -318,15 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return cell;
             }
                 actionBlock:^{
-                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    OWSAssert(strongSelf.delegate);
-                    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
-                    updateGroupViewController.delegate = strongSelf.delegate;
-                    updateGroupViewController.thread = (TSGroupThread *)strongSelf.thread;
-                    [strongSelf.navigationController pushViewController:updateGroupViewController animated:YES];
+                    [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
@@ -548,19 +540,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
-            OWSAssert(self.delegate);
-            UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
-            updateGroupViewController.delegate = self.delegate;
-            updateGroupViewController.thread = (TSGroupThread *)self.thread;
-
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                updateGroupViewController.shouldEditAvatarOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
             } else {
-                updateGroupViewController.shouldEditGroupNameOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
-
-            [self.navigationController pushViewController:updateGroupViewController animated:YES];
         } else {
             // TODO: Edit 1:1 contact.
         }
@@ -615,6 +600,20 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showUpdateGroupView:(UpdateGroupMode)mode
+{
+    OWSAssert(self.conversationSettingsViewDelegate);
+
+    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+    updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
+    updateGroupViewController.thread = (TSGroupThread *)self.thread;
+    updateGroupViewController.mode = mode;
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:updateGroupViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
 
 - (void)didTapLeaveGroup
 {

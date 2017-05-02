@@ -14,7 +14,11 @@
 
 - (void)phoneNumberWasSelected:(NSString *)phoneNumber;
 
+- (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount;
+
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount;
+
+- (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount;
 
 - (BOOL)shouldHideLocalNumber;
 

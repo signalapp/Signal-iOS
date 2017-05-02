@@ -27,16 +27,6 @@ typedef void (^GroupViewSuccessBlock)();
 
 @property (nonatomic, weak) id<GroupViewHelperDelegate> delegate;
 
-- (void)showRemoveFromGroupAlertForSignalAccount:(SignalAccount *)signalAccount
-                              fromViewController:(UIViewController *)fromViewController
-                                 contactsManager:(OWSContactsManager *)contactsManager
-                                    successBlock:(GroupViewSuccessBlock)successBlock;
-
-- (void)showRemoveFromGroupAlertForRecipientId:(NSString *)recipientId
-                            fromViewController:(UIViewController *)fromViewController
-                               contactsManager:(OWSContactsManager *)contactsManager
-                                  successBlock:(GroupViewSuccessBlock)successBlock;
-
 - (void)showChangeGroupAvatarUI;
 
 @end

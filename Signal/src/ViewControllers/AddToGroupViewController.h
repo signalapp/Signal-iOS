@@ -4,9 +4,13 @@
 
 #import "SelectRecipientViewController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol AddToGroupViewControllerDelegate <NSObject>
 
 - (void)recipientIdWasAdded:(NSString *)recipientId;
+
+- (BOOL)isRecipientGroupMember:(NSString *)recipientId;
 
 @end
 
@@ -19,3 +23,5 @@
 @property (nonatomic) BOOL hideContacts;
 
 @end
+
+NS_ASSUME_NONNULL_END

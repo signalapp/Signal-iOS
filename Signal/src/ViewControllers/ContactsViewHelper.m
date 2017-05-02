@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _blockingManager = [OWSBlockingManager sharedManager];
-    self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
     self.signalAccountMap = self.contactsManager.signalAccountMap;
@@ -92,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     if ([self.delegate shouldHideLocalNumber] && [self isCurrentUser:signalAccount]) {
-        // We never want to add ourselves to a group.
         return YES;
     }
 
@@ -159,8 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
             [signalAccounts addObject:signalAccount];
         }
     }
-    self.signalAccountMap = signalAccountMap;
-    self.signalAccounts = signalAccounts;
+    self.signalAccountMap = [signalAccountMap copy];
+    self.signalAccounts = [signalAccounts copy];
 
     [self.delegate contactsViewHelperDidUpdateContacts];
 }

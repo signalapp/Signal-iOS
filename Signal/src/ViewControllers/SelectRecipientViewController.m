@@ -486,13 +486,21 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                         cell.accessoryMessage = NSLocalizedString(
                             @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                     } else {
-                        OWSAssert(cell.accessoryMessage == nil);
+                        cell.accessoryMessage = [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                     }
                     [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+
+                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    }
+
                     return cell;
                 }
                                              customRowHeight:[ContactTableViewCell rowHeight]
                                              actionBlock:^{
+                                                 if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                                     return;
+                                                 }
                                                  [weakSelf.delegate signalAccountWasSelected:signalAccount];
                                              }]];
             }

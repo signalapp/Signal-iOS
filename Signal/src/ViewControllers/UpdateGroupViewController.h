@@ -8,15 +8,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSGroupThread;
 
+typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
+    UpdateGroupMode_Default = 0,
+    UpdateGroupMode_EditGroupName,
+    UpdateGroupMode_EditGroupAvatar,
+};
+
 @interface UpdateGroupViewController : UIViewController
 
-@property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> delegate;
+@property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
 // This property _must_ be set before the view is presented.
 @property (nonatomic) TSGroupThread *thread;
 
-@property (nonatomic) BOOL shouldEditGroupNameOnAppear;
-@property (nonatomic) BOOL shouldEditAvatarOnAppear;
+@property (nonatomic) UpdateGroupMode mode;
 
 @end
 

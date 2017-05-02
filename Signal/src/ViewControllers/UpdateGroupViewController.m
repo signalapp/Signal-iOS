@@ -19,6 +19,7 @@
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import "ViewControllerUtils.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSGroupModel.h>
@@ -44,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic, nullable) NSSet<NSString *> *previousMemberRecipientIds;
-@property (nonatomic, nullable) NSMutableSet<NSString *> *memberRecipientIds;
+@property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
@@ -135,13 +136,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    if (self.shouldEditGroupNameOnAppear) {
-        [self.groupNameTextField becomeFirstResponder];
-    } else if (self.shouldEditAvatarOnAppear) {
-        [self showChangeGroupAvatarUI:nil];
+    switch (self.mode) {
+        case UpdateGroupMode_EditGroupName:
+            [self.groupNameTextField becomeFirstResponder];
+            break;
+        case UpdateGroupMode_EditGroupAvatar:
+            [self showChangeGroupAvatarUI];
+            break;
+        default:
+            break;
     }
-    self.shouldEditGroupNameOnAppear = NO;
-    self.shouldEditAvatarOnAppear = NO;
+    // Only perform these actions the first time the view appears.
+    self.mode = UpdateGroupMode_Default;
 }
 
 - (UIView *)firstSectionHeader
@@ -197,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)avatarTouched:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self showChangeGroupAvatarUI:nil];
+        [self showChangeGroupAvatarUI];
     }
 }
 
@@ -210,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
+    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
 
     // Group Members
 
@@ -235,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
                          }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[helper localNumber]];
+    [memberRecipientIds removeObject:[contactsViewHelper localNumber]];
     for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
         [section
             addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -245,9 +251,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+                SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
                 BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
-                BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                 if (isPreviousMember) {
                     if (isBlocked) {
                         cell.accessoryMessage = NSLocalizedString(
@@ -265,18 +271,18 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 if (signalAccount) {
-                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                    [cell configureWithSignalAccount:signalAccount contactsManager:contactsViewHelper.contactsManager];
                 } else {
-                    [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+                    [cell configureWithRecipientId:recipientId contactsManager:contactsViewHelper.contactsManager];
                 }
 
                 return cell;
             }
                         customRowHeight:[ContactTableViewCell rowHeight]
                         actionBlock:^{
-                            SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+                            SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
                             BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                            BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                             if (isPreviousMember) {
                                 if (isBlocked) {
                                     if (signalAccount) {
@@ -284,25 +290,18 @@ NS_ASSUME_NONNULL_BEGIN
                                     } else {
                                         [weakSelf showUnblockAlertForRecipientId:recipientId];
                                     }
+                                } else {
+                                    [ViewControllerUtils
+                                        showAlertWithTitle:
+                                            NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+                                                @"Title for alert indicating that group members can't be removed.")
+                                                   message:NSLocalizedString(
+                                                               @"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+                                                               @"Title for alert indicating that group members can't "
+                                                               @"be removed.")];
                                 }
                             } else {
-                                if (signalAccount) {
-                                    [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForSignalAccount:signalAccount
-                                                              fromViewController:weakSelf
-                                                                 contactsManager:helper.contactsManager
-                                                                    successBlock:^{
-                                                                        [weakSelf removeSignalAccount:signalAccount];
-                                                                    }];
-                                } else {
-                                    [weakSelf.groupViewHelper
-                                        showRemoveFromGroupAlertForRecipientId:recipientId
-                                                            fromViewController:weakSelf
-                                                               contactsManager:helper.contactsManager
-                                                                  successBlock:^{
-                                                                      [weakSelf removeRecipientId:recipientId];
-                                                                  }];
-                                }
+                                [weakSelf removeRecipientId:recipientId];
                             }
                         }]];
     }
@@ -316,11 +315,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(signalAccount);
 
     __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
     [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                        fromViewController:self
-                                          blockingManager:helper.blockingManager
-                                          contactsManager:helper.contactsManager
+                                          blockingManager:self.contactsViewHelper.blockingManager
+                                          contactsManager:self.contactsViewHelper.contactsManager
                                           completionBlock:^(BOOL isBlocked) {
                                               if (!isBlocked) {
                                                   [weakSelf updateTableContents];
@@ -333,24 +331,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
     [BlockListUIUtils showUnblockPhoneNumberActionSheet:recipientId
                                      fromViewController:self
-                                        blockingManager:helper.blockingManager
-                                        contactsManager:helper.contactsManager
+                                        blockingManager:self.contactsViewHelper.blockingManager
+                                        contactsManager:self.contactsViewHelper.contactsManager
                                         completionBlock:^(BOOL isBlocked) {
                                             if (!isBlocked) {
                                                 [weakSelf updateTableContents];
                                             }
                                         }];
-}
-
-- (void)removeSignalAccount:(SignalAccount *)signalAccount
-{
-    OWSAssert(signalAccount);
-
-    [self.memberRecipientIds removeObject:signalAccount.recipientId];
-    [self updateTableContents];
 }
 
 - (void)removeRecipientId:(NSString *)recipientId
@@ -365,18 +354,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateGroup
 {
-    OWSAssert(self.delegate);
+    OWSAssert(self.conversationSettingsViewDelegate);
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:self.groupNameTextField.text
                                                          memberIds:[self.memberRecipientIds.allObjects mutableCopy]
                                                              image:self.groupAvatar
                                                            groupId:self.thread.groupModel.groupId];
-    [self.delegate groupWasUpdated:groupModel];
+    [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
 }
 
 #pragma mark - Group Avatar
 
-- (void)showChangeGroupAvatarUI:(nullable id)sender
+- (void)showChangeGroupAvatarUI
 {
     [self.groupNameTextField resignFirstResponder];
 
@@ -413,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
-        [self.navigationController popViewControllerAnimated:YES];
+        [self dismissViewControllerAnimated:YES completion:nil];
         return;
     }
 
@@ -424,21 +413,22 @@ NS_ASSUME_NONNULL_BEGIN
                              NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit update group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                             @"The label for the 'save' button in action sheets.")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     OWSAssert(self.delegate);
+    [controller
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                     @"The label for the 'save' button in action sheets.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *action) {
+                                             OWSAssert(self.conversationSettingsViewDelegate);
 
-                                                     [self updateGroup];
+                                             [self updateGroup];
 
-                                                     [self.delegate popAllConversationSettingsViews];
-                                                 }]];
+                                             [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+                                         }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
                                                              @"The label for the 'don't save' button in action sheets.")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *action) {
-                                                     [self.navigationController popViewControllerAnimated:YES];
+                                                     [self dismissViewControllerAnimated:YES completion:nil];
                                                  }]];
     [self presentViewController:controller animated:YES completion:nil];
 }
@@ -497,6 +487,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.memberRecipientIds addObject:recipientId];
     self.hasUnsavedChanges = YES;
     [self updateTableContents];
+}
+
+- (BOOL)isRecipientGroupMember:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return [self.memberRecipientIds containsObject:recipientId];
 }
 
 @end
