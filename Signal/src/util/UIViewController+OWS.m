@@ -10,6 +10,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIBarButtonItem *)createOWSBackButton
 {
+    return [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
+}
+
+- (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector
+{
+    OWSAssert(target);
+    OWSAssert(selector);
+
     // Nudge closer to the left edge to match default back button item.
     const CGFloat kExtraLeftPadding = -8;
 
@@ -26,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     // so we adjust the imageEdgeInsets on a UIButton, then wrap that
     // in a UIBarButtonItem.
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [backButton addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
 
     UIImage *backImage = [UIImage imageNamed:@"NavBarBack"];
     OWSAssert(backImage);

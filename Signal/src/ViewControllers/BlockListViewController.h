@@ -4,6 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BlockListViewController : UITableViewController
+@interface BlockListViewController : UIViewController
 
 @end

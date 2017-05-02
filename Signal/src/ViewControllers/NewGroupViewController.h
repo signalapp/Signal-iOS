@@ -2,27 +2,14 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
+#import "OWSConversationSettingsViewDelegate.h"
 
-@interface NewGroupViewController : UIViewController <UITableViewDelegate,
-                                                      UITabBarDelegate,
-                                                      UIImagePickerControllerDelegate,
-                                                      UINavigationControllerDelegate,
-                                                      UITextFieldDelegate>
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)configWithThread:(TSGroupThread *)thread;
+@interface NewGroupViewController : UIViewController
 
-@property (nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic) IBOutlet UITextField *nameGroupTextField;
-@property (nonatomic) IBOutlet UIButton *groupImageButton;
-@property (nonatomic) IBOutlet UIView *tapToDismissView;
-@property (nonatomic) IBOutlet UILabel *addPeopleLabel;
-@property (nonatomic) UIImage *groupImage;
-@property (nonatomic) TSGroupModel *groupModel;
-
-@property (nonatomic) BOOL shouldEditGroupNameOnAppear;
-@property (nonatomic) BOOL shouldEditAvatarOnAppear;
+@property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> delegate;
 
 @end
+
+NS_ASSUME_NONNULL_END

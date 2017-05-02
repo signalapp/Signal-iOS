@@ -6,8 +6,6 @@
 #import "BlockListUIUtils.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "NewGroupViewController.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
@@ -17,6 +15,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import "UpdateGroupViewController.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -119,15 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - View Lifecycle
-
-- (void)loadView
-{
-    // Initialize with empty contents. We'll populate the
-    // contents later.
-    self.contents = [OWSTableContents new];
-
-    [super loadView];
-}
 
 - (void)viewDidLoad
 {
@@ -327,14 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return cell;
             }
                 actionBlock:^{
-                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    NewGroupViewController *newGroupViewController =
-                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-                    [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
-                    [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
+                    [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
@@ -545,32 +528,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [firstSectionHeader
-        addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                           action:@selector(conversationNameTouched:)]];
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(conversationNameTouched:)]];
     firstSectionHeader.userInteractionEnabled = YES;
-    for (UIView *subview in firstSectionHeader.subviews) {
-        subview.userInteractionEnabled = NO;
-    }
 
     return firstSectionHeader;
 }
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
 {
-    if (sender.state == UIGestureRecognizerStateBegan || sender.state == UIGestureRecognizerStateRecognized) {
+    if (sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
-            NewGroupViewController *newGroupViewController =
-                [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-            [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
-
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                newGroupViewController.shouldEditAvatarOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
             } else {
-                newGroupViewController.shouldEditGroupNameOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
-
-            [self.navigationController pushViewController:newGroupViewController animated:YES];
         } else {
             // TODO: Edit 1:1 contact.
         }
@@ -625,6 +599,20 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showUpdateGroupView:(UpdateGroupMode)mode
+{
+    OWSAssert(self.conversationSettingsViewDelegate);
+
+    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+    updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
+    updateGroupViewController.thread = (TSGroupThread *)self.thread;
+    updateGroupViewController.mode = mode;
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:updateGroupViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
 
 - (void)didTapLeaveGroup
 {

@@ -7,12 +7,14 @@
 #import "ContactTableViewCell.h"
 #import "ContactsUpdater.h"
 #import "Environment.h"
+#import "NewGroupViewController.h"
 #import "OWSContactsSearcher.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -104,8 +106,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalRecipientsDidChange:)
-                                                 name:OWSContactsManagerSignalRecipientsDidChangeNotification
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
@@ -118,7 +120,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)signalRecipientsDidChange:(NSNotification *)notification {
+- (void)signalAccountsDidChange:(NSNotification *)notification
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self updateContacts];
     });
@@ -158,7 +161,8 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
 
     [self showEmptyBackgroundViewIfNecessary];
@@ -346,8 +350,9 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
     self.searchResults = [contactsSearcher filterWithString:searchText];
 
     NSMutableArray<NSString *> *searchPhoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
-                                                                           clientPhoneNumber:[TSStorageManager localNumber]]) {
+    for (PhoneNumber *phoneNumber in
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
+                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
         [searchPhoneNumbers addObject:phoneNumber.toE164];
     }
     // text to a non-signal number if we have no results and a valid phone #
@@ -739,7 +744,7 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 - (BOOL)isContactBlocked:(Contact *)contact
 {
     if (contact.parsedPhoneNumbers.count < 1) {
-        // Hide contacts without any valid phone numbers.
+        // Do not consider contacts without any valid phone numbers to be blocked.
         return NO;
     }
 
@@ -781,6 +786,12 @@ NSString *const MessageComposeTableViewControllerCellContact = @"ContactTableVie
 
 - (CGFloat)marginSize {
     return 20;
+}
+
+- (IBAction)showNewGroupView:(id)sender
+{
+    NewGroupViewController *newGroupViewController = [NewGroupViewController new];
+    [self.navigationController pushViewController:newGroupViewController animated:YES];
 }
 
 #pragma mark - UIScrollViewDelegate

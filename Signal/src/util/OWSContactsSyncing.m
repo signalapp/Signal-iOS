@@ -44,14 +44,24 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
     OWSSingletonAssert();
 
-    __weak OWSContactsSyncing *weakSelf = self;
-    [contactsManager.getObservableContacts watchLatestValue:^(id latestValue) {
-        [weakSelf sendSyncContactsMessageIfPossible];
-    }
-                                                   onThread:[NSThread mainThread]
-                                             untilCancelled:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                               object:nil];
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)signalAccountsDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self sendSyncContactsMessageIfPossible];
+    });
 }
 
 #pragma mark - Methods

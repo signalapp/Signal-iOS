@@ -3,7 +3,10 @@
 //
 
 #import "ViewControllerUtils.h"
+#import "Environment.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
+#import "SignalsViewController.h"
 #import "StringUtil.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
@@ -94,6 +97,30 @@ NS_ASSUME_NONNULL_BEGIN
                       ? [[numberFormatter stringFromNumber:@(round(fileSize / (CGFloat)kOneKilobyte))]
                             stringByAppendingString:@" kb"]
                       : [[numberFormatter stringFromNumber:@(fileSize)] stringByAppendingString:@" bytes"]));
+}
+
+#pragma mark - Alerts
+
++ (UIAlertController *)showAlertWithTitle:(NSString *)title message:(NSString *)message
+{
+    return [self showAlertWithTitle:title message:message buttonLabel:NSLocalizedString(@"OK", nil)];
+}
+
++ (UIAlertController *)showAlertWithTitle:(NSString *)title
+                                  message:(NSString *)message
+                              buttonLabel:(NSString *)buttonLabel
+{
+    OWSAssert(title.length > 0);
+    OWSAssert(message.length > 0);
+
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+
+    [alert addAction:[UIAlertAction actionWithTitle:buttonLabel style:UIAlertActionStyleDefault handler:nil]];
+
+    [[UIApplication sharedApplication].frontmostViewController presentViewController:alert animated:YES completion:nil];
+
+    return alert;
 }
 
 #pragma mark - Logging

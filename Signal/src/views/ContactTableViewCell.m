@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "SignalAccount.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -68,7 +69,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self.contentView addSubview:_nameLabel];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:8.f];
+    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
@@ -86,6 +87,15 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self configureWithRecipientId:contact.textSecureIdentifiers.firstObject
                         avatarName:contact.fullName
                        displayName:[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font]
+                   contactsManager:contactsManager];
+}
+
+- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
+{
+    [self configureWithRecipientId:signalAccount.recipientId
+                        avatarName:signalAccount.contact.fullName
+                       displayName:[contactsManager formattedDisplayNameForSignalAccount:signalAccount
+                                                                                    font:self.nameLabel.font]
                    contactsManager:contactsManager];
 }
 

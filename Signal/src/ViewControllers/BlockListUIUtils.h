@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
+@class SignalAccount;
 @class OWSBlockingManager;
 @class OWSContactsManager;
 
@@ -18,31 +19,31 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 
 #pragma mark - Block
 
-+ (void)showBlockContactActionSheet:(Contact *)contact
-                 fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
-
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
                         contactsManager:(OWSContactsManager *)contactsManager
                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
-#pragma mark - Unblock
++ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                       fromViewController:(UIViewController *)fromViewController
+                          blockingManager:(OWSBlockingManager *)blockingManager
+                          contactsManager:(OWSContactsManager *)contactsManager
+                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
-+ (void)showUnblockContactActionSheet:(Contact *)contact
-                   fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
-                      contactsManager:(OWSContactsManager *)contactsManager
-                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
+#pragma mark - Unblock
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager
                           contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
+
++ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                         fromViewController:(UIViewController *)fromViewController
+                            blockingManager:(OWSBlockingManager *)blockingManager
+                            contactsManager:(OWSContactsManager *)contactsManager
+                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 #pragma mark - UI Utils
 

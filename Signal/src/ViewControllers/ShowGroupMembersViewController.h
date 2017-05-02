@@ -1,20 +1,12 @@
 //
-//  ShowGroupMembersViewController.h
-//  Signal
-//
-//  Created by Christine Corbett on 12/19/14
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
+#import "OWSTableViewController.h"
 
-@interface ShowGroupMembersViewController : UITableViewController <UITableViewDelegate,
-                                                                   UITabBarDelegate,
-                                                                   UIImagePickerControllerDelegate,
-                                                                   UINavigationControllerDelegate,
-                                                                   UITextFieldDelegate>
+@class TSGroupThread;
+
+@interface ShowGroupMembersViewController : OWSTableViewController
 
 - (void)configWithThread:(TSGroupThread *)thread;
 

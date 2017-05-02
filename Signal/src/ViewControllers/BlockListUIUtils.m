@@ -5,6 +5,7 @@
 #import "BlockListUIUtils.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
+#import "SignalAccount.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -17,37 +18,6 @@ typedef void (^BlockAlertCompletionBlock)();
 
 #pragma mark - Block
 
-+ (void)showBlockContactActionSheet:(Contact *)contact
-                 fromViewController:(UIViewController *)fromViewController
-                    blockingManager:(OWSBlockingManager *)blockingManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if (phoneNumber.toE164.length > 0) {
-            [phoneNumbers addObject:phoneNumber.toE164];
-        }
-    }
-    if (phoneNumbers.count < 1) {
-        DDLogError(@"%@ Contact has no phone numbers", self.tag);
-        OWSAssert(0);
-        [self showBlockFailedAlert:fromViewController
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock(NO);
-                       }
-                   }];
-        return;
-    }
-    NSString *displayName = [contactsManager displayNameForContact:contact];
-    [self showBlockPhoneNumbersActionSheet:phoneNumbers
-                               displayName:displayName
-                        fromViewController:fromViewController
-                           blockingManager:blockingManager
-                           completionBlock:completionBlock];
-}
-
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -56,6 +26,20 @@ typedef void (^BlockAlertCompletionBlock)();
 {
     NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
     [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
+                               displayName:displayName
+                        fromViewController:fromViewController
+                           blockingManager:blockingManager
+                           completionBlock:completionBlock];
+}
+
++ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                       fromViewController:(UIViewController *)fromViewController
+                          blockingManager:(OWSBlockingManager *)blockingManager
+                          contactsManager:(OWSContactsManager *)contactsManager
+                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    [self showBlockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                displayName:displayName
                         fromViewController:fromViewController
                            blockingManager:blockingManager
@@ -161,37 +145,6 @@ typedef void (^BlockAlertCompletionBlock)();
 
 #pragma mark - Unblock
 
-+ (void)showUnblockContactActionSheet:(Contact *)contact
-                   fromViewController:(UIViewController *)fromViewController
-                      blockingManager:(OWSBlockingManager *)blockingManager
-                      contactsManager:(OWSContactsManager *)contactsManager
-                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if (phoneNumber.toE164.length > 0) {
-            [phoneNumbers addObject:phoneNumber.toE164];
-        }
-    }
-    if (phoneNumbers.count < 1) {
-        DDLogError(@"%@ Contact has no phone numbers", self.tag);
-        OWSAssert(0);
-        [self showUnblockFailedAlert:fromViewController
-                     completionBlock:^{
-                         if (completionBlock) {
-                             completionBlock(NO);
-                         }
-                     }];
-        return;
-    }
-    NSString *displayName = [contactsManager displayNameForContact:contact];
-    [self showUnblockPhoneNumbersActionSheet:phoneNumbers
-                                 displayName:displayName
-                          fromViewController:fromViewController
-                             blockingManager:blockingManager
-                             completionBlock:completionBlock];
-}
-
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
                           blockingManager:(OWSBlockingManager *)blockingManager
@@ -200,6 +153,20 @@ typedef void (^BlockAlertCompletionBlock)();
 {
     NSString *displayName = [contactsManager displayNameForPhoneIdentifier:phoneNumber];
     [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
+                                 displayName:displayName
+                          fromViewController:fromViewController
+                             blockingManager:blockingManager
+                             completionBlock:completionBlock];
+}
+
++ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
+                         fromViewController:(UIViewController *)fromViewController
+                            blockingManager:(OWSBlockingManager *)blockingManager
+                            contactsManager:(OWSContactsManager *)contactsManager
+                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+    [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                  displayName:displayName
                           fromViewController:fromViewController
                              blockingManager:blockingManager
