@@ -83,6 +83,16 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (NSString *)recipientId
+{
+    return self.uniqueId;
+}
+
+- (NSComparisonResult)compare:(SignalRecipient *)other
+{
+    return [self.recipientId compare:other.recipientId];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

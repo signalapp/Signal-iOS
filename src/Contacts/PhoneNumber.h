@@ -50,4 +50,6 @@
 - (BOOL)isValid;
 - (BOOL)resolvesInternationallyTo:(PhoneNumber *)otherPhoneNumber;
 
+- (NSComparisonResult)compare:(PhoneNumber *)other;
+
 @end
