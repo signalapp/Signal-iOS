@@ -29,7 +29,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
-- (nullable SignalAccount *)signalAccountForRecipientId:(nullable NSString *)recipientId;
+- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
 
@@ -42,10 +42,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
-- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
-- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount
-                                                                font:(UIFont *_Nonnull)font;
+- (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
 

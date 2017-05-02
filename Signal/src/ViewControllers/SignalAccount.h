@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class SignalRecipient;
+@class YapDatabaseReadTransaction;
 
 // This class represents a single valid Signal account.
 //
@@ -32,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // For contacts with more than one signal account,
 // this is a label for the account.
-@property (nonatomic) NSString *multipleAccountLabel;
+@property (nonatomic) NSString *multipleAccountLabelText;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -41,11 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRecipientId:(NSString *)recipientId;
 
 // In most cases this should be non-null. This should only
-// be non-null in the case where the SignalRecipient was
+// be null in the case where the SignalRecipient was
 // deleted before this property was accessed.
-//
-// NOTE: This may create a database transaction.
-- (nullable SignalRecipient *)signalRecipient;
+- (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

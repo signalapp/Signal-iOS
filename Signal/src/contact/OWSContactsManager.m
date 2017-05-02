@@ -82,7 +82,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
 - (void)handleAddressBookChanged
 {
-    [self.avatarCache removeAllObjects];
     [self pullLatestAddressBook];
 }
 
@@ -193,6 +192,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
 
+            [self.avatarCache removeAllObjects];
+
             [self intersectContacts];
 
             [self updateSignalAccounts];
@@ -215,7 +216,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
                     signalAccount.contact = contact;
                     if (signalRecipients.count > 1) {
                         signalAccount.hasMultipleAccountContact = YES;
-                        signalAccount.multipleAccountLabel =
+                        signalAccount.multipleAccountLabelText =
                             [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
                     }
                     if (signalAccountMap[signalAccount.recipientId]) {
@@ -277,7 +278,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_PAGER", @"Label for 'Pager' phone numbers.");
             break;
         case OWSPhoneNumberTypeUnknown:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN", @"Label for 'Unknown' phone numbers.");
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
+                @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
             break;
     }
 
@@ -562,9 +564,9 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
 
     NSString *baseName = (signalAccount.contact ? [self displayNameForContact:signalAccount.contact]
                                                 : [self displayNameForPhoneIdentifier:signalAccount.recipientId]);
-    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
-    if (signalAccount.multipleAccountLabel) {
-        return [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabel];
+    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
+    if (signalAccount.multipleAccountLabelText) {
+        return [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabelText];
     } else {
         return baseName;
     }
@@ -577,15 +579,16 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     OWSAssert(font);
 
     NSAttributedString *baseName = [self formattedFullNameForContact:signalAccount.contact font:font];
-    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabel != nil));
-    if (signalAccount.multipleAccountLabel) {
+    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
+    if (signalAccount.multipleAccountLabelText) {
         NSMutableAttributedString *result = [NSMutableAttributedString new];
         [result appendAttributedString:baseName];
         [result appendAttributedString:[[NSAttributedString alloc] initWithString:@" ("
                                                                        attributes:@{
                                                                            NSFontAttributeName : font,
                                                                        }]];
-        [result appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabel]];
+        [result
+            appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabelText]];
         [result appendAttributedString:[[NSAttributedString alloc] initWithString:@")"
                                                                        attributes:@{
                                                                            NSFontAttributeName : font,
@@ -656,7 +659,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             attributes:normalFontAttributes];
 }
 
-- (nullable SignalAccount *)signalAccountForRecipientId:(nullable NSString *)recipientId
+- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 

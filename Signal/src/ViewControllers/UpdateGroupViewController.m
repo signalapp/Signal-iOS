@@ -9,7 +9,6 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "GroupViewHelper.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
@@ -103,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.memberRecipientIds addObjectsFromArray:self.thread.groupModel.groupMemberIds];
     self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
 
-    self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The default title for the 'update group' view.");
+    self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
     self.navigationItem.leftBarButtonItem =
         [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
@@ -130,6 +129,24 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     [self.navigationController.navigationBar setTranslucent:NO];
+}
+
+- (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
+{
+    _hasUnsavedChanges = hasUnsavedChanges;
+
+    [self updateNavigationBar];
+}
+
+- (void)updateNavigationBar
+{
+    self.navigationItem.rightBarButtonItem = (self.hasUnsavedChanges
+            ? [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_GROUP_UPDATE_BUTTON",
+                                                         @"The title for the 'update group' button.")
+                                               style:UIBarButtonItemStylePlain
+                                              target:self
+                                              action:@selector(updateGroupPressed)]
+            : nil);
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -183,7 +200,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     groupNameTextField.textColor = [UIColor blackColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
-    groupNameTextField.placeholder = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"");
+    groupNameTextField.placeholder
+        = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");
     groupNameTextField.delegate = self;
     [groupNameTextField addTarget:self
                            action:@selector(groupNameDidChange:)
@@ -193,8 +211,8 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
     [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
 
-    [avatarView addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(avatarTouched:)]];
+    [avatarView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
@@ -227,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = NSLocalizedString(
-            @"EDIT_GROUP_MEMBERS_ADD_MEMBER", @"A label the cell that lets you add a new member to a group.");
+            @"EDIT_GROUP_MEMBERS_ADD_MEMBER", @"Label for the cell that lets you add a new member to a group.");
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor blackColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -431,6 +449,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self presentViewController:controller animated:YES completion:nil];
 }
 
+- (void)updateGroupPressed
+{
+    OWSAssert(self.conversationSettingsViewDelegate);
+
+    [self updateGroup];
+
+    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+}
 
 - (void)groupNameDidChange:(id)sender
 {

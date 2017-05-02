@@ -10,9 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> delegate;
 
-@property (nonatomic) BOOL shouldEditGroupNameOnAppear;
-@property (nonatomic) BOOL shouldEditAvatarOnAppear;
-
 @end
 
 NS_ASSUME_NONNULL_END

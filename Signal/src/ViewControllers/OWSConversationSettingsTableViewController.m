@@ -6,7 +6,6 @@
 #import "BlockListUIUtils.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
@@ -529,8 +528,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [firstSectionHeader
-        addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                           action:@selector(conversationNameTouched:)]];
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(conversationNameTouched:)]];
     firstSectionHeader.userInteractionEnabled = YES;
 
     return firstSectionHeader;

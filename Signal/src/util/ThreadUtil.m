@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    SignalAccount *signalAccount = [contactsManager signalAccountForRecipientId:contactThread.contactIdentifier];
+    SignalAccount *signalAccount = contactsManager.signalAccountMap[contactThread.contactIdentifier];
     if (signalAccount) {
         // Only create block offers for non-contacts.
         return;

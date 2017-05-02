@@ -10,10 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalAccount ()
 
-@property (nonatomic, nullable) SignalRecipient *signalRecipient;
-
-// This property may be modified after construction, so it should
-// only be modified on the main thread.
 @property (nonatomic) NSString *recipientId;
 
 @end
@@ -27,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (self = [super init]) {
         OWSAssert(signalRecipient);
 
-        _signalRecipient = signalRecipient;
         _recipientId = signalRecipient.uniqueId;
     }
     return self;
@@ -43,18 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SignalRecipient *)signalRecipient
+- (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(transaction);
 
-    if (!_signalRecipient) {
-        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            _signalRecipient =
-                [SignalRecipient recipientWithTextSecureIdentifier:self.recipientId withTransaction:transaction];
-        }];
-    }
-
-    return _signalRecipient;
+    return [SignalRecipient recipientWithTextSecureIdentifier:self.recipientId withTransaction:transaction];
 }
 
 @end

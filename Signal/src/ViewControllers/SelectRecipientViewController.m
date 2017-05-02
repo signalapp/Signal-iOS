@@ -7,7 +7,6 @@
 #import "ContactsViewHelper.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"

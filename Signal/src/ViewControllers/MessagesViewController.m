@@ -3074,7 +3074,15 @@ typedef enum : NSUInteger {
 
 - (void)popAllConversationSettingsViews
 {
-    [self.navigationController popToViewController:self animated:YES];
+    if (self.presentedViewController) {
+        [self.presentedViewController
+            dismissViewControllerAnimated:YES
+                               completion:^{
+                                   [self.navigationController popToViewController:self animated:YES];
+                               }];
+    } else {
+        [self.navigationController popToViewController:self animated:YES];
+    }
 }
 
 #pragma mark - Class methods

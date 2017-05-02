@@ -8,7 +8,6 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "GroupViewHelper.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
@@ -45,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -93,16 +93,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"The title for the 'new group' view.");
+    self.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"The navbar title for the 'new group' view.");
     self.navigationItem.leftBarButtonItem =
         [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"add-conversation"]
-                                                   imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(createGroup)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+        initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
+                style:UIBarButtonItemStylePlain
+               target:self
+               action:@selector(createGroup)];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
         = NSLocalizedString(@"FINISH_GROUP_CREATION_LABEL", @"Accessibilty label for finishing new group");
@@ -152,7 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
     _groupNameTextField = groupNameTextField;
     groupNameTextField.textColor = [UIColor blackColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
-    groupNameTextField.placeholder = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"");
+    groupNameTextField.placeholder
+        = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");
     groupNameTextField.delegate = self;
     [groupNameTextField addTarget:self
                            action:@selector(groupNameDidChange:)
@@ -162,8 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
     [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
 
-    [avatarView addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(avatarTouched:)]];
+    [avatarView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
@@ -315,8 +315,8 @@ NS_ASSUME_NONNULL_BEGIN
     __weak NewGroupViewController *weakSelf = self;
     return [OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"NEW_GROUP_ADD_NON_CONTACT", @"A label the cell that lets you add a new non-contact member to a group.");
+        cell.textLabel.text = NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
+            @"A label for the cell that lets you add a new non-contact member to a group.");
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor blackColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -361,13 +361,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    if (self.shouldEditGroupNameOnAppear) {
+    if (!self.hasAppeared) {
         [self.groupNameTextField becomeFirstResponder];
-    } else if (self.shouldEditAvatarOnAppear) {
-        [self showChangeGroupAvatarUI];
+        self.hasAppeared = YES;
     }
-    self.shouldEditGroupNameOnAppear = NO;
-    self.shouldEditAvatarOnAppear = NO;
 }
 
 #pragma mark - Actions

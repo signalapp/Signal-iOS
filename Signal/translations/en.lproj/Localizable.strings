@@ -337,10 +337,10 @@
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
 
-/* The default title for the 'update group' view. */
+/* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
 
-/* A label the cell that lets you add a new member to a group. */
+/* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
 
 /* a title for the members section of the 'new/update group' view. */
@@ -349,14 +349,8 @@
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
 
-/* A format for the message of the alert confirming whether user wants to remove a user from a group.  Embeds {{the user's name or phone number}}. */
-"EDIT_GROUP_REMOVE_MEMBER_ALERT_MESSAGE_FORMAT" = "Would you like to remove %@ from this group?";
-
-/* A title of the alert confirming whether user wants to remove a user from a group. */
-"EDIT_GROUP_REMOVE_MEMBER_ALERT_TITLE" = "Remove Group Member?";
-
-/* A title of the button that confirms user wants to remove a user from a group. */
-"EDIT_GROUP_REMOVE_MEMBER_BUTTON" = "Remove";
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Update";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "You've changed this group. Would you like to save these changes?";
@@ -753,19 +747,22 @@
 /* Text for button to start a new conversation with a non-contact */
 "NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "New conversation with %@";
 
-/* A label the cell that lets you add a new non-contact member to a group. */
+/* A label for the cell that lets you add a new non-contact member to a group. */
 "NEW_GROUP_ADD_NON_CONTACT" = "Add by phone number…";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
 
-/* The title for the 'new group' view. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Create";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "New Group";
 
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Member";
 
-/* No comment provided by engineer. */
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Name this group chat";
 
 /* a title for the non-contacts section of the 'new group' view. */
@@ -853,7 +850,7 @@
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
 
-/* Label for 'Unknown' phone numbers. */
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
 
 /* Label for 'Work FAX' phone numbers. */
