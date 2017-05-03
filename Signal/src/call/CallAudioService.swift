@@ -87,7 +87,13 @@ import AVFoundation
         ensureIsEnabled(call: call)
     }
 
-    private func ensureIsEnabled(call: SignalCall) {
+    private func ensureIsEnabled(call: SignalCall?) {
+        guard let call = call else {
+            setAudioSession(category: AVAudioSessionCategoryPlayback,
+                            mode: AVAudioSessionModeDefault)
+            return
+        }
+
         // Auto-enable speakerphone when local video is enabled.
         if call.hasLocalVideo {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
@@ -104,6 +110,12 @@ import AVFoundation
     }
 
     // MARK: - Service action handlers
+
+    public func didUpdateVideoTracks(call: SignalCall?) {
+        Logger.verbose("\(TAG) in \(#function)")
+
+        self.ensureIsEnabled(call: call)
+    }
 
     public func handleState(call: SignalCall) {
         assert(Thread.isMainThread)
@@ -151,6 +163,7 @@ import AVFoundation
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         stopPlayingAnySounds()
+        self.ensureIsEnabled(call: call)
     }
 
     private func handleRemoteRinging(call: SignalCall) {
