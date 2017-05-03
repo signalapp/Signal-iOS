@@ -310,7 +310,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 
     OWSAssert([phoneNumbersOfTheSameType containsObject:recipientId]);
-    if (phoneNumbersOfTheSameType.count > 0) {
+    if (phoneNumbersOfTheSameType.count > 1) {
         NSUInteger index =
             [[phoneNumbersOfTheSameType sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
         phoneNumberLabel =
