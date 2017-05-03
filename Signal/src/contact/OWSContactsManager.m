@@ -290,6 +290,15 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
             phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
                 @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
             break;
+        case OWSPhoneNumberTypeHome:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME", @"Label for 'Home' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeWork:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK", @"Label for 'Work' phone numbers.");
+            break;
+        case OWSPhoneNumberTypeOther:
+            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER", @"Label for 'Other' phone numbers.");
+            break;
     }
 
     // 2. Find all phone numbers for this contact of the same type.
