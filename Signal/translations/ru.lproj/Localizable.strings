@@ -50,49 +50,49 @@
 "ATTACHMENT" = "Вложение";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Вложение";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файла: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отправить";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось загрузить вложение. Нажмите, чтобы попробовать ещё раз.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Скачивание...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "В очереди";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Не удалось изменить размер прикреплённого изображения.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Не удалось обработать вложенное изображение.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вложение слишком большое.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Во вложении находится неподдерживаемое содержимое.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Формат файла вложения не поддерживается.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Вложение пустое.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Сделать новую фотографию или выбрать одну из существующих и отправить её";
@@ -101,16 +101,16 @@
 "ATTACHMENT_LABEL" = "Добавить вложение";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не удалось выбрать документ.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal не поддерживает такие файлы. Поместите этот файл в архив *.zip и повторите отправку.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдерживаемый файл";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "Заблокированные пользователь не смогут звонить или отправлять сообщения Вам.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокировать";
@@ -128,55 +128,55 @@
 "BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "Контакт \"%@\" уже заблокирован.";
 
 /* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Already Blocked";
+"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Уже заблокирован";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Не удалось заблокировать пользователя";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Ошибка";
 
 /* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ был заблокирован";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Пользователь заблокирован";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Вы не можете заблокировать самого себя.";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Ошибка";
 
 /* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
+"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Контакты";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Не удалось разблокировать пользователя.";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Ошибка";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ был разблокирован.";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Пользователь разблокирован";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Block";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Блокировка";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Заблокировать %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls. You can grant this permission in the Settings app.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal необходимы доступы к Вашему микрофону для совершения звонков. Вы можете включить данное разрешение в настройках устройства.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
+"CALL_AUDIO_PERMISSION_TITLE" = "Требуется доступ к микрофону";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Позвонить";
@@ -227,10 +227,10 @@
 "CONFIRMATION_TITLE" = "Подтвердите";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+"CONTACT_CELL_IS_BLOCKED" = "Заблокирован";
 
 /* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
+"CONTACT_CELL_IS_IN_GROUP" = "Участник группы";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незарегистрированный номер";
@@ -245,37 +245,37 @@
 "CONVERSATION_SETTINGS" = "Настройки разговоров";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокировать этого пользователя";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Беззвучный режим";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Беззвучный режим";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Звук уведомлений включен";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Беззвучный режим на 1 день";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Беззвучный режим на 1 час";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Беззвучный режим на 1 минуту";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Беззвучный режим на 1 неделю";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Беззвучный режим на год";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %@";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Включить звук";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Перезапуск рабочей сессии исправит получение сообщений от пользователя %@ в дальнейшем, но не обеспечит доступ к уже скомпрометированным сообщениям.";
@@ -317,10 +317,10 @@
 "EDIT_GROUP_ACTION" = "Изменить группу";
 
 /* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ уже является участником этой группы.";
 
 /* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
+"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Пользователь уже в группе";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Скопировать";
@@ -380,13 +380,13 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не удалось отправить в связи с неактуальными данными приватности";
 
 /* Error mesage indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не удалось отправить сообщение пользователю, так как Вы заблокировали его.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Не удалось установить интернет-соединение. Пожалуйста, попробуйте соединиться через другую WiFi-сеть или используйте мобильный интернет.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ошибка отправки сообщения из-за отсутствия действующих получателей.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Устройство больше не связано с вашим номером телефона. Необходимо удалить и переустановить Signal.";
@@ -431,19 +431,19 @@
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Активация данного %@ отключит Signal на другом устройстве, использующем этот номер телефона.";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Некорректное имя файла.";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Невозможно загрузить файл.";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Невозможно загрузить файл.";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Неизвестный тип файла.";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Ошибка";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Слишком много ошибок отправки. Пожалуйста, попробуйте позже.";
@@ -464,7 +464,7 @@
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Attachment";
+"GENERIC_ATTACHMENT_LABEL" = "Вложение";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Аватар изменён.";
@@ -488,16 +488,16 @@
 "GROUP_MEMBER_LEFT" = "%@ покинул группу.";
 
 /* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Call";
+"GROUP_MEMBERS_CALL" = "Позвонить";
 
 /* header for table which lists the members of this group thread */
 "GROUP_MEMBERS_HEADER" = "Участники группы";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Send Message";
+"GROUP_MEMBERS_SEND_MESSAGE" = "Отправить сообщение";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Информация о контакте";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Покидаем группу «%@»";
@@ -515,7 +515,7 @@
 "GROUP_YOU_LEFT" = "Вы покинули группу.";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Заблокированные";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "HOURS_TIME_AMOUNT" = "%u час.";
@@ -614,7 +614,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Камера";
 
 /* action sheet button title when choosing attachment type */
-"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Document";
+"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Документ";
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Библиотека фотографий";
@@ -626,7 +626,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Отправка не удалась. Нажмите, чтобы попробовать отправить ещё раз.";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Отправлено";
@@ -635,19 +635,19 @@
 "MESSAGE_STATUS_UPLOADING" = "Загрузка...";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Вы заблокировали этого пользователя";
 
 /* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Download Failed.";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Скачивание не удалось.";
 
 /* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Download Again";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Скачать ещё раз";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of this Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вы заблокировали 1 участника в этой группе";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вы заблокировали %d участников в этой группе";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Прикoснитесь чтобы открыть настройки";
@@ -670,7 +670,7 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Пропущенный звонок от %@.";
 
 /* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Пропущенный звонок от пользователя Signal.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "Вы приняли звонок от %@.";
@@ -691,7 +691,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вы достигли максимального количества устройств для соединения для Вашего аккаунта. Пожалуйста, удалите устройство или попробуйте соединить устройство позже.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Вы не будете получать уведомления для бесед в беззвучном режиме.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Пожалуйста, убедитесь, что вы в сети, и попробуйте снова.";
@@ -776,10 +776,10 @@
 "OUTGOING_INCOMPLETE_CALL" = "Незавершенный исходящий звонок";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [Нажмите для получения подробностей]";
 
 /* The title of the 'oversize text message' view. */
-"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Сообщение";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не код безопасности для %@. Убедитесь, что подтверждаете соединение с верным пользователем.";
@@ -854,7 +854,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Добро пожаловать!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
+"REGISTER_FAILED_TRY_AGAIN" = "Попробуйте ещё раз";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Слишком часто. Попробуйте через минуту";
@@ -932,16 +932,16 @@
 "SECURE_SESSION_RESET" = "Безопасный сеанс связи был сброшен.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "Отправить ещё раз";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Отправить";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Выбрать получателя для:";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Отправить файл";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Ошибка отправки приглашения, пожалуйста, повторить попытку.";
@@ -962,13 +962,13 @@
 "SETTINGS_ABOUT" = "О программе";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Заблокировать контакт";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Заблокировать номер";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокировать";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Включить журнал отладки";
@@ -980,13 +980,13 @@
 "SETTINGS_ADVANCED_TITLE" = "Расширенные";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавить";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "К сожалению, у Вас нет ни одного контакта, пользующегося Signal.";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
+"SETTINGS_BLOCK_LIST_TITLE" = "Заблокированные";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Требуется подтверждение соединения, так как код безопасности собеседника изменился, скорее всего из-за переустановки Signal.";
@@ -1058,7 +1058,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Запретить предпросмотр в переключателе приложений iOS";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Встроенная система звонков iOS отображает звонки на заблокированном экране и сохраняет их в истории звонков. Обратите внимание, что если на Вашем устройстве включен iCloud, то в этом случае информация о звонках может быть отправлена в Apple. Отключить интеграцию со звонками iOS Вы можете в настройках приложения.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Звонки";
@@ -1118,7 +1118,7 @@
 "UNKNOWN_ATTACHMENT_LABEL" = "Неизвестное вложение";
 
 /* No comment provided by engineer. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Пользователя нет в Вашем списке контактов. Заблокировать его?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Неизвестный контакт";
@@ -1160,7 +1160,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите на Ответ";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Теперь Signal поддерживает приватные видео звонки. Просто начните вызов, прикоснитесь к кнопке камеры и смахните.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Теперь Signal поддерживает приватные видеозвонки. Просто начните вызов как обычно и нажмите кнопку с изображением камеры на экране.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Добро пожаловать в Видео Звонки!";
@@ -1184,7 +1184,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Отправить код подтверждения";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Enter the verification code we sent to %@.";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Введите код подтверждения, который мы отправим %@";
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Подтвердить код безопасности";

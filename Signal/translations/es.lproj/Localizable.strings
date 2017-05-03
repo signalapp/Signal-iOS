@@ -245,7 +245,7 @@
 "CONVERSATION_SETTINGS" = "Ajustes del chat";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear este contacto";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear contacto";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -938,7 +938,7 @@
 "SEND_BUTTON_TITLE" = "Enviar";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un contacto para:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un contacto para enviar:";
 
 /* Title for the 'send external file' view. */
 "SEND_EXTERNAL_FILE_VIEW_TITLE" = "Enviar archivo";

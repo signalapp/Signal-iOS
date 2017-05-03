@@ -104,10 +104,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文書の選択に失敗しました";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "そのファイルはそのままでは扱えません。圧縮してください。";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "扱えないファイル";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "拒否すると通話もメッセージも受け付けません";
@@ -431,19 +431,19 @@
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "この%@を有効にすると，この電話番号に関係する他の端末のSignalは無効になります。";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "ファイル名が不正";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "ファイルを取り込めませんでした";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "ファイルを取り込めませんでした";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "ファイルの種類が不明";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "エラー";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "この連絡先との連絡に失敗しました。しばらくしてから再度試してください。";
@@ -938,10 +938,10 @@
 "SEND_BUTTON_TITLE" = "送信";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "受取人を選んでください";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "ファイルを送る";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "招待の送信に失敗しました。後でもう一度行ってください。";
