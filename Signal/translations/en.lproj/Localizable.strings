@@ -1,9 +1,6 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal requires access to your contacts. We do not store your contacts on our servers.";
-
 /* Alert title when contacts disabled */
 "AB_PERMISSION_MISSING_TITLE" = "Sorry!";
 
@@ -327,6 +324,12 @@
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edit Group";
