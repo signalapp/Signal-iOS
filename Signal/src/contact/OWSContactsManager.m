@@ -448,11 +448,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     return contact.image;
 }
 
-- (BOOL)hasAddressBook
-{
-    return (BOOL)self.addressBookReference;
-}
-
 #pragma mark - Logging
 
 + (NSString *)tag

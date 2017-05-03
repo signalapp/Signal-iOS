@@ -45,6 +45,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // TODO: Remove this method.
 - (NSArray<Contact *> *)signalContacts;
 
+#pragma mark - Util
+
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
@@ -52,9 +54,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-
-// TODO migrate to CNContact?
-- (BOOL)hasAddressBook;
 
 + (NSComparator _Nonnull)contactComparator;
 
