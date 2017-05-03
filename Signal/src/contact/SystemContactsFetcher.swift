@@ -20,6 +20,16 @@ class SystemContactsFetcher: NSObject {
         return CNContactStore.authorizationStatus(for: CNEntityType.contacts)
     }
 
+    public var isAuthorized: Bool {
+        guard self.authorizationStatus != .notDetermined else {
+            assertionFailure("should have called `requestOnce` before this point.")
+            Logger.error("\(TAG) should have called `requestOnce` before checking authorization status.")
+            return false
+        }
+
+        return self.authorizationStatus == .authorized
+    }
+
     private let contactStore = CNContactStore()
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
     private let allowedContactKeys: [CNKeyDescriptor] = [

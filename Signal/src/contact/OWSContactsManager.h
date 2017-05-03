@@ -31,7 +31,15 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - System Contact Fetching
 
+// Must call `requestSystemContactsOnce` before accessing this method
+@property (nonatomic, readonly) BOOL isSystemContactsAuthorized;
+
+// Request systems contacts and start syncing changes. The user will see an alert
+// if they haven't previously.
 - (void)requestSystemContactsOnce;
+
+// Ensure's the app has the latest contacts, but won't prompt the user for contact
+// access if they haven't granted it.
 - (void)fetchSystemContactsIfAlreadyAuthorized;
 
 // TODO: Remove this method.
