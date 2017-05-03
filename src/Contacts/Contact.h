@@ -65,7 +65,7 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
                                     andImage:(nullable UIImage *)image
                                 andContactID:(ABRecordID)record;
 
-- (instancetype)initWithContact:(CNContact *)contact;
+- (instancetype)initWithSystemContact:(CNContact *)contact;
 
 - (OWSPhoneNumberType)phoneNumberTypeForPhoneNumber:(NSString *)recipientId;
 

@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithContact:(CNContact *)contact
+- (instancetype)initWithSystemContact:(CNContact *)contact
 {
     self = [super init];
     if (!self) {
