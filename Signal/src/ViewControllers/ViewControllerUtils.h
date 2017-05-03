@@ -20,6 +20,8 @@
 
 + (NSString *)formatFileSize:(unsigned long)fileSize;
 
++ (NSString *)formatDurationSeconds:(long)timeSeconds;
+
 #pragma mark - Alerts
 
 + (UIAlertController *)showAlertWithTitle:(NSString *)title message:(NSString *)message;

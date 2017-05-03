@@ -94,25 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateAudioBottomLabel];
 }
 
-- (NSString *)formatTime:(long)timeSeconds
-{
-    long seconds = timeSeconds % 60;
-    long minutes = (timeSeconds / 60) % 60;
-    long hours = timeSeconds / 3600;
-
-    if (hours > 0) {
-        return [NSString stringWithFormat:@"%ld:%02ld:%02ld", hours, minutes, seconds];
-    } else {
-        return [NSString stringWithFormat:@"%ld:%02ld", minutes, seconds];
-    }
-}
-
 - (void)updateAudioBottomLabel
 {
     if (self.isAudioPlaying && self.audioProgressSeconds > 0 && self.audioDurationSeconds > 0) {
-        self.audioBottomLabel.text = [NSString stringWithFormat:@"%@ / %@",
-                                               [self formatTime:(long)round(self.audioProgressSeconds)],
-                                               [self formatTime:(long)round(self.audioDurationSeconds)]];
+        self.audioBottomLabel.text =
+            [NSString stringWithFormat:@"%@ / %@",
+                      [ViewControllerUtils formatDurationSeconds:(long)round(self.audioProgressSeconds)],
+                      [ViewControllerUtils formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
     } else {
         NSError *error;
         unsigned long long fileSize =
