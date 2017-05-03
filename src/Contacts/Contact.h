@@ -16,6 +16,9 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
     OWSPhoneNumberTypeWorkFAX,
     OWSPhoneNumberTypeOtherFAX,
     OWSPhoneNumberTypePager,
+    OWSPhoneNumberTypeHome,
+    OWSPhoneNumberTypeWork,
+    OWSPhoneNumberTypeOther
 };
 
 /**

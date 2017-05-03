@@ -72,10 +72,14 @@ NS_ASSUME_NONNULL_BEGIN
         if ([phoneNumberField.value isKindOfClass:[CNPhoneNumber class]]) {
             CNPhoneNumber *phoneNumber = (CNPhoneNumber *)phoneNumberField.value;
             [phoneNumbers addObject:phoneNumber.stringValue];
-            if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
-                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeMobile);
+            if ([phoneNumberField.label isEqualToString:CNLabelHome]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeHome);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelWork]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeWork);
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberiPhone]) {
                 phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeIPhone);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeMobile);
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMain]) {
                 phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeMain);
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberHomeFax]) {
@@ -86,7 +90,13 @@ NS_ASSUME_NONNULL_BEGIN
                 phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeOtherFAX);
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberPager]) {
                 phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypePager);
+            } else if ([phoneNumberField.label isEqualToString:CNLabelOther]) {
+                phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeOther);
             } else {
+                // TODO this should only be hit if the user has a custom label, which ideally we'd expose rather than
+                // unknown. I think the thing to do is to get rid of OWSPhoneNumberType*, and simply localize the label
+                // in this method - uising the custom label when available.
+                // Maybe that means adding a "label" to PhoneNumber class and parsing the numbers in this class.
                 phoneNumberTypeMap[phoneNumber.stringValue] = @(OWSPhoneNumberTypeUnknown);
             }
         }
