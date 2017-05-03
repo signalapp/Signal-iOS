@@ -133,8 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.isPaused = YES;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    double current = [self.audioPlayer currentTime] / [self.audioPlayer duration];
-    [self.delegate setAudioProgressFromFloat:(float)current];
+    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
     [self.delegate setAudioIconToPlay];
 }
 
@@ -144,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    [self.delegate setAudioProgressFromFloat:0];
+    [self.delegate setAudioProgress:0 duration:0];
     [self.delegate setAudioIconToPlay];
     self.delegate.isAudioPlaying = NO;
     self.delegate.isPaused = NO;
@@ -170,8 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.audioPlayer);
     OWSAssert(self.audioPlayerPoller);
 
-    double current = [self.audioPlayer currentTime] / [self.audioPlayer duration];
-    [self.delegate setAudioProgressFromFloat:(float)current];
+    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag

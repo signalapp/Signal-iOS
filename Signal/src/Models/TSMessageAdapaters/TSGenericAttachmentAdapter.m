@@ -78,17 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bubbleHeight
 {
-    return 45.f;
+    return 35.f;
 }
 
 - (CGFloat)iconSize
 {
     return 40.f;
-}
-
-- (CGFloat)hMargin
-{
-    return 10.f;
 }
 
 - (CGFloat)vMargin
@@ -100,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (_cachedMediaView == nil) {
         CGSize viewSize = [self mediaViewDisplaySize];
-        UIColor *textColor = (self.incoming ? [UIColor blackColor] : [UIColor whiteColor]);
+        UIColor *textColor = (self.incoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
 
         _cachedMediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
 
@@ -112,8 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
         const CGFloat kBubbleTailWidth = 6.f;
         CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
             self.vMargin,
-            viewSize.width - kBubbleTailWidth - 10,
-            viewSize.height - self.vMargin * 2.f);
+            viewSize.width - kBubbleTailWidth - (self.incoming ? 10 : 15),
+            viewSize.height - self.vMargin * 2);
 
         UIImage *image = [UIImage imageNamed:(self.incoming ? @"file-black-40" : @"file-white-40")];
         OWSAssert(image);
@@ -125,7 +120,10 @@ NS_ASSUME_NONNULL_BEGIN
         imageView.frame = iconFrame;
         [_cachedMediaView addSubview:imageView];
 
-        NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
+        NSString *fileExtension = self.attachment.filePath.pathExtension;
+        if (fileExtension.length < 1) {
+            [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
+        }
         if (fileExtension.length < 1) {
             fileExtension = NSLocalizedString(@"GENERIC_ATTACHMENT_DEFAULT_TYPE",
                 @"A default label for attachment whose file extension cannot be determined.");
@@ -164,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
         topLabel.text = topText;
         topLabel.textColor = textColor;
         topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        topLabel.font = [UIFont ows_mediumFontWithSize:15.f];
+        topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
         [topLabel sizeToFit];
         [_cachedMediaView addSubview:topLabel];
 
@@ -177,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
         bottomLabel.text = bottomText;
         bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        bottomLabel.font = [UIFont ows_regularFontWithSize:13.f];
+        bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
         [bottomLabel sizeToFit];
         [_cachedMediaView addSubview:bottomLabel];
 
