@@ -7,20 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
-    OWSPhoneNumberTypeUnknown,
-    OWSPhoneNumberTypeMobile,
-    OWSPhoneNumberTypeIPhone,
-    OWSPhoneNumberTypeMain,
-    OWSPhoneNumberTypeHomeFAX,
-    OWSPhoneNumberTypeWorkFAX,
-    OWSPhoneNumberTypeOtherFAX,
-    OWSPhoneNumberTypePager,
-    OWSPhoneNumberTypeHome,
-    OWSPhoneNumberTypeWork,
-    OWSPhoneNumberTypeOther
-};
-
 /**
  *
  * Contact represents relevant information related to a contact from the user's
@@ -61,13 +47,12 @@ typedef NS_ENUM(NSUInteger, OWSPhoneNumberType) {
 - (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
                                  andLastName:(nullable NSString *)lastName
                      andUserTextPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                          phoneNumberTypeMap:(nullable NSDictionary<NSString *, NSNumber *> *)phoneNumberTypeMap
                                     andImage:(nullable UIImage *)image
                                 andContactID:(ABRecordID)record;
 
 - (instancetype)initWithSystemContact:(CNContact *)contact;
 
-- (OWSPhoneNumberType)phoneNumberTypeForPhoneNumber:(NSString *)recipientId;
+- (NSString *)nameForPhoneNumber:(NSString *)recipientId;
 
 #endif // TARGET_OS_IOS
 
