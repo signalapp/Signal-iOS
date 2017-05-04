@@ -1,8 +1,8 @@
 /* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "امنح الوصول";
+"AB_PERMISSION_MISSING_ACTION" = "امنح الصلاحيات";
 
 /* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "يحتاج Signal للوصول إلى جهات الاتصال الخاصة بك. لن يتم تخزين جهات الاتصال الخاصة بك على خوادمنا.";
+"AB_PERMISSION_MISSING_BODY" = " تطبيق Signal  يتطلب للوصول إلى جهات الاتصال الخاصة بك. لن يتم تخزين جهات الاتصال الخاصة بك على خوادمنا.";
 
 /* Alert title when contacts disabled */
 "AB_PERMISSION_MISSING_TITLE" = "عذرًا!";
@@ -98,7 +98,7 @@
 "ATTACHMENT_HINT" = "اختر أو إلتقط صورة ثمّ أرسلها";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "مرفقة";
+"ATTACHMENT_LABEL" = "المرفق";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
@@ -236,7 +236,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "رقم غير مسجّل";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "لا يوجد عنوان إيميل.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "لا يوجد عنوان بريد إلكتروني.";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "لا يوجد رقم هاتف.";
@@ -281,7 +281,7 @@
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "اختيار رمز الدولة";
+"COUNTRYCODE_SELECT_TITLE" = "اختر رمز الدولة";
 
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "Create new group";

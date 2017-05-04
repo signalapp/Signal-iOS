@@ -217,11 +217,11 @@ extension CallUIAdaptee {
         call?.addObserverAndSyncState(observer: audioService)
     }
 
-    internal func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+    internal func didUpdateVideoTracks(call: SignalCall?,
+                                       localVideoTrack: RTCVideoTrack?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 
-        // Do nothing.
+        audioService.didUpdateVideoTracks(call:call)
     }
-
 }

@@ -98,15 +98,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                 : [UIColor lightGrayColor]),
                                                               }]];
         }
-        [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:[[DisplayableTextFilter new] displayableText:thread.lastMessageLabel]
-                                                                            attributes:@{
-                                                                                         NSFontAttributeName : (thread.hasUnreadMessages
-                                                                                                                ? [UIFont ows_mediumFontWithSize:12]
-                                                                                                                : [UIFont ows_regularFontWithSize:12]),
-                                                                                         NSForegroundColorAttributeName : (thread.hasUnreadMessages
-                                                                                                                           ? [UIColor ows_blackColor]
-                                                                                                                           : [UIColor lightGrayColor]),
-                                                                                         }]];
+        NSString *displayableText = [[DisplayableTextFilter new] displayableText:thread.lastMessageLabel];
+        if (displayableText) {
+            [snippetText appendAttributedString:[[NSAttributedString alloc]
+                                                    initWithString:displayableText
+                                                        attributes:@{
+                                                            NSFontAttributeName : (thread.hasUnreadMessages
+                                                                    ? [UIFont ows_mediumFontWithSize:12]
+                                                                    : [UIFont ows_regularFontWithSize:12]),
+                                                            NSForegroundColorAttributeName :
+                                                                (thread.hasUnreadMessages ? [UIColor ows_blackColor]
+                                                                                          : [UIColor lightGrayColor]),
+                                                        }]];
+        }
     }
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];

@@ -91,7 +91,8 @@ protocol CallServiceObserver: class {
     /**
      * Fired whenever the local or remote video track become active or inactive.
      */
-    func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+    func didUpdateVideoTracks(call: SignalCall?,
+                              localVideoTrack: RTCVideoTrack?,
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
@@ -901,13 +902,6 @@ protocol CallServiceObserver: class {
     func setIsMuted(isMuted: Bool) {
         AssertIsOnMainThread()
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
-            return
-        }
-
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
@@ -916,6 +910,12 @@ protocol CallServiceObserver: class {
         }
 
         call.isMuted = isMuted
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
         peerConnectionClient.setAudioEnabled(enabled: !isMuted)
     }
 
@@ -957,13 +957,6 @@ protocol CallServiceObserver: class {
             return
         }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
-            return
-        }
-
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
@@ -972,6 +965,12 @@ protocol CallServiceObserver: class {
         }
 
         call.hasLocalVideo = hasLocalVideo
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
@@ -1296,9 +1295,11 @@ protocol CallServiceObserver: class {
         observers.append(Weak(value: observer))
 
         // Synchronize observer with current call state
+        let call = self.call
         let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-        observer.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+        observer.didUpdateVideoTracks(call:call,
+                                      localVideoTrack:localVideoTrack,
                                       remoteVideoTrack:remoteVideoTrack)
     }
 
@@ -1321,11 +1322,13 @@ protocol CallServiceObserver: class {
     private func fireDidUpdateVideoTracks() {
         AssertIsOnMainThread()
 
+        let call = self.call
         let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
 
         for observer in observers {
-            observer.value?.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+            observer.value?.didUpdateVideoTracks(call:call,
+                                                 localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
     }
