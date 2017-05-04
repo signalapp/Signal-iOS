@@ -110,6 +110,20 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
+{
+    OWSAssert(0);
+
+    return NO;
+}
+
+- (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
+{
+    OWSAssert(0);
+
+    return nil;
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag

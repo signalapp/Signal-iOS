@@ -256,10 +256,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (IBAction)composeNew:(id)sender
+- (IBAction)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
-    [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
 }
 
 - (void)swappedSegmentedControl {

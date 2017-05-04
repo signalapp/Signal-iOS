@@ -444,7 +444,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
     if ([TSAccountManager isRegistered]) {
-        [[Environment getCurrent].signalsViewController composeNew:nil];
+        [[Environment getCurrent].signalsViewController composeNew];
         completionHandler(YES);
     } else {
         UIAlertController *controller =

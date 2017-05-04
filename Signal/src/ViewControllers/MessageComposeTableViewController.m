@@ -59,6 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsViewHelper.delegate = self;
     _nonContactAccountSet = [NSMutableSet set];
 
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(dismissPressed)];
     UIImage *newGroupImage = [UIImage imageNamed:@"btnGroup--white"];
     OWSAssert(newGroupImage);
     UIBarButtonItem *newGroupButton = [[UIBarButtonItem alloc] initWithImage:newGroupImage
@@ -211,10 +215,9 @@ NS_ASSUME_NONNULL_BEGIN
     __weak MessageComposeTableViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    // Group Members
-
     OWSTableSection *section = [OWSTableSection new];
 
+    // Find Non-Contacts by Phone Number
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = NSLocalizedString(
@@ -232,7 +235,22 @@ NS_ASSUME_NONNULL_BEGIN
                              [weakSelf.navigationController pushViewController:viewController animated:YES];
                          }]];
 
-    // If the search string looks like a phone number, show either "new conversation..." cells or
+    // Invite Contacts
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+            @"Label for the cell that presents the 'invite contacts' workflow.");
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        return cell;
+    }
+                         customRowHeight:[ContactTableViewCell rowHeight]
+                         actionBlock:^{
+                             [weakSelf presentInviteFlow];
+                         }]];
+
+    // If the search string looks like a phone number, show either "new conversation..." cells and/or
     // "invite via SMS..." cells.
     NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
     for (NSString *phoneNumber in searchPhoneNumbers) {
@@ -280,9 +298,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // Show the actual contacts, possibly filtered with the search text.
+    // Contacts, possibly filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
-
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             MessageComposeTableViewController *strongSelf = weakSelf;
@@ -313,20 +330,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                @"Label for the cell that presents the 'invite contacts' workflow.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            return cell;
-        }
-                             customRowHeight:[ContactTableViewCell rowHeight]
-                             actionBlock:^{
-                                 [weakSelf presentInviteFlow];
-                             }]];
-
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
             cell.textLabel.text = NSLocalizedString(
                 @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
             cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
@@ -335,10 +338,13 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
+                                               customRowHeight:[ContactTableViewCell rowHeight]
                                                    actionBlock:nil]];
     }
 
     if (hasSearchText && filteredSignalAccounts.count < 1) {
+        // No Search Results
+
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
             cell.textLabel.text = NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
@@ -349,6 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
+                                               customRowHeight:[ContactTableViewCell rowHeight]
                                                    actionBlock:nil]];
     }
 
@@ -513,6 +520,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Methods
+
+- (void)dismissPressed
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 - (void)newConversationWith:(NSString *)recipientId
 {
