@@ -713,7 +713,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
-            DDLogInfo(@"Marking group message as sent to recipient: %@", recipient.uniqueId);
+            DDLogInfo(@"%@ Marking group message as sent to recipient: %@", self.tag, recipient.uniqueId);
             [message updateWithSentRecipient:recipient.uniqueId];
             [futureSource trySetResult:@1];
         }
@@ -741,7 +741,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([message wasSentToRecipient:recipient.uniqueId]) {
             // Skip recipients we have already sent this message to (on an
             // earlier retry, perhaps).
-            DDLogInfo(@"Skipping group message recipient; already sent: %@", recipient.uniqueId);
+            DDLogInfo(@"%@ Skipping group message recipient; already sent: %@", self.tag, recipient.uniqueId);
             continue;
         }
 
@@ -930,7 +930,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogDebug(@"%@ failure sending to service: %@", self.tag, message.debugDescription);
+            DDLogInfo(@"%@ sending to recipient: %@, failed with error: %@",
+                self.tag,
+                recipient.uniqueId,
+                message.debugDescription);
             [DDLog flushLog];
 
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -965,6 +968,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     return failureHandler(error);
                 }
                 case 404: {
+                    DDLogWarn(@"%@ Unregistered recipient: %@", self.tag, recipient.uniqueId);
+
                     [self unregisteredRecipient:recipient message:message thread:thread];
                     NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
                     // No need to retry if the recipient is not registered.
@@ -977,7 +982,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
                 case 409: {
                     // Mismatched devices
-                    DDLogWarn(@"%@ Mismatch Devices.", self.tag);
+                    DDLogWarn(@"%@ Mismatch Devices for recipient: %@", self.tag, recipient.uniqueId);
 
                     NSError *error;
                     NSDictionary *serializedResponse =
@@ -993,7 +998,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
                 case 410: {
                     // Stale devices
-                    DDLogWarn(@"Stale devices");
+                    DDLogWarn(@"%@ Stale devices for recipient: %@", self.tag, recipient.uniqueId);
 
                     if (!responseData) {
                         DDLogWarn(@"Stale devices but server didn't specify devices in response.");
@@ -1022,7 +1027,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        if (extraDevices.count < 1 && missingDevices.count < 1) {
+            DDLogError(@"%@ No missing or extra devices in %s", self.tag, __PRETTY_FUNCTION__);
+            OWSAssert(NO);
+        }
+
         if (extraDevices && extraDevices.count > 0) {
+            DDLogInfo(@"%@ removing extra devices: %@", self.tag, extraDevices);
             for (NSNumber *extraDeviceId in extraDevices) {
                 [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
             }
@@ -1031,6 +1042,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         if (missingDevices && missingDevices.count > 0) {
+            DDLogInfo(@"%@ Adding missing devices: %@", self.tag, missingDevices);
             [recipient addDevices:[NSSet setWithArray:missingDevices]];
         }
 
