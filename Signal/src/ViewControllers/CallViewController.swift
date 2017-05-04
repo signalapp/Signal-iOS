@@ -868,10 +868,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         self.localVideoTrack = localVideoTrack
 
-        var source: RTCAVFoundationVideoSource?
-        if localVideoTrack?.source is RTCAVFoundationVideoSource {
-            source = localVideoTrack?.source as! RTCAVFoundationVideoSource
-        }
+        let source = localVideoTrack?.source as? RTCAVFoundationVideoSource
+
         localVideoView.captureSession = source?.captureSession
         let isHidden = source == nil
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
