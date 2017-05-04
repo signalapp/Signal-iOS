@@ -308,7 +308,7 @@ import AVFoundation
                 Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
             }
         } catch {
-            let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(mode), options: \(options) with error: \(error)"
+            let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
             assertionFailure(message)
             Logger.error(message)
         }
