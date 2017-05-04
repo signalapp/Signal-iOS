@@ -198,59 +198,20 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     }
 
     // 1. Find the phone number type of this account.
-    OWSPhoneNumberType phoneNumberType = [contact phoneNumberTypeForPhoneNumber:recipientId];
-
-    NSString *phoneNumberLabel;
-    switch (phoneNumberType) {
-        case OWSPhoneNumberTypeMobile:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MOBILE", @"Label for 'Mobile' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeIPhone:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'IPhone' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeMain:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_MAIN", @"Label for 'Main' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeHomeFAX:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME_FAX", @"Label for 'HomeFAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeWorkFAX:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK_FAX", @"Label for 'Work FAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeOtherFAX:
-            phoneNumberLabel
-                = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER_FAX", @"Label for 'Other FAX' phone numbers.");
-            break;
-        case OWSPhoneNumberTypePager:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_PAGER", @"Label for 'Pager' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeUnknown:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
-                @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
-            break;
-        case OWSPhoneNumberTypeHome:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_HOME", @"Label for 'Home' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeWork:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK", @"Label for 'Work' phone numbers.");
-            break;
-        case OWSPhoneNumberTypeOther:
-            phoneNumberLabel = NSLocalizedString(@"PHONE_NUMBER_TYPE_OTHER", @"Label for 'Other' phone numbers.");
-            break;
-    }
+    NSString *phoneNumberLabel = [contact nameForPhoneNumber:recipientId];
 
     // 2. Find all phone numbers for this contact of the same type.
-    NSMutableArray *phoneNumbersOfTheSameType = [NSMutableArray new];
+    NSMutableArray *phoneNumbersWithTheSameName = [NSMutableArray new];
     for (NSString *textSecureIdentifier in contact.textSecureIdentifiers) {
-        if (phoneNumberType == [contact phoneNumberTypeForPhoneNumber:textSecureIdentifier]) {
-            [phoneNumbersOfTheSameType addObject:textSecureIdentifier];
+        if ([phoneNumberLabel isEqualToString:[contact nameForPhoneNumber:textSecureIdentifier]]) {
+            [phoneNumbersWithTheSameName addObject:textSecureIdentifier];
         }
     }
 
-    OWSAssert([phoneNumbersOfTheSameType containsObject:recipientId]);
-    if (phoneNumbersOfTheSameType.count > 1) {
+    OWSAssert([phoneNumbersWithTheSameName containsObject:recipientId]);
+    if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
-            [[phoneNumbersOfTheSameType sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
         phoneNumberLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "
@@ -415,7 +376,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
         return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
                                                  andLastName:nil
                                      andUserTextPhoneNumbers:@[ identifier ]
-                                          phoneNumberTypeMap:nil
                                                     andImage:nil
                                                 andContactID:0];
     }

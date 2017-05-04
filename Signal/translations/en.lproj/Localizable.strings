@@ -421,6 +421,9 @@
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
 
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS";
+
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
 
@@ -574,7 +577,8 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
-/* Label for the cell that presents the 'invite contacts' workflow. */
+/* Label for the cell that presents the 'invite contacts' workflow.
+   Text for button at the top of the contact picker */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
 
 /* Search */
@@ -657,9 +661,6 @@
 
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading…";
-
-/* A label for audio attachments of unknown type. */
-"MESSAGES_VIEW_AUDIO_TYPE_GENERIC" = "Audio";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
@@ -830,7 +831,7 @@
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ (%d)";
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Home";
@@ -855,6 +856,9 @@
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
+
+/* Label for 'Radio' phone numbers. */
+"PHONE_NUMBER_TYPE_RADIO" = "Radio";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
