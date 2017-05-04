@@ -282,13 +282,6 @@ protocol CallServiceObserver: class {
         callRecord.save()
         call.callRecord = callRecord
 
-        guard self.peerConnectionClient == nil else {
-            let errorDescription = "\(TAG) peerconnection was unexpectedly already set."
-            Logger.error(errorDescription)
-            call.state = .localFailure
-            return Promise(error: CallError.assertionError(description: errorDescription))
-        }
-
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
@@ -296,11 +289,15 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
+            guard self.peerConnectionClient == nil else {
+                let errorDescription = "\(self.TAG) peerconnection was unexpectedly already set."
+                Logger.error(errorDescription)
+                throw CallError.assertionError(description: errorDescription)
+            }
+
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
-
-            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = peerConnectionClient
 
