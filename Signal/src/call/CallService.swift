@@ -911,7 +911,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        if call.state == .connected {
+            peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        }
     }
 
     /**
@@ -966,7 +968,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+        if call.state == .connected {
+            peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+        }
     }
 
     func handleCallKitStartVideo() {
