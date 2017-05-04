@@ -196,7 +196,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
  *
  * This method is intended to be somewhat expensive to produce in order to be brute force adverse.
  *
- * @param stableId
+ * @param stableIdData
  *      Immutable global identifier e.g. Signal Identifier, an e164 formatted phone number encoded as UTF-8 data
  * @param publicKey
  *      The current public key for <stableId>

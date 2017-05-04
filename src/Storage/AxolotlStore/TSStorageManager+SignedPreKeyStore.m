@@ -153,7 +153,7 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
         DDLogInfo(@"%@ SignedPreKeys Report:", tag);
         DDLogInfo(@"%@   currentId: %@", tag, currentId);
         DDLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
-        DDLogInfo(@"%@   prekeyUpdateFailureCount: %d", tag, prekeyUpdateFailureCount);
+        DDLogInfo(@"%@   prekeyUpdateFailureCount: %lu", tag, (unsigned long)prekeyUpdateFailureCount);
 
         NSUInteger count = [transaction numberOfKeysInCollection:TSStorageManagerSignedPreKeyStoreCollection];
         DDLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
