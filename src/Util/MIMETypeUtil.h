@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString *const OWSMimeTypeApplicationOctetStream;
 extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
@@ -19,10 +21,10 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (BOOL)isSupportedImageFile:(NSString *)filePath;
 + (BOOL)isSupportedAnimatedFile:(NSString *)filePath;
 
-+ (NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType;
-+ (NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType;
-+ (NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType;
-+ (NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType;
++ (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType;
++ (nullable NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType;
++ (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType;
++ (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType;
 
 + (BOOL)isAnimated:(NSString *)contentType;
 + (BOOL)isImage:(NSString *)contentType;
@@ -30,12 +32,10 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (BOOL)isAudio:(NSString *)contentType;
 
 // filename is optional and should not be trusted.
-+ (NSString *)filePathForAttachment:(NSString *)uniqueId
-                         ofMIMEType:(NSString *)contentType
-                           filename:(nullable NSString *)filename
-                           inFolder:(NSString *)folder;
-
-+ (NSURL *)simLinkCorrectExtensionOfFile:(NSURL *)mediaURL ofMIMEType:(NSString *)contentType;
++ (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
+                                  ofMIMEType:(NSString *)contentType
+                                    filename:(nullable NSString *)filename
+                                    inFolder:(NSString *)folder;
 
 + (NSSet<NSString *> *)supportedVideoUTITypes;
 + (NSSet<NSString *> *)supportedAudioUTITypes;
@@ -48,3 +48,5 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
 
 @end
+
+NS_ASSUME_NONNULL_END
