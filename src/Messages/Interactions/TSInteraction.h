@@ -4,6 +4,8 @@
 
 #import "TSYapDatabaseObject.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSThread;
 
 @interface TSInteraction : TSYapDatabaseObject
@@ -34,3 +36,5 @@
 - (nullable NSDate *)receiptDateForSorting;
 
 @end
+
+NS_ASSUME_NONNULL_END

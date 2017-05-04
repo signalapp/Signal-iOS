@@ -7,6 +7,8 @@
 #import "TSStorageManager+messageIDs.h"
 #import "TSThread.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSInteraction
 
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
@@ -108,3 +110,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
