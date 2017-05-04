@@ -84,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
+    _tableViewController.tableViewStyle = UITableViewStylePlain;
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -258,11 +259,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         if ([self.nonContactAccountSet containsObject:phoneNumber]) {
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                MessageComposeTableViewController *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return (ContactTableViewCell *)nil;
-                }
-
                 ContactTableViewCell *cell = [ContactTableViewCell new];
                 BOOL isBlocked = [helper isRecipientIdBlocked:phoneNumber];
                 if (isBlocked) {
@@ -302,11 +298,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            MessageComposeTableViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return (ContactTableViewCell *)nil;
-            }
-
             ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
             if (isBlocked) {
