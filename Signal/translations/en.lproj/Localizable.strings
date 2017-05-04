@@ -1,8 +1,5 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "Give access";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal requires access to your contacts. We do not store your contacts on our servers.";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
 /* Alert title when contacts disabled */
 "AB_PERMISSION_MISSING_TITLE" = "Sorry!";
@@ -27,9 +24,6 @@
 
 /* Alert body when contacts disabled */
 "ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal requires access to your contacts. Access to contacts is restricted. Signal will close. You can disable the restriction temporarily to let Signal access your contacts by going the Settings app >> General >> Restrictions >> Contacts >> Allow Changes.";
-
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Close";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Discard";
@@ -330,6 +324,12 @@
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edit Group";
@@ -927,12 +927,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Country Code Error";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal allows you to have private conversations with your existing contacts. To use Signal, please allow access to your contacts.";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "Continue";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Welcome!";

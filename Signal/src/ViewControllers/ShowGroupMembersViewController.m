@@ -11,6 +11,7 @@
 #import "SignalAccount.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
+#import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSGroupModel.h>
@@ -250,7 +251,39 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
 
+    if (!helper.contactsManager.isSystemContactsAuthorized) {
+        UIAlertController *alertController = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+                                                       : @"Alert title for when the user has just tried to edit a "
+                                                         @"contacts after declining to give Signal contacts "
+                                                         @"permissions")
+                             message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+                                                       : @"Alert body for when the user has just tried to edit a "
+                                                         @"contacts after declining to give Signal contacts "
+                                                         @"permissions")
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+        [alertController
+            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                         @"Button text to dismiss missing contacts permission alert")
+                                               style:UIAlertActionStyleCancel
+                                             handler:nil]];
+
+        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
+                                                                      @"Button text which opens the settings app")
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              NSURL *settingsUrl = [NSURL
+                                                                  URLWithString:UIApplicationOpenSettingsURLString];
+                                                              [[UIApplication sharedApplication] openURL:settingsUrl];
+                                                          }]];
+
+        [self presentViewController:alertController animated:YES completion:nil];
+        return;
+    }
+
     if (signalAccount) {
+        // FIXME This is broken until converted to Contacts framework.
         ABPersonViewController *view = [[ABPersonViewController alloc] init];
 
         ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
@@ -261,6 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.navigationController pushViewController:view animated:YES];
     } else {
+        // FIXME This is broken until converted to Contacts framework.
         ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
 
         ABRecordRef aContact = ABPersonCreate();

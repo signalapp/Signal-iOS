@@ -4,21 +4,19 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
+#import "Signal-Swift.h"
 #import "SignalAccount.h"
 #import "Util.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 
-#define ADDRESSBOOK_QUEUE dispatch_get_main_queue()
-
-typedef BOOL (^ContactSearchBlock)(id, NSUInteger, BOOL *);
+@import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     @"OWSContactsManagerSignalAccountsDidChangeNotification";
 
-@interface OWSContactsManager ()
+@interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
-@property (atomic, nullable) CNContactStore *contactStore;
 @property (atomic) id addressBookReference;
 @property (atomic) TOCFuture *futureAddressBook;
 @property (nonatomic) BOOL isContactsUpdateInFlight;
@@ -28,7 +26,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
-
+@property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @end
 
 @implementation OWSContactsManager
@@ -43,88 +41,41 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     _allContacts = @[];
     _signalAccountMap = @{};
     _signalAccounts = @[];
+    _systemContactsFetcher = [SystemContactsFetcher new];
+    _systemContactsFetcher.delegate = self;
 
     OWSSingletonAssert();
 
     return self;
 }
 
-- (void)doAfterEnvironmentInitSetup {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0) &&
-        !self.contactStore) {
-        OWSAssert(!self.contactStore);
-        self.contactStore = [[CNContactStore alloc] init];
-        [self.contactStore requestAccessForEntityType:CNEntityTypeContacts
-                                    completionHandler:^(BOOL granted, NSError *_Nullable error) {
-                                      if (!granted) {
-                                          // We're still using the old addressbook API.
-                                          // User warned if permission not granted in that setup.
-                                      }
-                                    }];
-    }
+#pragma mark - System Contact Fetching
 
-    [self setupAddressBookIfNecessary];
-}
-
-- (void)verifyABPermission {
-    [self setupAddressBookIfNecessary];
-}
-
-#pragma mark - Address Book callbacks
-
-void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context);
-void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef info, void *context) {
-    OWSContactsManager *contactsManager = (__bridge OWSContactsManager *)context;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [contactsManager handleAddressBookChanged];
-    });
-}
-
-- (void)handleAddressBookChanged
+// Request contacts access if you haven't asked recently.
+- (void)requestSystemContactsOnce
 {
-    [self pullLatestAddressBook];
+    [self.systemContactsFetcher requestOnce];
 }
 
-#pragma mark - Setup
-
-- (void)setupAddressBookIfNecessary
+- (void)fetchSystemContactsIfAlreadyAuthorized
 {
-    dispatch_async(ADDRESSBOOK_QUEUE, ^{
-        // De-bounce address book setup.
-        if (self.isContactsUpdateInFlight) {
-            return;
-        }
-        // We only need to set up our address book once;
-        // after that we only need to respond to onAddressBookChanged.
-        if (self.addressBookReference) {
-            return;
-        }
-        self.isContactsUpdateInFlight = YES;
-
-        TOCFuture *future = [OWSContactsManager asyncGetAddressBook];
-        [future thenDo:^(id addressBook) {
-            // Success.
-            OWSAssert(self.isContactsUpdateInFlight);
-            OWSAssert(!self.addressBookReference);
-
-            self.addressBookReference = addressBook;
-            self.isContactsUpdateInFlight = NO;
-
-            ABAddressBookRef cfAddressBook = (__bridge ABAddressBookRef)addressBook;
-            ABAddressBookRegisterExternalChangeCallback(cfAddressBook, onAddressBookChanged, (__bridge void *)self);
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self handleAddressBookChanged];
-            });
-        }];
-        [future catchDo:^(id failure) {
-            // Failure.
-            OWSAssert(self.isContactsUpdateInFlight);
-            OWSAssert(!self.addressBookReference);
-
-            self.isContactsUpdateInFlight = NO;
-        }];
-    });
+    [self.systemContactsFetcher fetchIfAlreadyAuthorized];
 }
+
+- (BOOL)isSystemContactsAuthorized
+{
+    return self.systemContactsFetcher.isAuthorized;
+}
+
+#pragma mark SystemContactsFetcherDelegate
+
+- (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
+              updatedContacts:(NSArray<Contact *> *)contacts
+{
+    [self updateWithContacts:contacts];
+}
+
+#pragma mark - Intersection
 
 - (void)intersectContacts
 {
@@ -157,21 +108,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
                                                                            success:success
                                                                            failure:failure];
-}
-
-- (void)pullLatestAddressBook {
-    dispatch_async(ADDRESSBOOK_QUEUE, ^{
-        CFErrorRef creationError = nil;
-        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
-        checkOperationDescribe(nil == creationError, [((__bridge NSError *)creationError)localizedDescription]);
-        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-            if (!granted) {
-                [OWSContactsManager blockingContactDialog];
-            }
-        });
-        NSArray<Contact *> *contacts = [self getContactsFromAddressBook:addressBookRef];
-        [self updateWithContacts:contacts];
-    });
 }
 
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts
@@ -249,6 +185,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     });
 }
 
+#pragma mark - View Helpers
+// TODO move into Contact class.
 + (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
 {
     OWSAssert(contact);
@@ -324,205 +262,8 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return phoneNumberLabel;
 }
 
-+ (void)blockingContactDialog {
-    switch (ABAddressBookGetAuthorizationStatus()) {
-        case kABAuthorizationStatusRestricted: {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_TITLE", nil)
-                                                    message:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BODY", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
-
-            [controller
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [DDLog flushLog];
-                                                     exit(0);
-                                                 }]];
-
-            [[UIApplication sharedApplication]
-                    .keyWindow.rootViewController presentViewController:controller
-                                                               animated:YES
-                                                             completion:nil];
-
-            break;
-        }
-        case kABAuthorizationStatusDenied: {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_TITLE", nil)
-                                                    message:NSLocalizedString(@"AB_PERMISSION_MISSING_BODY", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
-
-            [controller addAction:[UIAlertAction
-                                      actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION", nil)
-                                                style:UIAlertActionStyleDefault
-                                              handler:^(UIAlertAction *action) {
-                                                [[UIApplication sharedApplication]
-                                                    openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-                                              }]];
-
-            [[[UIApplication sharedApplication] keyWindow]
-                    .rootViewController presentViewController:controller
-                                                     animated:YES
-                                                   completion:nil];
-            break;
-        }
-
-        case kABAuthorizationStatusNotDetermined: {
-            DDLogInfo(@"AddressBook access not granted but status undetermined.");
-            [[Environment getCurrent].contactsManager pullLatestAddressBook];
-            break;
-        }
-
-        case kABAuthorizationStatusAuthorized: {
-            DDLogInfo(@"AddressBook access not granted but status authorized.");
-            break;
-        }
-
-        default:
-            break;
-    }
-}
-
-#pragma mark - Address Book utils
-
-+ (TOCFuture *)asyncGetAddressBook {
-    CFErrorRef creationError        = nil;
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, &creationError);
-    assert((addressBookRef == nil) == (creationError != nil));
-    if (creationError != nil) {
-        [self blockingContactDialog];
-        return [TOCFuture futureWithFailure:(__bridge_transfer id)creationError];
-    }
-
-    TOCFutureSource *futureAddressBookSource = [TOCFutureSource new];
-
-    id addressBook = (__bridge_transfer id)addressBookRef;
-    ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef requestAccessError) {
-      if (granted && ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-          dispatch_async(ADDRESSBOOK_QUEUE, ^{
-            [futureAddressBookSource trySetResult:addressBook];
-          });
-      } else {
-          [self blockingContactDialog];
-          [futureAddressBookSource trySetFailure:(__bridge id)requestAccessError];
-      }
-    });
-
-    return futureAddressBookSource.future;
-}
-
-- (NSArray<Contact *> *)getContactsFromAddressBook:(ABAddressBookRef _Nonnull)addressBook
-{
-    CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-
-    CFMutableArrayRef allPeopleMutable =
-        CFArrayCreateMutableCopy(kCFAllocatorDefault, CFArrayGetCount(allPeople), allPeople);
-
-    CFArraySortValues(allPeopleMutable,
-                      CFRangeMake(0, CFArrayGetCount(allPeopleMutable)),
-                      (CFComparatorFunction)ABPersonComparePeopleByName,
-                      (void *)(unsigned long)ABPersonGetSortOrdering());
-
-    NSArray *sortedPeople = (__bridge_transfer NSArray *)allPeopleMutable;
-
-    // This predicate returns all contacts from the addressbook having at least one phone number
-
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id record, NSDictionary *bindings) {
-      ABMultiValueRef phoneNumbers = ABRecordCopyValue((__bridge ABRecordRef)record, kABPersonPhoneProperty);
-      BOOL result                  = NO;
-
-      for (CFIndex i = 0; i < ABMultiValueGetCount(phoneNumbers); i++) {
-          NSString *phoneNumber = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneNumbers, i);
-          if (phoneNumber.length > 0) {
-              result = YES;
-              break;
-          }
-      }
-      CFRelease(phoneNumbers);
-      return result;
-    }];
-    CFRelease(allPeople);
-    NSArray *filteredContacts = [sortedPeople filteredArrayUsingPredicate:predicate];
-
-    return [filteredContacts map:^id(id item) {
-        Contact *contact = [self contactForRecord:(__bridge ABRecordRef)item];
-        return contact;
-    }];
-}
-
-#pragma mark - Contact/Phone Number util
-
-- (Contact *)contactForRecord:(ABRecordRef)record {
-    ABRecordID recordID = ABRecordGetRecordID(record);
-
-    NSString *firstName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonFirstNameProperty);
-    NSString *lastName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonLastNameProperty);
-    NSDictionary<NSString *, NSNumber *> *phoneNumberTypeMap = [self phoneNumbersForRecord:record];
-    NSArray *phoneNumbers = [phoneNumberTypeMap.allKeys sortedArrayUsingSelector:@selector(compare:)];
-
-    if (!firstName && !lastName) {
-        NSString *companyName = (__bridge_transfer NSString *)ABRecordCopyValue(record, kABPersonOrganizationProperty);
-        if (companyName) {
-            firstName = companyName;
-        } else if (phoneNumbers.count) {
-            firstName = phoneNumbers.firstObject;
-        }
-    }
-
-    NSData *imageData
-        = (__bridge_transfer NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
-    UIImage *img = [UIImage imageWithData:imageData];
-
-    return [[Contact alloc] initWithContactWithFirstName:firstName
-                                             andLastName:lastName
-                                 andUserTextPhoneNumbers:phoneNumbers
-                                      phoneNumberTypeMap:phoneNumberTypeMap
-                                                andImage:img
-                                            andContactID:recordID];
-}
-
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2 {
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
-}
-
-- (NSDictionary<NSString *, NSNumber *> *)phoneNumbersForRecord:(ABRecordRef)record
-{
-    ABMultiValueRef phoneNumberRefs = NULL;
-
-    @try {
-        phoneNumberRefs = ABRecordCopyValue(record, kABPersonPhoneProperty);
-
-        CFIndex phoneNumberCount = ABMultiValueGetCount(phoneNumberRefs);
-        NSMutableDictionary<NSString *, NSNumber *> *result = [NSMutableDictionary new];
-        for (int i = 0; i < phoneNumberCount; i++) {
-            NSString *phoneNumberLabel = (__bridge_transfer NSString *)ABMultiValueCopyLabelAtIndex(phoneNumberRefs, i);
-            NSString *phoneNumber = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneNumberRefs, i);
-
-            if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeMobile);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeIPhone);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeMain);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneHomeFAXLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeHomeFAX);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneWorkFAXLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeWorkFAX);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhoneOtherFAXLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypeOtherFAX);
-            } else if ([phoneNumberLabel isEqualToString:(NSString *)kABPersonPhonePagerLabel]) {
-                result[phoneNumber] = @(OWSPhoneNumberTypePager);
-            } else {
-                result[phoneNumber] = @(OWSPhoneNumberTypeUnknown);
-            }
-        }
-        return [result copy];
-    } @finally {
-        if (phoneNumberRefs) {
-            CFRelease(phoneNumberRefs);
-        }
-    }
 }
 
 #pragma mark - Whisper User Management
@@ -567,6 +308,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     return displayName;
 }
 
+// TODO move into Contact class.
 - (NSString *_Nonnull)displayNameForContact:(Contact *)contact
 {
     OWSAssert(contact);
@@ -617,6 +359,7 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     }
 }
 
+// TODO move into Contact class.
 - (NSAttributedString *_Nonnull)formattedFullNameForContact:(Contact *)contact font:(UIFont *_Nonnull)font
 {
     UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
@@ -703,11 +446,6 @@ void onAddressBookChanged(ABAddressBookRef notifyAddressBook, CFDictionaryRef in
     Contact *contact = self.allContactsMap[identifier];
 
     return contact.image;
-}
-
-- (BOOL)hasAddressBook
-{
-    return (BOOL)self.addressBookReference;
 }
 
 #pragma mark - Logging

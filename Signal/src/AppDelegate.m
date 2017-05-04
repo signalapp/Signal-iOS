@@ -113,11 +113,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return YES;
     }
 
-    if ([TSAccountManager isRegistered]) {
-        [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    }
-
-
     UIStoryboard *storyboard;
     if ([TSAccountManager isRegistered]) {
         storyboard = [UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:[NSBundle mainBundle]];
@@ -171,7 +166,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-
+                
                 [AppStoreRating setupRatingLibrary];
             }];
 
@@ -405,8 +400,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                // can't verify in production env due to code
                                                // signing.
                                                [TSSocketManager requestSocketOpen];
-                                               [[Environment getCurrent].contactsManager verifyABPermission];
-                                               
+
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   [[Environment getCurrent]
+                                                           .contactsManager fetchSystemContactsIfAlreadyAuthorized];
+                                               });
+
                                                // This will fetch new messages, if we're using domain
                                                // fronting.
                                                [[PushManager sharedManager] applicationDidBecomeActive];

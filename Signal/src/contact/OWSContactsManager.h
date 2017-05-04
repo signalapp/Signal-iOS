@@ -2,12 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Contacts/Contacts.h>
-#import <Foundation/Foundation.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import "CollapsingFutures.h"
 #import "Contact.h"
+#import <SignalServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,12 +29,23 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
 
-- (void)verifyABPermission;
+#pragma mark - System Contact Fetching
+
+// Must call `requestSystemContactsOnce` before accessing this method
+@property (nonatomic, readonly) BOOL isSystemContactsAuthorized;
+
+// Request systems contacts and start syncing changes. The user will see an alert
+// if they haven't previously.
+- (void)requestSystemContactsOnce;
+
+// Ensure's the app has the latest contacts, but won't prompt the user for contact
+// access if they haven't granted it.
+- (void)fetchSystemContactsIfAlreadyAuthorized;
 
 // TODO: Remove this method.
 - (NSArray<Contact *> *)signalContacts;
 
-- (void)doAfterEnvironmentInitSetup;
+#pragma mark - Util
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForContact:(Contact *)contact;
@@ -47,8 +54,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForContact:(Contact *)contact font:(UIFont *)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-
-- (BOOL)hasAddressBook;
 
 + (NSComparator _Nonnull)contactComparator;
 

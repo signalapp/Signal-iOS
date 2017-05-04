@@ -119,9 +119,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 - (void)sendSyncContactsMessageIfPossible
 {
     AssertIsOnMainThread();
-
-    if (![self.contactsManager hasAddressBook]) {
-        // Don't bother until the contacts manager has finished setup.
+    if (self.contactsManager.signalContacts.count == 0) {
+        // Don't bother if the contacts manager has no contacts,
+        // e.g. if the contacts manager hasn't finished setup.
         return;
     }
 
