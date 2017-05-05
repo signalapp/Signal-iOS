@@ -232,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     }
-                         customRowHeight:[ContactTableViewCell rowHeight]
+                         customRowHeight:kActionCellHeight
                          actionBlock:^{
                              NewNonContactConversationViewController *viewController =
                                  [NewNonContactConversationViewController new];
@@ -250,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     }
-                         customRowHeight:[ContactTableViewCell rowHeight]
+                         customRowHeight:kActionCellHeight
                          actionBlock:^{
                              [weakSelf presentInviteFlow];
                          }]];
@@ -291,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 return cell;
             }
-                                 customRowHeight:[ContactTableViewCell rowHeight]
+                                 customRowHeight:kActionCellHeight
                                  actionBlock:^{
                                      [weakSelf sendTextToPhoneNumber:phoneNumber];
                                  }]];
@@ -347,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 return cell;
             }
-                                 customRowHeight:[ContactTableViewCell rowHeight]
+                                 customRowHeight:kActionCellHeight
                                  actionBlock:^{
                                      [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
                                  }]];
@@ -367,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-                                               customRowHeight:[ContactTableViewCell rowHeight]
+                                               customRowHeight:kActionCellHeight
                                                    actionBlock:nil]];
     }
 
@@ -384,7 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-                                               customRowHeight:[ContactTableViewCell rowHeight]
+                                               customRowHeight:kActionCellHeight
                                                    actionBlock:nil]];
     }
 
