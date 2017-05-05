@@ -115,9 +115,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (void)showContactsPermissionReminder:(BOOL)flag
+- (void)showContactsPermissionReminder:(BOOL)isVisible
 {
-    _hideContactsPermissionReminderViewConstraint.active = !flag;
+    _hideContactsPermissionReminderViewConstraint.active = !isVisible;
+}
+
+- (void)showSearchBar:(BOOL)isVisible
+{
+    if (isVisible) {
+        self.tableViewController.tableView.tableHeaderView = self.searchBar;
+    } else {
+        self.tableViewController.tableView.tableHeaderView = nil;
+    }
 }
 
 - (UIView *)createNoSignalContactsView
@@ -259,20 +268,22 @@ NS_ASSUME_NONNULL_BEGIN
                              [weakSelf.navigationController pushViewController:viewController animated:YES];
                          }]];
 
-    // Invite Contacts
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-            @"Label for the cell that presents the 'invite contacts' workflow.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
+    if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        // Invite Contacts
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                @"Label for the cell that presents the 'invite contacts' workflow.");
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            return cell;
+        }
+                             customRowHeight:kActionCellHeight
+                             actionBlock:^{
+                                 [weakSelf presentInviteFlow];
+                             }]];
     }
-                         customRowHeight:kActionCellHeight
-                         actionBlock:^{
-                             [weakSelf presentInviteFlow];
-                         }]];
 
     // If the search string looks like a phone number, show either "new conversation..." cells and/or
     // "invite via SMS..." cells.
@@ -445,10 +456,13 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
         self.isNoContactsModeActive = (hasNoContacts && ![[Environment preferences] hasDeclinedNoContactsView]);
         [self showContactsPermissionReminder:NO];
+
+        [self showSearchBar:YES];
     } else {
         // don't show "no signal contacts", show "no contact access"
         self.isNoContactsModeActive = NO;
         [self showContactsPermissionReminder:YES];
+        [self showSearchBar:NO];
     }
 }
 
