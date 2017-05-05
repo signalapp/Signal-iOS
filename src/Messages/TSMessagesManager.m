@@ -23,6 +23,7 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
+#import "OWSSyncGroupsRequestMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -478,6 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     OWSAssert([NSThread isMainThread]);
+
     if (dataMessage.hasGroup) {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -490,7 +492,28 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         if (ignoreMessage) {
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
-            DDLogInfo(@"%@ Received message from group that I left or don't know about, ignoring", self.tag);
+            DDLogInfo(@"%@ Received message from group that I left or don't know about.", self.tag);
+
+            NSString *recipientId = incomingEnvelope.source;
+
+            __block TSThread *thread;
+            [[TSStorageManager sharedManager].dbConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+                }];
+
+            NSData *groupId = dataMessage.group.id;
+            OWSAssert(groupId);
+            OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+                [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
+            [self.messageSender sendMessage:syncGroupsRequestMessage
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent Request Group Info message.", self.tag);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
+                }];
+
             return;
         }
     }
@@ -719,6 +742,34 @@ NS_ASSUME_NONNULL_BEGIN
     [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
+- (void)sendGroupUpdateForThread:(TSGroupThread *)gThread message:(TSOutgoingMessage *)message
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(gThread);
+    OWSAssert(message);
+
+    if (gThread.groupModel.groupImage) {
+        [self.messageSender sendAttachmentData:UIImagePNGRepresentation(gThread.groupModel.groupImage)
+            contentType:OWSMimeTypeImagePng
+            filename:nil
+            inMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
+            }];
+    } else {
+        [self.messageSender sendMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update", self.tag);
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
+            }];
+    }
+}
+
 - (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -737,6 +788,30 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if (groupId) {
+          if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
+              DDLogInfo(@"Received 'Request Group Info' message for group: %@", groupId);
+
+              TSGroupModel *emptyModelToFillOutId =
+                  [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:dataMessage.group.id];
+              TSGroupThread *gThread =
+                  [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+              if (gThread) {
+                  NSString *updateGroupInfo = [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel
+                                                                             contactsManager:self.contactsManager];
+                  TSOutgoingMessage *message =
+                      [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                          inThread:gThread
+                                                  groupMetaMessage:TSGroupMessageUpdate];
+                  [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
+
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                      [self sendGroupUpdateForThread:gThread message:message];
+                  });
+              }
+
+              return;
+          }
+
           NSMutableArray *uniqueMemberIds = [[[NSSet setWithArray:dataMessage.group.members] allObjects] mutableCopy];
           TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                           memberIds:uniqueMemberIds
