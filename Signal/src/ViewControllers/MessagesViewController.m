@@ -12,6 +12,7 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NSTimer+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
@@ -96,19 +97,321 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
 
+- (void)didStartVoiceMemo;
+
+- (void)didEndVoiceMemo;
+
+- (void)didCancelVoiceMemo;
+
 @end
 
 #pragma mark -
 
-@interface OWSMessagesComposerTextView ()
+@interface OWSMessagesComposerTextView () <UITextViewDelegate>
 
 @property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
+
+@property (nonatomic) BOOL shouldShowVoiceMemoButton;
+
+@property (nonatomic) UIView *voiceMemoButton;
+
+// This view serves as its own delegate but also needs to forward delegate events
+// to JSQ.
+@property (weak, nonatomic) id<UITextViewDelegate> jsqDelegate;
+
+@property (nonatomic) BOOL isRecordingVoiceMemo;
 
 @end
 
 #pragma mark -
 
 @implementation OWSMessagesComposerTextView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    [self commonInit];
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    [self commonInit];
+
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (!self) {
+        return self;
+    }
+
+    [self commonInit];
+
+    return self;
+}
+
+- (void)commonInit
+{
+    self.delegate = self;
+    [self ensureShouldShowVoiceMemoButton];
+}
+
+- (void)setDelegate:(id<UITextViewDelegate>)delegate
+{
+    if (delegate == self) {
+        [super setDelegate:delegate];
+    } else {
+        self.jsqDelegate = delegate;
+    }
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewShouldBeginEditing:)]) {
+        return [self.jsqDelegate textViewShouldBeginEditing:textView];
+    }
+    return YES;
+}
+
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewShouldEndEditing:)]) {
+        return [self.jsqDelegate textViewShouldEndEditing:textView];
+    }
+    return YES;
+}
+
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidBeginEditing:)]) {
+        [self.jsqDelegate textViewDidBeginEditing:textView];
+    }
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidEndEditing:)]) {
+        [self.jsqDelegate textViewDidEndEditing:textView];
+    }
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldChangeTextInRange:replacementText:)]) {
+        return [self.jsqDelegate textView:textView shouldChangeTextInRange:range replacementText:text];
+    }
+    return YES;
+}
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidChange:)]) {
+        [self.jsqDelegate textViewDidChange:textView];
+    }
+
+    [self ensureShouldShowVoiceMemoButton];
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidChangeSelection:)]) {
+        [self.jsqDelegate textViewDidChangeSelection:textView];
+    }
+}
+
+- (BOOL)textView:(UITextView *)textView
+    shouldInteractWithURL:(NSURL *)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
+        return [self.jsqDelegate textView:textView
+                    shouldInteractWithURL:URL
+                                  inRange:characterRange
+                              interaction:interaction];
+    }
+    return YES;
+}
+
+- (BOOL)textView:(UITextView *)textView
+    shouldInteractWithTextAttachment:(NSTextAttachment *)textAttachment
+                             inRange:(NSRange)characterRange
+                         interaction:(UITextItemInteraction)interaction
+{
+    if ([self.jsqDelegate
+            respondsToSelector:@selector(textView:shouldInteractWithTextAttachment:inRange:interaction:)]) {
+        return [self.jsqDelegate textView:textView
+            shouldInteractWithTextAttachment:textAttachment
+                                     inRange:characterRange
+                                 interaction:interaction];
+    }
+    return YES;
+}
+
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:)]) {
+        return [self.jsqDelegate textView:textView shouldInteractWithURL:URL inRange:characterRange];
+    }
+    return YES;
+}
+
+- (BOOL)textView:(UITextView *)textView
+    shouldInteractWithTextAttachment:(NSTextAttachment *)textAttachment
+                             inRange:(NSRange)characterRange
+{
+    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithTextAttachment:inRange:)]) {
+        return
+            [self.jsqDelegate textView:textView shouldInteractWithTextAttachment:textAttachment inRange:characterRange];
+    }
+    return YES;
+}
+
+- (void)ensureShouldShowVoiceMemoButton
+{
+    self.shouldShowVoiceMemoButton = self.text.length < 1;
+}
+
+- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
+{
+    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
+        return;
+    }
+
+    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
+
+    [self ensureVoiceMemoButton];
+}
+
+- (CGFloat)voiceMemoButtonSize
+{
+    return 25;
+}
+
+- (void)ensureVoiceMemoButton
+{
+    if (!self.superview) {
+        return;
+    }
+
+    if (self.shouldShowVoiceMemoButton) {
+        [self.voiceMemoButton removeFromSuperview];
+        self.voiceMemoButton = nil;
+
+        UIView *button = [UIView new];
+        button.frame = CGRectMake(0, 0, self.voiceMemoButtonSize, self.voiceMemoButtonSize);
+        [button addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                   action:@selector(handleLongPress:)]];
+        button.userInteractionEnabled = YES;
+
+        UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+        OWSAssert(icon);
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:icon];
+        imageView.layer.opacity = 0.8f;
+        [button addSubview:imageView];
+
+        self.voiceMemoButton = button;
+        [self addSubview:button];
+        [self layoutVoiceMemoButton];
+    } else {
+        [self.voiceMemoButton removeFromSuperview];
+        self.voiceMemoButton = nil;
+    }
+}
+
+- (void)ensureSubviews
+{
+    [self ensureVoiceMemoButton];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+
+    [self layoutVoiceMemoButton];
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    [super setBounds:bounds];
+
+    [self layoutVoiceMemoButton];
+}
+
+- (void)setCenter:(CGPoint)center
+{
+    [super setCenter:center];
+
+    [self layoutVoiceMemoButton];
+}
+
+- (void)layoutVoiceMemoButton
+{
+    if (!self.voiceMemoButton) {
+        return;
+    }
+    CGRect buttonFrame = CGRectMake(floor(self.frame.size.width - (self.voiceMemoButtonSize + 5)),
+        floor((self.frame.size.height - self.voiceMemoButtonSize) * 0.5f),
+        self.voiceMemoButtonSize,
+        self.voiceMemoButtonSize);
+    buttonFrame = [self.voiceMemoButton.superview convertRect:buttonFrame fromView:self];
+    self.voiceMemoButton.frame = buttonFrame;
+    [self.voiceMemoButton.superview bringSubviewToFront:self.voiceMemoButton];
+}
+
+- (void)handleLongPress:(UIGestureRecognizer *)sender
+{
+    switch (sender.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.textViewPasteDelegate didCancelVoiceMemo];
+            }
+            break;
+        case UIGestureRecognizerStateBegan:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.textViewPasteDelegate didCancelVoiceMemo];
+            }
+            self.isRecordingVoiceMemo = YES;
+            [self.textViewPasteDelegate didStartVoiceMemo];
+            break;
+        case UIGestureRecognizerStateChanged:
+            // TODO:
+            break;
+        case UIGestureRecognizerStateEnded:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.textViewPasteDelegate didEndVoiceMemo];
+            }
+            break;
+    }
+}
+
+- (void)cancelVoiceMemoIfNecessary
+{
+    if (self.isRecordingVoiceMemo) {
+        self.isRecordingVoiceMemo = NO;
+        [self.textViewPasteDelegate didCancelVoiceMemo];
+    }
+}
 
 - (BOOL)canBecomeFirstResponder {
     return YES;
@@ -159,6 +462,20 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
+@interface OWSMessagesInputToolbar ()
+
+@property (nonatomic) UIView *voiceMemoUI;
+
+@property (nonatomic) NSDate *voiceMemoStartTime;
+
+@property (nonatomic) NSTimer *voiceMemoUpdateTimer;
+
+@property (nonatomic) UILabel *recordingLabel;
+
+@end
+
+#pragma mark -
+
 @implementation OWSMessagesInputToolbar
 
 - (JSQMessagesToolbarContentView *)loadToolbarContentView {
@@ -168,6 +485,126 @@ typedef enum : NSUInteger {
     OWSMessagesToolbarContentView *view = views[0];
     OWSAssert([view isKindOfClass:[OWSMessagesToolbarContentView class]]);
     return view;
+}
+
+- (CGFloat)voiceMemoButtonSize
+{
+    return 25;
+}
+
+- (void)showVoiceMemoUI
+{
+    self.voiceMemoStartTime = [NSDate date];
+
+    [self.voiceMemoUI removeFromSuperview];
+
+    self.voiceMemoUI = [UIView new];
+    self.voiceMemoUI.userInteractionEnabled = NO;
+    self.voiceMemoUI.backgroundColor = [UIColor whiteColor];
+    [self addSubview:self.voiceMemoUI];
+    self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+
+    self.recordingLabel = [UILabel new];
+    self.recordingLabel.textColor = [UIColor ows_materialBlueColor];
+    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    [self.voiceMemoUI addSubview:self.recordingLabel];
+    [self updateVoiceMemo];
+
+    UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+    OWSAssert(icon);
+    UIImageView *imageView =
+        [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+    imageView.tintColor = [UIColor ows_materialBlueColor];
+    //    imageView.layer.opacity = 0.8f;
+    [self.voiceMemoUI addSubview:imageView];
+
+    UILabel *cancelLabel = [UILabel new];
+    cancelLabel.textColor = [UIColor ows_destructiveRedColor];
+    cancelLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    cancelLabel.text = NSLocalizedString(@"VOICE_MEMO_CANCEL_INSTRUCTIONS", @"Indicates how to cancel a voice memo.");
+    [self.voiceMemoUI addSubview:cancelLabel];
+
+    [imageView autoVCenterInSuperview];
+    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [self.recordingLabel autoVCenterInSuperview];
+    [self.recordingLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:imageView withOffset:5.f];
+    [cancelLabel autoVCenterInSuperview];
+    [cancelLabel autoHCenterInSuperview];
+    [self.voiceMemoUI setNeedsLayout];
+    [self.voiceMemoUI layoutSubviews];
+
+    // Slide in the "slide to cancel" label.
+    CGRect cancelLabelStartFrame = cancelLabel.frame;
+    CGRect cancelLabelEndFrame = cancelLabel.frame;
+    cancelLabelStartFrame.origin.x = self.voiceMemoUI.bounds.size.width;
+    cancelLabel.frame = cancelLabelStartFrame;
+    [UIView animateWithDuration:0.35f
+                          delay:0.f
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         cancelLabel.frame = cancelLabelEndFrame;
+                     }
+                     completion:nil];
+
+    // Pulse the icon.
+    imageView.layer.opacity = 1.f;
+    [UIView animateWithDuration:0.5f
+                          delay:0.2f
+                        options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
+                        | UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         imageView.layer.opacity = 0.f;
+                     }
+                     completion:nil];
+
+    // Fade in the view.
+    self.voiceMemoUI.layer.opacity = 0.f;
+    [UIView animateWithDuration:0.2f
+        animations:^{
+            self.voiceMemoUI.layer.opacity = 1.f;
+        }
+        completion:^(BOOL finished) {
+            if (finished) {
+                self.voiceMemoUI.layer.opacity = 1.f;
+            }
+        }];
+
+    self.voiceMemoUpdateTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
+                                                                     target:self
+                                                                   selector:@selector(updateVoiceMemo)
+                                                                   userInfo:nil
+                                                                    repeats:YES];
+}
+
+- (void)hideVoiceMemoUI:(BOOL)animated
+{
+    UIView *voiceMemoUI = self.voiceMemoUI;
+    self.voiceMemoUI = nil;
+    NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
+    self.voiceMemoUpdateTimer = nil;
+
+    [self.voiceMemoUI.layer removeAllAnimations];
+
+    if (animated) {
+        [UIView animateWithDuration:0.35f
+            animations:^{
+                voiceMemoUI.layer.opacity = 0.f;
+            }
+            completion:^(BOOL finished) {
+                [voiceMemoUI removeFromSuperview];
+                [voiceMemoUpdateTimer invalidate];
+            }];
+    } else {
+        [voiceMemoUI removeFromSuperview];
+        [voiceMemoUpdateTimer invalidate];
+    }
+}
+
+- (void)updateVoiceMemo
+{
+    NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
+    self.recordingLabel.text = [ViewControllerUtils formatDurationSeconds:(long)round(durationSeconds)];
+    [self.recordingLabel sizeToFit];
 }
 
 @end
@@ -561,6 +998,8 @@ typedef enum : NSUInteger {
     [self ensureBlockStateIndicator];
 
     [self resetContentAndLayout];
+
+    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)ensureSubviews];
 }
 
 - (void)resetContentAndLayout
@@ -749,6 +1188,8 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
+
+    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)cancelVoiceMemoIfNecessary];
 }
 
 - (void)startExpirationTimerAnimations
@@ -3035,6 +3476,27 @@ typedef enum : NSUInteger {
     [self presentViewController:controller
                        animated:YES
                      completion:nil];
+}
+
+- (void)didStartVoiceMemo
+{
+    DDLogError(@"didStartVoiceMemo");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
+}
+
+- (void)didEndVoiceMemo
+{
+    DDLogError(@"didEndVoiceMemo");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:YES];
+}
+
+- (void)didCancelVoiceMemo
+{
+    DDLogError(@"didCancelVoiceMemo");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
 }
 
 #pragma mark - UIScrollViewDelegate

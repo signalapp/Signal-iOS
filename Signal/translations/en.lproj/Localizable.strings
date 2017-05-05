@@ -1280,6 +1280,9 @@
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verify Safety Number";
 
+/* Indicates how to cancel a voice memo. */
+"VOICE_MEMO_CANCEL_INSTRUCTIONS" = "Slide To Cancel";
+
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
 
