@@ -110,7 +110,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдерживаемый файл";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Заблокированные пользователь не смогут звонить или отправлять сообщения Вам.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить или отправлять сообщения Вам.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокировать";
@@ -245,16 +245,16 @@
 "CONVERSATION_SETTINGS" = "Настройки разговоров";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокировать этого пользователя";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокировать";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Беззвучный режим";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Без звука";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Беззвучный режим";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Без звука";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Звук уведомлений включен";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Выкл.";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Беззвучный режим на 1 день";
