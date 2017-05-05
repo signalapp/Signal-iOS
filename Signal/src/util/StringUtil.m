@@ -6,20 +6,7 @@
 #import "StringUtil.h"
 
 @implementation NSString (Util)
-- (NSData *)decodedAsHexString {
-    ows_require(self.length % 2 == 0);
 
-    NSUInteger n = self.length / 2;
-    uint8_t result[n];
-    for (NSUInteger i = 0; i < n; i++) {
-        unsigned int r;
-        NSScanner *scanner = [NSScanner scannerWithString:[self substringWithRange:NSMakeRange(i * 2, 2)]];
-        checkOperation([scanner scanHexInt:&r]);
-        checkOperation(r < 256);
-        result[i] = (uint8_t)r;
-    }
-    return [NSData dataWithBytes:result length:sizeof(result)];
-}
 - (NSData *)encodedAsUtf8 {
     NSData *result = [self dataUsingEncoding:NSUTF8StringEncoding];
     checkOperationDescribe(result != nil, @"Not a UTF8 string.");
@@ -53,13 +40,6 @@
     if (prefix.length > 0 && ![self hasPrefix:prefix])
         return nil;
     return [self substringFromIndex:prefix.length];
-}
-- (NSData *)decodedAsJsonIntoData {
-    NSError *jsonParseError = nil;
-    id parsedJson = [NSJSONSerialization dataWithJSONObject:self.encodedAsUtf8 options:0 error:&jsonParseError];
-    checkOperationDescribe(jsonParseError == nil, ([NSString stringWithFormat:@"Invalid json: %@", self]));
-    checkOperationDescribe([parsedJson isKindOfClass:NSData.class], @"Unexpected json data");
-    return parsedJson;
 }
 - (NSDictionary *)decodedAsJsonIntoDictionary {
     NSError *jsonParseError = nil;
