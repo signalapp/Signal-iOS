@@ -97,6 +97,60 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
 
+@end
+
+#pragma mark -
+
+@interface OWSMessagesComposerTextView () <UITextViewDelegate>
+
+@property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesComposerTextView
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)pasteboardHasPossibleAttachment
+{
+    // We don't want to load/convert images more than once so we
+    // only do a cursory validation pass at this time.
+    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (action == @selector(paste:)) {
+        if ([self pasteboardHasPossibleAttachment]) {
+            return YES;
+        }
+    }
+    return [super canPerformAction:action withSender:sender];
+}
+
+- (void)paste:(id)sender
+{
+    if ([self pasteboardHasPossibleAttachment]) {
+        SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
+        // Note: attachment might be nil or have an error at this point; that's fine.
+        [self.textViewPasteDelegate didPasteAttachment:attachment];
+        return;
+    }
+
+    [super paste:sender];
+}
+
+@end
+
+#pragma mark -
+
+@protocol OWSMessagesToolbarContentDelegate <NSObject>
+
 - (void)voiceMemoGestureDidStart;
 
 - (void)voiceMemoGestureDidEnd;
@@ -109,357 +163,19 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@interface OWSMessagesComposerTextView () <UITextViewDelegate>
+@interface OWSMessagesToolbarContentView ()
 
-@property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
+@property (nonatomic, weak) id<OWSMessagesToolbarContentDelegate> delegate;
 
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
 
-@property (nonatomic) UIView *voiceMemoButton;
+@property (nonatomic) UIButton *voiceMemoButton;
 
-// This view serves as its own delegate but also needs to forward delegate events
-// to JSQ.
-@property (weak, nonatomic) id<UITextViewDelegate> jsqDelegate;
+@property (nonatomic) UIButton *sendButton;
 
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 
-@property (nonatomic) CGPoint voiceMemoGestureStart;
-
-@end
-
-#pragma mark -
-
-@implementation OWSMessagesComposerTextView
-
-- (instancetype)init
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (void)commonInit
-{
-    self.delegate = self;
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)setDelegate:(id<UITextViewDelegate>)delegate
-{
-    if (delegate == self) {
-        [super setDelegate:delegate];
-    } else {
-        self.jsqDelegate = delegate;
-    }
-}
-
-#pragma mark - UITextViewDelegate
-
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewShouldBeginEditing:)]) {
-        return [self.jsqDelegate textViewShouldBeginEditing:textView];
-    }
-    return YES;
-}
-
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewShouldEndEditing:)]) {
-        return [self.jsqDelegate textViewShouldEndEditing:textView];
-    }
-    return YES;
-}
-
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidBeginEditing:)]) {
-        [self.jsqDelegate textViewDidBeginEditing:textView];
-    }
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidEndEditing:)]) {
-        [self.jsqDelegate textViewDidEndEditing:textView];
-    }
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldChangeTextInRange:replacementText:)]) {
-        return [self.jsqDelegate textView:textView shouldChangeTextInRange:range replacementText:text];
-    }
-    return YES;
-}
-
-- (void)textViewDidChange:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidChange:)]) {
-        [self.jsqDelegate textViewDidChange:textView];
-    }
-
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)textViewDidChangeSelection:(UITextView *)textView
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textViewDidChangeSelection:)]) {
-        [self.jsqDelegate textViewDidChangeSelection:textView];
-    }
-}
-
-- (BOOL)textView:(UITextView *)textView
-    shouldInteractWithURL:(NSURL *)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
-        return [self.jsqDelegate textView:textView
-                    shouldInteractWithURL:URL
-                                  inRange:characterRange
-                              interaction:interaction];
-    }
-    return YES;
-}
-
-- (BOOL)textView:(UITextView *)textView
-    shouldInteractWithTextAttachment:(NSTextAttachment *)textAttachment
-                             inRange:(NSRange)characterRange
-                         interaction:(UITextItemInteraction)interaction
-{
-    if ([self.jsqDelegate
-            respondsToSelector:@selector(textView:shouldInteractWithTextAttachment:inRange:interaction:)]) {
-        return [self.jsqDelegate textView:textView
-            shouldInteractWithTextAttachment:textAttachment
-                                     inRange:characterRange
-                                 interaction:interaction];
-    }
-    return YES;
-}
-
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:)]) {
-        return [self.jsqDelegate textView:textView shouldInteractWithURL:URL inRange:characterRange];
-    }
-    return YES;
-}
-
-- (BOOL)textView:(UITextView *)textView
-    shouldInteractWithTextAttachment:(NSTextAttachment *)textAttachment
-                             inRange:(NSRange)characterRange
-{
-    if ([self.jsqDelegate respondsToSelector:@selector(textView:shouldInteractWithTextAttachment:inRange:)]) {
-        return
-            [self.jsqDelegate textView:textView shouldInteractWithTextAttachment:textAttachment inRange:characterRange];
-    }
-    return YES;
-}
-
-- (void)ensureShouldShowVoiceMemoButton
-{
-    self.shouldShowVoiceMemoButton = self.text.length < 1;
-}
-
-- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
-{
-    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
-        return;
-    }
-
-    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
-
-    [self ensureVoiceMemoButton];
-}
-
-- (CGFloat)voiceMemoButtonSize
-{
-    return 25;
-}
-
-- (void)ensureVoiceMemoButton
-{
-    if (!self.superview) {
-        return;
-    }
-
-    if (self.shouldShowVoiceMemoButton) {
-        [self.voiceMemoButton removeFromSuperview];
-        self.voiceMemoButton = nil;
-
-        UIView *button = [UIView new];
-        button.frame = CGRectMake(0, 0, self.voiceMemoButtonSize, self.voiceMemoButtonSize);
-        [button addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(handleLongPress:)]];
-        button.userInteractionEnabled = YES;
-
-        UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
-        OWSAssert(icon);
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:icon];
-        imageView.layer.opacity = 0.8f;
-        [button addSubview:imageView];
-
-        self.voiceMemoButton = button;
-        [self addSubview:button];
-        [self layoutVoiceMemoButton];
-    } else {
-        [self.voiceMemoButton removeFromSuperview];
-        self.voiceMemoButton = nil;
-    }
-}
-
-- (void)ensureSubviews
-{
-    [self ensureVoiceMemoButton];
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    [super setFrame:frame];
-
-    [self layoutVoiceMemoButton];
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    [super setBounds:bounds];
-
-    [self layoutVoiceMemoButton];
-}
-
-- (void)setCenter:(CGPoint)center
-{
-    [super setCenter:center];
-
-    [self layoutVoiceMemoButton];
-}
-
-- (void)layoutVoiceMemoButton
-{
-    if (!self.voiceMemoButton) {
-        return;
-    }
-    CGRect buttonFrame = CGRectMake(floor(self.frame.size.width - (self.voiceMemoButtonSize + 5)),
-        floor((self.frame.size.height - self.voiceMemoButtonSize) * 0.5f),
-        self.voiceMemoButtonSize,
-        self.voiceMemoButtonSize);
-    buttonFrame = [self.voiceMemoButton.superview convertRect:buttonFrame fromView:self];
-    self.voiceMemoButton.frame = buttonFrame;
-    [self.voiceMemoButton.superview bringSubviewToFront:self.voiceMemoButton];
-}
-
-- (void)handleLongPress:(UIGestureRecognizer *)sender
-{
-    switch (sender.state) {
-        case UIGestureRecognizerStatePossible:
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-            if (self.isRecordingVoiceMemo) {
-                self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate voiceMemoGestureDidCancel];
-            }
-            break;
-        case UIGestureRecognizerStateBegan:
-            if (self.isRecordingVoiceMemo) {
-                self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate voiceMemoGestureDidCancel];
-            }
-            [self resignFirstResponder];
-            self.isRecordingVoiceMemo = YES;
-            self.voiceMemoGestureStart = [sender locationInView:self];
-            [self.textViewPasteDelegate voiceMemoGestureDidStart];
-            break;
-        case UIGestureRecognizerStateChanged:
-            if (self.isRecordingVoiceMemo) {
-                CGPoint location = [sender locationInView:self];
-                CGFloat offset = MAX(0, self.voiceMemoGestureStart.x - location.x);
-                const CGFloat kCancelOffsetPoints = 50.f;
-                CGFloat cancelAlpha = offset / kCancelOffsetPoints;
-                BOOL isCancelled = cancelAlpha >= 1.f;
-                if (isCancelled) {
-                    self.isRecordingVoiceMemo = NO;
-                    [self.textViewPasteDelegate voiceMemoGestureDidCancel];
-                } else {
-                    [self.textViewPasteDelegate voiceMemoGestureDidChange:cancelAlpha];
-                }
-            }
-            break;
-        case UIGestureRecognizerStateEnded:
-            if (self.isRecordingVoiceMemo) {
-                self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate voiceMemoGestureDidEnd];
-            }
-            break;
-    }
-}
-
-- (void)cancelVoiceMemoIfNecessary
-{
-    if (self.isRecordingVoiceMemo) {
-        self.isRecordingVoiceMemo = NO;
-    }
-}
-
-- (BOOL)canBecomeFirstResponder {
-    return YES;
-}
-
-- (BOOL)pasteboardHasPossibleAttachment
-{
-    // We don't want to load/convert images more than once so we
-    // only do a cursory validation pass at this time.
-    return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if (action == @selector(paste:)) {
-        if ([self pasteboardHasPossibleAttachment]) {
-            return YES;
-        }
-    }
-    return [super canPerformAction:action withSender:sender];
-}
-
-- (void)paste:(id)sender {
-    if ([self pasteboardHasPossibleAttachment]) {
-        SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
-        // Note: attachment might be nil or have an error at this point; that's fine.
-        [self.textViewPasteDelegate didPasteAttachment:attachment];
-        return;
-    }
-    
-    [super paste:sender];
-}
+@property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 
 @end
 
@@ -473,6 +189,123 @@ typedef enum : NSUInteger {
 {
     return [UINib nibWithNibName:NSStringFromClass([OWSMessagesToolbarContentView class])
                           bundle:[NSBundle bundleForClass:[OWSMessagesToolbarContentView class]]];
+}
+
+- (void)ensureSubviews
+{
+    [self ensureShouldShowVoiceMemoButton];
+
+    [self ensureVoiceMemoButton];
+}
+
+- (void)ensureEnabling
+{
+    [self ensureShouldShowVoiceMemoButton];
+
+    OWSAssert(self.voiceMemoButton.isEnabled == YES);
+    OWSAssert(self.sendButton.isEnabled == YES);
+}
+
+- (void)ensureShouldShowVoiceMemoButton
+{
+    self.shouldShowVoiceMemoButton = self.textView.text.length < 1;
+}
+
+- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
+{
+    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
+        return;
+    }
+
+    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
+
+    [self ensureVoiceMemoButton];
+}
+
+- (void)ensureVoiceMemoButton
+{
+    if (!self.superview) {
+        return;
+    }
+
+    if (!self.sendButton) {
+        OWSAssert(self.rightBarButtonItem);
+
+        self.sendButton = self.rightBarButtonItem;
+    }
+
+    if (self.shouldShowVoiceMemoButton) {
+        if (!self.voiceMemoButton) {
+            UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+            OWSAssert(icon);
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+            [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                    forState:UIControlStateNormal];
+            button.imageView.tintColor = [UIColor ows_materialBlueColor];
+            [button
+                addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                   action:@selector(handleLongPress:)]];
+            self.voiceMemoButton = button;
+        }
+
+        self.rightBarButtonItem = self.voiceMemoButton;
+        self.rightBarButtonItemWidth = [self.voiceMemoButton sizeThatFits:CGSizeZero].width;
+    } else {
+        self.rightBarButtonItem = self.sendButton;
+        self.rightBarButtonItemWidth = [self.sendButton sizeThatFits:CGSizeZero].width;
+    }
+}
+
+- (void)handleLongPress:(UIGestureRecognizer *)sender
+{
+    switch (sender.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidCancel];
+            }
+            break;
+        case UIGestureRecognizerStateBegan:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidCancel];
+            }
+            [self resignFirstResponder];
+            self.isRecordingVoiceMemo = YES;
+            self.voiceMemoGestureStartLocation = [sender locationInView:self];
+            [self.delegate voiceMemoGestureDidStart];
+            break;
+        case UIGestureRecognizerStateChanged:
+            if (self.isRecordingVoiceMemo) {
+                CGPoint location = [sender locationInView:self];
+                CGFloat offset = MAX(0, self.voiceMemoGestureStartLocation.x - location.x);
+                const CGFloat kCancelOffsetPoints = 60.f;
+                CGFloat cancelAlpha = offset / kCancelOffsetPoints;
+                BOOL isCancelled = cancelAlpha >= 1.f;
+                if (isCancelled) {
+                    self.isRecordingVoiceMemo = NO;
+                    [self.delegate voiceMemoGestureDidCancel];
+                } else {
+                    [self.delegate voiceMemoGestureDidChange:cancelAlpha];
+                }
+            }
+            break;
+        case UIGestureRecognizerStateEnded:
+            if (self.isRecordingVoiceMemo) {
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidEnd];
+            }
+            break;
+    }
+}
+
+- (void)cancelVoiceMemoIfNecessary
+{
+    if (self.isRecordingVoiceMemo) {
+        self.isRecordingVoiceMemo = NO;
+    }
 }
 
 @end
@@ -495,6 +328,11 @@ typedef enum : NSUInteger {
 
 @implementation OWSMessagesInputToolbar
 
+- (void)toggleSendButtonEnabled
+{
+    // Do nothing; disables JSQ's control over send button enabling.
+}
+
 - (JSQMessagesToolbarContentView *)loadToolbarContentView {
     NSArray *views = [[OWSMessagesToolbarContentView nib] instantiateWithOwner:nil
                                                                        options:nil];
@@ -502,11 +340,6 @@ typedef enum : NSUInteger {
     OWSMessagesToolbarContentView *view = views[0];
     OWSAssert([view isKindOfClass:[OWSMessagesToolbarContentView class]]);
     return view;
-}
-
-- (CGFloat)voiceMemoButtonSize
-{
-    return 25;
 }
 
 - (void)showVoiceMemoUI
@@ -534,7 +367,6 @@ typedef enum : NSUInteger {
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     imageView.tintColor = [UIColor ows_materialBlueColor];
-    //    imageView.layer.opacity = 0.8f;
     [self.voiceMemoUI addSubview:imageView];
 
     UILabel *cancelLabel = [UILabel new];
@@ -647,6 +479,7 @@ typedef enum : NSUInteger {
 
 @interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate,
     OWSTextViewPasteDelegate,
+    OWSMessagesToolbarContentDelegate,
     OWSConversationSettingsViewDelegate,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate> {
@@ -1045,7 +878,7 @@ typedef enum : NSUInteger {
 
     [self resetContentAndLayout];
 
-    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)ensureSubviews];
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
 }
 
 - (void)resetContentAndLayout
@@ -1494,6 +1327,7 @@ typedef enum : NSUInteger {
     OWSAssert(self.inputToolbar.contentView.textView);
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
+    ((OWSMessagesToolbarContentView *)self.inputToolbar.contentView).delegate = self;
 }
 
 // Overiding JSQMVC layout defaults
@@ -3600,6 +3434,8 @@ typedef enum : NSUInteger {
                      completion:nil];
 }
 
+#pragma mark - OWSMessagesToolbarContentDelegate
+
 - (void)voiceMemoGestureDidStart
 {
     OWSAssert([NSThread isMainThread]);
@@ -3641,9 +3477,14 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)cancelVoiceMemoIfNecessary];
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)cancelVoiceMemoIfNecessary];
     [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
     [self cancelRecordingVoiceMemo];
+}
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
 }
 
 #pragma mark - UIScrollViewDelegate

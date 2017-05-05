@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "voice-memo-button-25.png",
+      "filename" : "voice-memo-button-32.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "voice-memo-button-50.png",
+      "filename" : "voice-memo-button-64.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "voice-memo-button-75.png",
+      "filename" : "voice-memo-button-96.png",
       "scale" : "3x"
     }
   ],
