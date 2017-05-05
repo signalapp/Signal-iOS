@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSSignalServiceProtosSyncMessageContactsBuilder new];
 
     [contactsBuilder setBlob:attachmentProto];
+    [contactsBuilder setIsComplete:YES];
 
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     [syncMessageBuilder setContactsBuilder:contactsBuilder];
