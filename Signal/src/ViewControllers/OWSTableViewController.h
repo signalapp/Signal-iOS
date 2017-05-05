@@ -86,6 +86,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 @property (nonatomic) OWSTableContents *contents;
 @property (nonatomic, readonly) UITableView *tableView;
 
+@property (nonatomic) UITableViewStyle tableViewStyle;
+
 #pragma mark - Presentation
 
 - (void)presentFromViewController:(UIViewController *)fromViewController;

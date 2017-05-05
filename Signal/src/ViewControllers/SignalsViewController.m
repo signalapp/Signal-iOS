@@ -5,6 +5,7 @@
 #import "SignalsViewController.h"
 #import "AppDelegate.h"
 #import "InboxTableViewCell.h"
+#import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
@@ -255,14 +256,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (void)composeNew {
-    if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-
-    [self.navigationController popToRootViewControllerAnimated:YES];
-
-    [self performSegueWithIdentifier:@"composeNew" sender:self];
+- (IBAction)composeNew
+{
+    MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
 }
 
 - (void)swappedSegmentedControl {
@@ -507,15 +506,14 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     dispatch_async(dispatch_get_main_queue(), ^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
+        [mvc configureForThread:thread
+            keyboardOnViewAppearing:keyboardOnViewAppearing
+                callOnViewAppearing:callOnViewAppearing];
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         }
         [self.navigationController popToRootViewControllerAnimated:YES];
-
-        [mvc configureForThread:thread
-            keyboardOnViewAppearing:keyboardOnViewAppearing
-                callOnViewAppearing:callOnViewAppearing];
         [self.navigationController pushViewController:mvc animated:YES];
     });
 }

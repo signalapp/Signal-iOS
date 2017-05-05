@@ -5,6 +5,7 @@
 #import "BlockListViewController.h"
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
@@ -92,15 +93,17 @@ NS_ASSUME_NONNULL_BEGIN
         [helper.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
     for (NSString *phoneNumber in blockedPhoneNumbers) {
         [blocklistSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            // TODO: Use ContactTableViewCell.
-            UITableViewCell *cell = [UITableViewCell new];
-            NSString *displayName = [helper.contactsManager displayNameForPhoneIdentifier:phoneNumber];
-            cell.textLabel.text = displayName;
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            cell.textLabel.textColor = [UIColor blackColor];
+            ContactTableViewCell *cell = [ContactTableViewCell new];
+            SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
+            if (signalAccount) {
+                [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+            } else {
+                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+            }
+
             return cell;
         }
+                                      customRowHeight:[ContactTableViewCell rowHeight]
                                       actionBlock:^{
                                           [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
                                                                            fromViewController:weakSelf

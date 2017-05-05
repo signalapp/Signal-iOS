@@ -82,14 +82,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
     [self layoutSubviews];
 }
 
-- (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager
-{
-    [self configureWithRecipientId:contact.textSecureIdentifiers.firstObject
-                        avatarName:contact.fullName
-                       displayName:[contactsManager formattedFullNameForContact:contact font:self.nameLabel.font]
-                   contactsManager:contactsManager];
-}
-
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
 {
     [self configureWithRecipientId:signalAccount.recipientId

@@ -262,6 +262,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         OWSAssert(0);
         return;
     }
+
+    [self.phoneNumberTextField resignFirstResponder];
+
     // There should only be one phone number, since we're explicitly specifying
     // a country code and therefore parsing a number in e164 format.
     OWSAssert([possiblePhoneNumbers count] == 1);

@@ -122,24 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSAccountManager localNumber];
 }
 
-- (BOOL)isContactBlocked:(Contact *)contact
-{
-    OWSAssert([NSThread isMainThread]);
-
-    if (contact.parsedPhoneNumbers.count < 1) {
-        // Do not consider contacts without any valid phone numbers to be blocked.
-        return NO;
-    }
-
-    for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-        if ([_blockedPhoneNumbers containsObject:phoneNumber.toE164]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId
 {
     AssertIsOnMainThread();
@@ -199,8 +181,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
     NSArray<NSString *> *searchTerms =
-        [[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [[[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+            filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
+                                            NSDictionary<NSString *, id> *_Nullable bindings) {
+                return searchTerm.length > 0;
+            }]];
 
     if (searchTerms.count < 1) {
         return self.signalAccounts;

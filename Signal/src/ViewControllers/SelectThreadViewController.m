@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
+
 @property (nonatomic, readonly) UISearchBar *searchBar;
 
 @end
@@ -124,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-#pragma mark - Actions
+#pragma mark - Table Contents
 
 - (void)updateTableContents
 {
