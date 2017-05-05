@@ -101,7 +101,7 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@interface OWSMessagesComposerTextView () <UITextViewDelegate>
+@interface OWSMessagesComposerTextView ()
 
 @property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
 
@@ -3112,13 +3112,14 @@ typedef enum : NSUInteger {
 
     NSData *audioData = [NSData dataWithContentsOfURL:self.audioRecorder.url];
 
-    self.audioRecorder = nil;
-
     if (!audioData) {
         DDLogError(@"%@ Couldn't load audioRecorder data", self.tag);
         OWSAssert(0);
+        self.audioRecorder = nil;
         return;
     }
+
+    self.audioRecorder = nil;
 
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
