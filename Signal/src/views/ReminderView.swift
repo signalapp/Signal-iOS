@@ -41,8 +41,9 @@ class ReminderView: UIView {
         setupSubviews()
     }
 
-    convenience init(tapAction: @escaping () -> Void) {
+    convenience init(text: String, tapAction: @escaping () -> Void) {
         self.init(frame: .zero)
+        self.text = text
         self.tapAction = tapAction
     }
 
