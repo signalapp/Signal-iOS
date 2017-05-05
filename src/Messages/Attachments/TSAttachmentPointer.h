@@ -17,6 +17,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
  */
 @interface TSAttachmentPointer : TSAttachment
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
                           digest:(nullable NSData *)digest

@@ -12,6 +12,8 @@
 @class SignedPreKeyRecord;
 @class TSPrivacyPreferences;
 
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 
 @interface TSStorageManager : NSObject
@@ -32,8 +34,8 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (void)deleteThreadsAndMessages;
 - (void)resetSignalStorage;
 
-- (YapDatabase *)database;
-- (YapDatabaseConnection *)newDatabaseConnection;
+- (nullable YapDatabase *)database;
+- (nullable YapDatabaseConnection *)newDatabaseConnection;
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
@@ -44,16 +46,18 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)setDate:(nonnull NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
-- (NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection;
-- (NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection;
-- (NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;
-- (ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection;
-- (PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
-- (SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
+- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)purgeCollection:(NSString *)collection;
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) TSPrivacyPreferences *privacyPreferences;
 
 @end
+
+NS_ASSUME_NONNULL_END

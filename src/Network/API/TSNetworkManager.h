@@ -22,9 +22,9 @@
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <Foundation/Foundation.h>
 
-extern NSString *const TSNetworkManagerDomain;
-
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const TSNetworkManagerDomain;
 
 @interface TSNetworkManager : NSObject
 

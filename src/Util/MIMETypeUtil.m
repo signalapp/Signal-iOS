@@ -10,6 +10,8 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
@@ -216,23 +218,27 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]] != nil;
 }
 
-+ (NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType {
++ (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType
+{
     return [[self supportedVideoMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-+ (NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType {
++ (nullable NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType
+{
     return [[self supportedAudioMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-+ (NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType {
++ (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType
+{
     return [[self supportedImageMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-+ (NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType {
++ (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType
+{
     return [[self supportedAnimatedMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-+ (NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
++ (nullable NSString *)getSupportedExtensionFromBinaryDataMIMEType:(NSString *)supportedMIMEType
 {
     return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
@@ -259,10 +265,10 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
 }
 
-+ (NSString *)filePathForAttachment:(NSString *)uniqueId
-                         ofMIMEType:(NSString *)contentType
-                           filename:(nullable NSString *)filename
-                           inFolder:(NSString *)folder
++ (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
+                                  ofMIMEType:(NSString *)contentType
+                                    filename:(nullable NSString *)filename
+                                    inFolder:(NSString *)folder
 {
     NSString *kDefaultFileExtension = @"bin";
 
@@ -357,27 +363,6 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return [self filePathForData:uniqueId withFileExtension:kDefaultFileExtension inFolder:folder];
 }
 
-+ (NSURL *)simLinkCorrectExtensionOfFile:(NSURL *)mediaURL ofMIMEType:(NSString *)contentType {
-    if ([self isAudio:contentType]) {
-        // Audio files in current framework require changing to have extension for player
-        return [self changeFile:mediaURL
-                toHaveExtension:[[self supportedAudioMIMETypesToExtensionTypes] objectForKey:contentType]];
-    }
-    return mediaURL;
-}
-
-+ (NSURL *)changeFile:(NSURL *)originalFile toHaveExtension:(NSString *)extension {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *newPath =
-        [originalFile.URLByDeletingPathExtension.absoluteString stringByAppendingPathExtension:extension];
-    if (![fileManager fileExistsAtPath:newPath]) {
-        NSError *error = nil;
-        [fileManager createSymbolicLinkAtPath:newPath withDestinationPath:[originalFile path] error:&error];
-        return [NSURL URLWithString:newPath];
-    }
-    return originalFile;
-}
-
 + (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
     return [[folder stringByAppendingFormat:@"/%@", uniqueId]
         stringByAppendingPathExtension:[self getSupportedExtensionFromImageMIMEType:contentType]];
@@ -411,21 +396,21 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return [[folder stringByAppendingFormat:@"/%@", uniqueId] stringByAppendingPathExtension:fileExtension];
 }
 
-+ (NSString *)utiTypeForMIMEType:(NSString *)mimeType
++ (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType
 {
     CFStringRef utiType
-    = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
+        = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)mimeType, NULL);
     return (__bridge_transfer NSString *)utiType;
 }
 
-+ (NSString *)fileExtensionForUTIType:(NSString *)utiType
++ (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType
 {
     CFStringRef fileExtension
-    = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) utiType, kUTTagClassFilenameExtension);
+        = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)utiType, kUTTagClassFilenameExtension);
     return (__bridge_transfer NSString *)fileExtension;
 }
 
-+ (NSString *)fileExtensionForMIMETypeViaUTIType:(NSString *)mimeType
++ (nullable NSString *)fileExtensionForMIMETypeViaUTIType:(NSString *)mimeType
 {
     NSString *utiType = [self utiTypeForMIMEType:mimeType];
     if (!utiType) {
@@ -439,7 +424,13 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 {
     NSMutableSet<NSString *> *result = [NSMutableSet new];
     for (NSString *mimeType in mimeTypes) {
-        [result addObject:[self utiTypeForMIMEType:mimeType]];
+        NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
+        if (!utiType) {
+            DDLogError(@"%@ unknown utiType for mimetype: %@", self.tag, mimeType);
+            OWSAssert(NO);
+            continue;
+        }
+        [result addObject:utiType];
     }
     return result;
 }
@@ -1555,15 +1546,15 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return result;
 }
 
-+ (NSString *)fileExtensionForMIMETypeViaLookup:(NSString *)mimeType
++ (nullable NSString *)fileExtensionForMIMETypeViaLookup:(NSString *)mimeType
 {
     return [[self genericMIMETypesToExtensionTypes] objectForKey:mimeType];
 }
 
-+ (NSString *)fileExtensionForMIMEType:(NSString *)mimeType
++ (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType
 {
     // Try to deduce the file extension by converting to a UTI type.
-    NSString *fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
+    NSString *_Nullable fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
     if (!fileExtension) {
         // Try to deduce the file extension by using a lookup table..
         fileExtension = [self fileExtensionForMIMETypeViaLookup:mimeType];
@@ -1571,13 +1562,27 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     return fileExtension;
 }
 
-+ (NSString *)utiTypeForFileExtension:(NSString *)fileExtension
++ (nullable NSString *)utiTypeForFileExtension:(NSString *)fileExtension
 {
     OWSAssert(fileExtension.length > 0);
 
-    NSString *utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
+    NSString *_Nullable utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
         kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
     return utiType;
 }
 
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

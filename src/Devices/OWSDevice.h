@@ -22,7 +22,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
  * Set local database of devices to `devices`.
  *
  * This will create missing devices, update existing devices, and delete stale devices.
- * @param devices
+ * @param devices Removes any existing devices, replacing them with `devices`
  */
 + (void)replaceAll:(NSArray<OWSDevice *> *)devices;
 
@@ -33,7 +33,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 
 /**
  *
- * @param transaction
+ * @param transaction yapTransaction
  * @return
  *   If the user has any linked devices (apart from the device this app is running on).
  */
