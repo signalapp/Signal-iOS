@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIButton *inviteContactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                       "Text for button at the top of the contact picker")
+                                       "Label for the cell that presents the 'invite contacts' workflow.")
                           forState:UIControlStateNormal];
     [inviteContactsButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
     [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
@@ -420,6 +420,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showNoContactsModeIfNecessary
 {
+    if (!self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        return;
+    }
+    
     BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
     self.isNoContactsModeActive = (hasNoContacts && ![[Environment preferences] hasDeclinedNoContactsView]);
 }
