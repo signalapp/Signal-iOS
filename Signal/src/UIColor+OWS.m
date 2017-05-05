@@ -46,6 +46,11 @@
     return [UIColor colorWithRed:245.f / 255.f green:186.f / 255.f blue:98.f / 255.f alpha:1.f];
 }
 
++ (UIColor *)ows_reminderYellowColor
+{
+    return [UIColor colorWithRed:252.f / 255.f green:240.f / 255.f blue:217.f / 255.f alpha:1.f];
+}
+
 + (UIColor *)ows_greenColor
 {
     // green: #BF4240

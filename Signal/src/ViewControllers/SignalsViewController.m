@@ -52,7 +52,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 // Views
 
-@property (weak, nonatomic) IBOutlet NotificationView *missingContactsPermissionView;
+@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
 @end

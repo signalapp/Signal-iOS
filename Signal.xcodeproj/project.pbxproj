@@ -138,8 +138,8 @@
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
-		45A6DAD61EBBF85500893231 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* NotificationView.swift */; };
-		45A6DAD71EBBF85500893231 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* NotificationView.swift */; };
+		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
+		45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45AE48521E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45B201761DAECBFE00C461E0 /* HighlightableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */; };
@@ -544,7 +544,7 @@
 		459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceTableViewCell.m; sourceTree = "<group>"; };
 		4597E94E1D8313C100040CDE /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = translations/sq.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
-		45A6DAD51EBBF85500893231 /* NotificationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
+		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
 		45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighlightableLabel.swift; sourceTree = "<group>"; };
@@ -1320,7 +1320,7 @@
 				34330AA11E79686200DF2FB9 /* OWSProgressView.h */,
 				34330AA21E79686200DF2FB9 /* OWSProgressView.m */,
 				452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */,
-				45A6DAD51EBBF85500893231 /* NotificationView.swift */,
+				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -2070,7 +2070,7 @@
 				452EA0971EA662330078744B /* AttachmentPointerAdapter.swift in Sources */,
 				34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */,
 				45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
-				45A6DAD61EBBF85500893231 /* NotificationView.swift in Sources */,
+				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */,
 				45E615161E8C590B0018AD52 /* DisplayableTextFilter.swift in Sources */,
 				34B3F88A1E8DF1700035BE1A /* OWSLinkDeviceViewController.m in Sources */,
@@ -2231,7 +2231,7 @@
 				45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
-				45A6DAD71EBBF85500893231 /* NotificationView.swift in Sources */,
+				45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */,
 				B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
 				45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
