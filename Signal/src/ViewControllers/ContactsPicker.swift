@@ -274,7 +274,15 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dataSource = filteredSections
 
+        guard dataSource.count >= section else {
+            return nil
+        }
+        
         if dataSource[section].count > 0 {
+            guard collation.sectionTitles.count >= section else {
+                return nil
+            }
+            
             return collation.sectionTitles[section]
         } else {
             return nil
