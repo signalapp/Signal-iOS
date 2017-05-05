@@ -1,14 +1,16 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSChunkedOutputStream.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class Contact;
+@class SignalAccount;
 
 @interface OWSContactsOutputStream : OWSChunkedOutputStream
 
-- (void)writeContact:(Contact *)contact;
+- (void)writeSignalAccount:(SignalAccount *)signalAccount;
 
 @end
 

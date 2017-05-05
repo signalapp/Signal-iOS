@@ -8,6 +8,7 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 
@@ -63,8 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream open];
     OWSContactsOutputStream *contactsOutputStream = [OWSContactsOutputStream streamWithOutputStream:dataOutputStream];
 
-    for (Contact *contact in self.contactsManager.signalContacts) {
-        [contactsOutputStream writeContact:contact];
+    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
+        [contactsOutputStream writeSignalAccount:signalAccount];
     }
 
     [contactsOutputStream flush];
