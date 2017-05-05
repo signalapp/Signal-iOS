@@ -97,11 +97,11 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
 
-- (void)didStartVoiceMemo;
+- (void)gestureDidStartVoiceMemo;
 
-- (void)didEndVoiceMemo;
+- (void)gestureDidEndVoiceMemo;
 
-- (void)didCancelVoiceMemo;
+- (void)gestureDidCancelVoiceMemo;
 
 @end
 
@@ -382,16 +382,16 @@ typedef enum : NSUInteger {
         case UIGestureRecognizerStateFailed:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate didCancelVoiceMemo];
+                [self.textViewPasteDelegate gestureDidCancelVoiceMemo];
             }
             break;
         case UIGestureRecognizerStateBegan:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate didCancelVoiceMemo];
+                [self.textViewPasteDelegate gestureDidCancelVoiceMemo];
             }
             self.isRecordingVoiceMemo = YES;
-            [self.textViewPasteDelegate didStartVoiceMemo];
+            [self.textViewPasteDelegate gestureDidStartVoiceMemo];
             break;
         case UIGestureRecognizerStateChanged:
             // TODO:
@@ -399,7 +399,7 @@ typedef enum : NSUInteger {
         case UIGestureRecognizerStateEnded:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate didEndVoiceMemo];
+                [self.textViewPasteDelegate gestureDidEndVoiceMemo];
             }
             break;
     }
@@ -409,7 +409,6 @@ typedef enum : NSUInteger {
 {
     if (self.isRecordingVoiceMemo) {
         self.isRecordingVoiceMemo = NO;
-        [self.textViewPasteDelegate didCancelVoiceMemo];
     }
 }
 
@@ -914,6 +913,10 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
@@ -928,9 +931,17 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
+                                                        name:UIApplicationWillResignActiveNotification
+                                                      object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:UIApplicationDidEnterBackgroundNotification
+                                                      object:nil];
     }
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    [self cancelVoiceMemo];
 }
 
 - (void)initializeTextView {
@@ -1189,7 +1200,7 @@ typedef enum : NSUInteger {
     [self cancelReadTimer];
     [self saveDraft];
 
-    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)cancelVoiceMemoIfNecessary];
+    [self cancelVoiceMemo];
 }
 
 - (void)startExpirationTimerAnimations
@@ -3145,46 +3156,113 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
-- (void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray
-        arrayWithObjects:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                         [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]],
-                         nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+- (void)startRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"startRecordingVoiceMemo");
+
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
+    NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];
+    NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt:2] forKey:AVNumberOfChannelsKey];
+    NSError *error;
+    [session setCategory:AVAudioSessionCategoryRecord error:&error];
+    if (error) {
+        DDLogError(@"%@ Couldn't configure audio session: %@", self.tag, error);
+        [self resetRecordingVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
 
     // Initiate and prepare the recorder
-    _audioRecorder          = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
+    self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL
+                                                     settings:@{
+                                                         AVFormatIDKey : @(kAudioFormatMPEG4AAC),
+                                                         AVSampleRateKey : @(44100),
+                                                         AVNumberOfChannelsKey : @(2),
+                                                         AVEncoderBitRateKey: @(128 * 1024),
+                                                     }
+                                                        error:&error];
+    if (error) {
+        DDLogError(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
+        [self resetRecordingVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
+
+    self.audioRecorder.meteringEnabled = YES;
+
+    if (![self.audioRecorder prepareToRecord]) {
+        DDLogError(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
+        [self resetRecordingVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
+
+    if (![self.audioRecorder record]) {
+        DDLogError(@"%@ audioRecorder couldn't record.", self.tag);
+        [self resetRecordingVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
 }
 
-- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
-    if (flag) {
-        NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
-        if (!attachment ||
-            [attachment hasError]) {
-            DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                      self.tag,
-                      __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorName] : @"Missing data");
-            [self showErrorAlertForAttachment:attachment];
-        } else {
-            [self tryToSendAttachmentIfApproved:attachment];
-        }
+- (void)endRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"endRecordingVoiceMemo");
+
+    if (!self.audioRecorder) {
+        DDLogError(@"%@ Missing audioRecorder", self.tag);
+        OWSAssert(0);
+        return;
     }
+
+    [self.audioRecorder stop];
+
+    NSData *audioData = [NSData dataWithContentsOfURL:self.audioRecorder.url];
+
+    self.audioRecorder = nil;
+
+    if (!audioData) {
+        DDLogError(@"%@ Couldn't load audioRecorder data", self.tag);
+        OWSAssert(0);
+        return;
+    }
+
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
+    if (!attachment || [attachment hasError]) {
+        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+            self.tag,
+            __PRETTY_FUNCTION__,
+            attachment ? [attachment errorName] : @"Missing data");
+        [self showErrorAlertForAttachment:attachment];
+    } else {
+        [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
+    }
+}
+
+- (void)cancelRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"cancelRecordingVoiceMemo");
+
+    [self resetRecordingVoiceMemo];
+}
+
+- (void)resetRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.audioRecorder stop];
+    self.audioRecorder = nil;
 }
 
 #pragma mark Accessory View
@@ -3478,25 +3556,43 @@ typedef enum : NSUInteger {
                      completion:nil];
 }
 
-- (void)didStartVoiceMemo
+- (void)gestureDidStartVoiceMemo
 {
-    DDLogError(@"didStartVoiceMemo");
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"gestureDidStartVoiceMemo");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
+    [self startRecordingVoiceMemo];
 }
 
-- (void)didEndVoiceMemo
+- (void)gestureDidEndVoiceMemo
 {
-    DDLogError(@"didEndVoiceMemo");
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"gestureDidEndVoiceMemo");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:YES];
+    [self endRecordingVoiceMemo];
 }
 
-- (void)didCancelVoiceMemo
+- (void)gestureDidCancelVoiceMemo
 {
-    DDLogError(@"didCancelVoiceMemo");
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"gestureDidCancelVoiceMemo");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
+    [self cancelRecordingVoiceMemo];
+}
+
+- (void)cancelVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView)cancelVoiceMemoIfNecessary];
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
+    [self cancelRecordingVoiceMemo];
 }
 
 #pragma mark - UIScrollViewDelegate
