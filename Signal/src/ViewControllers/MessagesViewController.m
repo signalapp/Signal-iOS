@@ -263,25 +263,31 @@ typedef enum : NSUInteger {
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
             if (self.isRecordingVoiceMemo) {
+                // Cancel voice memo if necessary.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidCancel];
             }
             break;
         case UIGestureRecognizerStateBegan:
             if (self.isRecordingVoiceMemo) {
+                // Cancel voice memo if necessary.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidCancel];
             }
-            [self resignFirstResponder];
+            // Start voice memo.
+            [self.textView resignFirstResponder];
             self.isRecordingVoiceMemo = YES;
             self.voiceMemoGestureStartLocation = [sender locationInView:self];
             [self.delegate voiceMemoGestureDidStart];
             break;
         case UIGestureRecognizerStateChanged:
             if (self.isRecordingVoiceMemo) {
+                // Check for "slide to cancel" gesture.
                 CGPoint location = [sender locationInView:self];
                 CGFloat offset = MAX(0, self.voiceMemoGestureStartLocation.x - location.x);
-                const CGFloat kCancelOffsetPoints = 60.f;
+                // The lower this value, the easier it is to cancel by accident.
+                // The higher this value, the harder it is to cancel.
+                const CGFloat kCancelOffsetPoints = 100.f;
                 CGFloat cancelAlpha = offset / kCancelOffsetPoints;
                 BOOL isCancelled = cancelAlpha >= 1.f;
                 if (isCancelled) {
@@ -294,6 +300,7 @@ typedef enum : NSUInteger {
             break;
         case UIGestureRecognizerStateEnded:
             if (self.isRecordingVoiceMemo) {
+                // End voice memo.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidEnd];
             }
@@ -3484,6 +3491,8 @@ typedef enum : NSUInteger {
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    // We want to show the "voice memo" button if the text input is empty
+    // and the "send" button if it isn't.
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
 }
 
