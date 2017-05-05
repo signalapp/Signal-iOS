@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 
 @interface NSString (Util)
@@ -11,11 +15,9 @@
 - (NSString *)withMatchesAgainst:(NSRegularExpression *)regex replacedBy:(NSString *)replacement;
 - (bool)containsAnyMatches:(NSRegularExpression *)regex;
 - (NSString *)withPrefixRemovedElseNull:(NSString *)prefix;
-- (NSData *)decodedAsJsonIntoData;
+
 - (NSDictionary *)decodedAsJsonIntoDictionary;
-- (NSData *)decodedAsHexString;
-- (NSData *)decodedAsSpaceSeparatedHexString;
-- (NSData *)decodedAsBase64Data;
+
 - (NSNumber *)tryParseAsDecimalNumber;
 - (NSNumber *)tryParseAsUnsignedInteger;
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet;

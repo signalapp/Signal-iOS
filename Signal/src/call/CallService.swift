@@ -125,7 +125,7 @@ protocol CallServiceObserver: class {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(peerConnectionClient)")
+            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
         }
     }
 
@@ -141,7 +141,7 @@ protocol CallServiceObserver: class {
             updateIsVideoEnabled()
             updateLockTimerEnabling()
 
-            Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(call)")
+            Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(String(describing: call))")
 
             for observer in observers {
                 observer.value?.didUpdateCall(call:call)
@@ -688,7 +688,7 @@ protocol CallServiceObserver: class {
         guard thread.contactIdentifier() == self.thread?.contactIdentifier() else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("\(TAG) ignoring hangup for thread:\(thread) which is not the current thread: \(self.thread)")
+            Logger.warn("\(TAG) ignoring hangup for thread:\(thread) which is not the current thread: \(String(describing: self.thread))")
             return
         }
 

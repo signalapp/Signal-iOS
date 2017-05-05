@@ -188,7 +188,7 @@ class MessageFetcherJob: NSObject {
                                             Logger.debug("\(self.TAG) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
         },
                                         failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("\(self.TAG) acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(error)")
+                                            Logger.debug("\(self.TAG) acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
         })
     }
 }
