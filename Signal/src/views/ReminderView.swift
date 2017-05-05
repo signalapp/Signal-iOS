@@ -4,13 +4,13 @@
 
 import Foundation
 
-class NotificationView: UIView {
+class ReminderView: UIView {
 
-    let TAG = "[NotificationView]"
+    let TAG = "[ReminderView]"
     let label = UILabel()
 
     let defaultTapAction = {
-        Logger.debug("[NotificationView] tapped.")
+        Logger.debug("[ReminderView] tapped.")
     }
 
     var tapAction: () -> Void
@@ -47,7 +47,7 @@ class NotificationView: UIView {
     }
 
     func setupSubviews() {
-        self.backgroundColor = UIColor.ows_infoMessageBorder().withAlphaComponent(0.20)
+        self.backgroundColor = UIColor.ows_reminderYellow()
         self.clipsToBounds = true
 
         let container = UIView()
