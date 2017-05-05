@@ -97,11 +97,13 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
 
-- (void)gestureDidStartVoiceMemo;
+- (void)voiceMemoGestureDidStart;
 
-- (void)gestureDidEndVoiceMemo;
+- (void)voiceMemoGestureDidEnd;
 
-- (void)gestureDidCancelVoiceMemo;
+- (void)voiceMemoGestureDidCancel;
+
+- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha;
 
 @end
 
@@ -120,6 +122,8 @@ typedef enum : NSUInteger {
 @property (weak, nonatomic) id<UITextViewDelegate> jsqDelegate;
 
 @property (nonatomic) BOOL isRecordingVoiceMemo;
+
+@property (nonatomic) CGPoint voiceMemoGestureStart;
 
 @end
 
@@ -382,24 +386,38 @@ typedef enum : NSUInteger {
         case UIGestureRecognizerStateFailed:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate gestureDidCancelVoiceMemo];
+                [self.textViewPasteDelegate voiceMemoGestureDidCancel];
             }
             break;
         case UIGestureRecognizerStateBegan:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate gestureDidCancelVoiceMemo];
+                [self.textViewPasteDelegate voiceMemoGestureDidCancel];
             }
+            [self resignFirstResponder];
             self.isRecordingVoiceMemo = YES;
-            [self.textViewPasteDelegate gestureDidStartVoiceMemo];
+            self.voiceMemoGestureStart = [sender locationInView:self];
+            [self.textViewPasteDelegate voiceMemoGestureDidStart];
             break;
         case UIGestureRecognizerStateChanged:
-            // TODO:
+            if (self.isRecordingVoiceMemo) {
+                CGPoint location = [sender locationInView:self];
+                CGFloat offset = MAX(0, self.voiceMemoGestureStart.x - location.x);
+                const CGFloat kCancelOffsetPoints = 50.f;
+                CGFloat cancelAlpha = offset / kCancelOffsetPoints;
+                BOOL isCancelled = cancelAlpha >= 1.f;
+                if (isCancelled) {
+                    self.isRecordingVoiceMemo = NO;
+                    [self.textViewPasteDelegate voiceMemoGestureDidCancel];
+                } else {
+                    [self.textViewPasteDelegate voiceMemoGestureDidChange:cancelAlpha];
+                }
+            }
             break;
         case UIGestureRecognizerStateEnded:
             if (self.isRecordingVoiceMemo) {
                 self.isRecordingVoiceMemo = NO;
-                [self.textViewPasteDelegate gestureDidEndVoiceMemo];
+                [self.textViewPasteDelegate voiceMemoGestureDidEnd];
             }
             break;
     }
@@ -493,6 +511,8 @@ typedef enum : NSUInteger {
 
 - (void)showVoiceMemoUI
 {
+    OWSAssert([NSThread isMainThread]);
+
     self.voiceMemoStartTime = [NSDate date];
 
     [self.voiceMemoUI removeFromSuperview];
@@ -577,6 +597,8 @@ typedef enum : NSUInteger {
 
 - (void)hideVoiceMemoUI:(BOOL)animated
 {
+    OWSAssert([NSThread isMainThread]);
+
     UIView *voiceMemoUI = self.voiceMemoUI;
     self.voiceMemoUI = nil;
     NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
@@ -599,8 +621,21 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // Fade out the voice memo views as the cancel gesture
+    // proceeds as feedback.
+    for (UIView *subview in self.voiceMemoUI.subviews) {
+        subview.layer.opacity = MAX(0.f, MIN(1.f, 1.f - (float)cancelAlpha));
+    }
+}
+
 - (void)updateVoiceMemo
 {
+    OWSAssert([NSThread isMainThread]);
+
     NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
     self.recordingLabel.text = [ViewControllerUtils formatDurationSeconds:(long)round(durationSeconds)];
     [self.recordingLabel sizeToFit];
@@ -3223,7 +3258,16 @@ typedef enum : NSUInteger {
         return;
     }
 
+    NSTimeInterval currentTime = self.audioRecorder.currentTime;
+
     [self.audioRecorder stop];
+
+    const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
+    if (currentTime < kMinimumRecordingTimeSeconds) {
+        DDLogInfo(@"Discarding voice memo; too short.");
+        self.audioRecorder = nil;
+        return;
+    }
 
     NSData *audioData = [NSData dataWithContentsOfURL:self.audioRecorder.url];
 
@@ -3556,34 +3600,41 @@ typedef enum : NSUInteger {
                      completion:nil];
 }
 
-- (void)gestureDidStartVoiceMemo
+- (void)voiceMemoGestureDidStart
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"gestureDidStartVoiceMemo");
+    DDLogInfo(@"voiceMemoGestureDidStart");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
     [self startRecordingVoiceMemo];
 }
 
-- (void)gestureDidEndVoiceMemo
+- (void)voiceMemoGestureDidEnd
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"gestureDidEndVoiceMemo");
+    DDLogInfo(@"voiceMemoGestureDidEnd");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:YES];
     [self endRecordingVoiceMemo];
 }
 
-- (void)gestureDidCancelVoiceMemo
+- (void)voiceMemoGestureDidCancel
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"gestureDidCancelVoiceMemo");
+    DDLogInfo(@"voiceMemoGestureDidCancel");
 
     [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
     [self cancelRecordingVoiceMemo];
+}
+
+- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
 - (void)cancelVoiceMemo
