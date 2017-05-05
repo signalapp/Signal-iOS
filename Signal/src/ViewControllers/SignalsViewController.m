@@ -168,7 +168,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
 
-    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION", @"Multi line label explainging how to show names instead of phone numbers in your inbox");
+    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
     self.missingContactsPermissionView.tapAction = ^{
         [[UIApplication sharedApplication] openSystemSettings];
     };
