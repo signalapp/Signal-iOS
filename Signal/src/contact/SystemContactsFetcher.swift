@@ -88,21 +88,30 @@ class SystemContactsFetcher: NSObject {
     }
 
     private func updateContacts() {
+        AssertIsOnMainThread()
+
         systemContactsHaveBeenRequestedAtLeastOnce = true
 
-        var systemContacts = [CNContact]()
-        do {
-            let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
-            try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
-                systemContacts.append(contact)
-            }
-        } catch let error as NSError {
-            Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
-            assertionFailure()
-        }
+        let contactStore = self.contactStore
+        let allowedContactKeys = self.allowedContactKeys
 
-        let contacts = systemContacts.map { Contact(systemContact: $0) }
-        self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
+        DispatchQueue.global().async {
+            var systemContacts = [CNContact]()
+            do {
+                let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
+                try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                    systemContacts.append(contact)
+                }
+            } catch let error as NSError {
+                Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
+                assertionFailure()
+            }
+
+            let contacts = systemContacts.map { Contact(systemContact: $0) }
+            DispatchQueue.main.async {
+                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
+            }
+        }
     }
 
     private func startObservingContactChanges() {
