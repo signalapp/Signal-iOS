@@ -15,7 +15,7 @@
 + (NSString *)callingCodeFromCountryCode:(NSString *)countryCode;
 + (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
-+ (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode;
+- (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode;
 
 + (NSUInteger)translateCursorPosition:(NSUInteger)offset
                                  from:(NSString *)source

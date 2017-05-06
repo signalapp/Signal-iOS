@@ -7,6 +7,14 @@
 #import "FunctionalUtil.h"
 #import "Util.h"
 
+@interface PhoneNumberUtil ()
+
+@property (nonatomic, readonly) NSMutableDictionary *countryCodesFromCallingCodeCache;
+
+@end
+
+#pragma mark -
+
 @implementation PhoneNumberUtil
 
 + (instancetype)sharedUtil {
@@ -23,6 +31,7 @@
 
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
+        _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
 
         OWSSingletonAssert();
     }
@@ -87,15 +96,26 @@
     return callingCode;
 }
 
-+ (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode {
-    NSMutableArray *countryCodes = [NSMutableArray new];
-    for (NSString *countryCode in NSLocale.ISOCountryCodes) {
-        NSString *callingCodeForCountryCode = [self callingCodeFromCountryCode:countryCode];
-        if ([callingCode isEqualToString:callingCodeForCountryCode]) {
-            [countryCodes addObject:countryCode];
+- (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode
+{
+    @synchronized(self)
+    {
+        OWSAssert(callingCode.length > 0);
+
+        NSArray *result = self.countryCodesFromCallingCodeCache[callingCode];
+        if (!result) {
+            NSMutableArray *countryCodes = [NSMutableArray new];
+            for (NSString *countryCode in NSLocale.ISOCountryCodes) {
+                NSString *callingCodeForCountryCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+                if ([callingCode isEqualToString:callingCodeForCountryCode]) {
+                    [countryCodes addObject:countryCode];
+                }
+            }
+            result = [countryCodes copy];
+            self.countryCodesFromCallingCodeCache[callingCode] = result;
         }
+        return result;
     }
-    return countryCodes;
 }
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
