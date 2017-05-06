@@ -42,9 +42,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // access if they haven't granted it.
 - (void)fetchSystemContactsIfAlreadyAuthorized;
 
-// TODO: Remove this method.
-- (NSArray<Contact *> *)signalContacts;
-
 #pragma mark - Util
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
@@ -52,8 +49,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-
-+ (NSComparator _Nonnull)contactComparator;
 
 @end
 

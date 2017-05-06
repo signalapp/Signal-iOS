@@ -11,12 +11,12 @@
 #import "OWSContactsManager.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
-#import "SignalAccount.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>

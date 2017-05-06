@@ -11,7 +11,6 @@
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
-#import "SignalAccount.h"
 #import "StringUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
@@ -20,6 +19,7 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

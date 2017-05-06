@@ -8,12 +8,12 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
-#import "SignalAccount.h"
 #import "SignalsViewController.h"
 #import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 

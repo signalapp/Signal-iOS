@@ -23,7 +23,6 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "SignalAccount.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
@@ -58,6 +57,7 @@
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachment.h>

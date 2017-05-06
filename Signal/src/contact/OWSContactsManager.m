@@ -5,10 +5,10 @@
 #import "OWSContactsManager.h"
 #import "Environment.h"
 #import "Signal-Swift.h"
-#import "SignalAccount.h"
 #import "Util.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/SignalAccount.h>
 
 @import Contacts;
 
@@ -267,27 +267,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 }
 
 #pragma mark - Whisper User Management
-
-- (NSArray *)getSignalUsersFromContactsArray:(NSArray *)contacts {
-    NSMutableDictionary *signalContacts = [NSMutableDictionary new];
-    for (Contact *contact in contacts) {
-        if ([contact isSignalContact]) {
-            signalContacts[contact.textSecureIdentifiers.firstObject] = contact;
-        }
-    }
-
-    return [signalContacts.allValues sortedArrayUsingComparator:[[self class] contactComparator]];
-}
-
-+ (NSComparator)contactComparator
-{
-    BOOL firstNameOrdering = ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
-    return [Contact comparatorSortingNamesByFirstThenLast:firstNameOrdering];
-}
-
-- (NSArray<Contact *> * _Nonnull)signalContacts {
-    return [self getSignalUsersFromContactsArray:[self allContacts]];
-}
 
 - (NSString *)unknownContactName
 {

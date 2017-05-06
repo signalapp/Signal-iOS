@@ -11,12 +11,12 @@
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import "SignalAccount.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
