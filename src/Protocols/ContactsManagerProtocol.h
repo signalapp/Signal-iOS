@@ -1,14 +1,16 @@
-//  Created by Frederic Jacobs on 05/12/15.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
-@class PhoneNumber;
 @class Contact;
+@class PhoneNumber;
+@class SignalAccount;
 @class UIImage;
 
 @protocol ContactsManagerProtocol <NSObject>
 
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
-- (NSArray<Contact *> * _Nonnull)signalContacts;
+- (NSArray<SignalAccount *> * _Nonnull)signalAccounts;
 
 #if TARGET_OS_IPHONE
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
