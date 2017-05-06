@@ -183,7 +183,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         return self;
     }
 
-    [self commonInit];
+    [self owsTableCommonInit];
 
     return self;
 }
@@ -195,7 +195,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         return self;
     }
 
-    [self commonInit];
+    [self owsTableCommonInit];
 
     return self;
 }
@@ -207,12 +207,12 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         return self;
     }
 
-    [self commonInit];
+    [self owsTableCommonInit];
 
     return self;
 }
 
-- (void)commonInit
+- (void)owsTableCommonInit
 {
     _contents = [OWSTableContents new];
     self.tableViewStyle = UITableViewStyleGrouped;
