@@ -39,6 +39,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic) long inboxCount;
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
+@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 
 // Dependencies
 
@@ -49,11 +50,16 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
+// Views
+
+@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
 @end
 
 @implementation SignalsViewController
+
+#pragma mark - Init
 
 - (instancetype)init
 {
@@ -105,11 +111,13 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Notifications
+
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-
+        
         [self.tableView reloadData];
     });
 }
@@ -120,6 +128,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         [self.tableView reloadData];
     });
 }
+
+#pragma mark - View Life Cycle
 
 - (void)awakeFromNib
 {
@@ -156,6 +166,15 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.segmentedControl setSelectedSegmentIndex:0];
     navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+
+
+    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION", @"Multi line label explainging how to show names instead of phone numbers in your inbox");
+    self.missingContactsPermissionView.tapAction = ^{
+        [[UIApplication sharedApplication] openSystemSettings];
+    };
+    // Should only have to do this once per load (e.g. vs did appear) since app restarts when permissions change.
+    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -328,6 +347,15 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
+- (BOOL)shouldShowMissingContactsPermissionView
+{
+    if ([TSContactThread numberOfKeysInCollection] == 0) {
+        return NO;
+    }
+
+    return !self.contactsManager.isSystemContactsAuthorized;
+}
+
 #pragma mark - Table View Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -338,7 +366,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
-- (InboxTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     InboxTableViewCell *cell =
         [self.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([InboxTableViewCell class])];
     TSThread *thread = [self threadForIndexPath:indexPath];

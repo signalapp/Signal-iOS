@@ -16,4 +16,8 @@ extension UIApplication {
         return viewController
     }
 
+    func openSystemSettings() {
+        openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+    }
+
 }

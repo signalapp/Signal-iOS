@@ -9,6 +9,7 @@
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "SignalsViewController.h"
+#import "Signal-Swift.h"
 #import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -273,9 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       @"Button text which opens the settings app")
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *_Nonnull action) {
-                                                              NSURL *settingsUrl = [NSURL
-                                                                  URLWithString:UIApplicationOpenSettingsURLString];
-                                                              [[UIApplication sharedApplication] openURL:settingsUrl];
+                                                              [[UIApplication sharedApplication] openSystemSettings];
                                                           }]];
 
         [self presentViewController:alertController animated:YES completion:nil];

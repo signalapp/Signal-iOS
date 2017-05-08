@@ -72,7 +72,7 @@ import Foundation
         let dismissAction = UIAlertAction(title: dismiss, style: .cancel)
         let settingsString = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
         let settingsAction = UIAlertAction(title: settingsString, style: .default) { _ in
-            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+            UIApplication.shared.openSystemSettings()
         }
         alertController.addAction(dismissAction)
         alertController.addAction(settingsAction)
