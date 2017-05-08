@@ -58,15 +58,12 @@ class SystemContactsFetcher: NSObject {
                 }
 
                 if !granted {
-                    // TODO, make this a one time dismissable admonishment
-                    // e.g. remember across launches that the user has dismissed.
-                    self.displayMissingContactsPermissionAlert()
+                    Logger.info("\(self.TAG) declined contact access.")
                 } else {
                     self.updateContacts()
                 }
             })
         case .authorized:
-            // TODO reset onetime admonishment reminder, so that we remind user again (once) if they've since toggled permissions.
             self.updateContacts()
         case .denied, .restricted:
             Logger.debug("\(TAG) contacts were \(self.authorizationStatus)")
@@ -80,11 +77,6 @@ class SystemContactsFetcher: NSObject {
         }
 
         updateContacts()
-    }
-
-    private func displayMissingContactsPermissionAlert() {
-        let foo = UIApplication.shared.frontmostViewController
-        Logger.error("TODO")
     }
 
     private func updateContacts() {
