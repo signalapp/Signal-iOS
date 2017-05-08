@@ -216,6 +216,12 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
+        if let filename = filename {
+            let fileExtension = (filename as NSString).pathExtension
+            if fileExtension.characters.count > 0 {
+                return fileExtension
+            }
+        }
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return "txt"
         }
