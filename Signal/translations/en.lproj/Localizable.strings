@@ -422,7 +422,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
@@ -860,9 +860,6 @@
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
 
-/* Label for 'Radio' phone numbers. */
-"PHONE_NUMBER_TYPE_RADIO" = "Radio";
-
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
 
@@ -1281,7 +1278,16 @@
 "VERIFY_PRIVACY" = "Verify Safety Number";
 
 /* Indicates how to cancel a voice memo. */
-"VOICE_MEMO_CANCEL_INSTRUCTIONS" = "Slide To Cancel";
+"VOICE_MEMO_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+
+/* Filename for voice memoes. */
+"VOICE_MEMO_FILE_NAME" = "Voice Memo";
+
+/* Message of the 'voice memo needs recording permission' alert. */
+"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_MESSAGE" = "You can grant Signal access to your microphone in the Settings App >> Privacy >> Microphone >> Signal.";
+
+/* Title of the 'voice memo needs recording permission' alert. */
+"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_TITLE" = "Can't Record";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";

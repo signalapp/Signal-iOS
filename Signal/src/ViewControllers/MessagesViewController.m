@@ -165,13 +165,13 @@ typedef enum : NSUInteger {
 
 @interface OWSMessagesToolbarContentView ()
 
-@property (nonatomic, weak) id<OWSMessagesToolbarContentDelegate> delegate;
+@property (nonatomic, nullable, weak) id<OWSMessagesToolbarContentDelegate> delegate;
 
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
 
-@property (nonatomic) UIButton *voiceMemoButton;
+@property (nonatomic, nullable) UIButton *voiceMemoButton;
 
-@property (nonatomic) UIButton *sendButton;
+@property (nonatomic, nullable) UIButton *sendButton;
 
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 
@@ -193,6 +193,26 @@ typedef enum : NSUInteger {
 
 - (void)ensureSubviews
 {
+    if (!self.sendButton) {
+        OWSAssert(self.rightBarButtonItem);
+
+        self.sendButton = self.rightBarButtonItem;
+    }
+
+    if (!self.voiceMemoButton) {
+        UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+        OWSAssert(icon);
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                forState:UIControlStateNormal];
+        button.imageView.tintColor = [UIColor ows_materialBlueColor];
+        UILongPressGestureRecognizer *longPressGestureRecognizer =
+            [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        longPressGestureRecognizer.minimumPressDuration = 0;
+        [button addGestureRecognizer:longPressGestureRecognizer];
+        self.voiceMemoButton = button;
+    }
+
     [self ensureShouldShowVoiceMemoButton];
 
     [self ensureVoiceMemoButton];
@@ -224,30 +244,7 @@ typedef enum : NSUInteger {
 
 - (void)ensureVoiceMemoButton
 {
-    if (!self.superview) {
-        return;
-    }
-
-    if (!self.sendButton) {
-        OWSAssert(self.rightBarButtonItem);
-
-        self.sendButton = self.rightBarButtonItem;
-    }
-
     if (self.shouldShowVoiceMemoButton) {
-        if (!self.voiceMemoButton) {
-            UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
-            OWSAssert(icon);
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-            [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                    forState:UIControlStateNormal];
-            button.imageView.tintColor = [UIColor ows_materialBlueColor];
-            [button
-                addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(handleLongPress:)]];
-            self.voiceMemoButton = button;
-        }
-
         self.rightBarButtonItem = self.voiceMemoButton;
         self.rightBarButtonItemWidth = [self.voiceMemoButton sizeThatFits:CGSizeZero].width;
     } else {
@@ -338,6 +335,7 @@ typedef enum : NSUInteger {
 - (void)toggleSendButtonEnabled
 {
     // Do nothing; disables JSQ's control over send button enabling.
+    // Overrides a method in JSQMessagesInputToolbar.
 }
 
 - (JSQMessagesToolbarContentView *)loadToolbarContentView {
@@ -438,24 +436,24 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    UIView *voiceMemoUI = self.voiceMemoUI;
+    UIView *oldVoiceMemoUI = self.voiceMemoUI;
     self.voiceMemoUI = nil;
     NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
     self.voiceMemoUpdateTimer = nil;
 
-    [self.voiceMemoUI.layer removeAllAnimations];
+    [oldVoiceMemoUI.layer removeAllAnimations];
 
     if (animated) {
         [UIView animateWithDuration:0.35f
             animations:^{
-                voiceMemoUI.layer.opacity = 0.f;
+                oldVoiceMemoUI.layer.opacity = 0.f;
             }
             completion:^(BOOL finished) {
-                [voiceMemoUI removeFromSuperview];
+                [oldVoiceMemoUI removeFromSuperview];
                 [voiceMemoUpdateTimer invalidate];
             }];
     } else {
-        [voiceMemoUI removeFromSuperview];
+        [oldVoiceMemoUI removeFromSuperview];
         [voiceMemoUpdateTimer invalidate];
     }
 }
@@ -3049,7 +3047,7 @@ typedef enum : NSUInteger {
     [session setCategory:AVAudioSessionCategoryRecord error:&error];
     if (error) {
         DDLogError(@"%@ Couldn't configure audio session: %@", self.tag, error);
-        [self resetRecordingVoiceMemo];
+        [self cancelVoiceMemo];
         OWSAssert(0);
         return;
     }
@@ -3065,7 +3063,7 @@ typedef enum : NSUInteger {
                                                         error:&error];
     if (error) {
         DDLogError(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
-        [self resetRecordingVoiceMemo];
+        [self cancelVoiceMemo];
         OWSAssert(0);
         return;
     }
@@ -3074,15 +3072,26 @@ typedef enum : NSUInteger {
 
     if (![self.audioRecorder prepareToRecord]) {
         DDLogError(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
-        [self resetRecordingVoiceMemo];
+        [self cancelVoiceMemo];
         OWSAssert(0);
         return;
     }
 
     if (![self.audioRecorder record]) {
         DDLogError(@"%@ audioRecorder couldn't record.", self.tag);
-        [self resetRecordingVoiceMemo];
+        [self cancelVoiceMemo];
         OWSAssert(0);
+        return;
+    }
+
+    if (session.recordPermission != AVAudioSessionRecordPermissionGranted) {
+        DDLogError(@"%@ we do not have recording permission.", self.tag);
+        [self cancelVoiceMemo];
+        [ViewControllerUtils
+            showAlertWithTitle:NSLocalizedString(@"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_TITLE",
+                                   @"Title of the 'voice memo needs recording permission' alert.")
+                       message:NSLocalizedString(@"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_MESSAGE",
+                                   @"Message of the 'voice memo needs recording permission' alert.")];
         return;
     }
 }
@@ -3121,8 +3130,11 @@ typedef enum : NSUInteger {
 
     self.audioRecorder = nil;
 
+    NSString *filename = [NSLocalizedString(@"VOICE_MEMO_FILE_NAME", @"Filename for voice memoes.")
+        stringByAppendingPathExtension:[MIMETypeUtil fileExtensionForUTIType:(NSString *)kUTTypeMPEG4Audio]];
+
     SignalAttachment *attachment =
-        [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
+        [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:filename];
     if (!attachment || [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
             self.tag,
@@ -3492,6 +3504,8 @@ typedef enum : NSUInteger {
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    // Override.
+    //
     // We want to show the "voice memo" button if the text input is empty
     // and the "send" button if it isn't.
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];

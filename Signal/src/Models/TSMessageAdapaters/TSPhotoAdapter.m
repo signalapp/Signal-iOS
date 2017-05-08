@@ -8,6 +8,7 @@
 #import "TSAttachmentStream.h"
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <SignalServiceKit/MimeTypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -116,18 +117,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (action == @selector(copy:)) {
         // We should always copy to the pasteboard as data, not an UIImage.
-        // The pasteboard should has as specific as UTI type as possible and
+        // The pasteboard should have as specific as UTI type as possible and
         // data support should be far more general than UIImage support.
-        OWSAssert(self.attachment.filePath.length > 0);
-        NSString *fileExtension = [self.attachment.filePath pathExtension];
-        NSArray *utiTypes = (__bridge_transfer NSArray *)UTTypeCreateAllIdentifiersForTag(
-            kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, (CFStringRef) @"public.image");
-        NSString *utiType = (NSString *)kUTTypeImage;
-        OWSAssert(utiTypes.count > 0);
-        if (utiTypes.count > 0) {
-            utiType = utiTypes[0];
-        }
 
+        NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
+        if (!utiType) {
+            OWSAssert(0);
+            utiType = (NSString *)kUTTypeImage;
+        }
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         return;
