@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 #pragma mark - Table Contents
@@ -439,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[Environment preferences] setHasDeclinedNoContactsView:YES];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 - (void)presentInviteFlow
@@ -450,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
-- (void)showNoContactsModeIfNecessary
+- (void)showContactAppropriateViews
 {
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
         BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
@@ -621,7 +621,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self updateTableContents];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 - (BOOL)shouldHideLocalNumber
