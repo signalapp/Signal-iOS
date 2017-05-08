@@ -207,7 +207,7 @@ typedef enum : NSUInteger {
                 forState:UIControlStateNormal];
         button.imageView.tintColor = [UIColor ows_materialBlueColor];
 
-        // We want to be permissive about the voice memo gesture, so we:
+        // We want to be permissive about the voice message gesture, so we:
         //
         // * Add the gesture recognizer to the button's superview instead of the button.
         // * Filter the touches that the gesture recognizer receives by serving as its
@@ -269,18 +269,18 @@ typedef enum : NSUInteger {
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
             if (self.isRecordingVoiceMemo) {
-                // Cancel voice memo if necessary.
+                // Cancel voice message if necessary.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidCancel];
             }
             break;
         case UIGestureRecognizerStateBegan:
             if (self.isRecordingVoiceMemo) {
-                // Cancel voice memo if necessary.
+                // Cancel voice message if necessary.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidCancel];
             }
-            // Start voice memo.
+            // Start voice message.
             [self.textView resignFirstResponder];
             self.isRecordingVoiceMemo = YES;
             self.voiceMemoGestureStartLocation = [sender locationInView:self];
@@ -306,7 +306,7 @@ typedef enum : NSUInteger {
             break;
         case UIGestureRecognizerStateEnded:
             if (self.isRecordingVoiceMemo) {
-                // End voice memo.
+                // End voice message.
                 self.isRecordingVoiceMemo = NO;
                 [self.delegate voiceMemoGestureDidEnd];
             }
@@ -325,7 +325,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    // We want to be permissive about the voice memo gesture, so we accept
+    // We want to be permissive about the voice message gesture, so we accept
     // gesture that begin within N points of the
     CGFloat kVoiceMemoGestureTolerancePoints = 10;
     CGPoint location = [touch locationInView:self.voiceMemoButton];
@@ -399,7 +399,8 @@ typedef enum : NSUInteger {
     UILabel *cancelLabel = [UILabel new];
     cancelLabel.textColor = [UIColor ows_destructiveRedColor];
     cancelLabel.font = [UIFont ows_mediumFontWithSize:14.f];
-    cancelLabel.text = NSLocalizedString(@"VOICE_MEMO_CANCEL_INSTRUCTIONS", @"Indicates how to cancel a voice memo.");
+    cancelLabel.text
+        = NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS", @"Indicates how to cancel a voice message.");
     [self.voiceMemoUI addSubview:cancelLabel];
 
     [imageView autoVCenterInSuperview];
@@ -484,7 +485,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    // Fade out the voice memo views as the cancel gesture
+    // Fade out the voice message views as the cancel gesture
     // proceeds as feedback.
     for (UIView *subview in self.voiceMemoUI.subviews) {
         subview.layer.opacity = MAX(0.f, MIN(1.f, 1.f - (float)cancelAlpha));
@@ -3132,8 +3133,16 @@ typedef enum : NSUInteger {
 
     const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
     if (currentTime < kMinimumRecordingTimeSeconds) {
-        DDLogInfo(@"Discarding voice memo; too short.");
+        DDLogInfo(@"Discarding voice message; too short.");
         self.audioRecorder = nil;
+
+        [OWSAlerts
+            showAlertWithTitle:
+                NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE",
+                    @"Title for the alert indicating the 'voice message' needs to be held to be held down to record.")
+                       message:NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
+                                   @"Message for the alert indicating the 'voice message' needs to be held to be held "
+                                   @"down to record.")];
         return;
     }
 
@@ -3148,7 +3157,7 @@ typedef enum : NSUInteger {
 
     self.audioRecorder = nil;
 
-    NSString *filename = [NSLocalizedString(@"VOICE_MEMO_FILE_NAME", @"Filename for voice memos.")
+    NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:[MIMETypeUtil fileExtensionForUTIType:(NSString *)kUTTypeMPEG4Audio]];
 
     SignalAttachment *attachment =
@@ -3524,7 +3533,7 @@ typedef enum : NSUInteger {
 {
     // Override.
     //
-    // We want to show the "voice memo" button if the text input is empty
+    // We want to show the "voice message" button if the text input is empty
     // and the "send" button if it isn't.
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
 }

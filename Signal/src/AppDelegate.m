@@ -270,25 +270,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSString *filename = url.lastPathComponent;
         if ([filename stringByDeletingPathExtension].length < 1) {
             DDLogError(@"Application opened with URL invalid filename: %@", url);
-            [ViewControllerUtils
-                showAlertWithTitle:
-                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
-                                       @"Message for the alert indicating the 'export with signal' file had an "
-                                       @"invalid filename.")];
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
+                                              @"Message for the alert indicating the 'export with signal' file had an "
+                                              @"invalid filename.")];
             return NO;
         }
         NSString *fileExtension = [filename pathExtension];
         if (fileExtension.length < 1) {
             DDLogError(@"Application opened with URL missing file extension: %@", url);
-            [ViewControllerUtils
-                showAlertWithTitle:
-                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
-                                       @"Message for the alert indicating the 'export with signal' file had "
-                                       @"unknown type.")];
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
+                                              @"Message for the alert indicating the 'export with signal' file had "
+                                              @"unknown type.")];
             return NO;
         }
         
@@ -320,7 +318,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         } else if ([isDirectory boolValue]) {
             DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
             DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [ViewControllerUtils
+            [OWSAlerts
                 showAlertWithTitle:
                     NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
                         @"Alert title when picking a document fails because user picked a directory/bundle")
@@ -333,34 +331,31 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSData *data = [NSData dataWithContentsOfURL:url];
         if (!data) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [ViewControllerUtils
-                showAlertWithTitle:
-                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
-                                       @"Message for the alert indicating the 'export with signal' data "
-                                       @"couldn't be loaded.")];
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
+                                              @"Message for the alert indicating the 'export with signal' data "
+                                              @"couldn't be loaded.")];
             return NO;
         }
         SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
-            [ViewControllerUtils
-                showAlertWithTitle:
-                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                           message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
-                                       @"Message for the alert indicating the 'export with signal' attachment "
-                                       @"couldn't be loaded.")];
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
+                                              @"Message for the alert indicating the 'export with signal' attachment "
+                                              @"couldn't be loaded.")];
             return NO;
         }
         if ([attachment hasError]) {
             DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
-            [ViewControllerUtils
-                showAlertWithTitle:
-                    NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                        @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                           message:[attachment errorName]];
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:[attachment errorName]];
             return NO;
         }
         DDLogInfo(@"Application opened with URL: %@", url);

@@ -22,4 +22,16 @@ import Foundation
         alertController.addAction(settingsAction)
         UIApplication.shared.frontmostViewController?.present(alertController, animated: true, completion: nil)
     }
+
+    public class func showAlert(withTitle title: String, message: String) {
+        self.showAlert(withTitle: title, message: message, buttonLabel: NSLocalizedString("OK", comment: ""))
+    }
+
+    public class func showAlert(withTitle title: String, message: String, buttonLabel: String) {
+        assert(title.characters.count > 0)
+        assert(message.characters.count > 0)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: buttonLabel, style: .default, handler: nil))
+        UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
+    }
 }

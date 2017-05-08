@@ -12,6 +12,7 @@
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
 #import "UIUtil.h"
@@ -307,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         [weakSelf showUnblockAlertForRecipientId:recipientId];
                                     }
                                 } else {
-                                    [ViewControllerUtils
+                                    [OWSAlerts
                                         showAlertWithTitle:
                                             NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
                                                 @"Title for alert indicating that group members can't be removed.")

@@ -115,30 +115,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - Alerts
-
-+ (UIAlertController *)showAlertWithTitle:(NSString *)title message:(NSString *)message
-{
-    return [self showAlertWithTitle:title message:message buttonLabel:NSLocalizedString(@"OK", nil)];
-}
-
-+ (UIAlertController *)showAlertWithTitle:(NSString *)title
-                                  message:(NSString *)message
-                              buttonLabel:(NSString *)buttonLabel
-{
-    OWSAssert(title.length > 0);
-    OWSAssert(message.length > 0);
-
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-
-    [alert addAction:[UIAlertAction actionWithTitle:buttonLabel style:UIAlertActionStyleDefault handler:nil]];
-
-    [[UIApplication sharedApplication].frontmostViewController presentViewController:alert animated:YES completion:nil];
-
-    return alert;
-}
-
 #pragma mark - Logging
 
 + (NSString *)tag
