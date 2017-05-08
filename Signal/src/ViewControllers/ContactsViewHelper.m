@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper ()
 
+// This property is a cached value that is lazy-populated.
+@property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
+
 @property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
@@ -143,6 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.signalAccountMap = [signalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
+    self.nonSignalContacts = nil;
 
     [self.delegate contactsViewHelperDidUpdateContacts];
 }
@@ -178,15 +182,19 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
+{
+    return [[[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+        componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return searchTerm.length > 0;
+        }]];
+}
+
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
-    NSArray<NSString *> *searchTerms =
-        [[[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-            componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-            filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
-                                            NSDictionary<NSString *, id> *_Nullable bindings) {
-                return searchTerm.length > 0;
-            }]];
+    NSArray<NSString *> *searchTerms = [self searchTermsForSearchString:searchText];
 
     if (searchTerms.count < 1) {
         return self.signalAccounts;
@@ -197,6 +205,76 @@ NS_ASSUME_NONNULL_BEGIN
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
             return [self doesSignalAccount:signalAccount matchSearchTerms:searchTerms];
         }]];
+}
+
+- (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
+{
+    OWSAssert(contact);
+    OWSAssert(searchTerm.length > 0);
+
+    if ([contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
+        return YES;
+    }
+
+    NSString *asPhoneNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
+    if (asPhoneNumber.length > 0) {
+        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+            if ([phoneNumber.toE164 containsString:asPhoneNumber]) {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
+}
+
+- (BOOL)doesContact:(Contact *)contact matchSearchTerms:(NSArray<NSString *> *)searchTerms
+{
+    OWSAssert(contact);
+    OWSAssert(searchTerms.count > 0);
+
+    for (NSString *searchTerm in searchTerms) {
+        if (![self doesContact:contact matchSearchTerm:searchTerm]) {
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
+- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText
+{
+    NSArray<NSString *> *searchTerms = [self searchTermsForSearchString:searchText];
+
+    if (searchTerms.count < 1) {
+        return [NSArray new];
+    }
+
+    return [self.nonSignalContacts filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(Contact *contact,
+                                                                   NSDictionary<NSString *, id> *_Nullable bindings) {
+        return [self doesContact:contact matchSearchTerms:searchTerms];
+    }]];
+}
+
+- (nullable NSArray<Contact *> *)nonSignalContacts
+{
+    if (!_nonSignalContacts) {
+        NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
+        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
+                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
+                if (signalRecipients.count < 1) {
+                    [nonSignalContacts addObject:contact];
+                }
+            }
+        }];
+        _nonSignalContacts = [nonSignalContacts.allObjects
+            sortedArrayUsingComparator:^NSComparisonResult(Contact *_Nonnull left, Contact *_Nonnull right) {
+                return [left.fullName compare:right.fullName];
+            }];
+    }
+
+    return _nonSignalContacts;
 }
 
 @end

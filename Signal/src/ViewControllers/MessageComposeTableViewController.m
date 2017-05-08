@@ -218,6 +218,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableSection *section = [OWSTableSection new];
 
+    const CGFloat kActionCellHeight
+        = ScaleFromIPhone5To7Plus(round((kOWSTable_DefaultCellHeight + [ContactTableViewCell rowHeight]) * 0.5f),
+            [ContactTableViewCell rowHeight]);
+
     // Find Non-Contacts by Phone Number
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
@@ -228,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     }
-                         customRowHeight:[ContactTableViewCell rowHeight]
+                         customRowHeight:kActionCellHeight
                          actionBlock:^{
                              NewNonContactConversationViewController *viewController =
                                  [NewNonContactConversationViewController new];
@@ -246,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     }
-                         customRowHeight:[ContactTableViewCell rowHeight]
+                         customRowHeight:kActionCellHeight
                          actionBlock:^{
                              [weakSelf presentInviteFlow];
                          }]];
@@ -287,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 return cell;
             }
-                                 customRowHeight:[ContactTableViewCell rowHeight]
+                                 customRowHeight:kActionCellHeight
                                  actionBlock:^{
                                      [weakSelf sendTextToPhoneNumber:phoneNumber];
                                  }]];
@@ -316,6 +320,40 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL hasSearchText = [self.searchBar text].length > 0;
+    BOOL hasSearchResults = filteredSignalAccounts.count > 0;
+
+    // Invitation offers for non-signal contacts
+    if (hasSearchText) {
+        for (Contact *contact in [helper nonSignalContactsMatchingSearchString:[self.searchBar text]]) {
+            hasSearchResults = YES;
+
+            OWSAssert(contact.parsedPhoneNumbers.count > 0);
+            // TODO: Should we invite all of their phone numbers?
+            PhoneNumber *phoneNumber = contact.parsedPhoneNumbers[0];
+            NSString *displayName = contact.fullName;
+            if (displayName.length < 1) {
+                displayName = phoneNumber.toE164;
+            }
+
+            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                UITableViewCell *cell = [UITableViewCell new];
+                cell.textLabel.text =
+                    [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                   @"Text for button to send a Signal invite via SMS. %@ is "
+                                                   @"placeholder for the receipient's phone number."),
+                              displayName];
+                cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+                cell.textLabel.textColor = [UIColor blackColor];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                return cell;
+            }
+                                 customRowHeight:kActionCellHeight
+                                 actionBlock:^{
+                                     [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
+                                 }]];
+        }
+    }
+
     if (!hasSearchText && helper.signalAccounts.count < 1) {
         // No Contacts
 
@@ -329,11 +367,11 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-                                               customRowHeight:[ContactTableViewCell rowHeight]
+                                               customRowHeight:kActionCellHeight
                                                    actionBlock:nil]];
     }
 
-    if (hasSearchText && filteredSignalAccounts.count < 1) {
+    if (hasSearchText && !hasSearchResults) {
         // No Search Results
 
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -346,7 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-                                               customRowHeight:[ContactTableViewCell rowHeight]
+                                               customRowHeight:kActionCellHeight
                                                    actionBlock:nil]];
     }
 

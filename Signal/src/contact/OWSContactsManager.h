@@ -19,6 +19,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (nonnull, readonly) NSCache<NSString *, UIImage *> *avatarCache;
 
+@property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
+
 // signalAccountMap and signalAccounts hold the same data.
 // signalAccountMap is for lookup. signalAccounts contains the accounts
 // ordered by display order.

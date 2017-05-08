@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
 
+- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
+
 @end
 
 NS_ASSUME_NONNULL_END
