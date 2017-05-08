@@ -1280,7 +1280,7 @@
 /* Indicates how to cancel a voice memo. */
 "VOICE_MEMO_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
 
-/* Filename for voice memoes. */
+/* Filename for voice memos. */
 "VOICE_MEMO_FILE_NAME" = "Voice Memo";
 
 /* Message of the 'voice memo needs recording permission' alert. */

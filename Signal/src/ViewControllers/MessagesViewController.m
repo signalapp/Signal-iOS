@@ -3107,13 +3107,9 @@ typedef enum : NSUInteger {
     }
 
     if (session.recordPermission != AVAudioSessionRecordPermissionGranted) {
-        DDLogError(@"%@ we do not have recording permission.", self.tag);
+        DDLogInfo(@"%@ we do not have recording permission.", self.tag);
         [self cancelVoiceMemo];
-        [ViewControllerUtils
-            showAlertWithTitle:NSLocalizedString(@"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_TITLE",
-                                   @"Title of the 'voice memo needs recording permission' alert.")
-                       message:NSLocalizedString(@"VOICE_MEMO_NEEDS_RECORDING_PERMISSION_ALERT_MESSAGE",
-                                   @"Message of the 'voice memo needs recording permission' alert.")];
+        [OWSAlerts showNoMicrophonePermissionAlert];
         return;
     }
 }
@@ -3152,7 +3148,7 @@ typedef enum : NSUInteger {
 
     self.audioRecorder = nil;
 
-    NSString *filename = [NSLocalizedString(@"VOICE_MEMO_FILE_NAME", @"Filename for voice memoes.")
+    NSString *filename = [NSLocalizedString(@"VOICE_MEMO_FILE_NAME", @"Filename for voice memos.")
         stringByAppendingPathExtension:[MIMETypeUtil fileExtensionForUTIType:(NSString *)kUTTypeMPEG4Audio]];
 
     SignalAttachment *attachment =

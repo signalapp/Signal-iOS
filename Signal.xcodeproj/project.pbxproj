@@ -22,6 +22,7 @@
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
+		3453D8EA1EC0D4ED003F9E6F /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
@@ -379,6 +380,7 @@
 		34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioAttachmentPlayer.m; sourceTree = "<group>"; };
 		34535D801E256BE9008A4747 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34535D811E256BE9008A4747 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
+		3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		345670FF1E89A5F1006EE662 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
 		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
 		345671081E8A9F5D006EE662 /* TSGenericAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGenericAttachmentAdapter.h; sourceTree = "<group>"; };
@@ -1289,6 +1291,7 @@
 		76EB052B18170B33006006FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */,
 				45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				451764281DE939FD00EDB8B9 /* ContactCell.xib */,
@@ -1299,6 +1302,7 @@
 				45B201751DAECBFE00C461E0 /* HighlightableLabel.swift */,
 				4531C9C21DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.h */,
 				4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */,
+				3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */,
 				45C681B91D305C080050903A /* OWSCallCollectionViewCell.h */,
 				45C681BA1D305C080050903A /* OWSCallCollectionViewCell.m */,
 				45C681C01D305C9E0050903A /* OWSCallCollectionViewCell.xib */,
@@ -1319,7 +1323,6 @@
 				45F2B1961D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib */,
 				34330AA11E79686200DF2FB9 /* OWSProgressView.h */,
 				34330AA21E79686200DF2FB9 /* OWSProgressView.m */,
-				452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */,
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 			);
 			name = Views;
@@ -2094,6 +2097,7 @@
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */,
 				34B3F8821E8DF1700035BE1A /* MessageComposeTableViewController.m in Sources */,
+				3453D8EA1EC0D4ED003F9E6F /* OWSAlerts.swift in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,

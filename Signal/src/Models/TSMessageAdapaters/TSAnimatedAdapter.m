@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
         if (!utiType) {
             OWSAssert(0);
-            utiType = (NSString *)kUTTypeVideo;
+            utiType = (NSString *)kUTTypeGIF;
         }
 
         UIPasteboard *pasteboard = UIPasteboard.generalPasteboard;
