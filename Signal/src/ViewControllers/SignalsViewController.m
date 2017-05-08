@@ -279,9 +279,18 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 - (IBAction)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
-    [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+
+    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+        DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
+        // Even if there was an error fetching contacts we proceed to the next screen.
+        // As the compose view will present the proper thing depending on contact access.
+        //
+        // We just want to make sure contact access is *complete* before showing the compose
+        // screen to avoid flicker.
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+    }];
 }
 
 - (void)swappedSegmentedControl {

@@ -54,8 +54,14 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 // Request contacts access if you haven't asked recently.
 - (void)requestSystemContactsOnce
 {
-    [self.systemContactsFetcher requestOnce];
+    [self requestSystemContactsOnceWithCompletion:nil];
 }
+
+- (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *_Nullable error))completion
+{
+    [self.systemContactsFetcher requestOnceWithCompletion:completion];
+}
+
 
 - (void)fetchSystemContactsIfAlreadyAuthorized
 {
