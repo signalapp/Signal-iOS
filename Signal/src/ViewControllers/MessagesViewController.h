@@ -31,7 +31,6 @@ extern NSString *const OWSMessagesViewControllerDidAppearNotification;
 @interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,
                                                                UINavigationControllerDelegate,
                                                                UITextViewDelegate,
-                                                               AVAudioRecorderDelegate,
                                                                AVAudioPlayerDelegate,
                                                                UIGestureRecognizerDelegate>
 

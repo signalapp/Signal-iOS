@@ -10,6 +10,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -131,8 +132,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)performEditingAction:(SEL)action
 {
     if (action == @selector(copy:)) {
+        NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
+        if (!utiType) {
+            OWSAssert(0);
+            utiType = (NSString *)kUTTypeGIF;
+        }
+
         UIPasteboard *pasteboard = UIPasteboard.generalPasteboard;
-        [pasteboard setData:self.fileData forPasteboardType:(__bridge NSString *)kUTTypeGIF];
+        [pasteboard setData:self.fileData forPasteboardType:utiType];
     } else if (action == NSSelectorFromString(@"save:")) {
         NSData *photoData = self.fileData;
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];

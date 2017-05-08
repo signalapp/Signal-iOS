@@ -22,12 +22,4 @@
 
 + (NSString *)formatDurationSeconds:(long)timeSeconds;
 
-#pragma mark - Alerts
-
-+ (UIAlertController *)showAlertWithTitle:(NSString *)title message:(NSString *)message;
-
-+ (UIAlertController *)showAlertWithTitle:(NSString *)title
-                                  message:(NSString *)message
-                              buttonLabel:(NSString *)buttonLabel;
-
 @end

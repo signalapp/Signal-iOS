@@ -12,6 +12,7 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NSTimer+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
@@ -110,7 +111,8 @@ typedef enum : NSUInteger {
 
 @implementation OWSMessagesComposerTextView
 
-- (BOOL)canBecomeFirstResponder {
+- (BOOL)canBecomeFirstResponder
+{
     return YES;
 }
 
@@ -121,7 +123,8 @@ typedef enum : NSUInteger {
     return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
     if (action == @selector(paste:)) {
         if ([self pasteboardHasPossibleAttachment]) {
             return YES;
@@ -130,16 +133,49 @@ typedef enum : NSUInteger {
     return [super canPerformAction:action withSender:sender];
 }
 
-- (void)paste:(id)sender {
+- (void)paste:(id)sender
+{
     if ([self pasteboardHasPossibleAttachment]) {
         SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
         // Note: attachment might be nil or have an error at this point; that's fine.
         [self.textViewPasteDelegate didPasteAttachment:attachment];
         return;
     }
-    
+
     [super paste:sender];
 }
+
+@end
+
+#pragma mark -
+
+@protocol OWSMessagesToolbarContentDelegate <NSObject>
+
+- (void)voiceMemoGestureDidStart;
+
+- (void)voiceMemoGestureDidEnd;
+
+- (void)voiceMemoGestureDidCancel;
+
+- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha;
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesToolbarContentView () <UIGestureRecognizerDelegate>
+
+@property (nonatomic, nullable, weak) id<OWSMessagesToolbarContentDelegate> delegate;
+
+@property (nonatomic) BOOL shouldShowVoiceMemoButton;
+
+@property (nonatomic, nullable) UIButton *voiceMemoButton;
+
+@property (nonatomic, nullable) UIButton *sendButton;
+
+@property (nonatomic) BOOL isRecordingVoiceMemo;
+
+@property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 
 @end
 
@@ -155,11 +191,174 @@ typedef enum : NSUInteger {
                           bundle:[NSBundle bundleForClass:[OWSMessagesToolbarContentView class]]];
 }
 
+- (void)ensureSubviews
+{
+    if (!self.sendButton) {
+        OWSAssert(self.rightBarButtonItem);
+
+        self.sendButton = self.rightBarButtonItem;
+    }
+
+    if (!self.voiceMemoButton) {
+        UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+        OWSAssert(icon);
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                forState:UIControlStateNormal];
+        button.imageView.tintColor = [UIColor ows_materialBlueColor];
+
+        // We want to be permissive about the voice message gesture, so we:
+        //
+        // * Add the gesture recognizer to the button's superview instead of the button.
+        // * Filter the touches that the gesture recognizer receives by serving as its
+        //   delegate.
+        UILongPressGestureRecognizer *longPressGestureRecognizer =
+            [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        longPressGestureRecognizer.minimumPressDuration = 0;
+        longPressGestureRecognizer.delegate = self;
+        [self addGestureRecognizer:longPressGestureRecognizer];
+        self.userInteractionEnabled = YES;
+
+        self.voiceMemoButton = button;
+    }
+
+    [self ensureShouldShowVoiceMemoButton];
+
+    [self ensureVoiceMemoButton];
+}
+
+- (void)ensureEnabling
+{
+    [self ensureShouldShowVoiceMemoButton];
+
+    OWSAssert(self.voiceMemoButton.isEnabled == YES);
+    OWSAssert(self.sendButton.isEnabled == YES);
+}
+
+- (void)ensureShouldShowVoiceMemoButton
+{
+    self.shouldShowVoiceMemoButton = self.textView.text.length < 1;
+}
+
+- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
+{
+    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
+        return;
+    }
+
+    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
+
+    [self ensureVoiceMemoButton];
+}
+
+- (void)ensureVoiceMemoButton
+{
+    if (self.shouldShowVoiceMemoButton) {
+        self.rightBarButtonItem = self.voiceMemoButton;
+        self.rightBarButtonItemWidth = [self.voiceMemoButton sizeThatFits:CGSizeZero].width;
+    } else {
+        self.rightBarButtonItem = self.sendButton;
+        self.rightBarButtonItemWidth = [self.sendButton sizeThatFits:CGSizeZero].width;
+    }
+}
+
+- (void)handleLongPress:(UIGestureRecognizer *)sender
+{
+    switch (sender.state) {
+        case UIGestureRecognizerStatePossible:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            if (self.isRecordingVoiceMemo) {
+                // Cancel voice message if necessary.
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidCancel];
+            }
+            break;
+        case UIGestureRecognizerStateBegan:
+            if (self.isRecordingVoiceMemo) {
+                // Cancel voice message if necessary.
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidCancel];
+            }
+            // Start voice message.
+            [self.textView resignFirstResponder];
+            self.isRecordingVoiceMemo = YES;
+            self.voiceMemoGestureStartLocation = [sender locationInView:self];
+            [self.delegate voiceMemoGestureDidStart];
+            break;
+        case UIGestureRecognizerStateChanged:
+            if (self.isRecordingVoiceMemo) {
+                // Check for "slide to cancel" gesture.
+                CGPoint location = [sender locationInView:self];
+                CGFloat offset = MAX(0, self.voiceMemoGestureStartLocation.x - location.x);
+                // The lower this value, the easier it is to cancel by accident.
+                // The higher this value, the harder it is to cancel.
+                const CGFloat kCancelOffsetPoints = 100.f;
+                CGFloat cancelAlpha = offset / kCancelOffsetPoints;
+                BOOL isCancelled = cancelAlpha >= 1.f;
+                if (isCancelled) {
+                    self.isRecordingVoiceMemo = NO;
+                    [self.delegate voiceMemoGestureDidCancel];
+                } else {
+                    [self.delegate voiceMemoGestureDidChange:cancelAlpha];
+                }
+            }
+            break;
+        case UIGestureRecognizerStateEnded:
+            if (self.isRecordingVoiceMemo) {
+                // End voice message.
+                self.isRecordingVoiceMemo = NO;
+                [self.delegate voiceMemoGestureDidEnd];
+            }
+            break;
+    }
+}
+
+- (void)cancelVoiceMemoIfNecessary
+{
+    if (self.isRecordingVoiceMemo) {
+        self.isRecordingVoiceMemo = NO;
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    // We want to be permissive about the voice message gesture, so we accept
+    // gesture that begin within N points of the
+    CGFloat kVoiceMemoGestureTolerancePoints = 10;
+    CGPoint location = [touch locationInView:self.voiceMemoButton];
+    CGRect hitTestRect = CGRectInset(
+        self.voiceMemoButton.bounds, -kVoiceMemoGestureTolerancePoints, -kVoiceMemoGestureTolerancePoints);
+    return CGRectContainsPoint(hitTestRect, location);
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesInputToolbar ()
+
+@property (nonatomic) UIView *voiceMemoUI;
+
+@property (nonatomic) NSDate *voiceMemoStartTime;
+
+@property (nonatomic) NSTimer *voiceMemoUpdateTimer;
+
+@property (nonatomic) UILabel *recordingLabel;
+
 @end
 
 #pragma mark -
 
 @implementation OWSMessagesInputToolbar
+
+- (void)toggleSendButtonEnabled
+{
+    // Do nothing; disables JSQ's control over send button enabling.
+    // Overrides a method in JSQMessagesInputToolbar.
+}
 
 - (JSQMessagesToolbarContentView *)loadToolbarContentView {
     NSArray *views = [[OWSMessagesToolbarContentView nib] instantiateWithOwner:nil
@@ -170,12 +369,145 @@ typedef enum : NSUInteger {
     return view;
 }
 
+- (void)showVoiceMemoUI
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.voiceMemoStartTime = [NSDate date];
+
+    [self.voiceMemoUI removeFromSuperview];
+
+    self.voiceMemoUI = [UIView new];
+    self.voiceMemoUI.userInteractionEnabled = NO;
+    self.voiceMemoUI.backgroundColor = [UIColor whiteColor];
+    [self addSubview:self.voiceMemoUI];
+    self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+
+    self.recordingLabel = [UILabel new];
+    self.recordingLabel.textColor = [UIColor ows_materialBlueColor];
+    self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    [self.voiceMemoUI addSubview:self.recordingLabel];
+    [self updateVoiceMemo];
+
+    UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+    OWSAssert(icon);
+    UIImageView *imageView =
+        [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+    imageView.tintColor = [UIColor ows_materialBlueColor];
+    [self.voiceMemoUI addSubview:imageView];
+
+    UILabel *cancelLabel = [UILabel new];
+    cancelLabel.textColor = [UIColor ows_destructiveRedColor];
+    cancelLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+    cancelLabel.text
+        = NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS", @"Indicates how to cancel a voice message.");
+    [self.voiceMemoUI addSubview:cancelLabel];
+
+    [imageView autoVCenterInSuperview];
+    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [self.recordingLabel autoVCenterInSuperview];
+    [self.recordingLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:imageView withOffset:5.f];
+    [cancelLabel autoVCenterInSuperview];
+    [cancelLabel autoHCenterInSuperview];
+    [self.voiceMemoUI setNeedsLayout];
+    [self.voiceMemoUI layoutSubviews];
+
+    // Slide in the "slide to cancel" label.
+    CGRect cancelLabelStartFrame = cancelLabel.frame;
+    CGRect cancelLabelEndFrame = cancelLabel.frame;
+    cancelLabelStartFrame.origin.x = self.voiceMemoUI.bounds.size.width;
+    cancelLabel.frame = cancelLabelStartFrame;
+    [UIView animateWithDuration:0.35f
+                          delay:0.f
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         cancelLabel.frame = cancelLabelEndFrame;
+                     }
+                     completion:nil];
+
+    // Pulse the icon.
+    imageView.layer.opacity = 1.f;
+    [UIView animateWithDuration:0.5f
+                          delay:0.2f
+                        options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
+                        | UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         imageView.layer.opacity = 0.f;
+                     }
+                     completion:nil];
+
+    // Fade in the view.
+    self.voiceMemoUI.layer.opacity = 0.f;
+    [UIView animateWithDuration:0.2f
+        animations:^{
+            self.voiceMemoUI.layer.opacity = 1.f;
+        }
+        completion:^(BOOL finished) {
+            if (finished) {
+                self.voiceMemoUI.layer.opacity = 1.f;
+            }
+        }];
+
+    self.voiceMemoUpdateTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
+                                                                     target:self
+                                                                   selector:@selector(updateVoiceMemo)
+                                                                   userInfo:nil
+                                                                    repeats:YES];
+}
+
+- (void)hideVoiceMemoUI:(BOOL)animated
+{
+    OWSAssert([NSThread isMainThread]);
+
+    UIView *oldVoiceMemoUI = self.voiceMemoUI;
+    self.voiceMemoUI = nil;
+    NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
+    self.voiceMemoUpdateTimer = nil;
+
+    [oldVoiceMemoUI.layer removeAllAnimations];
+
+    if (animated) {
+        [UIView animateWithDuration:0.35f
+            animations:^{
+                oldVoiceMemoUI.layer.opacity = 0.f;
+            }
+            completion:^(BOOL finished) {
+                [oldVoiceMemoUI removeFromSuperview];
+                [voiceMemoUpdateTimer invalidate];
+            }];
+    } else {
+        [oldVoiceMemoUI removeFromSuperview];
+        [voiceMemoUpdateTimer invalidate];
+    }
+}
+
+- (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // Fade out the voice message views as the cancel gesture
+    // proceeds as feedback.
+    for (UIView *subview in self.voiceMemoUI.subviews) {
+        subview.layer.opacity = MAX(0.f, MIN(1.f, 1.f - (float)cancelAlpha));
+    }
+}
+
+- (void)updateVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
+    self.recordingLabel.text = [ViewControllerUtils formatDurationSeconds:(long)round(durationSeconds)];
+    [self.recordingLabel sizeToFit];
+}
+
 @end
 
 #pragma mark -
 
 @interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate,
     OWSTextViewPasteDelegate,
+    OWSMessagesToolbarContentDelegate,
     OWSConversationSettingsViewDelegate,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate> {
@@ -477,6 +809,10 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cancelReadTimer)
                                                      name:UIApplicationDidEnterBackgroundNotification
                                                    object:nil];
@@ -491,9 +827,17 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
+                                                        name:UIApplicationWillResignActiveNotification
+                                                      object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:UIApplicationDidEnterBackgroundNotification
+                                                      object:nil];
     }
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    [self cancelVoiceMemo];
 }
 
 - (void)initializeTextView {
@@ -561,6 +905,8 @@ typedef enum : NSUInteger {
     [self ensureBlockStateIndicator];
 
     [self resetContentAndLayout];
+
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
 }
 
 - (void)resetContentAndLayout
@@ -749,6 +1095,8 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
+
+    [self cancelVoiceMemo];
 }
 
 - (void)startExpirationTimerAnimations
@@ -1007,6 +1355,7 @@ typedef enum : NSUInteger {
     OWSAssert(self.inputToolbar.contentView.textView);
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
+    ((OWSMessagesToolbarContentView *)self.inputToolbar.contentView).delegate = self;
 }
 
 // Overiding JSQMVC layout defaults
@@ -2704,46 +3053,141 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
-- (void)recordAudio {
-    // Define the recorder setting
-    NSArray *pathComponents = [NSArray
-        arrayWithObjects:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                         [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]],
-                         nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+- (void)startRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"startRecordingVoiceMemo");
+
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
+    NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];
+    NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt:2] forKey:AVNumberOfChannelsKey];
+    NSError *error;
+    [session setCategory:AVAudioSessionCategoryRecord error:&error];
+    if (error) {
+        DDLogError(@"%@ Couldn't configure audio session: %@", self.tag, error);
+        [self cancelVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
 
     // Initiate and prepare the recorder
-    _audioRecorder          = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
+    self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL
+                                                     settings:@{
+                                                         AVFormatIDKey : @(kAudioFormatMPEG4AAC),
+                                                         AVSampleRateKey : @(44100),
+                                                         AVNumberOfChannelsKey : @(2),
+                                                         AVEncoderBitRateKey: @(128 * 1024),
+                                                     }
+                                                        error:&error];
+    if (error) {
+        DDLogError(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
+        [self cancelVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
+
+    self.audioRecorder.meteringEnabled = YES;
+
+    if (![self.audioRecorder prepareToRecord]) {
+        DDLogError(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
+        [self cancelVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
+
+    if (![self.audioRecorder record]) {
+        DDLogError(@"%@ audioRecorder couldn't record.", self.tag);
+        [self cancelVoiceMemo];
+        OWSAssert(0);
+        return;
+    }
+
+    if (session.recordPermission != AVAudioSessionRecordPermissionGranted) {
+        DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+        [self cancelVoiceMemo];
+        [OWSAlerts showNoMicrophonePermissionAlert];
+        return;
+    }
 }
 
-- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
-    if (flag) {
-        NSData *audioData = [NSData dataWithContentsOfURL:recorder.url];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:nil];
-        if (!attachment ||
-            [attachment hasError]) {
-            DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                      self.tag,
-                      __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorName] : @"Missing data");
-            [self showErrorAlertForAttachment:attachment];
-        } else {
-            [self tryToSendAttachmentIfApproved:attachment];
-        }
+- (void)endRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"endRecordingVoiceMemo");
+
+    if (!self.audioRecorder) {
+        DDLogError(@"%@ Missing audioRecorder", self.tag);
+        OWSAssert(0);
+        return;
     }
+
+    NSTimeInterval currentTime = self.audioRecorder.currentTime;
+
+    [self.audioRecorder stop];
+
+    const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
+    if (currentTime < kMinimumRecordingTimeSeconds) {
+        DDLogInfo(@"Discarding voice message; too short.");
+        self.audioRecorder = nil;
+
+        [OWSAlerts
+            showAlertWithTitle:
+                NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE",
+                    @"Title for the alert indicating the 'voice message' needs to be held to be held down to record.")
+                       message:NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
+                                   @"Message for the alert indicating the 'voice message' needs to be held to be held "
+                                   @"down to record.")];
+        return;
+    }
+
+    NSData *audioData = [NSData dataWithContentsOfURL:self.audioRecorder.url];
+
+    if (!audioData) {
+        DDLogError(@"%@ Couldn't load audioRecorder data", self.tag);
+        OWSAssert(0);
+        self.audioRecorder = nil;
+        return;
+    }
+
+    self.audioRecorder = nil;
+
+    NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
+        stringByAppendingPathExtension:[MIMETypeUtil fileExtensionForUTIType:(NSString *)kUTTypeMPEG4Audio]];
+
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:filename];
+    if (!attachment || [attachment hasError]) {
+        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+            self.tag,
+            __PRETTY_FUNCTION__,
+            attachment ? [attachment errorName] : @"Missing data");
+        [self showErrorAlertForAttachment:attachment];
+    } else {
+        [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
+    }
+}
+
+- (void)cancelRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"cancelRecordingVoiceMemo");
+
+    [self resetRecordingVoiceMemo];
+}
+
+- (void)resetRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.audioRecorder stop];
+    self.audioRecorder = nil;
 }
 
 #pragma mark Accessory View
@@ -3035,6 +3479,63 @@ typedef enum : NSUInteger {
     [self presentViewController:controller
                        animated:YES
                      completion:nil];
+}
+
+#pragma mark - OWSMessagesToolbarContentDelegate
+
+- (void)voiceMemoGestureDidStart
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"voiceMemoGestureDidStart");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
+    [self startRecordingVoiceMemo];
+}
+
+- (void)voiceMemoGestureDidEnd
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"voiceMemoGestureDidEnd");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:YES];
+    [self endRecordingVoiceMemo];
+}
+
+- (void)voiceMemoGestureDidCancel
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"voiceMemoGestureDidCancel");
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
+    [self cancelRecordingVoiceMemo];
+}
+
+- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [((OWSMessagesInputToolbar *)self.inputToolbar) setVoiceMemoUICancelAlpha:cancelAlpha];
+}
+
+- (void)cancelVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)cancelVoiceMemoIfNecessary];
+    [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
+    [self cancelRecordingVoiceMemo];
+}
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    // Override.
+    //
+    // We want to show the "voice message" button if the text input is empty
+    // and the "send" button if it isn't.
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
 }
 
 #pragma mark - UIScrollViewDelegate

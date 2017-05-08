@@ -297,9 +297,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([self isVideo]) {
         if (action == @selector(copy:)) {
+            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:_contentType];
+            if (!utiType) {
+                OWSAssert(0);
+                utiType = (NSString *)kUTTypeVideo;
+            }
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
-            // TODO: This assumes all videos are mp4.
-            [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4];
+            [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
             return;
         } else if (action == NSSelectorFromString(@"save:")) {
             if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.fileURL.path)) {
@@ -310,22 +314,30 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if ([self isAudio]) {
         if (action == @selector(copy:)) {
-            NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
-
-            NSString *pasteboardType = [MIMETypeUtil getSupportedExtensionFromAudioMIMEType:self.contentType];
-
-            if ([pasteboardType isEqualToString:@"mp3"]) {
-                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMP3];
-            } else if ([pasteboardType isEqualToString:@"aiff"]) {
-                [UIPasteboard.generalPasteboard setData:data
-                                      forPasteboardType:(NSString *)kUTTypeAudioInterchangeFileFormat];
-            } else if ([pasteboardType isEqualToString:@"m4a"]) {
-                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeMPEG4Audio];
-            } else if ([pasteboardType isEqualToString:@"amr"]) {
-                [UIPasteboard.generalPasteboard setData:data forPasteboardType:@"org.3gpp.adaptive-multi-rate-audio"];
-            } else {
-                [UIPasteboard.generalPasteboard setData:data forPasteboardType:(NSString *)kUTTypeAudio];
+            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:_contentType];
+            if (!utiType) {
+                if ([_contentType isEqualToString:@"audio/amr"]) {
+                    utiType = @"org.3gpp.adaptive-multi-rate-audio";
+                } else if ([_contentType isEqualToString:@"audio/mp3"] ||
+                    [_contentType isEqualToString:@"audio/x-mpeg"] || [_contentType isEqualToString:@"audio/mpeg"] ||
+                    [_contentType isEqualToString:@"audio/mpeg3"] || [_contentType isEqualToString:@"audio/x-mp3"] ||
+                    [_contentType isEqualToString:@"audio/x-mpeg3"]) {
+                    utiType = (NSString *)kUTTypeMP3;
+                } else if ([_contentType isEqualToString:@"audio/aac"] ||
+                    [_contentType isEqualToString:@"audio/x-m4a"]) {
+                    utiType = (NSString *)kUTTypeMPEG4Audio;
+                } else if ([_contentType isEqualToString:@"audio/aiff"] ||
+                    [_contentType isEqualToString:@"audio/x-aiff"]) {
+                    utiType = (NSString *)kUTTypeAudioInterchangeFileFormat;
+                } else {
+                    OWSAssert(0);
+                    utiType = (NSString *)kUTTypeAudio;
+                }
             }
+
+            NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            OWSAssert(data);
+            [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         }
     } else {
         // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction

@@ -310,7 +310,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                 }
                 [activityAlert dismissViewControllerAnimated:NO
                                                   completion:^{
-                                                      [ViewControllerUtils
+                                                      [OWSAlerts
                                                           showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE",
                                                                                  @"Title for a generic error alert.")
                                                                      message:error.localizedDescription];
