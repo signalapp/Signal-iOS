@@ -282,13 +282,6 @@ protocol CallServiceObserver: class {
         callRecord.save()
         call.callRecord = callRecord
 
-        guard self.peerConnectionClient == nil else {
-            let errorDescription = "\(TAG) peerconnection was unexpectedly already set."
-            Logger.error(errorDescription)
-            call.state = .localFailure
-            return Promise(error: CallError.assertionError(description: errorDescription))
-        }
-
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
@@ -296,11 +289,15 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
+            guard self.peerConnectionClient == nil else {
+                let errorDescription = "\(self.TAG) peerconnection was unexpectedly already set."
+                Logger.error(errorDescription)
+                throw CallError.assertionError(description: errorDescription)
+            }
+
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
-
-            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = peerConnectionClient
 
@@ -372,9 +369,10 @@ protocol CallServiceObserver: class {
 
         if pendingIceUpdateMessages.count > 0 {
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            _ = messageSender.sendCallMessage(callMessage).catch { error in
+            let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
             }
+            sendPromise.retainUntilComplete()
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -383,7 +381,7 @@ protocol CallServiceObserver: class {
         }
 
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
-        _ = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
+        let setDescriptionPromise = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
             Logger.debug("\(self.TAG) successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
@@ -393,6 +391,7 @@ protocol CallServiceObserver: class {
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
         }
+        setDescriptionPromise.retainUntilComplete()
     }
 
     /**
@@ -428,7 +427,8 @@ protocol CallServiceObserver: class {
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
-        _ = messageSender.sendCallMessage(callMessage)
+        let sendPromise = messageSender.sendCallMessage(callMessage)
+        sendPromise.retainUntilComplete()
 
         handleMissedCall(call, thread: thread)
     }
@@ -627,7 +627,8 @@ protocol CallServiceObserver: class {
 
         if self.sendIceUpdatesImmediately {
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessage: iceUpdateMessage)
-            _ = self.messageSender.sendCallMessage(callMessage)
+            let sendPromise = self.messageSender.sendCallMessage(callMessage)
+            sendPromise.retainUntilComplete()
         } else {
             // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
             // e.g. if the client has blocked our message due to an identity change, we'd otherwise
@@ -885,11 +886,12 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
-        _  = self.messageSender.sendCallMessage(callMessage).then {
+        let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
         }.catch { error in
             Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
         }
+        sendPromise.retainUntilComplete()
 
         terminateCall()
     }
@@ -916,7 +918,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        if call.state == .connected {
+            peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        }
     }
 
     /**
@@ -971,7 +975,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+        if call.state == .connected {
+            peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+        }
     }
 
     func handleCallKitStartVideo() {

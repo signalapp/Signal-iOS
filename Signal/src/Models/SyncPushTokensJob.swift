@@ -12,8 +12,6 @@ class SyncPushTokensJob: NSObject {
     let accountManager: AccountManager
     let preferences: PropertyListPreferences
     var uploadOnlyIfStale = true
-    // useful to ensure promise runs to completion
-    var retainCycle: SyncPushTokensJob?
 
     required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
         self.pushManager = pushManager
@@ -32,14 +30,12 @@ class SyncPushTokensJob: NSObject {
 
     func run() -> Promise<Void> {
         Logger.debug("\(TAG) Starting.")
-        // Make sure we don't GC until completion.
-        self.retainCycle = self
 
         // Required to potentially prompt user for notifications settings
         // before `requestPushTokens` will return.
         self.pushManager.validateUserNotificationSettings()
 
-        return self.requestPushTokens().then { (pushToken: String, voipToken: String) in
+        let runPromise: Promise<Void> = self.requestPushTokens().then { (pushToken: String, voipToken: String) in
             var shouldUploadTokens = !self.uploadOnlyIfStale
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
                 Logger.debug("\(self.TAG) push tokens changed.")
@@ -56,9 +52,10 @@ class SyncPushTokensJob: NSObject {
                 Logger.info("\(self.TAG) Recording tokens locally.")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
             }
-        }.always {
-            self.retainCycle = nil
         }
+        runPromise.retainUntilComplete()
+
+        return runPromise
     }
 
     private func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {

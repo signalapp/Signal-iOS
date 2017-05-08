@@ -29,8 +29,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
         self.callService.handleOutgoingCall(call).then {
             Logger.debug("\(self.TAG) handleOutgoingCall succeeded")
-            }.catch { error in
-                Logger.error("\(self.TAG) handleOutgoingCall failed with error: \(error)")
+        }.catch { error in
+            Logger.error("\(self.TAG) handleOutgoingCall failed with error: \(error)")
         }
 
         return call
