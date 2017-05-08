@@ -51,18 +51,21 @@ class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            contactStore.requestAccess(for: .contacts, completionHandler: { (granted, error) in
+            contactStore.requestAccess(for: .contacts) { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
                     assertionFailure()
                 }
 
-                if !granted {
+                guard granted else {
                     Logger.info("\(self.TAG) declined contact access.")
-                } else {
+                    return
+                }
+
+                DispatchQueue.main.async {
                     self.updateContacts()
                 }
-            })
+            }
         case .authorized:
             self.updateContacts()
         case .denied, .restricted:
