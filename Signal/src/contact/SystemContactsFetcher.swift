@@ -65,6 +65,7 @@ class SystemContactsFetcher: NSObject {
                     DispatchQueue.main.async {
                         completion?(error)
                     }
+                    return
                 }
 
                 guard granted else {
