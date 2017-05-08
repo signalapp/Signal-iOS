@@ -2568,11 +2568,16 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
 + (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType
 {
-    // Try to deduce the file extension by converting to a UTI type.
-    NSString *_Nullable fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
+    // Try to deduce the file extension by using a lookup table.
+    //
+    // This should be more accurate than deducing the file extension by
+    // converting to a UTI type.  For example, .m4a files will have a
+    // UTI type of kUTTypeMPEG4Audio which incorrectly yields the file
+    // extension .mp4 instead of .m4a.
+    NSString *_Nullable fileExtension = [self fileExtensionForMIMETypeViaLookup:mimeType];
     if (!fileExtension) {
-        // Try to deduce the file extension by using a lookup table..
-        fileExtension = [self fileExtensionForMIMETypeViaLookup:mimeType];
+        // Try to deduce the file extension by converting to a UTI type.
+        fileExtension = [self fileExtensionForMIMETypeViaUTIType:mimeType];
     }
     return fileExtension;
 }
