@@ -163,7 +163,7 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@interface OWSMessagesToolbarContentView ()
+@interface OWSMessagesToolbarContentView () <UIGestureRecognizerDelegate>
 
 @property (nonatomic, nullable, weak) id<OWSMessagesToolbarContentDelegate> delegate;
 
@@ -206,10 +206,19 @@ typedef enum : NSUInteger {
         [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                 forState:UIControlStateNormal];
         button.imageView.tintColor = [UIColor ows_materialBlueColor];
+
+        // We want to be permissive about the voice memo gesture, so we:
+        //
+        // * Add the gesture recognizer to the button's superview instead of the button.
+        // * Filter the touches that the gesture recognizer receives by serving as its
+        //   delegate.
         UILongPressGestureRecognizer *longPressGestureRecognizer =
             [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         longPressGestureRecognizer.minimumPressDuration = 0;
-        [button addGestureRecognizer:longPressGestureRecognizer];
+        longPressGestureRecognizer.delegate = self;
+        [self addGestureRecognizer:longPressGestureRecognizer];
+        self.userInteractionEnabled = YES;
+
         self.voiceMemoButton = button;
     }
 
@@ -310,6 +319,19 @@ typedef enum : NSUInteger {
     if (self.isRecordingVoiceMemo) {
         self.isRecordingVoiceMemo = NO;
     }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    // We want to be permissive about the voice memo gesture, so we accept
+    // gesture that begin within N points of the
+    CGFloat kVoiceMemoGestureTolerancePoints = 10;
+    CGPoint location = [touch locationInView:self.voiceMemoButton];
+    CGRect hitTestRect = CGRectInset(
+        self.voiceMemoButton.bounds, -kVoiceMemoGestureTolerancePoints, -kVoiceMemoGestureTolerancePoints);
+    return CGRectContainsPoint(hitTestRect, location);
 }
 
 @end
