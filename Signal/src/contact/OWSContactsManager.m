@@ -285,6 +285,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     OWSAssert(font);
 
     NSAttributedString *baseName = [self formattedFullNameForContact:signalAccount.contact font:font];
+
+    if (baseName.length == 0) {
+        baseName = [self formattedFullNameForRecipientId:signalAccount.recipientId font:font];
+    }
+
     OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
     if (signalAccount.multipleAccountLabelText) {
         NSMutableAttributedString *result = [NSMutableAttributedString new];
@@ -343,13 +348,13 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     }
 
     NSMutableAttributedString *fullNameString = [NSMutableAttributedString new];
-    if (leftName) {
+    if (leftName.length > 0) {
         [fullNameString appendAttributedString:leftName];
     }
-    if (leftName && rightName) {
+    if (leftName.length > 0 && rightName.length > 0) {
         [fullNameString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
     }
-    if (rightName) {
+    if (rightName.length > 0) {
         [fullNameString appendAttributedString:rightName];
     }
 
