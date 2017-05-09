@@ -4,6 +4,7 @@
 
 #import "OWSConversationSettingsTableViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "OWSAvatarBuilder.h"
@@ -29,9 +30,11 @@
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 
+@import ContactsUI;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSConversationSettingsTableViewController ()
+@interface OWSConversationSettingsTableViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) TSThread *thread;
 
@@ -42,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 
@@ -93,6 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
+    _contactsViewHelper = [ContactsViewHelper new];
+    _contactsViewHelper.delegate = self;
 }
 
 - (NSString *)threadName
@@ -115,6 +120,58 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureWithThread:(TSThread *)thread
 {
     self.thread = thread;
+    [self updateEditButton];
+}
+
+- (void)updateEditButton
+{
+    OWSAssert(self.thread);
+
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        self.navigationItem.rightBarButtonItem =
+            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
+                                             style:UIBarButtonItemStylePlain
+                                            target:self
+                                            action:@selector(didTapEditButton)];
+    }
+}
+
+- (void)didTapEditButton
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSAssert(NO);
+        return;
+    }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+                                                     fromViewController:self
+                                                        editImmediately:YES];
+}
+
+#pragma mark - ContactEditingDelegate
+
+- (void)didFinishEditingContact
+{
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - CNContactViewControllerDelegate
+
+- (void)contactViewController:(CNContactViewController *)viewController
+       didCompleteWithContact:(nullable CNContact *)contact
+{
+    DDLogDebug(@"%@ done editing contact.", self.tag);
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
+{
+    [self updateTableContents];
 }
 
 #pragma mark - View Lifecycle
@@ -567,6 +624,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    // In case we're dismissing a CNContactViewController which requires default system appearance
+    [UIUtil applySignalAppearence];
 
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly

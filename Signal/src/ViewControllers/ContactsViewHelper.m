@@ -5,11 +5,14 @@
 #import "ContactsViewHelper.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
+
+@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -95,7 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
-    if ([self.delegate shouldHideLocalNumber] && [self isCurrentUser:signalAccount]) {
+
+    if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
+        [self isCurrentUser:signalAccount]) {
+
         return YES;
     }
 
@@ -275,6 +281,91 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return _nonSignalContacts;
+}
+
+#pragma mark - Editing
+
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately
+{
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+
+    if (!self.contactsManager.isSystemContactsAuthorized) {
+        UIAlertController *alertController = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+                                                       : @"Alert title for when the user has just tried to edit a "
+                                                         @"contacts after declining to give Signal contacts "
+                                                         @"permissions")
+                             message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+                                                       : @"Alert body for when the user has just tried to edit a "
+                                                         @"contacts after declining to give Signal contacts "
+                                                         @"permissions")
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+        [alertController
+            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                         @"Button text to dismiss missing contacts permission alert")
+                                               style:UIAlertActionStyleCancel
+                                             handler:nil]];
+
+        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
+                                                                      @"Button text which opens the settings app")
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              [[UIApplication sharedApplication] openSystemSettings];
+                                                          }]];
+
+        [fromViewController presentViewController:alertController animated:YES completion:nil];
+        return;
+    }
+
+    CNContactViewController *_Nullable contactViewController;
+    if (signalAccount) {
+        CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
+        if (cnContact) {
+            if (shouldEditImmediately) {
+                // Not acutally a "new" contact, but this brings up the edit form rather than the "Read" form
+                // saving our users a tap in some cases when we already know they want to edit.
+                contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
+            } else {
+                contactViewController = [CNContactViewController viewControllerForContact:cnContact];
+            }
+        }
+    }
+
+    if (!contactViewController) {
+        CNMutableContact *newContact = [CNMutableContact new];
+        CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
+        CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+            [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+        newContact.phoneNumbers = @[ labeledPhoneNumber ];
+
+        contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
+    }
+
+    contactViewController.delegate = fromViewController;
+    contactViewController.allowsActions = NO;
+    contactViewController.allowsEditing = YES;
+    contactViewController.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                         style:UIBarButtonItemStylePlain
+                                        target:fromViewController
+                                        action:@selector(didFinishEditingContact)];
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:contactViewController];
+
+    // We want the presentation to imply a "replacement" in this case.
+    if (shouldEditImmediately) {
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    }
+    [fromViewController presentViewController:navigationController animated:YES completion:nil];
+
+    // HACK otherwise CNContactViewController Navbar is shown as black.
+    // RADAR rdar://28433898 http://www.openradar.me/28433898
+    // CNContactViewController incompatible with opaque navigation bar
+    [UIUtil applyDefaultSystemAppearence];
 }
 
 @end

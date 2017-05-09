@@ -22,7 +22,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate, CNContactViewControllerDelegate>
+@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate, ContactEditingDelegate>
 
 @property (nonatomic, readonly) TSGroupThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -265,74 +265,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
-
-    if (!helper.contactsManager.isSystemContactsAuthorized) {
-        UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
-                                                       : @"Alert title for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                             message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
-                                                       : @"Alert body for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                      preferredStyle:UIAlertControllerStyleAlert];
-
-        [alertController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                         @"Button text to dismiss missing contacts permission alert")
-                                               style:UIAlertActionStyleCancel
-                                             handler:nil]];
-
-        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
-                                                                      @"Button text which opens the settings app")
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [[UIApplication sharedApplication] openSystemSettings];
-                                                          }]];
-
-        [self presentViewController:alertController animated:YES completion:nil];
-        return;
-    }
-    
-    CNContactViewController *_Nullable contactViewController;
-    if (signalAccount) {
-        CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
-        if (cnContact) {
-            contactViewController = [CNContactViewController viewControllerForContact:cnContact];
-        }
-    }
-
-    if (!contactViewController) {
-        CNMutableContact *newContact = [CNMutableContact new];
-        CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
-        CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber = [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain
-                                                                             value:phoneNumber];
-        newContact.phoneNumbers = @[labeledPhoneNumber];
-        
-        contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
-    }
-
-    contactViewController.delegate = self;
-    contactViewController.allowsActions = NO;
-    contactViewController.allowsEditing = YES;
-    contactViewController.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(dismissPressed)];
-
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:contactViewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
-
-
-    // HACK otherwise CNContactViewController Navbar is shown as black.
-    // RADAR rdar://28433898 http://www.openradar.me/28433898
-    // CNContactViewController incompatible with opaque navigation bar
-    [UIUtil applyDefaultSystemAppearence];
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:recipientId
+                                                     fromViewController:self
+                                                        editImmediately:NO];
 }
 
 - (void)showConversationViewForRecipientId:(NSString *)recipientId
@@ -347,12 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment callUserWithIdentifier:recipientId];
 }
 
-- (void)dismissPressed
-{
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark - ContactsViewHelperDelegate
 
 - (void)contactsViewHelperDidUpdateContacts
@@ -363,6 +292,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return YES;
+}
+
+#pragma mark - ContactEditingDelegate
+
+- (void)didFinishEditingContact
+{
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - CNContactViewControllerDelegate
