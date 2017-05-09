@@ -951,12 +951,9 @@ protocol CallServiceObserver: class {
         // during a call while the app is in the background, because changing this
         // permission kills the app.
         if authStatus != .authorized {
-            let title = NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized")
-            let message = NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized")
-            let okButton = NSLocalizedString("OK", comment:"")
 
-            let alert = UIAlertView(title:title, message:message, delegate:nil, cancelButtonTitle:okButton)
-            alert.show()
+            OWSAlerts.showAlert(withTitle:NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
+                                message:NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
 
             return
         }

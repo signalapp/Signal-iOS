@@ -20,9 +20,8 @@
 
 @interface PushManager ()
 
-@property TOCFutureSource *registerWithServerFutureSource;
-@property UIAlertView *missingPermissionsAlertView;
-@property (nonatomic, retain) NSMutableArray *currentNotifications;
+@property (nonatomic) TOCFutureSource *registerWithServerFutureSource;
+@property (nonatomic) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
@@ -69,11 +68,6 @@
                                                                 networkManager:networkManager
                                                                  signalService:signalService];
 
-    _missingPermissionsAlertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ACTION_REQUIRED_TITLE", @"")
-                                                              message:NSLocalizedString(@"PUSH_SETTINGS_MESSAGE", @"")
-                                                             delegate:nil
-                                                    cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                    otherButtonTitles:nil, nil];
     _callBackgroundTask = UIBackgroundTaskInvalid;
     _currentNotifications = [NSMutableArray array];
 

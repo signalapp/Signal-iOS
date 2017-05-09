@@ -18,7 +18,6 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -339,13 +338,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 {
     [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                               accountManager:self.accountManager
-                                 preferences:[Environment preferences]]
-        .then(^{
-            DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-        })
-        .catch(^(NSError *_Nonnull error) {
-            DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-        });
+                                 preferences:[Environment preferences]
+                                  showAlerts:NO];
 }
 
 - (void)tableViewSetUp {
@@ -467,19 +461,22 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                                              inThread:thread
                                                                      groupMetaMessage:TSGroupMessageQuit];
             [self.messageSender sendMessage:message
-                                    success:^{
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     [self deleteThread:thread];
-                                                                 }];
-                                    }
-                                    failure:^(NSError *error) {
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
-                                                                                     error.localizedRecoverySuggestion);
-                                                                 }];
-                                    }];
+                success:^{
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [self deleteThread:thread];
+                                             }];
+                }
+                failure:^(NSError *error) {
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [OWSAlerts
+                                                     showAlertWithTitle:
+                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
+                                                             @"Title of alert indicating that group deletion failed.")
+                                                                message:error.localizedRecoverySuggestion];
+                                             }];
+                }];
         } else {
             [self deleteThread:thread];
         }
