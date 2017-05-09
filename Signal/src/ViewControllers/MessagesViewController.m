@@ -1509,6 +1509,7 @@ typedef enum : NSUInteger {
         {
             [self toggleDefaultKeyboard];
         }
+        [self clearDraft];
         [self finishSendingMessage];
     }
 }
@@ -3349,9 +3350,17 @@ typedef enum : NSUInteger {
         __block NSString *currentDraft = self.inputToolbar.contentView.textView.text;
 
         [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-          [thread setDraft:currentDraft transaction:transaction];
+            [thread setDraft:currentDraft transaction:transaction];
         }];
     }
+}
+
+- (void)clearDraft
+{
+    __block TSThread *thread = _thread;
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [thread setDraft:@"" transaction:transaction];
+    }];
 }
 
 #pragma mark Unread Badge
