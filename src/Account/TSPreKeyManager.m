@@ -355,6 +355,8 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
             return [left.generatedAt compare:right.generatedAt];
         }];
 
+        NSUInteger oldSignedPreKeyCount = oldSignedPrekeys.count;
+
         int oldAcceptedSignedPreKeyCount = 0;
         for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
             if (signedPrekey.wasAcceptedByService) {
@@ -364,6 +366,11 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 
         // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
         for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+            // Always keep at least 3 keys, accepted or otherwise.
+            if (oldSignedPreKeyCount <= 3) {
+                continue;
+            }
+
             // Never delete signed prekeys until they are N days old.
             if (fabs([signedPrekey.generatedAt timeIntervalSinceNow]) < kSignedPreKeysDeletionTime) {
                 continue;
@@ -383,6 +390,7 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                 [dateFormatter stringFromDate:signedPrekey.generatedAt],
                 signedPrekey.wasAcceptedByService);
 
+            oldSignedPreKeyCount--;
             [storageManager removeSignedPreKey:signedPrekey.Id];
         }
 
