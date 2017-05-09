@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, TSAttachmentType) {
+    TSAttachmentTypeDefault = 0,
+    TSAttachmentTypeVoiceMessage = 1,
+};
+
 @interface TSAttachment : TSYapDatabaseObject {
 
 @protected
@@ -24,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *contentType;
 
 @property (atomic, readwrite) BOOL isDownloaded;
+@property (nonatomic) TSAttachmentType attachmentType;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
@@ -42,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder;
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
+
+- (BOOL)isVoiceMessage;
 
 @end
 

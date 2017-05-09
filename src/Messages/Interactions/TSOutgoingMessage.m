@@ -22,6 +22,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 @property (atomic) NSString *customMessage;
 @property (atomic) NSString *mostRecentFailureText;
 @property (atomic) BOOL wasDelivered;
+
 // For outgoing, non-legacy group messages sent from this client, this
 // contains the list of recipients to whom the message has been sent.
 //
@@ -108,6 +109,24 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                      attachmentIds:attachmentIds
                   expiresInSeconds:expiresInSeconds
                    expireStartedAt:0];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                   isVoiceMessage:(BOOL)isVoiceMessage
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    self = [self initWithTimestamp:timestamp
+                          inThread:thread
+                       messageBody:nil
+                     attachmentIds:[NSMutableArray new]
+                  expiresInSeconds:expiresInSeconds
+                   expireStartedAt:0];
+    if (self) {
+        _isVoiceMessage = isVoiceMessage;
+    }
+
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -452,7 +471,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setFileName:filename];
     [builder setKey:attachmentStream.encryptionKey];
     [builder setDigest:attachmentStream.digest];
-
+    [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
     return [builder build];
 }
 
