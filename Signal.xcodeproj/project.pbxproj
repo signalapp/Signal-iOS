@@ -68,7 +68,6 @@
 		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */; };
 		34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */; };
-		34D5CCA61EA934A4005515DB /* NSTimer+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */; };
 		34D5CCA91EAE3D30005515DB /* GroupViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* GroupViewHelper.m */; };
 		34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */; };
 		34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */; };
@@ -452,8 +451,8 @@
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		34B3F86F1E8DF1700035BE1A /* SignalsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsViewController.h; sourceTree = "<group>"; };
 		34B3F8701E8DF1700035BE1A /* SignalsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsViewController.m; sourceTree = "<group>"; };
-		34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageAdapterTest.m; sourceTree = "<group>"; };
+		34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
 		34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
 		34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
@@ -463,8 +462,6 @@
 		34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
 		34D5CC981EA6EB79005515DB /* OWSMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageCollectionViewCell.h; sourceTree = "<group>"; };
 		34D5CC9B1EA6ED17005515DB /* OWSMessageMediaAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageMediaAdapter.h; sourceTree = "<group>"; };
-		34D5CCA41EA934A4005515DB /* NSTimer+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer+OWS.h"; sourceTree = "<group>"; };
-		34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+OWS.m"; sourceTree = "<group>"; };
 		34D5CCA71EAE3D30005515DB /* GroupViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupViewHelper.h; sourceTree = "<group>"; };
 		34D5CCA81EAE3D30005515DB /* GroupViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupViewHelper.m; sourceTree = "<group>"; };
 		34D5CCAB1EAE7136005515DB /* OWSConversationSettingsViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewDelegate.h; sourceTree = "<group>"; };
@@ -1249,8 +1246,6 @@
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
-				34D5CCA41EA934A4005515DB /* NSTimer+OWS.h */,
-				34D5CCA51EA934A4005515DB /* NSTimer+OWS.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
 				BFB074C519A5611000F2947C /* ObservableValue.h */,
@@ -2120,7 +2115,6 @@
 				34B3F88D1E8DF1700035BE1A /* OWSQRCodeScanningViewController.m in Sources */,
 				34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
-				34D5CCA61EA934A4005515DB /* NSTimer+OWS.m in Sources */,
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,

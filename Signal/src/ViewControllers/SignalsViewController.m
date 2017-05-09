@@ -19,6 +19,7 @@
 #import "UIUtil.h"
 #import "VersionMigrations.h"
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -318,6 +319,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
         [self ensureNotificationsUpToDate];
+
+        // Clean up any messages that expired since last launch immediately
+        // and continue cleaning in the background.
+        [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
     } else {
         [self displayAnyUnseenUpgradeExperience];
     }

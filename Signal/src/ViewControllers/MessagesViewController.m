@@ -12,7 +12,6 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "NSTimer+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
@@ -61,6 +60,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -557,7 +557,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
-@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
@@ -617,7 +616,6 @@ typedef enum : NSUInteger {
     _messageSender = [Environment getCurrent].messageSender;
     _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
-    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:_storageManager];
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
@@ -3257,9 +3255,10 @@ typedef enum : NSUInteger {
 - (void)markAllMessagesAsRead
 {
     [self.thread markAllAsRead];
+
     // In theory this should be unnecessary as read-status starts expiration
     // but in practice I've seen messages not have their timer started.
-    [self.disappearingMessagesJob setExpirationsForThread:self.thread];
+    [OWSDisappearingMessagesJob setExpirationsForThread:self.thread];
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView
