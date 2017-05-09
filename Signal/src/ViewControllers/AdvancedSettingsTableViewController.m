@@ -134,15 +134,16 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
             [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
                                                accountManager:[Environment getCurrent].accountManager
                                                   preferences:[Environment preferences]];
-        syncJob.uploadOnlyIfStale = NO;
         [syncJob run]
             .then(^{
                 DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-                SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_SUCCESS", @"Alert title"), nil);
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
+                                                  @"Title of alert shown when push tokens sync job succeeds.")];
             })
             .catch(^(NSError *error) {
                 DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-                SignalAlertView(NSLocalizedString(@"REGISTRATION_BODY", @"Alert title"), error.localizedDescription);
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
+                                                  @"Title of alert shown when push tokens sync job fails.")];
             });
 
     } else {

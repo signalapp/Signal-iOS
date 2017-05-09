@@ -11,6 +11,7 @@
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "SecurityUtils.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
 #import "UIUtil.h"
@@ -395,8 +396,11 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_async(dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES
                                      completion:^{
-                                         SignalAlertView(NSLocalizedString(@"GROUP_CREATING_FAILED", nil),
-                                             error.localizedDescription);
+                                         [OWSAlerts
+                                             showAlertWithTitle:
+                                                 NSLocalizedString(@"GROUP_CREATING_FAILED",
+                                                     "Title of alert indicating that new group could not be created.")
+                                                        message:error.localizedDescription];
                                      }];
         });
     };

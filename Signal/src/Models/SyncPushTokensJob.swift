@@ -11,7 +11,6 @@ class SyncPushTokensJob: NSObject {
     let pushManager: PushManager
     let accountManager: AccountManager
     let preferences: PropertyListPreferences
-    var uploadOnlyIfStale = true
 
     required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
         self.pushManager = pushManager
@@ -36,20 +35,13 @@ class SyncPushTokensJob: NSObject {
         self.pushManager.validateUserNotificationSettings()
 
         let runPromise: Promise<Void> = self.requestPushTokens().then { (pushToken: String, voipToken: String) in
-            var shouldUploadTokens = !self.uploadOnlyIfStale
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
                 Logger.debug("\(self.TAG) push tokens changed.")
-                shouldUploadTokens = true
             }
 
-            guard shouldUploadTokens else {
-                Logger.info("\(self.TAG) skipping push token upload")
-                return Promise(value: ())
-            }
+            Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
 
-            Logger.info("\(self.TAG) Sending new tokens to account servers.")
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
-                Logger.info("\(self.TAG) Recording tokens locally.")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
             }
         }
@@ -70,7 +62,7 @@ class SyncPushTokensJob: NSObject {
     }
 
     private func recordNewPushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        Logger.info("\(TAG) Recording new push tokens.")
+        Logger.warn("\(TAG) Recording new push tokens. pushToken: \(pushToken), voipToken: \(voipToken)")
 
         if (pushToken != self.preferences.getPushToken()) {
             Logger.info("\(TAG) Recording new plain push token")

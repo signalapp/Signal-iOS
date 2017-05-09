@@ -7,6 +7,7 @@
 #import "Environment.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 #import "UIView+OWS.h"
@@ -148,10 +149,10 @@ static NSString *const kCodeSentSegue = @"codeSent";
         }
         failure:^(NSError *error) {
           if (error.code == 400) {
-              SignalAlertView(NSLocalizedString(@"REGISTRATION_ERROR", nil),
-                              NSLocalizedString(@"REGISTRATION_NON_VALID_NUMBER", ));
+              [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                    message:NSLocalizedString(@"REGISTRATION_NON_VALID_NUMBER", nil)];
           } else {
-              SignalAlertView(error.localizedDescription, error.localizedRecoverySuggestion);
+              [OWSAlerts showAlertWithTitle:error.localizedDescription message:error.localizedRecoverySuggestion];
           }
 
           [_sendCodeButton setEnabled:YES];
@@ -166,14 +167,10 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 - (void)presentInvalidCountryCodeError {
-    UIAlertView *alertView =
-        [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
-                                   message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
-                                  delegate:nil
-                         cancelButtonTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
-                                               @"Generic short text for button to dismiss a dialog")
-                         otherButtonTitles:nil];
-    [alertView show];
+    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
+                          message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
+                      buttonTitle:NSLocalizedString(
+                                      @"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog")];
 }
 
 #pragma mark - Keyboard notifications

@@ -485,13 +485,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 @" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
                         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
                     } else {
-                        UIAlertView *notPermitted =
-                            [[UIAlertView alloc] initWithTitle:@""
-                                                       message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")
-                                                      delegate:nil
-                                             cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                             otherButtonTitles:nil];
-                        [notPermitted show];
+                        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
+                                              message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
                     }
                 }];
 

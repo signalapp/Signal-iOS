@@ -372,13 +372,8 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 }
 
 - (void)showRegistrationErrorMessage:(NSError *)registrationError {
-    UIAlertView *registrationErrorAV = [[UIAlertView alloc] initWithTitle:registrationError.localizedDescription
-                                                                  message:registrationError.localizedRecoverySuggestion
-                                                                 delegate:nil
-                                                        cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                        otherButtonTitles:nil, nil];
-
-    [registrationErrorAV show];
+    [OWSAlerts showAlertWithTitle:registrationError.localizedDescription
+                          message:registrationError.localizedRecoverySuggestion];
 }
 
 - (void)enableServerActions:(BOOL)enabled {

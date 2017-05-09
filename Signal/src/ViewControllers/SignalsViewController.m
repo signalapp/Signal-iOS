@@ -467,19 +467,22 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                                              inThread:thread
                                                                      groupMetaMessage:TSGroupMessageQuit];
             [self.messageSender sendMessage:message
-                                    success:^{
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     [self deleteThread:thread];
-                                                                 }];
-                                    }
-                                    failure:^(NSError *error) {
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
-                                                                                     error.localizedRecoverySuggestion);
-                                                                 }];
-                                    }];
+                success:^{
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [self deleteThread:thread];
+                                             }];
+                }
+                failure:^(NSError *error) {
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [OWSAlerts
+                                                     showAlertWithTitle:
+                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
+                                                             @"Title of alert indicating that group deletion failed.")
+                                                                message:error.localizedRecoverySuggestion];
+                                             }];
+                }];
         } else {
             [self deleteThread:thread];
         }

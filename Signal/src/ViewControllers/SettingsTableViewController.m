@@ -46,7 +46,7 @@ typedef enum {
     kUnregisterSection       = 3,
 } kSection;
 
-@interface SettingsTableViewController () <UIAlertViewDelegate>
+@interface SettingsTableViewController ()
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
@@ -243,21 +243,17 @@ typedef enum {
 
 - (void)proceedToUnregistration {
     [TSAccountManager unregisterTextSecureWithSuccess:^{
-      [Environment resetAppData];
+        [Environment resetAppData];
     }
         failure:^(NSError *error) {
-          SignalAlertView(NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @""), @"");
+            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
         }];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == kNetworkStatusSection) {
-        UIAlertView *info = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
-                                                       message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")
-                                                      delegate:self
-                                             cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                             otherButtonTitles:nil];
-        [info show];
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
+                              message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
     }
 }
 
