@@ -357,10 +357,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    // FIXME new names are not immediately chown.
-    // doing some debugging, it seems that even though [self.tableView reloadData] is called
-    // we don't see subsequent invocations of `cellForIndexpath:` unless the items are scrolled off screen.
-    
     [self updateTableContents];
 }
 
