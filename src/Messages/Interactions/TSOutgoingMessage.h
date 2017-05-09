@@ -59,6 +59,11 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
+                   isVoiceMessage:(BOOL)isVoiceMessage
+                 expiresInSeconds:(uint32_t)expiresInSeconds;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
@@ -94,6 +99,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  * sent as legacy message until we're confident no significant number of legacy clients exist in the wild.
  */
 @property (nonatomic, readonly) BOOL isLegacyMessage;
+
+@property (nonatomic, readonly) BOOL isVoiceMessage;
 
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.

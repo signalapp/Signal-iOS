@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attachments which don't need to be uploaded.
     _isUploaded = YES;
     _filename = pointer.filename;
+    self.attachmentType = pointer.attachmentType;
 
     return self;
 }

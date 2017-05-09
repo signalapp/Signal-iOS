@@ -110,6 +110,11 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     return attachmentString;
 }
 
+- (BOOL)isVoiceMessage
+{
+    return self.attachmentType == TSAttachmentTypeVoiceMessage;
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag

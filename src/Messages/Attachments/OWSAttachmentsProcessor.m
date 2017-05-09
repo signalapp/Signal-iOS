@@ -79,12 +79,21 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
         // digest will be empty for old clients.
         NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
 
+        TSAttachmentType attachmentType = TSAttachmentTypeDefault;
+        if ([attachmentProto hasFlags]) {
+            UInt32 flags = attachmentProto.flags;
+            if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
+                attachmentType = TSAttachmentTypeVoiceMessage;
+            }
+        }
+
         TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                                  key:attachmentProto.key
                                                                               digest:digest
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay
-                                                                            filename:attachmentProto.fileName];
+                                                                            filename:attachmentProto.fileName
+                                                                      attachmentType:attachmentType];
 
         [attachmentIds addObject:pointer.uniqueId];
 
