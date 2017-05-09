@@ -520,6 +520,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ left the group. ";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Call";
 

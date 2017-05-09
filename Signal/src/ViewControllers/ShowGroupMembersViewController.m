@@ -18,9 +18,11 @@
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
+@import ContactsUI;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate>
+@interface ShowGroupMembersViewController () <ContactsViewHelperDelegate, CNContactViewControllerDelegate>
 
 @property (nonatomic, readonly) TSGroupThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -78,11 +80,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
+
+    // HACK otherwise CNContactViewController Navbar is shown as black.
+    // RADAR rdar://28433898 http://www.openradar.me/28433898
+    // CNContactViewController incompatible with opaque navigation bar
+    [self.navigationController.navigationBar setTranslucent:YES];
 
     self.title = _thread.groupModel.groupName;
 
     [self updateTableContents];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    // In case we're dismissing a CNContactViewController which requires default system appearance
+    [UIUtil applySignalAppearence];
 }
 
 #pragma mark - Table Contents
@@ -143,13 +157,15 @@ NS_ASSUME_NONNULL_BEGIN
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO",
-                                                     @"Button label for the 'show contact info' button")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *_Nonnull action) {
-                                             [self showContactInfoViewForRecipientId:recipientId];
-                                         }]];
+    NSString *contactInfoTitle = signalAccount
+        ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
+        : NSLocalizedString(
+              @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
+    [actionSheetController addAction:[UIAlertAction actionWithTitle:contactInfoTitle
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                                [self showContactInfoViewForRecipientId:recipientId];
+                                                            }]];
 
     BOOL isBlocked;
     if (signalAccount) {
@@ -280,37 +296,43 @@ NS_ASSUME_NONNULL_BEGIN
         [self presentViewController:alertController animated:YES completion:nil];
         return;
     }
-
+    
+    CNContactViewController *_Nullable contactViewController;
     if (signalAccount) {
-        // FIXME This is broken until converted to Contacts framework.
-        ABPersonViewController *view = [[ABPersonViewController alloc] init];
-
-        ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, nil);
-        // Assume person is already defined.
-        view.displayedPerson = ABAddressBookGetPersonWithRecordID(addressBookRef, signalAccount.contact.recordID);
-        view.allowsActions = NO;
-        view.allowsEditing = YES;
-
-        [self.navigationController pushViewController:view animated:YES];
-    } else {
-        // FIXME This is broken until converted to Contacts framework.
-        ABUnknownPersonViewController *view = [[ABUnknownPersonViewController alloc] init];
-
-        ABRecordRef aContact = ABPersonCreate();
-        CFErrorRef anError   = NULL;
-
-        ABMultiValueRef phone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-        ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)recipientId, kABPersonPhoneMainLabel, NULL);
-
-        ABRecordSetValue(aContact, kABPersonPhoneProperty, phone, &anError);
-        CFRelease(phone);
-
-        if (!anError && aContact) {
-            view.displayedPerson = aContact; // Assume person is already defined.
-            view.allowsAddingToAddressBook = YES;
-            [self.navigationController pushViewController:view animated:YES];
+        CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
+        if (cnContact) {
+            contactViewController = [CNContactViewController viewControllerForContact:cnContact];
         }
     }
+
+    if (!contactViewController) {
+        CNMutableContact *newContact = [CNMutableContact new];
+        CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
+        CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber = [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain
+                                                                             value:phoneNumber];
+        newContact.phoneNumbers = @[labeledPhoneNumber];
+        
+        contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
+    }
+
+    contactViewController.delegate = self;
+    contactViewController.allowsActions = NO;
+    contactViewController.allowsEditing = YES;
+    contactViewController.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(dismissPressed)];
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:contactViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+
+
+    // HACK otherwise CNContactViewController Navbar is shown as black.
+    // RADAR rdar://28433898 http://www.openradar.me/28433898
+    // CNContactViewController incompatible with opaque navigation bar
+    [UIUtil applyDefaultSystemAppearence];
 }
 
 - (void)showConversationViewForRecipientId:(NSString *)recipientId
@@ -325,6 +347,12 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment callUserWithIdentifier:recipientId];
 }
 
+- (void)dismissPressed
+{
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - ContactsViewHelperDelegate
 
 - (void)contactsViewHelperDidUpdateContacts
@@ -335,6 +363,27 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return YES;
+}
+
+#pragma mark - CNContactViewControllerDelegate
+
+- (void)contactViewController:(CNContactViewController *)viewController
+       didCompleteWithContact:(nullable CNContact *)contact
+{
+    DDLogDebug(@"%@ done editing contact.", self.tag);
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

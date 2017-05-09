@@ -277,6 +277,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)setContents:(OWSTableContents *)contents
 {
     OWSAssert(contents);
+    AssertIsOnMainThread();
 
     _contents = contents;
 
