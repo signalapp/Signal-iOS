@@ -10,7 +10,6 @@
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "Pastelog.h"
-#import <PromiseKit/AnyPromise.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -130,22 +129,9 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         [DDLog flushLog];
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        OWSSyncPushTokensJob *syncJob =
-            [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                               accountManager:[Environment getCurrent].accountManager
-                                                  preferences:[Environment preferences]];
-        [syncJob run]
-            .then(^{
-                DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
-                                                  @"Title of alert shown when push tokens sync job succeeds.")];
-            })
-            .catch(^(NSError *error) {
-                DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
-                                                  @"Title of alert shown when push tokens sync job fails.")];
-            });
-
+        [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                  accountManager:[Environment getCurrent].accountManager
+                                     preferences:[Environment preferences]];
     } else {
         DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }

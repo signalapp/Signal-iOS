@@ -18,16 +18,12 @@ class SyncPushTokensJob: NSObject {
         self.preferences = preferences
     }
 
-    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> AnyPromise {
+    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
         let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
-        return AnyPromise(job.run())
+        job.run()
     }
 
-    @objc func run() -> AnyPromise {
-        return AnyPromise(run())
-    }
-
-    func run() -> Promise<Void> {
+    func run() {
         Logger.debug("\(TAG) Starting.")
 
         // Required to potentially prompt user for notifications settings
@@ -43,11 +39,14 @@ class SyncPushTokensJob: NSObject {
 
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
+                }
+            }.then {
+                Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
+            }.catch { error in
+                Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
             }
-        }
-        runPromise.retainUntilComplete()
 
-        return runPromise
+        runPromise.retainUntilComplete()
     }
 
     private func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {

@@ -24,7 +24,6 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
@@ -151,13 +150,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
                 [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                           accountManager:[Environment getCurrent].accountManager
-                                             preferences:[Environment preferences]]
-                    .then(^{
-                        DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-                    })
-                    .catch(^(NSError *_Nonnull error) {
-                        DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-                    });
+                                             preferences:[Environment preferences]];
 
                 // Clean up any messages that expired since last launch.
                 [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
