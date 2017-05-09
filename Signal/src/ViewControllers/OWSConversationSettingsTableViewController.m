@@ -565,6 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
     [threadNameView addSubview:threadTitleLabel];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
     if (![self isGroupThread] && ![self.thread.name isEqualToString:self.thread.contactIdentifier]) {
         NSString *subtitle =
