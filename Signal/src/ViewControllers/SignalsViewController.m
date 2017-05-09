@@ -338,7 +338,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 {
     [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                               accountManager:self.accountManager
-                                 preferences:[Environment preferences]];
+                                 preferences:[Environment preferences]
+                                  showAlerts:NO];
 }
 
 - (void)tableViewSetUp {

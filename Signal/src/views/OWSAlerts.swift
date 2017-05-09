@@ -24,17 +24,20 @@ import Foundation
     }
 
     public class func showAlert(withTitle title: String) {
-        self.showAlert(withTitle: title, message: nil, buttonTitle: NSLocalizedString("OK", comment: ""))
+        self.showAlert(withTitle: title, message: nil, buttonTitle: nil)
     }
 
     public class func showAlert(withTitle title: String, message: String) {
-        self.showAlert(withTitle: title, message: message, buttonTitle: NSLocalizedString("OK", comment: ""))
+        self.showAlert(withTitle: title, message: message, buttonTitle: nil)
     }
 
-    public class func showAlert(withTitle title: String, message: String?, buttonTitle: String) {
+    public class func showAlert(withTitle title: String, message: String? = nil, buttonTitle: String? = nil) {
         assert(title.characters.count > 0)
+
+        let actionTitle = (buttonTitle != nil ? buttonTitle : NSLocalizedString("OK", comment: ""))
+
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: buttonTitle, style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: nil))
         UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
     }
 }

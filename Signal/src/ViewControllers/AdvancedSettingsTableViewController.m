@@ -131,7 +131,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
         [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                   accountManager:[Environment getCurrent].accountManager
-                                     preferences:[Environment preferences]];
+                                     preferences:[Environment preferences]
+                                      showAlerts:YES];
     } else {
         DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }

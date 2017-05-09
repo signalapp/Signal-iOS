@@ -150,7 +150,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
                 [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                           accountManager:[Environment getCurrent].accountManager
-                                             preferences:[Environment preferences]];
+                                             preferences:[Environment preferences]
+                                              showAlerts:NO];
 
                 // Clean up any messages that expired since last launch.
                 [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
