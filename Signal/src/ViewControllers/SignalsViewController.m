@@ -18,6 +18,7 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -336,11 +337,15 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)ensureNotificationsUpToDate
 {
-    OWSSyncPushTokensJob *syncPushTokensJob =
-        [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                           accountManager:self.accountManager
-                                              preferences:[Environment preferences]];
-    [syncPushTokensJob run];
+    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                              accountManager:self.accountManager
+                                 preferences:[Environment preferences]]
+        .then(^{
+            DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
+        })
+        .catch(^(NSError *_Nonnull error) {
+            DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
+        });
 }
 
 - (void)tableViewSetUp {
