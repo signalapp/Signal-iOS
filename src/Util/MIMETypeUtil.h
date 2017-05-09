@@ -46,6 +46,7 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 + (nullable NSString *)utiTypeForFileExtension:(NSString *)fileExtension;
 + (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType;
 + (nullable NSString *)fileExtensionForMIMEType:(NSString *)mimeType;
++ (nullable NSString *)mimeTypeForFileExtension:(NSString *)fileExtension;
 
 @end
 
