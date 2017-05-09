@@ -59,8 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                             inThread:thread
-                                         messageBody:nil
-                                       attachmentIds:[NSMutableArray new]
+                                      isVoiceMessage:[attachment isVoiceMessage]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
     [messageSender sendAttachmentData:attachment.data
         contentType:attachment.mimeType
