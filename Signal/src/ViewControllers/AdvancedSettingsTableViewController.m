@@ -137,9 +137,11 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         syncJob.uploadOnlyIfStale = NO;
         [syncJob run]
             .then(^{
+                DDLogWarn(@"%@ Successfully ran syncPushTokensJob.", self.tag);
                 SignalAlertView(NSLocalizedString(@"PUSH_REGISTER_SUCCESS", @"Alert title"), nil);
             })
             .catch(^(NSError *error) {
+                DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
                 SignalAlertView(NSLocalizedString(@"REGISTRATION_BODY", @"Alert title"), error.localizedDescription);
             });
 

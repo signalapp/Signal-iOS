@@ -43,13 +43,12 @@ class SyncPushTokensJob: NSObject {
             }
 
             guard shouldUploadTokens else {
-                Logger.info("\(self.TAG) skipping push token upload")
+                Logger.warn("\(self.TAG) Skipping push token upload. pushToken: \(pushToken), voipToken: \(voipToken)")
                 return Promise(value: ())
             }
 
-            Logger.info("\(self.TAG) Sending new tokens to account servers.")
+            Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
-                Logger.info("\(self.TAG) Recording tokens locally.")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
             }
         }
@@ -70,7 +69,7 @@ class SyncPushTokensJob: NSObject {
     }
 
     private func recordNewPushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        Logger.info("\(TAG) Recording new push tokens.")
+        Logger.warn("\(self.TAG) Recording new push tokens. pushToken: \(pushToken), voipToken: \(voipToken)")
 
         if (pushToken != self.preferences.getPushToken()) {
             Logger.info("\(TAG) Recording new plain push token")

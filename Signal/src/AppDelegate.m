@@ -157,10 +157,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                           accountManager:[Environment getCurrent].accountManager
                                              preferences:[Environment preferences]]
                     .then(^{
-                        DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
+                        DDLogWarn(@"%@ Successfully ran syncPushTokensJob.", self.tag);
                     })
                     .catch(^(NSError *_Nonnull error) {
-                        DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
+                        DDLogError(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
                     });
 
                 // Clean up any messages that expired since last launch.
