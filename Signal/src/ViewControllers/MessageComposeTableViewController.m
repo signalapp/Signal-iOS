@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic, readonly) NSLayoutConstraint *hideContactsPermissionReminderViewConstraint;
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
@@ -58,6 +59,18 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsViewHelper = [ContactsViewHelper new];
     _contactsViewHelper.delegate = self;
     _nonContactAccountSet = [NSMutableSet set];
+
+    ReminderView *contactsPermissionReminderView = [[ReminderView alloc]
+        initWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                         @"Multiline label explaining why compose-screen contact picker is empty.")
+           tapAction:^{
+               [[UIApplication sharedApplication] openSystemSettings];
+           }];
+    [self.view addSubview:contactsPermissionReminderView];
+    [contactsPermissionReminderView autoPinWidthToSuperview];
+    [contactsPermissionReminderView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+    _hideContactsPermissionReminderViewConstraint =
+        [contactsPermissionReminderView autoSetDimension:ALDimensionHeight toSize:0];
 
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
@@ -87,7 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
     _tableViewController.tableViewStyle = UITableViewStylePlain;
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
+
+    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contactsPermissionReminderView];
     [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
@@ -99,6 +113,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self.noSignalContactsView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     [self updateTableContents];
+}
+
+- (void)showContactsPermissionReminder:(BOOL)isVisible
+{
+    _hideContactsPermissionReminderViewConstraint.active = !isVisible;
+}
+
+- (void)showSearchBar:(BOOL)isVisible
+{
+    if (isVisible) {
+        self.tableViewController.tableView.tableHeaderView = self.searchBar;
+    } else {
+        self.tableViewController.tableView.tableHeaderView = nil;
+    }
 }
 
 - (UIView *)createNoSignalContactsView
@@ -151,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIButton *inviteContactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [inviteContactsButton setTitle:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                       "Text for button at the top of the contact picker")
+                                       "Label for the cell that presents the 'invite contacts' workflow.")
                           forState:UIControlStateNormal];
     [inviteContactsButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
     [inviteContactsButton.titleLabel setFont:[UIFont ows_regularFontWithSize:17.f]];
@@ -199,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 #pragma mark - Table Contents
@@ -240,20 +268,22 @@ NS_ASSUME_NONNULL_BEGIN
                              [weakSelf.navigationController pushViewController:viewController animated:YES];
                          }]];
 
-    // Invite Contacts
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-            @"Label for the cell that presents the 'invite contacts' workflow.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
+    if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        // Invite Contacts
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                @"Label for the cell that presents the 'invite contacts' workflow.");
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            return cell;
+        }
+                             customRowHeight:kActionCellHeight
+                             actionBlock:^{
+                                 [weakSelf presentInviteFlow];
+                             }]];
     }
-                         customRowHeight:kActionCellHeight
-                         actionBlock:^{
-                             [weakSelf presentInviteFlow];
-                         }]];
 
     // If the search string looks like a phone number, show either "new conversation..." cells and/or
     // "invite via SMS..." cells.
@@ -357,18 +387,20 @@ NS_ASSUME_NONNULL_BEGIN
     if (!hasSearchText && helper.signalAccounts.count < 1) {
         // No Contacts
 
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(
-                @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            return cell;
+        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                UITableViewCell *cell = [UITableViewCell new];
+                cell.textLabel.text = NSLocalizedString(
+                    @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
+                cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
+                cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+                cell.textLabel.textAlignment = NSTextAlignmentCenter;
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                return cell;
+            }
+                                                   customRowHeight:kActionCellHeight
+                                                       actionBlock:nil]];
         }
-                                               customRowHeight:kActionCellHeight
-                                                   actionBlock:nil]];
     }
 
     if (hasSearchText && !hasSearchResults) {
@@ -407,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[Environment preferences] setHasDeclinedNoContactsView:YES];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 - (void)presentInviteFlow
@@ -418,10 +450,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
-- (void)showNoContactsModeIfNecessary
+- (void)showContactAppropriateViews
 {
-    BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
-    self.isNoContactsModeActive = (hasNoContacts && ![[Environment preferences] hasDeclinedNoContactsView]);
+    if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
+        self.isNoContactsModeActive = (hasNoContacts && ![[Environment preferences] hasDeclinedNoContactsView]);
+        [self showContactsPermissionReminder:NO];
+
+        [self showSearchBar:YES];
+    } else {
+        // don't show "no signal contacts", show "no contact access"
+        self.isNoContactsModeActive = NO;
+        [self showContactsPermissionReminder:YES];
+        [self showSearchBar:NO];
+    }
 }
 
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive
@@ -579,7 +621,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self updateTableContents];
 
-    [self showNoContactsModeIfNecessary];
+    [self showContactAppropriateViews];
 }
 
 - (BOOL)shouldHideLocalNumber

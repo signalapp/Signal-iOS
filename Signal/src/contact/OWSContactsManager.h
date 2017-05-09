@@ -39,6 +39,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
 - (void)requestSystemContactsOnce;
+- (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
 // Ensure's the app has the latest contacts, but won't prompt the user for contact
 // access if they haven't granted it.

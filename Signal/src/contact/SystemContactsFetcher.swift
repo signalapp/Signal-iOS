@@ -39,11 +39,19 @@ class SystemContactsFetcher: NSObject {
         CNContactEmailAddressesKey as CNKeyDescriptor
     ]
 
-    public func requestOnce() {
+    /**
+     * Ensures we've requested access for system contacts. This can be used in multiple places,
+     * where we might need contact access, but will ensure we don't wastefully reload contacts
+     * if we have already fetched contacts.
+     *
+     * @param   completion  completion handler is called on main thread.
+     */
+    public func requestOnce(completion: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
 
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
             Logger.debug("\(TAG) already requested system contacts")
+            completion?(nil)
             return
         }
         systemContactsHaveBeenRequestedAtLeastOnce = true
@@ -51,25 +59,36 @@ class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            contactStore.requestAccess(for: .contacts, completionHandler: { (granted, error) in
+            contactStore.requestAccess(for: .contacts) { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
-                    assertionFailure()
+                    DispatchQueue.main.async {
+                        completion?(error)
+                    }
+                    return
                 }
 
-                if !granted {
-                    // TODO, make this a one time dismissable admonishment
-                    // e.g. remember across launches that the user has dismissed.
-                    self.displayMissingContactsPermissionAlert()
-                } else {
-                    self.updateContacts()
+                guard granted else {
+                    Logger.info("\(self.TAG) declined contact access.")
+                    // This case should have been caught be the error guard a few lines up.
+                    assertionFailure()
+                    DispatchQueue.main.async {
+                        completion?(nil)
+                    }
+                    return
                 }
-            })
+
+                DispatchQueue.main.async {
+                    self.updateContacts(completion: completion)
+                }
+            }
         case .authorized:
-            // TODO reset onetime admonishment reminder, so that we remind user again (once) if they've since toggled permissions.
-            self.updateContacts()
+            self.updateContacts(completion: completion)
         case .denied, .restricted:
             Logger.debug("\(TAG) contacts were \(self.authorizationStatus)")
+            DispatchQueue.main.async {
+                completion?(nil)
+            }
         }
     }
 
@@ -79,15 +98,10 @@ class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts()
+        updateContacts(completion: nil)
     }
 
-    private func displayMissingContactsPermissionAlert() {
-        let foo = UIApplication.shared.frontmostViewController
-        Logger.error("TODO")
-    }
-
-    private func updateContacts() {
+    private func updateContacts(completion: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
@@ -105,11 +119,16 @@ class SystemContactsFetcher: NSObject {
             } catch let error as NSError {
                 Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
                 assertionFailure()
+                DispatchQueue.main.async {
+                    completion?(error)
+                }
+                return
             }
 
             let contacts = systemContacts.map { Contact(systemContact: $0) }
             DispatchQueue.main.async {
                 self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
+                completion?(nil)
             }
         }
     }
@@ -123,7 +142,7 @@ class SystemContactsFetcher: NSObject {
 
     @objc
     private func contactStoreDidChange() {
-        updateContacts()
+        updateContacts(completion: nil)
     }
 
 }

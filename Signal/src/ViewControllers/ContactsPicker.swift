@@ -145,20 +145,27 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void) {
         switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
             case CNAuthorizationStatus.denied, CNAuthorizationStatus.restricted:
+                let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
+                let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
 
-                let title = NSLocalizedString("AB_PERMISSION_MISSING_TITLE", comment: "Alert title when contacts disabled")
-                let body = NSLocalizedString("ADDRESSBOOK_RESTRICTED_ALERT_BODY", comment: "Alert body when contacts disabled")
                 let alert = UIAlertController(title: title, message: body, preferredStyle: UIAlertControllerStyle.alert)
 
-                let dismissText = NSLocalizedString("DISMISS_BUTTON_TEXT", comment:"")
+                let dismissText = NSLocalizedString("TXT_CANCEL_TITLE", comment:"")
 
-                let okAction = UIAlertAction(title: dismissText, style: UIAlertActionStyle.default, handler: {  _ in
+                let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, didContactFetchFailed: error)
                     errorHandler(error)
                     self.dismiss(animated: true, completion: nil)
                 })
-                alert.addAction(okAction)
+                alert.addAction(cancelAction)
+
+                let settingsText = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment:"Button text which opens the settings app")
+                let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
+                    UIApplication.shared.openSystemSettings()
+                })
+                alert.addAction(openSettingsAction)
+
                 self.present(alert, animated: true, completion: nil)
 
             case CNAuthorizationStatus.notDetermined:
@@ -207,6 +214,10 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
 
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let dataSource = filteredSections
+
+        guard section < dataSource.count else {
+            return 0
+        }
 
         return dataSource[section].count
     }
@@ -274,7 +285,15 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dataSource = filteredSections
 
+        guard section < dataSource.count else {
+            return nil
+        }
+
         if dataSource[section].count > 0 {
+            guard section < collation.sectionTitles.count else {
+                return nil
+            }
+
             return collation.sectionTitles[section]
         } else {
             return nil

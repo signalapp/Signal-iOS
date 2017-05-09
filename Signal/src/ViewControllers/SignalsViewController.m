@@ -168,7 +168,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
 
-    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION", @"Multi line label explainging how to show names instead of phone numbers in your inbox");
+    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
     self.missingContactsPermissionView.tapAction = ^{
         [[UIApplication sharedApplication] openSystemSettings];
     };
@@ -278,9 +279,18 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 - (IBAction)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
-    [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+
+    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+        DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
+        // Even if there was an error fetching contacts we proceed to the next screen.
+        // As the compose view will present the proper thing depending on contact access.
+        //
+        // We just want to make sure contact access is *complete* before showing the compose
+        // screen to avoid flicker.
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+    }];
 }
 
 - (void)swappedSegmentedControl {
