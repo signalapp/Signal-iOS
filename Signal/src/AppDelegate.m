@@ -417,7 +417,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if ([TSAccountManager isRegistered]) {
           dispatch_sync(dispatch_get_main_queue(), ^{
-              [self protectScreen];
+              if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                  // If app has not re-entered active, show screen protection if necessary.
+                  [self showScreenProtection];
+              }
               [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
           });
       }
@@ -603,16 +606,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.screenProtectionWindow = window;
 }
 
-- (void)protectScreen {
+- (void)showScreenProtection
+{
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection {
-    if (Environment.preferences.screenSecurityIsEnabled) {
-        self.screenProtectionWindow.hidden = YES;
-    }
+    self.screenProtectionWindow.hidden = YES;
 }
 
 #pragma mark Push Notifications Delegate Methods
