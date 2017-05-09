@@ -35,6 +35,7 @@
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
+#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
