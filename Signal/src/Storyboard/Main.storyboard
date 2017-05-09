@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -388,28 +388,7 @@
         <!--Show Group Members View Controller-->
         <scene sceneID="VBt-Ax-0G9">
             <objects>
-                <tableViewController storyboardIdentifier="ShowGroupMembersViewController" id="JeZ-9g-U61" customClass="ShowGroupMembersViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Fdx-Zk-e27">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="groupMemberCell" id="hyn-Ss-OAa">
-                                <rect key="frame" x="0.0" y="22" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hyn-Ss-OAa" id="4XE-JO-Upr">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="JeZ-9g-U61" id="xVC-pb-xNg"/>
-                            <outlet property="delegate" destination="JeZ-9g-U61" id="qYP-nN-CLJ"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="gcZ-cw-Rtp"/>
-                </tableViewController>
+                <tableViewController storyboardIdentifier="ShowGroupMembersViewController" id="JeZ-9g-U61" customClass="ShowGroupMembersViewController" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3R8-C6-Zq8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1032" y="-1540"/>
@@ -419,7 +398,7 @@
             <objects>
                 <navigationController storyboardIdentifier="UserInitialViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="VNq-cN-pk9">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="VNq-cN-pk9">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.082137122750282288" green="0.46843802928924561" blue="0.91112053394317627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -529,7 +508,7 @@
         <scene sceneID="nF7-wR-ITu">
             <objects>
                 <navigationController storyboardIdentifier="SettingsNavigationController" id="u7y-N1-6Ba" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="OEe-gh-9Ii">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="OEe-gh-9Ii">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -904,7 +883,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cZ7-de-SUi" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="gzw-fh-en2">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="gzw-fh-en2">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.082137122750282288" green="0.46843802928924561" blue="0.91112053394317627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
