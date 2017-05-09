@@ -89,6 +89,8 @@ class SignalAttachment: NSObject {
     // possible.
     public var image: UIImage?
 
+    private(set) public var isVoiceMessage = false
+
     // MARK: Constants
 
     /**
@@ -630,6 +632,14 @@ class SignalAttachment: NSObject {
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
                              filename : filename)
+    }
+
+    // MARK: Voice Messages
+
+    public class func voiceMessageAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+        let attachment = audioAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        attachment.isVoiceMessage = true
+        return attachment
     }
 
     // MARK: Attachments

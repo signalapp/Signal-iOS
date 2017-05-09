@@ -3165,8 +3165,9 @@ typedef enum : NSUInteger {
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:@".m4a"];
 
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:filename];
+    SignalAttachment *attachment = [SignalAttachment voiceMessageAttachmentWithData:audioData
+                                                                            dataUTI:(NSString *)kUTTypeMPEG4Audio
+                                                                           filename:filename];
     if (!attachment || [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
             self.tag,
