@@ -4,7 +4,6 @@
 
 #import "OWSRecordTranscriptJob.h"
 #import "OWSAttachmentsProcessor.h"
-#import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "TSInfoMessage.h"

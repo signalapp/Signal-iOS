@@ -17,7 +17,6 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
 @interface OWSReadReceiptsProcessor ()
 
 @property (nonatomic, readonly) NSArray<OWSReadReceipt *> *readReceipts;
-@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 
 @end
@@ -34,7 +33,6 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
 
     _readReceipts = [readReceipts copy];
     _storageManager = storageManager;
-    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
 
     return self;
 }
@@ -85,7 +83,7 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
             [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId timestamp:readReceipt.timestamp];
         if (message) {
             [message markAsReadFromReadReceipt];
-            [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:readReceipt.timestamp];
+            [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:readReceipt.timestamp];
             // If it was previously saved, no need to keep it around any longer.
             [readReceipt remove];
             [[NSNotificationCenter defaultCenter]

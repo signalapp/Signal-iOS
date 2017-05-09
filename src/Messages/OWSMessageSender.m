@@ -341,7 +341,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
-@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSOperationQueue *> *sendingQueueMap;
 
 @end
@@ -366,7 +365,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     _uploadingService = [[OWSUploadingService alloc] initWithNetworkManager:networkManager];
     _dbConnection = storageManager.newDatabaseConnection;
-    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
 
     OWSSingletonAssert();
 
@@ -1060,20 +1058,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self sendSyncTranscriptForMessage:message];
     }
 
-    [self.disappearingMessagesJob setExpirationForMessage:message];
+    [OWSDisappearingMessagesJob setExpirationForMessage:message];
 }
 
 - (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
 {
     [message updateWithWasSentAndDelivered];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
-    [self.disappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
+    [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
 
 - (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSOutgoingMessage *)outgoingMessage
 {
-    [self.disappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                              contactsManager:self.contactsManager];
+    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                            contactsManager:self.contactsManager];
 }
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage

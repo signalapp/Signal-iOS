@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosDataMessage;
 @class ContactsUpdater;
-@class OWSDisappearingMessagesJob;
 @class OWSMessageSender;
 @protocol ContactsManagerProtocol;
 @protocol OWSCallMessageHandler;

@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,15 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesJob : NSObject
 
++ (instancetype)sharedJob;
+
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
 
-- (void)run;
-- (void)setExpirationsForThread:(TSThread *)thread;
-- (void)setExpirationForMessage:(TSMessage *)message;
-- (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt;
-- (void)runBy:(uint64_t)millisecondTimestamp;
-
++ (void)setExpirationsForThread:(TSThread *)thread;
++ (void)setExpirationForMessage:(TSMessage *)message;
++ (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt;
 
 /**
  * Synchronize our disappearing messages settings with that of the given message. Useful so we can
@@ -31,8 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @param contactsManager
  *   Provides the contact name responsible for any configuration changes in an info message.
  */
-- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
++ (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager;
+
+// Clean up any messages that expired since last launch immediately
+// and continue cleaning in the background.
+- (void)startIfNecessary;
 
 @end
 
