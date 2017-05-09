@@ -351,7 +351,7 @@ protocol CallServiceObserver: class {
      * Called by the call initiator after receiving a CallAnswer from the callee.
      */
     public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
-        Logger.debug("\(TAG) received call answer for call: \(callId) thread: \(thread)")
+        Logger.info("\(TAG) received call answer for call: \(callId) thread: \(thread)")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
@@ -368,6 +368,8 @@ protocol CallServiceObserver: class {
         self.sendIceUpdatesImmediately = true
 
         if pendingIceUpdateMessages.count > 0 {
+            Logger.error("\(self.TAG) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
+
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
             let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
@@ -422,7 +424,7 @@ protocol CallServiceObserver: class {
      * Received a call while already in another call.
      */
     private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
-        Logger.debug("\(TAG) \(#function) for call: \(call) thread: \(thread)")
+        Logger.info("\(TAG) \(#function) for call: \(call) thread: \(thread)")
         AssertIsOnMainThread()
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
@@ -437,7 +439,7 @@ protocol CallServiceObserver: class {
      * The callee was already in another call.
      */
     public func handleRemoteBusy(thread: TSContactThread) {
-        Logger.debug("\(TAG) \(#function) for thread: \(thread)")
+        Logger.info("\(TAG) \(#function) for thread: \(thread)")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
@@ -462,7 +464,7 @@ protocol CallServiceObserver: class {
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(TAG) receivedCallOffer for thread:\(thread)")
+        Logger.info("\(TAG) receivedCallOffer for thread:\(thread)")
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
         guard call == nil else {
@@ -565,7 +567,7 @@ protocol CallServiceObserver: class {
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         AssertIsOnMainThread()
-        Logger.debug("\(TAG) called \(#function)")
+        Logger.info("\(TAG) called \(#function)")
 
         guard let currentThread = self.thread else {
             Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?")
@@ -626,6 +628,7 @@ protocol CallServiceObserver: class {
         let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
         if self.sendIceUpdatesImmediately {
+            Logger.info("\(TAG) in \(#function). Sending immediately.")
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessage: iceUpdateMessage)
             let sendPromise = self.messageSender.sendCallMessage(callMessage)
             sendPromise.retainUntilComplete()
@@ -633,7 +636,7 @@ protocol CallServiceObserver: class {
             // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
             // e.g. if the client has blocked our message due to an identity change, we'd otherwise
             // bombard them with a bunch *more* undecipherable messages.
-            Logger.debug("\(TAG) enqueuing iceUpdate until we receive call answer")
+            Logger.info("\(TAG) in \(#function). Enqueing for later.")
             self.pendingIceUpdateMessages.append(iceUpdateMessage)
             return
         }
@@ -1223,6 +1226,7 @@ protocol CallServiceObserver: class {
         thread = nil
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
+        Logger.info("\(TAG) clearing pendingIceUpdateMessages")
         pendingIceUpdateMessages = []
     }
 
