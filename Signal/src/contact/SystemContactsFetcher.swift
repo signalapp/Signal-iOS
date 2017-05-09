@@ -4,6 +4,7 @@
 
 import Foundation
 import Contacts
+import ContactsUI
 
 @objc protocol SystemContactsFetcherDelegate: class {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact])
@@ -36,7 +37,8 @@ class SystemContactsFetcher: NSObject {
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactPhoneNumbersKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor
+        CNContactEmailAddressesKey as CNKeyDescriptor,
+        CNContactViewController.descriptorForRequiredKeys()
     ]
 
     /**
@@ -106,14 +108,11 @@ class SystemContactsFetcher: NSObject {
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
 
-        let contactStore = self.contactStore
-        let allowedContactKeys = self.allowedContactKeys
-
         DispatchQueue.global().async {
             var systemContacts = [CNContact]()
             do {
-                let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
-                try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
+                try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                     systemContacts.append(contact)
                 }
             } catch let error as NSError {
