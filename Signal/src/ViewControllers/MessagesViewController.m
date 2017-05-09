@@ -325,6 +325,10 @@ typedef enum : NSUInteger {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
+    if (self.rightBarButtonItem != self.voiceMemoButton) {
+        return NO;
+    }
+
     // We want to be permissive about the voice message gesture, so we accept
     // gesture that begin within N points of the
     CGFloat kVoiceMemoGestureTolerancePoints = 10;
@@ -3158,7 +3162,7 @@ typedef enum : NSUInteger {
     self.audioRecorder = nil;
 
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
-        stringByAppendingPathExtension:[MIMETypeUtil fileExtensionForUTIType:(NSString *)kUTTypeMPEG4Audio]];
+        stringByAppendingPathExtension:@".m4a"];
 
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithData:audioData dataUTI:(NSString *)kUTTypeMPEG4Audio filename:filename];

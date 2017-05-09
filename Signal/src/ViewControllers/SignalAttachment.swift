@@ -168,6 +168,18 @@ class SignalAttachment: NSObject {
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
     var mimeType: String {
+        if let filename = filename {
+            let fileExtension = (filename as NSString).pathExtension
+            if fileExtension.characters.count > 0 {
+                if let mimeType = MIMETypeUtil.mimeType(forFileExtension:fileExtension) {
+                    // UTI types are an imperfect means of representing file type;
+                    // file extensions are also imperfect but far more reliable and
+                    // comprehensive so we always prefer to try to deduce MIME type
+                    // from the file extension.
+                    return mimeType
+                }
+            }
+        }
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return OWSMimeTypeOversizeTextMessage
         }
@@ -204,6 +216,12 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
+        if let filename = filename {
+            let fileExtension = (filename as NSString).pathExtension
+            if fileExtension.characters.count > 0 {
+                return fileExtension
+            }
+        }
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return "txt"
         }

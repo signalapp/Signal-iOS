@@ -316,23 +316,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (action == @selector(copy:)) {
             NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:_contentType];
             if (!utiType) {
-                if ([_contentType isEqualToString:@"audio/amr"]) {
-                    utiType = @"org.3gpp.adaptive-multi-rate-audio";
-                } else if ([_contentType isEqualToString:@"audio/mp3"] ||
-                    [_contentType isEqualToString:@"audio/x-mpeg"] || [_contentType isEqualToString:@"audio/mpeg"] ||
-                    [_contentType isEqualToString:@"audio/mpeg3"] || [_contentType isEqualToString:@"audio/x-mp3"] ||
-                    [_contentType isEqualToString:@"audio/x-mpeg3"]) {
-                    utiType = (NSString *)kUTTypeMP3;
-                } else if ([_contentType isEqualToString:@"audio/aac"] ||
-                    [_contentType isEqualToString:@"audio/x-m4a"]) {
-                    utiType = (NSString *)kUTTypeMPEG4Audio;
-                } else if ([_contentType isEqualToString:@"audio/aiff"] ||
-                    [_contentType isEqualToString:@"audio/x-aiff"]) {
-                    utiType = (NSString *)kUTTypeAudioInterchangeFileFormat;
-                } else {
-                    OWSAssert(0);
-                    utiType = (NSString *)kUTTypeAudio;
-                }
+                OWSAssert(0);
+                utiType = (NSString *)kUTTypeAudio;
             }
 
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
