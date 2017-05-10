@@ -48,11 +48,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @end
+
+#pragma mark -
 
 @implementation TSMessagesManager
 
@@ -103,7 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = messageSender;
 
     _dbConnection = storageManager.newDatabaseConnection;
-    _disappearingMessagesJob = [[OWSDisappearingMessagesJob alloc] initWithStorageManager:storageManager];
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
     _blockingManager = [OWSBlockingManager sharedManager];
 
@@ -940,8 +940,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        storageManager:self.storageManager];
         [readReceiptsProcessor process];
 
-        [self.disappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                                  contactsManager:self.contactsManager];
+        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                contactsManager:self.contactsManager];
 
         // Update thread preview in inbox
         [thread touch];
