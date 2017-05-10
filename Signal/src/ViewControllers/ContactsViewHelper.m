@@ -43,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
-    self.signalAccountMap = self.contactsManager.signalAccountMap;
-    self.signalAccounts = self.contactsManager.signalAccounts;
+
+    [self updateContacts];
 
     [self observeNotifications];
 
