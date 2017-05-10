@@ -1,23 +1,38 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "授权";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal 需要访问您的联系人。我们不会在服务器上存储您的联系人列表。";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "很抱歉！";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "接收新的安全码";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "需要采取行动";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Add";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal 需要访问您的联系人。联系人访问受限。Signal 即将退出。你可以通过 设置 App >> 常规 >> 限制 >> 联系人 >> 允许 以暂时允许 Signal 访问联系人来解除限制。";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Add Contact";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "关闭";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Add by Phone Number";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Add Member";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Discard";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Don't Save";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "Error";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Save";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "Validating";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "已经用Signal账户了吗？";
@@ -68,7 +83,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
@@ -124,12 +139,6 @@
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "从黑名单中移除 %@ 吗？";
 
-/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ 已经在黑名单里了。";
-
-/* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "已在黑名单";
-
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "加入黑名单";
 
@@ -150,9 +159,6 @@
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
-
-/* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "联系人";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "从黑名单中移除失败。";
@@ -208,6 +214,9 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "和剪切版相比较";
 
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, enable contacts access in your system settings.";
+
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "此操作将会重置程序，删除您的所有信息并将您从服务器注销。在删除所有数据后，此程序将会自动关闭。";
 
@@ -228,9 +237,6 @@
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blocked";
-
-/* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Group Member";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "未注册的号码";
@@ -313,14 +319,38 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "清除";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "编辑群聊";
 
-/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ is already a member of this group.";
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
 
-/* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Already a Group Member";
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Members";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Update";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "You've changed this group. Would you like to save these changes?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "复制";
@@ -330,6 +360,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "共享";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Edit";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\n最近我在使用Signal以保持iPhone上的对话私密. 我希望你也能装上, 这样我们可以有信心只有我和你可以看到我们发的消息或者听到我们打的电话.\n\nSignal可以在iPhone和Android上使用. 可以在以下的链接下载: %@\n\nSignal像你用过的聊天软件一样工作. 我们可以发照片或者视频, 打电话, 也可以群聊. 最好的地方在于, 没任何其它人可以看到这些内容, 即使是做出Signal软件的人!\n\n你可以在以下的链接了解更多关于制作Signal的Open Whisper Systems: %@";
@@ -475,7 +508,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "创建新的组群";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "组群创建失败";
 
 /* Conversation settings table section title */
@@ -487,11 +520,11 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ 已退出群组。";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Call";
-
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "成员列表";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Send Message";
@@ -502,7 +535,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "离开组群 %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "无法退出组群";
 
 /* No comment provided by engineer. */
@@ -521,19 +554,22 @@
 "HOURS_TIME_AMOUNT" = "%u 小时";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "正在连接...";
+"IN_CALL_CONNECTING" = "Connecting…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "正在响铃...";
+"IN_CALL_RINGING" = "Ringing…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "已接通。正在加密...";
+"IN_CALL_SECURING" = "Answered. Securing…";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "安全连接已启用。";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "通话结束。";
+
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "To see the names of your contacts, update your sytem settings to allow contact access.";
 
 /* notification body */
 "INCOMING_CALL" = "来电";
@@ -544,7 +580,13 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "未完成的来电，来自";
 
-/* Text for button at the top of the contact picker */
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "To invite your contacts, you need to allow Signal access to your contacts in the Settings app.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Enable Contact Access";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用Signal";
 
 /* Search */
@@ -599,12 +641,6 @@
 "LIST_GROUP_MEMBERS_ACTION" = "显示成员列表";
 
 /* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "正在加载您的通讯录。";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "正在加载中，请稍等。";
-
-/* No comment provided by engineer. */
 "LOGGING_SECTION" = "信息记录日志";
 
 /* No comment provided by engineer. */
@@ -632,7 +668,7 @@
 "MESSAGE_STATUS_SENT" = "已发送";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "上传中…";
+"MESSAGE_STATUS_UPLOADING" = "Uploading…";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "该用户在您的黑名单中";
@@ -711,20 +747,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "您可以通过收件箱上方的彩条来判断网络连接状态。";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "与%@开始新的对话。";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
+
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "Add by phone number";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "设置组群照片";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Create";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "新群组";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Member";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "为此群组命名";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "添加成员";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
@@ -757,7 +814,7 @@
 "NOTIFICATIONS_SOUND" = "通知铃声";
 
 /* No comment provided by engineer. */
-"OK" = "好";
+"OK" = "OK";
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
@@ -780,6 +837,45 @@
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "消息";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Home";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Home Fax";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Main";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Other";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Other Fax";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Work";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
@@ -817,14 +913,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "回复";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "成功重新注册了推送.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "推送通知";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal需要开启推送通知和声音以正常工作。请您到 设置 >> 通知中心 >> Signal 改变该设置。";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "？";
@@ -845,12 +938,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "国家编码错误";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal 允许你同现有的联系人进行私人聊天。要使用 Signal， 请允许访问联系人。";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "继续";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "欢迎！";
 
 /* No comment provided by engineer. */
@@ -862,7 +949,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "已注册号码";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "重新注册推送失败.";
 
 /* Label for the country code field */
@@ -950,7 +1037,7 @@
 "SEND_INVITE_SUCCESS" = "你已经邀请了你的朋友使用Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "通过SMS短信发送邀请至%@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "通过非加密的短信邀请好友？";
@@ -985,6 +1072,9 @@
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何使用Signal的联系人。";
 
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "No Search Results";
+
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "黑名单";
 
@@ -1013,7 +1103,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "删除账号";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您确定要清除您的所有历史记录吗(包括信息，附件，通话记录等)? 此操作是不可恢复的。";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "我确定";
@@ -1147,8 +1237,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "您的设备不支持此功能。";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "更新";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Allowed";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单的从锁屏应答来电。默认设置会隐藏呼叫人的信息，所以该信息会被保密。";
@@ -1188,6 +1281,18 @@
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "验证安全码";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal桌面版设置成功。";
