@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didFinishEditingContact
 {
     DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma mark - CNContactViewControllerDelegate
@@ -163,8 +163,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    DDLogDebug(@"%@ done editing contact.", self.tag);
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (contact) {
+        // Saving normally returns you to the "Show Contact" view
+        // which we're not interested in, so we skip it here. There is
+        // an unfortunate blip of the "Show Contact" view on slower devices.
+        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        [self dismissViewControllerAnimated:NO completion:nil];
+    } else {
+        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 #pragma mark - ContactsViewHelperDelegate

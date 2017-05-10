@@ -328,6 +328,10 @@ NS_ASSUME_NONNULL_BEGIN
                 // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
                 // saving our users a tap in some cases when we already know they want to edit.
                 contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
+
+                // Default title is "New Contact". We could give a more descriptive title, but anything
+                // seems redundant - the context is sufficiently clear.
+                contactViewController.title = @"";
             } else {
                 contactViewController = [CNContactViewController viewControllerForContact:cnContact];
             }
