@@ -23,6 +23,7 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
+#import "OWSSyncGroupsRequestMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -478,6 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     OWSAssert([NSThread isMainThread]);
+
     if (dataMessage.hasGroup) {
         __block BOOL ignoreMessage = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -490,7 +492,28 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         if (ignoreMessage) {
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
-            DDLogInfo(@"%@ Received message from group that I left or don't know about, ignoring", self.tag);
+            DDLogInfo(@"%@ Received message from group that I left or don't know about.", self.tag);
+
+            NSString *recipientId = incomingEnvelope.source;
+
+            __block TSThread *thread;
+            [[TSStorageManager sharedManager].dbConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+                }];
+
+            NSData *groupId = dataMessage.group.id;
+            OWSAssert(groupId);
+            OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+                [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
+            [self.messageSender sendMessage:syncGroupsRequestMessage
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent Request Group Info message.", self.tag);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
+                }];
+
             return;
         }
     }
@@ -547,10 +570,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [attachmentsProcessor fetchAttachmentsForMessage:nil
-        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+        success:^(TSAttachmentStream *attachmentStream) {
             [groupThread updateAvatarWithAttachmentStream:attachmentStream];
         }
-        failure:^(NSError *_Nonnull error) {
+        failure:^(NSError *error) {
             DDLogError(@"%@ failed to fetch attachments for group avatar sent at: %llu. with error: %@",
                 self.tag,
                 envelope.timestamp,
@@ -574,16 +597,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSIncomingMessage *createdMessage = [self handleReceivedEnvelope:envelope
-                                                     withDataMessage:dataMessage
-                                                       attachmentIds:attachmentsProcessor.supportedAttachmentIds];
+    TSIncomingMessage *_Nullable createdMessage =
+        [self handleReceivedEnvelope:envelope
+                     withDataMessage:dataMessage
+                       attachmentIds:attachmentsProcessor.supportedAttachmentIds];
+
+    if (!createdMessage) {
+        return;
+    }
 
     [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
-        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+        success:^(TSAttachmentStream *attachmentStream) {
             DDLogDebug(
                 @"%@ successfully fetched attachment: %@ for message: %@", self.tag, attachmentStream, createdMessage);
         }
-        failure:^(NSError *_Nonnull error) {
+        failure:^(NSError *error) {
             DDLogError(
                 @"%@ failed to fetch attachments for message: %@ with error: %@", self.tag, createdMessage, error);
         }];
@@ -603,13 +631,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    networkManager:self.networkManager];
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
-            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *_Nonnull attachmentStream) {
+            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
                 TSGroupThread *groupThread =
                     [TSGroupThread getOrCreateThreadWithGroupIdData:syncMessage.sent.message.group.id];
                 [groupThread updateAvatarWithAttachmentStream:attachmentStream];
             }];
         } else {
-            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *_Nonnull attachmentStream) {
+            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
                 DDLogDebug(@"%@ successfully fetched transcript attachment: %@", self.tag, attachmentStream);
             }];
         }
@@ -719,9 +747,72 @@ NS_ASSUME_NONNULL_BEGIN
     [self handleReceivedEnvelope:textMessageEnvelope withDataMessage:dataMessage attachmentIds:@[]];
 }
 
-- (TSIncomingMessage *)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                attachmentIds:(NSArray<NSString *> *)attachmentIds
+- (void)sendGroupUpdateForThread:(TSGroupThread *)gThread message:(TSOutgoingMessage *)message
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(gThread);
+    OWSAssert(message);
+
+    if (gThread.groupModel.groupImage) {
+        [self.messageSender sendAttachmentData:UIImagePNGRepresentation(gThread.groupModel.groupImage)
+            contentType:OWSMimeTypeImagePng
+            filename:nil
+            inMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
+            }
+            failure:^(NSError *error) {
+                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
+            }];
+    } else {
+        [self.messageSender sendMessage:message
+            success:^{
+                DDLogDebug(@"%@ Successfully sent group update", self.tag);
+            }
+            failure:^(NSError *error) {
+                DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
+            }];
+    }
+}
+
+- (void)handleGroupInfoRequest:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo);
+
+    NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
+    if (!groupId) {
+        OWSAssert(groupId);
+        return;
+    }
+
+    DDLogInfo(@"%@ Received 'Request Group Info' message for group: %@", self.tag, groupId);
+
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSGroupModel *emptyModelToFillOutId =
+            [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:dataMessage.group.id];
+        TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
+        if (!gThread) {
+            DDLogInfo(@"%@ Unknown group: %@", self.tag, groupId);
+            return;
+        }
+
+        NSString *updateGroupInfo =
+            [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                         inThread:gThread
+                                                                 groupMetaMessage:TSGroupMessageUpdate];
+        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendGroupUpdateForThread:gThread message:message];
+        });
+    }];
+}
+
+- (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                       withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                         attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
     OWSAssert([NSThread isMainThread]);
     uint64_t timestamp = envelope.timestamp;
@@ -734,6 +825,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do this outside of a transaction to avoid deadlock
     OWSAssert([TSAccountManager isRegistered]);
     NSString *localNumber = [TSAccountManager localNumber];
+
+    if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
+        [self handleGroupInfoRequest:dataMessage];
+        return nil;
+    }
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if (groupId) {

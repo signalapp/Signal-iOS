@@ -26,7 +26,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMessageNew,
     TSGroupMessageUpdate,
     TSGroupMessageDeliver,
-    TSGroupMessageQuit
+    TSGroupMessageQuit,
+    TSGroupMessageRequestInfo,
 };
 
 @class OWSSignalServiceProtosAttachmentPointer;
