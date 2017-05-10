@@ -3,48 +3,19 @@
 //
 
 #import "SettingsTableViewController.h"
-#import "Environment.h"
-#import "PropertyListPreferences.h"
-#import "TSAccountManager.h"
-#import "UIUtil.h"
-#import "TSSocketManager.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
+#import "Environment.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSContactsManager.h"
+#import "OWSLinkedDevicesTableViewController.h"
 #import "PrivacySettingsTableViewController.h"
+#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-
-//#define kProfileCellHeight 87.0f
-//#define kStandardCellHeight 44.0f
-//
-//#define kNumberOfSections 4
-//
-//#define kRegisteredNumberRow 0
-//#define kInviteRow 0
-//#define kPrivacyRow 1
-//#define kNotificationRow 2
-//#define kLinkedDevices 3 // we don't actually use this, instead we segue via Interface Builder
-//#define kAdvancedRow 4
-//#define kAboutRow 5
-//
-//#define kNetworkRow 0
-//#define kUnregisterRow 0
-//
-//typedef enum {
-//    kRegisteredRows = 1,
-//    kNetworkStatusRows = 1,
-//    kGeneralRows = 6,
-//    kUnregisterRows = 1,
-//} kRowsForSection;
-//
-//typedef enum {
-//    kRegisteredNumberSection = 0,
-//    kNetworkStatusSection    = 1,
-//    kGeneralSection          = 2,
-//    kUnregisterSection       = 3,
-//} kSection;
+#import "TSAccountManager.h"
+#import "TSSocketManager.h"
+#import "UIUtil.h"
 
 @interface SettingsTableViewController ()
 
@@ -80,6 +51,12 @@
     return self;
 }
 
+- (void)loadView
+{
+    self.tableViewStyle = UITableViewStylePlain;
+    [super loadView];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -87,37 +64,12 @@
 
     [self.navigationController.navigationBar setTranslucent:NO];
 
-////    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-//    self.registeredNumber.text =
-//        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
-//    self.registeredName.text = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
-
     [self initializeObserver];
 
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
     
-//    self.networkStatusHeader.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-//    self.privacyLabel.text = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
-//    self.advancedLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-//    self.aboutLabel.text = NSLocalizedString(@"SETTINGS_ABOUT", @"");
-//    self.notificationsLabel.text = NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil);
-//    self.linkedDevicesLabel.text
-//        = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
-//    self.inviteLabel.text = NSLocalizedString(@"SETTINGS_INVITE_TITLE", @"Settings table view cell label");
-//
-//    [self.destroyAccountButton setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-//                               forState:UIControlStateNormal];
-    
     [self updateTableContents];
 }
-
-//- (void)viewWillAppear:(BOOL)animated
-//{
-//    [super viewWillAppear:animated];
-//    // HACK to unselect rows when swiping back
-//    // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
-//    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
-//}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -129,8 +81,41 @@
 {
     OWSTableContents *contents = [OWSTableContents new];
     OWSTableSection *section = [OWSTableSection new];
-    
-    // Find Non-Contacts by Phone Number
+
+    __weak SettingsTableViewController *weakSelf = self;
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+
+        UILabel *titleLabel = [UILabel new];
+        titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+        titleLabel.textColor = [UIColor blackColor];
+        titleLabel.text = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
+        titleLabel.textAlignment = NSTextAlignmentCenter;
+
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.font = [UIFont ows_mediumFontWithSize:15.f];
+        subtitleLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        subtitleLabel.text =
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+        subtitleLabel.textAlignment = NSTextAlignmentCenter;
+
+        UIView *stack = [UIView new];
+        [cell addSubview:stack];
+        [stack autoCenterInSuperview];
+
+        [stack addSubview:titleLabel];
+        [stack addSubview:subtitleLabel];
+        [titleLabel autoPinWidthToSuperview];
+        [subtitleLabel autoPinWidthToSuperview];
+        [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
+
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        return cell;
+    }
+                                           customRowHeight:96.f
+                                               actionBlock:nil]];
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = NSLocalizedString(
@@ -156,120 +141,115 @@
         }
         [accessoryLabel sizeToFit];
         cell.accessoryView = accessoryLabel;
+        return cell;
+    }
+                         actionBlock:^{
+                             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
+                                                   message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
+                         }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
+                                                              @"Settings table view cell label")
+                                              actionBlock:^{
+                                                  [weakSelf showInviteFlow];
+                                              }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
+                                                              @"Settings table view cell label")
+                                              actionBlock:^{
+                                                  [weakSelf showPrivacy];
+                                              }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
+                                              actionBlock:^{
+                                                  [weakSelf showNotifications];
+                                              }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
+                                                              @"Menu item and navbar title for the device manager")
+                                              actionBlock:^{
+                                                  [weakSelf showLinkedDevices];
+                                              }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
+                                              actionBlock:^{
+                                                  [weakSelf showAdvanced];
+                                              }]];
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
+                                              actionBlock:^{
+                                                  [weakSelf showAbout];
+                                              }]];
+
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.backgroundColor = [UIColor ows_destructiveRedColor];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [button setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
+        button.titleLabel.font = [UIFont ows_mediumFontWithSize:18.f];
+        button.titleLabel.textAlignment = NSTextAlignmentCenter;
+        [cell.contentView addSubview:button];
+        [button autoSetDimension:ALDimensionHeight toSize:50.f];
+        [button autoVCenterInSuperview];
+        [button autoPinEdgeToSuperviewEdge:ALEdgeLeft
+                                 withInset:cell.layoutMargins.left + cell.contentView.layoutMargins.left];
+        [button autoPinEdgeToSuperviewEdge:ALEdgeRight
+                                 withInset:cell.layoutMargins.right + cell.contentView.layoutMargins.right];
+        [button addTarget:self action:@selector(unregisterUser) forControlEvents:UIControlEventTouchUpInside];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
+                                           customRowHeight:100.f
                                                actionBlock:nil]];
-    
+
     [contents addSection:section];
     
     self.contents = contents;
 }
 
+- (void)showInviteFlow
+{
+    OWSInviteFlow *inviteFlow =
+        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
+    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
+}
+
+- (void)showPrivacy
+{
+    PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
+    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+    NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showNotifications
+{
+    NotificationSettingsViewController *vc = [[NotificationSettingsViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showLinkedDevices
+{
+    OWSLinkedDevicesTableViewController *vc =
+        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSLinkedDevicesTableViewController"];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showAdvanced
+{
+    AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc] init];
+    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+    NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showAbout
+{
+    AboutTableViewController *vc = [[AboutTableViewController alloc] init];
+    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+    NSAssert(vc != nil, @"About View Controller must not be nil");
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 #pragma mark - Table view data source
 
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-//    return kNumberOfSections;
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-//    switch (section) {
-//        case kRegisteredNumberSection:
-//            return kRegisteredRows;
-//        case kGeneralSection:
-//            return kGeneralRows;
-//        case kNetworkStatusSection:
-//            return kNetworkStatusRows;
-//        case kUnregisterSection:
-//            return kUnregisterRows;
-//        default:
-//            return 0;
-//    }
-//}
-//
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//
-//    switch (indexPath.section) {
-//        case kGeneralSection: {
-//            switch (indexPath.row) {
-//                case kInviteRow: {
-//                    OWSInviteFlow *inviteFlow =
-//                        [[OWSInviteFlow alloc] initWithPresentingViewController:self
-//                                                                contactsManager:self.contactsManager];
-//                    [self presentViewController:inviteFlow.actionSheetController
-//                                       animated:YES
-//                                     completion:^{
-//                                         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-//                                     }];
-//                    break;
-//                }
-//                case kPrivacyRow: {
-//                    PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
-//                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-//                    NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
-//                    [self.navigationController pushViewController:vc animated:YES];
-//                    break;
-//                }
-//                case kNotificationRow: {
-//                    NotificationSettingsViewController *vc = [[NotificationSettingsViewController alloc] init];
-//                    [self.navigationController pushViewController:vc animated:YES];
-//                    break;
-//                }
-//                case kAdvancedRow: {
-//                    AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc] init];
-//                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-//                    NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
-//                    [self.navigationController pushViewController:vc animated:YES];
-//                    break;
-//                }
-//                case kAboutRow: {
-//                    AboutTableViewController *vc = [[AboutTableViewController alloc] init];
-//                    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-//                    NSAssert(vc != nil, @"About View Controller must not be nil");
-//                    [self.navigationController pushViewController:vc animated:YES];
-//                    break;
-//                }
-//                default:
-//                    DDLogError(@"%@ Unhandled row selected at index path: %@", self.tag, indexPath);
-//                    break;
-//            }
-//
-//            break;
-//        }
-//
-//        case kNetworkStatusSection: {
-//            break;
-//        }
-//
-//        case kUnregisterSection: {
-//            [self unregisterUser:nil];
-//            break;
-//        }
-//
-//        default:
-//            break;
-//    }
-//}
-//
-//
-//- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
-//    switch (indexPath.section) {
-//        case kNetworkStatusSection: {
-//            return NO;
-//        }
-//
-//        case kUnregisterSection: {
-//            return NO;
-//        }
-//
-//        default:
-//            return YES;
-//    }
-//}
-
-
-- (IBAction)unregisterUser:(id)sender {
+- (void)unregisterUser
+{
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
@@ -294,13 +274,6 @@
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
         }];
 }
-
-//- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-//    if (indexPath.section == kNetworkStatusSection) {
-//        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
-//                              message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
-//    }
-//}
 
 #pragma mark - Socket Status Notifications
 

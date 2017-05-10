@@ -64,6 +64,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 - (nullable UITableViewCell *)customCell;
 - (NSNumber *)customRowHeight;
 

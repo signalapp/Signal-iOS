@@ -3,6 +3,7 @@
 //
 
 #import "OWSTableViewController.h"
+#import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -146,6 +147,25 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.itemType = (actionBlock != nil ? OWSTableItemTypeAction : OWSTableItemTypeDefault);
     item.actionBlock = actionBlock;
     item.customCellBlock = customCellBlock;
+    return item;
+}
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSAssert(text.length > 0);
+    OWSAssert(actionBlock);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    item.actionBlock = actionBlock;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        return cell;
+    };
     return item;
 }
 
