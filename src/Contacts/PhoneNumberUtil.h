@@ -22,6 +22,8 @@
                                    to:(NSString *)target
                     stickingRightward:(bool)preferHigh;
 
++ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode;
+
 + (instancetype)sharedUtil;
 
 @end

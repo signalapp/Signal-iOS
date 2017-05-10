@@ -244,4 +244,30 @@
     }
 }
 
++ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
+{
+    // Signal users are very likely using mobile devices, so prefer that kind of example.
+    NSError *error;
+    NBPhoneNumber *nbPhoneNumber =
+        [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
+                                                                  type:NBEPhoneNumberTypeMOBILE
+                                                                 error:&error];
+    OWSAssert(!error);
+    if (!nbPhoneNumber) {
+        // For countries that with similar mobile and land lines, use "line or mobile"
+        // examples.
+        nbPhoneNumber =
+            [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
+                                                                      type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
+                                                                     error:&error];
+        OWSAssert(!error);
+    }
+    NSString *result = (nbPhoneNumber ? [[[self sharedUtil] nbPhoneNumberUtil] format:nbPhoneNumber
+                                                                         numberFormat:NBEPhoneNumberFormatE164
+                                                                                error:&error]
+                                      : nil);
+    OWSAssert(!error);
+    return result;
+}
+
 @end
