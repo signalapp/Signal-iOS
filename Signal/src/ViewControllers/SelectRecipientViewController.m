@@ -234,6 +234,13 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     NSString *examplePhoneNumber = [PhoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
     OWSAssert(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
     if (examplePhoneNumber && [examplePhoneNumber hasPrefix:callingCode]) {
+        NSString *formattedPhoneNumber =
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:examplePhoneNumber
+                                                         withSpecifiedCountryCodeString:countryCode];
+        if (formattedPhoneNumber.length > 0) {
+            examplePhoneNumber = formattedPhoneNumber;
+        }
+
         self.examplePhoneNumberLabel.text = [NSString
             stringWithFormat:
                 NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
