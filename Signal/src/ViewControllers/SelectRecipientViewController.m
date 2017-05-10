@@ -39,6 +39,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 @property (nonatomic) UIButton *phoneNumberButton;
 
+@property (nonatomic) UILabel *examplePhoneNumberLabel;
+
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
 @property (nonatomic) NSString *callingCode;
@@ -132,6 +134,22 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     return phoneNumberLabel;
 }
 
+- (UIFont *)examplePhoneNumberFont
+{
+    return [UIFont ows_regularFontWithSize:16.f];
+}
+
+- (UILabel *)examplePhoneNumberLabel
+{
+    if (!_examplePhoneNumberLabel) {
+        _examplePhoneNumberLabel = [UILabel new];
+        _examplePhoneNumberLabel.font = [self examplePhoneNumberFont];
+        _examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+    }
+
+    return _examplePhoneNumberLabel;
+}
+
 - (UITextField *)phoneNumberTextField
 {
     if (!_phoneNumberTextField) {
@@ -212,6 +230,26 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     NSString *title = [NSString stringWithFormat:@"%@ (%@)", callingCode, countryCode.uppercaseString];
     [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
     [self.countryCodeButton layoutSubviews];
+
+    NSString *examplePhoneNumber = [PhoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
+    OWSAssert(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
+    if (examplePhoneNumber && [examplePhoneNumber hasPrefix:callingCode]) {
+        NSString *formattedPhoneNumber =
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:examplePhoneNumber
+                                                         withSpecifiedCountryCodeString:countryCode];
+        if (formattedPhoneNumber.length > 0) {
+            examplePhoneNumber = formattedPhoneNumber;
+        }
+
+        self.examplePhoneNumberLabel.text = [NSString
+            stringWithFormat:
+                NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
+                    @"A format for a label showing an example phone number. Embeds {{the example phone number}}."),
+            [examplePhoneNumber substringFromIndex:callingCode.length]];
+    } else {
+        self.examplePhoneNumberLabel.text = @"";
+    }
+    [self.examplePhoneNumberLabel.superview layoutSubviews];
 }
 
 - (void)setCallingCode:(NSString *)callingCode
@@ -404,6 +442,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     phoneNumberSection.headerTitle = [self.delegate phoneNumberSectionTitle];
     const CGFloat kCountryRowHeight = 50;
     const CGFloat kPhoneNumberRowHeight = 50;
+    const CGFloat examplePhoneNumberRowHeight = self.examplePhoneNumberFont.lineHeight + 3.f;
     const CGFloat kButtonRowHeight = 60;
     [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         SelectRecipientViewController *strongSelf = weakSelf;
@@ -442,9 +481,17 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [self.phoneNumberTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:phoneNumberLabel withOffset:0];
         [self.phoneNumberTextField autoVCenterInSuperview];
 
+        // Example row.
+        UIView *examplePhoneNumberRow = [self createRowWithHeight:examplePhoneNumberRowHeight
+                                                      previousRow:phoneNumberRow
+                                                        superview:cell.contentView];
+        [examplePhoneNumberRow addSubview:self.examplePhoneNumberLabel];
+        [self.examplePhoneNumberLabel autoVCenterInSuperview];
+        [self.examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+
         // Phone Number Button Row
         UIView *buttonRow =
-            [self createRowWithHeight:kButtonRowHeight previousRow:phoneNumberRow superview:cell.contentView];
+            [self createRowWithHeight:kButtonRowHeight previousRow:examplePhoneNumberRow superview:cell.contentView];
         [buttonRow addSubview:self.phoneNumberButton];
         [self.phoneNumberButton autoVCenterInSuperview];
         [self.phoneNumberButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
@@ -455,6 +502,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         return cell;
     }
                                                       customRowHeight:kCountryRowHeight + kPhoneNumberRowHeight
+                                                      + examplePhoneNumberRowHeight
                                                       + kButtonRowHeight
                                                           actionBlock:nil]];
     [contents addSection:phoneNumberSection];
