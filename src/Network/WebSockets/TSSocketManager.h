@@ -5,13 +5,21 @@
 #import <Foundation/Foundation.h>
 #import "SRWebSocket.h"
 
-static void *kSocketStatusObservationContext = &kSocketStatusObservationContext;
+static void *SocketManagerStateObservationContext = &SocketManagerStateObservationContext;
 
-extern NSString *const SocketOpenedNotification;
-extern NSString *const SocketClosedNotification;
-extern NSString *const SocketConnectingNotification;
+extern NSString *const kNSNotification_SocketManagerStateDidChange;
+
+typedef NS_ENUM(NSUInteger, SocketManagerState) {
+    SocketManagerStateClosed,
+    SocketManagerStateConnecting,
+    SocketManagerStateOpen,
+};
 
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
+
+@property (nonatomic, readonly) SocketManagerState state;
+
++ (instancetype)sharedManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -25,7 +33,5 @@ extern NSString *const SocketConnectingNotification;
 //
 // This method can be called from any thread.
 + (void)requestSocketOpen;
-
-+ (void)sendNotification;
 
 @end
