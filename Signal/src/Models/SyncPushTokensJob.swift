@@ -59,7 +59,6 @@ class SyncPushTokensJob: NSObject {
 
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
-                }
             }.then {
                 Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
                 if self.showAlerts {
@@ -72,6 +71,7 @@ class SyncPushTokensJob: NSObject {
                     OWSAlerts.showAlert(withTitle:NSLocalizedString("REGISTRATION_BODY", comment: "Title of alert shown when push tokens sync job fails."))
                 }
             }
+        }
 
         runPromise.retainUntilComplete()
     }
