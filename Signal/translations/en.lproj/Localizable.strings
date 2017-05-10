@@ -215,7 +215,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, enable contacts access in your system settings.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data.";
