@@ -4,9 +4,6 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accept new safety number";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Action Required";
-
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Add";
 
@@ -511,7 +508,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Creating new group";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "Group creation failed";
 
 /* Conversation settings table section title */
@@ -538,7 +535,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Leaving group %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Failed to leave group";
 
 /* No comment provided by engineer. */
@@ -841,6 +838,9 @@
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";
+
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
 
@@ -913,14 +913,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Reply";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push Notifications";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal requires push notification alerts and sounds to be enabled to work properly. Please change it in the Settings app >> Notification Center >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -952,7 +949,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registered Number";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Failed to re-register for push notifications.";
 
 /* Label for the country code field */
