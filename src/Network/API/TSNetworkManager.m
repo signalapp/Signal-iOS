@@ -27,7 +27,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     static TSNetworkManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        OWSSignalService *signalService = [[OWSSignalService alloc] init];
+        OWSSignalService *signalService = [OWSSignalService sharedInstance];
         sharedMyManager = [[self alloc] initWithSignalService:signalService];
     });
     return sharedMyManager;

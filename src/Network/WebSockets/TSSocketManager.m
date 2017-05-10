@@ -101,7 +101,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     
     OWSAssert([NSThread isMainThread]);
 
-    _signalService = [OWSSignalService new];
+    _signalService = [OWSSignalService sharedInstance];
     _status = kSocketStatusClosed;
     _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
 
@@ -140,6 +140,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                                              selector:@selector(registrationStateDidChange:)
                                                  name:kNSNotificationName_RegistrationStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(isCensorshipCircumventionActiveDidChange:)
+                                                 name:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                                               object:nil];
 }
 
 + (instancetype)sharedManager {
@@ -156,11 +160,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)ensureWebsocketIsOpen
 {
     OWSAssert([NSThread isMainThread]);
-    
-    if (self.signalService.isCensored) {
-        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
-        return;
-    }
+    OWSAssert(!self.signalService.isCensorshipCircumventionActive);
 
     // Try to reuse the existing socket (if any) if it is in a valid state.
     if (self.websocket) {
@@ -526,6 +526,11 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         return NO;
     }
 
+    if (self.signalService.isCensorshipCircumventionActive) {
+        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
+        return NO;
+    }
+
     if (self.appIsActive) {
         // If app is active, keep web socket alive.
         return YES;
@@ -701,6 +706,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)registrationStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self applyDesiredSocketState];
+}
+
+- (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
 

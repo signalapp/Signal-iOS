@@ -1,5 +1,6 @@
-// Created by Michael Kirk on 12/20/16.
-// Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <AFNetworking/AFHTTPSessionManager.h>
 
@@ -11,15 +12,38 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kNSUserDefaults_isCensorshipCircumventionManuallyActivated =
+    @"kNSUserDefaults_isCensorshipCircumventionManuallyActivated";
+NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
+    @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
+
 @interface OWSSignalService ()
 
-@property (nonatomic, readonly, strong) OWSCensorshipConfiguration *censorshipConfiguration;
+@property (nonatomic, readonly) OWSCensorshipConfiguration *censorshipConfiguration;
+
+@property (nonatomic) BOOL hasCensoredPhoneNumber;
+
+@property (atomic) BOOL isCensorshipCircumventionActive;
 
 @end
 
+#pragma mark -
+
 @implementation OWSSignalService
 
-- (instancetype)init
+@synthesize isCensorshipCircumventionActive = _isCensorshipCircumventionActive;
+
++ (instancetype)sharedInstance
+{
+    static OWSSignalService *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] initDefault];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)initDefault
 {
     self = [super init];
     if (!self) {
@@ -28,24 +52,105 @@ NS_ASSUME_NONNULL_BEGIN
 
     _censorshipConfiguration = [OWSCensorshipConfiguration new];
 
+    [self observeNotifications];
+
+    [self updateIsCensorshipCircumventionActive];
+
+    OWSSingletonAssert();
+
     return self;
 }
 
-- (BOOL)isCensored
+- (void)observeNotifications
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange:)
+                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(localNumberDidChange:)
+                                                 name:kNSNotificationName_LocalNumberDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)updateHasCensoredPhoneNumber
+{
+    OWSAssert([NSThread isMainThread]);
+
     NSString *localNumber = [TSAccountManager localNumber];
 
     if (localNumber) {
-        return [self.censorshipConfiguration isCensoredPhoneNumber:localNumber];
+        self.hasCensoredPhoneNumber = [self.censorshipConfiguration isCensoredPhoneNumber:localNumber];
     } else {
-        DDLogError(@"no known phone number to check for censorship.");
-        return NO;
+        DDLogError(@"%@ no known phone number to check for censorship.", self.tag);
+        self.hasCensoredPhoneNumber = NO;
+    }
+
+    [self updateIsCensorshipCircumventionActive];
+}
+
+- (BOOL)isCensorshipCircumventionManuallyActivated
+{
+    OWSAssert([NSThread isMainThread]);
+
+    return [[NSUserDefaults.standardUserDefaults
+        objectForKey:kNSUserDefaults_isCensorshipCircumventionManuallyActivated] boolValue];
+}
+
+- (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [NSUserDefaults.standardUserDefaults setObject:@(value)
+                                            forKey:kNSUserDefaults_isCensorshipCircumventionManuallyActivated];
+    [NSUserDefaults.standardUserDefaults synchronize];
+
+    [self updateIsCensorshipCircumventionActive];
+}
+
+- (void)updateIsCensorshipCircumventionActive
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.isCensorshipCircumventionActive
+        = (self.isCensorshipCircumventionManuallyActivated || self.hasCensoredPhoneNumber);
+}
+
+- (void)setIsCensorshipCircumventionActive:(BOOL)isCensorshipCircumventionActive
+{
+    OWSAssert([NSThread isMainThread]);
+
+    @synchronized(self)
+    {
+        if (_isCensorshipCircumventionActive == isCensorshipCircumventionActive) {
+            return;
+        }
+
+        _isCensorshipCircumventionActive = isCensorshipCircumventionActive;
+    }
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                      object:nil
+                    userInfo:nil];
+}
+
+- (BOOL)isCensorshipCircumventionActive
+{
+    @synchronized(self)
+    {
+        return _isCensorshipCircumventionActive;
     }
 }
 
 - (AFHTTPSessionManager *)HTTPSessionManager
 {
-    if (self.isCensored) {
+    if (self.isCensorshipCircumventionActive) {
         DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
         return self.reflectorHTTPSessionManager;
     } else {
@@ -123,6 +228,18 @@ NS_ASSUME_NONNULL_BEGIN
         securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
     });
     return securityPolicy;
+}
+
+#pragma mark - Events
+
+- (void)registrationStateDidChange:(NSNotification *)notification
+{
+    [self updateHasCensoredPhoneNumber];
+}
+
+- (void)localNumberDidChange:(NSNotification *)notification
+{
+    [self updateHasCensoredPhoneNumber];
 }
 
 #pragma mark - Logging

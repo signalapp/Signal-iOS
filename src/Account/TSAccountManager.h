@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const kNSNotificationName_RegistrationStateDidChange;
+extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class TSNetworkManager;
 @class TSStorageManager;
