@@ -12,6 +12,7 @@ class SyncPushTokensJob: NSObject {
     let accountManager: AccountManager
     let preferences: PropertyListPreferences
     let showAlerts: Bool
+    var uploadOnlyIfStale = true
 
     required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences, showAlerts: Bool) {
         self.pushManager = pushManager
@@ -33,8 +34,14 @@ class SyncPushTokensJob: NSObject {
         self.pushManager.validateUserNotificationSettings()
 
         let runPromise: Promise<Void> = self.requestPushTokens().then { (pushToken: String, voipToken: String) in
+            var shouldUploadTokens = false
+
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
-                Logger.debug("\(self.TAG) push tokens changed.")
+                Logger.debug("\(self.TAG) Push tokens changed.")
+                shouldUploadTokens = true
+            } else if !self.uploadOnlyIfStale {
+                Logger.debug("\(self.TAG) Uploading even though tokens didn't change.")
+                shouldUploadTokens = true
             }
 
             Logger.warn("\(self.TAG) lastAppVersion: \(AppVersion.instance().lastAppVersion), currentAppVersion: \(AppVersion.instance().currentAppVersion)")

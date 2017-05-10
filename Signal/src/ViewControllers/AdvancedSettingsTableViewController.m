@@ -129,10 +129,13 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
         [DDLog flushLog];
         [Pastelog submitLogs];
     } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                  accountManager:[Environment getCurrent].accountManager
-                                     preferences:[Environment preferences]
-                                      showAlerts:YES];
+        OWSSyncPushTokensJob *job =
+            [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
+                                               accountManager:[Environment getCurrent].accountManager
+                                                  preferences:[Environment preferences]
+                                                   showAlerts:YES];
+        job.uploadOnlyIfStale = NO;
+        [job run];
     } else {
         DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
     }
