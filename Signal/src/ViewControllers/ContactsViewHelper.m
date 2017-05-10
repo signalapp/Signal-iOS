@@ -325,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
         CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
         if (cnContact) {
             if (shouldEditImmediately) {
-                // Not acutally a "new" contact, but this brings up the edit form rather than the "Read" form
+                // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
                 // saving our users a tap in some cases when we already know they want to edit.
                 contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
             } else {
