@@ -172,7 +172,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
                         [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
                 }
                 if (signalAccountMap[signalAccount.recipientId]) {
-                    DDLogInfo(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
+                    DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
                     continue;
                 }
                 signalAccountMap[signalAccount.recipientId] = signalAccount;
