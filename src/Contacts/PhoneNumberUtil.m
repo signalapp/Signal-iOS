@@ -244,4 +244,27 @@
     }
 }
 
++ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
+{
+    NSError *error;
+    NBPhoneNumber *nbPhoneNumber =
+        [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
+                                                                  type:NBEPhoneNumberTypeMOBILE
+                                                                 error:&error];
+    OWSAssert(!error);
+    if (!nbPhoneNumber) {
+        nbPhoneNumber =
+            [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
+                                                                      type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
+                                                                     error:&error];
+        OWSAssert(!error);
+    }
+    NSString *result = (nbPhoneNumber ? [[[self sharedUtil] nbPhoneNumberUtil] format:nbPhoneNumber
+                                                                         numberFormat:NBEPhoneNumberFormatE164
+                                                                                error:&error]
+                                      : nil);
+    OWSAssert(!error);
+    return result;
+}
+
 @end
