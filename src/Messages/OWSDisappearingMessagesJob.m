@@ -110,10 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!nextExpirationTimestampNumber) {
         // In theory we could kill the loop here. It should resume when the next expiring message is saved,
         // But this is a safeguard for any race conditions that exist while running the job as a new message is saved.
-        unsigned int delaySeconds = (10 * 60); // 10 minutes.
-        DDLogDebug(
-            @"%@ No more expiring messages. Setting next check %u seconds into the future", self.tag, delaySeconds);
-        [self runByDate:[NSDate ows_dateWithMillisecondsSince1970:now + delaySeconds * 1000]];
+        DDLogDebug(@"%@ No more expiring messages.", self.tag);
+        [self runLater];
         return;
     }
 
@@ -265,6 +263,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self runByDate:[NSDate new] ignoreMinDelay:YES];
 }
 
+- (NSTimeInterval)maxDelaySeconds
+{
+    // Don't run less often than once per N minutes.
+    return 5 * 60.f;
+}
+
+// Waits the maximum amount of time to run again.
+- (void)runLater
+{
+    [self runByDate:[NSDate dateWithTimeIntervalSinceNow:self.maxDelaySeconds] ignoreMinDelay:YES];
+}
+
 - (void)runByDate:(NSDate *)date
 {
     [self runByDate:date ignoreMinDelay:NO];
@@ -286,10 +296,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Don't run more often than once per second.
         const NSTimeInterval kMinDelaySeconds = ignoreMinDelay ? 0.f : 1.f;
-        // Don't run less often than once per N minutes.
-        const NSTimeInterval kMaxDelaySeconds = 5 * 60.f;
         NSTimeInterval delaySeconds
-            = MAX(kMinDelaySeconds, MIN(kMaxDelaySeconds, [date timeIntervalSinceDate:[NSDate new]]));
+            = MAX(kMinDelaySeconds, MIN(self.maxDelaySeconds, [date timeIntervalSinceDate:[NSDate new]]));
         NSDate *timerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
         if (self.timerScheduleDate && [timerScheduleDate timeIntervalSinceDate:self.timerScheduleDate] > 0) {
             DDLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to scheduled run at %@ (%d sec.)",
