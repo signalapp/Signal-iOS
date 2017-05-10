@@ -7,12 +7,21 @@ NS_ASSUME_NONNULL_BEGIN
 @class ContactsViewHelper;
 @class Contact;
 @class SignalAccount;
+@protocol CNContactViewControllerDelegate;
 
 @protocol ContactsViewHelperDelegate <NSObject>
 
 - (void)contactsViewHelperDidUpdateContacts;
 
+@optional
+
 - (BOOL)shouldHideLocalNumber;
+
+@end
+
+@protocol ContactEditingDelegate <CNContactViewControllerDelegate>
+
+- (void)didFinishEditingContact;
 
 @end
 
@@ -45,6 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
 
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
+
+/**
+ * NOTE: This method calls `[UIUtil applyDefaultSystemAppearence]`.
+ * When using this method, you must call `[UIUtil applySignalAppearence]` once contact editing is   finished;
+ */
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately;
 
 @end
 
