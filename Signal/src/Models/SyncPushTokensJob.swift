@@ -37,6 +37,17 @@ class SyncPushTokensJob: NSObject {
                 Logger.debug("\(self.TAG) push tokens changed.")
             }
 
+            Logger.warn("\(self.TAG) lastAppVersion: \(AppVersion.instance().lastAppVersion), currentAppVersion: \(AppVersion.instance().currentAppVersion)")
+            if AppVersion.instance().lastAppVersion != AppVersion.instance().currentAppVersion {
+                Logger.debug("\(self.TAG) Fresh install or app upgrade.")
+                shouldUploadTokens = true
+            }
+
+            guard shouldUploadTokens else {
+                Logger.warn("\(self.TAG) Skipping push token upload. pushToken: \(pushToken), voipToken: \(voipToken)")
+                return Promise(value: ())
+            }
+
             Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
 
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {

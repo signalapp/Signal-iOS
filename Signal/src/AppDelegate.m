@@ -93,6 +93,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
 
+    [AppVersion instance];
+
     // Set the seed the generator for rand().
     //
     // We should always use arc4random() instead of rand(), but we
