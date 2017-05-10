@@ -152,10 +152,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.phoneNumberNameMap);
 
     NSMutableDictionary<NSString *, PhoneNumber *> *parsedPhoneNumberMap = [NSMutableDictionary new];
+    NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
         for (PhoneNumber *phoneNumber in
             [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:phoneNumberString
                                                   clientPhoneNumber:[TSAccountManager localNumber]]) {
+            [parsedPhoneNumbers addObject:phoneNumber];
             parsedPhoneNumberMap[phoneNumber.toE164] = phoneNumber;
             NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];
             if (phoneNumberName) {
@@ -163,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
-    return [parsedPhoneNumberMap.allValues sortedArrayUsingSelector:@selector(compare:)];
+    return [parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (NSString *)fullName {
