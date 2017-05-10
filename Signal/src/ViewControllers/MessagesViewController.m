@@ -1644,12 +1644,6 @@ typedef enum : NSUInteger {
     }
     cell.delegate = collectionView;
 
-    //    @property (nonatomic) uint64_t expiresAtSeconds;
-    //    @property (nonatomic) uint32_t expiresInSeconds;
-    //
-    //    @property (nonatomic, copy) NSDate *messageDate;
-    //    @property (nonatomic, retain) NSString *messageBody;
-
     if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
         id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
         [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
