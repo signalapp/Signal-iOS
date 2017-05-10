@@ -52,7 +52,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (dispatch_queue_t)serialQueue
@@ -260,11 +274,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(date);
 
-    NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
-
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+            // Don't schedule run when inactive.
+            return;
+        }
+
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        dateFormatter.dateStyle = NSDateFormatterNoStyle;
+        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+
         // Don't run more often than once per second.
         const NSTimeInterval kMinDelaySeconds = ignoreMinDelay ? 0.f : 1.f;
         // Don't run less often than once per N minutes.
@@ -283,15 +302,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Update Schedule
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        dateFormatter.dateStyle = NSDateFormatterShortStyle;
-        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
         DDLogVerbose(@"%@ Scheduled run at %@ (%d sec.)",
             self.tag,
             [dateFormatter stringFromDate:timerScheduleDate],
             (int)round(MAX(0, [timerScheduleDate timeIntervalSinceDate:[NSDate new]])));
+        [self resetTimer];
         self.timerScheduleDate = timerScheduleDate;
-        [self.timer invalidate];
         self.timer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
                                                           target:self
                                                         selector:@selector(timerDidFire)
@@ -302,13 +318,44 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)timerDidFire
 {
-    [self.timer invalidate];
-    self.timer = nil;
-    self.timerScheduleDate = nil;
+    OWSAssert([NSThread isMainThread]);
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        // Don't run when inactive.
+        OWSAssert(0);
+        return;
+    }
+
+    [self resetTimer];
 
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
         [self runLoop];
     });
+}
+
+- (void)resetTimer
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.timer invalidate];
+    self.timer = nil;
+    self.timerScheduleDate = nil;
+}
+
+#pragma mark - Notifications
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self runNow];
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self resetTimer];
 }
 
 #pragma mark - Logging
