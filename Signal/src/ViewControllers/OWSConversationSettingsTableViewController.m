@@ -136,20 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)didTapEditButton
-{
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
-        OWSAssert(NO);
-        return;
-    }
-
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
-}
-
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
@@ -612,7 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
         } else {
-            // TODO: Edit 1:1 contact.
+            [self presentContactViewController];
         }
     }
 }
@@ -681,6 +667,25 @@ NS_ASSUME_NONNULL_BEGIN
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:updateGroupViewController];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)presentContactViewController
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSAssert(NO);
+        return;
+    }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+                                                     fromViewController:self
+                                                        editImmediately:YES];
+}
+
+- (void)didTapEditButton
+{
+    [self presentContactViewController];
 }
 
 - (void)didTapLeaveGroup
