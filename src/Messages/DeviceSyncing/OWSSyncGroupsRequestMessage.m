@@ -43,11 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (BOOL)isLegacyMessage
-{
-    return NO;
-}
-
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
@@ -58,14 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setGroupBuilder:groupContextBuilder];
 
     return builder;
-}
-
-- (NSData *)buildPlainTextData
-{
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setDataMessageBuilder:[self dataMessageBuilder]];
-
-    return [[contentBuilder build] data];
 }
 
 @end
