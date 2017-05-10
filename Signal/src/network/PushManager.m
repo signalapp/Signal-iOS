@@ -63,7 +63,7 @@
     _callUIAdapter = callUIAdapter;
     _messageSender = messageSender;
 
-    OWSSignalService *signalService = [OWSSignalService new];
+    OWSSignalService *signalService = [OWSSignalService sharedInstance];
     _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessagesManager:messagesManager
                                                                 networkManager:networkManager
                                                                  signalService:signalService];
