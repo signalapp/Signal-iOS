@@ -3,11 +3,11 @@
 //
 
 #import "OWSAudioAttachmentPlayer.h"
-#import "NSTimer+OWS.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSVideoAttachmentAdapter.h"
 #import "ViewControllerUtils.h"
+#import <SignalServiceKit/NSTimer+OWS.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
