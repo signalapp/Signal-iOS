@@ -293,6 +293,10 @@ NS_ASSUME_NONNULL_BEGIN
         hash = hash ^ phoneNumber.toE164.hash;
     }
 
+    for (NSString *email in self.emails) {
+        hash = hash ^ email.hash;
+    }
+
     return hash;
 }
 
