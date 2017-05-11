@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             blockingManager:helper.blockingManager
                                             contactsManager:helper.contactsManager
                                             completionBlock:^(BOOL isBlocked) {
-                                                if (isBlocked) {
+                                                if (!isBlocked) {
                                                     [weakSelf addToGroup:phoneNumber];
                                                 }
                                             }];
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               blockingManager:helper.blockingManager
                                               contactsManager:helper.contactsManager
                                               completionBlock:^(BOOL isBlocked) {
-                                                  if (isBlocked) {
+                                                  if (!isBlocked) {
                                                       [weakSelf addToGroup:signalAccount.recipientId];
                                                   }
                                               }];

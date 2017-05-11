@@ -4,6 +4,7 @@
 
 #import "NewGroupViewController.h"
 #import "AddToGroupViewController.h"
+#import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -205,37 +206,56 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSString *recipientId in
             [nonContactMemberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
 
-            [nonContactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                NewGroupViewController *strongSelf = weakSelf;
-                OWSAssert(strongSelf);
+            [nonContactsSection
+                addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                    NewGroupViewController *strongSelf = weakSelf;
+                    OWSAssert(strongSelf);
 
-                ContactTableViewCell *cell = [ContactTableViewCell new];
-                SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
-                BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                if (isCurrentMember) {
-                    // In the "contacts" section, we label members as such when editing an existing group.
-                    cell.accessoryMessage = NSLocalizedString(
-                        @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
-                } else if (isBlocked) {
-                    cell.accessoryMessage = NSLocalizedString(
-                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                } else {
-                    OWSAssert(cell.accessoryMessage == nil);
+                    ContactTableViewCell *cell = [ContactTableViewCell new];
+                    SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
+                    BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
+                    BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                    if (isCurrentMember) {
+                        // In the "contacts" section, we label members as such when editing an existing group.
+                        cell.accessoryMessage = NSLocalizedString(
+                            @"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
+                    } else if (isBlocked) {
+                        cell.accessoryMessage = NSLocalizedString(
+                            @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                    } else {
+                        OWSAssert(cell.accessoryMessage == nil);
+                    }
+
+                    if (signalAccount) {
+                        [cell configureWithSignalAccount:signalAccount
+                                         contactsManager:contactsViewHelper.contactsManager];
+                    } else {
+                        [cell configureWithRecipientId:recipientId contactsManager:contactsViewHelper.contactsManager];
+                    }
+
+                    return cell;
                 }
-
-                if (signalAccount) {
-                    [cell configureWithSignalAccount:signalAccount contactsManager:contactsViewHelper.contactsManager];
-                } else {
-                    [cell configureWithRecipientId:recipientId contactsManager:contactsViewHelper.contactsManager];
-                }
-
-                return cell;
-            }
-                                            customRowHeight:[ContactTableViewCell rowHeight]
-                                            actionBlock:^{
-                                                [weakSelf removeRecipientId:recipientId];
-                                            }]];
+                            customRowHeight:[ContactTableViewCell rowHeight]
+                            actionBlock:^{
+                                BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
+                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                if (isCurrentMember) {
+                                    [weakSelf removeRecipientId:recipientId];
+                                } else if (isBlocked) {
+                                    [BlockListUIUtils
+                                        showUnblockPhoneNumberActionSheet:recipientId
+                                                       fromViewController:weakSelf
+                                                          blockingManager:contactsViewHelper.blockingManager
+                                                          contactsManager:contactsViewHelper.contactsManager
+                                                          completionBlock:^(BOOL isStillBlocked) {
+                                                              if (!isStillBlocked) {
+                                                                  [weakSelf addRecipientId:recipientId];
+                                                              }
+                                                          }];
+                                } else {
+                                    [weakSelf addRecipientId:recipientId];
+                                }
+                            }]];
         }
         [contents addSection:nonContactsSection];
     }
@@ -287,8 +307,20 @@ NS_ASSUME_NONNULL_BEGIN
                             actionBlock:^{
                                 NSString *recipientId = signalAccount.recipientId;
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
+                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                                 if (isCurrentMember) {
                                     [weakSelf removeRecipientId:recipientId];
+                                } else if (isBlocked) {
+                                    [BlockListUIUtils
+                                        showUnblockSignalAccountActionSheet:signalAccount
+                                                         fromViewController:weakSelf
+                                                            blockingManager:contactsViewHelper.blockingManager
+                                                            contactsManager:contactsViewHelper.contactsManager
+                                                            completionBlock:^(BOOL isStillBlocked) {
+                                                                if (!isStillBlocked) {
+                                                                    [weakSelf addRecipientId:recipientId];
+                                                                }
+                                                            }];
                                 } else {
                                     [weakSelf addRecipientId:recipientId];
                                 }
