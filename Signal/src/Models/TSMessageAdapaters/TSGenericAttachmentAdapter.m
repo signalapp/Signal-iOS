@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
         const CGFloat kBubbleTailWidth = 6.f;
         CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
             self.vMargin,
-            viewSize.width - kBubbleTailWidth - (self.incoming ? 10 : 15),
+            viewSize.width - kBubbleTailWidth - 15,
             viewSize.height - self.vMargin * 2);
 
         UIImage *image = [UIImage imageNamed:(self.incoming ? @"file-black-40" : @"file-white-40")];

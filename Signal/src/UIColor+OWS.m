@@ -3,6 +3,7 @@
 //
 
 #import "Cryptography.h"
+#import "OWSMath.h"
 #import "UIColor+OWS.h"
 
 @implementation UIColor (OWS)
@@ -123,6 +124,19 @@
     CGFloat green = ((value >> 8) & 0xff) / 255.f;
     CGFloat blue = ((value >> 0) & 0xff) / 255.f;
     return [UIColor colorWithRed:red green:green blue:blue alpha:1.f];
+}
+
+- (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha
+{
+    CGFloat r0, g0, b0, a0;
+    [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
+    CGFloat r1, g1, b1, a1;
+    [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+
+    return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
+                           green:CGFloatLerp(g0, g1, alpha)
+                            blue:CGFloatLerp(b0, b1, alpha)
+                           alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
 @end

@@ -22,4 +22,6 @@
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
 
+- (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
+
 @end

@@ -6,6 +6,7 @@
 #import "AttachmentUploadView.h"
 #import "JSQMediaItem+OWS.h"
 #import "MIMETypeUtil.h"
+#import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
@@ -20,13 +21,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSVideoAttachmentAdapter ()
+@interface TSVideoAttachmentAdapter () <AudioProgressViewDelegate>
 
 @property (nonatomic) UIImage *image;
 @property (nonatomic, nullable) UIView *cachedMediaView;
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) UIButton *audioPlayPauseButton;
 @property (nonatomic, nullable) UILabel *audioBottomLabel;
+@property (nonatomic, nullable) AudioProgressView *audioProgressView;
 @property (nonatomic) BOOL incoming;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL isAudioPlaying;
@@ -59,9 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllViews
 {
-    [_cachedMediaView removeFromSuperview];
-    _cachedMediaView = nil;
-    _attachmentUploadView = nil;
+    [self.cachedMediaView removeFromSuperview];
+    self.cachedMediaView = nil;
+    self.attachmentUploadView = nil;
+    self.audioProgressView = nil;
 }
 
 - (void)clearCachedMediaViews
@@ -89,7 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     self.audioProgressSeconds = progress;
-    self.audioDurationSeconds = duration;
+    if (duration > 0) {
+        self.audioDurationSeconds = duration;
+    }
+
+    [self updateAudioProgressView];
 
     [self updateAudioBottomLabel];
 }
@@ -102,35 +109,52 @@ NS_ASSUME_NONNULL_BEGIN
                       [ViewControllerUtils formatDurationSeconds:(long)round(self.audioProgressSeconds)],
                       [ViewControllerUtils formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
     } else {
-        NSError *error;
-        unsigned long long fileSize =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:self.attachment.filePath error:&error].fileSize;
-        OWSAssert(!error);
-        NSString *bottomText = [ViewControllerUtils formatFileSize:fileSize];
-        self.audioBottomLabel.text = bottomText;
+        self.audioBottomLabel.text = [NSString
+            stringWithFormat:@"%@", [ViewControllerUtils formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
     }
 }
 
-- (void)setAudioIcon:(UIImage *)image
+- (void)setAudioIcon:(UIImage *)icon iconColor:(UIColor *)iconColor
 {
-    [_audioPlayPauseButton setImage:image forState:UIControlStateNormal];
-    [_audioPlayPauseButton setImage:image forState:UIControlStateDisabled];
-    _audioPlayPauseButton.layer.opacity = 0.8f;
+    icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
+    [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
+    _audioPlayPauseButton.imageView.tintColor = iconColor;
 }
 
 - (void)setAudioIconToPlay {
-    [self setAudioIcon:[UIImage imageNamed:(self.incoming ? @"audio_play_black_40" : @"audio_play_white_40")]];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]
+             iconColor:[self audioColorWithOpacity:self.incoming ? 0.2f : 0.1f]];
 }
 
 - (void)setAudioIconToPause {
-    [self setAudioIcon:[UIImage imageNamed:(self.incoming ? @"audio_pause_black_40" : @"audio_pause_white_40")]];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]
+             iconColor:[self audioColorWithOpacity:self.incoming ? 0.2f : 0.1f]];
+}
+
+- (void)setIsAudioPlaying:(BOOL)isAudioPlaying
+{
+    _isAudioPlaying = isAudioPlaying;
+
+    [self updateAudioProgressView];
+}
+
+- (void)updateAudioProgressView
+{
+    [self.audioProgressView
+        setProgress:(self.audioDurationSeconds > 0 ? self.audioProgressSeconds / self.audioDurationSeconds : 0.f)];
+
+    self.audioProgressView.horizontalBarColor = [self audioColorWithOpacity:0.75f];
+    self.audioProgressView.progressColor
+        = (self.isAudioPlaying ? [self audioColorWithOpacity:self.incoming ? 0.2f : 0.1f]
+                               : [self audioColorWithOpacity:0.4f]);
 }
 
 #pragma mark - JSQMessageMediaData protocol
 
-- (CGFloat)bubbleHeight
+- (CGFloat)audioBubbleHeight
 {
-    return 35.f;
+    return 45.f;
 }
 
 - (CGFloat)iconSize
@@ -140,111 +164,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)vMargin
 {
-    return 10.f;
+    return 5.f;
 }
 
 - (UIColor *)audioTextColor
 {
-    return (self.incoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
+    return (self.incoming ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor whiteColor]);
+}
+
+- (UIColor *)audioColorWithOpacity:(CGFloat)alpha
+{
+    return [self.audioTextColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
+}
+
+- (UIColor *)bubbleBackgroundColor
+{
+    return self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
 }
 
 - (UIView *)mediaView {
-    CGSize size = [self mediaViewDisplaySize];
     if ([self isVideo]) {
         if (self.cachedMediaView == nil) {
-            UIImageView *imageView  = [[UIImageView alloc] initWithImage:self.image];
-            imageView.contentMode   = UIViewContentModeScaleAspectFill;
-            imageView.frame         = CGRectMake(0.0f, 0.0f, size.width, size.height);
-            imageView.clipsToBounds = YES;
-            [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
-                                                                        isOutgoing:self.appliesMediaViewMaskAsOutgoing];
-            self.cachedMediaView = imageView;
-            UIImage *img           = [UIImage imageNamed:@"play_button"];
-            UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:img];
-            videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
-            [self.cachedMediaView addSubview:videoPlayButton];
-
-            if (!_incoming) {
-                self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
-                                                                                   superview:imageView
-                                                                     attachmentStateCallback:^(BOOL isAttachmentReady) {
-                                                                         videoPlayButton.hidden = !isAttachmentReady;
-                                                                     }];
-            }
+            self.cachedMediaView = [self createVideoMediaView];
         }
     } else if ([self isAudio]) {
         if (self.cachedMediaView == nil) {
-            CGSize viewSize = [self mediaViewDisplaySize];
-            UIColor *textColor = [self audioTextColor];
-
-            _cachedMediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
-
-            _cachedMediaView.backgroundColor
-                = self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
-            [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:_cachedMediaView
-                                                                        isOutgoing:!self.incoming];
-
-            const CGFloat kBubbleTailWidth = 6.f;
-            CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
-                self.vMargin,
-                viewSize.width - kBubbleTailWidth - (self.incoming ? 10 : 15),
-                viewSize.height - self.vMargin * 2);
-
-            CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + 10.f),
-                round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
-                self.iconSize,
-                self.iconSize);
-            _audioPlayPauseButton = [[UIButton alloc] initWithFrame:iconFrame];
-            _audioPlayPauseButton.enabled = NO;
-            [_cachedMediaView addSubview:_audioPlayPauseButton];
-
-            const CGFloat kLabelHSpacing = 3;
-            const CGFloat kLabelVSpacing = 2;
-            NSString *topText =
-                [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-            if (topText.length < 1) {
-                topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].uppercaseString;
-            }
-            if (topText.length < 1) {
-                topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
-            }
-            UILabel *topLabel = [UILabel new];
-            topLabel.text = topText;
-            topLabel.textColor = textColor;
-            topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-            topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
-            [topLabel sizeToFit];
-            [_cachedMediaView addSubview:topLabel];
-
-            UILabel *audioBottomLabel = [UILabel new];
-            self.audioBottomLabel = audioBottomLabel;
-            [self updateAudioBottomLabel];
-            audioBottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
-            audioBottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-            audioBottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-            [audioBottomLabel sizeToFit];
-            [_cachedMediaView addSubview:audioBottomLabel];
-
-            CGRect topLabelFrame = CGRectZero;
-            topLabelFrame.size = topLabel.bounds.size;
-            topLabelFrame.origin.x = round(iconFrame.origin.x + iconFrame.size.width + kLabelHSpacing);
-            topLabelFrame.origin.y = round(contentFrame.origin.y
-                + (contentFrame.size.height
-                      - (topLabel.frame.size.height + audioBottomLabel.frame.size.height + kLabelVSpacing))
-                    * 0.5f);
-            topLabelFrame.size.width
-                = round((contentFrame.origin.x + contentFrame.size.width) - topLabelFrame.origin.x);
-            topLabel.frame = topLabelFrame;
-
-            CGRect audioBottomLabelFrame = topLabelFrame;
-            audioBottomLabelFrame.origin.y += topLabelFrame.size.height + kLabelVSpacing;
-            audioBottomLabel.frame = audioBottomLabelFrame;
-
-            if (!self.incoming) {
-                self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
-                                                                                   superview:_cachedMediaView
-                                                                     attachmentStateCallback:nil];
-            }
+            self.cachedMediaView = [self createAudioMediaView];
         }
 
         if (self.isAudioPlaying) {
@@ -259,10 +204,150 @@ NS_ASSUME_NONNULL_BEGIN
     return self.cachedMediaView;
 }
 
+- (UIView *)createVideoMediaView
+{
+    OWSAssert([self isVideo]);
+
+    CGSize size = [self mediaViewDisplaySize];
+
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
+    imageView.contentMode = UIViewContentModeScaleAspectFill;
+    imageView.frame = CGRectMake(0.0f, 0.0f, size.width, size.height);
+    imageView.clipsToBounds = YES;
+    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:imageView
+                                                                isOutgoing:self.appliesMediaViewMaskAsOutgoing];
+    UIImage *img = [UIImage imageNamed:@"play_button"];
+    UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:img];
+    videoPlayButton.frame = CGRectMake((size.width / 2) - 18, (size.height / 2) - 18, 37, 37);
+    [imageView addSubview:videoPlayButton];
+
+    if (!_incoming) {
+        self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                           superview:imageView
+                                                             attachmentStateCallback:^(BOOL isAttachmentReady) {
+                                                                 videoPlayButton.hidden = !isAttachmentReady;
+                                                             }];
+    }
+
+    return imageView;
+}
+
+- (BOOL)isVoiceMessage
+{
+    OWSAssert([self isAudio]);
+
+    return (self.attachment.isVoiceMessage || self.attachment.filename.length < 1);
+}
+
+- (UIView *)createAudioMediaView
+{
+    OWSAssert([self isAudio]);
+
+    [self ensureAudioDurationSeconds];
+
+    CGSize viewSize = [self mediaViewDisplaySize];
+    UIColor *textColor = [self audioTextColor];
+
+    UIView *mediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
+
+    mediaView.backgroundColor = self.bubbleBackgroundColor;
+    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:mediaView isOutgoing:!self.incoming];
+
+    const CGFloat kBubbleTailWidth = 6.f;
+    CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
+        self.vMargin,
+        viewSize.width - kBubbleTailWidth - 15,
+        viewSize.height - self.vMargin * 2);
+
+    CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + 5.f),
+        (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
+        self.iconSize,
+        self.iconSize);
+    _audioPlayPauseButton = [[UIButton alloc] initWithFrame:iconFrame];
+    _audioPlayPauseButton.enabled = NO;
+    [mediaView addSubview:_audioPlayPauseButton];
+
+    const CGFloat kLabelHSpacing = 3;
+    const CGFloat kLabelVSpacing = 2;
+    NSString *topText = [[self.attachment.filename stringByDeletingPathExtension]
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (topText.length < 1) {
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].uppercaseString;
+    }
+    if (topText.length < 1) {
+        topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
+    }
+    if (self.isVoiceMessage) {
+        topText = nil;
+    }
+    UILabel *topLabel = [UILabel new];
+    topLabel.text = topText;
+    topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+    topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+    [topLabel sizeToFit];
+    [mediaView addSubview:topLabel];
+
+    AudioProgressView *audioProgressView = [AudioProgressView new];
+    self.audioProgressView = audioProgressView;
+    audioProgressView.delegate = self;
+    [self updateAudioProgressView];
+    [mediaView addSubview:audioProgressView];
+
+    UILabel *bottomLabel = [UILabel new];
+    self.audioBottomLabel = bottomLabel;
+    [self updateAudioBottomLabel];
+    bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+    bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+    bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+    [bottomLabel sizeToFit];
+    [mediaView addSubview:bottomLabel];
+
+    const CGFloat topLabelHeight = ceil(topLabel.font.lineHeight);
+    const CGFloat kAudioProgressViewHeight = 12.f;
+    const CGFloat bottomLabelHeight = ceil(bottomLabel.font.lineHeight);
+    CGRect labelsBounds = CGRectZero;
+    labelsBounds.origin.x = (CGFloat)round(iconFrame.origin.x + iconFrame.size.width + kLabelHSpacing);
+    labelsBounds.size.width = contentFrame.origin.x + contentFrame.size.width - labelsBounds.origin.x;
+    labelsBounds.size.height = topLabelHeight + kAudioProgressViewHeight + bottomLabelHeight + kLabelVSpacing * 2;
+    labelsBounds.origin.y
+        = (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - labelsBounds.size.height) * 0.5f);
+
+    topLabel.frame = CGRectMake(labelsBounds.origin.x, labelsBounds.origin.y, labelsBounds.size.width, topLabelHeight);
+    audioProgressView.frame = CGRectMake(labelsBounds.origin.x,
+        labelsBounds.origin.y + topLabelHeight + kLabelVSpacing,
+        labelsBounds.size.width,
+        kAudioProgressViewHeight);
+    bottomLabel.frame = CGRectMake(labelsBounds.origin.x,
+        labelsBounds.origin.y + topLabelHeight + kAudioProgressViewHeight + kLabelVSpacing * 2,
+        labelsBounds.size.width,
+        bottomLabelHeight);
+
+    if (!self.incoming) {
+        self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
+                                                                           superview:mediaView
+                                                             attachmentStateCallback:nil];
+    }
+
+    return mediaView;
+}
+
+- (void)ensureAudioDurationSeconds
+{
+    if (self.audioDurationSeconds == 0.f) {
+        NSError *error;
+        AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.fileURL error:&error];
+        OWSAssert(!error);
+        if (!error) {
+            self.audioDurationSeconds = (CGFloat)[audioPlayer duration];
+        }
+    }
+}
+
 - (CGSize)mediaViewDisplaySize {
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
-        size.height = ceil(self.bubbleHeight + self.vMargin * 2);
+        size.height = (CGFloat)ceil(self.audioBubbleHeight + self.vMargin * 2);
     } else if ([self isVideo]) {
         return [self ows_adjustBubbleSize:size forImage:self.image];
     }
@@ -331,6 +416,13 @@ NS_ASSUME_NONNULL_BEGIN
             @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
         OWSAssert(NO);
     }
+}
+
+#pragma mark - AudioProgressViewDelegate
+
+- (void)AudioProgressViewWasScrubbedWithProgress:(CGFloat)progress
+{
+    // TODO:
 }
 
 #pragma mark - OWSMessageMediaAdapter
