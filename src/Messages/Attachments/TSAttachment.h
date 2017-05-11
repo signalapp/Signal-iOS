@@ -31,15 +31,20 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (atomic, readwrite) BOOL isDownloaded;
 @property (nonatomic) TSAttachmentType attachmentType;
 
+// Represents the "nominal" filename sent or received in the protos,
+// not the filename on disk.
+@property (nonatomic, readonly, nullable) NSString *filename;
+
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
                    encryptionKey:(NSData *)encryptionKey
-                     contentType:(NSString *)contentType;
+                     contentType:(NSString *)contentType
+                        filename:(nullable NSString *)filename;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
-- (instancetype)initWithContentType:(NSString *)contentType;
+- (instancetype)initWithContentType:(NSString *)contentType filename:(nullable NSString *)filename;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.

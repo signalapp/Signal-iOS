@@ -22,6 +22,7 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
 - (instancetype)initWithServerId:(UInt64)serverId
                    encryptionKey:(NSData *)encryptionKey
                      contentType:(NSString *)contentType
+                        filename:(nullable NSString *)filename
 {
     self = [super init];
     if (!self) {
@@ -32,13 +33,14 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     _encryptionKey = encryptionKey;
     _contentType = contentType;
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+    _filename = filename;
 
     return self;
 }
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
-- (instancetype)initWithContentType:(NSString *)contentType
+- (instancetype)initWithContentType:(NSString *)contentType filename:(nullable NSString *)filename
 {
     self = [super init];
     if (!self) {
@@ -47,6 +49,7 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
 
     _contentType = contentType;
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+    _filename = filename;
 
     return self;
 }
@@ -64,6 +67,7 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     _serverId = pointer.serverId;
     _encryptionKey = pointer.encryptionKey;
     _contentType = pointer.contentType;
+    _filename = pointer.filename;
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
     return self;

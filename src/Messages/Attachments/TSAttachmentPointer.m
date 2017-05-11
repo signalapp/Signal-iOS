@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                         filename:(nullable NSString *)filename
                   attachmentType:(TSAttachmentType)attachmentType
 {
-    self = [super initWithServerId:serverId encryptionKey:key contentType:contentType];
+    self = [super initWithServerId:serverId encryptionKey:key contentType:contentType filename:filename];
     if (!self) {
         return self;
     }
@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
     _relay = relay;
-    _filename = filename;
     self.attachmentType = attachmentType;
 
     return self;
