@@ -14,6 +14,7 @@ import ContactsUI
 class SystemContactsFetcher: NSObject {
 
     private let TAG = "[SystemContactsFetcher]"
+    var lastContactUpdateHash: Int?
 
     public weak var delegate: SystemContactsFetcherDelegate?
 
@@ -125,6 +126,19 @@ class SystemContactsFetcher: NSObject {
             }
 
             let contacts = systemContacts.map { Contact(systemContact: $0) }
+
+            let contactsHash  = HashableArray(contacts).hashValue
+            guard (self.lastContactUpdateHash != contactsHash) else {
+                Logger.debug("\(self.TAG) System contacts unchanged. hash:\(contactsHash)")
+                DispatchQueue.main.async {
+                    completion?(nil)
+                }
+                return
+            }
+            self.lastContactUpdateHash = contactsHash
+
+            Logger.debug("\(self.TAG) Notifying delegate that system contacts did change. hash:\(contactsHash)")
+
             DispatchQueue.main.async {
                 self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
                 completion?(nil)
@@ -144,4 +158,23 @@ class SystemContactsFetcher: NSObject {
         updateContacts(completion: nil)
     }
 
+}
+
+struct HashableArray<Element: Hashable>: Hashable {
+    var elements: [Element]
+    init(_ elements: [Element]) {
+        self.elements = elements
+    }
+
+    var hashValue: Int {
+        // random generated 32bit number
+        let base = 224712574
+        return elements.reduce(base) { (result, element) -> Int in
+            return result ^ element.hashValue
+        }
+    }
+
+    static func == (lhs: HashableArray, rhs: HashableArray) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
 }
