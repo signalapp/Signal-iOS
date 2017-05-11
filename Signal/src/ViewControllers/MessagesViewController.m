@@ -1509,6 +1509,7 @@ typedef enum : NSUInteger {
         }
         [self clearDraft];
         [self finishSendingMessage];
+        [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
     }
 }
 
