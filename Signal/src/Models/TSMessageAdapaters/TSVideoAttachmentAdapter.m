@@ -21,7 +21,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSVideoAttachmentAdapter () <AudioProgressViewDelegate>
+@interface TSVideoAttachmentAdapter ()
 
 @property (nonatomic) UIImage *image;
 @property (nonatomic, nullable) UIView *cachedMediaView;
@@ -290,7 +290,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     AudioProgressView *audioProgressView = [AudioProgressView new];
     self.audioProgressView = audioProgressView;
-    audioProgressView.delegate = self;
     [self updateAudioProgressView];
     [mediaView addSubview:audioProgressView];
 
@@ -416,13 +415,6 @@ NS_ASSUME_NONNULL_BEGIN
             @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
         OWSAssert(NO);
     }
-}
-
-#pragma mark - AudioProgressViewDelegate
-
-- (void)AudioProgressViewWasScrubbedWithProgress:(CGFloat)progress
-{
-    // TODO:
 }
 
 #pragma mark - OWSMessageMediaAdapter

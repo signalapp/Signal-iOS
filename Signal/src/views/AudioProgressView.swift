@@ -4,13 +4,7 @@
 
 import UIKit
 
-@objc protocol AudioProgressViewDelegate: class {
-    func AudioProgressViewWasScrubbed(progress: CGFloat)
-}
-
 @objc class AudioProgressView: UIView {
-
-    public weak var delegate: AudioProgressViewDelegate?
 
     override var bounds: CGRect {
         didSet {
