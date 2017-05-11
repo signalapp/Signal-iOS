@@ -3161,7 +3161,7 @@ typedef enum : NSUInteger {
     self.audioRecorder = nil;
 
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
-        stringByAppendingPathExtension:@".m4a"];
+        stringByAppendingPathExtension:@"m4a"];
 
     SignalAttachment *attachment = [SignalAttachment voiceMessageAttachmentWithData:audioData
                                                                             dataUTI:(NSString *)kUTTypeMPEG4Audio
