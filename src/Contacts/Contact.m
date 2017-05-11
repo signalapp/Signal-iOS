@@ -281,6 +281,22 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
+- (NSUInteger)hash
+{
+    NSUInteger hash = 1825038313 ^ self.fullName.hash;
+
+    // NSData.hash appears not to change even when the underlying bytes change.
+    // maybe it's built on address?
+    hash = hash ^ self.cnContact.thumbnailImageData.description.hash;
+
+    for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
+        hash = hash ^ phoneNumber.toE164.hash;
+    }
+
+    return hash;
+}
+
+
 @end
 
 NS_ASSUME_NONNULL_END
