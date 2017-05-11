@@ -234,12 +234,16 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)registrationStateDidChange:(NSNotification *)notification
 {
-    [self updateHasCensoredPhoneNumber];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateHasCensoredPhoneNumber];
+    });
 }
 
 - (void)localNumberDidChange:(NSNotification *)notification
 {
-    [self updateHasCensoredPhoneNumber];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateHasCensoredPhoneNumber];
+    });
 }
 
 #pragma mark - Logging
