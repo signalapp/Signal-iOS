@@ -64,7 +64,7 @@
 
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    [self initializeObserver];
+    [self observeNotifications];
 
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
     
@@ -277,7 +277,8 @@
 
 #pragma mark - Socket Status Notifications
 
-- (void)initializeObserver {
+- (void)observeNotifications
+{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(socketStateDidChange)
                                                  name:kNSNotification_SocketManagerStateDidChange

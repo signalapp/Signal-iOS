@@ -15,33 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property (nonatomic) UITableViewCell *enableLogCell;
-@property (nonatomic) UITableViewCell *submitLogCell;
-@property (nonatomic) UITableViewCell *registerPushCell;
-
 @property (nonatomic) UISwitch *enableLogSwitch;
-@property (nonatomic, readonly) BOOL supportsCallKit;
 
 @end
 
-typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
-    AdvancedSettingsTableViewControllerSectionLogging,
-    AdvancedSettingsTableViewControllerSectionPushNotifications,
-    AdvancedSettingsTableViewControllerSection_Count // meta section
-};
+#pragma mark -
 
 @implementation AdvancedSettingsTableViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-- (instancetype)init
-{
-    return [super initWithStyle:UITableViewStyleGrouped];
-}
 
 - (void)loadView
 {
@@ -49,99 +29,96 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
     
-    // Enable Log
-    self.enableLogCell                        = [[UITableViewCell alloc] init];
-    self.enableLogCell.textLabel.text         = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
-    self.enableLogCell.userInteractionEnabled = YES;
     self.enableLogSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
     [self.enableLogSwitch setOn:[PropertyListPreferences loggingIsEnabled]];
     [self.enableLogSwitch addTarget:self
                              action:@selector(didToggleEnableLogSwitch:)
                    forControlEvents:UIControlEventValueChanged];
-    self.enableLogCell.accessoryView = self.enableLogSwitch;
 
-    // Send Log
-    self.submitLogCell                = [[UITableViewCell alloc] init];
-    self.submitLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"");
+    [self observeNotifications];
 
-    self.registerPushCell                = [[UITableViewCell alloc] init];
-    self.registerPushCell.textLabel.text = NSLocalizedString(@"REREGISTER_FOR_PUSH", nil);
+    [self updateTableContents];
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return AdvancedSettingsTableViewControllerSection_Count;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
-    switch (settingsSection) {
-        case AdvancedSettingsTableViewControllerSectionLogging:
-            return self.enableLogSwitch.isOn ? 2 : 1;
-        case AdvancedSettingsTableViewControllerSectionPushNotifications:
-            return 1;
-        default:
-            return 0;
-    }
-}
-
-- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (void)observeNotifications
 {
-    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)section;
-    switch (settingsSection) {
-        case AdvancedSettingsTableViewControllerSectionLogging:
-            return NSLocalizedString(@"LOGGING_SECTION", nil);
-        case AdvancedSettingsTableViewControllerSectionPushNotifications:
-            return NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
-        default:
-            return nil;
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(socketStateDidChange)
+                                                 name:kNSNotification_SocketManagerStateDidChange
+                                               object:nil];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)dealloc
 {
-    AdvancedSettingsTableViewControllerSection settingsSection = (AdvancedSettingsTableViewControllerSection)indexPath.section;
-    switch (settingsSection) {
-        case AdvancedSettingsTableViewControllerSectionLogging:
-            switch (indexPath.row) {
-                case 0:
-                    return self.enableLogCell;
-                case 1:
-                    OWSAssert(self.enableLogSwitch.isOn);
-                    return self.submitLogCell;
-            }
-        case AdvancedSettingsTableViewControllerSectionPushNotifications:
-            return self.registerPushCell;
-        default:
-            // Unknown section
-            OWSAssert(NO);
-            return nil;
-    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+- (void)socketStateDidChange
+{
+    OWSAssert([NSThread isMainThread]);
 
-    if ([tableView cellForRowAtIndexPath:indexPath] == self.submitLogCell) {
-        DDLogInfo(@"%@ Submitting debug logs", self.tag);
-        [DDLog flushLog];
-        [Pastelog submitLogs];
-    } else if ([tableView cellForRowAtIndexPath:indexPath] == self.registerPushCell) {
-        OWSSyncPushTokensJob *job =
-            [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                               accountManager:[Environment getCurrent].accountManager
-                                                  preferences:[Environment preferences]
-                                                   showAlerts:YES];
-        job.uploadOnlyIfStale = NO;
-        [job run];
-    } else {
-        DDLogDebug(@"%@ Ignoring cell selection at indexPath: %@", self.tag, indexPath);
+    [self updateTableContents];
+}
+
+#pragma mark - Table Contents
+
+- (void)updateTableContents
+{
+    OWSTableContents *contents = [OWSTableContents new];
+
+    __weak AdvancedSettingsTableViewController *weakSelf = self;
+
+    OWSTableSection *loggingSection = [OWSTableSection new];
+    loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
+    [loggingSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+
+        cell.accessoryView = self.enableLogSwitch;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        return cell;
     }
+                                                      actionBlock:nil]];
+    if (self.enableLogSwitch.isOn) {
+        [loggingSection
+            addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
+                                         actionBlock:^{
+                                             DDLogInfo(@"%@ Submitting debug logs", self.tag);
+                                             [DDLog flushLog];
+                                             [Pastelog submitLogs];
+                                         }]];
+    }
+
+    [contents addSection:loggingSection];
+
+    OWSTableSection *pushNotificationsSection = [OWSTableSection new];
+    pushNotificationsSection.headerTitle
+        = NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
+    [pushNotificationsSection addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"REREGISTER_FOR_PUSH", nil)
+                                                           actionBlock:^{
+                                                               [weakSelf syncPushTokens];
+                                                           }]];
+
+
+    [contents addSection:pushNotificationsSection];
+
+    self.contents = contents;
 }
 
 #pragma mark - Actions
+
+- (void)syncPushTokens
+{
+    OWSSyncPushTokensJob *job =
+        [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
+                                           accountManager:[Environment getCurrent].accountManager
+                                              preferences:[Environment preferences]
+                                               showAlerts:YES];
+    job.uploadOnlyIfStale = NO;
+    [job run];
+}
 
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender {
     if (!sender.isOn) {
@@ -152,7 +129,8 @@ typedef NS_ENUM(NSInteger, AdvancedSettingsTableViewControllerSection) {
     }
     
     [PropertyListPreferences setLoggingEnabled:sender.isOn];
-    [self.tableView reloadData];
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging
