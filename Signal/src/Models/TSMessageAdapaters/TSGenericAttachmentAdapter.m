@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bubbleHeight
 {
-    return 35.f;
+    return 45.f;
 }
 
 - (CGFloat)iconSize
