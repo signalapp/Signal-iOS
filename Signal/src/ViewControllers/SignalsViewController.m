@@ -283,8 +283,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-        DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
-        // Even if there was an error fetching contacts we proceed to the next screen.
+        if (error) {
+            DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
+        }
+        // Even if there is an error fetching contacts we proceed to the next screen.
         // As the compose view will present the proper thing depending on contact access.
         //
         // We just want to make sure contact access is *complete* before showing the compose
