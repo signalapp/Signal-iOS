@@ -16,7 +16,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     OWSAssert(text != nil);
     OWSAssert(regionCode != nil);
 
-    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedUtil].nbPhoneNumberUtil;
+    PhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedUtil];
 
     NSError *parseError   = nil;
     NBPhoneNumber *number = [phoneUtil parse:text defaultRegion:regionCode error:&parseError];
