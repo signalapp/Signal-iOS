@@ -2065,7 +2065,11 @@ typedef enum : NSUInteger {
                 // We want to activate fullscreen media view for sent items
                 // but not those which failed-to-send
                 break;
+            } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+                // Ignore taps on outgoing messages being sent.
+                break;
             }
+
             // No `break` as we want to fall through to capture tapping on Outgoing media items too
         }
         case TSIncomingMessageAdapter: {
