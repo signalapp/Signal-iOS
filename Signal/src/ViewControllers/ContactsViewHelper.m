@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
-@property (nonatomic) BOOL suppressDelegateEvents;
+@property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 
 @end
 
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(delegate);
     _delegate = delegate;
 
-    self.suppressDelegateEvents = YES;
+    self.shouldNotifyDelegateOfUpdatedContacts = YES;
 
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self observeNotifications];
 
-    self.suppressDelegateEvents = NO;
+    self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
     return self;
 }
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.nonSignalContacts = nil;
 
     // Don't fire delegate "change" events during initialization.
-    if (!self.suppressDelegateEvents) {
+    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
         [self.delegate contactsViewHelperDidUpdateContacts];
     }
 }
