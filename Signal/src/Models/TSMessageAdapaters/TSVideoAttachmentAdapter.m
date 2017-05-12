@@ -128,12 +128,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIconToPlay {
     [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]
-             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.15f])];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
 }
 
 - (void)setAudioIconToPause {
     [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]
-             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.1f])];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
 }
 
 - (void)setIsAudioPlaying:(BOOL)isAudioPlaying
