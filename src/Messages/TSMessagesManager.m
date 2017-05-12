@@ -492,7 +492,9 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         if (ignoreMessage) {
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
-            DDLogInfo(@"%@ Received message from group that I left or don't know about.", self.tag);
+            DDLogInfo(@"%@ Received message from group that I left or don't know about from: %@.",
+                self.tag,
+                incomingEnvelope.source);
 
             NSString *recipientId = incomingEnvelope.source;
 
@@ -508,7 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
             [self.messageSender sendMessage:syncGroupsRequestMessage
                 success:^{
-                    DDLogInfo(@"%@ Successfully sent Request Group Info message.", self.tag);
+                    DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.tag);
                 }
                 failure:^(NSError *error) {
                     DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
@@ -787,15 +789,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogInfo(@"%@ Received 'Request Group Info' message for group: %@ from: %@", self.tag, groupId, envelope.source);
+    DDLogWarn(@"%@ Received 'Request Group Info' message for group: %@ from: %@", self.tag, groupId, envelope.source);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSGroupModel *emptyModelToFillOutId =
             [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:dataMessage.group.id];
         TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
         if (!gThread) {
-            DDLogInfo(@"%@ Unknown group: %@", self.tag, groupId);
+            DDLogWarn(@"%@ Unknown group: %@", self.tag, groupId);
             return;
+        }
+
+        if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
+            DDLogWarn(@"%@ Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
+                self.tag,
+                envelope.source,
+                gThread.groupModel.groupMemberIds);
         }
 
         NSString *updateGroupInfo =
