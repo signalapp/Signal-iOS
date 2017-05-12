@@ -118,7 +118,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithThread:(TSThread *)thread
 {
+    OWSAssert(thread);
     self.thread = thread;
+
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        self.title = NSLocalizedString(
+            @"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", @"Navbar title when viewing settings for a 1-on-1 thread");
+    } else {
+        self.title = NSLocalizedString(
+            @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
+    }
+
     [self updateEditButton];
 }
 
@@ -172,9 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Translations
-    self.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
     _disappearingMessagesDurationLabel = [UILabel new];
 
