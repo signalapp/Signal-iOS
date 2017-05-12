@@ -3,6 +3,7 @@
 //
 
 #import "Contact.h"
+#import "Cryptography.h"
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -279,6 +280,34 @@ NS_ASSUME_NONNULL_BEGIN
             @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
     }
     return value;
+}
+
+- (NSUInteger)hash
+{
+    // base hash is some arbitrary number
+    NSUInteger hash = 1825038313;
+
+    hash = hash ^ self.fullName.hash;
+
+    // base thumbnailHash is some arbitrary number
+    NSUInteger thumbnailHash = 389201946;
+    if (self.cnContact.thumbnailImageData) {
+        NSData *thumbnailHashData =
+            [Cryptography computeSHA256Digest:self.cnContact.thumbnailImageData truncatedToBytes:sizeof(thumbnailHash)];
+        [thumbnailHashData getBytes:&thumbnailHash length:sizeof(thumbnailHash)];
+    }
+
+    hash = hash ^ thumbnailHash;
+
+    for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
+        hash = hash ^ phoneNumber.toE164.hash;
+    }
+
+    for (NSString *email in self.emails) {
+        hash = hash ^ email.hash;
+    }
+
+    return hash;
 }
 
 @end
