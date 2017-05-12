@@ -170,6 +170,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)firstSectionHeader
 {
+    OWSAssert(self.thread);
+    OWSAssert(self.thread.groupModel);
+
     UIView *firstSectionHeader = [UIView new];
     firstSectionHeader.backgroundColor = [UIColor whiteColor];
     UIView *threadInfoView = [UIView new];
@@ -189,16 +192,13 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
-    if (self.thread.groupModel) {
-        _groupAvatar = self.thread.groupModel.groupImage;
-    }
+    _groupAvatar = self.thread.groupModel.groupImage;
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    if (self.thread) {
-        self.groupNameTextField.text = self.thread.groupModel.groupName;
-    }
+    self.groupNameTextField.text =
+        [self.thread.groupModel.groupName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     groupNameTextField.textColor = [UIColor blackColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
