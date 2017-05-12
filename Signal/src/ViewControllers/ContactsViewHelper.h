@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper : NSObject
 
-@property (nonatomic, weak) id<ContactsViewHelperDelegate> delegate;
+@property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -41,6 +41,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 

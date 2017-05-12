@@ -26,18 +26,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
+@property (nonatomic) BOOL suppressDelegateEvents;
+
 @end
 
 #pragma mark -
 
 @implementation ContactsViewHelper
 
-- (instancetype)init
+- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
 {
     self = [super init];
     if (!self) {
         return self;
     }
+
+    OWSAssert(delegate);
+    _delegate = delegate;
+
+    self.suppressDelegateEvents = YES;
 
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
@@ -47,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateContacts];
 
     [self observeNotifications];
+
+    self.suppressDelegateEvents = NO;
 
     return self;
 }
@@ -97,7 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
 {
     OWSAssert([NSThread isMainThread]);
-
 
     if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
         [self isCurrentUser:signalAccount]) {
@@ -154,7 +162,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.signalAccounts = [signalAccounts copy];
     self.nonSignalContacts = nil;
 
-    [self.delegate contactsViewHelperDidUpdateContacts];
+    // Don't fire delegate "change" events during initialization.
+    if (!self.suppressDelegateEvents) {
+        [self.delegate contactsViewHelperDidUpdateContacts];
+    }
 }
 
 - (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerm:(NSString *)searchTerm

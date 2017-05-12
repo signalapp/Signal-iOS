@@ -58,8 +58,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     [self createViews];
 

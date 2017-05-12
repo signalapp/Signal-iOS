@@ -62,8 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 }
 
 - (void)configWithThread:(TSGroupThread *)thread

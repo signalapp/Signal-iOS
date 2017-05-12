@@ -56,8 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _nonContactAccountSet = [NSMutableSet set];
 
     ReminderView *contactsPermissionReminderView = [[ReminderView alloc]
