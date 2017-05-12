@@ -775,7 +775,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleGroupInfoRequest:(OWSSignalServiceProtosDataMessage *)dataMessage
+- (void)handleGroupInfoRequest:(OWSSignalServiceProtosEnvelope *)envelope
+                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo);
@@ -786,7 +787,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogInfo(@"%@ Received 'Request Group Info' message for group: %@", self.tag, groupId);
+    DDLogInfo(@"%@ Received 'Request Group Info' message for group: %@ from: %@", self.tag, groupId, envelope.source);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSGroupModel *emptyModelToFillOutId =
@@ -803,6 +804,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          inThread:gThread
                                                                  groupMetaMessage:TSGroupMessageUpdate];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
+        // Only send this group update to the requester.
+        [message updateWithSingleGroupRecipient:envelope.source transaction:transaction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self sendGroupUpdateForThread:gThread message:message];
@@ -827,7 +830,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *localNumber = [TSAccountManager localNumber];
 
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
-        [self handleGroupInfoRequest:dataMessage];
+        [self handleGroupInfoRequest:envelope dataMessage:dataMessage];
         return nil;
     }
 
