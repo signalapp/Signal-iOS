@@ -467,12 +467,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSGroupModel *)makeGroup
 {
-    NSString *title = self.groupNameTextField.text;
+    NSString *groupName =
+        [self.groupNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
-
-    return [[TSGroupModel alloc] initWithTitle:title memberIds:recipientIds image:self.groupAvatar groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
 }
 
 #pragma mark - Group Avatar

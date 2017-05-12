@@ -373,7 +373,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.conversationSettingsViewDelegate);
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:self.groupNameTextField.text
+    NSString *groupName =
+        [self.groupNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:[self.memberRecipientIds.allObjects mutableCopy]
                                                              image:self.groupAvatar
                                                            groupId:self.thread.groupModel.groupId];
