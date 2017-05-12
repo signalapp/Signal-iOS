@@ -1,9 +1,5 @@
 //
-//  JSQMediaItem+OWS.m
-//  Signal
-//
-//  Created by Matthew Douglass on 10/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "JSQMediaItem+OWS.h"
@@ -12,12 +8,18 @@
 
 @implementation JSQMediaItem (OWS)
 
+- (CGFloat)ows_maxMediaBubbleWidth:(CGSize)defaultBubbleSize
+{
+    return (
+        [[UIDevice currentDevice] isiPhoneVersionSixOrMore] ? defaultBubbleSize.width * 1.2 : defaultBubbleSize.width);
+}
+
 - (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImage:(UIImage *)image {
     double aspectRatio = image.size.height / image.size.width;
     double clampedAspectRatio = [NumberUtil clamp:aspectRatio toMin:0.5 andMax:1.5];
     
     if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
-        bubbleSize.width *= 1.2;
+        bubbleSize.width = [self ows_maxMediaBubbleWidth:bubbleSize];
         bubbleSize.height = (CGFloat)(bubbleSize.width * clampedAspectRatio);
     } else {
         if (aspectRatio > 1) {

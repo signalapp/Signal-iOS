@@ -4,6 +4,7 @@
 
 #import "TSGenericAttachmentAdapter.h"
 #import "AttachmentUploadView.h"
+#import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
@@ -205,6 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)mediaViewDisplaySize
 {
     CGSize size = [super mediaViewDisplaySize];
+    size.width = [self ows_maxMediaBubbleWidth:size];
     size.height = ceil(self.bubbleHeight + self.vMargin * 2);
     return size;
 }
