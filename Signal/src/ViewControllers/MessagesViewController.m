@@ -281,7 +281,6 @@ typedef enum : NSUInteger {
                 [self.delegate voiceMemoGestureDidCancel];
             }
             // Start voice message.
-            [self.textView resignFirstResponder];
             self.isRecordingVoiceMemo = YES;
             self.voiceMemoGestureStartLocation = [sender locationInView:self];
             [self.delegate voiceMemoGestureDidStart];
