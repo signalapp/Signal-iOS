@@ -50,42 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(phoneNumber.length > 0);
 
-    __weak NewNonContactConversationViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:phoneNumber]) {
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                         fromViewController:self
-                                            blockingManager:helper.blockingManager
-                                            contactsManager:helper.contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf selectRecipient:phoneNumber];
-                                                }
-                                            }];
-    } else {
-        [self selectRecipient:phoneNumber];
-    }
+    [self selectRecipient:phoneNumber];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssert(signalAccount);
 
-    __weak NewNonContactConversationViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
-        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
-                                           fromViewController:self
-                                              blockingManager:helper.blockingManager
-                                              contactsManager:helper.contactsManager
-                                              completionBlock:^(BOOL isBlocked) {
-                                                  if (!isBlocked) {
-                                                      [weakSelf selectRecipient:signalAccount.recipientId];
-                                                  }
-                                              }];
-    } else {
-        [self selectRecipient:signalAccount.recipientId];
-    }
+    [self selectRecipient:signalAccount.recipientId];
 }
 
 - (void)selectRecipient:(NSString *)recipientId
