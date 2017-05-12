@@ -914,16 +914,12 @@ NS_ASSUME_NONNULL_BEGIN
           thread = cThread;
       }
 
-      DDLogWarn(@"%@ handleReceivedEnvelope: %@ %@", self.tag, [thread class], [incomingMessage debugDescription]);
-
       if (thread && incomingMessage) {
           [incomingMessage saveWithTransaction:transaction];
 
           // Any messages sent from the current user - from this device or another - should be
           // automatically marked as read.
           BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
-          DDLogWarn(
-              @"%@ shouldMarkMessageAsRead: %@ %@ %d", self.tag, envelope.source, localNumber, shouldMarkMessageAsRead);
           if (shouldMarkMessageAsRead) {
               [incomingMessage markAsReadLocallyWithTransaction:transaction];
           }
