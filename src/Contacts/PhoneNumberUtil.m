@@ -52,6 +52,13 @@
 
     if (!result) {
         result = [self.nbPhoneNumberUtil parse:numberToParse defaultRegion:defaultRegion error:error];
+        if (error && *error) {
+            OWSAssert(!result);
+            return nil;
+        }
+
+        OWSAssert(result);
+
         if (result) {
             [self.parsedPhoneNumberCache setObject:result forKey:hashKey];
         } else {

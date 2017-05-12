@@ -22,14 +22,14 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NBPhoneNumber *number = [phoneUtil parse:text defaultRegion:regionCode error:&parseError];
 
     if (parseError) {
-        DDLogWarn(@"Issue while parsing number: %@", [parseError description]);
+        DDLogDebug(@"Issue while parsing number: %@", [parseError description]);
         return nil;
     }
 
     NSError *toE164Error;
     NSString *e164 = [phoneUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
     if (toE164Error) {
-        DDLogWarn(@"Issue while parsing number: %@", [toE164Error description]);
+        DDLogDebug(@"Issue while formatting number: %@", [toE164Error description]);
         return nil;
     }
 
