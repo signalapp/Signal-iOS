@@ -120,17 +120,20 @@ NS_ASSUME_NONNULL_BEGIN
     icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
-    _audioPlayPauseButton.imageView.tintColor = iconColor;
+    _audioPlayPauseButton.imageView.tintColor = self.bubbleBackgroundColor;
+    _audioPlayPauseButton.backgroundColor = iconColor;
+    _audioPlayPauseButton.layer.cornerRadius
+        = MIN(_audioPlayPauseButton.bounds.size.width, _audioPlayPauseButton.bounds.size.height) * 0.5f;
 }
 
 - (void)setAudioIconToPlay {
     [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]
-             iconColor:[self audioColorWithOpacity:self.incoming ? 0.2f : 0.1f]];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.15f])];
 }
 
 - (void)setAudioIconToPause {
     [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]
-             iconColor:[self audioColorWithOpacity:self.incoming ? 0.2f : 0.1f]];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.1f])];
 }
 
 - (void)setIsAudioPlaying:(BOOL)isAudioPlaying
@@ -153,19 +156,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - JSQMessageMediaData protocol
 
+- (CGFloat)audioIconHMargin
+{
+    return 10.f;
+}
+
+- (CGFloat)audioIconVMargin
+{
+    return 12.f;
+}
+
 - (CGFloat)audioBubbleHeight
 {
-    return 50.f;
+    return self.iconSize + self.audioIconVMargin * 2;
 }
 
 - (CGFloat)iconSize
 {
     return 40.f;
-}
-
-- (CGFloat)vMargin
-{
-    return 5.f;
 }
 
 - (UIColor *)audioTextColor
@@ -260,11 +268,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     const CGFloat kBubbleTailWidth = 6.f;
     CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
-        self.vMargin,
+        self.audioIconVMargin,
         viewSize.width - kBubbleTailWidth - 15,
-        viewSize.height - self.vMargin * 2);
+        viewSize.height - self.audioIconVMargin * 2);
 
-    CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + 5.f),
+    CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + self.audioIconHMargin),
         (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
         self.iconSize,
         self.iconSize);
@@ -272,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
     _audioPlayPauseButton.enabled = NO;
     [mediaView addSubview:_audioPlayPauseButton];
 
-    const CGFloat kLabelHSpacing = 3;
+    const CGFloat kLabelHSpacing = self.audioIconHMargin;
     const CGFloat kLabelVSpacing = 2;
     NSString *topText = [[self.attachment.filename stringByDeletingPathExtension]
         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -317,15 +325,13 @@ NS_ASSUME_NONNULL_BEGIN
     labelsBounds.origin.y
         = (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - labelsBounds.size.height) * 0.5f);
 
-    topLabel.frame = CGRectMake(labelsBounds.origin.x, labelsBounds.origin.y, labelsBounds.size.width, topLabelHeight);
-    audioProgressView.frame = CGRectMake(labelsBounds.origin.x,
-        labelsBounds.origin.y + topLabelHeight + kLabelVSpacing,
-        labelsBounds.size.width,
-        kAudioProgressViewHeight);
-    bottomLabel.frame = CGRectMake(labelsBounds.origin.x,
-        labelsBounds.origin.y + topLabelHeight + kAudioProgressViewHeight + kLabelVSpacing * 2,
-        labelsBounds.size.width,
-        bottomLabelHeight);
+    CGFloat y = labelsBounds.origin.y;
+    topLabel.frame
+        = CGRectMake(labelsBounds.origin.x, labelsBounds.origin.y, labelsBounds.size.width, topLabelHeight);
+    y += topLabelHeight + kLabelVSpacing;
+    audioProgressView.frame = CGRectMake(labelsBounds.origin.x, y, labelsBounds.size.width, kAudioProgressViewHeight);
+    y += kAudioProgressViewHeight + kLabelVSpacing;
+    bottomLabel.frame = CGRectMake(labelsBounds.origin.x, y, labelsBounds.size.width, bottomLabelHeight);
 
     if (!self.incoming) {
         self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachment
@@ -357,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
         size.width = [self ows_maxMediaBubbleWidth:size];
-        size.height = (CGFloat)ceil(self.audioBubbleHeight + self.vMargin * 2);
+        size.height = (CGFloat)ceil(self.audioBubbleHeight);
     } else if ([self isVideo]) {
         return [self ows_adjustBubbleSize:size forImage:self.image];
     }
