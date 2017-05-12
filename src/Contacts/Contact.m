@@ -3,6 +3,7 @@
 //
 
 #import "Contact.h"
+#import "Cryptography.h"
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -283,11 +284,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)hash
 {
-    NSUInteger hash = 1825038313 ^ self.fullName.hash;
+    // base hash is some arbitrary number
+    NSUInteger hash = 1825038313;
 
-    // NSData.hash appears not to change even when the underlying bytes change.
-    // maybe it's built on address?
-    hash = hash ^ self.cnContact.thumbnailImageData.description.hash;
+    hash = hash ^ self.fullName.hash;
+
+    // base thumbnailHash is some arbitrary number
+    NSUInteger thumbnailHash = 389201946;
+    if (self.cnContact.thumbnailImageData) {
+        NSData *thumbnailHashData =
+            [Cryptography computeSHA256Digest:self.cnContact.thumbnailImageData truncatedToBytes:sizeof(thumbnailHash)];
+        [thumbnailHashData getBytes:&thumbnailHash length:sizeof(thumbnailHash)];
+    }
+
+    hash = hash ^ thumbnailHash;
 
     for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
         hash = hash ^ phoneNumber.toE164.hash;
@@ -299,7 +309,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     return hash;
 }
-
 
 @end
 
