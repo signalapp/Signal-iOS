@@ -129,14 +129,22 @@
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha
 {
     CGFloat r0, g0, b0, a0;
-    [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
-    CGFloat r1, g1, b1, a1;
-    [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+#ifdef DEBUG
+    BOOL result =
+#endif
+        [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
+    OWSAssert(result)
 
-    return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
-                           green:CGFloatLerp(g0, g1, alpha)
-                            blue:CGFloatLerp(b0, b1, alpha)
-                           alpha:CGFloatLerp(a0, a1, alpha)];
+        CGFloat r1,
+        g1, b1, a1;
+#ifdef DEBUG
+    result =
+#endif
+        [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+    OWSAssert(result) return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
+                                             green:CGFloatLerp(g0, g1, alpha)
+                                              blue:CGFloatLerp(b0, b1, alpha)
+                                             alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
 @end

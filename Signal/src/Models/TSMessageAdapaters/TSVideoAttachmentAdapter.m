@@ -236,6 +236,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self isAudio]);
 
+    // We want to treat "pre-voice messages flag" messages as voice messages if
+    // they have no file name.
+    //
+    // TODO: Remove this after the flag has been in production for a few months.
     return (self.attachment.isVoiceMessage || self.attachment.filename.length < 1);
 }
 

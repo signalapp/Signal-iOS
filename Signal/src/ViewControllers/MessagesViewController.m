@@ -3108,6 +3108,10 @@ typedef enum : NSUInteger {
 
     DDLogInfo(@"startRecordingVoiceMemo");
 
+    // Cancel any ongoing audio playback.
+    [self.audioAttachmentPlayer stop];
+    self.audioAttachmentPlayer = nil;
+
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
     NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];

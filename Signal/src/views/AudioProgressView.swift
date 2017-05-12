@@ -45,7 +45,7 @@ import UIKit
         }
     }
 
-    @available(*, unavailable, message:"use delegate: constructor instead.")
+    @available(*, unavailable, message:"use init() constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         self.horizontalBarLayer = CAShapeLayer()
         self.progressLayer = CAShapeLayer()
