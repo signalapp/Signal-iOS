@@ -340,6 +340,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.audioDurationSeconds == 0.f) {
         NSError *error;
         AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.fileURL error:&error];
+        if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
+            && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+            // Ignore "invalid audio file" errors.
+            return;
+        }
         OWSAssert(!error);
         if (!error) {
             self.audioDurationSeconds = (CGFloat)[audioPlayer duration];

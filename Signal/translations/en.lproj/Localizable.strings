@@ -580,6 +580,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "To invite your contacts, you need to allow Signal access to your contacts in the Settings app.";
 
