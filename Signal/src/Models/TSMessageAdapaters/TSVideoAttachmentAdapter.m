@@ -12,6 +12,7 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
+#import "UIDevice+TSHardwareVersion.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
@@ -355,6 +356,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)mediaViewDisplaySize {
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
+        if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
+            size.width *= 1.2;
+        }
         size.height = (CGFloat)ceil(self.audioBubbleHeight + self.vMargin * 2);
     } else if ([self isVideo]) {
         return [self ows_adjustBubbleSize:size forImage:self.image];
