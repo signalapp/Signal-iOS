@@ -6,10 +6,12 @@
 #import "ContactsManagerProtocol.h"
 #import "FunctionalUtil.h"
 #import "Util.h"
+#import <libPhoneNumber-iOS/NBPhoneNumber.h>
 
 @interface PhoneNumberUtil ()
 
 @property (nonatomic, readonly) NSMutableDictionary *countryCodesFromCallingCodeCache;
+@property (nonatomic, readonly) NSCache *parsedPhoneNumberCache;
 
 @end
 
@@ -32,11 +34,50 @@
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
         _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
+        _parsedPhoneNumberCache = [NSCache new];
 
         OWSSingletonAssert();
     }
 
     return self;
+}
+
+- (nullable NBPhoneNumber *)parse:(NSString *)numberToParse
+                    defaultRegion:(NSString *)defaultRegion
+                            error:(NSError **)error
+{
+    NSString *hashKey = [NSString stringWithFormat:@"numberToParse:%@defaultRegion:%@", numberToParse, defaultRegion];
+
+    NBPhoneNumber *result = [self.parsedPhoneNumberCache objectForKey:hashKey];
+
+    if (!result) {
+        result = [self.nbPhoneNumberUtil parse:numberToParse defaultRegion:defaultRegion error:error];
+        if (error && *error) {
+            OWSAssert(!result);
+            return nil;
+        }
+
+        OWSAssert(result);
+
+        if (result) {
+            [self.parsedPhoneNumberCache setObject:result forKey:hashKey];
+        } else {
+            [self.parsedPhoneNumberCache setObject:[NSNull null] forKey:hashKey];
+        }
+    }
+
+    if ([result class] == [NSNull class]) {
+        return nil;
+    } else {
+        return result;
+    }
+}
+
+- (NSString *)format:(NBPhoneNumber *)phoneNumber
+        numberFormat:(NBEPhoneNumberFormat)numberFormat
+               error:(NSError **)error
+{
+    return [self.nbPhoneNumberUtil format:phoneNumber numberFormat:numberFormat error:error];
 }
 
 // country code -> country name
