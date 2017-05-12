@@ -125,7 +125,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Documento non supportato";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Messaggio Vocale";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Gli utenti bloccati non potranno chiamarti o inviarti messaggi.";
@@ -257,10 +257,10 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blocca questo utente";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info Contatto";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info Gruppo";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenzioso";
@@ -590,7 +590,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Chiamata incompleta da";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Audio file non valido.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Per invitare i tuoi contatti, devi abilitare l'accesso dei tuoi contatti a Signal nelle impostazioni di sistema.";
