@@ -516,6 +516,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     dispatch_async([OWSDispatch attachmentsQueue], ^{
         TSAttachmentStream *attachmentStream =
             [[TSAttachmentStream alloc] initWithContentType:contentType filename:filename];
+        if (message.isVoiceMessage) {
+            attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+        }
 
         NSError *error;
         [attachmentStream writeData:dataCopy error:&error];
