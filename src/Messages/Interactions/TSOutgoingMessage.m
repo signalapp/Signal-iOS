@@ -22,6 +22,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 @property (atomic) NSString *customMessage;
 @property (atomic) NSString *mostRecentFailureText;
 @property (atomic) BOOL wasDelivered;
+@property (atomic) NSString *singleGroupRecipient;
 
 // For outgoing, non-legacy group messages sent from this client, this
 // contains the list of recipients to whom the message has been sent.
@@ -319,6 +320,18 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                 [message setWasDelivered:YES];
                                             }];
     }];
+}
+
+- (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(singleGroupRecipient.length > 0);
+
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setSingleGroupRecipient:singleGroupRecipient];
+                                        }];
 }
 
 #pragma mark - Sent Recipients

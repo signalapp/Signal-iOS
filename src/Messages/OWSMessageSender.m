@@ -735,11 +735,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
     for (SignalRecipient *recipient in recipients) {
+        NSString *recipientId = recipient.recipientId;
+
         // We don't need to send the message to ourselves...
-        if ([recipient.uniqueId isEqualToString:[TSStorageManager localNumber]]) {
+        if ([recipientId isEqualToString:[TSStorageManager localNumber]]) {
             continue;
         }
-        if ([message wasSentToRecipient:recipient.uniqueId]) {
+        // We don't need to sent the message to all group members if
+        // it has a "single group recipient".
+        if (message.singleGroupRecipient && ![message.singleGroupRecipient isEqualToString:recipientId]) {
+            continue;
+        }
+        if ([message wasSentToRecipient:recipientId]) {
             // Skip recipients we have already sent this message to (on an
             // earlier retry, perhaps).
             DDLogInfo(@"%@ Skipping group message recipient; already sent: %@", self.tag, recipient.uniqueId);

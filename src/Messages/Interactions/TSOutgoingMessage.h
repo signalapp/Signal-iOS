@@ -94,6 +94,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 
+// If set, this group message should only be sent to a single recipient.
+@property (atomic, readonly) NSString *singleGroupRecipient;
+
 /**
  * Whether the message should be serialized as a modern aka Content, or the old style legacy message.
  * Sync and Call messsages must be sent as Content, but other old style DataMessage payloads should be
@@ -168,6 +171,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasDelivered;
 - (void)updateWithWasSentAndDelivered;
+- (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Sent Recipients
 
