@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioBubbleHeight
 {
-    return 45.f;
+    return 50.f;
 }
 
 - (CGFloat)iconSize
