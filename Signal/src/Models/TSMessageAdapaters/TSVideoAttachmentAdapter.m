@@ -128,12 +128,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIconToPlay {
     [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]
-             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.15f])];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
 }
 
 - (void)setAudioIconToPause {
     [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]
-             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9494B2] : [self audioColorWithOpacity:0.1f])];
+             iconColor:(self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
 }
 
 - (void)setIsAudioPlaying:(BOOL)isAudioPlaying
@@ -157,6 +157,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - JSQMessageMediaData protocol
 
 - (CGFloat)audioIconHMargin
+{
+    return 12.f;
+}
+
+- (CGFloat)audioIconHSpacing
 {
     return 10.f;
 }
@@ -269,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kBubbleTailWidth = 6.f;
     CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
         self.audioIconVMargin,
-        viewSize.width - kBubbleTailWidth - 15,
+        viewSize.width - kBubbleTailWidth - self.audioIconHMargin,
         viewSize.height - self.audioIconVMargin * 2);
 
     CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + self.audioIconHMargin),
@@ -280,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
     _audioPlayPauseButton.enabled = NO;
     [mediaView addSubview:_audioPlayPauseButton];
 
-    const CGFloat kLabelHSpacing = self.audioIconHMargin;
+    const CGFloat kLabelHSpacing = self.audioIconHSpacing;
     const CGFloat kLabelVSpacing = 2;
     NSString *topText = [[self.attachment.filename stringByDeletingPathExtension]
         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];

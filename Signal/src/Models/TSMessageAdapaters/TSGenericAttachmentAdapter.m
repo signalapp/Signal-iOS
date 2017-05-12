@@ -77,9 +77,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - JSQMessageMediaData protocol
 
+- (CGFloat)iconHMargin
+{
+    return 12.f;
+}
+
+- (CGFloat)iconHSpacing
+{
+    return 10.f;
+}
+
+- (CGFloat)iconVMargin
+{
+    return 12.f;
+}
+
 - (CGFloat)bubbleHeight
 {
-    return 45.f;
+    return self.iconSize + self.iconVMargin * 2;
 }
 
 - (CGFloat)iconSize
@@ -92,6 +107,21 @@ NS_ASSUME_NONNULL_BEGIN
     return 10.f;
 }
 
+- (UIColor *)bubbleBackgroundColor
+{
+    return self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+}
+
+- (UIColor *)textColor
+{
+    return (self.incoming ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor whiteColor]);
+}
+
+- (UIColor *)foregroundColorWithOpacity:(CGFloat)alpha
+{
+    return [self.textColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
+}
+
 - (UIView *)mediaView
 {
     if (_cachedMediaView == nil) {
@@ -100,25 +130,29 @@ NS_ASSUME_NONNULL_BEGIN
 
         _cachedMediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
 
-        _cachedMediaView.backgroundColor
-            = self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+        _cachedMediaView.backgroundColor = self.bubbleBackgroundColor;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:_cachedMediaView
                                                                     isOutgoing:!self.incoming];
 
         const CGFloat kBubbleTailWidth = 6.f;
         CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
             self.vMargin,
-            viewSize.width - kBubbleTailWidth - 15,
+            viewSize.width - kBubbleTailWidth - self.iconHMargin,
             viewSize.height - self.vMargin * 2);
 
-        UIImage *image = [UIImage imageNamed:(self.incoming ? @"file-black-40" : @"file-white-40")];
+        UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
         OWSAssert(image);
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + 10.f),
+        UIImageView *imageView = [UIImageView new];
+        CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + self.iconHMargin),
             round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
             self.iconSize,
             self.iconSize);
         imageView.frame = iconFrame;
+        imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        imageView.tintColor = self.bubbleBackgroundColor;
+        imageView.backgroundColor
+            = (self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
+        imageView.layer.cornerRadius = MIN(imageView.bounds.size.width, imageView.bounds.size.height) * 0.5f;
         [_cachedMediaView addSubview:imageView];
 
         NSString *fileExtension = self.attachment.filePath.pathExtension;
@@ -132,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         UILabel *fileTypeLabel = [UILabel new];
         fileTypeLabel.text = fileExtension.uppercaseString;
-        fileTypeLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+        fileTypeLabel.textColor = imageView.backgroundColor;
         fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
         fileTypeLabel.adjustsFontSizeToFitWidth = YES;
@@ -140,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGRect fileTypeLabelFrame = CGRectZero;
         fileTypeLabelFrame.size = [fileTypeLabel sizeThatFits:CGSizeZero];
         // This dimension depends on the space within the icon boundaries.
-        fileTypeLabelFrame.size.width = 20.f;
+        fileTypeLabelFrame.size.width = 15.f;
         // Center on icon.
         fileTypeLabelFrame.origin.x
             = round(iconFrame.origin.x + (iconFrame.size.width - fileTypeLabelFrame.size.width) * 0.5f);
@@ -149,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
         fileTypeLabel.frame = fileTypeLabelFrame;
         [_cachedMediaView addSubview:fileTypeLabel];
 
-        const CGFloat kLabelHSpacing = 3;
+        const CGFloat kLabelHSpacing = self.iconHSpacing;
         const CGFloat kLabelVSpacing = 2;
         NSString *topText =
             [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -207,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     CGSize size = [super mediaViewDisplaySize];
     size.width = [self ows_maxMediaBubbleWidth:size];
-    size.height = ceil(self.bubbleHeight + self.vMargin * 2);
+    size.height = (CGFloat)ceil(self.bubbleHeight);
     return size;
 }
 
