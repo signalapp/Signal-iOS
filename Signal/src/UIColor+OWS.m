@@ -133,18 +133,19 @@
     BOOL result =
 #endif
         [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
-    OWSAssert(result)
+    OWSAssert(result);
 
-        CGFloat r1,
-        g1, b1, a1;
+    CGFloat r1, g1, b1, a1;
 #ifdef DEBUG
     result =
 #endif
         [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-    OWSAssert(result) return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
-                                             green:CGFloatLerp(g0, g1, alpha)
-                                              blue:CGFloatLerp(b0, b1, alpha)
-                                             alpha:CGFloatLerp(a0, a1, alpha)];
+    OWSAssert(result);
+
+    return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
+                           green:CGFloatLerp(g0, g1, alpha)
+                            blue:CGFloatLerp(b0, b1, alpha)
+                           alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
 @end
