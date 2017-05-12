@@ -158,6 +158,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioIconHMargin
 {
+    return 12.f;
+}
+
+- (CGFloat)audioIconHSpacing
+{
     return 10.f;
 }
 
@@ -269,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kBubbleTailWidth = 6.f;
     CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
         self.audioIconVMargin,
-        viewSize.width - kBubbleTailWidth - 15,
+        viewSize.width - kBubbleTailWidth - self.audioIconHMargin,
         viewSize.height - self.audioIconVMargin * 2);
 
     CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + self.audioIconHMargin),
@@ -280,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
     _audioPlayPauseButton.enabled = NO;
     [mediaView addSubview:_audioPlayPauseButton];
 
-    const CGFloat kLabelHSpacing = self.audioIconHMargin;
+    const CGFloat kLabelHSpacing = self.audioIconHSpacing;
     const CGFloat kLabelVSpacing = 2;
     NSString *topText = [[self.attachment.filename stringByDeletingPathExtension]
         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -363,6 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
         size.width = [self ows_maxMediaBubbleWidth:size];
+        size.height = (CGFloat)ceil(self.audioBubbleHeight);
     } else if ([self isVideo]) {
         return [self ows_adjustBubbleSize:size forImage:self.image];
     }
