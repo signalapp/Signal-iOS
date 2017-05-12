@@ -14,6 +14,8 @@ import ContactsUI
 class SystemContactsFetcher: NSObject {
 
     private let TAG = "[SystemContactsFetcher]"
+    var lastContactUpdateHash: Int?
+    var lastDelegateNotificationDate: Date?
 
     public weak var delegate: SystemContactsFetcherDelegate?
 
@@ -108,7 +110,7 @@ class SystemContactsFetcher: NSObject {
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
 
-        DispatchQueue.global().async {
+        DispatchQueue.default.async {
             var systemContacts = [CNContact]()
             do {
                 let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
@@ -125,7 +127,46 @@ class SystemContactsFetcher: NSObject {
             }
 
             let contacts = systemContacts.map { Contact(systemContact: $0) }
+            let contactsHash  = HashableArray(contacts).hashValue
+
             DispatchQueue.main.async {
+                var shouldNotifyDelegate = false
+
+                if self.lastContactUpdateHash != contactsHash {
+                    Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
+                    shouldNotifyDelegate = true
+                } else {
+
+                    // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
+                    if let lastDelegateNotificationDate = self.lastDelegateNotificationDate {
+                        let kDebounceInterval = TimeInterval(12 * 60 * 60)
+
+                        let expiresAtDate = Date(timeInterval: kDebounceInterval, since:lastDelegateNotificationDate)
+                        if  Date() > expiresAtDate {
+                            Logger.info("\(self.TAG) debounce interval expired at: \(expiresAtDate)")
+                            shouldNotifyDelegate = true
+                        } else {
+                            Logger.info("\(self.TAG) ignoring since debounce interval hasn't expired")
+                        }
+                    } else {
+                        Logger.info("\(self.TAG) first contact fetch. contactsHash: \(contactsHash)")
+                        shouldNotifyDelegate = true
+                    }
+                }
+
+                guard shouldNotifyDelegate else {
+                    Logger.info("\(self.TAG) no reason to notify delegate.")
+
+                    completion?(nil)
+
+                    return
+                }
+
+                Logger.debug("\(self.TAG) Notifying delegate that system contacts did change. hash:\(contactsHash)")
+
+                self.lastDelegateNotificationDate = Date()
+                self.lastContactUpdateHash = contactsHash
+
                 self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
                 completion?(nil)
             }
@@ -144,4 +185,23 @@ class SystemContactsFetcher: NSObject {
         updateContacts(completion: nil)
     }
 
+}
+
+struct HashableArray<Element: Hashable>: Hashable {
+    var elements: [Element]
+    init(_ elements: [Element]) {
+        self.elements = elements
+    }
+
+    var hashValue: Int {
+        // random generated 32bit number
+        let base = 224712574
+        return elements.reduce(base) { (result, element) -> Int in
+            return result ^ element.hashValue
+        }
+    }
+
+    static func == (lhs: HashableArray, rhs: HashableArray) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
 }
