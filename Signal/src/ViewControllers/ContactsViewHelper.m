@@ -26,25 +26,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
+@property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
+
 @end
 
 #pragma mark -
 
 @implementation ContactsViewHelper
 
-- (instancetype)init
+- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
+    OWSAssert(delegate);
+    _delegate = delegate;
+
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
 
+    // We don't want to notify the delegate in the `updateContacts`.
+    self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
+    self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
     [self observeNotifications];
 
@@ -97,7 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
 {
     OWSAssert([NSThread isMainThread]);
-
 
     if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
         [self isCurrentUser:signalAccount]) {
@@ -154,7 +161,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.signalAccounts = [signalAccounts copy];
     self.nonSignalContacts = nil;
 
-    [self.delegate contactsViewHelperDidUpdateContacts];
+    // Don't fire delegate "change" events during initialization.
+    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
+        [self.delegate contactsViewHelperDidUpdateContacts];
+    }
 }
 
 - (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerm:(NSString *)searchTerm

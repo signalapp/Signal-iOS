@@ -33,8 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");

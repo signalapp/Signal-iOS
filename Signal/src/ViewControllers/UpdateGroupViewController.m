@@ -82,8 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _messageSender = [Environment getCurrent].messageSender;
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _groupViewHelper = [GroupViewHelper new];
     _groupViewHelper.delegate = self;
 

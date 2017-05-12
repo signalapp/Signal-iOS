@@ -53,8 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-    _contactsViewHelper = [ContactsViewHelper new];
-    _contactsViewHelper.delegate = self;
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
