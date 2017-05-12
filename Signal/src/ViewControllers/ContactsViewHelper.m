@@ -44,18 +44,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(delegate);
     _delegate = delegate;
 
-    self.shouldNotifyDelegateOfUpdatedContacts = YES;
-
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
 
+    // We don't want to notify the delegate in the `updateContacts`.
+    self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
+    self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
     [self observeNotifications];
-
-    self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
     return self;
 }
