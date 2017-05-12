@@ -299,7 +299,12 @@ NS_ASSUME_NONNULL_BEGIN
                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                 }
 
-                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
+                if (signalAccount) {
+                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                } else {
+                    [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                }
 
                 return cell;
             }
@@ -330,6 +335,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Contacts, possibly filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
+        if ([searchPhoneNumbers containsObject:signalAccount.recipientId]) {
+            // Don't show a contact if they already appear in the "search phone numbers"
+            // results.
+            continue;
+        }
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
