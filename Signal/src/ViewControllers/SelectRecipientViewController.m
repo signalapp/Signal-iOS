@@ -64,6 +64,10 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [self createViews];
 
     [self populateDefaultCountryNameAndCode];
+
+    if (self.delegate.shouldHideContacts) {
+        self.tableViewController.tableView.scrollEnabled = NO;
+    }
 }
 
 - (void)viewDidLoad
