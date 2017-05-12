@@ -363,7 +363,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
         size.width = [self ows_maxMediaBubbleWidth:size];
-        size.height = (CGFloat)ceil(self.audioBubbleHeight);
     } else if ([self isVideo]) {
         return [self ows_adjustBubbleSize:size forImage:self.image];
     }
