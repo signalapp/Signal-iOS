@@ -110,7 +110,7 @@ class SystemContactsFetcher: NSObject {
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
 
-        DispatchQueue.default.async {
+        DispatchQueue.global().async {
             var systemContacts = [CNContact]()
             do {
                 let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
