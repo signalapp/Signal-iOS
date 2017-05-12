@@ -106,7 +106,16 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     } else if ([MIMETypeUtil isVideo:self.contentType]) {
         return [NSString stringWithFormat:@"📽 %@", attachmentString];
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
-        return [NSString stringWithFormat:@"📻 %@", attachmentString];
+
+        // a missing filename is the legacy way to determin if an audio attachment is a voice note vs. other arbitrary
+        // audio attachments.
+        if (self.isVoiceMessage || !self.filename || self.filename.length == 0) {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
+                @"Short text label for a voice message attachment, used for thread preview and on lockscreen");
+            return [NSString stringWithFormat:@"🎤 %@", attachmentString];
+        } else {
+            return [NSString stringWithFormat:@"📻 %@", attachmentString];
+        }
     } else if ([MIMETypeUtil isAnimated:self.contentType]) {
         return [NSString stringWithFormat:@"🎡 %@", attachmentString];
     }
