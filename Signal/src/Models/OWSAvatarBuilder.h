@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSAvatarBuilder : NSObject
 
 + (UIImage *)buildImageForThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
++ (UIImage *)buildImageForThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager diameter:(CGFloat)diameter;
 
 - (nullable UIImage *)buildSavedImage;
 - (UIImage *)buildDefaultImage;
