@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -52,14 +53,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 - (void)configureProgrammatically
 {
     const CGFloat kAvatarSize = 40.f;
-    _avatarView = [UIImageView new];
-    _avatarView.image = [UIImage imageNamed:@"empty-group-avatar"];
-    _avatarView.contentMode = UIViewContentModeScaleToFill;
-    // applyRoundedBorderToImageView requires the avatar to have
-    // the correct size.
-    _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
-    _avatarView.layer.minificationFilter = kCAFilterTrilinear;
-    _avatarView.layer.magnificationFilter = kCAFilterTrilinear;
+    _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
@@ -145,12 +139,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    [UIUtil applyRoundedBorderToImageView:self.avatarView];
 }
 
 - (void)prepareForReuse
