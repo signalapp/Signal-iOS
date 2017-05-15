@@ -98,11 +98,11 @@ import AVFoundation
         if call.hasLocalVideo {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
-                            options: [.defaultToSpeaker])
+                            options: .defaultToSpeaker)
         } else if call.isSpeakerphoneEnabled {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: [.defaultToSpeaker])
+                            options: .defaultToSpeaker)
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
