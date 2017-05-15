@@ -70,12 +70,7 @@ class ReminderView: UIView {
         label.textColor = UIColor.black.withAlphaComponent(0.9)
 
         // Icon
-
-        // TODO proper "push" image rather than this hack.
-        let sourceIconImage = #imageLiteral(resourceName: "NavBarBack")
-        let iconImage = UIImage(cgImage:sourceIconImage.cgImage!,
-                                  scale: sourceIconImage.scale,
-                                  orientation: .upMirrored).withRenderingMode(.alwaysTemplate)
+        let iconImage = #imageLiteral(resourceName: "system_disclosure_indicator").withRenderingMode(.alwaysTemplate)
         let iconView = UIImageView(image: iconImage)
         iconView.contentMode = .scaleAspectFit
         iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
