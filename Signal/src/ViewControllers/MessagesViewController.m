@@ -3108,13 +3108,20 @@ typedef enum : NSUInteger {
 - (void)requestRecordingVoiceMemo
 {
     OWSAssert([NSThread isMainThread]);
+
+    __weak typeof(self) weakSelf = self;
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+
             if (granted) {
-                [self startRecordingVoiceMemo];
+                [strongSelf startRecordingVoiceMemo];
             } else {
                 DDLogInfo(@"%@ we do not have recording permission.", self.tag);
-                [self cancelVoiceMemo];
+                [strongSelf cancelVoiceMemo];
                 [OWSAlerts showNoMicrophonePermissionAlert];
             }
         });
