@@ -105,8 +105,7 @@ import AVFoundation
                             options: .defaultToSpeaker)
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: [.allowBluetooth])
+                            mode: AVAudioSessionModeVoiceChat)
         }
     }
 
@@ -151,7 +150,7 @@ import AVFoundation
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: [.mixWithOthers, .allowBluetooth])
+                            options: .mixWithOthers)
         }
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
@@ -300,8 +299,6 @@ import AVFoundation
     private func setAudioSession(category: String,
                                  mode: String? = nil,
                                  options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
-        assert(Thread.isMainThread)
-
         do {
             if #available(iOS 10.0, *), let mode = mode {
                 try AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
