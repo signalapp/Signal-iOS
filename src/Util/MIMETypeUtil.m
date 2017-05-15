@@ -267,14 +267,14 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType
-                                    filename:(nullable NSString *)filename
+                              sourceFilename:(nullable NSString *)sourceFilename
                                     inFolder:(NSString *)folder
 {
     NSString *kDefaultFileExtension = @"bin";
 
-    if (filename.length > 0) {
+    if (sourceFilename.length > 0) {
         NSString *normalizedFilename =
-            [filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            [sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         // Ensure that the filename is a valid filesystem name,
         // replacing invalid characters with an underscore.
         for (NSCharacterSet *invalidCharacterSet in @[

@@ -34,7 +34,7 @@ extern NSString *const OWSMimeTypeUnknownForTests;
 // filename is optional and should not be trusted.
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType
-                                    filename:(nullable NSString *)filename
+                              sourceFilename:(nullable NSString *)sourceFilename
                                     inFolder:(NSString *)folder;
 
 + (NSSet<NSString *> *)supportedVideoUTITypes;
