@@ -169,18 +169,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
                                        callingCodeForLocalNumber,
                                        sanitizedString],
                                       [self defaultRegionCode]);
-
-            // It's gratuitous to try all country codes associated with a given
-            // calling code, but it can't hurt and this isn't a performance
-            // hotspot.
-            NSArray *possibleLocalCountryCodes = [PhoneNumberUtil.sharedUtil
-                countryCodesFromCallingCode:[NSString stringWithFormat:@"+%@", callingCodeForLocalNumber]];
-            for (NSString *countryCode in possibleLocalCountryCodes) {
-                tryParsingWithCountryCode([NSString stringWithFormat:@"+%@%@",
-                                           callingCodeForLocalNumber,
-                                           sanitizedString],
-                                          countryCode);
-            }
         }
     }
     
