@@ -3105,6 +3105,22 @@ typedef enum : NSUInteger {
 
 #pragma mark - Audio
 
+- (void)requestRecordingVoiceMemo
+{
+    OWSAssert([NSThread isMainThread]);
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                [self startRecordingVoiceMemo];
+            } else {
+                DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+                [self cancelVoiceMemo];
+                [OWSAlerts showNoMicrophonePermissionAlert];
+            }
+        });
+    }];
+}
+
 - (void)startRecordingVoiceMemo
 {
     OWSAssert([NSThread isMainThread]);
@@ -3122,6 +3138,8 @@ typedef enum : NSUInteger {
 
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
+    OWSAssert(session.recordPermission == AVAudioSessionRecordPermissionGranted);
+
     NSError *error;
     [session setCategory:AVAudioSessionCategoryRecord error:&error];
     if (error) {
@@ -3160,13 +3178,6 @@ typedef enum : NSUInteger {
         DDLogError(@"%@ audioRecorder couldn't record.", self.tag);
         [self cancelVoiceMemo];
         OWSAssert(0);
-        return;
-    }
-
-    if (session.recordPermission != AVAudioSessionRecordPermissionGranted) {
-        DDLogInfo(@"%@ we do not have recording permission.", self.tag);
-        [self cancelVoiceMemo];
-        [OWSAlerts showNoMicrophonePermissionAlert];
         return;
     }
 }
@@ -3557,7 +3568,7 @@ typedef enum : NSUInteger {
 
     [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    [self startRecordingVoiceMemo];
+    [self requestRecordingVoiceMemo];
 }
 
 - (void)voiceMemoGestureDidEnd
