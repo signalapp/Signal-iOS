@@ -254,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
     // they have no file name.
     //
     // TODO: Remove this after the flag has been in production for a few months.
-    return (self.attachment.isVoiceMessage || self.attachment.filename.length < 1);
+    return (self.attachment.isVoiceMessage || self.attachment.sourceFilename.length < 1);
 }
 
 - (UIView *)createAudioMediaView
@@ -287,7 +287,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     const CGFloat kLabelHSpacing = self.audioIconHSpacing;
     const CGFloat kLabelVSpacing = 2;
-    NSString *topText = [[self.attachment.filename stringByDeletingPathExtension]
+    NSString *filename = self.attachment.sourceFilename;
+    if (!filename) {
+        filename = [self.attachment localFilePathWithoutTransaction];
+    }
+    NSString *topText = [[filename stringByDeletingPathExtension]
         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].uppercaseString;

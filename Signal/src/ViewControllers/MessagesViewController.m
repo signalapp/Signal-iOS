@@ -3414,7 +3414,7 @@ typedef enum : NSUInteger {
     if (newGroupModel.groupImage) {
         [self.messageSender sendAttachmentData:UIImagePNGRepresentation(newGroupModel.groupImage)
             contentType:OWSMimeTypeImagePng
-            filename:nil
+            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);

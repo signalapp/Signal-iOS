@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
     [messageSender sendAttachmentData:attachment.data
         contentType:attachment.mimeType
-        filename:attachment.filenameOrDefault
+        sourceFilename:attachment.filenameOrDefault
         inMessage:message
         success:^{
             DDLogDebug(@"%@ Successfully sent message attachment.", self.tag);

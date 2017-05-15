@@ -155,7 +155,11 @@ NS_ASSUME_NONNULL_BEGIN
         imageView.layer.cornerRadius = MIN(imageView.bounds.size.width, imageView.bounds.size.height) * 0.5f;
         [_cachedMediaView addSubview:imageView];
 
-        NSString *fileExtension = self.attachment.filePath.pathExtension;
+        NSString *filename = self.attachment.sourceFilename;
+        if (!filename) {
+            filename = [self.attachment localFilePathWithoutTransaction];
+        }
+        NSString *fileExtension = filename.pathExtension;
         if (fileExtension.length < 1) {
             [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
         }
@@ -186,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
         const CGFloat kLabelHSpacing = self.iconHSpacing;
         const CGFloat kLabelVSpacing = 2;
         NSString *topText =
-            [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            [self.attachment.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         if (topText.length < 1) {
             topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].uppercaseString;
         }
@@ -203,7 +207,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSError *error;
         unsigned long long fileSize =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:self.attachment.filePath error:&error].fileSize;
+            [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachment localFilePathWithoutTransaction]
+                                                             error:&error]
+                .fileSize;
         OWSAssert(!error);
         NSString *bottomText = [ViewControllerUtils formatFileSize:fileSize];
         UILabel *bottomLabel = [UILabel new];
