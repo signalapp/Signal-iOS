@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSAttachmentStream
 
-- (instancetype)initWithContentType:(NSString *)contentType filename:(NSString *)filename
+- (instancetype)initWithContentType:(NSString *)contentType sourceFilename:(NSString *)sourceFilename
 {
-    self = [super initWithContentType:contentType filename:filename];
+    self = [super initWithContentType:contentType sourceFilename:sourceFilename];
     if (!self) {
         return self;
     }
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [MIMETypeUtil filePathForAttachment:self.uniqueId
                                     ofMIMEType:self.contentType
-                                      filename:self.filename
+                                      filename:self.sourceFilename
                                       inFolder:[[self class] attachmentsFolder]];
 }
 

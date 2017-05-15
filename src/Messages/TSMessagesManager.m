@@ -758,7 +758,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (gThread.groupModel.groupImage) {
         [self.messageSender sendAttachmentData:UIImagePNGRepresentation(gThread.groupModel.groupImage)
             contentType:OWSMimeTypeImagePng
-            filename:nil
+            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);

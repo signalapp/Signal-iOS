@@ -92,7 +92,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                                                               digest:digest
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay
-                                                                            filename:attachmentProto.fileName
+                                                                      sourceFilename:attachmentProto.fileName
                                                                       attachmentType:attachmentType];
 
         [attachmentIds addObject:pointer.uniqueId];
