@@ -170,6 +170,16 @@ class SignalAttachment: NSObject {
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
     var mimeType: String {
+        if isVoiceMessage {
+            // Legacy iOS clients don't handle "audio/mp4" files correctly;
+            // they are written to disk as .mp4 instead of .m4a which breaks
+            // playback.  So we send voice messages as "audio/aac" to work
+            // around this.
+            //
+            // TODO: Remove this Nov. 2016 or after.
+            return "audio/aac"
+        }
+
         if let filename = filename {
             let fileExtension = (filename as NSString).pathExtension
             if fileExtension.characters.count > 0 {
@@ -275,7 +285,7 @@ class SignalAttachment: NSObject {
             kUTTypePlainText as String,
             kUTTypeUTF8PlainText as String,
             kUTTypeUTF16PlainText as String,
-            kUTTypeURL as String,
+            kUTTypeURL as String
         ]
     }
 
