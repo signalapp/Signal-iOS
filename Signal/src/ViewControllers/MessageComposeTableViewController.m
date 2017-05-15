@@ -396,7 +396,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!hasSearchText && helper.signalAccounts.count < 1) {
         // No Contacts
 
-        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
+            && self.contactsViewHelper.contactsManager.hasFetchedSignalAccountsAtLeastOnce) {
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
                 cell.textLabel.text = NSLocalizedString(
@@ -462,10 +463,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showContactAppropriateViews
 {
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
-        BOOL hasNoContacts = self.contactsViewHelper.signalAccounts.count < 1;
-        self.isNoContactsModeActive = (hasNoContacts && ![[Environment preferences] hasDeclinedNoContactsView]);
-        [self showContactsPermissionReminder:NO];
+        if (self.contactsViewHelper.contactsManager.hasFetchedSignalAccountsAtLeastOnce
+            && self.contactsViewHelper.signalAccounts.count < 1
+            && ![[Environment preferences] hasDeclinedNoContactsView]) {
+            self.isNoContactsModeActive = YES;
+        } else {
+            self.isNoContactsModeActive = NO;
+        }
 
+        [self showContactsPermissionReminder:NO];
         [self showSearchBar:YES];
     } else {
         // don't show "no signal contacts", show "no contact access"

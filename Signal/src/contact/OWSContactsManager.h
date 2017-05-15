@@ -27,6 +27,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
+// Useful to differentiate between having no signal accounts vs. haven't checked yet
+@property (atomic, readonly) BOOL hasFetchedSignalAccountsAtLeastOnce;
+
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 
 - (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
