@@ -3148,7 +3148,9 @@ typedef enum : NSUInteger {
     OWSAssert(session.recordPermission == AVAudioSessionRecordPermissionGranted);
 
     NSError *error;
-    [session setCategory:AVAudioSessionCategoryRecord error:&error];
+    [session setCategory:AVAudioSessionCategoryRecord
+             withOptions:AVAudioSessionCategoryOptionAllowBluetooth
+                   error:&error];
     if (error) {
         DDLogError(@"%@ Couldn't configure audio session: %@", self.tag, error);
         [self cancelVoiceMemo];
