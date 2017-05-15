@@ -694,6 +694,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    OWSAssert([NSThread isMainThread]);
+
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *sectionChanges = nil;
     NSArray *rowChanges     = nil;
@@ -769,7 +771,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.tableView endUpdates];
     [self checkIfEmptyView];
 }
-
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
 }
