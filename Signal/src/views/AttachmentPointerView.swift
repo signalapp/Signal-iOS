@@ -26,7 +26,7 @@ class AttachmentPointerView: UIView {
         self.isIncoming = isIncoming
         self.attachmentPointer = attachmentPointer
 
-        let attachmentPointerFilename = attachmentPointer.filename
+        let attachmentPointerFilename = attachmentPointer.sourceFilename
         if let filename = attachmentPointerFilename, !filename.isEmpty {
           self.filename = filename
         } else {
