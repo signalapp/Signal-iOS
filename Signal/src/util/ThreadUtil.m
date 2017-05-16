@@ -188,7 +188,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSMutableArray *indicators = [NSMutableArray new];
         __block TSMessage *firstUnreadMessage = nil;
-        // TODO: Will this approach be prohibitively expensive?
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
