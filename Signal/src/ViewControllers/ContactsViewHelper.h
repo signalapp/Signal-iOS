@@ -40,6 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
+// Useful to differentiate between having no signal accounts vs. haven't checked yet
+@property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
+
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
 - (instancetype)init NS_UNAVAILABLE;

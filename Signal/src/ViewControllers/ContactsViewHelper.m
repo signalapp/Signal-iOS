@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
+@property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 
 @end
 
@@ -164,6 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Don't fire delegate "change" events during initialization.
     if (!self.shouldNotifyDelegateOfUpdatedContacts) {
         [self.delegate contactsViewHelperDidUpdateContacts];
+        self.hasUpdatedContactsAtLeastOnce = YES;
     }
 }
 

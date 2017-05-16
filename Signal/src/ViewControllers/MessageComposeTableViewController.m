@@ -397,7 +397,7 @@ NS_ASSUME_NONNULL_BEGIN
         // No Contacts
 
         if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
-            && self.contactsViewHelper.contactsManager.hasFetchedSignalAccountsAtLeastOnce) {
+            && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
                 cell.textLabel.text = NSLocalizedString(
@@ -463,7 +463,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showContactAppropriateViews
 {
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
-        if (self.contactsViewHelper.contactsManager.hasFetchedSignalAccountsAtLeastOnce
+        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce
             && self.contactsViewHelper.signalAccounts.count < 1
             && ![[Environment preferences] hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;

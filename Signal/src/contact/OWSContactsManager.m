@@ -25,7 +25,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 @property (atomic) NSArray<Contact *> *allContacts;
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
-@property (atomic) BOOL hasFetchedSignalAccountsAtLeastOnce;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @end
@@ -184,7 +183,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
         dispatch_async(dispatch_get_main_queue(), ^{
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
-            self.hasFetchedSignalAccountsAtLeastOnce = YES;
             [[NSNotificationCenter defaultCenter]
                 postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
                               object:nil];
