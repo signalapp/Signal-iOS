@@ -5,6 +5,7 @@
 #import "ThreadUtil.h"
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import "TSUnreadIndicatorInteraction.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -175,6 +176,58 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          thread:contactThread
                                                                       contactId:contactThread.contactIdentifier];
         [errorMessage saveWithTransaction:transaction];
+    }];
+}
+
++ (void)createUnreadMessagesIndicatorIfNecessary:(TSThread *)thread storageManager:(TSStorageManager *)storageManager
+{
+    OWSAssert(thread);
+    OWSAssert(storageManager);
+
+    [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+
+        NSMutableArray *indicators = [NSMutableArray new];
+        __block TSMessage *firstUnreadMessage = nil;
+        // TODO: Will this approach be prohibitively expensive?
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                              [indicators addObject:object];
+                          } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
+                              TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
+                              if (!incomingMessage.wasRead) {
+                                  if (!firstUnreadMessage) {
+                                      firstUnreadMessage = incomingMessage;
+                                  } else {
+                                      OWSAssert([[firstUnreadMessage receiptDateForSorting]
+                                                    compare:[incomingMessage receiptDateForSorting]]
+                                          == NSOrderedAscending);
+                                  }
+                              }
+                          }
+                      }];
+
+        for (TSUnreadIndicatorInteraction *indicator in indicators) {
+            [indicator removeWithTransaction:transaction];
+        }
+
+        BOOL shouldHaveIndicator = firstUnreadMessage != nil;
+        if (!shouldHaveIndicator) {
+            return;
+        }
+
+        DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction", self.tag);
+
+        // We want the block offer to appear just before the first unread incoming
+        // message in the conversation timeline.
+        uint64_t indicatorTimestamp = firstUnreadMessage.timestamp - 1;
+
+        TSUnreadIndicatorInteraction *indicator =
+            [[TSUnreadIndicatorInteraction alloc] initWithTimestamp:indicatorTimestamp thread:thread];
+        [indicator saveWithTransaction:transaction];
     }];
 }
 
