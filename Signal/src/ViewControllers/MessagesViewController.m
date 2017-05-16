@@ -150,22 +150,24 @@ typedef enum : NSUInteger {
 
 - (void)setFrame:(CGRect)frame
 {
+    BOOL isNonEmpty = (self.width > 0.f && self.height > 0.f);
     BOOL didChangeSize = !CGSizeEqualToSize(frame.size, self.frame.size);
 
     [super setFrame:frame];
 
-    if (didChangeSize) {
+    if (didChangeSize && isNonEmpty) {
         [self.textViewPasteDelegate textViewDidChangeSize];
     }
 }
 
 - (void)setBounds:(CGRect)bounds
 {
+    BOOL isNonEmpty = (self.width > 0.f && self.height > 0.f);
     BOOL didChangeSize = !CGSizeEqualToSize(bounds.size, self.bounds.size);
 
     [super setBounds:bounds];
 
-    if (didChangeSize) {
+    if (didChangeSize && isNonEmpty) {
         [self.textViewPasteDelegate textViewDidChangeSize];
     }
 }
@@ -635,6 +637,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic) NSDate *lastMessageSentDate;
+@property (nonatomic) NSTimer *scrollToBottomTimer;
 
 @end
 
@@ -999,6 +1002,9 @@ typedef enum : NSUInteger {
 
 - (void)scrollToDefaultPosition
 {
+    [self.scrollToBottomTimer invalidate];
+    self.scrollToBottomTimer = nil;
+
     NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
     if (indexPath) {
         [self.collectionView scrollToItemAtIndexPath:indexPath
@@ -3067,7 +3073,7 @@ typedef enum : NSUInteger {
     if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
         return;
     }
-    
+
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
     // update is a new outgoing message AND we're already scrolled to
@@ -3663,10 +3669,23 @@ typedef enum : NSUInteger {
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self scrollToBottomAnimated:NO];
-        });
+        [self.scrollToBottomTimer invalidate];
+        self.scrollToBottomTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
+                                                                        target:self
+                                                                      selector:@selector(scrollToBottomImmediately)
+                                                                      userInfo:nil
+                                                                       repeats:NO];
     }
+}
+
+- (void)scrollToBottomImmediately
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.scrollToBottomTimer invalidate];
+    self.scrollToBottomTimer = nil;
+
+    [self scrollToBottomAnimated:NO];
 }
 
 #pragma mark - OWSMessagesToolbarContentDelegate
