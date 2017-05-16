@@ -42,8 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
                    forControlEvents:UIControlEventValueChanged];
 
     self.enableCensorshipCircumventionSwitch = [UISwitch new];
-    [self.enableCensorshipCircumventionSwitch
-        setOn:OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated];
     [self.enableCensorshipCircumventionSwitch addTarget:self
                                                  action:@selector(didToggleEnableCensorshipCircumventionSwitch:)
                                        forControlEvents:UIControlEventValueChanged];
@@ -183,6 +181,12 @@ NS_ASSUME_NONNULL_BEGIN
                    [TSSocketManager sharedManager].state != SocketManagerStateOpen
                    && weakSelf.reachability.isReachable));
         weakSelf.enableCensorshipCircumventionSwitch.enabled = shouldEnable;
+        if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
+            [weakSelf.enableCensorshipCircumventionSwitch setOn:YES];
+        } else {
+            [weakSelf.enableCensorshipCircumventionSwitch
+                setOn:OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated];
+        }
 
         cell.accessoryView = weakSelf.enableCensorshipCircumventionSwitch;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
