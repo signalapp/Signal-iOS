@@ -21,10 +21,10 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
             domain = self.censoredCountryCodes[countryCode];
         }
     }
-    
-    // Fronting should only be used for countries specified in censoredCountryCodes,
-    // all of which have a domain specified.
-    OWSAssert(domain);
+
+    // Fronting should only be auto-activated for countries specified in censoredCountryCodes,
+    // all of which have a domain specified.  However users can also manually enable
+    // censorship circumvention.
     if (!domain) {
         domain = @"google.com";
     }

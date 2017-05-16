@@ -54,6 +54,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     [self observeNotifications];
 
+    [self updateHasCensoredPhoneNumber];
     [self updateIsCensorshipCircumventionActive];
 
     OWSSingletonAssert();
