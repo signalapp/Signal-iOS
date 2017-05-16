@@ -98,6 +98,8 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
 
+- (void)textViewDidChangeSize;
+
 @end
 
 #pragma mark -
@@ -144,6 +146,28 @@ typedef enum : NSUInteger {
     }
 
     [super paste:sender];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL didChangeSize = !CGSizeEqualToSize(frame.size, self.frame.size);
+
+    [super setFrame:frame];
+
+    if (didChangeSize) {
+        [self.textViewPasteDelegate textViewDidChangeSize];
+    }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL didChangeSize = !CGSizeEqualToSize(bounds.size, self.bounds.size);
+
+    [super setBounds:bounds];
+
+    if (didChangeSize) {
+        [self.textViewPasteDelegate textViewDidChangeSize];
+    }
 }
 
 @end
@@ -782,6 +806,7 @@ typedef enum : NSUInteger {
 
     self.senderId          = ME_MESSAGE_IDENTIFIER;
     self.senderDisplayName = ME_MESSAGE_IDENTIFIER;
+    self.automaticallyScrollsToMostRecentMessage = NO;
 
     [self initializeToolbars];
 
@@ -935,14 +960,6 @@ typedef enum : NSUInteger {
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
     [self setNavigationTitle];
 
-    NSInteger numberOfMessages = (NSInteger)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    if (numberOfMessages > 0) {
-        NSIndexPath *lastCellIndexPath = [NSIndexPath indexPathForRow:numberOfMessages - 1 inSection:0];
-        [self.collectionView scrollToItemAtIndexPath:lastCellIndexPath
-                                    atScrollPosition:UICollectionViewScrollPositionBottom
-                                            animated:NO];
-    }
-
     // Other views might change these custom menu items, so we
     // need to set them every time we enter this view.
     SEL saveSelector = NSSelectorFromString(@"save:");
@@ -961,6 +978,35 @@ typedef enum : NSUInteger {
     [self resetContentAndLayout];
 
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+
+    [self scrollToDefaultPosition];
+    [self.collectionView.collectionViewLayout
+        invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+}
+
+- (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
+{
+    int numberOfMessages = (int)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    for (int i = 0; i < numberOfMessages; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
+        if (message.messageType == TSUnreadIndicatorAdapter) {
+            return indexPath;
+        }
+    }
+    return nil;
+}
+
+- (void)scrollToDefaultPosition
+{
+    NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
+    if (indexPath) {
+        [self.collectionView scrollToItemAtIndexPath:indexPath
+                                    atScrollPosition:UICollectionViewScrollPositionTop
+                                            animated:NO];
+    } else {
+        [self scrollToBottomAnimated:NO];
+    }
 }
 
 - (void)resetContentAndLayout
@@ -3022,11 +3068,7 @@ typedef enum : NSUInteger {
         return;
     }
     
-    const CGFloat kIsAtBottomTolerancePts = 5;
-    BOOL wasAtBottom = (self.collectionView.contentOffset.y +
-                        self.collectionView.bounds.size.height +
-                        kIsAtBottomTolerancePts >=
-                        self.collectionView.contentSize.height);
+    BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
     // update is a new outgoing message AND we're already scrolled to
     // the bottom of the conversation, skip the scroll animation.
@@ -3052,11 +3094,11 @@ typedef enum : NSUInteger {
               }
               case YapDatabaseViewChangeInsert: {
                   [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                  scrollToBottom = YES;
                   
                   TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
-                  if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                      shouldAnimateScrollToBottom = YES;
+                  if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                      scrollToBottom = YES;
+                      shouldAnimateScrollToBottom = NO;
                   }
                   break;
               }
@@ -3086,6 +3128,13 @@ typedef enum : NSUInteger {
               [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
           }
         }];
+}
+
+- (BOOL)isScrolledToBottom
+{
+    const CGFloat kIsAtBottomTolerancePts = 5;
+    return (self.collectionView.contentOffset.y + self.collectionView.bounds.size.height + kIsAtBottomTolerancePts
+        >= self.collectionView.contentSize.height);
 }
 
 #pragma mark - UICollectionView DataSource
@@ -3606,6 +3655,18 @@ typedef enum : NSUInteger {
     [self presentViewController:controller
                        animated:YES
                      completion:nil];
+}
+
+- (void)textViewDidChangeSize
+{
+    OWSAssert([NSThread isMainThread]);
+
+    BOOL wasAtBottom = [self isScrolledToBottom];
+    if (wasAtBottom) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self scrollToBottomAnimated:NO];
+        });
+    }
 }
 
 #pragma mark - OWSMessagesToolbarContentDelegate

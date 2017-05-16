@@ -1302,9 +1302,13 @@ NS_ASSUME_NONNULL_BEGIN
     if (counter < 1) {
         return;
     }
-    [ThreadUtil sendMessageWithText:[@(counter) description]
-                           inThread:thread
-                      messageSender:messageSender];
+    [ThreadUtil
+        sendMessageWithText:[[@(counter) description]
+                                stringByAppendingString:@" Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                                                        @"Suspendisse rutrum, nulla vitae pretium hendrerit, tellus "
+                                                        @"turpis pharetra libero, vitae sodales tortor ante vel sem."]
+                   inThread:thread
+              messageSender:messageSender];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) 1.f * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
                        [self sendTextMessage:counter - 1 thread:thread];
