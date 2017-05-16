@@ -250,8 +250,8 @@ typedef NS_OPTIONS(NSUInteger, YapDatabaseViewChangesBitMask) {
  *
  * [self.tableView endUpdates];
 **/
-@property (nonatomic, readonly) NSIndexPath *indexPath;
-@property (nonatomic, readonly) NSIndexPath *newIndexPath;
+@property (nonatomic, readonly, nullable) NSIndexPath *indexPath;
+@property (nonatomic, readonly, nullable) NSIndexPath *newIndexPath;
 
 /**
  * The "original" values represent the location of the changed item
