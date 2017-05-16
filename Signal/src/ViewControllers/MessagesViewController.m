@@ -42,6 +42,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
+#import "TSUnreadIndicatorInteraction.h"
 #import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
@@ -637,7 +638,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic) NSDate *lastMessageSentDate;
-@property (nonatomic) NSTimer *scrollToBottomTimer;
+@property (nonatomic) NSTimer *scrollLaterTimer;
 
 @end
 
@@ -982,9 +983,20 @@ typedef enum : NSUInteger {
 
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
 
-    [self scrollToDefaultPosition];
     [self.collectionView.collectionViewLayout
         invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+
+    [self.scrollLaterTimer invalidate];
+    self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
+                                                                 target:self
+                                                               selector:@selector(scrollToDefaultPosition)
+                                                               userInfo:nil
+                                                                repeats:NO];
+}
+
+- (void)clearUnreadMessagesIndicator
+{
+    [ThreadUtil clearUnreadMessagesIndicator:self.thread storageManager:self.storageManager];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1002,8 +1014,8 @@ typedef enum : NSUInteger {
 
 - (void)scrollToDefaultPosition
 {
-    [self.scrollToBottomTimer invalidate];
-    self.scrollToBottomTimer = nil;
+    [self.scrollLaterTimer invalidate];
+    self.scrollLaterTimer = nil;
 
     NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
     if (indexPath) {
@@ -1608,6 +1620,8 @@ typedef enum : NSUInteger {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
         self.lastMessageSentDate = [NSDate new];
+        [self clearUnreadMessagesIndicator];
+
         if (updateKeyboardState)
         {
             [self toggleDefaultKeyboard];
@@ -2366,6 +2380,8 @@ typedef enum : NSUInteger {
         self.page++;
     }
 
+    [self.scrollLaterTimer invalidate];
+    self.scrollLaterTimer = nil;
     NSInteger item = (NSInteger)[self scrollToItem];
 
     [self updateRangeOptionsForPage:self.page];
@@ -2418,6 +2434,8 @@ typedef enum : NSUInteger {
         invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     [self.collectionView reloadData];
 
+    [self.scrollLaterTimer invalidate];
+    self.scrollLaterTimer = nil;
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:offset inSection:0]
                                 atScrollPosition:UICollectionViewScrollPositionTop
                                         animated:NO];
@@ -2951,6 +2969,7 @@ typedef enum : NSUInteger {
         [attachment mimeType]);
     [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
     self.lastMessageSentDate = [NSDate new];
+    [self clearUnreadMessagesIndicator];
 }
 
 - (NSURL *)videoTempFolder {
@@ -3131,6 +3150,8 @@ typedef enum : NSUInteger {
               [self.collectionView reloadData];
           }
           if (scrollToBottom) {
+              [self.scrollLaterTimer invalidate];
+              self.scrollLaterTimer = nil;
               [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
           }
         }];
@@ -3669,12 +3690,12 @@ typedef enum : NSUInteger {
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
-        [self.scrollToBottomTimer invalidate];
-        self.scrollToBottomTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
-                                                                        target:self
-                                                                      selector:@selector(scrollToBottomImmediately)
-                                                                      userInfo:nil
-                                                                       repeats:NO];
+        [self.scrollLaterTimer invalidate];
+        self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
+                                                                     target:self
+                                                                   selector:@selector(scrollToBottomImmediately)
+                                                                   userInfo:nil
+                                                                    repeats:NO];
     }
 }
 
@@ -3682,8 +3703,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self.scrollToBottomTimer invalidate];
-    self.scrollToBottomTimer = nil;
+    [self.scrollLaterTimer invalidate];
+    self.scrollLaterTimer = nil;
 
     [self scrollToBottomAnimated:NO];
 }

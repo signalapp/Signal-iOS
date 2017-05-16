@@ -230,6 +230,30 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
++ (void)clearUnreadMessagesIndicator:(TSThread *)thread storageManager:(TSStorageManager *)storageManager
+{
+    OWSAssert(thread);
+    OWSAssert(storageManager);
+
+    [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+
+        NSMutableArray *indicators = [NSMutableArray new];
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                              [indicators addObject:object];
+                          }
+                      }];
+
+        for (TSUnreadIndicatorInteraction *indicator in indicators) {
+            [indicator removeWithTransaction:transaction];
+        }
+    }];
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag
