@@ -31,7 +31,7 @@
           "libraries": "sqlite3",
           "dependencies": {
             "CocoaLumberjack": [
-              "~> 2"
+
             ]
           },
           "source_files": [
@@ -180,7 +180,7 @@
               ">= 3.4.0"
             ],
             "CocoaLumberjack": [
-              "~> 2"
+
             ]
           },
           "source_files": [
