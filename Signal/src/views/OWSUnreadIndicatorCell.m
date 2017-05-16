@@ -6,6 +6,7 @@
 #import "OWSBezierPathView.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
 @interface OWSUnreadIndicatorCell ()
@@ -62,16 +63,10 @@
 
 - (void)layoutSubviews
 {
-    CGSize labelSize = [self.label sizeThatFits:CGSizeZero];
-    self.label.frame = CGRectMake(round(self.bounds.origin.x + (self.bounds.size.width - labelSize.width) * 0.5f),
-        round(self.bounds.origin.y + (self.bounds.size.height - labelSize.height) * 0.5f),
-        labelSize.width,
-        labelSize.height);
-    self.leftPathView.frame = CGRectMake(0, 0, self.label.frame.origin.x, self.bounds.size.height);
-    self.rightPathView.frame = CGRectMake(self.label.frame.origin.x + self.label.frame.size.width,
-        0,
-        self.bounds.size.width - (self.label.frame.origin.x + self.label.frame.size.width),
-        self.bounds.size.height);
+    [self.label sizeToFit];
+    [self.label centerOnSuperview];
+    self.leftPathView.frame = CGRectMake(0, 0, self.label.left, self.height);
+    self.rightPathView.frame = CGRectMake(self.label.right, 0, self.width - self.label.right, self.height);
 }
 
 @end

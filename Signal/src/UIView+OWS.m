@@ -131,6 +131,47 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     [self setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
 }
 
+#pragma mark - Manual Layout
+
+- (CGFloat)left
+{
+    return self.frame.origin.x;
+}
+
+- (CGFloat)right
+{
+    return self.frame.origin.x + self.frame.size.width;
+}
+
+- (CGFloat)top
+{
+    return self.frame.origin.y;
+}
+
+- (CGFloat)bottom
+{
+    return self.frame.origin.x + self.frame.size.height;
+}
+
+- (CGFloat)width
+{
+    return self.frame.size.width;
+}
+
+- (CGFloat)height
+{
+    return self.frame.size.height;
+}
+
+- (void)centerOnSuperview
+{
+    self.frame = CGRectMake(
+        round(self.superview.bounds.origin.x + (self.superview.bounds.size.width - self.frame.size.width) * 0.5f),
+        round(self.superview.bounds.origin.y + (self.superview.bounds.size.height - self.frame.size.height) * 0.5f),
+        self.frame.size.width,
+        self.frame.size.height);
+}
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color
