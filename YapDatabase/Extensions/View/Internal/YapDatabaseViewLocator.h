@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YapDatabaseViewLocator : NSObject
 
 - (instancetype)initWithGroup:(NSString *)group index:(NSUInteger)index;
-- (instancetype)initWithGroup:(NSString *)group index:(NSUInteger)index pageKey:(NSString *)pageKey;
+- (instancetype)initWithGroup:(NSString *)group index:(NSUInteger)index pageKey:(nullable NSString *)pageKey;
 
 @property (nonatomic, readonly, copy) NSString *group;
 @property (nonatomic, readonly, assign) NSUInteger index;
