@@ -47,7 +47,7 @@
             pathBounds = CGRectInset(pathBounds, kLineMargin, 0);
             UIBezierPath *path = [UIBezierPath bezierPathWithRect:pathBounds];
             layer.path = path.CGPath;
-            layer.fillColor = [UIColor ows_infoMessageBorderColor].CGColor;
+            layer.fillColor = [[UIColor ows_infoMessageBorderColor] colorWithAlphaComponent:0.5f].CGColor;
         };
 
         self.leftPathView = [OWSBezierPathView new];
