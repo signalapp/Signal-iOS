@@ -14,6 +14,7 @@
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/Threading.h>
 
 @interface NotificationsManager ()
 
@@ -215,11 +216,11 @@
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
         // Replace any existing notification
         // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
         if (self.currentNotifications[identifier]) {
-            [self cancelNotificationWithIdentifierMainThread:identifier];
+            [self cancelNotificationWithIdentifier:identifier];
         }
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
@@ -231,23 +232,17 @@
 
 - (void)cancelNotificationWithIdentifier:(NSString *)identifier
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self cancelNotificationWithIdentifierMainThread:identifier];
+    DispatchMainThreadSafe(^{
+        UILocalNotification *notification = self.currentNotifications[identifier];
+        if (!notification) {
+            DDLogWarn(
+                @"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
+            return;
+        }
+        [self.currentNotifications removeObjectForKey:identifier];
+
+        [[UIApplication sharedApplication] cancelLocalNotification:notification];
     });
-}
-
-- (void)cancelNotificationWithIdentifierMainThread:(NSString *)identifier
-{
-    OWSAssert([NSThread isMainThread]);
-
-    UILocalNotification *notification = self.currentNotifications[identifier];
-    if (!notification) {
-        DDLogWarn(@"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
-        return;
-    }
-    [self.currentNotifications removeObjectForKey:identifier];
-
-    [[UIApplication sharedApplication] cancelLocalNotification:notification];
 }
 
 #pragma mark - Logging
