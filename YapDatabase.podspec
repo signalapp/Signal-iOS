@@ -117,7 +117,7 @@ Pod::Spec.new do |s|
         ssee.osx.framework   = 'SystemConfiguration'
         ssee.ios.framework   = 'SystemConfiguration'
         ssee.tvos.framework  = 'SystemConfiguration'
-        ssee.dependency 'YapDatabase/Standard/Extensions/View'
+        ssee.dependency 'YapDatabase/Standard/Extensions/AutoView'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'
       end
@@ -221,7 +221,7 @@ Pod::Spec.new do |s|
         ssee.osx.framework   = 'SystemConfiguration'
         ssee.ios.framework   = 'SystemConfiguration'
         ssee.tvos.framework  = 'SystemConfiguration'
-        ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
+        ssee.dependency 'YapDatabase/SQLCipher/Extensions/AutoView'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'
       end
