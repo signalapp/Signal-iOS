@@ -214,10 +214,28 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)populateDefaultCountryNameAndCode
 {
-    NSLocale *locale = NSLocale.currentLocale;
-    NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
-    NSNumber *callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localNumber]];
+    OWSAssert(localNumber);
+
+    NSString *countryCode;
+    NSNumber *callingCode;
+    if (localNumber) {
+        callingCode = [localNumber getCountryCode];
+        OWSAssert(callingCode);
+        if (callingCode) {
+            countryCode = [[PhoneNumberUtil sharedUtil]
+                probableCountryCodeForCallingCode:[@"+" stringByAppendingString:[callingCode description]]];
+        }
+    }
+
+    if (!countryCode || !callingCode) {
+        NSLocale *locale = NSLocale.currentLocale;
+        countryCode = [locale objectForKey:NSLocaleCountryCode];
+        callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+    }
+
     NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+
     [self updateCountryWithName:countryName
                     callingCode:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode]
                     countryCode:countryCode];
