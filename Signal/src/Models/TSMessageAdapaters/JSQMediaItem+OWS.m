@@ -3,8 +3,9 @@
 //
 
 #import "JSQMediaItem+OWS.h"
-#import "UIDevice+TSHardwareVersion.h"
 #import "NumberUtil.h"
+#import "UIDevice+TSHardwareVersion.h"
+#import <ImageIO/ImageIO.h>
 
 @implementation JSQMediaItem (OWS)
 
@@ -15,7 +16,12 @@
 }
 
 - (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImage:(UIImage *)image {
-    double aspectRatio = image.size.height / image.size.width;
+    return [self ows_adjustBubbleSize:bubbleSize forImageSize:image.size];
+}
+
+- (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImageSize:(CGSize)imageSize
+{
+    double aspectRatio = imageSize.height / imageSize.width;
     double clampedAspectRatio = [NumberUtil clamp:aspectRatio toMin:0.5 andMax:1.5];
     
     if ([[UIDevice currentDevice] isiPhoneVersionSixOrMore]) {
@@ -30,6 +36,35 @@
         }
     }
     return bubbleSize;
+}
+
+- (CGSize)sizeOfImageAtURL:(NSURL *_Nullable)imageURL
+{
+    if (!imageURL) {
+        return CGSizeZero;
+    }
+
+    // With CGImageSource we avoid loading the whole image into memory.
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
+    if (!source) {
+        return CGSizeZero;
+    }
+
+    NSDictionary *options = @{
+        (NSString *)kCGImageSourceShouldCache : @(NO),
+    };
+    NSDictionary *properties
+        = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+    CGSize imageSize = CGSizeZero;
+    if (properties) {
+        NSNumber *width = properties[(NSString *)kCGImagePropertyPixelWidth];
+        NSNumber *height = properties[(NSString *)kCGImagePropertyPixelHeight];
+        if (width && height) {
+            imageSize = CGSizeMake(width.floatValue, height.floatValue);
+        }
+    }
+    CFRelease(source);
+    return imageSize;
 }
 
 @end

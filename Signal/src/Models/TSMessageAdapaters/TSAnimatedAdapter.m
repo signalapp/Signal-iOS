@@ -15,13 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAnimatedAdapter ()
-//<FLAnimatedImageViewDebugDelegate>
 
 @property (nonatomic, nullable) FLAnimatedImageView *cachedImageView;
-@property (nonatomic) UIImage *image;
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
+@property (nonatomic) CGSize imageSize;
 
 // See comments on OWSMessageMediaAdapter.
 @property (nonatomic, nullable, weak) id lastPresentingCell;
@@ -40,9 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
         _cachedImageView = nil;
         _attachment      = attachment;
         _attachmentId    = attachment.uniqueId;
-        _image           = [attachment image];
-        _fileData        = [NSData dataWithContentsOfURL:[attachment mediaURL]];
         _incoming = incoming;
+        _imageSize = [self sizeOfImageAtURL:attachment.mediaURL];
     }
 
     return self;
@@ -50,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllViews
 {
+    OWSAssert([NSThread isMainThread]);
+
     [_cachedImageView removeFromSuperview];
     _cachedImageView = nil;
     _attachmentUploadView = nil;
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)hash
 {
-    return super.hash ^ self.image.hash;
+    return super.hash ^ self.attachment.uniqueId.hash;
 }
 
 #pragma mark - OWSMessageMediaAdapter
@@ -95,9 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - JSQMessageMediaData protocol
 
 - (UIView *)mediaView {
+    OWSAssert([NSThread isMainThread]);
+
     if (self.cachedImageView == nil) {
         // Use Flipboard FLAnimatedImage library to display gifs
-        FLAnimatedImage *animatedGif   = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
+        NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
         imageView.animatedImage        = animatedGif;
         CGSize size                    = [self mediaViewDisplaySize];
@@ -119,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)mediaViewDisplaySize {
-    return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
+    return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImageSize:self.imageSize];
 }
 
 #pragma mark - OWSMessageEditing Protocol
@@ -139,11 +142,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         UIPasteboard *pasteboard = UIPasteboard.generalPasteboard;
-        [pasteboard setData:self.fileData forPasteboardType:utiType];
+        NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        [pasteboard setData:data forPasteboardType:utiType];
     } else if (action == NSSelectorFromString(@"save:")) {
-        NSData *photoData = self.fileData;
+        NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        [library writeImageDataToSavedPhotosAlbum:photoData
+        [library writeImageDataToSavedPhotosAlbum:data
                                          metadata:nil
                                   completionBlock:^(NSURL *assetURL, NSError *error) {
                                       if (error) {
