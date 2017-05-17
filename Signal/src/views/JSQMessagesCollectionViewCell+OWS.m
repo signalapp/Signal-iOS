@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 11/13/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "JSQMessagesCollectionViewCell+OWS.h"
 #import "UIColor+OWS.h"
@@ -22,8 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     self.textView.dataDetectorTypes
-        = (UIDataDetectorTypePhoneNumber | UIDataDetectorTypeLink | UIDataDetectorTypeAddress
-            | UIDataDetectorTypeCalendarEvent);
+        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
 }
 
 @end
