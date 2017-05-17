@@ -88,7 +88,7 @@ NSUInteger const TSAttachmentSchemaVersion = 3;
     if (!_sourceFilename) {
         // renamed _filename to _sourceFilename
         _sourceFilename = [coder decodeObjectForKey:@"filename"];
-        OWSAssert(_sourceFilename || [_sourceFilename isKindOfClass:[NSString class]]);
+        OWSAssert(!_sourceFilename || [_sourceFilename isKindOfClass:[NSString class]]);
     }
 
     return self;
