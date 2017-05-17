@@ -33,9 +33,9 @@
 #pragma mark Transaction Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)_handleChangeWithRowid:(int64_t)rowid
-                 collectionKey:(YapCollectionKey *)collectionKey
-                changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
+- (void)_didChangeWithRowid:(int64_t)rowid
+              collectionKey:(YapCollectionKey *)collectionKey
+             changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
 {
 	// Should we ignore the row based on the allowedCollections ?
 	
@@ -87,9 +87,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**
@@ -102,9 +102,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**
@@ -117,9 +117,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**
@@ -135,9 +135,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**
@@ -153,9 +153,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedMetadata;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**
@@ -171,9 +171,9 @@
 	
 	YapDatabaseViewChangesBitMask changesBitMask = YapDatabaseViewChangedObject | YapDatabaseViewChangedMetadata;
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	              changesBitMask:changesBitMask];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	           changesBitMask:changesBitMask];
 }
 
 /**

@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "YapDatabaseViewTransaction.h"
+#import "YapDatabaseAutoViewTransaction.h"
 
 
-@interface YapDatabaseActionManagerTransaction : YapDatabaseViewTransaction
+@interface YapDatabaseActionManagerTransaction : YapDatabaseAutoViewTransaction
 
 @end

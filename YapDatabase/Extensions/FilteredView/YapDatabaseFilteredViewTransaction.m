@@ -727,14 +727,14 @@
 #pragma mark Transaction Hooks
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)_handleChangeWithRowid:(int64_t)rowid
-                 collectionKey:(YapCollectionKey *)collectionKey
-                        object:(id)object
-                      metadata:(id)metadata
-                     filtering:(YapDatabaseViewFiltering *)filtering
-            blockInvokeBitMask:(YapDatabaseBlockInvoke)blockInvokeBitMask
-                changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
-                      isInsert:(BOOL)isInsert
+- (void)_didChangeWithRowid:(int64_t)rowid
+              collectionKey:(YapCollectionKey *)collectionKey
+                     object:(id)object
+                   metadata:(id)metadata
+                  filtering:(YapDatabaseViewFiltering *)filtering
+         blockInvokeBitMask:(YapDatabaseBlockInvoke)blockInvokeBitMask
+             changesBitMask:(YapDatabaseViewChangesBitMask)changesBitMask
+                   isInsert:(BOOL)isInsert
 {
 	YDBLogAutoTrace();
 	
@@ -872,14 +872,14 @@
 	YapDatabaseViewFiltering *filtering = nil;
 	[filteredViewConnection getFiltering:&filtering];
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:YES];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:YES];
 }
 
 /**
@@ -905,14 +905,14 @@
 	YapDatabaseViewFiltering *filtering = nil;
 	[filteredViewConnection getFiltering:&filtering];
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**
@@ -946,14 +946,14 @@
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**
@@ -987,14 +987,14 @@
 		object = [databaseTransaction objectForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**
@@ -1037,14 +1037,14 @@
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**
@@ -1087,14 +1087,14 @@
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**
@@ -1138,14 +1138,14 @@
 		metadata = [databaseTransaction metadataForCollectionKey:collectionKey withRowid:rowid];
 	}
 	
-	[self _handleChangeWithRowid:rowid
-	               collectionKey:collectionKey
-	                      object:object
-	                    metadata:metadata
-	                   filtering:filtering
-	          blockInvokeBitMask:blockInvokeBitMask
-	              changesBitMask:changesBitMask
-	                    isInsert:NO];
+	[self _didChangeWithRowid:rowid
+	            collectionKey:collectionKey
+	                   object:object
+	                 metadata:metadata
+	                filtering:filtering
+	       blockInvokeBitMask:blockInvokeBitMask
+	           changesBitMask:changesBitMask
+	                 isInsert:NO];
 }
 
 /**

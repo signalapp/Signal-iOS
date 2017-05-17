@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "YapDatabaseViewConnection.h"
+#import "YapDatabaseAutoViewConnection.h"
 
 
-@interface YapDatabaseActionManagerConnection : YapDatabaseViewConnection
+@interface YapDatabaseActionManagerConnection : YapDatabaseAutoViewConnection
 
 @end
