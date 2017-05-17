@@ -3210,6 +3210,8 @@ typedef enum : NSUInteger {
         DDLogInfo(@"Discarding voice message; too short.");
         self.audioRecorder = nil;
 
+        [self dismissKeyBoard];
+
         [OWSAlerts
             showAlertWithTitle:
                 NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE",
