@@ -84,19 +84,12 @@
 
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
 {
-    UInt64 nowTimestamp = [NSDate ows_millisecondTimeStamp];
-
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-    [[[TSErrorMessage alloc] initWithTimestamp:nowTimestamp
-                                      inThread:contactThread
-                             failedMessageType:TSErrorMessageNonBlockingIdentityChange] save];
+    [[TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId] save];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
-        [[[TSErrorMessage alloc] initWithTimestamp:nowTimestamp
-                                          inThread:groupThread
-                                 failedMessageType:TSErrorMessageNonBlockingIdentityChange] save];
+        [[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId] save];
     }
 }
-
 
 @end
