@@ -121,6 +121,11 @@ Pod::Spec.new do |s|
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'
       end
+      
+      sse.subspec 'CloudCore' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/CloudCore/**/*.{h,m,mm,c}'
+        ssee.private_header_files = 'YapDatabase/Extensions/CloudCore/Internal/*.h'
+      end
 
     end # Extensions
 
@@ -219,6 +224,11 @@ Pod::Spec.new do |s|
         ssee.dependency 'YapDatabase/SQLCipher/Extensions/View'
         ssee.source_files = 'YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/ActionManager/Internal/*.h'
+      end
+      
+      sse.subspec 'CloudCore' do |ssee|
+        ssee.source_files = 'YapDatabase/Extensions/CloudCore/**/*.{h,m,mm,c}'
+        ssee.private_header_files = 'YapDatabase/Extensions/CloudCore/Internal/*.h'
       end
 
     end # Extensions
