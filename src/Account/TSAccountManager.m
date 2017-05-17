@@ -121,6 +121,19 @@ NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificati
                                           success:(void (^)())successHandler
                                           failure:(void (^)(NSError *))failureHandler
 {
+    [self registerForPushNotificationsWithPushToken:pushToken
+                                          voipToken:voipToken
+                                            success:successHandler
+                                            failure:failureHandler
+                                   remainingRetries:3];
+}
+
+- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
+                                        voipToken:(NSString *)voipToken
+                                          success:(void (^)())successHandler
+                                          failure:(void (^)(NSError *))failureHandler
+                                 remainingRetries:(int)remainingRetries
+{
     TSRegisterForPushRequest *request =
         [[TSRegisterForPushRequest alloc] initWithPushIdentifier:pushToken voipIdentifier:voipToken];
 
@@ -129,7 +142,15 @@ NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificati
             successHandler();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failureHandler(error);
+            if (remainingRetries > 0) {
+                [self registerForPushNotificationsWithPushToken:pushToken
+                                                      voipToken:voipToken
+                                                        success:successHandler
+                                                        failure:failureHandler
+                                               remainingRetries:remainingRetries - 1];
+            } else {
+                failureHandler(error);
+            }
         }];
 }
 
