@@ -150,7 +150,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (CGFloat)bottom
 {
-    return self.frame.origin.x + self.frame.size.height;
+    return self.frame.origin.y + self.frame.size.height;
 }
 
 - (CGFloat)width
@@ -165,6 +165,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)centerOnSuperview
 {
+    OWSAssert(self.superview);
+
     self.frame = CGRectMake(
         round(self.superview.bounds.origin.x + (self.superview.bounds.size.width - self.frame.size.width) * 0.5f),
         round(self.superview.bounds.origin.y + (self.superview.bounds.size.height - self.frame.size.height) * 0.5f),
