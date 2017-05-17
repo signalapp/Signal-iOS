@@ -1282,6 +1282,12 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Sveiki, saugūs vaizdo skambučiai!";
 
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
+
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Naujinama Signal ...";
 
