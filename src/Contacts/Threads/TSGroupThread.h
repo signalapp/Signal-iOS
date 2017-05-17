@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
-// all group threads conrtaining recipient as a member
+// all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId;
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
