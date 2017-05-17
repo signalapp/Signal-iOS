@@ -97,9 +97,6 @@ Pod::Spec.new do |s|
       end
 
       sse.subspec 'CloudKit' do |ssee|
-        ssee.osx.deployment_target = '10.8'
-        ssee.ios.deployment_target = '6.0'
-        ssee.tvos.deployment_target = '9.0'
         ssee.source_files = 'YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/CloudKit/Internal/*.h'
       end
@@ -201,9 +198,6 @@ Pod::Spec.new do |s|
       end
 
       sse.subspec 'CloudKit' do |ssee|
-        ssee.osx.deployment_target = '10.8'
-        ssee.ios.deployment_target = '6.0'
-        ssee.tvos.deployment_target = '9.0'
         ssee.source_files = 'YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}'
         ssee.private_header_files = 'YapDatabase/Extensions/CloudKit/Internal/*.h'
       end
