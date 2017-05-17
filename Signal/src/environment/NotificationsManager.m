@@ -14,6 +14,7 @@
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/Threading.h>
 
 @interface NotificationsManager ()
 
@@ -215,7 +216,7 @@
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
         // Replace any existing notification
         // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
         if (self.currentNotifications[identifier]) {
@@ -231,7 +232,7 @@
 
 - (void)cancelNotificationWithIdentifier:(NSString *)identifier
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
         UILocalNotification *notification = self.currentNotifications[identifier];
         if (!notification) {
             DDLogWarn(
