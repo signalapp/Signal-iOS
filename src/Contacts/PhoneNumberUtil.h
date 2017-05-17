@@ -15,7 +15,12 @@
 + (NSString *)callingCodeFromCountryCode:(NSString *)countryCode;
 + (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm;
+
+// Returns a list of country codes for a calling code in descending
+// order of population.
 - (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode;
+// Returns the most likely country code for a calling code based on population.
+- (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode;
 
 + (NSUInteger)translateCursorPosition:(NSUInteger)offset
                                  from:(NSString *)source
