@@ -6,6 +6,7 @@
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
+#import "TSGroupThread.h"
 #import "TSPrivacyPreferences.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+SessionStore.h"
@@ -83,10 +84,21 @@
 
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
 {
+    // TODO But should they be marked as dirty/play an alert? Probably not.
+
+    UInt64 nowTimestamp = [NSDate ows_millisecondTimeStamp];
+
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-    [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+    [[[TSErrorMessage alloc] initWithTimestamp:nowTimestamp
                                       inThread:contactThread
                              failedMessageType:TSErrorMessageNonBlockingIdentityChange] save];
+
+    for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
+        [[[TSErrorMessage alloc] initWithTimestamp:nowTimestamp
+                                          inThread:groupThread
+                                 failedMessageType:TSErrorMessageNonBlockingIdentityChange] save];
+    }
 }
+
 
 @end
