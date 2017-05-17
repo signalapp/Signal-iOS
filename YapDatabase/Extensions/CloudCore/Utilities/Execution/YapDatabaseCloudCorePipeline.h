@@ -150,7 +150,7 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
  * You should allow the pipeline to mange the queue, and only start operations when told to.
  *
  * However, there is one particular edge case in which is is unavoidable: background network tasks.
- * If the app is relaunched, and you discover there are network task from a previously app session,
+ * If the app is relaunched, and you discover there are network task from a previous app session,
  * you'll obviously want to avoid starting the corresponding operation again.
  * In this case, you should use this method to inform the pipeline that the operation is already started.
 **/

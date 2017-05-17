@@ -14,7 +14,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE; // | YDB_LOG_FLAG_TRACE;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN; // YDB_LOG_LEVEL_VERBOSE; // | YDB_LOG_FLAG_TRACE;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
@@ -1541,10 +1541,10 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  *
  * The row is being inserted, meaning there is not currently an entry for the collection/key tuple.
 **/
-- (void)handleInsertObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didInsertObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	YDBLogAutoTrace();
 	
@@ -1572,10 +1572,10 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  *
  * The row is being modified, meaning there is already an entry for the collection/key tuple which is being modified.
 **/
-- (void)handleUpdateObject:(id)object
-          forCollectionKey:(YapCollectionKey *)collectionKey
-              withMetadata:(id)metadata
-                     rowid:(int64_t)rowid
+- (void)didUpdateObject:(id)object
+       forCollectionKey:(YapCollectionKey *)collectionKey
+           withMetadata:(id)metadata
+                  rowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1589,7 +1589,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  *
  * There is already a row for the collection/key tuple, and only the object is being modified (metadata untouched).
 **/
-- (void)handleReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1603,7 +1603,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  *
  * There is already a row for the collection/key tuple, and only the metadata is being modified (object untouched).
 **/
-- (void)handleReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1614,7 +1614,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchObjectForKey:inCollection:collection:
 **/
-- (void)handleTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1625,7 +1625,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchMetadataForKey:inCollection:
 **/
-- (void)handleTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchMetadataForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1636,7 +1636,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  * Corresponds to the following method(s) in YapDatabaseReadWriteTransaction:
  * - touchRowForKey:inCollection:
 **/
-- (void)handleTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
+- (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1646,7 +1646,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  *
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
+- (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)ck withRowid:(int64_t)rowid
 {
 	// Nothing to do here
 }
@@ -1655,7 +1655,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
+- (void)didRemoveObjectsForKeys:(NSArray *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
 	// Nothing to do here
 }
@@ -1664,7 +1664,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
  * YapDatabase extension hook.
  * This method is invoked by a YapDatabaseReadWriteTransaction as a post-operation-hook.
 **/
-- (void)handleRemoveAllObjectsInAllCollections
+- (void)didRemoveAllObjectsInAllCollections
 {
 	YDBLogAutoTrace();
 	
@@ -2481,8 +2481,10 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 					if (stop) break;
 				}
 				
-				if (stop) *innerStop = YES;
-				return;
+				if (stop) {
+					*innerStop = YES;
+					return;
+				}
 			}
 			
 			lastGraphIdx = graphIdx;

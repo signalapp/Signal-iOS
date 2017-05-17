@@ -99,6 +99,12 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
+	// Deallocating a suspended timer will cause a crash
+	if (holdTimer && holdTimerSuspended) {
+		dispatch_resume(holdTimer);
+		holdTimerSuspended = NO;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,27 +157,39 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 - (void)_enumerateOperationsUsingBlock:(void (^)(YapDatabaseCloudCoreOperation *operation,
                                                  NSUInteger graphIdx, BOOL *stop))enumBlock
 {
+	__block NSMutableArray<NSArray<YapDatabaseCloudCoreOperation *> *> *graphOperations = nil;
+	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[graphs enumerateObjectsUsingBlock:^(YapDatabaseCloudCoreGraph *graph, NSUInteger graphIdx, BOOL *outerStop) {
-			
-			BOOL innerStop = NO;
-			
-			for (YapDatabaseCloudCoreOperation *operation in graph.operations)
-			{
-				enumBlock(operation, graphIdx, &innerStop);
-				
-				if (innerStop) break;
-			}
-			
-			if (innerStop) *outerStop = YES;
-		}];
+		graphOperations = [NSMutableArray arrayWithCapacity:graphs.count];
+		
+		for (YapDatabaseCloudCoreGraph *graph in graphs)
+		{
+			[graphOperations addObject:graph.operations];
+		}
 	}};
 	
 	if (dispatch_get_specific(IsOnQueueKey))
 		block();
 	else
 		dispatch_sync(queue, block);
+	
+	
+	NSUInteger graphIdx = 0;
+	BOOL stop = NO;
+	
+	for (NSArray<YapDatabaseCloudCoreOperation *> *operations in graphOperations)
+	{
+		for (YapDatabaseCloudCoreOperation *operation in operations)
+		{
+			enumBlock(operation, graphIdx, &stop);
+			
+			if (stop) break;
+		}
+		
+		if (stop) break;
+		graphIdx++;
+	}
 }
 
 - (NSUInteger)graphCount
