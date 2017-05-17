@@ -577,6 +577,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) MPMoviePlayerController *videoPlayer;
 @property (nonatomic) AVAudioRecorder *audioRecorder;
 @property (nonatomic) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
+@property (nonatomic) NSUUID *voiceMessageUUID;
 
 @property (nonatomic) NSTimer *readTimer;
 @property (nonatomic) UIView *navigationBarTitleView;
@@ -608,6 +609,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
+@property (nonatomic) NSDate *lastMessageSentDate;
 
 @end
 
@@ -1547,6 +1549,7 @@ typedef enum : NSUInteger {
         } else {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
+        self.lastMessageSentDate = [NSDate new];
         if (updateKeyboardState)
         {
             [self toggleDefaultKeyboard];
@@ -2871,6 +2874,7 @@ typedef enum : NSUInteger {
         (unsigned long)attachment.data.length,
         [attachment mimeType]);
     [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    self.lastMessageSentDate = [NSDate new];
 }
 
 - (NSURL *)videoTempFolder {
@@ -3109,11 +3113,20 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
+    NSUUID *voiceMessageUUID = [NSUUID UUID];
+    self.voiceMessageUUID = voiceMessageUUID;
+
     __weak typeof(self) weakSelf = self;
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
+                return;
+            }
+
+            if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
+                // This voice message recording has been cancelled
+                // before recording could begin.
                 return;
             }
 
@@ -3195,9 +3208,12 @@ typedef enum : NSUInteger {
 
     DDLogInfo(@"endRecordingVoiceMemo");
 
+    self.voiceMessageUUID = nil;
+
     if (!self.audioRecorder) {
+        // No voice message recording is in progress.
+        // We may be cancelling before the recording could begin.
         DDLogError(@"%@ Missing audioRecorder", self.tag);
-        OWSAssert(0);
         return;
     }
 
@@ -3209,6 +3225,8 @@ typedef enum : NSUInteger {
     if (currentTime < kMinimumRecordingTimeSeconds) {
         DDLogInfo(@"Discarding voice message; too short.");
         self.audioRecorder = nil;
+
+        [self dismissKeyBoard];
 
         [OWSAlerts
             showAlertWithTitle:
@@ -3263,6 +3281,7 @@ typedef enum : NSUInteger {
 
     [self.audioRecorder stop];
     self.audioRecorder = nil;
+    self.voiceMessageUUID = nil;
 }
 
 #pragma mark Accessory View
@@ -3572,6 +3591,17 @@ typedef enum : NSUInteger {
     OWSAssert([NSThread isMainThread]);
 
     DDLogInfo(@"voiceMemoGestureDidStart");
+
+    const CGFloat kIgnoreMessageSendDoubleTapDurationSeconds = 2.f;
+    if (self.lastMessageSentDate &&
+        [[NSDate new] timeIntervalSinceDate:self.lastMessageSentDate] < kIgnoreMessageSendDoubleTapDurationSeconds) {
+        // If users double-taps the message send button, the second tap can look like a
+        // very short voice message gesture.  We want to ignore such gestures.
+        [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)cancelVoiceMemoIfNecessary];
+        [((OWSMessagesInputToolbar *)self.inputToolbar) hideVoiceMemoUI:NO];
+        [self cancelRecordingVoiceMemo];
+        return;
+    }
 
     [((OWSMessagesInputToolbar *)self.inputToolbar)showVoiceMemoUI];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
