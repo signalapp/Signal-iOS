@@ -6,6 +6,125 @@ import Foundation
 import Contacts
 import ContactsUI
 
+enum Result<T, ErrorType> {
+    case success(T)
+    case error(ErrorType)
+}
+
+protocol ContactStoreAdaptee {
+    var authorizationStatus: ContactStoreAuthorizationStatus { get }
+    var contactsChangedNotificationName: Notification.Name { get }
+    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
+    func fetchContacts() -> Result<[Contact], Error>
+}
+
+@available(iOS 9.0, *)
+class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
+    let TAG = "[ContactsFrameworkContactStoreAdaptee]"
+    private let contactStore = CNContactStore()
+
+    private let allowedContactKeys: [CNKeyDescriptor] = [
+        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+        CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
+        CNContactPhoneNumbersKey as CNKeyDescriptor,
+        CNContactEmailAddressesKey as CNKeyDescriptor,
+        CNContactViewController.descriptorForRequiredKeys()
+    ]
+
+    var authorizationStatus: ContactStoreAuthorizationStatus {
+        switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .restricted
+        case .denied:
+            return .denied
+        case .authorized:
+             return .authorized
+        }
+    }
+
+    var contactsChangedNotificationName: Notification.Name {
+        return .CNContactStoreDidChange
+    }
+
+    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
+        self.contactStore.requestAccess(for: .contacts, completionHandler: completionHandler)
+    }
+
+    func fetchContacts() -> Result<[Contact], Error> {
+        var systemContacts = [CNContact]()
+        do {
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
+            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                systemContacts.append(contact)
+            }
+        } catch let error as NSError {
+            Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
+            assertionFailure()
+            return .error(error)
+        }
+
+        let contacts = systemContacts.map { Contact(systemContact: $0) }
+        return .success(contacts)
+    }
+}
+
+class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
+    var authorizationStatus: ContactStoreAuthorizationStatus {
+        //TODO
+        return .denied
+    }
+
+    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
+        // TODO
+    }
+
+    func fetchContacts() -> Result<[Contact], Error> {
+        // TODO
+        return .success([])
+    }
+
+    var contactsChangedNotificationName: Notification.Name {
+        return Notification.Name("TODO")
+    }
+}
+
+enum ContactStoreAuthorizationStatus {
+    case notDetermined,
+         restricted,
+         denied,
+         authorized
+}
+
+class ContactStoreAdapter: ContactStoreAdaptee {
+    let adaptee: ContactStoreAdaptee
+
+    init() {
+        if #available(iOS 9.0, *) {
+            self.adaptee = ContactsFrameworkContactStoreAdaptee()
+        } else {
+            self.adaptee = AddressBookContactStoreAdaptee()
+        }
+    }
+
+    var authorizationStatus: ContactStoreAuthorizationStatus {
+        return self.adaptee.authorizationStatus
+    }
+
+    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
+        return self.adaptee.requestAccess(completionHandler: completionHandler)
+    }
+
+    func fetchContacts() -> Result<[Contact], Error> {
+        return self.adaptee.fetchContacts()
+    }
+
+    var contactsChangedNotificationName: Notification.Name {
+        return self.adaptee.contactsChangedNotificationName
+    }
+}
+
 @objc protocol SystemContactsFetcherDelegate: class {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact])
 }
@@ -16,11 +135,12 @@ class SystemContactsFetcher: NSObject {
     private let TAG = "[SystemContactsFetcher]"
     var lastContactUpdateHash: Int?
     var lastDelegateNotificationDate: Date?
+    let contactStoreAdapter: ContactStoreAdapter
 
     public weak var delegate: SystemContactsFetcherDelegate?
 
-    public var authorizationStatus: CNAuthorizationStatus {
-        return CNContactStore.authorizationStatus(for: CNEntityType.contacts)
+    public var authorizationStatus: ContactStoreAuthorizationStatus {
+        return contactStoreAdapter.authorizationStatus
     }
 
     public var isAuthorized: Bool {
@@ -33,15 +153,11 @@ class SystemContactsFetcher: NSObject {
         return self.authorizationStatus == .authorized
     }
 
-    private let contactStore = CNContactStore()
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
-    private let allowedContactKeys: [CNKeyDescriptor] = [
-        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-        CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
-        CNContactPhoneNumbersKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor,
-        CNContactViewController.descriptorForRequiredKeys()
-    ]
+
+    override init() {
+        self.contactStoreAdapter = ContactStoreAdapter()
+    }
 
     /**
      * Ensures we've requested access for system contacts. This can be used in multiple places,
@@ -63,7 +179,7 @@ class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            contactStore.requestAccess(for: .contacts) { (granted, error) in
+            self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
                     DispatchQueue.main.async {
@@ -111,22 +227,23 @@ class SystemContactsFetcher: NSObject {
         systemContactsHaveBeenRequestedAtLeastOnce = true
 
         DispatchQueue.global().async {
-            var systemContacts = [CNContact]()
-            do {
-                let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
-                try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
-                    systemContacts.append(contact)
-                }
-            } catch let error as NSError {
-                Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
-                assertionFailure()
-                DispatchQueue.main.async {
-                    completion?(error)
-                }
+
+            var fetchedContacts: [Contact]?
+
+            switch self.contactStoreAdapter.fetchContacts() {
+            case .success(let result):
+                fetchedContacts = result
+            case .error(let error):
+                completion?(error)
                 return
             }
 
-            let contacts = systemContacts.map { Contact(systemContact: $0) }
+            guard let contacts = fetchedContacts else {
+                Logger.error("\(self.TAG) contacts was unexpectedly not set.")
+                assertionFailure()
+                completion?(nil)
+            }
+
             let contactsHash  = HashableArray(contacts).hashValue
 
             DispatchQueue.main.async {
@@ -176,7 +293,7 @@ class SystemContactsFetcher: NSObject {
     private func startObservingContactChanges() {
         NotificationCenter.default.addObserver(self,
             selector: #selector(contactStoreDidChange),
-            name: .CNContactStoreDidChange,
+            name: self.contactStoreAdapter.contactsChangedNotificationName,
             object: nil)
     }
 
