@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSString *filename = self.attachment.sourceFilename;
         if (!filename) {
-            filename = [self.attachment localFilePathWithoutTransaction];
+            filename = [[self.attachment localFilePath] lastPathComponent];
         }
         NSString *fileExtension = filename.pathExtension;
         if (fileExtension.length < 1) {
@@ -207,8 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSError *error;
         unsigned long long fileSize =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachment localFilePathWithoutTransaction]
-                                                             error:&error]
+            [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachment localFilePath] error:&error]
                 .fileSize;
         OWSAssert(!error);
         NSString *bottomText = [ViewControllerUtils formatFileSize:fileSize];
