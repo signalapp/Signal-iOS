@@ -175,7 +175,6 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
                        andImage: addressBookRecord.image,
                        andContactID: addressBookRecord.recordId)
     }
-
 }
 
 /**

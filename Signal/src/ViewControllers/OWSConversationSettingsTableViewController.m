@@ -604,7 +604,9 @@ NS_ASSUME_NONNULL_BEGIN
                 [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
         } else {
-            [self presentContactViewController];
+            if (self.contactsManager.supportsContactEditing) {
+                [self presentContactViewController];
+            }
         }
     }
 }
@@ -678,7 +680,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewController
 {
     if (!self.contactsManager.supportsContactEditing) {
-        DDLogWarn(@"%@ Contact editing not supported", self.tag);
+        DDLogError(@"%@ Contact editing not supported", self.tag);
+        OWSAssert(NO);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
