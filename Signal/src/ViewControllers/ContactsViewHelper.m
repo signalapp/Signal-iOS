@@ -303,6 +303,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
 
+    if (!self.contactsManager.supportsContactEditing) {
+        DDLogError(@"%@ Contact editing not supported.", self.tag);
+        // Should not expose UI that lets the user get here.
+        OWSAssert(NO);
+        return;
+    }
+
     if (!self.contactsManager.isSystemContactsAuthorized) {
         UIAlertController *alertController = [UIAlertController
             alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
@@ -382,6 +389,18 @@ NS_ASSUME_NONNULL_BEGIN
     // RADAR rdar://28433898 http://www.openradar.me/28433898
     // CNContactViewController incompatible with opaque navigation bar
     [UIUtil applyDefaultSystemAppearence];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

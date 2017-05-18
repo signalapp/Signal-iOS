@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.thread);
 
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
                                              style:UIBarButtonItemStylePlain
@@ -604,7 +604,9 @@ NS_ASSUME_NONNULL_BEGIN
                 [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
         } else {
-            [self presentContactViewController];
+            if (self.contactsManager.supportsContactEditing) {
+                [self presentContactViewController];
+            }
         }
     }
 }
@@ -677,6 +679,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentContactViewController
 {
+    if (!self.contactsManager.supportsContactEditing) {
+        DDLogError(@"%@ Contact editing not supported", self.tag);
+        OWSAssert(NO);
+        return;
+    }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
         OWSAssert(NO);

@@ -73,6 +73,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     return self.systemContactsFetcher.isAuthorized;
 }
 
+- (BOOL)supportsContactEditing
+{
+    return self.systemContactsFetcher.supportsContactEditing;
+}
+
 #pragma mark SystemContactsFetcherDelegate
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
