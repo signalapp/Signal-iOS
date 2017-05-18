@@ -13,6 +13,7 @@ enum Result<T, ErrorType> {
 
 protocol ContactStoreAdaptee {
     var authorizationStatus: ContactStoreAuthorizationStatus { get }
+    var supportsContactEditing: Bool { get }
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
     func fetchContacts() -> Result<[Contact], Error>
     func startObservingChanges(changeHandler: @escaping () -> Void)
@@ -24,6 +25,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     private let contactStore = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
+    let supportsContactEditing = true
 
     private let allowedContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -95,6 +97,7 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
 
     private var addressBook: ABAddressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
     private var changeHandler: (() -> Void)?
+    let supportsContactEditing = false
 
     var authorizationStatus: ContactStoreAuthorizationStatus {
         switch ABAddressBookGetAuthorizationStatus() {
@@ -265,6 +268,7 @@ enum ContactStoreAuthorizationStatus {
 }
 
 class ContactStoreAdapter: ContactStoreAdaptee {
+
     let adaptee: ContactStoreAdaptee
 
     init() {
@@ -273,6 +277,10 @@ class ContactStoreAdapter: ContactStoreAdaptee {
         } else {
             self.adaptee = AddressBookContactStoreAdaptee()
         }
+    }
+
+    var supportsContactEditing: Bool {
+        return self.adaptee.supportsContactEditing
     }
 
     var authorizationStatus: ContactStoreAuthorizationStatus {

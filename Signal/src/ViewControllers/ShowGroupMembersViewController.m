@@ -156,15 +156,18 @@ NS_ASSUME_NONNULL_BEGIN
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    NSString *contactInfoTitle = signalAccount
-        ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
-        : NSLocalizedString(
-              @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
-    [actionSheetController addAction:[UIAlertAction actionWithTitle:contactInfoTitle
-                                                              style:UIAlertActionStyleDefault
-                                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                                [self showContactInfoViewForRecipientId:recipientId];
-                                                            }]];
+    if (self.contactsViewHelper.contactsManager.supportsContactEditing) {
+        NSString *contactInfoTitle = signalAccount
+            ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
+            : NSLocalizedString(
+                  @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
+        [actionSheetController addAction:[UIAlertAction actionWithTitle:contactInfoTitle
+                                                                  style:UIAlertActionStyleDefault
+                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                    [self
+                                                                        showContactInfoViewForRecipientId:recipientId];
+                                                                }]];
+    }
 
     BOOL isBlocked;
     if (signalAccount) {
