@@ -25,6 +25,14 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 - (BOOL)isCensorshipCircumventionManuallyActivated;
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value;
 
+#pragma mark - Censorship Circumvention Domain
+
+- (NSString *)manualCensorshipCircumventionDomain;
+- (void)setManualCensorshipCircumventionDomain:(NSString *)value;
+
+- (NSString *)manualCensorshipCircumventionCountryCode;
+- (void)setManualCensorshipCircumventionCountryCode:(NSString *)value;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -4,16 +4,23 @@
 
 #import <AFNetworking/AFHTTPSessionManager.h>
 
-#import "OWSSignalService.h"
 #import "OWSCensorshipConfiguration.h"
 #import "OWSHTTPSecurityPolicy.h"
-#import "TSConstants.h"
+#import "OWSSignalService.h"
 #import "TSAccountManager.h"
+#import "TSConstants.h"
+#import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSUserDefaults_isCensorshipCircumventionManuallyActivated =
-    @"kNSUserDefaults_isCensorshipCircumventionManuallyActivated";
+NSString *const kTSStorageManager_OWSSignalService = @"kTSStorageManager_OWSSignalService";
+NSString *const kTSStorageManager_isCensorshipCircumventionManuallyActivated =
+    @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
+NSString *const kTSStorageManager_ManualCensorshipCircumventionDomain =
+    @"kTSStorageManager_ManualCensorshipCircumventionDomain";
+NSString *const kTSStorageManager_ManualCensorshipCircumventionCountryCode =
+    @"kTSStorageManager_ManualCensorshipCircumventionCountryCode";
+
 NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
 
@@ -97,19 +104,17 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (BOOL)isCensorshipCircumventionManuallyActivated
 {
-    OWSAssert([NSThread isMainThread]);
-
-    return [[NSUserDefaults.standardUserDefaults
-        objectForKey:kNSUserDefaults_isCensorshipCircumventionManuallyActivated] boolValue];
+    return [[TSStorageManager sharedManager] boolForKey:kTSStorageManager_isCensorshipCircumventionManuallyActivated
+                                           inCollection:kTSStorageManager_OWSSignalService];
 }
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
 {
     OWSAssert([NSThread isMainThread]);
 
-    [NSUserDefaults.standardUserDefaults setObject:@(value)
-                                            forKey:kNSUserDefaults_isCensorshipCircumventionManuallyActivated];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [[TSStorageManager sharedManager] setObject:@(value)
+                                         forKey:kTSStorageManager_isCensorshipCircumventionManuallyActivated
+                                   inCollection:kTSStorageManager_OWSSignalService];
 
     [self updateIsCensorshipCircumventionActive];
 }
@@ -180,6 +185,11 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     OWSAssert(localNumber.length > 0);
 
     // Target fronting domain
+    OWSAssert(self.isCensorshipCircumventionActive);
+    NSString *frontingHost = [self.censorshipConfiguration frontingHost:localNumber];
+    if (self.isCensorshipCircumventionManuallyActivated && self.manualCensorshipCircumventionDomain.length > 0) {
+        frontingHost = self.manualCensorshipCircumventionDomain;
+    };
     NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
@@ -245,6 +255,40 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     dispatch_async(dispatch_get_main_queue(), ^{
         [self updateHasCensoredPhoneNumber];
     });
+}
+
+#pragma mark - Manual Censorship Circumvention
+
+- (NSString *)manualCensorshipCircumventionDomain
+{
+    return [[TSStorageManager sharedManager] objectForKey:kTSStorageManager_ManualCensorshipCircumventionDomain
+                                             inCollection:kTSStorageManager_OWSSignalService];
+}
+
+- (void)setManualCensorshipCircumventionDomain:(NSString *)value
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [[TSStorageManager sharedManager] setObject:value
+                                         forKey:kTSStorageManager_ManualCensorshipCircumventionDomain
+                                   inCollection:kTSStorageManager_OWSSignalService];
+}
+
+- (NSString *)manualCensorshipCircumventionCountryCode
+{
+    OWSAssert([NSThread isMainThread]);
+
+    return [[TSStorageManager sharedManager] objectForKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
+                                             inCollection:kTSStorageManager_OWSSignalService];
+}
+
+- (void)setManualCensorshipCircumventionCountryCode:(NSString *)value
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [[TSStorageManager sharedManager] setObject:value
+                                         forKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
+                                   inCollection:kTSStorageManager_OWSSignalService];
 }
 
 #pragma mark - Logging
