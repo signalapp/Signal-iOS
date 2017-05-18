@@ -250,10 +250,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
         return self.unknownContactName;
     }
 
-    // TODO: There's some overlap here with displayNameForSignalAccount.
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:identifier];
+    // When viewing an old thread with someone who is no longer a Signal user, they won't have a SignalAccount
+    // so we get the name from `allContactsMap` as opposed to `signalAccountForRecipientId`.
+    Contact *contact = self.allContactsMap[identifier];
 
-    NSString *displayName = (signalAccount.contact.fullName.length > 0) ? signalAccount.contact.fullName : identifier;
+    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
 
     return displayName;
 }
