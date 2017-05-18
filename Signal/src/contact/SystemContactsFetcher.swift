@@ -13,15 +13,17 @@ enum Result<T, ErrorType> {
 
 protocol ContactStoreAdaptee {
     var authorizationStatus: ContactStoreAuthorizationStatus { get }
-    var contactsChangedNotificationName: Notification.Name { get }
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void)
     func fetchContacts() -> Result<[Contact], Error>
+    func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
 @available(iOS 9.0, *)
 class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     let TAG = "[ContactsFrameworkContactStoreAdaptee]"
     private let contactStore = CNContactStore()
+    private var changeHandler: (() -> Void)?
+    private var initializedObserver = false
 
     private let allowedContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -44,8 +46,21 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         }
     }
 
-    var contactsChangedNotificationName: Notification.Name {
-        return .CNContactStoreDidChange
+    func startObservingChanges(changeHandler: @escaping () -> Void) {
+        // should only call once
+        assert(self.changeHandler == nil)
+        self.changeHandler = changeHandler
+        NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: .CNContactStoreDidChange, object: nil)
+    }
+
+    @objc
+    func runChangeHandler() {
+        guard let changeHandler = self.changeHandler else {
+            Logger.error("\(TAG) trying to run change handler before it was registered")
+            assertionFailure()
+            return
+        }
+        changeHandler()
     }
 
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
@@ -70,23 +85,175 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     }
 }
 
+let kAddressBookContactyStoreDidChangeNotificationName = NSNotification.Name("AddressBookContactStoreAdapteeDidChange")
+/**
+ * System contact fetching compatible with iOS8
+ */
 class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
+
+    let TAG = "[AddressBookContactStoreAdaptee]"
+
+    private var addressBook: ABAddressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
+    private var changeHandler: (() -> Void)?
+
     var authorizationStatus: ContactStoreAuthorizationStatus {
-        //TODO
-        return .denied
+        switch ABAddressBookGetAuthorizationStatus() {
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .restricted
+        case .denied:
+            return .denied
+        case .authorized:
+            return .authorized
+        }
+    }
+
+    @objc
+    func runChangeHandler() {
+        guard let changeHandler = self.changeHandler else {
+            Logger.error("\(TAG) trying to run change handler before it was registered")
+            assertionFailure()
+            return
+        }
+        changeHandler()
+    }
+
+    func startObservingChanges(changeHandler: @escaping () -> Void) {
+        // should only call once
+        assert(self.changeHandler == nil)
+        self.changeHandler = changeHandler
+
+        NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: kAddressBookContactyStoreDidChangeNotificationName, object: nil)
+
+        let callback: ABExternalChangeCallback = { (_, _, _) in
+            // Ideally we'd just call the changeHandler here, but because this is a C style callback in swift, 
+            // we can't capture any state in the closure, so we use a notification as a trampoline
+            NotificationCenter.default.post(name: kAddressBookContactyStoreDidChangeNotificationName, object: nil)
+        }
+
+        ABAddressBookRegisterExternalChangeCallback(addressBook, callback, nil)
     }
 
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
-        // TODO
+        ABAddressBookRequestAccessWithCompletion(addressBook, completionHandler)
     }
 
     func fetchContacts() -> Result<[Contact], Error> {
-        // TODO
-        return .success([])
+        // Changes are not reflected unless we create a new address book
+        self.addressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
+
+        let allPeople = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook, nil, ABPersonGetSortOrdering()).takeRetainedValue() as [ABRecord]
+
+        let contacts = allPeople.map { self.buildContact(abRecord: $0) }
+
+        return .success(contacts)
     }
 
-    var contactsChangedNotificationName: Notification.Name {
-        return Notification.Name("TODO")
+    private func buildContact(abRecord: ABRecord) -> Contact {
+
+        let addressBookRecord = OWSABRecord(abRecord: abRecord)
+
+        var firstName = addressBookRecord.firstName
+        let lastName = addressBookRecord.lastName
+        let phoneNumbers = addressBookRecord.phoneNumbers
+
+        if (firstName == nil && lastName == nil) {
+            if let companyName = addressBookRecord.companyName {
+                firstName = companyName
+            } else {
+                firstName = phoneNumbers.first
+            }
+        }
+
+        return Contact(contactWithFirstName: firstName,
+                       andLastName: lastName,
+                       andUserTextPhoneNumbers: phoneNumbers,
+                       andImage: addressBookRecord.image,
+                       andContactID: addressBookRecord.recordId)
+    }
+
+}
+
+/**
+ * Wrapper around ABRecord for easy property extraction.
+ * Some code lifted from: 
+ * https://github.com/SocialbitGmbH/SwiftAddressBook/blob/c1993fa/Pod/Classes/SwiftAddressBookPerson.swift
+ */
+struct OWSABRecord {
+
+    public struct MultivalueEntry<T> {
+        public var value: T
+        public var label: String?
+        public let id: Int
+
+        public init(value: T, label: String?, id: Int) {
+            self.value = value
+            self.label = label
+            self.id = id
+        }
+    }
+
+    let abRecord: ABRecord
+
+    init(abRecord: ABRecord) {
+        self.abRecord = abRecord
+    }
+
+    var firstName: String? {
+        return self.extractProperty(kABPersonFirstNameProperty)
+    }
+
+    var lastName: String? {
+        return self.extractProperty(kABPersonLastNameProperty)
+    }
+
+    var companyName: String? {
+        return self.extractProperty(kABPersonOrganizationProperty)
+    }
+
+    var recordId: ABRecordID {
+        return ABRecordGetRecordID(abRecord)
+    }
+
+    // We don't yet support labels for our iOS8 users.
+    var phoneNumbers: [String] {
+        if let result: [MultivalueEntry<String>] = extractMultivalueProperty(kABPersonPhoneProperty) {
+            return result.map { $0.value }
+        } else {
+            return []
+        }
+    }
+
+    var image: UIImage? {
+        guard ABPersonHasImageData(abRecord) else {
+            return nil
+        }
+        guard let data = ABPersonCopyImageData(abRecord)?.takeRetainedValue() else {
+            return nil
+        }
+        return UIImage(data: data as Data)
+    }
+
+    private func extractProperty<T>(_ propertyName: ABPropertyID) -> T? {
+        let value: AnyObject? = ABRecordCopyValue(self.abRecord, propertyName)?.takeRetainedValue()
+        return value as? T
+    }
+
+    fileprivate func extractMultivalueProperty<T>(_ propertyName: ABPropertyID) -> Array<MultivalueEntry<T>>? {
+        guard let multivalue: ABMultiValue = extractProperty(propertyName) else { return nil }
+        var array = Array<MultivalueEntry<T>>()
+        for i: Int in 0..<(ABMultiValueGetCount(multivalue)) {
+            let value: T? = ABMultiValueCopyValueAtIndex(multivalue, i).takeRetainedValue() as? T
+            if let v: T = value {
+                let id: Int = Int(ABMultiValueGetIdentifierAtIndex(multivalue, i))
+                let optionalLabel = ABMultiValueCopyLabelAtIndex(multivalue, i)?.takeRetainedValue()
+                array.append(MultivalueEntry(value: v,
+                                             label: optionalLabel == nil ? nil : optionalLabel! as String,
+                                             id: id))
+            }
+        }
+        return !array.isEmpty ? array : nil
     }
 }
 
@@ -120,8 +287,8 @@ class ContactStoreAdapter: ContactStoreAdaptee {
         return self.adaptee.fetchContacts()
     }
 
-    var contactsChangedNotificationName: Notification.Name {
-        return self.adaptee.contactsChangedNotificationName
+    func startObservingChanges(changeHandler: @escaping () -> Void) {
+        self.adaptee.startObservingChanges(changeHandler: changeHandler)
     }
 }
 
@@ -154,9 +321,25 @@ class SystemContactsFetcher: NSObject {
     }
 
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
+    private var hasSetupObservation = false
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
+    }
+
+    var supportsContactEditing: Bool {
+        return self.contactStoreAdapter.supportsContactEditing
+    }
+
+    private func setupObservationIfNecessary() {
+        AssertIsOnMainThread()
+        guard !hasSetupObservation else {
+            return
+        }
+        hasSetupObservation = true
+        self.contactStoreAdapter.startObservingChanges {
+            self.updateContacts(completion: nil)
+        }
     }
 
     /**
@@ -175,7 +358,7 @@ class SystemContactsFetcher: NSObject {
             return
         }
         systemContactsHaveBeenRequestedAtLeastOnce = true
-        self.startObservingContactChanges()
+        setupObservationIfNecessary()
 
         switch authorizationStatus {
         case .notDetermined:
@@ -225,6 +408,7 @@ class SystemContactsFetcher: NSObject {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
+        setupObservationIfNecessary()
 
         DispatchQueue.global().async {
 
@@ -289,19 +473,6 @@ class SystemContactsFetcher: NSObject {
             }
         }
     }
-
-    private func startObservingContactChanges() {
-        NotificationCenter.default.addObserver(self,
-            selector: #selector(contactStoreDidChange),
-            name: self.contactStoreAdapter.contactsChangedNotificationName,
-            object: nil)
-    }
-
-    @objc
-    private func contactStoreDidChange() {
-        updateContacts(completion: nil)
-    }
-
 }
 
 struct HashableArray<Element: Hashable>: Hashable {
