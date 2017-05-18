@@ -1,32 +1,32 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ไม่ใช่ตอนนี้";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "ยอมรับตัวเลขความปลอดภัยใหม่";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Add";
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "เพิ่ม";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Add Contact";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "เพิ่มรายชื่อ";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Add by Phone Number";
 
 /* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Add Member";
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "เพิ่มสมาชิก";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Discard";
+"ALERT_DISCARD_BUTTON" = "ละทิ้ง";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "Don't Save";
+"ALERT_DONT_SAVE" = "ไม่บันทึก";
 
 /* Title for a generic error alert. */
-"ALERT_ERROR_TITLE" = "Error";
+"ALERT_ERROR_TITLE" = "ข้อผิดพลาด";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Save";
+"ALERT_SAVE" = "บันทึก";
 
 /* A message for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
@@ -77,13 +77,13 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "ไฟล์แนบ";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ล้มเหลว แตะเพื่อลองใหม่";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading…";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "กำลังดาวน์โหลด…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
@@ -116,7 +116,7 @@
 "ATTACHMENT_LABEL" = "ไฟล์แนบ";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "ไม่สามารถเลือกเอกสาร";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
@@ -125,7 +125,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "ข้อความเสียง";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกปิดกั้นจะไม่สามารถโทรหาคุณหรือส่งข้อความถึงคุณ";
@@ -182,7 +182,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ปิดกั้น %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls. You can grant this permission in the Settings app.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls and record voice messages. You can grant this permission in the Settings app.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
@@ -338,22 +338,22 @@
 "EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
 
 /* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "รายชื่อ";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
+"EDIT_GROUP_DEFAULT_TITLE" = "แก้ไขกลุ่ม";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "เพิ่ม…";
 
 /* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Members";
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "สมาชิก";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Update";
+"EDIT_GROUP_UPDATE_BUTTON" = "อัปเดต";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "You've changed this group. Would you like to save these changes?";
@@ -371,7 +371,7 @@
 "EDIT_ITEM_SHARE_ACTION" = "แบ่งปัน";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Edit";
+"EDIT_TXT" = "แก้ไข";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "เฮ้\n\nเมื่อเร็ว ๆ นี้ฉันได้ใช้ Signal เพื่อเก็บรักษาการสนทนาบน iPhone ของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งด้วย เพื่อให้เราสามารถมั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงโทรของเรา\n\nSignal ใช้งานได้บน iPhone และ Android รับเลยที่นี่: %@\n\nSignal ทำงานเหมือนกับแอปข้อความที่มีอยู่ของคุณ เราสามารถส่งรูปภาพและวิดีโอ โทรออก และเริ่มแชทกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครอื่นสามารถเห็นสิ่งเหล่านี้ ไม่แม้แต่ผู้คนที่สร้าง Signal!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้คนที่สร้าง Signal ได้ที่นี่: %@";
@@ -476,7 +476,7 @@
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "ไม่สามารถโหลดไฟล์";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
@@ -485,7 +485,7 @@
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "ข้อผิดพลาด";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "เกิดความล้มเหลวมากเกินไปกับรายชื่อนี้ โปรดลองอีกครั้งในเร็ว ๆ นี้";
@@ -530,13 +530,13 @@
 "GROUP_MEMBER_LEFT" = " %@ ได้ออกจากกลุ่ม";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "เพิ่มรายชื่อ";
 
 /* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Call";
+"GROUP_MEMBERS_CALL" = "โทร";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Send Message";
+"GROUP_MEMBERS_SEND_MESSAGE" = "ส่งข้อความ";
 
 /* Button label for the 'show contact info' button */
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
@@ -563,7 +563,7 @@
 "HOURS_TIME_AMOUNT" = "%u ชั่วโมง";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connecting…";
+"IN_CALL_CONNECTING" = "กำลังเชื่อมต่อ…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Ringing…";
@@ -680,7 +680,7 @@
 "MESSAGE_STATUS_SENT" = "Sent";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด…";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้ปิดกั้นผู้ใช้นี้";
@@ -689,7 +689,7 @@
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Download Failed.";
 
 /* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Download Again";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "ดาวน์โหลดอีกครั้ง";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "คุณได้ปิดกั้น 1 สมาชิกของกลุ่มนี้";
@@ -769,13 +769,13 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ตั้งรูปภาพกลุ่ม";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Create";
+"NEW_GROUP_CREATE_BUTTON" = "สร้าง";
 
 /* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "กลุ่มใหม่";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "สมาชิก";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ตั้งชื่อแชทกลุ่มนี้";
@@ -790,10 +790,10 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ค้นหา";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาผู้ใช้";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหารายชื่อด้วยหมายเลขโทรศัพท์";
@@ -826,7 +826,7 @@
 "NOTIFICATIONS_SOUND" = "เสียงการแจ้งเตือน";
 
 /* No comment provided by engineer. */
-"OK" = "OK";
+"OK" = "ตกลง";
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
@@ -851,7 +851,7 @@
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "ข้อความ";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "ตัวอย่าง: %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
@@ -953,7 +953,7 @@
 "REGISTER_CONTACTS_WELCOME" = "ยินดีต้อนรับ!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
+"REGISTER_FAILED_TRY_AGAIN" = "ลองอีกครั้ง";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
@@ -997,6 +997,18 @@
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "เปิดใช้งานอุปกรณ์นี้";
 
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
+
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";
 
@@ -1031,7 +1043,7 @@
 "SECURE_SESSION_RESET" = "วาระแบบปลอดภัยถูกรีเซ็ต";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "ส่งอีกครั้ง";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "ส่ง";
@@ -1040,7 +1052,7 @@
 "SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "ส่งไฟล์";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "การส่งคำเชิญล้มเหลว โปรดลองอีกครั้งในภายหลัง";
@@ -1298,13 +1310,13 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "ข้อความเสียง";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "ข้อความเสียง";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "ตั้งค่าให้เสร็จสมบูรณ์บน Signal Desktop";
