@@ -4,7 +4,9 @@
 
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugLogger.h"
+#import "DomainFrontingCountryViewController.h"
 #import "Environment.h"
+#import "OWSCountryMetadata.h"
 #import "Pastelog.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
@@ -80,6 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reachabilityChanged
 {
     OWSAssert([NSThread isMainThread]);
+
+    [self updateTableContents];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 
     [self updateTableContents];
 }
@@ -161,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     [censorshipSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = NSLocalizedString(
-            @"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION", @"Label for the  'censorship circumvention' switch.");
+            @"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION", @"Label for the  'manual censorship circumvention' switch.");
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor blackColor];
 
@@ -193,9 +202,67 @@ NS_ASSUME_NONNULL_BEGIN
         return cell;
     }
                                                          actionBlock:nil]];
+
+    if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated) {
+        [censorshipSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            OWSCountryMetadata *manualCensorshipCircumventionCountry =
+                [weakSelf ensureManualCensorshipCircumventionCountry];
+            OWSAssert(manualCensorshipCircumventionCountry);
+
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = [NSString
+                stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
+                                     @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
+                                     @"censorship circumvention country}}."),
+                manualCensorshipCircumventionCountry.localizedCountryName];
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            return cell;
+        }
+                                       actionBlock:^{
+                                           [weakSelf showDomainFrontingCountryView];
+                                       }]];
+    }
     [contents addSection:censorshipSection];
 
     self.contents = contents;
+}
+
+- (void)showDomainFrontingCountryView
+{
+    DomainFrontingCountryViewController *vc = [DomainFrontingCountryViewController new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (OWSCountryMetadata *)ensureManualCensorshipCircumventionCountry
+{
+    OWSCountryMetadata *countryMetadata = nil;
+    NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;
+    if (countryCode) {
+        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
+    }
+
+    if (!countryMetadata) {
+        countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
+        if (countryCode) {
+            countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
+        }
+    }
+
+    if (!countryMetadata) {
+        countryCode = @"US";
+        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
+        OWSAssert(countryMetadata);
+    }
+
+    if (countryMetadata) {
+        // Ensure the "manual censorship circumvention" country state is in sync.
+        OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
+        OWSSignalService.sharedInstance.manualCensorshipCircumventionDomain = countryMetadata.googleDomain;
+    }
+
+    return countryMetadata;
 }
 
 #pragma mark - Actions
