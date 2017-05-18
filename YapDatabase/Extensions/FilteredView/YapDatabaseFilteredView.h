@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   The filteringBlock allows you to filter items from this view that exist in the parent view.
  *   There are multiple filteringBlock types that are supported.
  *
- *   @see YapDatabaseViewTypes.h for block type definitions.
+ *   @see YapDatabaseFilteredViewTypes.h for block type definitions.
  *
  * @param versionTag
  *
