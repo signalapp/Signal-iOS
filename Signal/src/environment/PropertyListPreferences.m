@@ -26,6 +26,7 @@ NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
+NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 
 @implementation PropertyListPreferences
 
@@ -189,6 +190,16 @@ NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDecli
 - (void)setHasDeclinedNoContactsView:(BOOL)value
 {
     [self setValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
+}
+
+- (void)setIOSUpgradeNagVersion:(NSString *)value
+{
+    [self setValueForKey:PropertyListPreferencesKeyIOSUpgradeNagVersion toValue:value];
+}
+
+- (nullable NSString *)iOSUpgradeNagVersion
+{
+    return [self tryGetValueForKey:PropertyListPreferencesKeyIOSUpgradeNagVersion];
 }
 
 #pragma mark - Calling
