@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSGroupModel.h"
 #import "TSThread.h"
@@ -21,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
+
+// all group threads containing recipient as a member
++ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId;
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 

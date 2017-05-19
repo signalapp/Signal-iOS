@@ -251,6 +251,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
     NSDate *lastMessageDate = [lastMessage receiptDateForSorting];
 
+    if ([lastMessage isKindOfClass:[TSErrorMessage class]]) {
+        TSErrorMessage *errorMessage = (TSErrorMessage *)lastMessage;
+        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
+            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
+            // there was no meaningful interaction.
+            DDLogDebug(@"%@ not updating lastMessage for thread:%@ nonblocking identity change: %@",
+                self.tag,
+                self,
+                errorMessage.debugDescription);
+            return;
+        }
+    }
+
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
 
