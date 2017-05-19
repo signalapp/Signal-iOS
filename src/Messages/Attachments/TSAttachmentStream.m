@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
 
-    [self ensureLocalFilePath:NO];
+    // This instance hasn't been persisted yet.
+    [self ensureFilePathAndPersist:NO];
 
     return self;
 }
@@ -57,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
 
-    [self ensureLocalFilePath:NO];
+    // This instance hasn't been persisted yet.
+    [self ensureFilePathAndPersist:NO];
 
     return self;
 }
@@ -69,7 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    [self ensureLocalFilePath:YES];
+    // This instance has been persisted, we need to
+    // update it in the database.
+    [self ensureFilePathAndPersist:YES];
 
     return self;
 }
@@ -87,28 +91,28 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)ensureLocalFilePath:(BOOL)shouldPersist
+- (void)ensureFilePathAndPersist:(BOOL)shouldPersist
 {
     if (self.localRelativeFilePath) {
         return;
     }
 
     NSString *attachmentsFolder = [[self class] attachmentsFolder];
-    NSString *localFilePath = [MIMETypeUtil filePathForAttachment:self.uniqueId
-                                                       ofMIMEType:self.contentType
-                                                   sourceFilename:self.sourceFilename
-                                                         inFolder:attachmentsFolder];
-    if (!localFilePath) {
+    NSString *filePath = [MIMETypeUtil filePathForAttachment:self.uniqueId
+                                                  ofMIMEType:self.contentType
+                                              sourceFilename:self.sourceFilename
+                                                    inFolder:attachmentsFolder];
+    if (!filePath) {
         DDLogError(@"%@ Could not generate path for attachment.", self.tag);
         OWSAssert(0);
         return;
     }
-    if (![localFilePath hasPrefix:attachmentsFolder]) {
+    if (![filePath hasPrefix:attachmentsFolder]) {
         DDLogError(@"%@ Attachment paths should all be in the attachments folder.", self.tag);
         OWSAssert(0);
         return;
     }
-    NSString *localRelativeFilePath = [localFilePath substringFromIndex:attachmentsFolder.length];
+    NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
     if (localRelativeFilePath.length < 1) {
         DDLogError(@"%@ Empty local relative attachment paths.", self.tag);
         OWSAssert(0);
@@ -116,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.localRelativeFilePath = localRelativeFilePath;
-    OWSAssert(self.localFilePath);
+    OWSAssert(self.filePath);
 
     if (shouldPersist) {
         // It's not ideal to do this asynchronously, but we can create a new transaction
@@ -136,22 +140,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error
 {
     *error = nil;
-    NSString *_Nullable localFilePath = self.localFilePath;
-    if (!localFilePath) {
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
         return nil;
     }
-    return [NSData dataWithContentsOfFile:localFilePath options:0 error:error];
+    return [NSData dataWithContentsOfFile:filePath options:0 error:error];
 }
 
 - (BOOL)writeData:(NSData *)data error:(NSError **)error
 {
     *error = nil;
-    NSString *_Nullable localFilePath = self.localFilePath;
-    if (!localFilePath) {
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
         return NO;
     }
-    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, localFilePath);
-    return [data writeToFile:localFilePath options:0 error:error];
+    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
+    return [data writeToFile:filePath options:0 error:error];
 }
 
 + (NSString *)attachmentsFolder
@@ -185,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     return count;
 }
 
-- (nullable NSString *)localFilePath
+- (nullable NSString *)filePath
 {
     if (!self.localRelativeFilePath) {
         OWSAssert(0);
@@ -197,21 +205,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURL *)mediaURL
 {
-    NSString *_Nullable localFilePath = self.localFilePath;
-    if (!localFilePath) {
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
         return nil;
     }
-    return [NSURL fileURLWithPath:localFilePath];
+    return [NSURL fileURLWithPath:filePath];
 }
 
 - (void)removeFileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSString *_Nullable localFilePath = self.localFilePath;
-    if (!localFilePath) {
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
         return;
     }
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:localFilePath error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
         DDLogError(@"%@ remove file errored with: %@", self.tag, error);

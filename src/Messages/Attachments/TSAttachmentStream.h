@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isAudio;
 - (nullable NSURL *)mediaURL;
 
-- (nullable NSString *)localFilePath;
+- (nullable NSString *)filePath;
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
