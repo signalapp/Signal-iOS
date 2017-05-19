@@ -98,7 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case TSErrorMessageUnknownContactBlockOffer:
-            return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER", nil);
+            return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
+                @"Message shown in conversation view that offers to block an unknown user.");
         default:
             return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
             break;

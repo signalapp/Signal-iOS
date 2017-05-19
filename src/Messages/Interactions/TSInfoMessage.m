@@ -64,6 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
             return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
+        case TSInfoMessageAddToContactsOffer:
+            return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
+                @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
         default:
             break;
     }
