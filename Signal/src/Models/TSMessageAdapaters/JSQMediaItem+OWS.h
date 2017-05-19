@@ -10,4 +10,8 @@
 
 - (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImage:(UIImage *)image;
 
+- (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImageSize:(CGSize)imageSize;
+
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL;
+
 @end

@@ -12,10 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAnimatedAdapter : JSQMediaItem <OWSMessageEditing, OWSMessageMediaAdapter>
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
+@property (nonatomic, readonly) NSString *attachmentId;
 
-@property NSString *attachmentId;
-@property NSData *fileData;
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming;
 
 @end
 

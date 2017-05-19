@@ -320,9 +320,9 @@ NS_ASSUME_NONNULL_BEGIN
     [bottomLabel sizeToFit];
     [mediaView addSubview:bottomLabel];
 
-    const CGFloat topLabelHeight = ceil(topLabel.font.lineHeight);
+    const CGFloat topLabelHeight = (CGFloat)ceil(topLabel.font.lineHeight);
     const CGFloat kAudioProgressViewHeight = 12.f;
-    const CGFloat bottomLabelHeight = ceil(bottomLabel.font.lineHeight);
+    const CGFloat bottomLabelHeight = (CGFloat)ceil(bottomLabel.font.lineHeight);
     CGRect labelsBounds = CGRectZero;
     labelsBounds.origin.x = (CGFloat)round(iconFrame.origin.x + iconFrame.size.width + kLabelHSpacing);
     labelsBounds.size.width = contentFrame.origin.x + contentFrame.size.width - labelsBounds.origin.x;
