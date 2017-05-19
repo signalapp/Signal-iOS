@@ -344,8 +344,10 @@ class SystemContactsFetcher: NSObject {
             return
         }
         hasSetupObservation = true
-        self.contactStoreAdapter.startObservingChanges {
-            self.updateContacts(completion: nil)
+        self.contactStoreAdapter.startObservingChanges { [weak self] in
+            DispatchQueue.main.async {
+                self?.updateContacts(completion: nil)
+            }
         }
     }
 
