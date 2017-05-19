@@ -938,10 +938,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogInfo(@"%@ sending to recipient: %@, failed with error: %@",
-                self.tag,
-                recipient.uniqueId,
-                message.debugDescription);
+            DDLogInfo(@"%@ sending to recipient: %@, failed with error: %@", self.tag, recipient.uniqueId, error);
             [DDLog flushLog];
 
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
