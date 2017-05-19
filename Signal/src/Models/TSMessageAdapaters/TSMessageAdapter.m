@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSMessageAdapter.h"
 #import "AttachmentSharing.h"
 #import "OWSCall.h"
 #import "Signal-Swift.h"
@@ -16,6 +17,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
+#import "TSUnreadIndicatorInteraction.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -119,6 +121,8 @@ NS_ASSUME_NONNULL_BEGIN
             adapter.senderDisplayName = NSLocalizedString(@"ME_STRING", @"");
             adapter.messageType       = TSOutgoingMessageAdapter;
         }
+    } else {
+        OWSAssert(0);
     }
 
     if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
@@ -216,11 +220,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                    displayString:@""];
             return call;
         }
-    } else {
+    } else if ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+        adapter.messageType = TSUnreadIndicatorAdapter;
+    } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
         adapter.errorMessageType = errorMessage.errorType;
         adapter.messageBody          = errorMessage.description;
         adapter.messageType          = TSErrorMessageAdapter;
+    } else {
+        OWSAssert(0);
     }
 
     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {

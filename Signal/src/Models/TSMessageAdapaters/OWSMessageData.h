@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, TSMessageAdapterType) {
     TSErrorMessageAdapter,
     TSMediaAttachmentAdapter,
     TSGenericTextMessageAdapter, // Used when message direction is unknown (outgoing or incoming)
+    TSUnreadIndicatorAdapter,
 };
 
 @protocol OWSMessageData <JSQMessageData, OWSMessageEditing>

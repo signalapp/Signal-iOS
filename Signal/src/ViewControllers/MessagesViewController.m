@@ -27,6 +27,7 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "OWSUnknownContactBlockOfferMessage.h"
+#import "OWSUnreadIndicatorCell.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
@@ -707,6 +708,8 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
+    [ThreadUtil createUnreadMessagesIndicatorIfNecessary:thread storageManager:self.storageManager];
+
     [self markAllMessagesAsRead];
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -812,6 +815,9 @@ typedef enum : NSUInteger {
 {
     [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
           forCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]];
+
+    [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
+            forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
 
     [self.collectionView registerNib:[OWSDisplayedMessageCollectionViewCell nib]
           forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
@@ -1685,6 +1691,9 @@ typedef enum : NSUInteger {
         case TSOutgoingMessageAdapter: {
             cell = [self loadOutgoingCellForMessage:message atIndexPath:indexPath];
         } break;
+        case TSUnreadIndicatorAdapter: {
+            cell = [self loadUnreadIndicatorCell:indexPath];
+        } break;
         default: {
             DDLogWarn(@"using default cell constructor for message: %@", message);
             cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView cellForItemAtIndexPath:indexPath];
@@ -1712,6 +1721,7 @@ typedef enum : NSUInteger {
 
     if (![cell isKindOfClass:[OWSIncomingMessageCollectionViewCell class]]) {
         DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
+        OWSAssert(0);
         return cell;
     }
 
@@ -1732,6 +1742,7 @@ typedef enum : NSUInteger {
 
     if (![cell isKindOfClass:[OWSOutgoingMessageCollectionViewCell class]]) {
         DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
+        OWSAssert(0);
         return cell;
     }
 
@@ -1748,6 +1759,18 @@ typedef enum : NSUInteger {
         TSMessageAdapter *messageAdapter = (TSMessageAdapter *)message;
         cell.mediaView.alpha = messageAdapter.mediaViewAlpha;
     }
+
+    return cell;
+}
+
+- (JSQMessagesCollectionViewCell *)loadUnreadIndicatorCell:(NSIndexPath *)indexPath
+{
+    OWSAssert(indexPath);
+
+    OWSUnreadIndicatorCell *cell =
+        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
+                                                       forIndexPath:indexPath];
+    [cell configure];
 
     return cell;
 }
@@ -2222,6 +2245,7 @@ typedef enum : NSUInteger {
             [self handleErrorMessageTap:(TSErrorMessage *)interaction];
             break;
         case TSCallAdapter:
+        case TSUnreadIndicatorAdapter:
             break;
         default:
             DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);
