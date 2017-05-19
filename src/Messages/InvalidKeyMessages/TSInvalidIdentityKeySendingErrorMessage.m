@@ -32,12 +32,12 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 {
     self = [super initWithTimestamp:message.timestamp
                            inThread:thread
-                  failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
+                  failedMessageType:TSErrorMessageWrongTrustedIdentityKey
+                        recipientId:recipientId];
 
     if (self) {
         _messageId    = message.uniqueId;
         _preKeyBundle = preKeyBundle;
-        _recipientId  = recipientId;
     }
 
     return self;
