@@ -38,15 +38,14 @@
     return bubbleSize;
 }
 
-- (CGSize)sizeOfImageAtURL:(NSURL *_Nullable)imageURL
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL
 {
-    if (!imageURL) {
-        return CGSizeZero;
-    }
+    OWSAssert(imageURL);
 
     // With CGImageSource we avoid loading the whole image into memory.
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
     if (!source) {
+        OWSAssert(0);
         return CGSizeZero;
     }
 
@@ -61,6 +60,8 @@
         NSNumber *height = properties[(NSString *)kCGImagePropertyPixelHeight];
         if (width && height) {
             imageSize = CGSizeMake(width.floatValue, height.floatValue);
+        } else {
+            OWSAssert(0);
         }
     }
     CFRelease(source);

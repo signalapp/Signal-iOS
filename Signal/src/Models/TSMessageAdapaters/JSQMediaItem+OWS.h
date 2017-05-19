@@ -12,6 +12,6 @@
 
 - (CGSize)ows_adjustBubbleSize:(CGSize)bubbleSize forImageSize:(CGSize)imageSize;
 
-- (CGSize)sizeOfImageAtURL:(NSURL *_Nullable)imageURL;
+- (CGSize)sizeOfImageAtURL:(NSURL *)imageURL;
 
 @end

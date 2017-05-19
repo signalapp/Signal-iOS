@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming
 {
-    self = [super initWithImage:nil];
+    self = [super init];
 
     if (!self) {
         return self;
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     _attachment = attachment;
     _attachmentId = attachment.uniqueId;
     _incoming = incoming;
-    _imageSize = [self sizeOfImageAtURL:attachment.mediaURL];
+    _imageSize = attachment.mediaURL ? [self sizeOfImageAtURL:attachment.mediaURL] : CGSizeZero;
 
     return self;
 }
@@ -74,6 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.cachedImageView == nil) {
         UIImage *image = self.attachment.image;
         if (!image) {
+            DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
             return nil;
         }
         CGSize size             = [self mediaViewDisplaySize];
@@ -125,10 +127,20 @@ NS_ASSUME_NONNULL_BEGIN
             utiType = (NSString *)kUTTypeImage;
         }
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         return;
     } else if (action == NSSelectorFromString(@"save:")) {
         NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
         [library writeImageDataToSavedPhotosAlbum:data
                                          metadata:nil
@@ -159,6 +171,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

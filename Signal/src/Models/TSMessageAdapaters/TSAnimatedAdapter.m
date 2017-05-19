@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
 @property (nonatomic) CGSize imageSize;
+@property (nonatomic) NSString *attachmentId;
 
 // See comments on OWSMessageMediaAdapter.
 @property (nonatomic, nullable, weak) id lastPresentingCell;
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
         _attachment      = attachment;
         _attachmentId    = attachment.uniqueId;
         _incoming = incoming;
-        _imageSize = [self sizeOfImageAtURL:attachment.mediaURL];
+        _imageSize = attachment.mediaURL ? [self sizeOfImageAtURL:attachment.mediaURL] : CGSizeZero;
     }
 
     return self;
@@ -100,6 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.cachedImageView == nil) {
         // Use Flipboard FLAnimatedImage library to display gifs
         NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        if (!fileData) {
+            DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return nil;
+        }
         FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
         imageView.animatedImage        = animatedGif;
@@ -141,11 +147,20 @@ NS_ASSUME_NONNULL_BEGIN
             utiType = (NSString *)kUTTypeGIF;
         }
 
-        UIPasteboard *pasteboard = UIPasteboard.generalPasteboard;
         NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
-        [pasteboard setData:data forPasteboardType:utiType];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
+        [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
     } else if (action == NSSelectorFromString(@"save:")) {
         NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
         [library writeImageDataToSavedPhotosAlbum:data
                                          metadata:nil
@@ -159,6 +174,18 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *actionString = NSStringFromSelector(action);
         DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, [self class], self.attachmentId);
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
