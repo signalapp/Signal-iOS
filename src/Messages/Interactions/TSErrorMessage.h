@@ -54,7 +54,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
-@property (nullable, readonly) NSString *recipientId;
+@property (nullable, nonatomic, readonly) NSString *recipientId;
 
 @end
 
