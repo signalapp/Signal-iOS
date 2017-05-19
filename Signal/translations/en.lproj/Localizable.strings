@@ -1297,6 +1297,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Unnamed Device";
 
+/* Named used for groups without a name. */
+"UNNAMED_GROUP_NAME" = "Unnamed Group";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Failed to unregister from Signal.";
 

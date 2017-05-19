@@ -9,11 +9,14 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/TSStorageManager.h>
 
 @import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     @"OWSContactsManagerSignalAccountsDidChangeNotification";
+
+NSString *const kTSStorageManager_ContactNames = @"kTSStorageManager_ContactNames";
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
@@ -191,11 +194,44 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
             [[NSNotificationCenter defaultCenter]
                 postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
                               object:nil];
+
+            [self updateCachedDisplayNames];
         });
     });
 }
 
+- (void)updateCachedDisplayNames
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSMutableDictionary<NSString *, NSString *> *accountNameMap = [NSMutableDictionary new];
+    for (SignalAccount *signalAccount in self.signalAccounts) {
+        NSString *displayName = [self displayNameForSignalAccount:signalAccount];
+        if (![displayName isEqualToString:signalAccount.recipientId]) {
+            accountNameMap[signalAccount.recipientId] = displayName;
+        }
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [TSStorageManager.sharedManager.newDatabaseConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                for (NSString *recipientId in accountNameMap) {
+                    NSString *displayName = accountNameMap[recipientId];
+                    [transaction setObject:displayName forKey:recipientId inCollection:kTSStorageManager_ContactNames];
+                }
+            }];
+    });
+}
+
+- (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.lastPathComponent > 0);
+
+    return [[TSStorageManager sharedManager] objectForKey:recipientId inCollection:kTSStorageManager_ContactNames];
+}
+
 #pragma mark - View Helpers
+
 // TODO move into Contact class.
 + (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
 {
@@ -245,16 +281,23 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
                              @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
-    if (!identifier) {
+- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+{
+    if (!recipientId) {
         return self.unknownContactName;
     }
 
     // When viewing an old thread with someone who is no longer a Signal user, they won't have a SignalAccount
     // so we get the name from `allContactsMap` as opposed to `signalAccountForRecipientId`.
-    Contact *contact = self.allContactsMap[identifier];
+    Contact *contact = self.allContactsMap[recipientId];
 
-    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
+    NSString *displayName = contact.fullName;
+    if (displayName.length < 1) {
+        displayName = [self cachedDisplayNameForRecipientId:recipientId];
+    }
+    if (displayName.length < 1) {
+        displayName = recipientId;
+    }
 
     return displayName;
 }
