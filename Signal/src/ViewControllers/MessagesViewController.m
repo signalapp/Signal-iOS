@@ -747,6 +747,10 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
+    // We need to create the "unread indicator" before we mark
+    // all messages as read.
+    [self ensureThreadOffersAndIndicators];
+
     [self markAllMessagesAsRead];
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -2752,9 +2756,8 @@ typedef enum : NSUInteger {
     OWSAssert([NSThread isMainThread]);
 
     if (self.hasClearedUnreadMessagesIndicator) {
-        // ensureThreadOffersAndIndicators is slightly
-        // expensive, so make sure we don't call it
-        // unneccesarily.
+        // ensureThreadOffersAndIndicators is somewhat expensive
+        // so we don't want to call it unnecessarily.
         return;
     }
 

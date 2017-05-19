@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         __block TSUnreadIndicatorInteraction *unreadIndicator = nil;
         __block TSIncomingMessage *firstIncomingMessage = nil;
         __block TSOutgoingMessage *firstOutgoingMessage = nil;
-        __block TSMessage *firstUnreadMessage = nil;
+        __block TSIncomingMessage *firstUnreadMessage = nil;
         __block long outgoingMessageCount = 0;
 
         [[transaction ext:TSMessageDatabaseViewExtensionName]
