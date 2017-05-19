@@ -18,6 +18,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@implementation ThreadOffersAndIndicators
+
+@end
+
+#pragma mark -
+
 @implementation ThreadUtil
 
 + (void)sendMessageWithText:(NSString *)text inThread:(TSThread *)thread messageSender:(OWSMessageSender *)messageSender
@@ -75,30 +81,35 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-+ (void)ensureThreadOffersAndIndicators:(TSContactThread *)contactThread
-                         storageManager:(TSStorageManager *)storageManager
-                        contactsManager:(OWSContactsManager *)contactsManager
-                        blockingManager:(OWSBlockingManager *)blockingManager
++ (ThreadOffersAndIndicators *)ensureThreadOffersAndIndicators:(TSThread *)thread
+                                                storageManager:(TSStorageManager *)storageManager
+                                               contactsManager:(OWSContactsManager *)contactsManager
+                                               blockingManager:(OWSBlockingManager *)blockingManager
+                                   hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+                                 fixedUnreadIndicatorTimestamp:(NSNumber *_Nullable)fixedUnreadIndicatorTimestamp
 {
-    OWSAssert(contactThread);
+    OWSAssert(thread);
     OWSAssert(storageManager);
     OWSAssert(contactsManager);
     OWSAssert(blockingManager);
+
+    ThreadOffersAndIndicators *result = [ThreadOffersAndIndicators new];
 
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
         __block OWSAddToContactsOfferMessage *addToContactsOffer = nil;
         __block OWSUnknownContactBlockOfferMessage *blockOffer = nil;
+        __block TSUnreadIndicatorInteraction *unreadIndicator = nil;
         __block TSIncomingMessage *firstIncomingMessage = nil;
         __block TSOutgoingMessage *firstOutgoingMessage = nil;
+        __block TSMessage *firstUnreadMessage = nil;
         __block long outgoingMessageCount = 0;
 
         [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:contactThread.uniqueId
+            enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
 
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
                               OWSAssert(!blockOffer);
@@ -106,6 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
                               OWSAssert(!addToContactsOffer);
                               addToContactsOffer = (OWSAddToContactsOfferMessage *)object;
+                          } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                              OWSAssert(!unreadIndicator);
+                              unreadIndicator = (TSUnreadIndicatorInteraction *)object;
                           } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
                               TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
                               if (!firstIncomingMessage) {
@@ -114,6 +128,16 @@ NS_ASSUME_NONNULL_BEGIN
                                   OWSAssert([[firstIncomingMessage receiptDateForSorting]
                                                 compare:[incomingMessage receiptDateForSorting]]
                                       == NSOrderedAscending);
+                              }
+
+                              if (!incomingMessage.wasRead) {
+                                  if (!firstUnreadMessage) {
+                                      firstUnreadMessage = incomingMessage;
+                                  } else {
+                                      OWSAssert([[firstUnreadMessage receiptDateForSorting]
+                                                    compare:[incomingMessage receiptDateForSorting]]
+                                          == NSOrderedAscending);
+                                  }
                               }
                           } else if ([object isKindOfClass:[TSOutgoingMessage class]]) {
                               TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)object;
@@ -138,19 +162,30 @@ NS_ASSUME_NONNULL_BEGIN
 
         BOOL shouldHaveBlockOffer = YES;
         BOOL shouldHaveAddToContactsOffer = YES;
-        if ([[blockingManager blockedPhoneNumbers] containsObject:contactThread.contactIdentifier]) {
-            // Only create offers for users which are not already blocked.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for users which are not already blocked.
-            shouldHaveBlockOffer = NO;
-        }
 
-        SignalAccount *signalAccount = contactsManager.signalAccountMap[contactThread.contactIdentifier];
-        if (signalAccount) {
-            // Only create offers for non-contacts.
+        BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
+        if (!isContactThread) {
+            // Only create "add to contacts" offers in 1:1 conversations.
             shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for non-contacts.
+            // Only create block offers in 1:1 conversations.
             shouldHaveBlockOffer = NO;
+        } else {
+            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+
+            if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+                // Only create "add to contacts" offers for users which are not already blocked.
+                shouldHaveAddToContactsOffer = NO;
+                // Only create block offers for users which are not already blocked.
+                shouldHaveBlockOffer = NO;
+            }
+
+            SignalAccount *signalAccount = contactsManager.signalAccountMap[recipientId];
+            if (signalAccount) {
+                // Only create "add to contacts" offers for non-contacts.
+                shouldHaveAddToContactsOffer = NO;
+                // Only create block offers for non-contacts.
+                shouldHaveBlockOffer = NO;
+            }
         }
 
         if (!firstMessage) {
@@ -176,8 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We use these offset to control the ordering of the offers and indicators.
         const int kBlockOfferOffset = -3;
         const int kAddToContactsOfferOffset = -2;
-        // TODO:
-        //        const int kUnseenIndicatorOfferOffset = -1;
+        const int kUnreadIndicatorOfferOffset = -1;
 
         if (blockOffer && !shouldHaveBlockOffer) {
             [blockOffer removeWithTransaction:transaction];
@@ -188,11 +222,12 @@ NS_ASSUME_NONNULL_BEGIN
             // conversation's timeline, so we back-date it to slightly before
             // the first incoming message (which we know is the first message).
             uint64_t blockOfferTimestamp = (uint64_t)((long long)firstMessage.timestamp + kBlockOfferOffset);
+            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
             TSMessage *offerMessage =
                 [OWSUnknownContactBlockOfferMessage unknownContactBlockOfferMessage:blockOfferTimestamp
-                                                                             thread:contactThread
-                                                                          contactId:contactThread.contactIdentifier];
+                                                                             thread:thread
+                                                                          contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
         }
 
@@ -206,89 +241,50 @@ NS_ASSUME_NONNULL_BEGIN
             // conversation's timeline, so we back-date it to slightly before
             // the first incoming message (which we know is the first message).
             uint64_t offerTimestamp = (uint64_t)((long long)firstMessage.timestamp + kAddToContactsOfferOffset);
+            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
-            TSMessage *offerMessage =
-                [OWSAddToContactsOfferMessage addToContactsOfferMessage:offerTimestamp
-                                                                 thread:contactThread
-                                                              contactId:contactThread.contactIdentifier];
+            TSMessage *offerMessage = [OWSAddToContactsOfferMessage addToContactsOfferMessage:offerTimestamp
+                                                                                       thread:thread
+                                                                                    contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
         }
-    }];
-}
 
-+ (void)createUnreadMessagesIndicatorIfNecessary:(TSThread *)thread storageManager:(TSStorageManager *)storageManager
-{
-    OWSAssert(thread);
-    OWSAssert(storageManager);
+        BOOL shouldHaveUnreadIndicator
+            = ((firstUnreadMessage != nil || fixedUnreadIndicatorTimestamp != nil) && !hideUnreadMessagesIndicator);
+        if (!shouldHaveUnreadIndicator) {
+            if (unreadIndicator) {
+                [unreadIndicator removeWithTransaction:transaction];
+            }
+        } else {
+            // We want the block offer to appear just before the first unread incoming
+            // message in the conversation timeline...
+            //
+            // ...unless we have a fixed timestamp for the unread indicator.
+            uint64_t indicatorTimestamp = (uint64_t)(fixedUnreadIndicatorTimestamp
+                    ? [fixedUnreadIndicatorTimestamp longLongValue]
+                    : ((long long)firstUnreadMessage.timestamp + kUnreadIndicatorOfferOffset));
 
-    [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            if (indicatorTimestamp && unreadIndicator.timestamp == indicatorTimestamp) {
+                // Keep the existing indicator; it is in the correct position.
 
-        NSMutableArray *indicators = [NSMutableArray new];
-        __block TSMessage *firstUnreadMessage = nil;
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+                result.unreadIndicator = unreadIndicator;
+            } else {
+                if (unreadIndicator) {
+                    [unreadIndicator removeWithTransaction:transaction];
+                }
 
-                          if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              [indicators addObject:object];
-                          } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
-                              TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
-                              if (!incomingMessage.wasRead) {
-                                  if (!firstUnreadMessage) {
-                                      firstUnreadMessage = incomingMessage;
-                                  } else {
-                                      OWSAssert([[firstUnreadMessage receiptDateForSorting]
-                                                    compare:[incomingMessage receiptDateForSorting]]
-                                          == NSOrderedAscending);
-                                  }
-                              }
-                          }
-                      }];
+                DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction", self.tag);
 
-        for (TSUnreadIndicatorInteraction *indicator in indicators) {
-            [indicator removeWithTransaction:transaction];
-        }
+                TSUnreadIndicatorInteraction *indicator =
+                    [[TSUnreadIndicatorInteraction alloc] initWithTimestamp:indicatorTimestamp thread:thread];
+                [indicator saveWithTransaction:transaction];
 
-        BOOL shouldHaveIndicator = firstUnreadMessage != nil;
-        if (!shouldHaveIndicator) {
-            return;
-        }
-
-        DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction", self.tag);
-
-        // We want the block offer to appear just before the first unread incoming
-        // message in the conversation timeline.
-        uint64_t indicatorTimestamp = firstUnreadMessage.timestamp - 1;
-
-        TSUnreadIndicatorInteraction *indicator =
-            [[TSUnreadIndicatorInteraction alloc] initWithTimestamp:indicatorTimestamp thread:thread];
-        [indicator saveWithTransaction:transaction];
-    }];
-}
-
-+ (void)clearUnreadMessagesIndicator:(TSThread *)thread storageManager:(TSStorageManager *)storageManager
-{
-    OWSAssert(thread);
-    OWSAssert(storageManager);
-
-    [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-
-        NSMutableArray *indicators = [NSMutableArray new];
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              [indicators addObject:object];
-                          }
-                      }];
-
-        for (TSUnreadIndicatorInteraction *indicator in indicators) {
-            [indicator removeWithTransaction:transaction];
+                result.unreadIndicator = indicator;
+            }
         }
     }];
+
+    return result;
 }
 
 #pragma mark - Logging

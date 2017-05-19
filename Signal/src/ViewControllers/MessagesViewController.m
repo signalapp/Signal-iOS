@@ -646,6 +646,9 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSTimer *scrollLaterTimer;
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@property (nonatomic, nullable) ThreadOffersAndIndicators *offersAndIndicators;
+@property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
+
 
 @end
 
@@ -743,8 +746,6 @@ typedef enum : NSUInteger {
     isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
-
-    [ThreadUtil createUnreadMessagesIndicatorIfNecessary:thread storageManager:self.storageManager];
 
     [self markAllMessagesAsRead];
 
@@ -998,11 +999,6 @@ typedef enum : NSUInteger {
                                                                selector:@selector(scrollToDefaultPosition)
                                                                userInfo:nil
                                                                 repeats:NO];
-}
-
-- (void)clearUnreadMessagesIndicator
-{
-    [ThreadUtil clearUnreadMessagesIndicator:self.thread storageManager:self.storageManager];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1625,6 +1621,7 @@ typedef enum : NSUInteger {
         } else {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
+
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
 
@@ -2739,13 +2736,33 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self.thread;
-        [ThreadUtil ensureThreadOffersAndIndicators:contactThread
+    self.offersAndIndicators =
+        [ThreadUtil ensureThreadOffersAndIndicators:self.thread
                                      storageManager:self.storageManager
                                     contactsManager:self.contactsManager
-                                    blockingManager:self.blockingManager];
+                                    blockingManager:self.blockingManager
+                        hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
+                      fixedUnreadIndicatorTimestamp:(self.offersAndIndicators.unreadIndicator
+                                                            ? @(self.offersAndIndicators.unreadIndicator.timestamp)
+                                                            : nil)];
+}
+
+- (void)clearUnreadMessagesIndicator
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (self.hasClearedUnreadMessagesIndicator) {
+        // ensureThreadOffersAndIndicators is slightly
+        // expensive, so make sure we don't call it
+        // unneccesarily.
+        return;
     }
+
+    // Once we've cleared the unread messages indicator,
+    // make sure we don't show it again.
+    self.hasClearedUnreadMessagesIndicator = YES;
+
+    [self ensureThreadOffersAndIndicators];
 }
 
 #pragma mark - Attachment Picking: Documents
