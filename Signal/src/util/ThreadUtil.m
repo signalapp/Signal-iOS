@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -74,44 +75,37 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-+ (void)createBlockOfferIfNecessary:(TSContactThread *)contactThread
-                     storageManager:(TSStorageManager *)storageManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    blockingManager:(OWSBlockingManager *)blockingManager
++ (void)ensureThreadOffersAndIndicators:(TSContactThread *)contactThread
+                         storageManager:(TSStorageManager *)storageManager
+                        contactsManager:(OWSContactsManager *)contactsManager
+                        blockingManager:(OWSBlockingManager *)blockingManager
 {
     OWSAssert(contactThread);
     OWSAssert(storageManager);
     OWSAssert(contactsManager);
     OWSAssert(blockingManager);
 
-    if ([[blockingManager blockedPhoneNumbers] containsObject:contactThread.contactIdentifier]) {
-        // Only create block offers for users which are not already blocked.
-        return;
-    }
-
-    SignalAccount *signalAccount = contactsManager.signalAccountMap[contactThread.contactIdentifier];
-    if (signalAccount) {
-        // Only create block offers for non-contacts.
-        return;
-    }
-
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        const int kMaxOutgoingMessageCount = 10;
+        const int kMaxBlockOfferOutgoingMessageCount = 10;
 
+        __block OWSAddToContactsOfferMessage *addToContactsOffer = nil;
+        __block OWSUnknownContactBlockOfferMessage *blockOffer = nil;
         __block TSIncomingMessage *firstIncomingMessage = nil;
         __block TSOutgoingMessage *firstOutgoingMessage = nil;
         __block long outgoingMessageCount = 0;
-        __block BOOL hasUnknownContactBlockOffer = NO;
 
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:contactThread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
+
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
-                              hasUnknownContactBlockOffer = YES;
-                              // If there already is a block offer, abort.
-                              *stop = YES;
+                              OWSAssert(!blockOffer);
+                              blockOffer = (OWSUnknownContactBlockOfferMessage *)object;
+                          } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+                              OWSAssert(!addToContactsOffer);
+                              addToContactsOffer = (OWSAddToContactsOfferMessage *)object;
                           } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
                               TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
                               if (!firstIncomingMessage) {
@@ -131,26 +125,42 @@ NS_ASSUME_NONNULL_BEGIN
                                       == NSOrderedAscending);
                               }
                               outgoingMessageCount++;
-                              if (outgoingMessageCount > kMaxOutgoingMessageCount) {
-                                  // If the user has sent more than N interactions, abort.
-                                  *stop = YES;
-                              }
                           }
                       }];
 
-        if (!firstIncomingMessage && !firstOutgoingMessage) {
-            // If the thread has no interactions, abort.
-            return;
+        TSMessage *firstMessage = firstIncomingMessage;
+        if (!firstMessage
+            || (firstOutgoingMessage &&
+                   [[firstOutgoingMessage receiptDateForSorting] compare:[firstMessage receiptDateForSorting]]
+                       == NSOrderedAscending)) {
+            firstMessage = firstOutgoingMessage;
         }
 
-        if (outgoingMessageCount > kMaxOutgoingMessageCount) {
-            // If the user has sent more than N messages, abort.
-            return;
+        BOOL shouldHaveBlockOffer = YES;
+        BOOL shouldHaveAddToContactsOffer = YES;
+        if ([[blockingManager blockedPhoneNumbers] containsObject:contactThread.contactIdentifier]) {
+            // Only create offers for users which are not already blocked.
+            shouldHaveAddToContactsOffer = NO;
+            // Only create block offers for users which are not already blocked.
+            shouldHaveBlockOffer = NO;
         }
 
-        if (hasUnknownContactBlockOffer) {
-            // If there already is a block offer, abort.
-            return;
+        SignalAccount *signalAccount = contactsManager.signalAccountMap[contactThread.contactIdentifier];
+        if (signalAccount) {
+            // Only create offers for non-contacts.
+            shouldHaveAddToContactsOffer = NO;
+            // Only create block offers for non-contacts.
+            shouldHaveBlockOffer = NO;
+        }
+
+        if (!firstMessage) {
+            shouldHaveAddToContactsOffer = NO;
+            shouldHaveBlockOffer = NO;
+        }
+
+        if (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount) {
+            // If the user has sent more than N messages, don't show a block offer.
+            shouldHaveBlockOffer = NO;
         }
 
         BOOL hasOutgoingBeforeIncomingInteraction = (firstOutgoingMessage
@@ -159,23 +169,50 @@ NS_ASSUME_NONNULL_BEGIN
                        == NSOrderedAscending));
         if (hasOutgoingBeforeIncomingInteraction) {
             // If there is an outgoing message before an incoming message
-            // the local user initiated this conversation, abort.
-            return;
+            // the local user initiated this conversation, don't show a block offer.
+            shouldHaveBlockOffer = NO;
         }
 
-        DDLogInfo(@"Creating block offer for unknown contact");
+        // We use these offset to control the ordering of the offers and indicators.
+        const int kBlockOfferOffset = -3;
+        const int kAddToContactsOfferOffset = -2;
+        // TODO:
+        //        const int kUnseenIndicatorOfferOffset = -1;
 
-        // We want the block offer to be the first interaction in their
-        // conversation's timeline, so we back-date it to slightly before
-        // the first incoming message (which we know is the first message).
-        TSIncomingMessage *firstMessage = firstIncomingMessage;
-        uint64_t blockOfferTimestamp = firstMessage.timestamp - 1;
+        if (blockOffer && !shouldHaveBlockOffer) {
+            [blockOffer removeWithTransaction:transaction];
+        } else if (!blockOffer && shouldHaveBlockOffer) {
+            DDLogInfo(@"Creating block offer for unknown contact");
 
-        TSErrorMessage *errorMessage =
-            [OWSUnknownContactBlockOfferMessage unknownContactBlockOfferMessage:blockOfferTimestamp
-                                                                         thread:contactThread
-                                                                      contactId:contactThread.contactIdentifier];
-        [errorMessage saveWithTransaction:transaction];
+            // We want the block offer to be the first interaction in their
+            // conversation's timeline, so we back-date it to slightly before
+            // the first incoming message (which we know is the first message).
+            uint64_t blockOfferTimestamp = (uint64_t)((long long)firstMessage.timestamp + kBlockOfferOffset);
+
+            TSMessage *offerMessage =
+                [OWSUnknownContactBlockOfferMessage unknownContactBlockOfferMessage:blockOfferTimestamp
+                                                                             thread:contactThread
+                                                                          contactId:contactThread.contactIdentifier];
+            [offerMessage saveWithTransaction:transaction];
+        }
+
+        if (addToContactsOffer && !shouldHaveAddToContactsOffer) {
+            [addToContactsOffer removeWithTransaction:transaction];
+        } else if (!addToContactsOffer && shouldHaveAddToContactsOffer) {
+
+            DDLogInfo(@"Creating 'add to contacts' offer for unknown contact");
+
+            // We want the offer to be the first interaction in their
+            // conversation's timeline, so we back-date it to slightly before
+            // the first incoming message (which we know is the first message).
+            uint64_t offerTimestamp = (uint64_t)((long long)firstMessage.timestamp + kAddToContactsOfferOffset);
+
+            TSMessage *offerMessage =
+                [OWSAddToContactsOfferMessage addToContactsOfferMessage:offerTimestamp
+                                                                 thread:contactThread
+                                                              contactId:contactThread.contactIdentifier];
+            [offerMessage saveWithTransaction:transaction];
+        }
     }];
 }
 

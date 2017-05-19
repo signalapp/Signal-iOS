@@ -22,10 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
                          inThread:(TSThread *)thread
                     messageSender:(OWSMessageSender *)messageSender;
 
-+ (void)createBlockOfferIfNecessary:(TSContactThread *)contactThread
-                     storageManager:(TSStorageManager *)storageManager
-                    contactsManager:(OWSContactsManager *)contactsManager
-                    blockingManager:(OWSBlockingManager *)blockingManager;
++ (void)ensureThreadOffersAndIndicators:(TSContactThread *)contactThread
+                         storageManager:(TSStorageManager *)storageManager
+                        contactsManager:(OWSContactsManager *)contactsManager
+                        blockingManager:(OWSBlockingManager *)blockingManager;
 
 + (void)createUnreadMessagesIndicatorIfNecessary:(TSThread *)thread storageManager:(TSStorageManager *)storageManager;
 + (void)clearUnreadMessagesIndicator:(TSThread *)thread storageManager:(TSStorageManager *)storageManager;

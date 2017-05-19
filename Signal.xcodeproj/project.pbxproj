@@ -1066,23 +1066,23 @@
 		457F3AC01D14A0F700C51351 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
-				453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */,
-				453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */,
-				45C681B51D305A580050903A /* OWSCall.h */,
-				45C681B61D305A580050903A /* OWSCall.m */,
-				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
-				453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */,
-				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
-				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
-				45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */,
-				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
-				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
-				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
-				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
-				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				45CD81EE1DC030E7004C9430 /* AccountManager.swift */,
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
+				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
+				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
+				45C681B51D305A580050903A /* OWSCall.h */,
+				45C681B61D305A580050903A /* OWSCall.m */,
+				45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */,
+				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
+				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
+				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
+				453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */,
+				453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */,
+				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
+				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
+				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
+				453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */,
+				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 			);
 			path = Models;
 			sourceTree = "<group>";
