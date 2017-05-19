@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"Paul",
         @"Bertha",
     ];
-    return values[arc4random() % values.count];
+    return values[arc4random_uniform(values.count)];
 }
 
 
@@ -1183,18 +1183,18 @@ NS_ASSUME_NONNULL_BEGIN
         @"Noel",
         @"Vang",
     ];
-    return values[arc4random() % values.count];
+    return values[arc4random_uniform(values.count)];
 }
 
 
 + (NSString *)randomPhoneNumber
 {
-    if (arc4random() % 2 == 0) {
+    if (arc4random_uniform(2) == 0) {
         // Generate a US phone number.
         NSMutableString *result = [@"+1" mutableCopy];
         for (int i = 0; i < 10; i++) {
             // Add digits.
-            [result appendString:[@(arc4random() % 10) description]];
+            [result appendString:[@(arc4random_uniform(10)) description]];
         }
         return result;
     } else {
@@ -1202,7 +1202,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableString *result = [@"+441" mutableCopy];
         for (int i = 0; i < 9; i++) {
             // Add digits.
-            [result appendString:[@(arc4random() % 10) description]];
+            [result appendString:[@(arc4random_uniform(10)) description]];
         }
         return result;
     }
