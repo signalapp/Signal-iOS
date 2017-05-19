@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 05/12/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 @class TSErrorMessage;
 @class TSIncomingMessage;
@@ -9,7 +10,6 @@
 @protocol NotificationsProtocol <NSObject>
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
-                                from:(NSString *)name
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 
