@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly) NSString *customMessage;
 @property (atomic, readonly) NSString *mostRecentFailureText;
-// A map of attachment id-to-filename.
+// A map of attachment id-to-"source" filename.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;

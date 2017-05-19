@@ -10,12 +10,15 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentPointer;
+@class YapDatabaseReadWriteTransaction;
 
 @interface TSAttachmentStream : TSAttachment
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithContentType:(NSString *)contentType filename:(NSString *)filename NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithContentType:(NSString *)contentType
+                     sourceFilename:(nullable NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // Though now required, `digest` may be null for pre-existing records or from
 // messages received from other clients
@@ -32,8 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isImage;
 - (BOOL)isVideo;
 - (BOOL)isAudio;
-- (nullable NSString *)filePath;
 - (nullable NSURL *)mediaURL;
+
+- (nullable NSString *)filePath;
+
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 

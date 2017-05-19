@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                           digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay
-                        filename:(nullable NSString *)filename
+                  sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSString *relay;

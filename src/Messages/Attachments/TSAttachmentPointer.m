@@ -30,10 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
                           digest:(nullable NSData *)digest
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay
-                        filename:(nullable NSString *)filename
+                  sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType
 {
-    self = [super initWithServerId:serverId encryptionKey:key contentType:contentType filename:filename];
+    self = [super initWithServerId:serverId encryptionKey:key contentType:contentType sourceFilename:sourceFilename];
     if (!self) {
         return self;
     }

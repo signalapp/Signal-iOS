@@ -435,8 +435,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            NSString *filename = self.attachmentFilenameMap[attachmentId];
-            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:filename]];
+            NSString *sourceFilename = self.attachmentFilenameMap[attachmentId];
+            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:sourceFilename]];
         }
         [builder setAttachmentsArray:attachments];
     }

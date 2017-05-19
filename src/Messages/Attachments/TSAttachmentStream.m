@@ -6,15 +6,26 @@
 #import "MIMETypeUtil.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface TSAttachmentStream ()
+
+// We only want to generate the file path for this attachment once, so that
+// changes in the file path generation logic don't break existing attachments.
+@property (nullable, nonatomic) NSString *localRelativeFilePath;
+
+@end
+
+#pragma mark -
+
 @implementation TSAttachmentStream
 
-- (instancetype)initWithContentType:(NSString *)contentType filename:(NSString *)filename
+- (instancetype)initWithContentType:(NSString *)contentType sourceFilename:(nullable NSString *)sourceFilename
 {
-    self = [super initWithContentType:contentType filename:filename];
+    self = [super initWithContentType:contentType sourceFilename:sourceFilename];
     if (!self) {
         return self;
     }
@@ -24,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
     // state, but this constructor is used only for new outgoing
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
+
+    // This instance hasn't been persisted yet.
+    [self ensureFilePathAndPersist:NO];
 
     return self;
 }
@@ -44,6 +58,23 @@ NS_ASSUME_NONNULL_BEGIN
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
 
+    // This instance hasn't been persisted yet.
+    [self ensureFilePathAndPersist:NO];
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // This instance has been persisted, we need to
+    // update it in the database.
+    [self ensureFilePathAndPersist:YES];
+
     return self;
 }
 
@@ -60,25 +91,75 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - TSYapDatabaseModel overrides
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ensureFilePathAndPersist:(BOOL)shouldPersist
 {
-    [super removeWithTransaction:transaction];
-    [self removeFile];
+    if (self.localRelativeFilePath) {
+        return;
+    }
+
+    NSString *attachmentsFolder = [[self class] attachmentsFolder];
+    NSString *filePath = [MIMETypeUtil filePathForAttachment:self.uniqueId
+                                                  ofMIMEType:self.contentType
+                                              sourceFilename:self.sourceFilename
+                                                    inFolder:attachmentsFolder];
+    if (!filePath) {
+        DDLogError(@"%@ Could not generate path for attachment.", self.tag);
+        OWSAssert(0);
+        return;
+    }
+    if (![filePath hasPrefix:attachmentsFolder]) {
+        DDLogError(@"%@ Attachment paths should all be in the attachments folder.", self.tag);
+        OWSAssert(0);
+        return;
+    }
+    NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
+    if (localRelativeFilePath.length < 1) {
+        DDLogError(@"%@ Empty local relative attachment paths.", self.tag);
+        OWSAssert(0);
+        return;
+    }
+
+    self.localRelativeFilePath = localRelativeFilePath;
+    OWSAssert(self.filePath);
+
+    if (shouldPersist) {
+        // It's not ideal to do this asynchronously, but we can create a new transaction
+        // within initWithCoder: which will be called from within a transaction.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                OWSAssert(transaction);
+
+                [self saveWithTransaction:transaction];
+            }];
+        });
+    }
 }
 
 #pragma mark - File Management
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error
 {
-    return [NSData dataWithContentsOfFile:self.filePath options:0 error:error];
+    *error = nil;
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
+        return nil;
+    }
+    return [NSData dataWithContentsOfFile:filePath options:0 error:error];
 }
 
 - (BOOL)writeData:(NSData *)data error:(NSError **)error
 {
-    DDLogInfo(@"%@ Created file at %@", self.tag, self.filePath);
-    return [data writeToFile:self.filePath options:0 error:error];
+    *error = nil;
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
+        return NO;
+    }
+    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
+    return [data writeToFile:filePath options:0 error:error];
 }
 
 + (NSString *)attachmentsFolder
@@ -114,26 +195,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)filePath
 {
-    return [MIMETypeUtil filePathForAttachment:self.uniqueId
-                                    ofMIMEType:self.contentType
-                                      filename:self.filename
-                                      inFolder:[[self class] attachmentsFolder]];
+    if (!self.localRelativeFilePath) {
+        OWSAssert(0);
+        return nil;
+    }
+
+    return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
 - (nullable NSURL *)mediaURL
 {
-    NSString *filePath = self.filePath;
-    return filePath ? [NSURL fileURLWithPath:filePath] : nil;
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
+        return nil;
+    }
+    return [NSURL fileURLWithPath:filePath];
 }
 
-- (void)removeFile
+- (void)removeFileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
+        return;
+    }
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self filePath] error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
         DDLogError(@"%@ remove file errored with: %@", self.tag, error);
     }
+}
+
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super removeWithTransaction:transaction];
+    [self removeFileWithTransaction:transaction];
 }
 
 - (BOOL)isAnimated {
@@ -157,14 +257,21 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isVideo] || [self isAudio]) {
         return [self videoThumbnail];
     } else {
-        // [self isAnimated] || [self isImage]
-        return [UIImage imageWithData:[NSData dataWithContentsOfURL:[self mediaURL]]];
+        NSURL *_Nullable mediaUrl = [self mediaURL];
+        if (!mediaUrl) {
+            return nil;
+        }
+        return [UIImage imageWithData:[NSData dataWithContentsOfURL:mediaUrl]];
     }
 }
 
 - (nullable UIImage *)videoThumbnail
 {
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:self.filePath] options:nil];
+    NSURL *_Nullable mediaUrl = [self mediaURL];
+    if (!mediaUrl) {
+        return nil;
+    }
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:mediaUrl options:nil];
     AVAssetImageGenerator *generate         = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     generate.appliesPreferredTrackTransform = YES;
     NSError *err                            = NULL;
