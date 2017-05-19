@@ -987,6 +987,7 @@ typedef enum : NSUInteger {
         invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
 
     [self.scrollLaterTimer invalidate];
+    // We want to scroll to the bottom _after_ the layout has been updated.
     self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
                                                                  target:self
                                                                selector:@selector(scrollToDefaultPosition)
@@ -3691,6 +3692,7 @@ typedef enum : NSUInteger {
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
         [self.scrollLaterTimer invalidate];
+        // We want to scroll to the bottom _after_ the layout has been updated.
         self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
                                                                      target:self
                                                                    selector:@selector(scrollToBottomImmediately)
