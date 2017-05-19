@@ -454,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
                          if (model.groupImage) {
                              [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
                                                         contentType:OWSMimeTypeImagePng
-                                                           filename:nil
+                                                     sourceFilename:nil
                                                           inMessage:message
                                                             success:popToThread
                                                             failure:removeThreadWithError];
