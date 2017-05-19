@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kLabelVSpacing = 2;
     NSString *filename = self.attachment.sourceFilename;
     if (!filename) {
-        filename = [[self.attachment localFilePath] lastPathComponent];
+        filename = [[self.attachment filePath] lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension]
         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
