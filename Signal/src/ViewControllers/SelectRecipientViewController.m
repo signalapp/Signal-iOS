@@ -287,7 +287,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     CountryCodeViewController *countryCodeController = [[UIStoryboard storyboardWithName:@"Registration" bundle:NULL]
         instantiateViewControllerWithIdentifier:@"CountryCodeViewController"];
     countryCodeController.delegate = self;
-    countryCodeController.shouldDismissWithoutSegue = YES;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:countryCodeController];
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];

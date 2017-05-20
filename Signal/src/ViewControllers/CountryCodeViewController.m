@@ -2,17 +2,27 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "CountryCodeTableViewCell.h"
 #import "CountryCodeViewController.h"
-#import "PhoneNumberUtil.h"
+#import "CountryCodeTableViewCell.h"
 #import "FunctionalUtil.h"
+#import "PhoneNumberUtil.h"
+#import "UIView+OWS.h"
 
 static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER    = @"CountryCodeTableViewCell";
-static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
 
-@interface CountryCodeViewController () {
+@interface CountryCodeViewController () <UITableViewDelegate,
+    UITableViewDataSource,
+    UISearchBarDelegate,
+    UISearchDisplayDelegate> {
     NSArray *_countryCodes;
 }
+
+@property (nonatomic) IBOutlet UITableView *countryCodeTableView;
+@property (nonatomic) IBOutlet UISearchBar *searchBar;
+
+@property (nonatomic) NSString *countryCodeSelected;
+@property (nonatomic) NSString *callingCodeSelected;
+@property (nonatomic) NSString *countryNameSelected;
 
 @end
 
@@ -20,15 +30,17 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addRedBorder];
     [self.navigationController.navigationBar setTranslucent:NO];
     _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
     self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
     self.searchBar.delegate = self;
-    if (self.shouldDismissWithoutSegue) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                                                              target:self
-                                                                                                       action:@selector(dismissWasPressed:)];
-    }
+
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(dismissWasPressed:)];
 }
 
 #pragma mark - UITableViewDelegate
@@ -66,11 +78,7 @@ static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryC
                                  countryName:_countryNameSelected
                                  callingCode:_callingCodeSelected];
     [self.searchBar resignFirstResponder];
-    if (self.shouldDismissWithoutSegue) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
-    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismissWasPressed:(id)sender {

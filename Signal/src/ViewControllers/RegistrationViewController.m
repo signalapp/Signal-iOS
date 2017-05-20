@@ -16,7 +16,7 @@
 
 static NSString *const kCodeSentSegue = @"codeSent";
 
-@interface RegistrationViewController ()
+@interface RegistrationViewController () <CountryCodeViewControllerDelegate>
 
 @property (nonatomic) NSString *callingCode;
 
@@ -48,6 +48,16 @@ static NSString *const kCodeSentSegue = @"codeSent";
     [_sendCodeButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
     [_existingUserButton setTitle:NSLocalizedString(@"ALREADY_HAVE_ACCOUNT_BUTTON", @"registration button text")
                          forState:UIControlStateNormal];
+
+    [self.countryNameButton addTarget:self
+                               action:@selector(changeCountryCodeTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.countryCodeButton addTarget:self
+                               action:@selector(changeCountryCodeTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.countryCodeRow
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(countryCodeRowWasTapped:)]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -175,9 +185,21 @@ static NSString *const kCodeSentSegue = @"codeSent";
         smsVerification:YES];
 }
 
-- (IBAction)changeCountryCodeTapped {
-    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
-    [self presentViewController:countryCodeController animated:YES completion:[UIUtil modalCompletionBlock]];
+- (void)countryCodeRowWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self changeCountryCodeTapped];
+    }
+}
+
+- (void)changeCountryCodeTapped
+{
+    CountryCodeViewController *countryCodeController = [[UIStoryboard storyboardWithName:@"Registration" bundle:NULL]
+        instantiateViewControllerWithIdentifier:@"CountryCodeViewController"];
+    countryCodeController.delegate = self;
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:countryCodeController];
+    [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 - (void)presentInvalidCountryCodeError {
@@ -185,6 +207,20 @@ static NSString *const kCodeSentSegue = @"codeSent";
                           message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
                       buttonTitle:NSLocalizedString(
                                       @"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog")];
+}
+
+#pragma mark - CountryCodeViewControllerDelegate
+
+- (void)countryCodeViewController:(CountryCodeViewController *)vc
+             didSelectCountryCode:(NSString *)countryCode
+                      countryName:(NSString *)countryName
+                      callingCode:(NSString *)callingCode
+{
+
+    [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
+
+    // Trigger the formatting logic with a no-op edit.
+    [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
 }
 
 #pragma mark - Keyboard notifications
@@ -222,19 +258,6 @@ static NSString *const kCodeSentSegue = @"codeSent";
 #pragma mark - Unwind segue
 
 - (IBAction)unwindToChangeNumber:(UIStoryboardSegue *)sender {
-}
-
-- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue {
-}
-
-- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue {
-    CountryCodeViewController *vc = [segue sourceViewController];
-    [self updateCountryWithName:vc.countryNameSelected
-                    callingCode:vc.callingCodeSelected
-                    countryCode:vc.countryCodeSelected];
-
-    // Reformat phone number
-    [self textField:_phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
 }
 
 #pragma mark iPhone 5s or shorter

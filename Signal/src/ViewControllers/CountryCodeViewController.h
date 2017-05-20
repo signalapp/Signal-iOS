@@ -15,15 +15,10 @@
 
 @end
 
-@interface CountryCodeViewController
-    : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchDisplayDelegate>
+#pragma mark -
 
-@property (nonatomic) IBOutlet UITableView *countryCodeTableView;
-@property (nonatomic) IBOutlet UISearchBar *searchBar;
+@interface CountryCodeViewController : UIViewController
+
 @property (nonatomic, weak) id<CountryCodeViewControllerDelegate> delegate;
-@property (nonatomic) NSString *countryCodeSelected;
-@property (nonatomic) NSString *callingCodeSelected;
-@property (nonatomic) NSString *countryNameSelected;
-@property (nonatomic) BOOL shouldDismissWithoutSegue;
 
 @end
