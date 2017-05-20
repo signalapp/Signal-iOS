@@ -27,7 +27,4 @@
 
 @property (nonatomic) IBOutlet NSLayoutConstraint *headerHeightConstraint;
 
-- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
-- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;
-
 @end
