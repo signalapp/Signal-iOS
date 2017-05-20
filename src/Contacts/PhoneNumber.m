@@ -165,10 +165,24 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         // (ISO 3166-1 alpha-2).
         NSNumber *callingCodeForLocalNumber = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
         if (callingCodeForLocalNumber != nil) {
-            tryParsingWithCountryCode([NSString stringWithFormat:@"+%@%@",
-                                       callingCodeForLocalNumber,
-                                       sanitizedString],
-                                      [self defaultRegionCode]);
+            NSString *callingCodePrefix = [NSString stringWithFormat:@"+%@", callingCodeForLocalNumber];
+
+            tryParsingWithCountryCode(
+                [callingCodePrefix stringByAppendingString:sanitizedString], [self defaultRegionCode]);
+
+            // Try to determine what the country code is for the local phone number
+            // and also try parsing the phone number using that country code if it
+            // differs from the device's region code.
+            //
+            // For example, a French person living in Italy might have an
+            // Italian phone number but use French region/language for their
+            // phone. They're likely to have both Italian and French contacts.
+            NSString *localCountryCode =
+                [PhoneNumberUtil.sharedUtil probableCountryCodeForCallingCode:callingCodePrefix];
+            if (localCountryCode && ![localCountryCode isEqualToString:[self defaultRegionCode]]) {
+                tryParsingWithCountryCode(
+                    [callingCodePrefix stringByAppendingString:sanitizedString], localCountryCode);
+            }
         }
     }
     
