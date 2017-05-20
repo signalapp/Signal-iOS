@@ -215,6 +215,9 @@ static NSString *const kCodeSentSegue = @"codeSent";
                       countryName:(NSString *)countryName
                       callingCode:(NSString *)callingCode
 {
+    OWSAssert(countryCode.length > 0);
+    OWSAssert(countryName.length > 0);
+    OWSAssert(callingCode.length > 0);
 
     [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
 
