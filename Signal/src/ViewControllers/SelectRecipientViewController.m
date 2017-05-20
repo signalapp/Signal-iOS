@@ -284,9 +284,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)showCountryCodeView:(nullable id)sender
 {
-    CountryCodeViewController *countryCodeController = [[UIStoryboard storyboardWithName:@"Registration" bundle:NULL]
-        instantiateViewControllerWithIdentifier:@"CountryCodeViewController"];
-    countryCodeController.delegate = self;
+    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
+    countryCodeController.countryCodeDelegate = self;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:countryCodeController];
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];

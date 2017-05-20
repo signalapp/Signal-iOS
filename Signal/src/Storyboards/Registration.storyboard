@@ -239,112 +239,6 @@
             </objects>
             <point key="canvasLocation" x="-4663.125" y="-735.21126760563379"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="CXh-B2-B5s">
-            <objects>
-                <navigationController id="CCL-Zs-hfU" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cF0-06-4sO">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.08213712275" green="0.4684380293" blue="0.91112053390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="Z2i-u6-bhY" kind="relationship" relationship="rootViewController" id="MJ5-IX-jSb"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="m2Q-Yk-UFa" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-4663" y="118"/>
-        </scene>
-        <!--_2.0_1.0__1 Country Code Modal-->
-        <scene sceneID="kX2-KQ-Haq">
-            <objects>
-                <tableViewController storyboardIdentifier="CountryCodeViewController" id="Z2i-u6-bhY" userLabel="_2.0_1.0__1 Country Code Modal" customClass="CountryCodeViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="HIm-Hc-yjX" userLabel="_1.0__1 Country Code Table">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="CMs-3a-1tn" userLabel="__1a Search Bar">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <textInputTraits key="textInputTraits"/>
-                            <connections>
-                                <outlet property="delegate" destination="Z2i-u6-bhY" id="vEf-Fh-V9X"/>
-                            </connections>
-                        </searchBar>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CountryCodeTableViewCell" id="LFg-KJ-GnQ" userLabel="__1b Country Code Table" customClass="CountryCodeTableViewCell">
-                                <rect key="frame" x="0.0" y="66" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LFg-KJ-GnQ" id="o6y-AP-QLT" userLabel="Country Code Table Row">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="United states" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eyx-0e-8jI">
-                                            <rect key="frame" x="20" y="11" width="244" height="22"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="244" id="n1j-cy-UCc"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
-                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-5L-cqs">
-                                            <rect key="frame" x="237" y="12" width="64" height="20"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="64" id="Esx-e5-KEm"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                            <color key="textColor" red="0.4266758859" green="0.42666310070000002" blue="0.42667034269999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="eyx-0e-8jI" firstAttribute="leading" secondItem="o6y-AP-QLT" secondAttribute="leadingMargin" constant="12" id="3e1-Ho-Lkh"/>
-                                        <constraint firstAttribute="centerY" secondItem="eyx-0e-8jI" secondAttribute="centerY" id="9tf-zE-uTh"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="EEE-5L-cqs" secondAttribute="trailing" constant="11" id="VWY-K4-mnQ"/>
-                                        <constraint firstAttribute="centerY" secondItem="EEE-5L-cqs" secondAttribute="centerY" id="xkZ-7a-4si"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="countryCodeLabel" destination="EEE-5L-cqs" id="l5s-J2-hEb"/>
-                                    <outlet property="countryNameLabel" destination="eyx-0e-8jI" id="FVB-VB-L0Y"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="Z2i-u6-bhY" id="rHA-cX-cjx"/>
-                            <outlet property="delegate" destination="Z2i-u6-bhY" id="XPn-SJ-wjB"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Select Country Code" id="Q6t-Dx-qGA" userLabel="_1.0__1c Navigation Bar">
-                        <barButtonItem key="leftBarButtonItem" image="btnCancel--white" id="upu-bg-cQC">
-                            <connections>
-                                <segue destination="dCz-q4-kx5" kind="unwind" unwindAction="unwindToCountryCodeSelectionCancelled:" id="rAG-7g-91h"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="countryCodeTableView" destination="HIm-Hc-yjX" id="SJ0-1f-5bx"/>
-                        <outlet property="searchBar" destination="CMs-3a-1tn" id="OZf-gj-MFu"/>
-                        <outlet property="searchDisplayController" destination="b82-X1-yzZ" id="tc5-Ii-aAN"/>
-                        <segue destination="dCz-q4-kx5" kind="unwind" identifier="UnwindToCountryCodeWasSelectedSegue" unwindAction="unwindToCountryCodeWasSelected:" id="grw-Tg-ALb"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eQ6-CW-FOy" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="dCz-q4-kx5" userLabel="Exit" sceneMemberID="exit"/>
-                <searchDisplayController id="b82-X1-yzZ">
-                    <connections>
-                        <outlet property="delegate" destination="Z2i-u6-bhY" id="rO2-da-1gE"/>
-                        <outlet property="searchContentsController" destination="Z2i-u6-bhY" id="m7R-H5-bMY"/>
-                        <outlet property="searchResultsDataSource" destination="Z2i-u6-bhY" id="JmH-Rd-hgI"/>
-                        <outlet property="searchResultsDelegate" destination="Z2i-u6-bhY" id="kmD-Pu-fbT"/>
-                    </connections>
-                </searchDisplayController>
-                <navigationItem title="Title" id="DLP-7z-aG1"/>
-            </objects>
-            <point key="canvasLocation" x="-3780" y="118"/>
-        </scene>
         <!--_1.1 Verification Screen-->
         <scene sceneID="9FI-Mi-3YV">
             <objects>
@@ -391,7 +285,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="btnCancel--white" width="44" height="44"/>
         <image name="logoSignal" width="138" height="139"/>
     </resources>
 </document>

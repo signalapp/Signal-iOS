@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSTableViewController.h"
 
 @class CountryCodeViewController;
 
@@ -17,8 +17,8 @@
 
 #pragma mark -
 
-@interface CountryCodeViewController : UIViewController
+@interface CountryCodeViewController : OWSTableViewController
 
-@property (nonatomic, weak) id<CountryCodeViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<CountryCodeViewControllerDelegate> countryCodeDelegate;
 
 @end
