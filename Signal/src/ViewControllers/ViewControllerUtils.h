@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface ViewControllerUtils : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -22,4 +24,8 @@
 
 + (NSString *)formatDurationSeconds:(long)timeSeconds;
 
++ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
+
 @end
+
+NS_ASSUME_NONNULL_END

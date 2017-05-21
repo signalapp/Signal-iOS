@@ -19,6 +19,7 @@
 
 @property (nonatomic) UILabel *countryCodeLabel;
 @property (nonatomic) UITextField *phoneNumberTextField;
+@property (nonatomic) UILabel *examplePhoneNumberLabel;
 @property (nonatomic) UIButton *activateButton;
 @property (nonatomic) UIActivityIndicatorView *spinnerView;
 
@@ -57,18 +58,19 @@
     UILabel *headerLabel = [UILabel new];
     headerLabel.text = NSLocalizedString(@"REGISTRATION_TITLE_LABEL", @"");
     headerLabel.textColor = [UIColor whiteColor];
-    headerLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+    headerLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(20.f, 24.f)];
     [header addSubview:headerLabel];
     [headerLabel autoHCenterInSuperview];
     [headerLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:14.f];
 
     CGFloat screenHeight = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
     if (screenHeight < 568) {
-        // iPhone 4s
+        // iPhone 4s or smaller.
         [header autoSetDimension:ALDimensionHeight toSize:20];
+        headerLabel.hidden = YES;
     } else if (screenHeight < 667) {
-        // iPhone 5
-        [header autoSetDimension:ALDimensionHeight toSize:120];
+        // iPhone 5 or smaller.
+        [header autoSetDimension:ALDimensionHeight toSize:80];
     } else {
         [header autoSetDimension:ALDimensionHeight toSize:225];
 
@@ -93,6 +95,8 @@
     const CGFloat kRowRightMargin = 16.f;
     const CGFloat kSeparatorHeight = 1.f;
     const CGFloat kButtonHMargin = 30.f;
+    const CGFloat kExamplePhoneNumberVSpacing = 8.f;
+    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
 
     // Country
     UIView *countryRow = [UIView new];
@@ -108,7 +112,7 @@
     countryNameLabel.text
         = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field");
     countryNameLabel.textColor = [UIColor blackColor];
-    countryNameLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    countryNameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [countryRow addSubview:countryNameLabel];
     [countryNameLabel autoVCenterInSuperview];
     [countryNameLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
@@ -116,7 +120,7 @@
     UILabel *countryCodeLabel = [UILabel new];
     self.countryCodeLabel = countryCodeLabel;
     countryCodeLabel.textColor = [UIColor ows_materialBlueColor];
-    countryCodeLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    countryCodeLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2.f];
     [countryRow addSubview:countryCodeLabel];
     [countryCodeLabel autoVCenterInSuperview];
     [countryCodeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
@@ -139,7 +143,7 @@
     phoneNumberLabel.text
         = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield");
     phoneNumberLabel.textColor = [UIColor blackColor];
-    phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoVCenterInSuperview];
     [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
@@ -152,16 +156,30 @@
         @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
     self.phoneNumberTextField = phoneNumberTextField;
     phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];
-    phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:16.f];
+    phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
     [phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+
+    UILabel *examplePhoneNumberLabel = [UILabel new];
+    self.examplePhoneNumberLabel = examplePhoneNumberLabel;
+    examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
+    examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+    [contentView addSubview:examplePhoneNumberLabel];
+    [examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [examplePhoneNumberLabel autoPinEdge:ALEdgeTop
+                                  toEdge:ALEdgeBottom
+                                  ofView:phoneNumberTextField
+                              withOffset:kExamplePhoneNumberVSpacing];
 
     UIView *separatorView2 = [UIView new];
     separatorView2.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.f];
     [contentView addSubview:separatorView2];
     [separatorView2 autoPinWidthToSuperview];
-    [separatorView2 autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:phoneNumberRow];
+    [separatorView2 autoPinEdge:ALEdgeTop
+                         toEdge:ALEdgeBottom
+                         ofView:phoneNumberRow
+                     withOffset:examplePhoneNumberLabel.font.lineHeight];
     [separatorView2 autoSetDimension:ALDimensionHeight toSize:kSeparatorHeight];
 
     // Activate Button
@@ -170,13 +188,16 @@
     activateButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
     [activateButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
     [activateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    activateButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    activateButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
     [activateButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [activateButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:activateButton];
     [activateButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kButtonHMargin];
     [activateButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kButtonHMargin];
-    [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:9.f];
+    [activateButton autoPinEdge:ALEdgeTop
+                         toEdge:ALEdgeBottom
+                         ofView:separatorView2
+                     withOffset:ScaleFromIPhone5To7Plus(12.f, 15.f)];
     [activateButton autoSetDimension:ALDimensionHeight toSize:47.f];
     [activateButton addTarget:self action:@selector(sendCodeAction:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -195,7 +216,7 @@
     [existingAccountButton setTitle:NSLocalizedString(@"ALREADY_HAVE_ACCOUNT_BUTTON", @"registration button text")
                            forState:UIControlStateNormal];
     [existingAccountButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    existingAccountButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    existingAccountButton.titleLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints - 2.f];
     [existingAccountButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [existingAccountButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:existingAccountButton];
@@ -241,6 +262,10 @@
                        countryCode.uppercaseString];
     self.countryCodeLabel.text = title;
     [self.countryCodeLabel setNeedsLayout];
+
+    self.examplePhoneNumberLabel.text =
+        [ViewControllerUtils examplePhoneNumberForCountryCode:countryCode callingCode:callingCode];
+    [self.examplePhoneNumberLabel setNeedsLayout];
 }
 
 #pragma mark - Actions
