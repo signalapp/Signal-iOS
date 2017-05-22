@@ -98,9 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
-        __block OWSAddToContactsOfferMessage *addToContactsOffer = nil;
-        __block OWSUnknownContactBlockOfferMessage *blockOffer = nil;
-        __block TSUnreadIndicatorInteraction *unreadIndicator = nil;
+        __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
+        __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
+        __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
         __block TSIncomingMessage *firstIncomingMessage = nil;
         __block TSOutgoingMessage *firstOutgoingMessage = nil;
         __block TSIncomingMessage *firstUnreadMessage = nil;
@@ -112,14 +112,14 @@ NS_ASSUME_NONNULL_BEGIN
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
-                              OWSAssert(!blockOffer);
-                              blockOffer = (OWSUnknownContactBlockOfferMessage *)object;
+                              OWSAssert(!existingBlockOffer);
+                              existingBlockOffer = (OWSUnknownContactBlockOfferMessage *)object;
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
-                              OWSAssert(!addToContactsOffer);
-                              addToContactsOffer = (OWSAddToContactsOfferMessage *)object;
+                              OWSAssert(!existingAddToContactsOffer);
+                              existingAddToContactsOffer = (OWSAddToContactsOfferMessage *)object;
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              OWSAssert(!unreadIndicator);
-                              unreadIndicator = (TSUnreadIndicatorInteraction *)object;
+                              OWSAssert(!existingUnreadIndicator);
+                              existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
                           } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
                               TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
                               if (!firstIncomingMessage) {
@@ -213,9 +213,9 @@ NS_ASSUME_NONNULL_BEGIN
         const int kAddToContactsOfferOffset = -2;
         const int kUnreadIndicatorOfferOffset = -1;
 
-        if (blockOffer && !shouldHaveBlockOffer) {
-            [blockOffer removeWithTransaction:transaction];
-        } else if (!blockOffer && shouldHaveBlockOffer) {
+        if (existingBlockOffer && !shouldHaveBlockOffer) {
+            [existingBlockOffer removeWithTransaction:transaction];
+        } else if (!existingBlockOffer && shouldHaveBlockOffer) {
             DDLogInfo(@"Creating block offer for unknown contact");
 
             // We want the block offer to be the first interaction in their
@@ -231,9 +231,9 @@ NS_ASSUME_NONNULL_BEGIN
             [offerMessage saveWithTransaction:transaction];
         }
 
-        if (addToContactsOffer && !shouldHaveAddToContactsOffer) {
-            [addToContactsOffer removeWithTransaction:transaction];
-        } else if (!addToContactsOffer && shouldHaveAddToContactsOffer) {
+        if (existingAddToContactsOffer && !shouldHaveAddToContactsOffer) {
+            [existingAddToContactsOffer removeWithTransaction:transaction];
+        } else if (!existingAddToContactsOffer && shouldHaveAddToContactsOffer) {
 
             DDLogInfo(@"Creating 'add to contacts' offer for unknown contact");
 
@@ -252,8 +252,8 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldHaveUnreadIndicator
             = ((firstUnreadMessage != nil || fixedUnreadIndicatorTimestamp != nil) && !hideUnreadMessagesIndicator);
         if (!shouldHaveUnreadIndicator) {
-            if (unreadIndicator) {
-                [unreadIndicator removeWithTransaction:transaction];
+            if (existingUnreadIndicator) {
+                [existingUnreadIndicator removeWithTransaction:transaction];
             }
         } else {
             // We want the block offer to appear just before the first unread incoming
@@ -264,13 +264,13 @@ NS_ASSUME_NONNULL_BEGIN
                     ? [fixedUnreadIndicatorTimestamp longLongValue]
                     : ((long long)firstUnreadMessage.timestamp + kUnreadIndicatorOfferOffset));
 
-            if (indicatorTimestamp && unreadIndicator.timestamp == indicatorTimestamp) {
+            if (indicatorTimestamp && existingUnreadIndicator.timestamp == indicatorTimestamp) {
                 // Keep the existing indicator; it is in the correct position.
 
-                result.unreadIndicator = unreadIndicator;
+                result.unreadIndicator = existingUnreadIndicator;
             } else {
-                if (unreadIndicator) {
-                    [unreadIndicator removeWithTransaction:transaction];
+                if (existingUnreadIndicator) {
+                    [existingUnreadIndicator removeWithTransaction:transaction];
                 }
 
                 DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction", self.tag);
