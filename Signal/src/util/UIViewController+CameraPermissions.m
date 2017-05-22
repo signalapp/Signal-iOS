@@ -1,13 +1,11 @@
 //
-//  UIViewController+CameraPermissions.m
-//  Signal
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
-//  Created by Jarosław Pawlak on 18.10.2016.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
-//
+
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
 #import <AVFoundation/AVFoundation.h>
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSString *settingsTitle = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", @"Button text which opens the settings app");
         UIAlertAction *openSettingsAction = [UIAlertAction actionWithTitle:settingsTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+            [[UIApplication sharedApplication] openSystemSettings];
             if (alertActionHandler) {
                 alertActionHandler();
             }

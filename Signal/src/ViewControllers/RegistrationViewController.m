@@ -7,6 +7,7 @@
 #import "Environment.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
+#import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 #import "UIView+OWS.h"
@@ -118,44 +119,58 @@ static NSString *const kCodeSentSegue = @"codeSent";
 {
     DDLogInfo(@"called %s", __PRETTY_FUNCTION__);
 
-    NSString *alertTitleFormat = NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_TITLE",
-        @"during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\"");
-    NSString *alertTitle = [NSString stringWithFormat:alertTitleFormat, [UIDevice currentDevice].localizedModel];
-    NSString *alertBody = NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_BODY", @"during registration");
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                             message:alertBody
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction *cancelAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:nil];
-    [alertController addAction:cancelAction];
-
-    [self presentViewController:alertController animated:YES completion:nil];
+    [OWSAlerts
+        showAlertWithTitle:
+            [NSString stringWithFormat:NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_TITLE",
+                                           @"during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\""),
+                      [UIDevice currentDevice].localizedModel]
+                   message:NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_BODY", @"during registration")];
 }
 
 - (IBAction)sendCodeAction:(id)sender {
-    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, _phoneNumberTextField.text];
+    NSString *phoneNumberText =
+        [_phoneNumberTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (phoneNumberText.length < 1) {
+        [OWSAlerts
+            showAlertWithTitle:NSLocalizedString(@"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
+                                   @"Title of alert indicating that users needs to enter a phone number to register.")
+                       message:
+                           NSLocalizedString(@"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE",
+                               @"Message of alert indicating that users needs to enter a phone number to register.")];
+        return;
+    }
+    NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
+    NSString *parsedPhoneNumber = localNumber.toE164;
+    if (parsedPhoneNumber.length < 1) {
+        [OWSAlerts showAlertWithTitle:
+                       NSLocalizedString(@"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
+                           @"Title of alert indicating that users needs to enter a valid phone number to register.")
+                              message:NSLocalizedString(@"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
+                                          @"Message of alert indicating that users needs to enter a valid phone number "
+                                          @"to register.")];
+        return;
+    }
 
     [_sendCodeButton setEnabled:NO];
     [_spinnerView startAnimating];
     [_phoneNumberTextField resignFirstResponder];
 
-    [TSAccountManager registerWithPhoneNumber:localNumber.toE164
+    [TSAccountManager registerWithPhoneNumber:parsedPhoneNumber
         success:^{
-          [self performSegueWithIdentifier:@"codeSent" sender:self];
-          [_spinnerView stopAnimating];
+            [self performSegueWithIdentifier:@"codeSent" sender:self];
+            [_spinnerView stopAnimating];
         }
         failure:^(NSError *error) {
-          if (error.code == 400) {
-              SignalAlertView(NSLocalizedString(@"REGISTRATION_ERROR", nil),
-                              NSLocalizedString(@"REGISTRATION_NON_VALID_NUMBER", ));
-          } else {
-              SignalAlertView(error.localizedDescription, error.localizedRecoverySuggestion);
-          }
+            if (error.code == 400) {
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                      message:NSLocalizedString(@"REGISTRATION_NON_VALID_NUMBER", nil)];
+            } else {
+                [OWSAlerts showAlertWithTitle:error.localizedDescription message:error.localizedRecoverySuggestion];
+            }
 
-          [_sendCodeButton setEnabled:YES];
-          [_spinnerView stopAnimating];
+            [_sendCodeButton setEnabled:YES];
+            [_spinnerView stopAnimating];
         }
         smsVerification:YES];
 }
@@ -166,14 +181,10 @@ static NSString *const kCodeSentSegue = @"codeSent";
 }
 
 - (void)presentInvalidCountryCodeError {
-    UIAlertView *alertView =
-        [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
-                                   message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
-                                  delegate:nil
-                         cancelButtonTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
-                                               @"Generic short text for button to dismiss a dialog")
-                         otherButtonTitles:nil];
-    [alertView show];
+    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
+                          message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
+                      buttonTitle:NSLocalizedString(
+                                      @"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog")];
 }
 
 #pragma mark - Keyboard notifications

@@ -1,23 +1,38 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "Suteikti prieigą";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal reikalauja prieigos prie jūsų kontaktų. Mes nekaupiame jūsų kontaktų savo serveriuose.";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "Atleiskite!";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne dabar";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Priimti naują saugumo numerį";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Reikalingas veiksmas";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Pridėti";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal reikalauja prieigos prie jūsų kontaktų. Prieiga prie kontaktų yra apribota. Signal bus užverta. Tam, kad leistumėte Signal prieigą prie savo kontaktų, jūs galite laikinai išjungti apribojimą, pereidami į Nustatymų (angl. Settings) programėlę >> Bendra (angl. General) >> Apribojimai (angl. Restrictions) >> Kontaktai (angl. Contacts) >> Leisti pakeitimus (angl. Allow Changes).";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Pridėti kontaktą";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Užverti";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Pridėti pagal telefono numerį";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Pridėti dalyvį";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Atmesti";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Neįrašyti";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "Klaida";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Įrašyti";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Tikrinama ar tai yra teisinga Signal paskyra.";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "Tikrinama";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Jau turite Signal paskyrą?";
@@ -68,7 +83,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Nepavyko. Bakstelėkite, norėdami pakartoti.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Atsisiunčiama...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Atsiunčiama…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Laukia eilėje";
@@ -109,6 +124,9 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepalaikomas failas";
 
+/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Balso žinutė";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Užblokuoti naudotojai negalės jums skambinti ar siųsti žinutes.";
 
@@ -123,12 +141,6 @@
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Atblokuoti %@?";
-
-/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ jau yra užblokuota(-as).";
-
-/* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Jau užblokuota(-as)";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Užblokuoti";
@@ -150,9 +162,6 @@
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Klaida";
-
-/* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Kontaktai";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Nepavyko atblokuoti naudotojo.";
@@ -208,6 +217,9 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Palyginti su iškarpine";
 
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie jūsų kontaktai yra Signal naudotojai, leiskite savo sistemos nustatymuose kontaktų prieigą.";
+
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tai atstatys programą, ištrinant jūsų žinutes ir išregistruojant jus iš serverio. Po duomenų ištrynimo programa užsivers.";
 
@@ -229,9 +241,6 @@
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Užblokuotas";
 
-/* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Grupės dalyvis";
-
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistruotas numeris";
 
@@ -246,6 +255,12 @@
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Užblokuoti šį naudotoją";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinė informacija";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupės informacija";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Pranešimų išjungimas";
@@ -313,14 +328,38 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Atmesti";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Jūs galite suteikti prieigą Nustatymų (angl. Settings) programėlėje.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Signal reikia kontaktų prieigos";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Taisyti grupę";
 
-/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ jau yra šios grupės dalyvis.";
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontaktai";
 
-/* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Jau yra grupės dalyvis";
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Taisyti grupę";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Pridėti…";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Dalyviai";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Pridėtas";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Atnaujinti";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Jūs taisėte šią grupę. Ar norėtumėte įrašyti šiuos pakeitimus?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Neįrašyti pakeitimai";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopijuoti";
@@ -330,6 +369,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "Dalintis";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Taisyti";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Labas,\n\nPaskutiniu metu, tam kad savo iPhone telefone išlaikyčiau pokalbius privačius, aš naudoju Signal. Norėčiau, kad ir tu įsidiegtum šią programėlę, taigi, tokiu būdu mes galėtume būti tikri, kad tik tu ir aš galime skaityti savo žinutes ir girdėti savo skambučius.\n\nSignal yra prieinama iPhone ir Android telefonams. Atsisiųsk ją iš čia: %@\n\nSignal veikia panašiai kaip tavo dabartinė susirašinėjimo programėlė. Mes galime siųsti paveikslus ir vaizdo įrašus, skambinti ir pradėti grupės pokalbius. Geriausia yra tai, kad niekas negali to pamatyti, netgi žmonės, kurie sukūrė Signal!\n\nGali daugiau paskaityti apie Open Whisper Systems (žmones, kurie sukūrė Signal) čia: %@";
@@ -475,7 +517,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Kuriama nauja grupė";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "Grupės kūrimas nepavyko";
 
 /* Conversation settings table section title */
@@ -487,11 +529,11 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ išėjo iš grupės. ";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Pridėti kontaktą";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Skambinti";
-
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "Grupės dalyviai";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Siųsti žinutę";
@@ -502,7 +544,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Išeinama iš grupės %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Nepavyko išeiti iš grupės";
 
 /* No comment provided by engineer. */
@@ -521,19 +563,22 @@
 "HOURS_TIME_AMOUNT" = "%u val.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Jungiamasi...";
+"IN_CALL_CONNECTING" = "Jungiamasi…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Skambinama...";
+"IN_CALL_RINGING" = "Skambinama…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Atsiliepta. Apsaugoma...";
+"IN_CALL_SECURING" = "Atsiliepta. Apsaugoma…";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "Apsaugotas. Aktyvus.";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Skambutis pasibaigė.";
+
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti savo kontaktų vardus, atnaujinkite savo sistemos nustatymus, kad leistumėte kontaktų prieigą.";
 
 /* notification body */
 "INCOMING_CALL" = "Gaunamasis skambutis";
@@ -544,7 +589,16 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Neužbaigtas gaunamasis skambutis nuo";
 
-/* Text for button at the top of the contact picker */
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Neteisingas garso failas.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Norint pakviesti savo kontaktus, jums reikia Nustatymų (angl. Settings) programėlėje leisti programėlei Signal prieigą prie savo kontaktų.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Leisti kontaktų prieigą";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pakviesti draugus į Signal";
 
 /* Search */
@@ -599,12 +653,6 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Išvardyti grupės dalyvius";
 
 /* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "Įkeliami jūsų kontaktai.";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Tvirtai laikykitės.";
-
-/* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registravimas";
 
 /* No comment provided by engineer. */
@@ -632,7 +680,7 @@
 "MESSAGE_STATUS_SENT" = "Išsiųsta";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Įkeliama...";
+"MESSAGE_STATUS_UPLOADING" = "Įkeliama…";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Jūs užblokavote šį naudotoją";
@@ -711,20 +759,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Jūs galite tikrinti savo tinklo būseną, žvilgteldami į spalvotą juostą virš jūsų skyrelio Gauta.";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Naujas pokalbis su %@";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Rasti pagal telefono numerį";
+
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "Pridėti pagal telefono numerį";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Nustatykite grupės nuotrauką";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Sukurti";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nauja grupė";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Dalyvis";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Suteikti šiam grupės pokalbiui pavadinimą";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "Pridėti žmones";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Kiti naudotojai";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ar norėtumėte atmesti šiuos pakeitimus?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Neįrašyti pakeitimai";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Ieškoti";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Rasti naudotoją";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rasti kontaktus pagal telefono numerį";
@@ -781,6 +850,45 @@
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Žinutė";
 
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Pavyzdys: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Namų";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Namų faksas";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Pagrindinis";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobilusis";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Kitas";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Kitas faksas";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pranešimų gaviklis";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Nežinomas";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Darbo";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Darbo faksas";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tai neatrodo kaip jūsų saugumo numeris, skirtas %@. Ar tikrai tvirtinate teisingą kontaktą?";
 
@@ -817,14 +925,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Atsakyti";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Sėkmingai iš naujo užsiregistruota push pranešimams.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push pranešimai";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Tam, kad tinkamai veiktų, Signal reikalauja, kad būtų įjungti push pranešimų signalai ir garsai. Prašome tai pakeisti Nustatymų (angl. Settings) programėlėje >> Pranešimų centras (angl. Notification Center) >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -845,12 +950,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Šalies kodo klaida";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal leidžia privačiai kalbėtis su savo esamais kontaktais. Norėdami naudoti Signal, leiskite prieigą prie savo kontaktų.";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "Tęsti";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Sveiki!";
 
 /* No comment provided by engineer. */
@@ -862,7 +961,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registruotas numeris";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Nepavyko iš naujo užsiregistruoti push pranešimams.";
 
 /* Label for the country code field */
@@ -897,6 +996,18 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktyvuoti šį įrenginį";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Atmesti";
@@ -985,6 +1096,9 @@
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Signal kontaktų.";
 
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nėra paieškos rezultatų";
+
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Užblokuoti";
 
@@ -1013,7 +1127,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ištrinti paskyrą";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ar tikrai norite ištrinti visą savo istoriją (žinutes, priedus, skambučių istoriją ...) ? Šio veiksmo neįmanoma bus sugrąžinti.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ar tikrai norite ištrinti visą savo istoriją (žinutes, priedus, skambučių istoriją …) ? Šio veiksmo neįmanoma bus sugrąžinti.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Taip, tikrai.";
@@ -1147,8 +1261,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Jūsų įrenginys nepalaiko šios ypatybės.";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "Atnaujinti";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Jūs negalite šalinti grupės dalyvius. Jie arba turės išeiti, arba turėsite sukurti naują grupę be tam tikro dalyvio.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Neleidžiama";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Su iOS skambučių integracija, atsiliepti į skambučius iš jūsų užrakinto ekrano yra lengva. Pagal numatymą, mes anonimizuojame jūsų skambintojus, taigi tuo pačiu tai yra ir privatu.";
@@ -1164,6 +1281,12 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Sveiki, saugūs vaizdo skambučiai!";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Naujinama Signal ...";
@@ -1188,6 +1311,18 @@
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Patvirtinti saugumo numerį";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Perbraukite, norėdami atsisakyti";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Balso žinutė";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Bakstelėkite ir laikykite, norėdami įrašyti balso žinutę.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Balso žinutė";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Užbaikite sąranką darbalaukiui skirtoje Signal programoje.";

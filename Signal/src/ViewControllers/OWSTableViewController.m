@@ -176,6 +176,48 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
 
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    [self owsTableCommonInit];
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    [self owsTableCommonInit];
+
+    return self;
+}
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (!self) {
+        return self;
+    }
+
+    [self owsTableCommonInit];
+
+    return self;
+}
+
+- (void)owsTableCommonInit
+{
+    _contents = [OWSTableContents new];
+    self.tableViewStyle = UITableViewStyleGrouped;
+}
+
 - (void)loadView
 {
     [super loadView];
@@ -186,13 +228,13 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         self.title = self.contents.title;
     }
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:self.tableViewStyle];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
-    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+    [self.tableView autoPinHeightToSuperview];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }
@@ -235,6 +277,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)setContents:(OWSTableContents *)contents
 {
     OWSAssert(contents);
+    AssertIsOnMainThread();
 
     _contents = contents;
 

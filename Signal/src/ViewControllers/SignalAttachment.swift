@@ -80,7 +80,7 @@ class SignalAttachment: NSObject {
             AssertIsOnMainThread()
 
             assert(oldValue == nil)
-            Logger.verbose("\(SignalAttachment.TAG) Attachment has error: \(error)")
+            Logger.verbose("\(SignalAttachment.TAG) Attachment has error: \(String(describing: error))")
         }
     }
 
@@ -88,6 +88,8 @@ class SignalAttachment: NSObject {
     // images, we cache the UIImage associated with this attachment if
     // possible.
     public var image: UIImage?
+
+    private(set) public var isVoiceMessage = false
 
     // MARK: Constants
 
@@ -168,6 +170,28 @@ class SignalAttachment: NSObject {
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
     var mimeType: String {
+        if isVoiceMessage {
+            // Legacy iOS clients don't handle "audio/mp4" files correctly;
+            // they are written to disk as .mp4 instead of .m4a which breaks
+            // playback.  So we send voice messages as "audio/aac" to work
+            // around this.
+            //
+            // TODO: Remove this Nov. 2016 or after.
+            return "audio/aac"
+        }
+
+        if let filename = filename {
+            let fileExtension = (filename as NSString).pathExtension
+            if fileExtension.characters.count > 0 {
+                if let mimeType = MIMETypeUtil.mimeType(forFileExtension:fileExtension) {
+                    // UTI types are an imperfect means of representing file type;
+                    // file extensions are also imperfect but far more reliable and
+                    // comprehensive so we always prefer to try to deduce MIME type
+                    // from the file extension.
+                    return mimeType
+                }
+            }
+        }
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return OWSMimeTypeOversizeTextMessage
         }
@@ -204,6 +228,12 @@ class SignalAttachment: NSObject {
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
     var fileExtension: String? {
+        if let filename = filename {
+            let fileExtension = (filename as NSString).pathExtension
+            if fileExtension.characters.count > 0 {
+                return fileExtension
+            }
+        }
         if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
             return "txt"
         }
@@ -255,7 +285,7 @@ class SignalAttachment: NSObject {
             kUTTypePlainText as String,
             kUTTypeUTF8PlainText as String,
             kUTTypeUTF16PlainText as String,
-            kUTTypeURL as String,
+            kUTTypeURL as String
         ]
     }
 
@@ -612,6 +642,14 @@ class SignalAttachment: NSObject {
                              validUTISet : nil,
                              maxFileSize : kMaxFileSizeGeneric,
                              filename : filename)
+    }
+
+    // MARK: Voice Messages
+
+    public class func voiceMessageAttachment(data: Data?, dataUTI: String, filename: String?) -> SignalAttachment {
+        let attachment = audioAttachment(data : data, dataUTI : dataUTI, filename: filename)
+        attachment.isVoiceMessage = true
+        return attachment
     }
 
     // MARK: Attachments

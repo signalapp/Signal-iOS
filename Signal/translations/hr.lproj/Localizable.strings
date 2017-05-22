@@ -1,23 +1,38 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "Dozvoli pristup";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal zahtijeva pristup vašim kontakima. Mi ne pohranjujemo vaše kontakte na naše servere.";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "Žao nam je!";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne sada";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Prihvati novi sigurnosni broj";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Zahtijeva akciju";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Dodaj";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal zahtijeva pristup vašim kontaktima. Pristup kontaktima  je ograničen. Signal će se zatvoriti. Vi možete privremeno onemogućiti ograničenje i dozvoliti da Signal pristupi vašim kontaktima u aplikaciji Postavke >> Općenito >> Ograničenja >> Kontakti >> Dozvoli promjene";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Dodaj kontakt";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Zatvori";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Dodaj po telefonskom broju";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Dodaj člana";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Odbaci";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Nemoj spremiti";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "Greška";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Spremi";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Provjeri da je to važeći Signal račun.";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "Ovjera";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Već imate Signal račun?";
@@ -104,10 +119,13 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Neuspješan odabir dokumenta.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ne može prenijeti ovu datoteku. Probajte je sažeti u .zip format prije slanja.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datoteka nije podržana.";
+
+/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Glasovna poruka";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokirani korisnici neće biti u mogućnosti da vas pozovu ili vam pošalju poruku.";
@@ -123,12 +141,6 @@
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblokiraj %@?";
-
-/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je već blokiran.";
-
-/* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Već blokiran";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokiraj";
@@ -151,9 +163,6 @@
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Greška";
 
-/* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Kontakti";
-
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Deblokiranje korisnika nije uspjelo.";
 
@@ -173,7 +182,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blokiraj %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za upućivanje poziva. Možete odobriti ovu dozvolu u aplikaciji Postavke.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za uspostavu poziva i snimanje glasovnih poruka. Možete odobriti ove dozvole u aplikaciji Postavke.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zahtijeva pristup mikrofonu";
@@ -208,6 +217,9 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Uporedi sa međuspremnikom";
 
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Da biste vidjeli koji od vaših kontakata koriste Signal, omogućite pristup kontaktima u postavkama sistema.";
+
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka i odjaviti će vas sa servera. Aplikacija će se zatvoriti nakon brisanja podataka.";
 
@@ -229,9 +241,6 @@
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blokiran";
 
-/* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Član grupe";
-
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistrirani broj";
 
@@ -246,6 +255,12 @@
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakt informacije";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informacije o grupi";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj";
@@ -313,14 +328,38 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Odbaci";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Možete odobriti pristup u aplikaciji Postavke.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal zahtijeva pristup kontaktima za uređivanje kontakt informacija";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Uredi grupu";
 
-/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ je već član ove grupe.";
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakti";
 
-/* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Već je član grupe.";
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Uredi grupu";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Dodaj...";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Članovi";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Dodano";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Ažuriraj";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Izmjenili ste ovu grupu. Želite li spremiti ove izmjene?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Nespremljene promjene";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopiraj";
@@ -330,6 +369,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "Podijeli";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Uredi";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nOdnedavno koristim Signal kako bi svoje razgovore na mom iPhoneu zadržao privatnim. Volio bi da ga i ti instaliraš, tako da budemo sigurni da samo ja i ti možemo čitati naše poruke i čuti naše razgovore.\n\nSignal je dostupan za iPhone i Android. Preuzmite ga ovdje : %@\n\nSignal radi kao tvoja postojeća aplikacija za razmjenu poruka. Možemo slati slike i video, vršiti pozive i započeti grupne razgovore. Najbolje stvar je što nitko drugi osim nas ništa od toga ne može vidjeti, pa čak ni ljudi koje čine Signal.\n\nMožeš pročitati više o Open Whisper System i Signalu, ljudima koji stoje iza ovog projekta, ovdje: %@";
@@ -395,7 +437,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška servera. Molimo pokušajte kasnije ponovo.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo je do nepoznate greške.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ne koristi Signal.";
@@ -419,7 +461,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj promijenjen.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate greške.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirni za verifikaciju.";
@@ -431,19 +473,19 @@
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Aktiviranje ovog %@a će onemogućiti Signal na bilo kojem drugom uređaju koji je trenutno povezan sa ovim telefonskim brojem.";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Nevažeći naziv datoteke.";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Nije moguće učitati datoteku.";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Nije moguće učitati datoteku.";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Nepoznati tip datoteke.";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Greška";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha sa ovim kontaktom. Pokušajte malo kasnije.";
@@ -475,7 +517,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Kreiranje nove grupe";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "Neuspješno kreiranje grupe";
 
 /* Conversation settings table section title */
@@ -487,11 +529,11 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ je napustio/la grupu.";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Dodaj kontakt";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Poziv";
-
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "Članovi grupe";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Pošalji poruku";
@@ -502,7 +544,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Napuštanje grupe %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Napuštanje grupe nije uspjelo";
 
 /* No comment provided by engineer. */
@@ -535,6 +577,9 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Poziv završen.";
 
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Da vidite imena kontakata, ažurirajte postavke sistema kako bi omogućili pristup kontaktima.";
+
 /* notification body */
 "INCOMING_CALL" = "Dolazni poziv";
 
@@ -544,7 +589,16 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Nedovršen dolazni poziv od";
 
-/* Text for button at the top of the contact picker */
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Nevažeća audio datoteka.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Da biste poslali pozivnicu svojim kontaktima, potrebno je da Signalu omogućite pristup svojim kontaktima u aplikaciji Postavke.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Dozvoli pristup kontaktima";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozovite prijatelje na Signal";
 
 /* Search */
@@ -597,12 +651,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Popis članova grupe";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "Učitavanje vaših kontakata.";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Imajte strpljenja.";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Prijavljivanje";
@@ -711,20 +759,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Možete provjeriti status vaše mreže gledajući traku u boji iznad vašeg sandučića.";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Novi razgovor sa %@";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Nađi po broju telefona";
+
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "Dodaj po broju telefona";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Postavi sliku grupe";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Kreiraj";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nova grupa";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Član";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Dodijeli naziv ovom grupnom razgovoru";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "Dodajte osobe";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Ostali korisnici";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Želite li odbaciti ove promjene?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Nespremljene promjene";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Pretraga";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nađi korisnika";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Pronađi kontakt po telefonskom broju";
@@ -757,7 +826,7 @@
 "NOTIFICATIONS_SOUND" = "Zvukovi obavijesti";
 
 /* No comment provided by engineer. */
-"OK" = "Ok";
+"OK" = "OK";
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
@@ -780,6 +849,45 @@
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Poruka";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Primjer: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Dom";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Kućni Fax";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Glavni";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobilni";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Ostalo";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Ostalo Fax";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pejdžer";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Nepoznato";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Posao";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Poslovni Fax";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
@@ -817,14 +925,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Odgovor";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za \"push\" obavijesti.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "\"Push\" obavijesti";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal zahtijeva \"push\" notifikacije, upozorenja i zvukovi moraju biti omogućeni za ispravno funkcionisanje. Molimo izvršite izmjene u aplikaciji Postavke >> Obavijesti >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -845,12 +950,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Greška državnog kôda";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal vam dozvoljava privatne razgovore sa vašim postojećim kontaktima. Da bi koristili Signal, molimo dozvolite pristup vašim kontaktima. ";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "Nastavi";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Dobrodošli!";
 
 /* No comment provided by engineer. */
@@ -862,7 +961,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Registrirani broj";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Neuspješna ponovna registracija za \"push\" obavijesti.";
 
 /* Label for the country code field */
@@ -897,6 +996,18 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktivirajte ovaj uređaj";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Odbaci";
@@ -938,7 +1049,7 @@
 "SEND_BUTTON_TITLE" = "Šalji";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Odaberi primatelja za:";
 
 /* Title for the 'send external file' view. */
 "SEND_EXTERNAL_FILE_VIEW_TITLE" = "Pošalji datoteku";
@@ -950,7 +1061,7 @@
 "SEND_INVITE_SUCCESS" = "Pozvali se prijatelja/icu da koristi Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Pošalji SMS pozivnicu za: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Pošalji pozivnicu putem SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Pošalji pozivnicu prijatelju putem obične SMS poruke?";
@@ -985,6 +1096,9 @@
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nemate kontakata koji koriste Signal.";
 
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nema rezultata pretraživanja";
+
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokiranje";
 
@@ -1013,7 +1127,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Da li ste sigurni da želite izbrisati svu povijest (poruke, privitke, povijest poziva...) ? \nOva akcija ne može biti poništena.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Jeste li sigurni da želite izbrisati svu svoju povijest (poruke, privitke, povijest poziva ...) ? Ta se radnja se ne može vratiti.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Siguran sam";
@@ -1147,8 +1261,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Vaš uređaj ne podržava ovu mogućnost.";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "Ažuriraj";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Ne možete ukloniti članove grupe. Morat će otići ili možete stvoriti novu grupu bez ovog člana.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nije dozvoljeno";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Odgovaranje na poziv sa zaključanog zaslona je jednostavno sa iOS integracijom poziva. Po zadanim postavkama vaš pozivatelj je anoniman.";
@@ -1164,6 +1281,12 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Pozdrav sigurnim video pozivima!";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Signal se nadograđuje...";
@@ -1188,6 +1311,18 @@
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifikacija sigurnosnog broja";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Povucite za otkazivanje.";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Glasovna poruka";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Dodirni i drži za snimanje glasovne poruke.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Glasovna poruka";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";

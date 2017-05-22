@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kContactsTable_CellReuseIdentifier;
 
 @class OWSContactsManager;
+@class SignalAccount;
 @class TSThread;
 
 @interface ContactTableViewCell : UITableViewCell
@@ -26,7 +27,7 @@ extern NSString *const kContactsTable_CellReuseIdentifier;
 
 + (CGFloat)rowHeight;
 
-- (void)configureWithContact:(Contact *)contact contactsManager:(OWSContactsManager *)contactsManager;
+- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
 

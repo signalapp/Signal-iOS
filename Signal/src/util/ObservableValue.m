@@ -95,6 +95,7 @@
       }
     }];
 }
+
 - (void)adjustValue:(id (^)(id))adjustment {
     ows_require(adjustment != nil);
     [self queueRun:^{

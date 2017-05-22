@@ -1,23 +1,38 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "Permite accesul";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal solicită accesul la contactele tale. Noi nu stocăm informația despre contactele tale pe serverele noastre.";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "Scuze!";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nu acum";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă noul număr de siguranță";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Se Necesită Acțiune";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Adaugă";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal are nevoie de acces la contactele tale. Accesul la contacte este restricționat. Signal se va închide. Poți dezactiva restricția temporar pentru a permite Signal accesul la contactele tale prin navigarea la Setări >> General >> Restricții >> Contacte >> Permite Schimbări.";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Adaugă contact";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Închide";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Adaugă după numărul de telefon";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Adaugă membru";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Renunță";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Nu salva";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "Eroare";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Salvează";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Se verifică dacă acest cont Signal este valid.";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "Se validează";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Ai deja un cont Signal?";
@@ -109,6 +124,9 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fișier nesuportat";
 
+/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mesaj vocal";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Utilizatorii blocați nu vor putea să te sune sau să-ți trimită mesaje.";
 
@@ -123,12 +141,6 @@
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblochez pe %@?";
-
-/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ este deja blocat(ă).";
-
-/* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Deja blocat";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blochează";
@@ -150,9 +162,6 @@
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Eroare";
-
-/* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacte";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Deblocarea utilizatorului a eșuat.";
@@ -208,6 +217,9 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compară cu Clipboard";
 
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pentru a vedea care dintre contactele tale sunt utilizatori Signal, permite accesul la contacte în setările de sistem.";
+
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Această acțiune va reseta aplicația prin șteregerea mesajelor tale și prin anularea înregistrării la server. Această aplicație se va închide după ștergerea datelor.";
 
@@ -229,9 +241,6 @@
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blocat";
 
-/* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Membru grup";
-
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Număr Necunoscut";
 
@@ -246,6 +255,12 @@
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blochează acest utilizator";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informații contact";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informații grup";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mut";
@@ -313,14 +328,38 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Revocare";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Poți permite accesul din aplicația Setări.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal are nevoie de acces la contacte pentru a edita informațiile despre contact";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editează grupul";
 
-/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ este deja membru al acestui grup.";
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacte";
 
-/* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Este deja membru al grupului";
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Editează grupul";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Adaugă...";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Membrii";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Adăugat";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Actualizează";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ai modificat acest grup. Vrei să salvezi aceste schimbări?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Schimbări nesalvate";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copiază";
@@ -330,6 +369,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "Partajează";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Editează";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nRecent am început să folosesc Signal pentru a-mi păstra conversațiile private pe iPhone. Aș dori să-ți instalezi și tu aplicația, ca să fim siguri că numai noi doi putem citi mesajele sau să ascultăm apelurile.\n\nSignal este disponibil pentru iPhone și Android. Obține-l de aici:%@\n\nSignal funcționează ca și aplicația ta curentă de mesagerie. Putem trimite poze și video-uri, putem suna, și putem incepe chat-uri de grup. Cea mai bună parte este că nimeni altcineva nu poate vedea toate acestea, nici măcar oamenii care dezvoltă Signal!\n\nPoți afla mai multe despre Open Whisper Systems, oamenii care dezvoltă Signal, aici: %@";
@@ -395,7 +437,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Eroare de server. Te rog încearcă mai târziu.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "A apărut o eroare necunoscută.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "A apărut o eroare neprevăzută. ";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contactul nu este un utilizator de Signal.";
@@ -475,7 +517,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Se creează un grup nou";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "Crearea grupului a eşuat";
 
 /* Conversation settings table section title */
@@ -487,11 +529,11 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = " %@ a părăsit grupul.";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Adaugă contact";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Apel";
-
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "Membrii grupului";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Trimite mesaj";
@@ -502,7 +544,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Se părăsește grupul %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Părăsirea grupului a eșuat.";
 
 /* No comment provided by engineer. */
@@ -524,7 +566,7 @@
 "IN_CALL_CONNECTING" = "Se conectează...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Telefonul sună...";
+"IN_CALL_RINGING" = "Sună...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Apel preluat. Securizare în curs...";
@@ -535,6 +577,9 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Apelul a fost terminat.";
 
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Pentru a putea vedea numele contactelor tale, actualizează-ți setările de sistem pentru a permite accesul la contacte.";
+
 /* notification body */
 "INCOMING_CALL" = "Apel de intrare";
 
@@ -544,7 +589,16 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Apel de intrare incomplet de la";
 
-/* Text for button at the top of the contact picker */
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fișier audio invalid.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Pentru a invita contactele tale, trebuie să permiți accesul Signal la contactele tale în aplicația Setări.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Permite accesul la contacte";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invită-ți prietenii la Signal";
 
 /* Search */
@@ -597,12 +651,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Afișează membrii grupului";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "Contactele tale se Încarcă.";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Sit tight.";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Jurnalizare";
@@ -711,20 +759,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Poți verifica status-ul rețelei prin observarea barei colorate deasupra inbox-ului.";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Conversație nouă cu %@";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Găsește după numărul de telefon";
+
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "Adaugă după numărul de telefon";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Setează Poza de Grup";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Creează";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "Grup Nou";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Membru";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Denumește această conversație de grup";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "Adaugă persoane";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Alți utilizatori";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vrei să renunți la aceste schimbări?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Schimbări nesalvate";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Căutare";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Caută utilizator";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Găsește contacte după numărul de telefon";
@@ -757,7 +826,7 @@
 "NOTIFICATIONS_SOUND" = "Notificări Sonore";
 
 /* No comment provided by engineer. */
-"OK" = "Ok";
+"OK" = "OK";
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
@@ -780,6 +849,45 @@
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Mesaj";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemplu: %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Acasă";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax acasă";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Principal";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobil";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Altul";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Fax altul";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Necunoscut";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Servici";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax serviciu";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
@@ -817,14 +925,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Răspunde";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Reînregistrarea pentru notificări push s-a făcut cu succes.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Notificări Push";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Pentru a funcționa corect aplicația Signal necesită ca notificările push și sunetele să fie activate.Vă rugăm sa faceți modificările necesare în Configurări >> Notificări >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -845,12 +950,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Prefixul Țării Incorect";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal îți permite să ai conversații private cu contactele tale existente. Pentru a folosi Signal, te rog permite accesul la contactele tale.";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "Continuă";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Bine ați venit!";
 
 /* No comment provided by engineer. */
@@ -862,7 +961,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Număr înregistrat";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Eroare la re-înregistrare pentru notificările push.";
 
 /* Label for the country code field */
@@ -897,6 +996,18 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Activează acest dispozitiv";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Respinge";
@@ -950,7 +1061,7 @@
 "SEND_INVITE_SUCCESS" = "Ai invitat prietenul tău să folosească Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Trimite invitație prin SMS către: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invită prin SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invită un prieten prin SMS nesecurizat?";
@@ -984,6 +1095,9 @@
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nu ai nici un contact pe Signal.";
+
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Niciun rezultat al căutării";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocat";
@@ -1147,8 +1261,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Dispozitivul tău nu suportă această funcţionalitate.";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "Actualizează";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Nu poți elimina membrii grupului. Vor trebui fie să plece, sau poți crea un grup nou fără acest membru.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nepermis";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Preluarea apelurilor din ecranul de blocare este ușoară prin integrarea de apel iOS. Anonimizăm apelantul în mod implicit, asigurând confidențialitatea.";
@@ -1164,6 +1281,12 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bun venit la apeluri video securizate!";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Se actualizează Signal ...";
@@ -1188,6 +1311,18 @@
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Verifică Numărul de Siguranță";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisează pentru a anula";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Mesaj vocal";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Apasă și menține pentru a înregistra un mesaj vocal.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Mesaj vocal";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Finalizează configurarea în Signal Desktop.";

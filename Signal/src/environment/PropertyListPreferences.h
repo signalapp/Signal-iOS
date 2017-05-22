@@ -58,6 +58,9 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
 
+- (void)setIOSUpgradeNagVersion:(NSString *)value;
+- (nullable NSString *)iOSUpgradeNagVersion;
+
 #pragma mark - Calling
 
 #pragma mark Callkit

@@ -22,8 +22,8 @@
 #import "TSStorageManager+Calling.h"
 #import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
+#import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
@@ -93,6 +93,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
 
+    [AppVersion instance];
+
     // Set the seed the generator for rand().
     //
     // We should always use arc4random() instead of rand(), but we
@@ -111,11 +113,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (getenv("runningTests_dontStartApp")) {
         return YES;
     }
-
-    if ([TSAccountManager isRegistered]) {
-        [Environment.getCurrent.contactsManager doAfterEnvironmentInitSetup];
-    }
-
 
     UIStoryboard *storyboard;
     if ([TSAccountManager isRegistered]) {
@@ -158,16 +155,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
                 [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                           accountManager:[Environment getCurrent].accountManager
-                                             preferences:[Environment preferences]]
-                    .then(^{
-                        DDLogDebug(@"%@ Successfully ran syncPushTokensJob.", self.tag);
-                    })
-                    .catch(^(NSError *_Nonnull error) {
-                        DDLogDebug(@"%@ Failed to run syncPushTokensJob with error: %@", self.tag, error);
-                    });
+                                             preferences:[Environment preferences]
+                                              showAlerts:NO];
 
-                // Clean up any messages that expired since last launch.
-                [[[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                // Clean up any messages that expired since last launch immediately
+                // and continue cleaning in the background.
+                [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
@@ -177,6 +170,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 {
                     [AppStoreRating setupRatingLibrary];
                 }
+
             }];
 
     [[TSAccountManager sharedInstance]
@@ -279,9 +273,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSString *filename = url.lastPathComponent;
         if ([filename stringByDeletingPathExtension].length < 1) {
             DDLogError(@"Application opened with URL invalid filename: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
                                   message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
                                               @"Message for the alert indicating the 'export with signal' file had an "
                                               @"invalid filename.")];
@@ -290,9 +284,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSString *fileExtension = [filename pathExtension];
         if (fileExtension.length < 1) {
             DDLogError(@"Application opened with URL missing file extension: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
                                   message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
                                               @"Message for the alert indicating the 'export with signal' file had "
                                               @"unknown type.")];
@@ -327,19 +321,22 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         } else if ([isDirectory boolValue]) {
             DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
             DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [self showErrorAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                                                            @"Alert title when picking a document fails because user picked a directory/bundle")
-                                  message:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                                            @"Alert body when picking a document fails because user picked a directory/bundle")];
+            [OWSAlerts
+                showAlertWithTitle:
+                    NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                        @"Alert title when picking a document fails because user picked a directory/bundle")
+                           message:
+                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
             return NO;
         }
         
         NSData *data = [NSData dataWithContentsOfURL:url];
         if (!data) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
                                   message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
                                               @"Message for the alert indicating the 'export with signal' data "
                                               @"couldn't be loaded.")];
@@ -348,9 +345,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
                                   message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
                                               @"Message for the alert indicating the 'export with signal' attachment "
                                               @"couldn't be loaded.")];
@@ -358,9 +355,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
         if ([attachment hasError]) {
             DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
-            [self showErrorAlertWithTitle:
-                      NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                          @"Title for the alert indicating the 'export with signal' attachment had an error.")
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
                                   message:[attachment errorName]];
             return NO;
         }
@@ -388,23 +385,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return NO;
 }
 
-- (void)showErrorAlertWithTitle:(NSString *)title message:(NSString *)message
-{
-    OWSAssert(title.length > 0);
-    OWSAssert(message.length > 0);
-
-    UIAlertController *controller =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:nil]];
-
-    [[Environment getCurrent].signalsViewController presentTopLevelModalViewController:controller
-                                                                      animateDismissal:YES
-                                                                   animatePresentation:YES];
-}
-
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.tag);
 
@@ -418,8 +398,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                // can't verify in production env due to code
                                                // signing.
                                                [TSSocketManager requestSocketOpen];
-                                               [[Environment getCurrent].contactsManager verifyABPermission];
-                                               
+
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   [[Environment getCurrent]
+                                                           .contactsManager fetchSystemContactsIfAlreadyAuthorized];
+                                               });
+
                                                // This will fetch new messages, if we're using domain
                                                // fronting.
                                                [[PushManager sharedManager] applicationDidBecomeActive];
@@ -442,7 +426,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       if ([TSAccountManager isRegistered]) {
           dispatch_sync(dispatch_get_main_queue(), ^{
-              [self protectScreen];
+              if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                  // If app has not re-entered active, show screen protection if necessary.
+                  [self showScreenProtection];
+              }
               [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
           });
       }
@@ -628,16 +615,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.screenProtectionWindow = window;
 }
 
-- (void)protectScreen {
+- (void)showScreenProtection
+{
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection {
-    if (Environment.preferences.screenSecurityIsEnabled) {
-        self.screenProtectionWindow.hidden = YES;
-    }
+    self.screenProtectionWindow.hidden = YES;
 }
 
 #pragma mark Push Notifications Delegate Methods

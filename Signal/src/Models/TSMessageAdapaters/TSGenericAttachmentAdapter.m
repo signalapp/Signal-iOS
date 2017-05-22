@@ -4,6 +4,7 @@
 
 #import "TSGenericAttachmentAdapter.h"
 #import "AttachmentUploadView.h"
+#import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
@@ -76,9 +77,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - JSQMessageMediaData protocol
 
+- (CGFloat)iconHMargin
+{
+    return 12.f;
+}
+
+- (CGFloat)iconHSpacing
+{
+    return 10.f;
+}
+
+- (CGFloat)iconVMargin
+{
+    return 12.f;
+}
+
 - (CGFloat)bubbleHeight
 {
-    return 45.f;
+    return self.iconSize + self.iconVMargin * 2;
 }
 
 - (CGFloat)iconSize
@@ -86,46 +102,67 @@ NS_ASSUME_NONNULL_BEGIN
     return 40.f;
 }
 
-- (CGFloat)hMargin
+- (CGFloat)vMargin
 {
     return 10.f;
 }
 
-- (CGFloat)vMargin
+- (UIColor *)bubbleBackgroundColor
 {
-    return 10.f;
+    return self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+}
+
+- (UIColor *)textColor
+{
+    return (self.incoming ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor whiteColor]);
+}
+
+- (UIColor *)foregroundColorWithOpacity:(CGFloat)alpha
+{
+    return [self.textColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
 }
 
 - (UIView *)mediaView
 {
     if (_cachedMediaView == nil) {
         CGSize viewSize = [self mediaViewDisplaySize];
-        UIColor *textColor = (self.incoming ? [UIColor blackColor] : [UIColor whiteColor]);
+        UIColor *textColor = (self.incoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
 
         _cachedMediaView = [[UIView alloc] initWithFrame:CGRectMake(0.f, 0.f, viewSize.width, viewSize.height)];
 
-        _cachedMediaView.backgroundColor
-            = self.incoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+        _cachedMediaView.backgroundColor = self.bubbleBackgroundColor;
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:_cachedMediaView
                                                                     isOutgoing:!self.incoming];
 
         const CGFloat kBubbleTailWidth = 6.f;
         CGRect contentFrame = CGRectMake(self.incoming ? kBubbleTailWidth : 0.f,
             self.vMargin,
-            viewSize.width - kBubbleTailWidth - 10,
-            viewSize.height - self.vMargin * 2.f);
+            viewSize.width - kBubbleTailWidth - self.iconHMargin,
+            viewSize.height - self.vMargin * 2);
 
-        UIImage *image = [UIImage imageNamed:(self.incoming ? @"file-black-40" : @"file-white-40")];
+        UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
         OWSAssert(image);
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + 10.f),
+        UIImageView *imageView = [UIImageView new];
+        CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + self.iconHMargin),
             round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
             self.iconSize,
             self.iconSize);
         imageView.frame = iconFrame;
+        imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        imageView.tintColor = self.bubbleBackgroundColor;
+        imageView.backgroundColor
+            = (self.incoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
+        imageView.layer.cornerRadius = MIN(imageView.bounds.size.width, imageView.bounds.size.height) * 0.5f;
         [_cachedMediaView addSubview:imageView];
 
-        NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
+        NSString *filename = self.attachment.sourceFilename;
+        if (!filename) {
+            filename = [[self.attachment filePath] lastPathComponent];
+        }
+        NSString *fileExtension = filename.pathExtension;
+        if (fileExtension.length < 1) {
+            [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
+        }
         if (fileExtension.length < 1) {
             fileExtension = NSLocalizedString(@"GENERIC_ATTACHMENT_DEFAULT_TYPE",
                 @"A default label for attachment whose file extension cannot be determined.");
@@ -133,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         UILabel *fileTypeLabel = [UILabel new];
         fileTypeLabel.text = fileExtension.uppercaseString;
-        fileTypeLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+        fileTypeLabel.textColor = imageView.backgroundColor;
         fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
         fileTypeLabel.adjustsFontSizeToFitWidth = YES;
@@ -141,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGRect fileTypeLabelFrame = CGRectZero;
         fileTypeLabelFrame.size = [fileTypeLabel sizeThatFits:CGSizeZero];
         // This dimension depends on the space within the icon boundaries.
-        fileTypeLabelFrame.size.width = 20.f;
+        fileTypeLabelFrame.size.width = 15.f;
         // Center on icon.
         fileTypeLabelFrame.origin.x
             = round(iconFrame.origin.x + (iconFrame.size.width - fileTypeLabelFrame.size.width) * 0.5f);
@@ -150,10 +187,10 @@ NS_ASSUME_NONNULL_BEGIN
         fileTypeLabel.frame = fileTypeLabelFrame;
         [_cachedMediaView addSubview:fileTypeLabel];
 
-        const CGFloat kLabelHSpacing = 3;
+        const CGFloat kLabelHSpacing = self.iconHSpacing;
         const CGFloat kLabelVSpacing = 2;
         NSString *topText =
-            [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            [self.attachment.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         if (topText.length < 1) {
             topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].uppercaseString;
         }
@@ -164,20 +201,20 @@ NS_ASSUME_NONNULL_BEGIN
         topLabel.text = topText;
         topLabel.textColor = textColor;
         topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        topLabel.font = [UIFont ows_mediumFontWithSize:15.f];
+        topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
         [topLabel sizeToFit];
         [_cachedMediaView addSubview:topLabel];
 
         NSError *error;
         unsigned long long fileSize =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:self.attachment.filePath error:&error].fileSize;
+            [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachment filePath] error:&error].fileSize;
         OWSAssert(!error);
         NSString *bottomText = [ViewControllerUtils formatFileSize:fileSize];
         UILabel *bottomLabel = [UILabel new];
         bottomLabel.text = bottomText;
         bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        bottomLabel.font = [UIFont ows_regularFontWithSize:13.f];
+        bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
         [bottomLabel sizeToFit];
         [_cachedMediaView addSubview:bottomLabel];
 
@@ -207,7 +244,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)mediaViewDisplaySize
 {
     CGSize size = [super mediaViewDisplaySize];
-    size.height = ceil(self.bubbleHeight + self.vMargin * 2);
+    size.width = [self ows_maxMediaBubbleWidth:size];
+    size.height = (CGFloat)ceil(self.bubbleHeight);
     return size;
 }
 

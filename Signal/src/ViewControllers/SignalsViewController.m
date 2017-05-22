@@ -5,6 +5,7 @@
 #import "SignalsViewController.h"
 #import "AppDelegate.h"
 #import "InboxTableViewCell.h"
+#import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
@@ -17,7 +18,9 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -38,6 +41,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic) long inboxCount;
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
+@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 
 // Dependencies
 
@@ -48,11 +52,16 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
+// Views
+
+@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
 @end
 
 @implementation SignalsViewController
+
+#pragma mark - Init
 
 - (instancetype)init
 {
@@ -93,6 +102,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -100,14 +113,25 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Notifications
+
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-
+        
         [self.tableView reloadData];
     });
 }
+
+- (void)signalAccountsDidChange:(id)notification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
+}
+
+#pragma mark - View Life Cycle
 
 - (void)awakeFromNib
 {
@@ -131,13 +155,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                object:nil];
     [self selectedInbox:self];
 
-    __weak SignalsViewController *weakSelf = self;
-    [[[Environment getCurrent] contactsManager].getObservableContacts watchLatestValue:^(id latestValue) {
-        [weakSelf.tableView reloadData];
-    }
-                                                                              onThread:[NSThread mainThread]
-                                                                        untilCancelled:nil];
-
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
         NSLocalizedString(@"ARCHIVE_NAV_BAR_TITLE", nil)
@@ -151,6 +168,16 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.segmentedControl setSelectedSegmentIndex:0];
     navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+
+
+    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
+    self.missingContactsPermissionView.tapAction = ^{
+        [[UIApplication sharedApplication] openSystemSettings];
+    };
+    // Should only have to do this once per load (e.g. vs did appear) since app restarts when permissions change.
+    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -251,14 +278,23 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (void)composeNew {
-    if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
+- (IBAction)composeNew
+{
+    MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
 
-    [self.navigationController popToRootViewControllerAnimated:YES];
-
-    [self performSegueWithIdentifier:@"composeNew" sender:self];
+    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+            DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
+        }
+        // Even if there is an error fetching contacts we proceed to the next screen.
+        // As the compose view will present the proper thing depending on contact access.
+        //
+        // We just want to make sure contact access is *complete* before showing the compose
+        // screen to avoid flicker.
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+    }];
 }
 
 - (void)swappedSegmentedControl {
@@ -272,7 +308,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self checkIfEmptyView];
-
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
     [self updateInboxCountLabel];
     [[self tableView] reloadData];
 }
@@ -283,47 +321,17 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
+        [self ensureNotificationsUpToDate];
 
-        [self didAppearForNewlyRegisteredUser];
+        // Clean up any messages that expired since last launch immediately
+        // and continue cleaning in the background.
+        [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
     } else {
         [self displayAnyUnseenUpgradeExperience];
     }
 }
 
 #pragma mark - startup
-
-- (void)didAppearForNewlyRegisteredUser
-{
-    ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
-    switch (status) {
-        case kABAuthorizationStatusNotDetermined:
-        case kABAuthorizationStatusRestricted: {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                    message:NSLocalizedString(@"REGISTER_CONTACTS_BODY", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
-
-            [controller
-                addAction:[UIAlertAction
-                              actionWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_CONTINUE", nil)
-                                        style:UIAlertActionStyleCancel
-                                      handler:^(UIAlertAction *action) {
-                                          [self ensureNotificationsUpToDate];
-                                          [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-                                      }]];
-
-            [self presentViewController:controller animated:YES completion:nil];
-            break;
-        }
-        default: {
-            DDLogError(@"%@ Unexpected for new user to have kABAuthorizationStatus:%ld", self.tag, status);
-            [self ensureNotificationsUpToDate];
-            [[Environment getCurrent].contactsManager doAfterEnvironmentInitSetup];
-
-            break;
-        }
-    }
-}
 
 - (void)displayAnyUnseenUpgradeExperience
 {
@@ -346,15 +354,23 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)ensureNotificationsUpToDate
 {
-    OWSSyncPushTokensJob *syncPushTokensJob =
-        [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
-                                           accountManager:self.accountManager
-                                              preferences:[Environment preferences]];
-    [syncPushTokensJob run];
+    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                              accountManager:self.accountManager
+                                 preferences:[Environment preferences]
+                                  showAlerts:NO];
 }
 
 - (void)tableViewSetUp {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (BOOL)shouldShowMissingContactsPermissionView
+{
+    if ([TSContactThread numberOfKeysInCollection] == 0) {
+        return NO;
+    }
+
+    return !self.contactsManager.isSystemContactsAuthorized;
 }
 
 #pragma mark - Table View Data Source
@@ -367,7 +383,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
-- (InboxTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     InboxTableViewCell *cell =
         [self.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([InboxTableViewCell class])];
     TSThread *thread = [self threadForIndexPath:indexPath];
@@ -462,19 +479,22 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                                                              inThread:thread
                                                                      groupMetaMessage:TSGroupMessageQuit];
             [self.messageSender sendMessage:message
-                                    success:^{
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     [self deleteThread:thread];
-                                                                 }];
-                                    }
-                                    failure:^(NSError *error) {
-                                        [self dismissViewControllerAnimated:YES
-                                                                 completion:^{
-                                                                     SignalAlertView(NSLocalizedString(@"GROUP_REMOVING_FAILED", nil),
-                                                                                     error.localizedRecoverySuggestion);
-                                                                 }];
-                                    }];
+                success:^{
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [self deleteThread:thread];
+                                             }];
+                }
+                failure:^(NSError *error) {
+                    [self dismissViewControllerAnimated:YES
+                                             completion:^{
+                                                 [OWSAlerts
+                                                     showAlertWithTitle:
+                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
+                                                             @"Title of alert indicating that group deletion failed.")
+                                                                message:error.localizedRecoverySuggestion];
+                                             }];
+                }];
         } else {
             [self deleteThread:thread];
         }
@@ -535,15 +555,14 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     dispatch_async(dispatch_get_main_queue(), ^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
+        [mvc configureForThread:thread
+            keyboardOnViewAppearing:keyboardOnViewAppearing
+                callOnViewAppearing:callOnViewAppearing];
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         }
         [self.navigationController popToRootViewControllerAnimated:YES];
-
-        [mvc configureForThread:thread
-            keyboardOnViewAppearing:keyboardOnViewAppearing
-                callOnViewAppearing:callOnViewAppearing];
         [self.navigationController pushViewController:mvc animated:YES];
     });
 }
@@ -678,6 +697,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
     NSArray *sectionChanges = nil;
     NSArray *rowChanges     = nil;
+
+    // If the user hasn't already granted contact access
+    // we don't want to request until they receive a message.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
 
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges

@@ -6,8 +6,10 @@
 #import "AttachmentUploadView.h"
 #import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <SignalServiceKit/MimeTypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIImageView *cachedImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
+@property (nonatomic) CGSize imageSize;
 
 // See comments on OWSMessageMediaAdapter.
 @property (nonatomic, nullable, weak) id lastPresentingCell;
@@ -28,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment incoming:(BOOL)incoming
 {
-    self = [super initWithImage:attachment.image];
+    self = [super init];
 
     if (!self) {
         return self;
@@ -38,12 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
     _attachment = attachment;
     _attachmentId = attachment.uniqueId;
     _incoming = incoming;
+    _imageSize = attachment.mediaURL ? [self sizeOfImageAtURL:attachment.mediaURL] : CGSizeZero;
 
     return self;
 }
 
 - (void)clearAllViews
 {
+    OWSAssert([NSThread isMainThread]);
+
     [_cachedImageView removeFromSuperview];
     _cachedImageView = nil;
     _attachmentUploadView = nil;
@@ -63,13 +69,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - JSQMessageMediaData protocol
 
 - (UIView *)mediaView {
-    if (self.image == nil) {
-        return nil;
-    }
+    OWSAssert([NSThread isMainThread]);
 
     if (self.cachedImageView == nil) {
+        UIImage *image = self.attachment.image;
+        if (!image) {
+            DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return nil;
+        }
         CGSize size             = [self mediaViewDisplaySize];
-        UIImageView *imageView  = [[UIImageView alloc] initWithImage:self.image];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
         imageView.contentMode   = UIViewContentModeScaleAspectFill;
         imageView.frame         = CGRectMake(0.0f, 0.0f, size.width, size.height);
         imageView.clipsToBounds = YES;
@@ -92,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)mediaViewDisplaySize {
-    return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImage:self.image];
+    return [self ows_adjustBubbleSize:[super mediaViewDisplaySize] forImageSize:self.imageSize];
 }
 
 #pragma mark - OWSMessageEditing Protocol
@@ -105,34 +115,40 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)performEditingAction:(SEL)action
 {
     NSString *actionString = NSStringFromSelector(action);
-    if (!self.image) {
-        OWSAssert(NO);
-        DDLogWarn(@"Refusing to perform '%@' action with nil image for %@: attachmentId=%@. (corrupted attachment?)",
-            actionString,
-            self.class,
-            self.attachmentId);
-        return;
-    }
 
     if (action == @selector(copy:)) {
         // We should always copy to the pasteboard as data, not an UIImage.
-        // The pasteboard should has as specific as UTI type as possible and
+        // The pasteboard should have as specific as UTI type as possible and
         // data support should be far more general than UIImage support.
-        OWSAssert(self.attachment.filePath.length > 0);
-        NSString *fileExtension = [self.attachment.filePath pathExtension];
-        NSArray *utiTypes = (__bridge_transfer NSArray *)UTTypeCreateAllIdentifiersForTag(
-            kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, (CFStringRef) @"public.image");
-        NSString *utiType = (NSString *)kUTTypeImage;
-        OWSAssert(utiTypes.count > 0);
-        if (utiTypes.count > 0) {
-            utiType = utiTypes[0];
-        }
 
+        NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
+        if (!utiType) {
+            OWSAssert(0);
+            utiType = (NSString *)kUTTypeImage;
+        }
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         return;
     } else if (action == NSSelectorFromString(@"save:")) {
-        UIImageWriteToSavedPhotosAlbum(self.image, nil, nil, nil);
+        NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
+        if (!data) {
+            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
+            OWSAssert(0);
+            return;
+        }
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        [library writeImageDataToSavedPhotosAlbum:data
+                                         metadata:nil
+                                  completionBlock:^(NSURL *assetURL, NSError *error) {
+                                      if (error) {
+                                          DDLogWarn(@"Error Saving image to photo album: %@", error);
+                                      }
+                                  }];
         return;
     }
     
@@ -155,6 +171,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

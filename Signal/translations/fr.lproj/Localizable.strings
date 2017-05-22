@@ -1,23 +1,38 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "Donner l'accès";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal nécessite l'accès à vos contacts. Nous n'enregistrons pas vos contacts sur nos serveurs.";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "Désolé !";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Pas maintenant";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accepter le nouveau numéro de sécurité";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "Action requise";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Ajouter...";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal nécessite l'accès à vos contacts. L'accès aux contacts n'est pas autorisé. Signal va fermer. Vous pouvez temporairement autoriser Signal à accéder à vos contacts via l'application Réglages >> Général >> Restrictions >> Contacts >> Autoriser.";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Ajouter Contact";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "Fermer";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Ajouter par numéro de téléphone";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Ajouter un membre";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "Jeter";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "Ne pas sauvegarder";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "Erreur";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "Sauvegarder";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "En vérifiant qu'il s'agit d'un compte Signal valide.";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "Validation";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Vous avez déjà un compte Signal?";
@@ -68,7 +83,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Échoué. Cliquer pour réessayer.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Téléchargement...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Téléchargement..";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "En file d'attente";
@@ -104,10 +119,13 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Impossible de choisir le document.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ne peut pas procéder au traitement de ce fichier tel quel. Veuillez essayer de le compresser avant de l'envoyer";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non supporté";
+
+/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message Vocal";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront pas vous appeler ou vous envoyer des messages.";
@@ -123,12 +141,6 @@
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Débloquer %@?";
-
-/* A format for the message of the alert if user tries to block a user who is already blocked.  Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ est déjà bloqué.";
-
-/* A title of the alert if user tries to block a user who is already blocked. */
-"BLOCK_LIST_VIEW_ALREADY_BLOCKED_ALERT_TITLE" = "Déjà Bloqué";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Bloquer";
@@ -150,9 +162,6 @@
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Erreur";
-
-/* A title for the contacts section of the block list view. */
-"BLOCK_LIST_VIEW_CONTACTS_SECTION_TITLE" = "Contacts";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Impossible de débloquer l'utilisateur.";
@@ -208,6 +217,9 @@
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le presse-papier";
 
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pour voir lesquels de vos contacts sont les utilisateurs du Signal, autorisez l'accès des contacts dans les paramètres de votre système.";
+
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ceci va remettre à zéro l'application en effaçant vos messages et en vous désinscrivant du serveur. L'application se fermera après l'effacement des données.";
 
@@ -229,9 +241,6 @@
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Bloqué";
 
-/* An indicator that a contact is a member of the current group. */
-"CONTACT_CELL_IS_IN_GROUP" = "Membres du groupe";
-
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Numéro non enregistré";
 
@@ -246,6 +255,12 @@
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquer cet utilisateur";
+
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informations du contact";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informations du groupe";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Muet";
@@ -313,14 +328,38 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Ignorer";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez donner accès à l'application Paramètres.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d'accéder au contact pour éditer le contact";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Modifier le groupe";
 
-/* A format for the message of the alert if user tries to add a user to a group who is already in the group.  Embeds {{the blocked user's name or phone number}}. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_MESSAGE_FORMAT" = "%@ est déjà un membre de ce groupe.";
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
 
-/* A title of the alert if user tries to add a user to a group who is already in the group. */
-"EDIT_GROUP_VIEW_ALREADY_IN_GROUP_ALERT_TITLE" = "Déjà membre du groupe";
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "Editer groupe";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Ajouter...";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Membres";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Ajouté";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "Mise à jour";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vous avez changé ce groupe. Voulez-vous enregistrer ces modifications?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copy";
@@ -330,6 +369,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "Partager";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "Editer";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey\n\nDernièrement, j'ai utilisé Signal pour garder les conversations sur mon iPhone privé. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seul vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est disponible pour iPhones et Android. Téléchargez ici: %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, faire des appels et commencer des discussions de groupe. La meilleure partie est, personne d'autre ne peut voir tout cela, pas même les gens qui font Signal!\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici: %@ ";
@@ -419,7 +461,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Numéro de sécurité modifié.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inattendue s'est produite.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numéro de sécurité modifié. Appuyez pour vérifier.";
@@ -431,19 +473,19 @@
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "L'activation de ce %@ désactive Signal sur tout autre périphérique actuellement associé à ce numéro de téléphone.";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Nom du fichier invalide";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Impossible de charger le fichier";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Impossible de charger le fichier";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Type de fichier inconnu";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Erreur";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop de défaillances avec ce contact. Veuillez réessayer prochainement.";
@@ -475,7 +517,7 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Création du nouveau groupe";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that new group could not be created. */
 "GROUP_CREATING_FAILED" = "Echec de la création du groupe";
 
 /* Conversation settings table section title */
@@ -487,11 +529,11 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ a quitté le groupe.";
 
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Ajouter Contact";
+
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Appel";
-
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "Membres du groupe";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Envoyer le message";
@@ -502,7 +544,7 @@
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Sortie du groupe %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Echec de la sortie du groupe";
 
 /* No comment provided by engineer. */
@@ -521,19 +563,22 @@
 "HOURS_TIME_AMOUNT" = "%u heures";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connexion…";
+"IN_CALL_CONNECTING" = "Connexion en cours";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Numérotation…";
+"IN_CALL_RINGING" = "Sonnerie…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Établissement de la liaison sécurisée…";
+"IN_CALL_SECURING" = "Répondu. Sécurisation...";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "Sécurisé. Actif.";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Appel terminé.";
+
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Pour voir les noms de vos contacts, mettez à jour les paramètres de votre système pour permettre l'accès aux contacts.";
 
 /* notification body */
 "INCOMING_CALL" = "Appel entrant";
@@ -544,7 +589,16 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Appel entrant incomplet de";
 
-/* Text for button at the top of the contact picker */
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fichier audio invalide.";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Pour inviter vos contacts, vous devez autoriser l'accès de Signal à vos contacts dans les paramètres de l'application.";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l'accès au contact";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des Amis à Signal";
 
 /* Search */
@@ -597,12 +651,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Voir la liste des membres du groupe";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "Chargement des contacts.";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "Patientez.";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Authentification";
@@ -711,20 +759,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_TEXT" = "Vous pouvez vérifier l'état de votre connexion en regardant la barre au-dessus de la boîte de réception.";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "Nouvelle conversation avec %@";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Trouver par numéro de téléphone";
+
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "Ajouter par numéro de téléphone";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Définir la photo de groupe";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "Créer";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
+
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "Membre";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nommer ce groupe de discussion";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "Ajouter quelqu'un";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autre Utilisateurs";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous supprimer ces modifications?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Chercher";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Trouver utilisateur";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
@@ -781,6 +850,45 @@
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
 
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "Maison";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax Maison";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "Principal";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "Autre";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Autre Fax";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Inconnu";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "Travail";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax Travail";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Cela ne ressemble pas à votre numéro de sécurité avec %@. Avez-vous vérifier le bon contact?";
 
@@ -817,14 +925,11 @@
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Répondre";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Enregistrement réussi pour les notifications push.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Notifications push";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = "Signal requiert que l’envoi de notifications et de sons soit activé pour fonctionner correctement. Pour changer cela merci de vous rendre dans Réglages >> Notifications >> Signal.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -845,12 +950,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Problème d'indicatif téléphonique";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal vous permet d'avoir des conversations privées avec vos contacts existants. Pour utiliser Signal, veuillez autoriser l'accès à vos contacts.";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "Continuer";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
 
 /* No comment provided by engineer. */
@@ -862,7 +961,7 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "Numéro enregistré";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Impossible de se réenregistrer pour les notifications push.";
 
 /* Label for the country code field */
@@ -897,6 +996,18 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Activer cet appareil";
+
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Rejeter";
@@ -938,10 +1049,10 @@
 "SEND_BUTTON_TITLE" = "Envoyer";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Choisir un destinataire pour :";
 
 /* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Envoyer le fichier";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Échec de l'envoi de l'invitation. Veuillez réessayer plus tard. ";
@@ -950,7 +1061,7 @@
 "SEND_INVITE_SUCCESS" = "Vous avez invité vos amis à utiliser Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Envoyer une invitation par SMS à %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par SMS %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviter un ami via un SMS non sécurisé ?";
@@ -985,6 +1096,9 @@
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Vous n'avez aucun contact sur Signal.";
 
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Aucun résultat trouvé";
+
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Bloqué";
 
@@ -1013,7 +1127,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Etes-vous sûr de vouloir effacer tout votre historique (messages, pièces jointes, liste d'appels…) ? Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Êtes-vous sûr de vouloir supprimer tout votre historique (messages, pièces jointes, historique des appels ...)? Cette action ne peut pas être réversible.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Je suis sûr.";
@@ -1147,8 +1261,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne supporte pas cette fonctionnalité.";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "Mettre à jour";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Vous ne pouvez pas supprimer les membres du groupe. Ils doivent soit partir, soit créer un nouveau groupe sans ce membre.";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Interdit";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Répondre aux appels de votre écran de verrouillage est facile avec l'intégration d'appels iOS. Nous anonymisons votre appelant par défaut, donc il est privé aussi.";
@@ -1164,6 +1281,12 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bonjour Appels vidéo sécurisés!";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Mise à niveau de Signal ...";
@@ -1188,6 +1311,18 @@
 
 /* table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Vérifier le numéro de sécurité";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisser pour effacer";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Message Vocal";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Appuyez et maintenez la touche pour enregistrer un message vocal.";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Message Vocal";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complétez la configuration sur Signal Desktop";

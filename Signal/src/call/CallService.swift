@@ -91,7 +91,8 @@ protocol CallServiceObserver: class {
     /**
      * Fired whenever the local or remote video track become active or inactive.
      */
-    func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+    func didUpdateVideoTracks(call: SignalCall?,
+                              localVideoTrack: RTCVideoTrack?,
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
@@ -124,7 +125,7 @@ protocol CallServiceObserver: class {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(peerConnectionClient)")
+            Logger.debug("\(self.TAG) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
         }
     }
 
@@ -140,7 +141,7 @@ protocol CallServiceObserver: class {
             updateIsVideoEnabled()
             updateLockTimerEnabling()
 
-            Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(call)")
+            Logger.debug("\(self.TAG) .call setter: \(oldValue != nil) -> \(call != nil) \(String(describing: call))")
 
             for observer in observers {
                 observer.value?.didUpdateCall(call:call)
@@ -281,13 +282,6 @@ protocol CallServiceObserver: class {
         callRecord.save()
         call.callRecord = callRecord
 
-        guard self.peerConnectionClient == nil else {
-            let errorDescription = "\(TAG) peerconnection was unexpectedly already set."
-            Logger.error(errorDescription)
-            call.state = .localFailure
-            return Promise(error: CallError.assertionError(description: errorDescription))
-        }
-
         return getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("\(self.TAG) got ice servers:\(iceServers)")
 
@@ -295,11 +289,15 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
+            guard self.peerConnectionClient == nil else {
+                let errorDescription = "\(self.TAG) peerconnection was unexpectedly already set."
+                Logger.error(errorDescription)
+                throw CallError.assertionError(description: errorDescription)
+            }
+
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
-
-            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function)")
             self.peerConnectionClient = peerConnectionClient
 
@@ -353,7 +351,7 @@ protocol CallServiceObserver: class {
      * Called by the call initiator after receiving a CallAnswer from the callee.
      */
     public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
-        Logger.debug("\(TAG) received call answer for call: \(callId) thread: \(thread)")
+        Logger.info("\(TAG) received call answer for call: \(callId) thread: \(thread)")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
@@ -370,10 +368,13 @@ protocol CallServiceObserver: class {
         self.sendIceUpdatesImmediately = true
 
         if pendingIceUpdateMessages.count > 0 {
+            Logger.error("\(self.TAG) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
+
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            _ = messageSender.sendCallMessage(callMessage).catch { error in
+            let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
             }
+            sendPromise.retainUntilComplete()
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -382,7 +383,7 @@ protocol CallServiceObserver: class {
         }
 
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
-        _ = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
+        let setDescriptionPromise = peerConnectionClient.setRemoteSessionDescription(sessionDescription).then {
             Logger.debug("\(self.TAG) successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
@@ -392,6 +393,7 @@ protocol CallServiceObserver: class {
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
         }
+        setDescriptionPromise.retainUntilComplete()
     }
 
     /**
@@ -422,12 +424,13 @@ protocol CallServiceObserver: class {
      * Received a call while already in another call.
      */
     private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
-        Logger.debug("\(TAG) \(#function) for call: \(call) thread: \(thread)")
+        Logger.info("\(TAG) \(#function) for call: \(call) thread: \(thread)")
         AssertIsOnMainThread()
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
-        _ = messageSender.sendCallMessage(callMessage)
+        let sendPromise = messageSender.sendCallMessage(callMessage)
+        sendPromise.retainUntilComplete()
 
         handleMissedCall(call, thread: thread)
     }
@@ -436,7 +439,7 @@ protocol CallServiceObserver: class {
      * The callee was already in another call.
      */
     public func handleRemoteBusy(thread: TSContactThread) {
-        Logger.debug("\(TAG) \(#function) for thread: \(thread)")
+        Logger.info("\(TAG) \(#function) for thread: \(thread)")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
@@ -461,7 +464,7 @@ protocol CallServiceObserver: class {
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(TAG) receivedCallOffer for thread:\(thread)")
+        Logger.info("\(TAG) receivedCallOffer for thread:\(thread)")
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
         guard call == nil else {
@@ -498,7 +501,7 @@ protocol CallServiceObserver: class {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let unknownCaller = self.contactsManager.contact(forPhoneIdentifier: thread.contactIdentifier()) == nil
+            let unknownCaller = self.contactsManager.signalAccount(forRecipientId: thread.contactIdentifier()) == nil
 
             let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
 
@@ -564,7 +567,7 @@ protocol CallServiceObserver: class {
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         AssertIsOnMainThread()
-        Logger.debug("\(TAG) called \(#function)")
+        Logger.info("\(TAG) called \(#function)")
 
         guard let currentThread = self.thread else {
             Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?")
@@ -625,13 +628,15 @@ protocol CallServiceObserver: class {
         let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
         if self.sendIceUpdatesImmediately {
+            Logger.info("\(TAG) in \(#function). Sending immediately.")
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessage: iceUpdateMessage)
-            _ = self.messageSender.sendCallMessage(callMessage)
+            let sendPromise = self.messageSender.sendCallMessage(callMessage)
+            sendPromise.retainUntilComplete()
         } else {
             // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
             // e.g. if the client has blocked our message due to an identity change, we'd otherwise
             // bombard them with a bunch *more* undecipherable messages.
-            Logger.debug("\(TAG) enqueuing iceUpdate until we receive call answer")
+            Logger.info("\(TAG) in \(#function). Enqueing for later.")
             self.pendingIceUpdateMessages.append(iceUpdateMessage)
             return
         }
@@ -687,7 +692,7 @@ protocol CallServiceObserver: class {
         guard thread.contactIdentifier() == self.thread?.contactIdentifier() else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("\(TAG) ignoring hangup for thread:\(thread) which is not the current thread: \(self.thread)")
+            Logger.warn("\(TAG) ignoring hangup for thread:\(thread) which is not the current thread: \(String(describing: self.thread))")
             return
         }
 
@@ -884,11 +889,12 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
-        _  = self.messageSender.sendCallMessage(callMessage).then {
+        let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(thread)")
         }.catch { error in
             Logger.error("\(self.TAG) failed to send hangup call message to \(thread) with error: \(error)")
         }
+        sendPromise.retainUntilComplete()
 
         terminateCall()
     }
@@ -901,13 +907,6 @@ protocol CallServiceObserver: class {
     func setIsMuted(isMuted: Bool) {
         AssertIsOnMainThread()
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
-            return
-        }
-
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
@@ -916,7 +915,15 @@ protocol CallServiceObserver: class {
         }
 
         call.isMuted = isMuted
-        peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
+        if call.state == .connected {
+            peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        }
     }
 
     /**
@@ -947,20 +954,10 @@ protocol CallServiceObserver: class {
         // during a call while the app is in the background, because changing this
         // permission kills the app.
         if authStatus != .authorized {
-            let title = NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized")
-            let message = NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized")
-            let okButton = NSLocalizedString("OK", comment:"")
 
-            let alert = UIAlertView(title:title, message:message, delegate:nil, cancelButtonTitle:okButton)
-            alert.show()
+            OWSAlerts.showAlert(withTitle:NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
+                                message:NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
 
-            return
-        }
-
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) peerConnectionClient was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
@@ -972,7 +969,15 @@ protocol CallServiceObserver: class {
         }
 
         call.hasLocalVideo = hasLocalVideo
-        peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
+        if call.state == .connected {
+            peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
+        }
     }
 
     func handleCallKitStartVideo() {
@@ -1221,6 +1226,7 @@ protocol CallServiceObserver: class {
         thread = nil
         incomingCallPromise = nil
         sendIceUpdatesImmediately = true
+        Logger.info("\(TAG) clearing pendingIceUpdateMessages")
         pendingIceUpdateMessages = []
     }
 
@@ -1296,9 +1302,11 @@ protocol CallServiceObserver: class {
         observers.append(Weak(value: observer))
 
         // Synchronize observer with current call state
+        let call = self.call
         let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-        observer.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+        observer.didUpdateVideoTracks(call:call,
+                                      localVideoTrack:localVideoTrack,
                                       remoteVideoTrack:remoteVideoTrack)
     }
 
@@ -1321,11 +1329,13 @@ protocol CallServiceObserver: class {
     private func fireDidUpdateVideoTracks() {
         AssertIsOnMainThread()
 
+        let call = self.call
         let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
 
         for observer in observers {
-            observer.value?.didUpdateVideoTracks(localVideoTrack:localVideoTrack,
+            observer.value?.didUpdateVideoTracks(call:call,
+                                                 localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
     }

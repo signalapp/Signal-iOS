@@ -18,9 +18,12 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
     var videoPlayer: MPMoviePlayerController?
 
     var audioPlayer: OWSAudioAttachmentPlayer?
+    var audioStatusLabel: UILabel?
     var audioPlayButton: UIButton?
     var isAudioPlayingFlag = false
     var isAudioPaused = false
+    var audioProgressSeconds: CGFloat = 0
+    var audioDurationSeconds: CGFloat = 0
 
     // MARK: Initializers
 
@@ -154,6 +157,11 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
         let fileSizeLabel = createFileSizeLabel()
         subviews.append(fileSizeLabel)
+
+        let audioStatusLabel = createAudioStatusLabel()
+        self.audioStatusLabel = audioStatusLabel
+        updateAudioStatusLabel()
+        subviews.append(audioStatusLabel)
 
         let stackView = wrapViewsInVerticalStack(subviews:subviews)
         attachmentPreviewView.addSubview(stackView)
@@ -303,9 +311,18 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         let label = UILabel()
         let fileSize = attachment.data.count
         label.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
-                                                             comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
-                                    ViewControllerUtils.formatFileSize(UInt(fileSize)))
+                                                     comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
+                            ViewControllerUtils.formatFileSize(UInt(fileSize)))
 
+        label.textColor = UIColor.ows_materialBlue()
+        label.font = labelFont()
+        label.textAlignment = .center
+
+        return label
+    }
+
+    private func createAudioStatusLabel() -> UILabel {
+        let label = UILabel()
         label.textColor = UIColor.ows_materialBlue()
         label.font = labelFont()
         label.textAlignment = .center
@@ -400,6 +417,8 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
     public func setIsAudioPlaying(_ isAudioPlaying: Bool) {
         isAudioPlayingFlag = isAudioPlaying
+
+        updateAudioStatusLabel()
     }
 
     public func isPaused() -> Bool {
@@ -410,19 +429,39 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
         isAudioPaused = isPaused
     }
 
-    public func setAudioProgressFrom(_ progress: Float) {
-        // Ignore
+    public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
+        audioProgressSeconds = progress
+        audioDurationSeconds = duration
+
+        updateAudioStatusLabel()
+    }
+
+    private func updateAudioStatusLabel() {
+        guard let audioStatusLabel = self.audioStatusLabel else {
+            assertionFailure("Missing audio status label")
+            return
+        }
+
+        if isAudioPlayingFlag && audioProgressSeconds > 0 && audioDurationSeconds > 0 {
+            audioStatusLabel.text = String(format:"%@ / %@",
+                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioProgressSeconds))),
+                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioDurationSeconds))))
+        } else {
+            audioStatusLabel.text = " "
+        }
     }
 
     public func setAudioIconToPlay() {
-        let image = UIImage(named:"audio_play_white_large")
+        let image = UIImage(named:"audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for:.normal)
+        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
     }
 
     public func setAudioIconToPause() {
-        let image = UIImage(named:"audio_pause_white_large")
+        let image = UIImage(named:"audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for:.normal)
+        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
     }
 }

@@ -4,10 +4,9 @@
 
 #import "OWSConversationSettingsTableViewController.h"
 #import "BlockListUIUtils.h"
+#import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "NewGroupViewController.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
@@ -17,6 +16,7 @@
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import "UpdateGroupViewController.h"
 #import <25519/Curve25519.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -30,9 +30,11 @@
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 
+@import ContactsUI;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSConversationSettingsTableViewController ()
+@interface OWSConversationSettingsTableViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) TSThread *thread;
 
@@ -43,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 
@@ -94,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 }
 
 - (NSString *)threadName
@@ -115,26 +118,70 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithThread:(TSThread *)thread
 {
+    OWSAssert(thread);
     self.thread = thread;
+
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        self.title = NSLocalizedString(
+            @"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", @"Navbar title when viewing settings for a 1-on-1 thread");
+    } else {
+        self.title = NSLocalizedString(
+            @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
+    }
+
+    [self updateEditButton];
+}
+
+- (void)updateEditButton
+{
+    OWSAssert(self.thread);
+
+    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing) {
+        self.navigationItem.rightBarButtonItem =
+            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
+                                             style:UIBarButtonItemStylePlain
+                                            target:self
+                                            action:@selector(didTapEditButton)];
+    }
+}
+
+#pragma mark - ContactEditingDelegate
+
+- (void)didFinishEditingContact
+{
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+#pragma mark - CNContactViewControllerDelegate
+
+- (void)contactViewController:(CNContactViewController *)viewController
+       didCompleteWithContact:(nullable CNContact *)contact
+{
+    if (contact) {
+        // Saving normally returns you to the "Show Contact" view
+        // which we're not interested in, so we skip it here. There is
+        // an unfortunate blip of the "Show Contact" view on slower devices.
+        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        [self dismissViewControllerAnimated:NO completion:nil];
+    } else {
+        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
+{
+    [self updateTableContents];
 }
 
 #pragma mark - View Lifecycle
 
-- (void)loadView
-{
-    // Initialize with empty contents. We'll populate the
-    // contents later.
-    self.contents = [OWSTableContents new];
-
-    [super loadView];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Translations
-    self.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
     _disappearingMessagesDurationLabel = [UILabel new];
 
@@ -327,14 +374,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return cell;
             }
                 actionBlock:^{
-                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    NewGroupViewController *newGroupViewController =
-                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-                    [newGroupViewController configWithThread:(TSGroupThread *)strongSelf.thread];
-                    [strongSelf.navigationController pushViewController:newGroupViewController animated:YES];
+                    [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
@@ -525,6 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
     [threadNameView addSubview:threadTitleLabel];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
     if (![self isGroupThread] && ![self.thread.name isEqualToString:self.thread.contactIdentifier]) {
         NSString *subtitle =
@@ -545,34 +586,27 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [firstSectionHeader
-        addGestureRecognizer:[[OWSAnyTouchGestureRecognizer alloc] initWithTarget:self
-                                                                           action:@selector(conversationNameTouched:)]];
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(conversationNameTouched:)]];
     firstSectionHeader.userInteractionEnabled = YES;
-    for (UIView *subview in firstSectionHeader.subviews) {
-        subview.userInteractionEnabled = NO;
-    }
 
     return firstSectionHeader;
 }
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
 {
-    if (sender.state == UIGestureRecognizerStateBegan || sender.state == UIGestureRecognizerStateRecognized) {
+    if (sender.state == UIGestureRecognizerStateRecognized) {
         if (self.isGroupThread) {
-            NewGroupViewController *newGroupViewController =
-                [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"NewGroupViewController"];
-            [newGroupViewController configWithThread:(TSGroupThread *)self.thread];
-
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                newGroupViewController.shouldEditAvatarOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
             } else {
-                newGroupViewController.shouldEditGroupNameOnAppear = YES;
+                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
             }
-
-            [self.navigationController pushViewController:newGroupViewController animated:YES];
         } else {
-            // TODO: Edit 1:1 contact.
+            if (self.contactsManager.supportsContactEditing) {
+                [self presentContactViewController];
+            }
         }
     }
 }
@@ -583,7 +617,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [UIColor blackColor];
+    iconView.tintColor = [UIColor colorWithRGBHex:0x505050];
     iconView.contentMode = UIViewContentModeScaleToFill;
     [iconView autoSetDimension:ALDimensionWidth toSize:32.f];
     [iconView autoSetDimension:ALDimensionHeight toSize:32.f];
@@ -593,6 +627,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    // In case we're dismissing a CNContactViewController which requires default system appearance
+    [UIUtil applySignalAppearence];
 
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
@@ -625,6 +662,44 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showUpdateGroupView:(UpdateGroupMode)mode
+{
+    OWSAssert(self.conversationSettingsViewDelegate);
+
+    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
+    updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
+    updateGroupViewController.thread = (TSGroupThread *)self.thread;
+    updateGroupViewController.mode = mode;
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:updateGroupViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)presentContactViewController
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        DDLogError(@"%@ Contact editing not supported", self.tag);
+        OWSAssert(NO);
+        return;
+    }
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSAssert(NO);
+        return;
+    }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+                                                     fromViewController:self
+                                                        editImmediately:YES];
+}
+
+- (void)didTapEditButton
+{
+    [self presentContactViewController];
+}
 
 - (void)didTapLeaveGroup
 {

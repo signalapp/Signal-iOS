@@ -20,6 +20,4 @@
     #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/OWSDispatch.h>
     #import <SignalServiceKit/iOSVersions.h>
-
-    #define SignalAlertView(title,msg) [[[UIAlertView alloc] initWithTitle:title message:msg delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles:nil, nil] show]    
 #endif

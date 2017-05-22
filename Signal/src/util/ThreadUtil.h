@@ -27,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
                     contactsManager:(OWSContactsManager *)contactsManager
                     blockingManager:(OWSBlockingManager *)blockingManager;
 
++ (void)createUnreadMessagesIndicatorIfNecessary:(TSThread *)thread storageManager:(TSStorageManager *)storageManager;
++ (void)clearUnreadMessagesIndicator:(TSThread *)thread storageManager:(TSStorageManager *)storageManager;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -33,6 +33,7 @@
 {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
+    [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
     [[UINavigationBar appearance] setTitleTextAttributes:@{
                                                            NSForegroundColorAttributeName : [UIColor blackColor],

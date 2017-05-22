@@ -868,10 +868,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         self.localVideoTrack = localVideoTrack
 
-        var source: RTCAVFoundationVideoSource?
-        if localVideoTrack?.source is RTCAVFoundationVideoSource {
-            source = localVideoTrack?.source as! RTCAVFoundationVideoSource
-        }
+        let source = localVideoTrack?.source as? RTCAVFoundationVideoSource
+
         localVideoView.captureSession = source?.captureSession
         let isHidden = source == nil
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
@@ -944,14 +942,15 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             self.dismiss(animated: false, completion:completion)
         }
     }
-    
+
     // MARK: - CallServiceObserver
 
     internal func didUpdateCall(call: SignalCall?) {
         // Do nothing.
     }
 
-    internal func didUpdateVideoTracks(localVideoTrack: RTCVideoTrack?,
+    internal func didUpdateVideoTracks(call: SignalCall?,
+                                       localVideoTrack: RTCVideoTrack?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 

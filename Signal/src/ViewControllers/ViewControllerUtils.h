@@ -20,4 +20,6 @@
 
 + (NSString *)formatFileSize:(unsigned long)fileSize;
 
++ (NSString *)formatDurationSeconds:(long)timeSeconds;
+
 @end

@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIBarButtonItem *)createOWSBackButton;
 
+- (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector;
+
 @end
 
 NS_ASSUME_NONNULL_END

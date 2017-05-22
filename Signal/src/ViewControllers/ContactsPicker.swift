@@ -1,10 +1,11 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 //  Originally based on EPContacts
 //
 //  Created by Prabaharan Elangovan on 12/10/15.
-//  Parts Copyright © 2015 Prabaharan Elangovan. All rights reserved.
-//
-//  Modified for Signal by Michael Kirk on 11/25/2016
-//  Parts Copyright © 2016 Open Whisper Systems. All rights reserved.
+//  Parts Copyright © 2015 Prabaharan Elangovan. All rights reserved
 
 import UIKit
 import Contacts
@@ -27,7 +28,7 @@ public extension ContactsPickerDelegate {
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool { return true }
 }
 
-public enum SubtitleCellValue{
+public enum SubtitleCellValue {
     case phoneNumber
     case email
 }
@@ -89,17 +90,17 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     func didChangePreferredContentSize() {
         self.tableView.reloadData()
     }
-    
+
     func initializeBarButtons() {
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(onTouchCancelButton))
         self.navigationItem.leftBarButtonItem = cancelButton
-        
+
         if multiSelectEnabled {
             let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onTouchDoneButton))
             self.navigationItem.rightBarButtonItem = doneButton
         }
     }
-    
+
     fileprivate func registerContactCell() {
         tableView.register(ContactCell.nib, forCellReuseIdentifier: contactCellReuseIdentifier)
     }
@@ -119,14 +120,14 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     convenience public init(delegate: ContactsPickerDelegate?) {
         self.init(delegate: delegate, multiSelection: false)
     }
-    
-    convenience public init(delegate: ContactsPickerDelegate?, multiSelection : Bool) {
+
+    convenience public init(delegate: ContactsPickerDelegate?, multiSelection: Bool) {
         self.init()
         multiSelectEnabled = multiSelection
         contactsPickerDelegate = delegate
     }
 
-    convenience public init(delegate: ContactsPickerDelegate?, multiSelection : Bool, subtitleCellType: SubtitleCellValue) {
+    convenience public init(delegate: ContactsPickerDelegate?, multiSelection: Bool, subtitleCellType: SubtitleCellValue) {
         self.init()
         multiSelectEnabled = multiSelection
         contactsPickerDelegate = delegate
@@ -134,32 +135,39 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     // MARK: - Contact Operations
-  
+
     open func reloadContacts() {
         getContacts( onError: { error in
             Logger.error("\(self.TAG) failed to reload contacts with error:\(error)")
         })
     }
 
-    func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void)  {
+    func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void) {
         switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
             case CNAuthorizationStatus.denied, CNAuthorizationStatus.restricted:
-                
-                let title = NSLocalizedString("AB_PERMISSION_MISSING_TITLE", comment: "Alert title when contacts disabled")
-                let body = NSLocalizedString("ADDRESSBOOK_RESTRICTED_ALERT_BODY", comment: "Alert body when contacts disabled")
+                let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
+                let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
+
                 let alert = UIAlertController(title: title, message: body, preferredStyle: UIAlertControllerStyle.alert)
 
-                let dismissText = NSLocalizedString("DISMISS_BUTTON_TEXT", comment:"")
+                let dismissText = NSLocalizedString("TXT_CANCEL_TITLE", comment:"")
 
-                let okAction = UIAlertAction(title: dismissText, style: UIAlertActionStyle.default, handler: {  action in
+                let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, didContactFetchFailed: error)
                     errorHandler(error)
                     self.dismiss(animated: true, completion: nil)
                 })
-                alert.addAction(okAction)
+                alert.addAction(cancelAction)
+
+                let settingsText = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment:"Button text which opens the settings app")
+                let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
+                    UIApplication.shared.openSystemSettings()
+                })
+                alert.addAction(openSettingsAction)
+
                 self.present(alert, animated: true, completion: nil)
-            
+
             case CNAuthorizationStatus.notDetermined:
                 //This case means the user is prompted for the first time for allowing contacts
                 contactStore.requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
@@ -170,14 +178,14 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
                        errorHandler(error!)
                     }
                 }
-            
+
             case  CNAuthorizationStatus.authorized:
                 //Authorization granted by user for this app.
                 var contacts = [CNContact]()
 
                 do {
                     let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
-                    try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, stop) -> Void in
+                    try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                         contacts.append(contact)
                     }
                     self.sections = collatedContacts(contacts)
@@ -198,15 +206,18 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
         return collated
     }
 
-    
     // MARK: - Table View DataSource
-    
+
     open func numberOfSections(in tableView: UITableView) -> Int {
         return self.collation.sectionTitles.count
     }
-    
+
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let dataSource = filteredSections
+
+        guard section < dataSource.count else {
+            return 0
+        }
 
         return dataSource[section].count
     }
@@ -218,7 +229,7 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
 
         let dataSource = filteredSections
         let cnContact = dataSource[indexPath.section][indexPath.row]
-        let contact = Contact(contact: cnContact)
+        let contact = Contact(systemContact: cnContact)
 
         cell.updateContactsinUI(contact, subtitleType: subtitleCellValue, contactsManager: self.contactsManager)
         let isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
@@ -239,7 +250,7 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let deselectedContact = cell.contact!
 
-        selectedContacts = selectedContacts.filter() {
+        selectedContacts = selectedContacts.filter {
             return $0.uniqueId != deselectedContact.uniqueId
         }
     }
@@ -262,11 +273,11 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
-    
+
     open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         return collation.section(forSectionIndexTitle: index)
     }
-    
+
     open func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return collation.sectionIndexTitles
     }
@@ -274,30 +285,38 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
     open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dataSource = filteredSections
 
+        guard section < dataSource.count else {
+            return nil
+        }
+
         if dataSource[section].count > 0 {
+            guard section < collation.sectionTitles.count else {
+                return nil
+            }
+
             return collation.sectionTitles[section]
         } else {
             return nil
         }
     }
-    
+
     // MARK: - Button Actions
-    
+
     func onTouchCancelButton() {
         contactsPickerDelegate?.contactsPicker(self, didCancel: NSError(domain: "contactsPickerErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey: "User Canceled Selection"]))
         dismiss(animated: true, completion: nil)
     }
-    
+
     func onTouchDoneButton() {
         contactsPickerDelegate?.contactsPicker(self, didSelectMultipleContacts: selectedContacts)
         dismiss(animated: true, completion: nil)
     }
-    
+
     // MARK: - Search Actions
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateSearchResults(searchText: searchText)
     }
-    
+
     open func updateSearchResults(searchText: String) {
         let predicate: NSPredicate
         if searchText.characters.count == 0 {
@@ -305,7 +324,7 @@ open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             do {
                 predicate = CNContact.predicateForContacts(matchingName: searchText)
-                let filteredContacts = try contactStore.unifiedContacts(matching: predicate,keysToFetch: allowedContactKeys)
+                let filteredContacts = try contactStore.unifiedContacts(matching: predicate, keysToFetch: allowedContactKeys)
                     filteredSections = collatedContacts(filteredContacts)
             } catch let error as NSError {
                 Logger.error("\(self.TAG) updating search results failed with error: \(error)")
@@ -347,9 +366,9 @@ fileprivate extension CNContact {
     @objc var nameForCollating: String {
         get {
             if self.familyName.isEmpty && self.givenName.isEmpty {
-                return self.emailAddresses.first?.value as? String ?? ""
+                return self.emailAddresses.first?.value as String? ?? ""
             }
-            
+
             let compositeName: String
             if ContactSortOrder == .familyName {
                 compositeName = "\(self.familyName) \(self.givenName)"
