@@ -400,6 +400,11 @@ NS_ASSUME_NONNULL_BEGIN
                 utiType = (NSString *)kUTTypeVideo;
             }
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            if (!data) {
+                OWSAssert(data);
+                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                return;
+            }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
             return;
         } else if (action == NSSelectorFromString(@"save:")) {
@@ -418,7 +423,11 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
-            OWSAssert(data);
+            if (!data) {
+                OWSAssert(data);
+                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                return;
+            }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         }
     } else {
@@ -444,6 +453,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

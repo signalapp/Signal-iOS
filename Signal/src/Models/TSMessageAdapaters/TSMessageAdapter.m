@@ -57,8 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) uint64_t expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
-@property (nonatomic, copy) NSDate *messageDate;
-@property (nonatomic, retain) NSString *messageBody;
+@property (nonatomic) NSDate *messageDate;
+@property (nonatomic) NSString *messageBody;
 
 @property (nonatomic) NSString *interactionUniqueId;
 
