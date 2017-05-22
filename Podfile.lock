@@ -114,7 +114,7 @@ DEPENDENCIES:
   - OpenSSL
   - PureLayout
   - Reachability
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `../SignalServiceKit`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
@@ -124,7 +124,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/position-edit-menu
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :path: ../SignalServiceKit
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -135,9 +135,6 @@ CHECKOUT OPTIONS:
   JSQMessagesViewController:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  SignalServiceKit:
-    :commit: d61235825680e9b563f28cbbbaf6772c19f85674
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
@@ -164,6 +161,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 48e80d7f1e049bbf544a689fdfdf33e8196c640a
+PODFILE CHECKSUM: 6f9ef5d9fa17469569e127a9f5719dafa11631b9
 
 COCOAPODS: 1.2.1
