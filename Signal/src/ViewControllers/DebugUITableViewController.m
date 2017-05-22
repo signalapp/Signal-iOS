@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
+#import <SignalServiceKit/TSStorageManager+SignedPreKeyStore.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -109,8 +110,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                     runWithContactThread:contactThread
                                                            messageSender:[Environment getCurrent].messageSender
                                                           storageManager:[TSStorageManager sharedManager]];
-                                            }]
-
+                                            }],
+                                      [OWSTableItem itemWithTitle:@"Log SignedPreKey Report"
+                                                      actionBlock:^{
+                                                          [[TSStorageManager sharedManager] logSignedPreKeyReport];
+                                                      }]
                                   ]]];
 
     [contents addSection:[OWSTableSection
