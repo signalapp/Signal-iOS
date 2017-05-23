@@ -237,6 +237,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSCountryMetadata *)ensureManualCensorshipCircumventionCountry
 {
+    OWSAssert([NSThread isMainThread]);
+
     OWSCountryMetadata *countryMetadata = nil;
     NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;
     if (countryCode) {
@@ -294,6 +296,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCensorshipCircumventionSwitch:(UISwitch *)sender
 {
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = sender.isOn;
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging

@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.title
-        = NSLocalizedString(@"DOMAIN_FRONTING_COUNTRY_VIEW_TITLE", @"Title for the 'domain fronting country' view.");
+    self.title = NSLocalizedString(
+        @"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE", @"Title for the 'censorship circumvention country' view.");
 
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
