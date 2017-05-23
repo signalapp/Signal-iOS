@@ -63,6 +63,10 @@
     [self.navigationItem setHidesBackButton:YES];
 
     [self.navigationController.navigationBar setTranslucent:NO];
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(dismissWasPressed:)];
 
     [self observeNotifications];
 
@@ -244,6 +248,11 @@
     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
     NSAssert(vc != nil, @"About View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)dismissWasPressed:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Table view data source
