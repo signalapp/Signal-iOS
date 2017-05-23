@@ -284,10 +284,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)showCountryCodeView:(nullable id)sender
 {
-    CountryCodeViewController *countryCodeController = [[UIStoryboard storyboardWithName:@"Registration" bundle:NULL]
-        instantiateViewControllerWithIdentifier:@"CountryCodeViewController"];
-    countryCodeController.delegate = self;
-    countryCodeController.shouldDismissWithoutSegue = YES;
+    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
+    countryCodeController.countryCodeDelegate = self;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:countryCodeController];
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
@@ -416,6 +414,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                       countryName:(NSString *)countryName
                       callingCode:(NSString *)callingCode
 {
+    OWSAssert(countryCode.length > 0);
+    OWSAssert(countryName.length > 0);
+    OWSAssert(callingCode.length > 0);
 
     [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
 

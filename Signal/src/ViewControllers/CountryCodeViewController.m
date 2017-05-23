@@ -2,99 +2,159 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "CountryCodeTableViewCell.h"
 #import "CountryCodeViewController.h"
 #import "PhoneNumberUtil.h"
-#import "FunctionalUtil.h"
+#import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
+#import "UIView+OWS.h"
 
-static NSString *const CONTRY_CODE_TABLE_CELL_IDENTIFIER    = @"CountryCodeTableViewCell";
-static NSString *const kUnwindToCountryCodeWasSelectedSegue = @"UnwindToCountryCodeWasSelectedSegue";
+@interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
 
-@interface CountryCodeViewController () {
-    NSArray *_countryCodes;
-}
+@property (nonatomic, readonly) UISearchBar *searchBar;
+
+@property (nonatomic) NSArray<NSString *> *countryCodes;
 
 @end
 
+#pragma mark -
+
 @implementation CountryCodeViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)loadView
+{
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
-    self.title    = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
-    self.searchBar.delegate = self;
-    if (self.shouldDismissWithoutSegue) {
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                                                              target:self
-                                                                                                       action:@selector(dismissWasPressed:)];
-    }
+    self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
+
+    self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
+
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(dismissWasPressed:)];
+
+    [self createViews];
 }
 
-#pragma mark - UITableViewDelegate
+- (void)createViews
+{
+    // Search
+    UISearchBar *searchBar = [UISearchBar new];
+    _searchBar = searchBar;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.delegate = self;
+    searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
+    searchBar.backgroundColor = [UIColor whiteColor];
+    [searchBar sizeToFit];
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)_countryCodes.count;
+    self.tableView.tableHeaderView = searchBar;
+
+    [self updateTableContents];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CountryCodeTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
-    if (!cell) {
-        cell = [[CountryCodeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                               reuseIdentifier:CONTRY_CODE_TABLE_CELL_IDENTIFIER];
+#pragma mark - Table Contents
+
+- (void)updateTableContents
+{
+    OWSTableContents *contents = [OWSTableContents new];
+
+    __weak CountryCodeViewController *weakSelf = self;
+    OWSTableSection *section = [OWSTableSection new];
+
+    for (NSString *countryCode in self.countryCodes) {
+        OWSAssert(countryCode.length > 0);
+        OWSAssert([PhoneNumberUtil countryNameFromCountryCode:countryCode].length > 0);
+        OWSAssert([PhoneNumberUtil callingCodeFromCountryCode:countryCode].length > 0);
+        OWSAssert(![[PhoneNumberUtil callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
+
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            cell.textLabel.textColor = [UIColor blackColor];
+
+            UILabel *countryCodeLabel = [UILabel new];
+            countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+            countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
+            countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
+            [countryCodeLabel sizeToFit];
+            cell.accessoryView = countryCodeLabel;
+
+            return cell;
+        }
+                             actionBlock:^{
+                                 [weakSelf countryCodeWasSelected:countryCode];
+                             }]];
     }
 
-    NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
+    [contents addSection:section];
+
+    self.contents = contents;
+}
+
+- (void)countryCodeWasSelected:(NSString *)countryCode
+{
     OWSAssert(countryCode.length > 0);
-    OWSAssert([PhoneNumberUtil countryNameFromCountryCode:countryCode].length > 0);
-    OWSAssert([PhoneNumberUtil callingCodeFromCountryCode:countryCode].length > 0);
-    OWSAssert(![[PhoneNumberUtil callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
 
-    [cell configureWithCountryCode:[PhoneNumberUtil callingCodeFromCountryCode:countryCode]
-                    andCountryName:[PhoneNumberUtil countryNameFromCountryCode:countryCode]];
-
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *countryCode = _countryCodes[(NSUInteger)indexPath.row];
-    _callingCodeSelected  = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-    _countryNameSelected  = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-    _countryCodeSelected = countryCode;
-    [self.delegate countryCodeViewController:self
-                        didSelectCountryCode:_countryCodeSelected
-                                 countryName:_countryNameSelected
-                                 callingCode:_callingCodeSelected];
+    NSString *callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+    NSString *countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+    NSString *countryCodeSelected = countryCode;
+    [self.countryCodeDelegate countryCodeViewController:self
+                                   didSelectCountryCode:countryCodeSelected
+                                            countryName:countryNameSelected
+                                            callingCode:callingCodeSelected];
     [self.searchBar resignFirstResponder];
-    if (self.shouldDismissWithoutSegue) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [self performSegueWithIdentifier:kUnwindToCountryCodeWasSelectedSegue sender:self];
-    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismissWasPressed:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44.0f;
-}
 
 #pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
-    [self.countryCodeTableView reloadData];
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self searchTextDidChange];
 }
 
-- (void)filterContentForSearchText:(NSString *)searchText scope:(NSString *)scope {
-    _countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
 }
 
-#pragma mark - UIScrollViewDelegate
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
+}
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
+{
+    [self searchTextDidChange];
+}
+
+- (void)searchTextDidChange
+{
+    NSString *searchText =
+        [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
+
+    [self updateTableContents];
+}
+
+#pragma mark - OWSTableViewControllerDelegate
+
+- (void)tableViewDidScroll
+{
     [self.searchBar resignFirstResponder];
 }
 

@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSTableViewController.h"
 
 @class CountryCodeViewController;
 
@@ -15,15 +15,10 @@
 
 @end
 
-@interface CountryCodeViewController
-    : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchDisplayDelegate>
+#pragma mark -
 
-@property (nonatomic) IBOutlet UITableView *countryCodeTableView;
-@property (nonatomic) IBOutlet UISearchBar *searchBar;
-@property (nonatomic, weak) id<CountryCodeViewControllerDelegate> delegate;
-@property (nonatomic) NSString *countryCodeSelected;
-@property (nonatomic) NSString *callingCodeSelected;
-@property (nonatomic) NSString *countryNameSelected;
-@property (nonatomic) BOOL shouldDismissWithoutSegue;
+@interface CountryCodeViewController : OWSTableViewController
+
+@property (nonatomic, weak) id<CountryCodeViewControllerDelegate> countryCodeDelegate;
 
 @end

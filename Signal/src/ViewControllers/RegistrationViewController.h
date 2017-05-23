@@ -1,9 +1,5 @@
 //
-//  RegistrationViewController.h
-//  Signal
-//
-//  Created by Dylan Bourgeois on 13/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -13,24 +9,22 @@
 @interface RegistrationViewController : UIViewController <UITextFieldDelegate>
 
 // Country code
-@property (nonatomic, strong) IBOutlet UIButton *countryNameButton;
-@property (nonatomic, strong) IBOutlet UIButton *countryCodeButton;
+@property (nonatomic) IBOutlet UIButton *countryNameButton;
+@property (nonatomic) IBOutlet UIButton *countryCodeButton;
+@property (nonatomic) IBOutlet UIView *countryCodeRow;
 
 // Phone number
-@property (nonatomic, strong) IBOutlet UITextField *phoneNumberTextField;
-@property (nonatomic, strong) IBOutlet UIButton *phoneNumberButton;
-@property (nonatomic, strong) IBOutlet UILabel *titleLabel;
+@property (nonatomic) IBOutlet UITextField *phoneNumberTextField;
+@property (nonatomic) IBOutlet UIButton *phoneNumberButton;
+@property (nonatomic) IBOutlet UILabel *titleLabel;
 // Button
-@property (nonatomic, strong) IBOutlet UIButton *sendCodeButton;
-@property (nonatomic, strong) IBOutlet UIButton *existingUserButton;
+@property (nonatomic) IBOutlet UIButton *sendCodeButton;
+@property (nonatomic) IBOutlet UIButton *existingUserButton;
 
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *spinnerView;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *spinnerView;
 @property (nonatomic) IBOutlet UIImageView *signalLogo;
 @property (nonatomic) IBOutlet UIView *registrationHeader;
 
 @property (nonatomic) IBOutlet NSLayoutConstraint *headerHeightConstraint;
-
-- (IBAction)unwindToCountryCodeWasSelected:(UIStoryboardSegue *)segue;
-- (IBAction)unwindToCountryCodeSelectionCancelled:(UIStoryboardSegue *)segue;
 
 @end
