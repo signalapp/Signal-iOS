@@ -97,6 +97,44 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
+
+#pragma mark -
+
+@interface OWSMessagesCollectionViewFlowLayout : JSQMessagesCollectionViewFlowLayout
+
+@property (nonatomic) BOOL ignoreLayout;
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesCollectionViewFlowLayout
+
+- (void)prepareLayout
+{
+    if (self.ignoreLayout) {
+        DDLogInfo(@"%@ ignoring layout.", self.tag);
+        return;
+    }
+    [super prepareLayout];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
+@end
+
+#pragma mark -
+
 @protocol OWSTextViewPasteDelegate <NSObject>
 
 - (void)didPasteAttachment:(SignalAttachment * _Nullable)attachment;
@@ -944,7 +982,12 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    // Ignore layout requests in viewWillAppear.
+    // JSQMessagesView forces layout then invalidates the layout.
+    // Besides, we'll be changing the contents of the view below.
+    ((OWSMessagesCollectionViewFlowLayout *)self.collectionView.collectionViewLayout).ignoreLayout = YES;
     [super viewWillAppear:animated];
+    ((OWSMessagesCollectionViewFlowLayout *)self.collectionView.collectionViewLayout).ignoreLayout = NO;
 
     // In case we're dismissing a CNContactViewController which requires default system appearance
     [UIUtil applySignalAppearence];
@@ -1493,6 +1536,7 @@ typedef enum : NSUInteger {
 // Overiding JSQMVC layout defaults
 - (void)initializeCollectionViewLayout
 {
+    self.collectionView.collectionViewLayout = [OWSMessagesCollectionViewFlowLayout new];
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
     self.collectionView.showsVerticalScrollIndicator = NO;
