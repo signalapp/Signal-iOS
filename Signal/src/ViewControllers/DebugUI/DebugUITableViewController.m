@@ -42,7 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
         addSection:[OWSTableSection
                        sectionWithTitle:@"Session State"
                                   items:@[
-                                      [OWSTableItem itemWithTitle:@"Print all sessions"
+                                      [OWSTableItem itemWithTitle:@"Log All Recipient Identities"
+                                                      actionBlock:^{
+                                                          [OWSRecipientIdentity printAllIdentities];
+                                                      }],
+                                      [OWSTableItem itemWithTitle:@"Log All Sessions"
                                                       actionBlock:^{
                                                           dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                                               [[TSStorageManager sharedManager] printAllSessions];
@@ -76,7 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                            messageSender:[Environment getCurrent].messageSender
                                                           storageManager:[TSStorageManager sharedManager]];
                                             }]
-
                                   ]]];
 
     [contents addSection:[DebugUIContacts section]];

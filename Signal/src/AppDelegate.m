@@ -201,7 +201,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
                                              contactsManager:[Environment getCurrent].contactsManager
                                                messageSender:[Environment getCurrent].messageSender
-                                        notificationsManager:[Environment getCurrent].notificationsManager];
+                                        notificationsManager:[Environment getCurrent].notificationsManager
+                                                 preferences:[Environment getCurrent].preferences];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabase];

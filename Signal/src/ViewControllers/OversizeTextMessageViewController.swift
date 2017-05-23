@@ -38,7 +38,7 @@ class OversizeTextMessageViewController: UIViewController {
             assert(false)
             return nil
         }
-        guard let attachment = TSAttachment.fetch(withUniqueID:attachmentID) as? TSAttachmentStream else {
+        guard let attachment = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentStream else {
             Logger.error("\(TAG) could not load attachment.")
             assert(false)
             return nil

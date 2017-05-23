@@ -1,8 +1,8 @@
-//  Created by Michael Kirk on 11/8/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWS101ExistingUsersBlockOnIdentityChange.h"
-#import <SignalServiceKit/TSPrivacyPreferences.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,10 +19,11 @@ static NSString *const OWS101ExistingUsersBlockOnIdentityChangeMigrationId = @"1
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    DDLogWarn(@"[OWS101ExistingUsersBlockOnIdentityChange] Opting existing user into 'blocking' on identity changes.");
-    TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
-    preferences.shouldBlockOnIdentityChange = YES;
-    [preferences saveWithTransaction:transaction];
+    DDLogWarn(@"[OWS101ExistingUsersBlockOnIdentityChange] has been obviated.");
+    //    DDLogWarn(@"[OWS101ExistingUsersBlockOnIdentityChange] Opting existing user into 'blocking' on identity
+    //    changes."); TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
+    //    preferences.shouldBlockOnIdentityChange = YES;
+    //    [preferences saveWithTransaction:transaction];
 }
 
 @end
