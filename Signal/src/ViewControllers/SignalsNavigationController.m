@@ -1,9 +1,5 @@
 //
-//  SignalsNavigationController.m
-//  Signal
-//
-//  Created by Dylan Bourgeois on 18/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsNavigationController.h"
@@ -22,7 +18,7 @@ static double const STALLED_PROGRESS = 0.9;
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self initializeObserver];
-    [TSSocketManager sendNotification];
+    [self updateSocketStatusView];
 }
 
 - (void)initializeSocketStatusBar {
@@ -48,57 +44,52 @@ static double const STALLED_PROGRESS = 0.9;
 
 - (void)initializeObserver {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketDidOpen)
-                                                 name:SocketOpenedNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketDidClose)
-                                                 name:SocketClosedNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketIsConnecting)
-                                                 name:SocketConnectingNotification
+                                             selector:@selector(socketManagerStateDidChange)
+                                                 name:kNSNotification_SocketManagerStateDidChange
                                                object:nil];
 }
 
-- (void)socketDidOpen {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_updateStatusTimer invalidate];
-        for (UIView *view in self.navigationBar.subviews) {
-            if ([view isKindOfClass:[UIProgressView class]]) {
-                [view removeFromSuperview];
-                _socketStatusView = nil;
+- (void)socketManagerStateDidChange {
+    OWSAssert([NSThread isMainThread]);
+    
+    [self updateSocketStatusView];
+}
+
+- (void)updateSocketStatusView {
+    OWSAssert([NSThread isMainThread]);
+    
+    switch ([TSSocketManager sharedManager].state) {
+        case SocketManagerStateClosed:
+            if (_socketStatusView == nil) {
+                [self initializeSocketStatusBar];
+                _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                                                                      target:self
+                                                                    selector:@selector(updateProgress)
+                                                                    userInfo:nil
+                                                                     repeats:YES];
+                
+            } else if (_socketStatusView.progress >= STALLED_PROGRESS) {
+                [_updateStatusTimer invalidate];
             }
-        }
-    });
-}
-
-- (void)socketDidClose {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (_socketStatusView == nil) {
-            [self initializeSocketStatusBar];
-            _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                                                                  target:self
-                                                                selector:@selector(updateSocketConnecting)
-                                                                userInfo:nil
-                                                                 repeats:YES];
-
-        } else if (_socketStatusView.progress >= STALLED_PROGRESS) {
+            break;
+        case SocketManagerStateConnecting:
+            // Do nothing.
+            break;
+        case SocketManagerStateOpen:
             [_updateStatusTimer invalidate];
-        }
-    });
+            for (UIView *view in self.navigationBar.subviews) {
+                if ([view isKindOfClass:[UIProgressView class]]) {
+                    [view removeFromSuperview];
+                    _socketStatusView = nil;
+                }
+            }
+            break;
+    }
 }
 
-- (void)updateSocketConnecting {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        double progress = _socketStatusView.progress + 0.05;
-        _socketStatusView.progress = (float)MIN(progress, STALLED_PROGRESS);
-    });
+- (void)updateProgress {
+    double progress = _socketStatusView.progress + 0.05;
+    _socketStatusView.progress = (float) MIN(progress, STALLED_PROGRESS);
 }
-
-- (void)socketIsConnecting {
-    // Nothing to see here currently
-}
-
 
 @end

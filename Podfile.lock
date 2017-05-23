@@ -39,6 +39,7 @@ PODS:
   - OpenSSL (1.0.210)
   - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
+  - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SignalServiceKit (0.9.0):
     - '25519'
@@ -112,6 +113,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/position-edit-menu`)
   - OpenSSL
   - PureLayout
+  - Reachability
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
@@ -134,7 +136,7 @@ CHECKOUT OPTIONS:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: cbeafac20ebb0437baf8982381c1980db276681f
+    :commit: d61235825680e9b563f28cbbbaf6772c19f85674
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
@@ -153,6 +155,7 @@ SPEC CHECKSUMS:
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
   SignalServiceKit: 2ad8d86da055e24ac3ea0354ec1d4b13251af28f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
@@ -161,6 +164,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: cb2cbbe74dab34123e1cb527417ef658aa60bd26
+PODFILE CHECKSUM: 48e80d7f1e049bbf544a689fdfdf33e8196c640a
 
 COCOAPODS: 1.2.1
