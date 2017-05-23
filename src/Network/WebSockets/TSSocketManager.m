@@ -14,12 +14,6 @@
 #import "TSStorageManager+keyingMaterial.h"
 #import "Threading.h"
 
-typedef enum : NSUInteger {
-    kSocketStatusOpen,
-    kSocketStatusClosed,
-    kSocketStatusConnecting,
-} SocketStatus;
-
 static const CGFloat kSocketHeartbeatPeriodSeconds = 30.f;
 static const CGFloat kSocketReconnectDelaySeconds = 5.f;
 
@@ -31,9 +25,7 @@ static const CGFloat kBackgroundOpenSocketDurationSeconds = 25.f;
 // b) It has received a message over the socket in the last 15 seconds.
 static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
 
-NSString *const SocketOpenedNotification     = @"SocketOpenedNotification";
-NSString *const SocketClosedNotification     = @"SocketClosedNotification";
-NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
+NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_SocketManagerStateDidChange";
 
 // TSSocketManager's properties should only be accessed from the main thread.
 @interface TSSocketManager ()
@@ -50,7 +42,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 
 #pragma mark -
 
-// The second tier is the status property.  We initiate changes
+// The second tier is the state property.  We initiate changes
 // to the websocket by changing this property's value, and delegate
 // events from the websocket also update this value as the websocket's
 // state changes.
@@ -58,7 +50,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 // Due to concurrency, this property can fall out of sync with the
 // websocket's actual state, so we're defensive and distrustful of
 // this property.
-@property (nonatomic) SocketStatus status;
+@property (nonatomic) SocketManagerState state;
 
 #pragma mark -
 
@@ -101,11 +93,9 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     
     OWSAssert([NSThread isMainThread]);
 
-    _signalService = [OWSSignalService new];
-    _status = kSocketStatusClosed;
+    _signalService = [OWSSignalService sharedInstance];
+    _state = SocketManagerStateClosed;
     _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-
-    [self addObserver:self forKeyPath:@"status" options:0 context:kSocketStatusObservationContext];
 
     OWSSingletonAssert();
 
@@ -140,6 +130,10 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                                              selector:@selector(registrationStateDidChange:)
                                                  name:kNSNotificationName_RegistrationStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(isCensorshipCircumventionActiveDidChange:)
+                                                 name:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                                               object:nil];
 }
 
 + (instancetype)sharedManager {
@@ -156,22 +150,18 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 - (void)ensureWebsocketIsOpen
 {
     OWSAssert([NSThread isMainThread]);
-    
-    if (self.signalService.isCensored) {
-        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
-        return;
-    }
+    OWSAssert(!self.signalService.isCensorshipCircumventionActive);
 
     // Try to reuse the existing socket (if any) if it is in a valid state.
     if (self.websocket) {
         switch ([self.websocket readyState]) {
             case SR_OPEN:
                 DDLogVerbose(@"WebSocket already open on connection request");
-                self.status = kSocketStatusOpen;
+                self.state = SocketManagerStateOpen;
                 return;
             case SR_CONNECTING:
                 DDLogVerbose(@"WebSocket is already connecting");
-                self.status = kSocketStatusConnecting;
+                self.state = SocketManagerStateConnecting;
                 return;
             default:
                 break;
@@ -186,18 +176,19 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     // The websocket delegate methods are invoked _after_ the websocket
     // state changes, so we may be just learning about a socket failure
     // or close event now.
-    self.status = kSocketStatusClosed;
+    self.state = SocketManagerStateClosed;
     // Now open a new socket.
-    self.status = kSocketStatusConnecting;
+    self.state = SocketManagerStateConnecting;
 }
 
-- (NSString *)stringFromSocketStatus:(SocketStatus)status {
-    switch (status) {
-        case kSocketStatusClosed:
+- (NSString *)stringFromSocketManagerState:(SocketManagerState)state
+{
+    switch (state) {
+        case SocketManagerStateClosed:
             return @"Closed";
-        case kSocketStatusOpen:
+        case SocketManagerStateOpen:
             return @"Open";
-        case kSocketStatusConnecting:
+        case SocketManagerStateConnecting:
             return @"Connecting";
     }
 }
@@ -216,46 +207,47 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 // it's not safe to assume we'll learn of changes to websocket state
 // in the websocket delegate methods.
 //
-// Therefore, we use the [setStatus:] setter to ensure alignment between
+// Therefore, we use the [setState:] setter to ensure alignment between
 // websocket state and class state.
-- (void)setStatus:(SocketStatus)status {
+- (void)setState:(SocketManagerState)state
+{
     OWSAssert([NSThread isMainThread]);
 
-    // If this status update is redundant, verify that
+    // If this state update is redundant, verify that
     // class state and socket state are aligned.
     //
     // Note: it's not safe to check the socket's readyState here as
     //       it may have been just updated on another thread. If so,
     //       we'll learn of that state change soon.
-    if (_status == status) {
-        switch (status) {
-            case kSocketStatusClosed:
+    if (_state == state) {
+        switch (state) {
+            case SocketManagerStateClosed:
                 OWSAssert(!self.websocket);
                 break;
-            case kSocketStatusOpen:
+            case SocketManagerStateOpen:
                 OWSAssert(self.websocket);
                 break;
-            case kSocketStatusConnecting:
+            case SocketManagerStateConnecting:
                 OWSAssert(self.websocket);
                 break;
         }
         return;
     }
-    
-    DDLogWarn(@"%@ Socket status change: %@ -> %@",
-              self.tag,
-              [self stringFromSocketStatus:_status],
-              [self stringFromSocketStatus:status]);
-    
-    // If this status update is _not_ redundant,
-    // update class state to reflect the new status.
-    switch (status) {
-        case kSocketStatusClosed: {
+
+    DDLogWarn(@"%@ Socket state change: %@ -> %@",
+        self.tag,
+        [self stringFromSocketManagerState:_state],
+        [self stringFromSocketManagerState:state]);
+
+    // If this state update is _not_ redundant,
+    // update class state to reflect the new state.
+    switch (state) {
+        case SocketManagerStateClosed: {
             [self resetSocket];
             break;
         }
-        case kSocketStatusOpen: {
-            OWSAssert(self.status == kSocketStatusConnecting);
+        case SocketManagerStateOpen: {
+            OWSAssert(self.state == SocketManagerStateConnecting);
 
             self.heartbeatTimer = [NSTimer timerWithTimeInterval:kSocketHeartbeatPeriodSeconds
                                                           target:self
@@ -270,7 +262,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             [self clearReconnect];
             break;
         }
-        case kSocketStatusConnecting: {
+        case SocketManagerStateConnecting: {
             // Discard the old socket which is already closed or is closing.
             [self resetSocket];
             
@@ -286,16 +278,27 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
             [self setWebsocket:socket];
 
             // [SRWebSocket open] could hypothetically call a delegate method (e.g. if
-            // the socket failed immediately for some reason), so we update the status
+            // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
-            _status = status;
+            _state = state;
             [socket open];
             return;
         }
     }
 
-    _status = status;
+    _state = state;
+
+    [self notifyStatusChange];
 }
+
+- (void)notifyStatusChange
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotification_SocketManagerStateDidChange
+                                                        object:nil
+                                                      userInfo:nil];
+}
+
+#pragma mark -
 
 - (void)resetSocket {
     OWSAssert([NSThread isMainThread]);
@@ -315,7 +318,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         DDLogWarn(@"%@ closeWebSocket.", self.tag);
     }
 
-    self.status = kSocketStatusClosed;
+    self.state = SocketManagerStateClosed;
 }
 
 #pragma mark - Delegate methods
@@ -328,7 +331,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
         return;
     }
 
-    self.status = kSocketStatusOpen;
+    self.state = SocketManagerStateOpen;
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -480,42 +483,6 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
                          [TSStorageManager serverAuthToken]];
 }
 
-#pragma mark UI Delegates
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if (context == kSocketStatusObservationContext) {
-        [self notifyStatusChange];
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
-
-- (void)notifyStatusChange
-{
-    switch (self.status) {
-        case kSocketStatusOpen:
-            [[NSNotificationCenter defaultCenter] postNotificationName:SocketOpenedNotification object:self];
-            break;
-        case kSocketStatusClosed:
-            [[NSNotificationCenter defaultCenter] postNotificationName:SocketClosedNotification object:self];
-            break;
-        case kSocketStatusConnecting:
-            [[NSNotificationCenter defaultCenter] postNotificationName:SocketConnectingNotification object:self];
-            break;
-        default:
-            break;
-    }
-}
-
-+ (void)sendNotification
-{
-    [[self sharedManager] notifyStatusChange];
-}
-
 #pragma mark - Socket LifeCycle
 
 - (BOOL)shouldSocketBeOpen
@@ -523,6 +490,11 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     OWSAssert([NSThread isMainThread]);
 
     if (![TSAccountManager isRegistered]) {
+        return NO;
+    }
+
+    if (self.signalService.isCensorshipCircumventionActive) {
+        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
         return NO;
     }
 
@@ -621,7 +593,7 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
     OWSAssert([NSThread isMainThread]);
 
     if ([self shouldSocketBeOpen]) {
-        if (self.status != kSocketStatusOpen) {
+        if (self.state != SocketManagerStateOpen) {
             // If we want the socket to be open and it's not open,
             // start up the reconnect timer immediately (don't wait for an error).
             // There's little harm in it and this will make us more robust to edge
@@ -701,6 +673,13 @@ NSString *const SocketConnectingNotification = @"SocketConnectingNotification";
 }
 
 - (void)registrationStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self applyDesiredSocketState];
+}
+
+- (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
 

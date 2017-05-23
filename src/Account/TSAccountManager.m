@@ -18,11 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificationName_RegistrationStateDidChange";
+NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 @interface TSAccountManager ()
 
-@property (nullable, nonatomic, retain) NSString *phoneNumberAwaitingVerification;
-@property (nonatomic, strong, readonly) TSStorageManager *storageManager;
+@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 
 @end
 
@@ -56,6 +57,15 @@ NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificati
     });
 
     return sharedInstance;
+}
+
+- (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
+{
+    _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalNumberDidChange
+                                                        object:nil
+                                                      userInfo:nil];
 }
 
 + (BOOL)isRegistered {

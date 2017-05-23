@@ -14,7 +14,6 @@ NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkMana
 
 @interface TSNetworkManager ()
 
-@property (nonatomic, readonly, strong) OWSSignalService *signalService;
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 @end
@@ -27,21 +26,18 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     static TSNetworkManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        OWSSignalService *signalService = [[OWSSignalService alloc] init];
-        sharedMyManager = [[self alloc] initWithSignalService:signalService];
+        sharedMyManager = [[self alloc] initDefault];
     });
     return sharedMyManager;
 }
 
 
-- (instancetype)initWithSignalService:(OWSSignalService *)signalService
+- (instancetype)initDefault
 {
     self = [super init];
     if (!self) {
         return self;
     }
-
-    _signalService = signalService;
 
     OWSSingletonAssert();
 
@@ -59,7 +55,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     void (^failure)(NSURLSessionDataTask *task, NSError *error) =
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
-    AFHTTPSessionManager *sessionManager = self.signalService.HTTPSessionManager;
+    AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].HTTPSessionManager;
 
     if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
         // We plant the Authorization parameter ourselves, no need to double add.

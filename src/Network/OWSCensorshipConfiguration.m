@@ -11,20 +11,20 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
 
 @implementation OWSCensorshipConfiguration
 
-- (NSString *)frontingHost:(NSString *)e164PhonNumber
+- (NSString *)frontingHost:(NSString *)e164PhoneNumber
 {
-    OWSAssert(e164PhonNumber.length > 0);
-    
+    OWSAssert(e164PhoneNumber.length > 0);
+
     NSString *domain = nil;
     for (NSString *countryCode in self.censoredCountryCodes) {
-        if ([e164PhonNumber hasPrefix:countryCode]) {
+        if ([e164PhoneNumber hasPrefix:countryCode]) {
             domain = self.censoredCountryCodes[countryCode];
         }
     }
-    
-    // Fronting should only be used for countries specified in censoredCountryCodes,
-    // all of which have a domain specified.
-    OWSAssert(domain);
+
+    // Fronting should only be auto-activated for countries specified in censoredCountryCodes,
+    // all of which have a domain specified.  However users can also manually enable
+    // censorship circumvention.
     if (!domain) {
         domain = @"google.com";
     }
@@ -60,10 +60,10 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
              };
 }
 
-- (BOOL)isCensoredPhoneNumber:(NSString *)e164PhonNumber
+- (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber
 {
     for (NSString *countryCode in self.censoredCountryCodes) {
-        if ([e164PhonNumber hasPrefix:countryCode]) {
+        if ([e164PhoneNumber hasPrefix:countryCode]) {
             return YES;
         }
     }
