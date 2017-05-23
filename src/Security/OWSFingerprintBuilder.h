@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/22/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Builds a fingerprint combining your current credentials with their most recently accepted credentials.
  */
-- (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId;
+- (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId;
 
 /**
  * Builds a fingerprint combining your current credentials with the specified identity key.

@@ -59,7 +59,10 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 {
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] saveRemoteIdentity:self.newIdentityKey recipientId:self.recipientId];
+        [[TSStorageManager sharedManager] saveRemoteIdentity:self.newIdentityKey
+                                                 recipientId:self.recipientId
+                                      approvedForBlockingUse:YES
+                                   approvedForNonBlockingUse:YES];
     });
 }
 

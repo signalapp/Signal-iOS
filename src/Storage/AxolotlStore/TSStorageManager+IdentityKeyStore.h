@@ -1,18 +1,29 @@
 //
-//  TSStorageManager+IdentityKeyStore.h
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <AxolotlKit/IdentityKeyStore.h>
 #import "TSStorageManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const TSStorageManagerTrustedKeysCollection;
+
 @interface TSStorageManager (IdentityKeyStore) <IdentityKeyStore>
 
+/**
+ * Explicitly mark an identity as approved for blocking/nonblocking use
+ * e.g. in response to a user confirmation action.
+ */
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey
+               recipientId:(NSString *)recipientId
+    approvedForBlockingUse:(BOOL)approvedForBlockingUse
+ approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse;
+
 - (void)generateNewIdentityKey;
-- (NSData *)identityKeyForRecipientId:(NSString *)recipientId;
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
 - (void)removeIdentityKeyForRecipient:(NSString *)receipientId;
 
 @end
+
+NS_ASSUME_NONNULL_END

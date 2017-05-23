@@ -10,7 +10,6 @@
 @class ECKeyPair;
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
-@class TSPrivacyPreferences;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,7 +55,6 @@ extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
 - (void)purgeCollection:(NSString *)collection;
 
 @property (nullable, nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) TSPrivacyPreferences *privacyPreferences;
 
 @end
 

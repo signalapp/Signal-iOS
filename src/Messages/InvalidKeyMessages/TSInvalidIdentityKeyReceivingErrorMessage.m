@@ -81,7 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
+        [[TSStorageManager sharedManager] saveRemoteIdentity:newKey
+                                                 recipientId:self.envelope.source
+                                      approvedForBlockingUse:YES
+                                   approvedForNonBlockingUse:YES];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             // Decrypt this and any old messages for the newly accepted key

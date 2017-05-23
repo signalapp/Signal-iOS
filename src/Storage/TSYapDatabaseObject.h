@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <Mantle/MTLModel+NSCoding.h>
 
@@ -73,8 +74,8 @@
  *
  *  @return Instance of the object or nil if non-existent
  */
-+ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID transaction:(YapDatabaseReadTransaction *)transaction;
-+ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID;
++ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(fetch(uniqueId:transaction:));
++ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
 
 /**
  *  Saves the object with a new YapDatabaseConnection
