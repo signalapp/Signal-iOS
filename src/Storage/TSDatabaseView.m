@@ -22,6 +22,7 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
+NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
 NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
@@ -56,6 +57,41 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
 
     return
         [[TSStorageManager sharedManager].database registerExtension:view withName:TSUnreadDatabaseViewExtensionName];
+}
+
++ (BOOL)registerDynamicMessagesDatabaseView
+{
+    YapDatabaseView *existingView =
+        [[TSStorageManager sharedManager].database registeredExtension:TSDynamicMessagesDatabaseViewExtensionName];
+    if (existingView) {
+        return YES;
+    }
+
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSInteraction class]]) {
+            TSInteraction *interaction = (TSInteraction *)object;
+            if ([interaction isDynamicInteraction]) {
+                return interaction.uniqueThreadId;
+            }
+        } else {
+            OWSAssert(0);
+        }
+        return nil;
+    }];
+
+    YapDatabaseViewSorting *viewSorting = [self messagesSorting];
+
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = YES;
+    options.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
+
+    YapDatabaseView *view =
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+
+    return [[TSStorageManager sharedManager].database registerExtension:view
+                                                               withName:TSDynamicMessagesDatabaseViewExtensionName];
 }
 
 + (BOOL)registerThreadDatabaseView {

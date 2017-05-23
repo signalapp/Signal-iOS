@@ -109,6 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }
 
+- (BOOL)isDynamicInteraction
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

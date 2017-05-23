@@ -1,9 +1,5 @@
 //
-//  TSDatabaseView.h
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 17/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -19,11 +15,13 @@ extern NSString *TSSecondaryDevicesGroup;
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
+extern NSString *TSDynamicMessagesDatabaseViewExtensionName;
 extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerBuddyConversationDatabaseView;
 + (BOOL)registerUnreadDatabaseView;
++ (BOOL)registerDynamicMessagesDatabaseView;
 + (void)asyncRegisterSecondaryDevicesDatabaseView;
 
 @end

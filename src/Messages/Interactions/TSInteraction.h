@@ -35,6 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSDate *)receiptDateForSorting;
 
+// "Dynamic" interactions are not messages or static events (like
+// info messages, error messages, etc.).  They are interactions
+// created, updated and deleted by the views.
+//
+// These include block offers, "add to contact" offers,
+// unseen message indicators, etc.
+- (BOOL)isDynamicInteraction;
+
 @end
 
 NS_ASSUME_NONNULL_END
