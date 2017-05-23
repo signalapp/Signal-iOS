@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSDate *messageDate;
 @property (nonatomic, retain) NSString *messageBody;
 
-@property NSUInteger identifier;
+@property (nonatomic) NSString *interactionUniqueId;
 
 @end
 
@@ -77,9 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _interaction = interaction;
     _messageDate = interaction.date;
-    // TODO casting a string to an integer? At least need a comment here explaining why we are doing this.
-    // Can we just remove this? Haven't found where we're using it...
-    _identifier = (NSUInteger)interaction.uniqueId;
+
+    self.interactionUniqueId = interaction.uniqueId;
 
     if ([interaction isKindOfClass:[TSMessage class]]) {
         TSMessage *message = (TSMessage *)interaction;
@@ -354,11 +353,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)messageHash
 {
-    if (self.isMediaMessage) {
-        return [self.mediaItem mediaHash];
-    } else {
-        return self.identifier;
-    }
+    OWSAssert(self.interactionUniqueId);
+
+    return self.interactionUniqueId.hash;
 }
 
 - (NSInteger)messageState {
