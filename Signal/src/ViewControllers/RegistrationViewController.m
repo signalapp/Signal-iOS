@@ -42,11 +42,6 @@
 
 - (void)createViews
 {
-    // TODO:
-    for (UIView *subview in self.view.subviews) {
-        [subview removeFromSuperview];
-    }
-
     self.view.backgroundColor = [UIColor ows_signalBrandBlueColor];
 
     UIView *header = [UIView new];
