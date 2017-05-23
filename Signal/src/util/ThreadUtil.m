@@ -106,7 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
         __block TSIncomingMessage *firstUnreadMessage = nil;
         __block long outgoingMessageCount = 0;
 
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
+        // We use different views for performance reasons.
+        [[transaction ext:TSDynamicMessagesDatabaseViewExtensionName]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
@@ -120,7 +121,36 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
                               OWSAssert(!existingUnreadIndicator);
                               existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
-                          } else if ([object isKindOfClass:[TSIncomingMessage class]]) {
+                          } else {
+                              DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
+                              OWSAssert(0);
+                          }
+                      }];
+        [[transaction ext:TSUnreadDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if (![object isKindOfClass:[TSIncomingMessage class]]) {
+                              DDLogError(@"Unexpected unread message type: %@", [object class]);
+                              OWSAssert(0);
+                              return;
+                          }
+                          TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
+                          if (incomingMessage.wasRead) {
+                              DDLogError(@"Unexpectedly read unread message");
+                              OWSAssert(0);
+                              return;
+                          }
+                          firstUnreadMessage = incomingMessage;
+                          *stop = YES;
+                      }];
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if ([object isKindOfClass:[TSIncomingMessage class]]) {
                               TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
                               if (!firstIncomingMessage) {
                                   firstIncomingMessage = incomingMessage;
@@ -128,16 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
                                   OWSAssert([[firstIncomingMessage receiptDateForSorting]
                                                 compare:[incomingMessage receiptDateForSorting]]
                                       == NSOrderedAscending);
-                              }
-
-                              if (!incomingMessage.wasRead) {
-                                  if (!firstUnreadMessage) {
-                                      firstUnreadMessage = incomingMessage;
-                                  } else {
-                                      OWSAssert([[firstUnreadMessage receiptDateForSorting]
-                                                    compare:[incomingMessage receiptDateForSorting]]
-                                          == NSOrderedAscending);
-                                  }
                               }
                           } else if ([object isKindOfClass:[TSOutgoingMessage class]]) {
                               TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)object;
@@ -149,6 +169,9 @@ NS_ASSUME_NONNULL_BEGIN
                                       == NSOrderedAscending);
                               }
                               outgoingMessageCount++;
+                              if (outgoingMessageCount >= kMaxBlockOfferOutgoingMessageCount) {
+                                  *stop = YES;
+                              }
                           }
                       }];
 
