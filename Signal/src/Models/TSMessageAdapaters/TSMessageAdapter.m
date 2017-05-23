@@ -93,6 +93,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (NSCache *)displayableTextCache
+{
+    static NSCache *cache = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        cache = [NSCache new];
+        // Cache the results for up to 1,000 messages.
+        cache.countLimit = 1000;
+    });
+    return cache;
+}
+
 + (id<OWSMessageData>)messageViewDataWithInteraction:(TSInteraction *)interaction inThread:(TSThread *)thread contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     TSMessageAdapter *adapter = [[TSMessageAdapter alloc] initWithInteraction:interaction];
@@ -138,23 +150,30 @@ NS_ASSUME_NONNULL_BEGIN
                 if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                     TSAttachmentStream *stream = (TSAttachmentStream *)attachment;
                     if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-                        NSData *textData = [NSData dataWithContentsOfURL:stream.mediaURL];
-                        NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-                        // Only show up to 2kb of text.
-                        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
-                        NSString *displayText = [[DisplayableTextFilter new] displayableText:fullText];
-                        if (displayText.length > kMaxTextDisplayLength) {
-                            // Trim whitespace before _AND_ after slicing the snipper from the string.
-                            NSString *snippet =
-                                [[[displayText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                        NSString *displayableText = [[self displayableTextCache] objectForKey:interaction.uniqueId];
+                        if (!displayableText) {
+                            NSData *textData = [NSData dataWithContentsOfURL:stream.mediaURL];
+                            NSString *fullText = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                            // Only show up to 2kb of text.
+                            const NSUInteger kMaxTextDisplayLength = 2 * 1024;
+                            displayableText = [[DisplayableTextFilter new] displayableText:fullText];
+                            if (displayableText.length > kMaxTextDisplayLength) {
+                                // Trim whitespace before _AND_ after slicing the snipper from the string.
+                                NSString *snippet = [[[displayableText
+                                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
                                     substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
                                     stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                            displayText =
-                                [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
-                                                               @"A display format for oversize text messages."),
-                                          snippet];
+                                displayableText =
+                                    [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
+                                                                   @"A display format for oversize text messages."),
+                                              snippet];
+                            }
+                            if (!displayableText) {
+                                displayableText = @"";
+                            }
+                            [[self displayableTextCache] setObject:displayableText forKey:interaction.uniqueId];
                         }
-                        adapter.messageBody = displayText;
+                        adapter.messageBody = displayableText;
                     } else if ([stream isAnimated]) {
                         adapter.mediaItem =
                             [[TSAnimatedAdapter alloc] initWithAttachment:stream incoming:isIncomingAttachment];
@@ -188,6 +207,16 @@ NS_ASSUME_NONNULL_BEGIN
                                NSStringFromClass([attachment class]));
                 }
             }
+        } else {
+            NSString *displayableText = [[self displayableTextCache] objectForKey:interaction.uniqueId];
+            if (!displayableText) {
+                displayableText = [[DisplayableTextFilter new] displayableText:message.body];
+                if (!displayableText) {
+                    displayableText = @"";
+                }
+                [[self displayableTextCache] setObject:displayableText forKey:interaction.uniqueId];
+            }
+            adapter.messageBody = displayableText;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         TSCall *callRecord = (TSCall *)interaction;
