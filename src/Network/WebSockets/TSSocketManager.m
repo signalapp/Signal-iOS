@@ -552,7 +552,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }];
     } else {
         OWSAssert(self.backgroundKeepAliveUntilDate);
-        OWSAssert([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f);
         OWSAssert(self.backgroundKeepAliveTimer);
         OWSAssert([self.backgroundKeepAliveTimer isValid]);
         OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
