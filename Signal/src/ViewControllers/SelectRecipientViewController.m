@@ -252,24 +252,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
     [self.countryCodeButton layoutSubviews];
 
-    NSString *examplePhoneNumber = [PhoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
-    OWSAssert(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
-    if (examplePhoneNumber && [examplePhoneNumber hasPrefix:callingCode]) {
-        NSString *formattedPhoneNumber =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:examplePhoneNumber
-                                                         withSpecifiedCountryCodeString:countryCode];
-        if (formattedPhoneNumber.length > 0) {
-            examplePhoneNumber = formattedPhoneNumber;
-        }
-
-        self.examplePhoneNumberLabel.text = [NSString
-            stringWithFormat:
-                NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
-                    @"A format for a label showing an example phone number. Embeds {{the example phone number}}."),
-            [examplePhoneNumber substringFromIndex:callingCode.length]];
-    } else {
-        self.examplePhoneNumberLabel.text = @"";
-    }
+    self.examplePhoneNumberLabel.text =
+        [ViewControllerUtils examplePhoneNumberForCountryCode:countryCode callingCode:callingCode];
     [self.examplePhoneNumberLabel.superview layoutSubviews];
 }
 
