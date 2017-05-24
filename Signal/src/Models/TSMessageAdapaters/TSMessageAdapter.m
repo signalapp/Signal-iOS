@@ -355,7 +355,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.interactionUniqueId);
 
-    return self.interactionUniqueId.hash;
+    // messageHash is used as a key in the "message bubble size" cache,
+    // so  messageHash's value must change whenever the message's bubble size
+    // changes.  Incoming messages change size after their attachment's been
+    // downloaded, so we use the mediaItem's class (which will be nil before
+    // the attachment is downloaded) to reflect attachment status.
+    return self.interactionUniqueId.hash ^ [self.mediaItem class].description.hash;
 }
 
 - (NSInteger)messageState {
