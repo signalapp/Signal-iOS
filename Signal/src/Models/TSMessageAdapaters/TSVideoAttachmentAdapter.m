@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSVideoAttachmentAdapter ()
 
-@property (nonatomic) UIImage *image;
 @property (nonatomic, nullable) UIView *cachedMediaView;
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) UIButton *audioPlayPauseButton;
@@ -36,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat audioProgressSeconds;
 @property (nonatomic) CGFloat audioDurationSeconds;
 @property (nonatomic) BOOL isPaused;
+@property (nonatomic) CGSize imageSize;
 
 // See comments on OWSMessageMediaAdapter.
 @property (nonatomic, nullable, weak) id lastPresentingCell;
@@ -50,12 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithFileURL:[attachment mediaURL] isReadyToPlay:YES];
 
     if (self) {
-        _image           = attachment.image;
         _cachedMediaView = nil;
         _attachmentId    = attachment.uniqueId;
         _contentType     = attachment.contentType;
         _attachment      = attachment;
         _incoming        = incoming;
+        _imageSize = [attachment cachedImageSizeWithoutTransaction];
     }
     return self;
 }
@@ -224,7 +224,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize size = [self mediaViewDisplaySize];
 
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
+    UIImage *image = self.attachment.image;
+    if (!image) {
+        DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
+        OWSAssert(0);
+        return nil;
+    }
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.frame = CGRectMake(0.0f, 0.0f, size.width, size.height);
     imageView.clipsToBounds = YES;
@@ -261,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self isAudio]);
 
-    [self ensureAudioDurationSeconds];
+    self.audioDurationSeconds = [self.attachment cachedAudioDurationSecondsWithoutTransaction];
 
     CGSize viewSize = [self mediaViewDisplaySize];
     UIColor *textColor = [self audioTextColor];
@@ -351,30 +357,13 @@ NS_ASSUME_NONNULL_BEGIN
     return mediaView;
 }
 
-- (void)ensureAudioDurationSeconds
-{
-    if (self.audioDurationSeconds == 0.f) {
-        NSError *error;
-        AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.fileURL error:&error];
-        if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
-            && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-            // Ignore "invalid audio file" errors.
-            return;
-        }
-        OWSAssert(!error);
-        if (!error) {
-            self.audioDurationSeconds = (CGFloat)[audioPlayer duration];
-        }
-    }
-}
-
 - (CGSize)mediaViewDisplaySize {
     CGSize size = [super mediaViewDisplaySize];
     if ([self isAudio]) {
         size.width = [self ows_maxMediaBubbleWidth:size];
         size.height = (CGFloat)ceil(self.audioBubbleHeight);
     } else if ([self isVideo]) {
-        return [self ows_adjustBubbleSize:size forImage:self.image];
+        return [self ows_adjustBubbleSize:size forImageSize:self.imageSize];
     }
     return size;
 }
@@ -413,6 +402,11 @@ NS_ASSUME_NONNULL_BEGIN
                 utiType = (NSString *)kUTTypeVideo;
             }
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+            if (!data) {
+                OWSAssert(data);
+                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                return;
+            }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
             return;
         } else if (action == NSSelectorFromString(@"save:")) {
@@ -431,7 +425,11 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
-            OWSAssert(data);
+            if (!data) {
+                OWSAssert(data);
+                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                return;
+            }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
         }
     } else {
@@ -457,6 +455,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

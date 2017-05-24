@@ -758,11 +758,11 @@ typedef enum : NSUInteger {
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
       [self.messageMappings updateWithTransaction:transaction];
-      self.page = 0;
-      [self updateRangeOptionsForPage:self.page];
-      [self.collectionView reloadData];
     }];
+    self.page = 0;
+    [self updateRangeOptionsForPage:self.page];
     [self updateLoadEarlierVisible];
+    [self.collectionView reloadData];
 }
 
 - (BOOL)userLeftGroup
