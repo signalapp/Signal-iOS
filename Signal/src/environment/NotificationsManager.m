@@ -157,7 +157,7 @@
     NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
     NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (groupName.length < 1) {
-        groupName = NSLocalizedString(@"UNNAMED_GROUP_NAME", @"Named used for groups without a name.");
+        groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
     }
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
