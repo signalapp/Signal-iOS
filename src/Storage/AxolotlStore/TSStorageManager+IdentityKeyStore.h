@@ -14,6 +14,15 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
 /**
  * Explicitly mark an identity as approved for blocking/nonblocking use
  * e.g. in response to a user confirmation action.
+ *
+ * @param   identityKey key data used to identify the recipient
+ * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
+ * @param   approvedForBlockingUse if the user wants explicit confirmation before sending to changed numbers, whether
+ * that confirmation has occurred.
+ * @param   approvedForNonBlockingUse YES to override the duration during which we consider an SN "too soon" to send.
+ *
+ * @returns YES if we are replacing an existing known identity key for recipientId.
+ *          NO  if there was no previously stored identity key for the recipient.
  */
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                recipientId:(NSString *)recipientId

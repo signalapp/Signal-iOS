@@ -66,8 +66,8 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId
 {
-    NSParameterAssert(identityKey != nil);
-    NSParameterAssert(recipientId != nil);
+    OWSAssert(identityKey != nil);
+    OWSAssert(recipientId != nil);
 
     @synchronized([[self class] sharedIdentityKeyLock])
     {
@@ -87,8 +87,8 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     approvedForBlockingUse:(BOOL)approvedForBlockingUse
  approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse
 {
-    NSParameterAssert(identityKey != nil);
-    NSParameterAssert(recipientId != nil);
+    OWSAssert(identityKey != nil);
+    OWSAssert(recipientId != nil);
 
     NSString const *logTag = @"[IdentityKeyStore]";
     @synchronized ([[self class] sharedIdentityKeyLock]) {
@@ -134,9 +134,9 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
                  recipientId:(NSString *)recipientId
                    direction:(TSMessageDirection)direction
 {
-    NSParameterAssert(identityKey != nil);
-    NSParameterAssert(recipientId != nil);
-    NSParameterAssert(direction != TSMessageDirectionUnknown);
+    OWSAssert(identityKey != nil);
+    OWSAssert(recipientId != nil);
+    OWSAssert(direction != TSMessageDirectionUnknown);
 
     @synchronized([[self class] sharedIdentityKeyLock])
     {
@@ -172,7 +172,7 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
-    NSParameterAssert(identityKey != nil);
+    OWSAssert(identityKey != nil);
 
     @synchronized([[self class] sharedIdentityKeyLock])
     {
@@ -207,7 +207,7 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 - (BOOL)isBlockingApprovalRequiredForIdentity:(OWSRecipientIdentity *)recipientIdentity
 {
-    NSParameterAssert(recipientIdentity != nil);
+    OWSAssert(recipientIdentity != nil);
     OWSAssert([TextSecureKitEnv sharedEnv].preferences != nil);
 
     return !recipientIdentity.isFirstKnownKey &&
@@ -217,7 +217,7 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 - (BOOL)isNonBlockingApprovalRequiredForIdentity:(OWSRecipientIdentity *)recipientIdentity
 {
-    NSParameterAssert(recipientIdentity != nil);
+    OWSAssert(recipientIdentity != nil);
 
     return !recipientIdentity.isFirstKnownKey &&
         [[NSDate new] timeIntervalSinceDate:recipientIdentity.createdAt] < kIdentityKeyStoreNonBlockingSecondsThreshold &&
@@ -226,14 +226,14 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 - (void)removeIdentityKeyForRecipient:(NSString *)recipientId
 {
-    NSParameterAssert(recipientId != nil);
+    OWSAssert(recipientId != nil);
 
     [[OWSRecipientIdentity fetchObjectWithUniqueID:recipientId] remove];
 }
 
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
 {
-    NSParameterAssert(recipientId != nil);
+    OWSAssert(recipientId != nil);
 
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     OWSAssert(contactThread != nil);

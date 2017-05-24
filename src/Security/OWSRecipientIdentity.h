@@ -11,14 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSData *identityKey;
 @property (nonatomic, readonly) NSDate *createdAt;
-@property (nonatomic, readonly) BOOL wasSeen;
+@property (atomic, readonly) BOOL wasSeen;
 @property (nonatomic, readonly) BOOL isFirstKnownKey;
-@property (nonatomic) BOOL approvedForBlockingUse;
-@property (nonatomic) BOOL approvedForNonBlockingUse;
+@property (atomic) BOOL approvedForBlockingUse;
+@property (atomic) BOOL approvedForNonBlockingUse;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
                         identityKey:(NSData *)identityKey
