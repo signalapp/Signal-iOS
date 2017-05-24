@@ -313,7 +313,7 @@
             [weakSelf.spinnerView stopAnimating];
 
             CodeVerificationViewController *vc = [CodeVerificationViewController new];
-            [self.navigationController pushViewController:vc animated:YES];
+            [weakSelf.navigationController pushViewController:vc animated:YES];
         }
         failure:^(NSError *error) {
             if (error.code == 400) {
