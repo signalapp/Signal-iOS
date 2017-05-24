@@ -6,6 +6,7 @@
 #import "NSData+Base64.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
+#import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -84,6 +85,18 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSData *)groupIdFromThreadId:(NSString *)threadId
 {
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length - 1)]];
+}
+
+- (NSArray<NSString *> *)recipientIdentifiers
+{
+    NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+    if (groupMemberIds == nil) {
+        return @[];
+    }
+
+    [groupMemberIds removeObject:[TSAccountManager localNumber]];
+
+    return [groupMemberIds copy];
 }
 
 // Group and Contact threads share a collection, this is a convenient way to enumerate *just* the group threads

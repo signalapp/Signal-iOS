@@ -80,6 +80,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self class] contactIdFromThreadId:self.uniqueId];
 }
 
+- (NSArray<NSString *> *)recipientIdentifiers
+{
+    return @[self.contactIdentifier];
+}
+
 - (BOOL)isGroupThread {
     return false;
 }
