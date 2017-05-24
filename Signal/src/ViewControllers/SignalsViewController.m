@@ -11,6 +11,7 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "SettingsTableViewController.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
@@ -225,7 +226,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 }
 
 - (void)settingsButtonPressed:(id)sender {
-    [self performSegueWithIdentifier:@"ShowAppSettingsSegue" sender:sender];
+    SettingsTableViewController *vc = [SettingsTableViewController new];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:vc];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
