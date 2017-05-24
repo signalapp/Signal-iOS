@@ -110,7 +110,6 @@
 		452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4531C9C31DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m */; };
 		45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 45387B031E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m */; };
-		453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */; };
 		453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		453D28BB1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */; };
 		4542F0941EB9372700C7EE92 /* SystemContactsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0931EB9372700C7EE92 /* SystemContactsFetcher.swift */; };
@@ -525,8 +524,6 @@
 		45387B021E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS102MoveLoggingPreferenceToUserDefaults.h; path = Migrations/OWS102MoveLoggingPreferenceToUserDefaults.h; sourceTree = "<group>"; };
 		45387B031E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS102MoveLoggingPreferenceToUserDefaults.m; path = Migrations/OWS102MoveLoggingPreferenceToUserDefaults.m; sourceTree = "<group>"; };
 		453CC0361D08E1A60040EBA3 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = translations/sn.lproj/Localizable.strings; sourceTree = "<group>"; };
-		453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisplayedMessage.h; sourceTree = "<group>"; };
-		453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisplayedMessage.m; sourceTree = "<group>"; };
 		453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesBubblesSizeCalculator.h; sourceTree = "<group>"; };
 		453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesBubblesSizeCalculator.m; sourceTree = "<group>"; };
 		4542F0931EB9372700C7EE92 /* SystemContactsFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemContactsFetcher.swift; sourceTree = "<group>"; };
@@ -1101,8 +1098,6 @@
 				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
 				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
 				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
-				453D28B51D32BA5F00D523F0 /* OWSDisplayedMessage.h */,
-				453D28B61D32BA5F00D523F0 /* OWSDisplayedMessage.m */,
 				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
@@ -2158,7 +2153,6 @@
 				34B3F8911E8DF1710035BE1A /* ShowGroupMembersViewController.m in Sources */,
 				45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */,
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
-				453D28B71D32BA5F00D523F0 /* OWSDisplayedMessage.m in Sources */,
 				45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				34B3F8711E8DF1700035BE1A /* AboutTableViewController.m in Sources */,
 				34B3F88D1E8DF1700035BE1A /* OWSQRCodeScanningViewController.m in Sources */,
