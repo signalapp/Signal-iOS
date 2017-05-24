@@ -6,6 +6,7 @@
 #import "MIMETypeUtil.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
+#import <ImageIO/ImageIO.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -16,6 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 // We only want to generate the file path for this attachment once, so that
 // changes in the file path generation logic don't break existing attachments.
 @property (nullable, nonatomic) NSString *localRelativeFilePath;
+
+// These properties should only be accessed on the main thread.
+@property (nullable, nonatomic) NSNumber *cachedImageWidth;
+@property (nullable, nonatomic) NSNumber *cachedImageHeight;
+@property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
 @end
 
@@ -254,14 +260,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)image
 {
-    if ([self isVideo] || [self isAudio]) {
+    if ([self isVideo]) {
         return [self videoThumbnail];
-    } else {
+    } else if ([self isImage] || [self isAnimated]) {
         NSURL *_Nullable mediaUrl = [self mediaURL];
         if (!mediaUrl) {
             return nil;
         }
         return [UIImage imageWithData:[NSData dataWithContentsOfURL:mediaUrl]];
+    } else {
+        return nil;
     }
 }
 
@@ -287,6 +295,177 @@ NS_ASSUME_NONNULL_BEGIN
     if (error) {
         DDLogError(@"Failed to delete attachment folder with error: %@", error.debugDescription);
     }
+}
+
+- (CGSize)calculateImageSize
+{
+    if ([self isVideo]) {
+        return [self videoThumbnail].size;
+    } else if ([self isImage] || [self isAnimated]) {
+        NSURL *_Nullable mediaUrl = [self mediaURL];
+        if (!mediaUrl) {
+            return CGSizeZero;
+        }
+
+        // With CGImageSource we avoid loading the whole image into memory.
+        CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)mediaUrl, NULL);
+        if (!source) {
+            OWSAssert(0);
+            return CGSizeZero;
+        }
+
+        NSDictionary *options = @{
+            (NSString *)kCGImageSourceShouldCache : @(NO),
+        };
+        NSDictionary *properties
+            = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+        CGSize imageSize = CGSizeZero;
+        if (properties) {
+            NSNumber *width = properties[(NSString *)kCGImagePropertyPixelWidth];
+            NSNumber *height = properties[(NSString *)kCGImagePropertyPixelHeight];
+            if (width && height) {
+                imageSize = CGSizeMake(width.floatValue, height.floatValue);
+            } else {
+                OWSAssert(0);
+            }
+        }
+        CFRelease(source);
+        return imageSize;
+    } else {
+        return CGSizeZero;
+    }
+}
+
+- (CGSize)ensureCachedImageSizeWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (self.cachedImageWidth && self.cachedImageHeight) {
+        return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
+    }
+
+    CGSize imageSize = [self calculateImageSize];
+    self.cachedImageWidth = @(imageSize.width);
+    self.cachedImageHeight = @(imageSize.height);
+
+    void (^updateDataStore)() = ^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSAssert(transaction);
+
+        NSString *collection = [[self class] collection];
+        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (latestInstance) {
+            latestInstance.cachedImageWidth = @(imageSize.width);
+            latestInstance.cachedImageHeight = @(imageSize.height);
+            [latestInstance saveWithTransaction:transaction];
+        } else {
+            // This message has not yet been saved; do nothing.
+            OWSAssert(0);
+        }
+    };
+
+    if (transaction) {
+        updateDataStore(transaction);
+    } else {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            updateDataStore(transaction);
+        }];
+    }
+
+    return imageSize;
+}
+
+- (CGSize)cachedImageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(transaction);
+
+    if (self.cachedImageWidth && self.cachedImageHeight) {
+        return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
+    }
+
+    return [self ensureCachedImageSizeWithTransaction:transaction];
+}
+
+- (CGSize)cachedImageSizeWithoutTransaction
+{
+    OWSAssert([NSThread isMainThread]);
+
+    return [self ensureCachedImageSizeWithTransaction:nil];
+}
+
+- (CGFloat)calculateAudioDurationSeconds
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert([self isAudio]);
+
+    NSError *error;
+    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
+    if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
+        && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+        // Ignore "invalid audio file" errors.
+        return 0.f;
+    }
+    OWSAssert(!error);
+    if (!error) {
+        return (CGFloat)[audioPlayer duration];
+    } else {
+        return 0;
+    }
+}
+
+- (CGFloat)ensureCachedAudioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (self.cachedAudioDurationSeconds) {
+        return self.cachedAudioDurationSeconds.floatValue;
+    }
+
+    CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
+    self.cachedAudioDurationSeconds = @(audioDurationSeconds);
+
+    void (^updateDataStore)() = ^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSAssert(transaction);
+
+        NSString *collection = [[self class] collection];
+        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (latestInstance) {
+            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+            [latestInstance saveWithTransaction:transaction];
+        } else {
+            // This message has not yet been saved; do nothing.
+            OWSAssert(0);
+        }
+    };
+
+    if (transaction) {
+        updateDataStore(transaction);
+    } else {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            updateDataStore(transaction);
+        }];
+    }
+
+    return audioDurationSeconds;
+}
+
+- (CGFloat)cachedAudioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(transaction);
+
+    if (self.cachedAudioDurationSeconds) {
+        return self.cachedAudioDurationSeconds.floatValue;
+    }
+
+    return [self ensureCachedAudioDurationSecondsWithTransaction:transaction];
+}
+
+- (CGFloat)cachedAudioDurationSecondsWithoutTransaction
+{
+    OWSAssert([NSThread isMainThread]);
+
+    return [self ensureCachedAudioDurationSecondsWithTransaction:nil];
 }
 
 #pragma mark - Logging

@@ -46,6 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)attachmentsFolder;
 + (NSUInteger)numberOfItemsInAttachmentsFolder;
 
+- (CGSize)cachedImageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (CGSize)cachedImageSizeWithoutTransaction;
+
+- (CGFloat)cachedAudioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (CGFloat)cachedAudioDurationSecondsWithoutTransaction;
+
 @end
 
 NS_ASSUME_NONNULL_END
