@@ -117,9 +117,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     if ([TSAccountManager isRegistered]) {
-        UIStoryboard *storyboard =
-            [UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:[NSBundle mainBundle]];
-        self.window.rootViewController = [storyboard instantiateInitialViewController];
+        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
