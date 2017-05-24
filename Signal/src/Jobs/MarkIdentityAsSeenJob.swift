@@ -19,21 +19,8 @@ class MarkIdentityAsSeenJob: NSObject {
     }
 
     public func run() {
-        switch self.thread {
-        case let contactThread as TSContactThread:
-            markAsSeenIfNecessary(recipientId: contactThread.contactIdentifier())
-        case let groupThread as TSGroupThread:
-            groupThread.groupModel.groupMemberIds?.forEach { memberId in
-                guard let recipientId = memberId as? String else {
-                    Logger.error("\(TAG) unexecpted type in group members.")
-                    assertionFailure("\(TAG) unexecpted type in group members.")
-                    return
-                }
-
-                markAsSeenIfNecessary(recipientId: recipientId)
-            }
-        default:
-            assertionFailure("Unexpected thread type: \(self.thread)")
+        for recipientId in self.thread.recipientIdentifiers {
+            markAsSeenIfNecessary(recipientId: recipientId)
         }
     }
 
