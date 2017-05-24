@@ -14,6 +14,7 @@
 #import "Pastelog.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "RegistrationViewController.h"
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
@@ -36,7 +37,6 @@
 @import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
-NSString *const AppDelegateStoryboardRegistration = @"Registration";
 
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
@@ -114,15 +114,17 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return YES;
     }
 
-    UIStoryboard *storyboard;
-    if ([TSAccountManager isRegistered]) {
-        storyboard = [UIStoryboard storyboardWithName:AppDelegateStoryboardMain bundle:[NSBundle mainBundle]];
-    } else {
-        storyboard = [UIStoryboard storyboardWithName:AppDelegateStoryboardRegistration bundle:[NSBundle mainBundle]];
-    }
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    self.window.rootViewController = [storyboard instantiateInitialViewController];
+    if ([TSAccountManager isRegistered]) {
+        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
+    } else {
+        RegistrationViewController *viewController = [RegistrationViewController new];
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:viewController];
+        self.window.rootViewController = navigationController;
+    }
+
     [self.window makeKeyAndVisible];
 
     // performUpdateCheck must be invoked after Environment has been initialized because
