@@ -38,12 +38,9 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
-            let navigationController = UIStoryboard.main.instantiateViewController(withIdentifier:"SettingsNavigationController") as! UINavigationController
-            assert(navigationController.viewControllers.count == 1)
+            let navigationController = UINavigationController(rootViewController:SettingsTableViewController())
+            navigationController.pushViewController(PrivacySettingsTableViewController(), animated:false)
 
-            let privacySettingsViewController = PrivacySettingsTableViewController()
-            navigationController.pushViewController(privacySettingsViewController, animated:false)
-            
             fromViewController?.present(navigationController, animated: true, completion: nil)
         }
     }
@@ -85,7 +82,7 @@ private class ExperienceUpgradeViewController: UIViewController {
         titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(26, 32))
         titleLabel.textColor = UIColor.white
         titleLabel.minimumScaleFactor = 0.5
-        titleLabel.adjustsFontSizeToFitWidth = true;
+        titleLabel.adjustsFontSizeToFitWidth = true
 
         // Body label
         let bodyLabel = UILabel()

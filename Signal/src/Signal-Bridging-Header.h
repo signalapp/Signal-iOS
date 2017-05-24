@@ -23,6 +23,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "SettingsTableViewController.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"

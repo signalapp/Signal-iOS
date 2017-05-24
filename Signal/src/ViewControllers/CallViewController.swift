@@ -803,10 +803,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
-            let navigationController = UIStoryboard.main.instantiateViewController(withIdentifier: "SettingsNavigationController") as! UINavigationController
-            assert(navigationController.viewControllers.count == 1)
-            let privacySettingsViewController = PrivacySettingsTableViewController()
-            navigationController.pushViewController(privacySettingsViewController, animated:false)
+            let navigationController = UINavigationController(rootViewController:SettingsTableViewController())
+            navigationController.pushViewController(PrivacySettingsTableViewController(), animated:false)
 
             fromViewController?.present(navigationController, animated: true, completion: nil)
         })

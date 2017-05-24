@@ -2133,8 +2133,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSConversationSettingsTableViewController *settingsVC =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
+    OWSConversationSettingsTableViewController *settingsVC = [OWSConversationSettingsTableViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
