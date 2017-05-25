@@ -189,6 +189,23 @@ NS_ASSUME_NONNULL_BEGIN
     return hasUnread;
 }
 
+- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
+    [[transaction ext:TSUnseenDatabaseViewExtensionName]
+        enumerateRowsInGroup:self.uniqueId
+                  usingBlock:^(
+                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                      if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                          DDLogError(@"%@ Unexpected object in unseen messages: %@", self.tag, object);
+                      }
+                      [messages addObject:(id<OWSReadTracking>)object];
+                  }];
+
+    return [messages copy];
+}
+
 - (NSArray<id<OWSReadTracking> > *)unreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking> > *messages = [NSMutableArray new];
@@ -218,9 +235,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    for (id<OWSReadTracking> message in [self unreadMessagesWithTransaction:transaction]) {
+    for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
         [message markAsReadLocallyWithTransaction:transaction];
     }
+
+    // Just to be defensive, we'll also check for unread messages.
+    OWSAssert([self unreadMessagesWithTransaction:transaction].count < 1);
 }
 
 - (void)markAllAsRead
@@ -255,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDate *lastMessageDate = [lastMessage receiptDateForSorting];
+    NSDate *lastMessageDate = [lastMessage dateForSorting];
 
     if ([lastMessage isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)lastMessage;

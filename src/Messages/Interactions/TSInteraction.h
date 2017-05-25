@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
 
-- (NSDate *)date;
 - (NSString *)description;
 
 /**
@@ -33,7 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (nullable NSDate *)receiptDateForSorting;
+// NSDate has second precision, uint64_t timestamps have millisecond precision
+// so prefer timestampForSorting over dateForSorting.
+- (NSDate *)dateForSorting;
+- (uint64_t)timestampForSorting;
 
 // "Dynamic" interactions are not messages or static events (like
 // info messages, error messages, etc.).  They are interactions

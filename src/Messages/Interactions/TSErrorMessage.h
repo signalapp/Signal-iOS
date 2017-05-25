@@ -2,12 +2,13 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSReadTracking.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSErrorMessage : TSMessage
+@interface TSErrorMessage : TSMessage <OWSReadTracking>
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -55,6 +56,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) NSString *recipientId;
+
+- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

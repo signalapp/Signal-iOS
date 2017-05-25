@@ -15,12 +15,20 @@ extern NSString *TSSecondaryDevicesGroup;
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
+extern NSString *TSUnseenDatabaseViewExtensionName;
 extern NSString *TSDynamicMessagesDatabaseViewExtensionName;
 extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
-+ (BOOL)registerBuddyConversationDatabaseView;
++ (BOOL)registerThreadInteractionsDatabaseView;
+// Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
+//
+// Should be used for "unread message counts".
 + (BOOL)registerUnreadDatabaseView;
+// Should be used for "unread indicator".
+//
+// Instances of OWSReadTracking for wasRead is NO.
++ (BOOL)registerUnseenDatabaseView;
 + (BOOL)registerDynamicMessagesDatabaseView;
 + (void)asyncRegisterSecondaryDevicesDatabaseView;
 

@@ -21,9 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly) BOOL shouldStartExpireTimer;
-// _DO NOT_ access this property directly.  You almost certainly
-// want to use receiptDateForSorting instead.
-@property (nonatomic, readonly) NSDate *receivedAtDate;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
 

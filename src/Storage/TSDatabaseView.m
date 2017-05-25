@@ -3,15 +3,13 @@
 //
 
 #import "TSDatabaseView.h"
-
-#import <YapDatabase/YapDatabaseView.h>
-
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabaseView.h>
 
 NSString *TSInboxGroup   = @"TSInboxGroup";
 NSString *TSArchiveGroup = @"TSArchiveGroup";
@@ -22,12 +20,15 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
+NSString *TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
 NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
-+ (BOOL)registerMessageDatabaseViewWithName:(NSString *)viewName viewGrouping:(YapDatabaseViewGrouping *)viewGrouping
++ (BOOL)registerMessageDatabaseViewWithName:(NSString *)viewName
+                               viewGrouping:(YapDatabaseViewGrouping *)viewGrouping
+                                    version:(NSString *)version
 {
     OWSAssert(viewName.length > 0);
     OWSAssert((viewGrouping));
@@ -45,7 +46,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
 
     YapDatabaseView *view =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:version options:options];
 
     return [[TSStorageManager sharedManager].database registerExtension:view withName:viewName];
 }
@@ -56,14 +57,34 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
             id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (possiblyRead.read == NO) {
+            if (!possiblyRead.wasRead && possiblyRead.shouldAffectUnreadCounts) {
                 return possiblyRead.uniqueThreadId;
             }
         }
         return nil;
     }];
 
-    return [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName viewGrouping:viewGrouping];
+    return [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
+}
+
++ (BOOL)registerUnseenDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
+            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+            if (!possiblyRead.wasRead) {
+                return possiblyRead.uniqueThreadId;
+            }
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
 }
 
 + (BOOL)registerDynamicMessagesDatabaseView
@@ -81,11 +102,12 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         return nil;
     }];
 
-    return
-        [self registerMessageDatabaseViewWithName:TSDynamicMessagesDatabaseViewExtensionName viewGrouping:viewGrouping];
+    return [self registerMessageDatabaseViewWithName:TSDynamicMessagesDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"2"];
 }
 
-+ (BOOL)registerBuddyConversationDatabaseView
++ (BOOL)registerThreadInteractionsDatabaseView
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -95,7 +117,9 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         return nil;
     }];
 
-    return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName viewGrouping:viewGrouping];
+    return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
 }
 
 + (BOOL)registerThreadDatabaseView {
@@ -194,19 +218,12 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
           TSInteraction *message1 = (TSInteraction *)object1;
           TSInteraction *message2 = (TSInteraction *)object2;
 
-          NSDate *date1 = [self localTimeReceiveDateForInteraction:message1];
-          NSDate *date2 = [self localTimeReceiveDateForInteraction:message2];
+          uint64_t timestamp1 = message1.timestampForSorting;
+          uint64_t timestamp2 = message2.timestampForSorting;
 
-          NSComparisonResult result = [date1 compare:date2];
-
-          // NSDates are only accurate to the second, we might want finer precision
-          if (result != NSOrderedSame) {
-              return result;
-          }
-
-          if (message1.timestamp > message2.timestamp) {
+          if (timestamp1 > timestamp2) {
               return NSOrderedDescending;
-          } else if (message1.timestamp < message2.timestamp) {
+          } else if (timestamp1 < timestamp2) {
               return NSOrderedAscending;
           } else {
               return NSOrderedSame;
@@ -272,10 +289,6 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
                        DDLogError(@"%@ Unable to setup extension: %@", self.tag, TSSecondaryDevicesGroup);
                    }
                }];
-}
-
-+ (NSDate *)localTimeReceiveDateForInteraction:(TSInteraction *)interaction {
-    return [interaction receiptDateForSorting];
 }
 
 #pragma mark - Logging

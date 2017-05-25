@@ -13,13 +13,15 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @interface TSCall ()
 
+@property (nonatomic, getter=wasRead) BOOL read;
+
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
 @end
 
-@implementation TSCall
+#pragma mark -
 
-@synthesize read = _read;
+@implementation TSCall
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
@@ -76,6 +78,11 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 }
 
 #pragma mark - OWSReadTracking
+
+- (BOOL)shouldAffectUnreadCounts
+{
+    return YES;
+}
 
 - (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {

@@ -2,16 +2,40 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSDate+millisecondTimeStamp.h"
 #import "TSInfoMessage.h"
+#import "NSDate+millisecondTimeStamp.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSUInteger TSInfoMessageSchemaVersion = 1;
+
+@interface TSInfoMessage ()
+
+@property (nonatomic, getter=wasRead) BOOL read;
+
+@property (nonatomic, readonly) NSUInteger infoMessageSchemaVersion;
+
+@end
+
+#pragma mark -
 
 @implementation TSInfoMessage
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (self.infoMessageSchemaVersion < 1) {
+        _read = YES;
+    }
+
+    _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
+
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -30,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _messageType = infoMessage;
+    _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
     return self;
 }
@@ -72,6 +97,40 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return @"Unknown Info Message Type";
+}
+
+#pragma mark - OWSReadTracking
+
+- (BOOL)shouldAffectUnreadCounts
+{
+    return NO;
+}
+
+- (void)markAsReadLocally
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsReadLocallyWithTransaction:transaction];
+    }];
+}
+
+- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    _read = YES;
+    [self saveWithTransaction:transaction];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

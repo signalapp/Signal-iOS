@@ -9,14 +9,38 @@
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSMessagesManager.h"
 #import "TextSecureKitEnv.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSUInteger TSErrorMessageSchemaVersion = 1;
+
+@interface TSErrorMessage ()
+
+@property (nonatomic, getter=wasRead) BOOL read;
+
+@property (nonatomic, readonly) NSUInteger errorMessageSchemaVersion;
+
+@end
+
+#pragma mark -
 
 @implementation TSErrorMessage
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (self.errorMessageSchemaVersion < 1) {
+        _read = YES;
+    }
+
+    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
+
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -44,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _errorType = errorMessageType;
     _recipientId = recipientId;
+    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
     return self;
 }
@@ -133,6 +158,40 @@ NS_ASSUME_NONNULL_BEGIN
                                   inThread:thread
                          failedMessageType:TSErrorMessageNonBlockingIdentityChange
                                recipientId:recipientId];
+}
+
+#pragma mark - OWSReadTracking
+
+- (BOOL)shouldAffectUnreadCounts
+{
+    return NO;
+}
+
+- (void)markAsReadLocally
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsReadLocallyWithTransaction:transaction];
+    }];
+}
+
+- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    _read = YES;
+    [self saveWithTransaction:transaction];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

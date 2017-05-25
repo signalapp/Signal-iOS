@@ -3,6 +3,7 @@
 //
 
 #import "TSInteraction.h"
+#import "NSDate+millisecondTimeStamp.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSStorageManager+messageIDs.h"
 #import "TSThread.h"
@@ -52,7 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 #pragma mark Thread
 
 - (TSThread *)thread
@@ -72,11 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.timestamp;
 }
 
-- (NSDate *)date {
-    uint64_t seconds = self.timestamp / 1000;
-    return [NSDate dateWithTimeIntervalSince1970:seconds];
-}
-
 + (NSString *)stringFromTimeStamp:(uint64_t)timestamp {
     return [[NSNumber numberWithUnsignedLongLong:timestamp] stringValue];
 }
@@ -88,9 +83,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [myNumber unsignedLongLongValue];
 }
 
-- (nullable NSDate *)receiptDateForSorting
+- (NSDate *)dateForSorting
 {
-    return self.date;
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForSorting];
+}
+
+- (uint64_t)timestampForSorting
+{
+    return self.timestamp;
 }
 
 - (NSString *)description {

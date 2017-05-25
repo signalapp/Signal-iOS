@@ -15,13 +15,15 @@
  */
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
+@property (nonatomic, readonly) NSString *uniqueThreadId;
+
+- (BOOL)shouldAffectUnreadCounts;
+
 /**
  * Call when the user viewed the message/call on this device. "locally" as opposed to being notified via a read receipt
  * sync message of a remote read.
  */
 - (void)markAsReadLocally;
 - (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-@property (nonatomic, readonly) NSString *uniqueThreadId;
 
 @end
