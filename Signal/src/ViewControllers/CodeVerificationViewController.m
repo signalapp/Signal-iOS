@@ -16,8 +16,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
-
 @interface CodeVerificationViewController () <UITextFieldDelegate>
 
 @property (nonatomic, readonly) AccountManager *accountManager;
@@ -266,7 +264,19 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
             DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
-                [self performSegueWithIdentifier:kCompletedRegistrationSegue sender:nil];
+
+                UIStoryboard *storyboard = [UIStoryboard main];
+                UIViewController *viewController = [storyboard instantiateInitialViewController];
+                OWSAssert([viewController isKindOfClass:[SignalsNavigationController class]]);
+                SignalsNavigationController *navigationController = (SignalsNavigationController *)viewController;
+                AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+                appDelegate.window.rootViewController = navigationController;
+                OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
+
+                DDLogDebug(@"%@ notifying signals view controller of new user.", self.tag);
+                SignalsViewController *signalsViewController
+                    = (SignalsViewController *)navigationController.topViewController;
+                signalsViewController.newlyRegisteredUser = YES;
             });
         })
         .catch(^(NSError *_Nonnull error) {
@@ -308,30 +318,6 @@ NSString *const kCompletedRegistrationSegue = @"CompletedRegistration";
 
 - (NSString *)validationCodeFromTextField {
     return [self.challengeTextField.text stringByReplacingOccurrencesOfString:@"-" withString:@""];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    DDLogInfo(@"%@ preparing for CompletedRegistrationSeque", self.tag);
-    if ([segue.identifier isEqualToString:kCompletedRegistrationSegue]) {
-        if (![segue.destinationViewController isKindOfClass:[SignalsNavigationController class]]) {
-            DDLogError(@"%@ Unexpected destination view controller: %@", self.tag, segue.destinationViewController);
-            return;
-        }
-
-        SignalsNavigationController *snc = (SignalsNavigationController *)segue.destinationViewController;
-
-        AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-        appDelegate.window.rootViewController = snc;
-        if (![snc.topViewController isKindOfClass:[SignalsViewController class]]) {
-            DDLogError(@"%@ Unexpected top view controller: %@", self.tag, snc.topViewController);
-            return;
-        }
-
-        DDLogDebug(@"%@ notifying signals view controller of new user.", self.tag);
-        SignalsViewController *signalsViewController = (SignalsViewController *)snc.topViewController;
-        signalsViewController.newlyRegisteredUser = YES;
-    }
 }
 
 #pragma mark - Send codes again

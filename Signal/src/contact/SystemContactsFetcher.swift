@@ -362,7 +362,6 @@ class SystemContactsFetcher: NSObject {
         AssertIsOnMainThread()
 
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
-            Logger.debug("\(TAG) already requested system contacts")
             completion?(nil)
             return
         }

@@ -7,6 +7,7 @@
 #import "AttachmentSharing.h"
 #import "BlockListUIUtils.h"
 #import "BlockListViewController.h"
+#import "ContactsViewHelper.h"
 #import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
@@ -26,7 +27,6 @@
 #import "OWSMessageCollectionViewCell.h"
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
-#import "OWSUnknownContactBlockOfferMessage.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
@@ -63,12 +63,14 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
+#import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
@@ -586,7 +588,10 @@ typedef enum : NSUInteger {
     OWSMessagesToolbarContentDelegate,
     OWSConversationSettingsViewDelegate,
     UIDocumentMenuDelegate,
-    UIDocumentPickerDelegate> {
+    UIDocumentPickerDelegate,
+    ContactsViewHelperDelegate,
+    ContactEditingDelegate,
+    CNContactViewControllerDelegate> {
     UIImage *tappedImage;
     BOOL isGroupConversation;
 }
@@ -639,6 +644,11 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic) NSDate *lastMessageSentDate;
 @property (nonatomic) NSTimer *scrollLaterTimer;
+
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@property (nonatomic, nullable) ThreadOffersAndIndicators *offersAndIndicators;
+@property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
+
 
 @end
 
@@ -694,6 +704,7 @@ typedef enum : NSUInteger {
     _messagesManager = [TSMessagesManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
+    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     [self addNotificationListeners];
 }
@@ -736,8 +747,11 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
-    [ThreadUtil createUnreadMessagesIndicatorIfNecessary:thread storageManager:self.storageManager];
+    // We need to create the "unread indicator" before we mark
+    // all messages as read.
+    [self ensureThreadOffersAndIndicators];
 
+    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
     [self markAllMessagesAsRead];
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -745,11 +759,11 @@ typedef enum : NSUInteger {
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
       [self.messageMappings updateWithTransaction:transaction];
-      self.page = 0;
-      [self updateRangeOptionsForPage:self.page];
-      [self.collectionView reloadData];
     }];
+    self.page = 0;
+    [self updateRangeOptionsForPage:self.page];
     [self updateLoadEarlierVisible];
+    [self.collectionView reloadData];
 }
 
 - (BOOL)userLeftGroup
@@ -813,14 +827,6 @@ typedef enum : NSUInteger {
     self.automaticallyScrollsToMostRecentMessage = NO;
 
     [self initializeToolbars];
-
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self.thread;
-        [ThreadUtil createBlockOfferIfNecessary:contactThread
-                                 storageManager:self.storageManager
-                                contactsManager:self.contactsManager
-                                blockingManager:self.blockingManager];
-    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -940,6 +946,9 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
 
+    // In case we're dismissing a CNContactViewController which requires default system appearance
+    [UIUtil applySignalAppearence];
+
     // Since we're using a custom back button, we have to do some extra work to manage the interactivePopGestureRecognizer
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
@@ -948,6 +957,8 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 
     [self toggleObservers:YES];
+
+    [self ensureThreadOffersAndIndicators];
 
     // Triggering modified notification renders "call notification" when leaving full screen call view
     [self.thread touch];
@@ -993,11 +1004,6 @@ typedef enum : NSUInteger {
                                                                selector:@selector(scrollToDefaultPosition)
                                                                userInfo:nil
                                                                 repeats:NO];
-}
-
-- (void)clearUnreadMessagesIndicator
-{
-    [ThreadUtil clearUnreadMessagesIndicator:self.thread storageManager:self.storageManager];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1172,9 +1178,14 @@ typedef enum : NSUInteger {
 - (void)startReadTimer {
     self.readTimer = [NSTimer scheduledTimerWithTimeInterval:1
                                                       target:self
-                                                    selector:@selector(markAllMessagesAsRead)
+                                                    selector:@selector(readTimerDidFire)
                                                     userInfo:nil
                                                      repeats:YES];
+}
+
+- (void)readTimerDidFire
+{
+    [self markAllMessagesAsRead];
 }
 
 - (void)cancelReadTimer {
@@ -1200,6 +1211,7 @@ typedef enum : NSUInteger {
         _callOnOpen = NO;
     }
     [self updateNavigationBarSubtitleLabel];
+    [MarkIdentityAsSeenJob runWithThread:self.thread];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1518,6 +1530,8 @@ typedef enum : NSUInteger {
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
     OWSFingerprint *fingerprint =
         [builder fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
+
+    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
     [self markAllMessagesAsRead];
 
     NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
@@ -1620,6 +1634,7 @@ typedef enum : NSUInteger {
         } else {
             [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
+
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
 
@@ -2127,8 +2142,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSConversationSettingsTableViewController *settingsVC =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSConversationSettingsTableViewController"];
+    OWSConversationSettingsTableViewController *settingsVC = [OWSConversationSettingsTableViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread];
     [self.navigationController pushViewController:settingsVC animated:YES];
@@ -2310,6 +2324,9 @@ typedef enum : NSUInteger {
         } break;
         case TSErrorMessageAdapter:
             [self handleErrorMessageTap:(TSErrorMessage *)interaction];
+            break;
+        case TSInfoMessageAdapter:
+            [self handleInfoMessageTap:(TSInfoMessage *)interaction];
             break;
         case TSCallAdapter:
         case TSUnreadIndicatorAdapter:
@@ -2544,8 +2561,37 @@ typedef enum : NSUInteger {
         [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
     } else if (message.errorType == TSErrorMessageInvalidMessage) {
         [self tappedCorruptedMessage:message];
+    } else if (message.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        [self tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
     } else {
         DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
+    }
+}
+
+- (void)tappedNonBlockingIdentityChangeForRecipientId:(NSString *)signalId
+{
+    NSParameterAssert(signalId != nil);
+
+    OWSFingerprintBuilder *fingerprintBuilder =
+        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
+
+    OWSFingerprint *fingerprint = [fingerprintBuilder fingerprintWithTheirSignalId:signalId];
+
+    FingerprintViewController *fingerprintViewController =
+        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+
+    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:signalId];
+    [fingerprintViewController configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+
+    [self presentViewController:fingerprintViewController animated:YES completion:nil];
+}
+
+- (void)handleInfoMessageTap:(TSInfoMessage *)message
+{
+    if ([message isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+        [self tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message];
+    } else {
+        DDLogInfo(@"%@ Unhandled tap for info message:%@", self.tag, message);
     }
 }
 
@@ -2666,6 +2712,89 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
+- (void)tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)errorMessage
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        DDLogError(@"%@ Contact editing not supported", self.tag);
+        OWSAssert(NO);
+        return;
+    }
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSAssert(NO);
+        return;
+    }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+                                                     fromViewController:self
+                                                        editImmediately:YES];
+}
+
+#pragma mark - ContactEditingDelegate
+
+- (void)didFinishEditingContact
+{
+    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+
+    [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+#pragma mark - CNContactViewControllerDelegate
+
+- (void)contactViewController:(CNContactViewController *)viewController
+       didCompleteWithContact:(nullable CNContact *)contact
+{
+    if (contact) {
+        // Saving normally returns you to the "Show Contact" view
+        // which we're not interested in, so we skip it here. There is
+        // an unfortunate blip of the "Show Contact" view on slower devices.
+        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        [self dismissViewControllerAnimated:NO completion:nil];
+    } else {
+        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+#pragma mark - ContactsViewHelperDelegate
+
+- (void)contactsViewHelperDidUpdateContacts
+{
+    [self ensureThreadOffersAndIndicators];
+}
+
+- (void)ensureThreadOffersAndIndicators
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.offersAndIndicators =
+        [ThreadUtil ensureThreadOffersAndIndicators:self.thread
+                                     storageManager:self.storageManager
+                                    contactsManager:self.contactsManager
+                                    blockingManager:self.blockingManager
+                        hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
+                      fixedUnreadIndicatorTimestamp:(self.offersAndIndicators.unreadIndicator
+                                                            ? @(self.offersAndIndicators.unreadIndicator.timestamp)
+                                                            : nil)];
+}
+
+- (void)clearUnreadMessagesIndicator
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (self.hasClearedUnreadMessagesIndicator) {
+        // ensureThreadOffersAndIndicators is somewhat expensive
+        // so we don't want to call it unnecessarily.
+        return;
+    }
+
+    // Once we've cleared the unread messages indicator,
+    // make sure we don't show it again.
+    self.hasClearedUnreadMessagesIndicator = YES;
+
+    [self ensureThreadOffersAndIndicators];
+}
 
 #pragma mark - Attachment Picking: Documents
 

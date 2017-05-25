@@ -57,10 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) uint64_t expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
-@property (nonatomic, copy) NSDate *messageDate;
-@property (nonatomic, retain) NSString *messageBody;
+@property (nonatomic) NSDate *messageDate;
+@property (nonatomic) NSString *messageBody;
 
-@property NSUInteger identifier;
+@property (nonatomic) NSString *interactionUniqueId;
 
 @end
 
@@ -77,9 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _interaction = interaction;
     _messageDate = interaction.date;
-    // TODO casting a string to an integer? At least need a comment here explaining why we are doing this.
-    // Can we just remove this? Haven't found where we're using it...
-    _identifier = (NSUInteger)interaction.uniqueId;
+
+    self.interactionUniqueId = interaction.uniqueId;
 
     if ([interaction isKindOfClass:[TSMessage class]]) {
         TSMessage *message = (TSMessage *)interaction;
@@ -354,11 +353,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)messageHash
 {
-    if (self.isMediaMessage) {
-        return [self.mediaItem mediaHash];
-    } else {
-        return self.identifier;
-    }
+    OWSAssert(self.interactionUniqueId);
+
+    // messageHash is used as a key in the "message bubble size" cache,
+    // so  messageHash's value must change whenever the message's bubble size
+    // changes.  Incoming messages change size after their attachment's been
+    // downloaded, so we use the mediaItem's class (which will be nil before
+    // the attachment is downloaded) to reflect attachment status.
+    return self.interactionUniqueId.hash ^ [self.mediaItem class].description.hash;
 }
 
 - (NSInteger)messageState {

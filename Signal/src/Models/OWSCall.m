@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)messageHash
 {
-    return self.hash;
+    return self.interaction.hash;
 }
 
 - (NSString *)text

@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSPreferences.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -17,7 +19,7 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
 extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
-@interface PropertyListPreferences : NSObject
+@interface PropertyListPreferences : NSObject <TSPreferences>
 
 #pragma mark - Helpers
 
@@ -82,8 +84,7 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 #pragma mark - Block on Identity Change
 
-- (BOOL)shouldBlockOnIdentityChange;
-- (void)setShouldBlockOnIdentityChange:(BOOL)value;
+- (void)setIsSendingIdentityApprovalRequired:(BOOL)value;
 
 #pragma mark - Push Tokens
 

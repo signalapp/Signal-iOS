@@ -11,6 +11,7 @@ target 'Signal' do
     pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/position-edit-menu'
     #pod 'JSQMessagesViewController'   path: '../JSQMessagesViewController'
     pod 'PureLayout'
+    pod 'Reachability'
     target 'SignalTests' do
         inherit! :search_paths
     end

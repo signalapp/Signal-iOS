@@ -26,7 +26,7 @@ class MessageFetcherJob: NSObject {
 
     func runAsync() {
         Logger.debug("\(TAG) \(#function)")
-        guard signalService.isCensored  else {
+        guard signalService.isCensorshipCircumventionActive  else {
             Logger.debug("\(self.TAG) delegating message fetching to SocketManager since we're using normal transport.")
             TSSocketManager.requestSocketOpen()
             return

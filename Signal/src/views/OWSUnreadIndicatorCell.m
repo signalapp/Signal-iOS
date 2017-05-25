@@ -63,6 +63,8 @@
 
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+
     [self.label sizeToFit];
     [self.label centerOnSuperview];
     self.leftPathView.frame = CGRectMake(0, 0, self.label.left, self.height);

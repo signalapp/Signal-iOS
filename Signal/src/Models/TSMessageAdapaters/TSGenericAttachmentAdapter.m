@@ -266,6 +266,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
         OWSAssert(utiType.length > 0);
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
+        if (!data) {
+            OWSAssert(data);
+            DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+            return;
+        }
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
     } else {
         // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
@@ -288,6 +293,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (cell == self.lastPresentingCell) {
         [self clearCachedMediaViews];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

@@ -16,6 +16,9 @@
 /* Title for the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Add Member";
 
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"ADD_TO_CONTACTS_OFFER" = "Would you like to add this user to your contacts?";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Discard";
 
@@ -214,6 +217,9 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
 
+/* Title for the 'censorship circumvention country' view. */
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
 
@@ -327,6 +333,9 @@
 
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
+
+/* Section title for the 'domain fronting country' view. */
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
@@ -457,8 +466,11 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "No available session for contact.";
 
-/* No comment provided by engineer. */
+/* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+
+/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
@@ -1084,6 +1096,27 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
 
+/* Label for the  'manual censorship circumvention' switch. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+
+/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
+
+/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+
+/* Table header for the 'censorship circumvention' section. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Enable Debug Log";
 
@@ -1106,10 +1139,10 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "Requires your approval before communicating with someone who has a new safety number, commonly from a reinstall of Signal.";
+"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "When a contact's safety number changes, it often means they simply reinstalled Signal. However, you may wish to verify their safety number before responding to ensure privacy.";
 
 /* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "Require Approval on Change";
+"SETTINGS_BLOCK_SENDING_ON_IDENTITY_CHANGE_TITLE" = "Responding Requires Approval";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
@@ -1162,11 +1195,11 @@
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
 
-/* No comment provided by engineer. */
+/* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
 
 /* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "Safety Numbers Approval";
+"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "When Safety Numbers Change";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
@@ -1234,7 +1267,7 @@
 /* In Inbox view, last message label for thread with corrupted attachment. */
 "UNKNOWN_ATTACHMENT_LABEL" = "Unknown attachment";
 
-/* No comment provided by engineer. */
+/* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */

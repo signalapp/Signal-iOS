@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
                         return;
                     }
                     ShowGroupMembersViewController *showGroupMembersViewController =
-                        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"ShowGroupMembersViewController"];
+                        [ShowGroupMembersViewController new];
                     [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
                 }],

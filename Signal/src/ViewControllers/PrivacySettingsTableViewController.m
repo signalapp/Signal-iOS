@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     PrivacySettingsTableViewControllerSectionIndexCalling,
     PrivacySettingsTableViewControllerSectionIndexCallKit,
     PrivacySettingsTableViewControllerSectionIndexHistoryLog,
-    PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange,
+    PrivacySettingsTableViewControllerSectionIndexBlockSendingOnIdentityChange,
     PrivacySettingsTableViewControllerSectionIndex_Count // meta section to track how many sections
 };
 
@@ -38,8 +38,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
 @property (nonatomic) UITableViewCell *callsHideIPAddressCell;
 @property (nonatomic) UISwitch *callsHideIPAddressSwitch;
 
-@property (nonatomic, strong) UITableViewCell *blockOnIdentityChangeCell;
-@property (nonatomic, strong) UISwitch *blockOnIdentityChangeSwitch;
+@property (nonatomic, strong) UITableViewCell *sendingIdentityApprovalRequiredCell;
+@property (nonatomic, strong) UISwitch *isSendingIdentityApprovalRequiredSwitch;
 
 @property (nonatomic, strong) UITableViewCell *clearHistoryLogCell;
 
@@ -116,16 +116,16 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     self.clearHistoryLogCell.textLabel.text = NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"");
     self.clearHistoryLogCell.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
 
-    // Block Identity on KeyChange
-    self.blockOnIdentityChangeCell = [UITableViewCell new];
-    self.blockOnIdentityChangeCell.textLabel.text
-        = NSLocalizedString(@"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE", @"Table cell label");
-    self.blockOnIdentityChangeSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-    self.blockOnIdentityChangeCell.accessoryView = self.blockOnIdentityChangeSwitch;
-    [self.blockOnIdentityChangeSwitch setOn:[Environment.preferences shouldBlockOnIdentityChange]];
-    [self.blockOnIdentityChangeSwitch addTarget:self
-                                         action:@selector(didToggleBlockOnIdentityChangeSwitch:)
-                               forControlEvents:UIControlEventValueChanged];
+    // Block Sending on Key Change
+    self.sendingIdentityApprovalRequiredCell = [UITableViewCell new];
+    self.sendingIdentityApprovalRequiredCell.textLabel.text
+        = NSLocalizedString(@"SETTINGS_BLOCK_SENDING_ON_IDENTITY_CHANGE_TITLE", @"Table cell label");
+    self.isSendingIdentityApprovalRequiredSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+    self.sendingIdentityApprovalRequiredCell.accessoryView = self.isSendingIdentityApprovalRequiredSwitch;
+    [self.isSendingIdentityApprovalRequiredSwitch setOn:[Environment.preferences isSendingIdentityApprovalRequired]];
+    [self.isSendingIdentityApprovalRequiredSwitch addTarget:self
+                                               action:@selector(didToggleisSendingIdentityApprovalRequiredSwitch:)
+                                     forControlEvents:UIControlEventValueChanged];
 }
 
 #pragma mark - Table view data source
@@ -149,7 +149,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return [Environment getCurrent].preferences.isCallKitEnabled ? 2 : 1;
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return 1;
-        case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
+        case PrivacySettingsTableViewControllerSectionIndexBlockSendingOnIdentityChange:
             return 1;
         default:
             return 0;
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return ([UIDevice currentDevice].supportsCallKit
                     ? NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.")
                     : nil);
-        case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
+        case PrivacySettingsTableViewControllerSectionIndexBlockSendingOnIdentityChange:
             return NSLocalizedString(
                 @"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL", @"User settings section footer, a detailed explanation");
         default:
@@ -193,8 +193,8 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             }
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return self.clearHistoryLogCell;
-        case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
-            return self.blockOnIdentityChangeCell;
+        case PrivacySettingsTableViewControllerSectionIndexBlockSendingOnIdentityChange:
+            return self.sendingIdentityApprovalRequiredCell;
         default: {
             DDLogError(@"%@ Requested unknown table view cell for row at indexPath: %@", self.tag, indexPath);
             return [UITableViewCell new];
@@ -211,7 +211,7 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
             return NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
         case PrivacySettingsTableViewControllerSectionIndexHistoryLog:
             return NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
-        case PrivacySettingsTableViewControllerSectionIndexBlockOnIdentityChange:
+        case PrivacySettingsTableViewControllerSectionIndexBlockSendingOnIdentityChange:
             return NSLocalizedString(@"SETTINGS_PRIVACY_VERIFICATION_TITLE", @"Section header");
         default:
             return nil;
@@ -263,11 +263,11 @@ typedef NS_ENUM(NSInteger, PrivacySettingsTableViewControllerSectionIndex) {
     [Environment.preferences setScreenSecurity:enabled];
 }
 
-- (void)didToggleBlockOnIdentityChangeSwitch:(UISwitch *)sender
+- (void)didToggleisSendingIdentityApprovalRequiredSwitch:(UISwitch *)sender
 {
-    BOOL enabled = self.blockOnIdentityChangeSwitch.isOn;
-    DDLogInfo(@"%@ toggled blockOnIdentityChange: %@", self.tag, enabled ? @"ON" : @"OFF");
-    [Environment.preferences setShouldBlockOnIdentityChange:enabled];
+    BOOL enabled = self.isSendingIdentityApprovalRequiredSwitch.isOn;
+    DDLogInfo(@"%@ toggled isSendingIdentityApprovalRequired: %@", self.tag, enabled ? @"ON" : @"OFF");
+    [Environment.preferences setIsSendingIdentityApprovalRequired:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender

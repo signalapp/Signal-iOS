@@ -23,6 +23,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "SettingsTableViewController.h"
 #import "TSSocketManager.h"
 #import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
@@ -55,6 +56,7 @@
 #import <SignalServiceKit/OWSGetMessagesRequest.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
+#import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -67,6 +69,7 @@
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
+#import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>

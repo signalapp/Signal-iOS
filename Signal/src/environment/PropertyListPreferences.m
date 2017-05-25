@@ -4,7 +4,6 @@
 
 #import "PropertyListPreferences.h"
 #import "TSStorageHeaders.h"
-#import <SignalServiceKit/TSPrivacyPreferences.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +26,7 @@ NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPriva
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
+NSString *const PropertyListPreferencesKeyIsSendingIdentityApprovalRequired = @"IsSendingIdentityApprovalRequired";
 
 @implementation PropertyListPreferences
 
@@ -65,11 +65,6 @@ NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNag
     [TSStorageManager.sharedManager setObject:value
                                        forKey:key
                                  inCollection:PropertyListPreferencesSignalDatabaseCollection];
-}
-
-- (TSPrivacyPreferences *)tsPrivacyPreferences
-{
-    return [TSPrivacyPreferences sharedInstance];
 }
 
 #pragma mark - Specific Preferences
@@ -305,15 +300,19 @@ NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNag
 
 #pragma mark - Block on Identity Change
 
-- (BOOL)shouldBlockOnIdentityChange
+- (BOOL)isSendingIdentityApprovalRequired
 {
-    return self.tsPrivacyPreferences.shouldBlockOnIdentityChange;
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyIsSendingIdentityApprovalRequired];
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        return NO;
+    }
 }
 
-- (void)setShouldBlockOnIdentityChange:(BOOL)value
+- (void)setIsSendingIdentityApprovalRequired:(BOOL)value
 {
-    self.tsPrivacyPreferences.shouldBlockOnIdentityChange = value;
-    [self.tsPrivacyPreferences save];
+    [self setValueForKey:PropertyListPreferencesKeyIsSendingIdentityApprovalRequired toValue:@(value)];
 }
 
 #pragma mark - Push Tokens
