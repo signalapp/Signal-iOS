@@ -35,8 +35,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                          theirName:(NSString *)theirName
                     hashIterations:(uint32_t)hashIterations
 {
-    NSParameterAssert(theirIdentityKeyWithoutKeyType.length == 32);
-    NSParameterAssert(myIdentityKeyWithoutKeyType.length == 32);
+    OWSAssert(theirIdentityKeyWithoutKeyType.length == 32);
+    OWSAssert(myIdentityKeyWithoutKeyType.length == 32);
 
     self = [super init];
     if (!self) {
@@ -205,8 +205,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
  */
 - (NSData *)dataForStableId:(NSData *)stableIdData publicKey:(NSData *)publicKey
 {
-    NSParameterAssert(stableIdData);
-    NSParameterAssert(publicKey);
+    OWSAssert(stableIdData);
+    OWSAssert(publicKey);
 
     NSData *versionData = [self dataFromShort:OWSFingerprintHashingVersion];
     NSMutableData *hash = [NSMutableData dataWithData:versionData];
@@ -227,7 +227,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSString *)stringForFingerprintData:(NSData *)data
 {
-    NSParameterAssert(data);
+    OWSAssert(data);
 
     return [NSString stringWithFormat:@"%@%@%@%@%@%@",
                      [self encodedChunkFromData:data offset:0],
@@ -240,7 +240,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSString *)encodedChunkFromData:(NSData *)data offset:(uint)offset
 {
-    NSParameterAssert(data);
+    OWSAssert(data);
 
     uint8_t fiveBytes[5];
     [data getBytes:fiveBytes range:NSMakeRange(offset, 5)];

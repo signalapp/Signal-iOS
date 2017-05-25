@@ -15,7 +15,6 @@
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import "TSInteraction.h"
-#import "TSPrivacyPreferences.h"
 #import "TSThread.h"
 #import <25519/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
@@ -245,11 +244,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (nullable YapDatabaseConnection *)newDatabaseConnection
 {
     return self.database.newConnection;
-}
-
-- (TSPrivacyPreferences *)privacyPreferences
-{
-    return [TSPrivacyPreferences sharedInstance];
 }
 
 - (BOOL)userSetPassword {

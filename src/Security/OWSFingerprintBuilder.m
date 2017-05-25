@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/22/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSFingerprintBuilder.h"
 #import "ContactsManagerProtocol.h"
@@ -33,9 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
+- (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
 {
     NSData *_Nullable theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
+
+    if (theirIdentityKey == nil) {
+        OWSAssert(NO);
+        return nil;
+    }
 
     return [self fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
 }

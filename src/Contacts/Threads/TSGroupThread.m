@@ -86,7 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length - 1)]];
 }
 
-
 // Group and Contact threads share a collection, this is a convenient way to enumerate *just* the group threads
 + (void)enumerateGroupThreadsUsingBlock:(void (^)(TSGroupThread *groupThread, BOOL *stop))block
 {
