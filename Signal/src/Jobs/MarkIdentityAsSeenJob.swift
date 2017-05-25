@@ -39,13 +39,12 @@ class MarkIdentityAsSeenJob: NSObject {
 
     private func markAsSeenIfNecessary(recipientId: String) {
         guard let identity = OWSRecipientIdentity.fetch(uniqueId: recipientId) else {
-            Logger.verbose("\(TAG) no existing identity for recipient: \(recipientId). No messages with them yet?")
+            Logger.verbose("\(self.TAG) no existing identity for recipient: \(recipientId). No messages with them yet?")
             return
         }
         if !identity.wasSeen {
-            Logger.info("\(TAG) marking identity as seen for recipient: \(recipientId)")
-            identity.markAsSeen()
-            identity.save()
+            Logger.info("\(self.TAG) marking identity as seen for recipient: \(recipientId)")
+            identity.updateAsSeen()
         }
     }
 }
