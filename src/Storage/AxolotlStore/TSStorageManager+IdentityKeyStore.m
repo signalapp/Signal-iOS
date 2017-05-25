@@ -175,6 +175,29 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     }
 }
 
+- (nullable OWSRecipientIdentity *)unconfirmedIdentityThatShouldBlockSendingForRecipientId:(NSString *)recipientId;
+{
+    OWSAssert(recipientId != nil);
+
+    @synchronized([[self class] sharedIdentityKeyLock])
+    {
+        OWSRecipientIdentity *currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+        if (currentIdentity == nil) {
+            // No preexisting key, Trust On First Use
+            return nil;
+        }
+
+        if ([self isTrustedIdentityKey:currentIdentity.identityKey
+                           recipientId:currentIdentity.recipientId
+                             direction:TSMessageDirectionOutgoing]) {
+            return nil;
+        }
+
+        // identity not yet trusted for sending
+        return currentIdentity;
+    }
+}
+
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
     OWSAssert(identityKey != nil);
