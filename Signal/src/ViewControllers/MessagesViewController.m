@@ -751,6 +751,7 @@ typedef enum : NSUInteger {
     // all messages as read.
     [self ensureThreadOffersAndIndicators];
 
+    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
     [self markAllMessagesAsRead];
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -1177,9 +1178,14 @@ typedef enum : NSUInteger {
 - (void)startReadTimer {
     self.readTimer = [NSTimer scheduledTimerWithTimeInterval:1
                                                       target:self
-                                                    selector:@selector(markAllMessagesAsRead)
+                                                    selector:@selector(readTimerDidFire)
                                                     userInfo:nil
                                                      repeats:YES];
+}
+
+- (void)readTimerDidFire
+{
+    [self markAllMessagesAsRead];
 }
 
 - (void)cancelReadTimer {
@@ -1205,6 +1211,7 @@ typedef enum : NSUInteger {
         _callOnOpen = NO;
     }
     [self updateNavigationBarSubtitleLabel];
+    [MarkIdentityAsSeenJob runWithThread:self.thread];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1523,6 +1530,8 @@ typedef enum : NSUInteger {
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
     OWSFingerprint *fingerprint =
         [builder fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
+
+    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
     [self markAllMessagesAsRead];
 
     NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
@@ -2552,9 +2561,29 @@ typedef enum : NSUInteger {
         [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
     } else if (message.errorType == TSErrorMessageInvalidMessage) {
         [self tappedCorruptedMessage:message];
+    } else if (message.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        [self tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
     } else {
         DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
     }
+}
+
+- (void)tappedNonBlockingIdentityChangeForRecipientId:(NSString *)signalId
+{
+    NSParameterAssert(signalId != nil);
+
+    OWSFingerprintBuilder *fingerprintBuilder =
+        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
+
+    OWSFingerprint *fingerprint = [fingerprintBuilder fingerprintWithTheirSignalId:signalId];
+
+    FingerprintViewController *fingerprintViewController =
+        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+
+    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:signalId];
+    [fingerprintViewController configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+
+    [self presentViewController:fingerprintViewController animated:YES completion:nil];
 }
 
 - (void)handleInfoMessageTap:(TSInfoMessage *)message

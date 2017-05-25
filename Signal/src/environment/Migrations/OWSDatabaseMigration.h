@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #include <SignalServiceKit/TSYapDatabaseObject.h>
 
@@ -13,19 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 
-/**
- * Run an asynchronous migration. Prefer this to the blocking variant whenever possible as the migration runner will
- * block launching, and potentially crash apps e.g. if a view is being populated.
- */
+// Prefer nonblocking (async) migrations by overriding `runUpWithTransaction:` in a subclass.
+// Blocking migrations running too long will crash the app, effectively bricking install
+// because the user will never get past it.
+// If you must write a launch-blocking migration, override runUp.
 - (void)runUp;
-
-/**
- * Run a synchronous migration.
- * TODO: there's currently no tooling in the migration runner to run BlockingMigrations, as we don't have any yet.
- * Try to avoid this whenever possible as the migration runner will block launching, and potentially crash apps
- * e.g. if a view is being populated.
- */
-- (void)runUpWithBlockingMigration;
 
 @end
 

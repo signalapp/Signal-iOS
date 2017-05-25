@@ -102,6 +102,7 @@
     return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
+// TODO rename to logTag, tag is an existing UIView method.
 - (NSString *)tag
 {
     return self.class.tag;
