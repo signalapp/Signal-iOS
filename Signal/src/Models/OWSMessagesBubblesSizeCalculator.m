@@ -5,10 +5,12 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
+#import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
 #import "TSMessageAdapter.h"
 #import "UIFont+OWS.h"
 #import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.
+#import <JSQMessagesViewController/JSQMessagesCollectionView.h>
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayout.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -50,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
         if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
             return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
+        } else if (message.messageType == TSUnreadIndicatorAdapter) {
+            return [OWSUnreadIndicatorCell
+                cellSizeForInteraction:(TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction
+                   collectionViewWidth:layout.collectionView.bounds.size.width];
+            return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
         }
     }
 
@@ -65,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
-        return [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+        return [self simple_messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
     }
 }
 
@@ -119,7 +126,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
     UIFont *emojiFont = [UIFont fontWithName:@".AppleColorEmojiUI" size:layout.messageBubbleFont.pointSize];
-    CGSize superSize = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+    CGSize superSize =
+        [self simple_messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
     int lines = (int)floor(superSize.height / emojiFont.lineHeight);
 
     // Add an extra pixel per line to fit the emoji.
@@ -132,7 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   atIndexPath:(NSIndexPath *)indexPath
                                    withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
         return [cachedSize CGSizeValue];
     }
@@ -199,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
         finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
     }
 
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
 
     return finalSize;
 }
@@ -208,7 +218,9 @@ NS_ASSUME_NONNULL_BEGIN
                            atIndexPath:(NSIndexPath *)indexPath
                             withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
         return [cachedSize CGSizeValue];
     }
@@ -232,7 +244,78 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
 
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
+
+    return finalSize;
+}
+
+- (id)cacheKeyForMessageData:(id<JSQMessageData>)messageData
+{
+    OWSAssert(messageData);
+    OWSAssert([messageData conformsToProtocol:@protocol(OWSMessageData)]);
+    OWSAssert(((id<OWSMessageData>)messageData).interaction);
+    OWSAssert(((id<OWSMessageData>)messageData).interaction.uniqueId);
+
+    return ((id<OWSMessageData>)messageData).interaction.uniqueId;
+}
+
+// This method was lifted from JSQMessagesBubblesSizeCalculator and
+// modified to use interaction.uniqueId as cache keys.
+- (CGSize)simple_messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
+                                     atIndexPath:(NSIndexPath *)indexPath
+                                      withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize finalSize = CGSizeZero;
+
+    if ([messageData isMediaMessage]) {
+        finalSize = [[messageData media] mediaViewDisplaySize];
+    } else {
+        CGSize avatarSize = [self jsq_avatarSizeForMessageData:messageData withLayout:layout];
+
+        //  from the cell xibs, there is a 2 point space between avatar and bubble
+        CGFloat spacingBetweenAvatarAndBubble = 2.0f;
+        CGFloat horizontalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.left
+            + layout.messageBubbleTextViewTextContainerInsets.right;
+        CGFloat horizontalFrameInsets
+            = layout.messageBubbleTextViewFrameInsets.left + layout.messageBubbleTextViewFrameInsets.right;
+
+        CGFloat horizontalInsetsTotal
+            = horizontalContainerInsets + horizontalFrameInsets + spacingBetweenAvatarAndBubble;
+        CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - avatarSize.width
+            - layout.messageBubbleLeftRightMargin - horizontalInsetsTotal;
+
+        CGRect stringRect = [[messageData text]
+            boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
+                         options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                      attributes:@{ NSFontAttributeName : layout.messageBubbleFont }
+                         context:nil];
+
+        CGSize stringSize = CGRectIntegral(stringRect).size;
+
+        CGFloat verticalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.top
+            + layout.messageBubbleTextViewTextContainerInsets.bottom;
+        CGFloat verticalFrameInsets
+            = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
+
+        //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
+        //  not sure why. magix. (shrug) if you know, submit a PR
+        CGFloat verticalInsets = verticalContainerInsets + verticalFrameInsets + self.additionalInset;
+
+        //  same as above, an extra 2 points of magix
+        CGFloat finalWidth
+            = MAX(stringSize.width + horizontalInsetsTotal, self.minimumBubbleWidth) + self.additionalInset;
+
+        finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
+    }
+
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
 
     return finalSize;
 }

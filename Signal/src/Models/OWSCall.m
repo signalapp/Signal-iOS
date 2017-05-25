@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithInteraction:callRecord
                             callerId:contactThread.contactIdentifier
                    callerDisplayName:name
-                                date:callRecord.date
+                                date:callRecord.dateForSorting
                               status:status
                        displayString:detailString];
 }
