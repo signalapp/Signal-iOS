@@ -4,7 +4,6 @@
 
 #import "OWSDatabaseMigrationRunner.h"
 #import "OWS100RemoveTSRecipientsMigration.h"
-//#import "OWS101ExistingUsersBlockOnIdentityChange.h"
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
 #import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
@@ -29,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @[
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
-        // Old nonblocking migration is no longer necessary.
-        // [[OWS101ExistingUsersBlockOnIdentityChange alloc] initWithStorageManager:self.storageManager],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
         [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager]

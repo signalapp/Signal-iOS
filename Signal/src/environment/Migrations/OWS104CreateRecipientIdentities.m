@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
 /**
- * New SN behavaior requires tracking additional state - not just the identity key data.
+ * New SN behavior requires tracking additional state - not just the identity key data.
  * So we wrap the key, along with the new meta-data in an OWSRecipientIdentity.
  */
 @implementation OWS104CreateRecipientIdentities
