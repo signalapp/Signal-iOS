@@ -3,10 +3,9 @@
 //
 
 #import "OWSGetProfileRequest.h"
+#import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const OWSProfileRequestPathFormat = @"v1/profile/%@";
 
 @implementation OWSGetProfileRequest
 
@@ -14,7 +13,7 @@ NSString *const OWSProfileRequestPathFormat = @"v1/profile/%@";
 {
     OWSAssert(recipientId.length > 0);
 
-    NSString *path =[NSString stringWithFormat:OWSProfileRequestPathFormat, recipientId];
+    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
     self = [super initWithURL:[NSURL URLWithString:path]];
     if (!self) {
         return self;
