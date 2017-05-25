@@ -125,9 +125,8 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
         }
         
         if ([self isBlockingApprovalRequiredForIdentity:existingIdentity] || [self isNonBlockingApprovalRequiredForIdentity:existingIdentity]) {
-            existingIdentity.approvedForBlockingUse = approvedForBlockingUse;
-            existingIdentity.approvedForNonBlockingUse = approvedForNonBlockingUse;
-            [existingIdentity save];
+            [existingIdentity updateWithApprovedForBlockingUse:approvedForBlockingUse
+                                     approvedForNonBlockingUse:approvedForNonBlockingUse];
             return NO;
         }
         

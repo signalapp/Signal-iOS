@@ -6,6 +6,15 @@
 #import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSRecipientIdentity ()
+
+@property (atomic) BOOL wasSeen;
+@property (atomic) BOOL approvedForBlockingUse;
+@property (atomic) BOOL approvedForNonBlockingUse;
+
+@end
+
 /**
  * Record for a recipients identity key and some meta data around it used to make trust decisions.
  *
@@ -37,9 +46,37 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)markAsSeen
+- (void)updateAsSeen
 {
-    _wasSeen = YES;
+    [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
+        obj.wasSeen = YES;
+    }];
+}
+
+- (void)updateWithApprovedForBlockingUse:(BOOL)approvedForBlockingUse
+               approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse
+{
+    // Ensure changes are persisted without clobbering any work done on another thread or instance.
+    [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
+        obj.approvedForBlockingUse = approvedForBlockingUse;
+        obj.approvedForNonBlockingUse = approvedForNonBlockingUse;
+    }];
+}
+
+- (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
+{
+    changeBlock(self);
+
+    [[self class].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+        if (latest == nil) {
+            [self saveWithTransaction:transaction];
+            return;
+        }
+
+        changeBlock(latest);
+        [latest saveWithTransaction:transaction];
+    }];
 }
 
 /**

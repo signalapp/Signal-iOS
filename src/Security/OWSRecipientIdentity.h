@@ -11,10 +11,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSData *identityKey;
 @property (nonatomic, readonly) NSDate *createdAt;
-@property (atomic, readonly) BOOL wasSeen;
 @property (nonatomic, readonly) BOOL isFirstKnownKey;
-@property (atomic) BOOL approvedForBlockingUse;
-@property (atomic) BOOL approvedForNonBlockingUse;
+
+#pragma mark - get/set Seen
+
+@property (atomic, readonly) BOOL wasSeen;
+- (void)updateAsSeen;
+
+#pragma mark - get/set Approval
+
+@property (atomic, readonly) BOOL approvedForBlockingUse;
+@property (atomic, readonly) BOOL approvedForNonBlockingUse;
+- (void)updateWithApprovedForBlockingUse:(BOOL)approvedForBlockingUse
+               approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse;
+
+#pragma mark - Initializers
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
@@ -24,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
                           createdAt:(NSDate *)createdAt
              approvedForBlockingUse:(BOOL)approvedForBlockingUse
           approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse NS_DESIGNATED_INITIALIZER;
-
-- (void)markAsSeen;
 
 #pragma mark - debug
 
