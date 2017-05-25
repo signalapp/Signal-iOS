@@ -414,27 +414,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillResignActive.", self.tag);
-    
-    UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
-    bgTask                                    = [application beginBackgroundTaskWithExpirationHandler:^{
 
-    }];
-
+    UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      if ([TSAccountManager isRegistered]) {
-          dispatch_sync(dispatch_get_main_queue(), ^{
-              if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-                  // If app has not re-entered active, show screen protection if necessary.
-                  [self showScreenProtection];
-              }
-              [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
-          });
-      }
-
-      [application endBackgroundTask:bgTask];
-      bgTask = UIBackgroundTaskInvalid;
+        if ([TSAccountManager isRegistered]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                    // If app has not re-entered active, show screen protection if necessary.
+                    [self showScreenProtection];
+                }
+                [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+                [application endBackgroundTask:bgTask];
+            });
+        }
     });
-    
+
     [DDLog flushLog];
 }
 
