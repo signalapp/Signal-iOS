@@ -71,6 +71,12 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
     @synchronized([[self class] sharedIdentityKeyLock])
     {
+        // Deprecated. We actually no longer use the TSStorageManagerTrustedKeysCollection for trust
+        // decisions, but it's desirable to try to keep it up to date with our trusted identitys
+        // while we're switching between versions, e.g. so we don't get into a state where we have a
+        // session for an identity not in our key store.
+        [self setObject:identityKey forKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
+
         // If send-blocking is disabled at the time the identity was saved, we want to consider the identity as
         // approved for blocking. Otherwise the user will see inexplicable failures when trying to send to this
         // identity, if they later enabled send-blocking.
