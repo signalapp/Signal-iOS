@@ -4,6 +4,7 @@
 
 #import "OWSRecipientIdentity.h"
 #import "TSStorageManager.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,9 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
         sharedDBConnection.objectCacheEnabled = NO;
+#if DEBUG
         sharedDBConnection.permittedTransactions = YDB_AnySyncTransaction;
+#endif
     });
-    
+
     return sharedDBConnection;
 }
 

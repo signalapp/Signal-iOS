@@ -116,13 +116,18 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
             TSInteraction *interaction = (TSInteraction *)object;
             return interaction.uniqueThreadId;
+        } else if ([object isKindOfClass:[TSErrorMessage class]]) {
+            TSErrorMessage *errorMessage = (TSErrorMessage *)object;
+            if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
+                return errorMessage.uniqueThreadId;
+            }
         }
         return nil;
     }];
 
     return [self registerMessageDatabaseViewWithName:TSSafetyNumberChangeDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
-                                             version:@"1"];
+                                             version:@"2"];
 }
 
 + (BOOL)registerThreadInteractionsDatabaseView
