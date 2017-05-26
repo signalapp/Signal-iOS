@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         // END HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
 
-        return [self simple_messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+        return [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
     }
 }
 
@@ -126,8 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
     UIFont *emojiFont = [UIFont fontWithName:@".AppleColorEmojiUI" size:layout.messageBubbleFont.pointSize];
-    CGSize superSize =
-        [self simple_messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+    CGSize superSize = [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
     int lines = (int)floor(superSize.height / emojiFont.lineHeight);
 
     // Add an extra pixel per line to fit the emoji.
@@ -256,68 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(((id<OWSMessageData>)messageData).interaction);
     OWSAssert(((id<OWSMessageData>)messageData).interaction.uniqueId);
 
-    return ((id<OWSMessageData>)messageData).interaction.uniqueId;
-}
-
-// This method was lifted from JSQMessagesBubblesSizeCalculator and
-// modified to use interaction.uniqueId as cache keys.
-- (CGSize)simple_messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
-                                     atIndexPath:(NSIndexPath *)indexPath
-                                      withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
-{
-    id cacheKey = [self cacheKeyForMessageData:messageData];
-
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGSize finalSize = CGSizeZero;
-
-    if ([messageData isMediaMessage]) {
-        finalSize = [[messageData media] mediaViewDisplaySize];
-    } else {
-        CGSize avatarSize = [self jsq_avatarSizeForMessageData:messageData withLayout:layout];
-
-        //  from the cell xibs, there is a 2 point space between avatar and bubble
-        CGFloat spacingBetweenAvatarAndBubble = 2.0f;
-        CGFloat horizontalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.left
-            + layout.messageBubbleTextViewTextContainerInsets.right;
-        CGFloat horizontalFrameInsets
-            = layout.messageBubbleTextViewFrameInsets.left + layout.messageBubbleTextViewFrameInsets.right;
-
-        CGFloat horizontalInsetsTotal
-            = horizontalContainerInsets + horizontalFrameInsets + spacingBetweenAvatarAndBubble;
-        CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - avatarSize.width
-            - layout.messageBubbleLeftRightMargin - horizontalInsetsTotal;
-
-        CGRect stringRect = [[messageData text]
-            boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
-                         options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                      attributes:@{ NSFontAttributeName : layout.messageBubbleFont }
-                         context:nil];
-
-        CGSize stringSize = CGRectIntegral(stringRect).size;
-
-        CGFloat verticalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.top
-            + layout.messageBubbleTextViewTextContainerInsets.bottom;
-        CGFloat verticalFrameInsets
-            = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
-
-        //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
-        //  not sure why. magix. (shrug) if you know, submit a PR
-        CGFloat verticalInsets = verticalContainerInsets + verticalFrameInsets + self.additionalInset;
-
-        //  same as above, an extra 2 points of magix
-        CGFloat finalWidth
-            = MAX(stringSize.width + horizontalInsetsTotal, self.minimumBubbleWidth) + self.additionalInset;
-
-        finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
-    }
-
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
-
-    return finalSize;
+    return @([messageData messageHash]);
 }
 
 @end
