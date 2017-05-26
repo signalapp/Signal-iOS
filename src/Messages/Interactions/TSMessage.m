@@ -111,12 +111,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     _expiresInSeconds = expiresInSeconds;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
-
-    if ([self shouldUseReceiptDateForSorting]) {
-        _receivedAtTimestamp = self.timestamp;
-    } else {
-        _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
-    }
+    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
 
     return self;
 }
@@ -155,10 +150,6 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
         if (receivedAtDate) {
             _receivedAtTimestamp = [NSDate ows_millisecondsSince1970ForDate:receivedAtDate];
         }
-    }
-
-    if ([self shouldUseReceiptDateForSorting]) {
-        _receivedAtTimestamp = self.timestamp;
     }
 
     _schemaVersion = OWSMessageSchemaVersion;

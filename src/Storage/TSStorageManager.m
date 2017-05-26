@@ -201,6 +201,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
     [TSDatabaseView registerUnseenDatabaseView];
     [TSDatabaseView registerDynamicMessagesDatabaseView];
+    [TSDatabaseView registerSafetyNumberChangeDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
 
     // Register extensions which aren't essential for rendering threads async

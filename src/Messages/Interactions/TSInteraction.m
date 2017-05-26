@@ -93,6 +93,22 @@ NS_ASSUME_NONNULL_BEGIN
     return self.timestamp;
 }
 
+- (NSComparisonResult)compareForSorting:(TSInteraction *)other
+{
+    OWSAssert(other);
+
+    uint64_t timestamp1 = self.timestampForSorting;
+    uint64_t timestamp2 = other.timestampForSorting;
+
+    if (timestamp1 > timestamp2) {
+        return NSOrderedDescending;
+    } else if (timestamp1 < timestamp2) {
+        return NSOrderedAscending;
+    } else {
+        return NSOrderedSame;
+    }
+}
+
 - (NSString *)description {
     return @"Interaction description";
 }

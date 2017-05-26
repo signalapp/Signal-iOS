@@ -32,10 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-// NSDate has second precision, uint64_t timestamps have millisecond precision
-// so prefer timestampForSorting over dateForSorting.
 - (NSDate *)dateForSorting;
 - (uint64_t)timestampForSorting;
+- (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
 // "Dynamic" interactions are not messages or static events (like
 // info messages, error messages, etc.).  They are interactions

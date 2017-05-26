@@ -6,6 +6,7 @@
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
+#import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
@@ -22,6 +23,7 @@ NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionN
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
 NSString *TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
+NSString *TSSafetyNumberChangeDatabaseViewExtensionName = @"TSSafetyNumberChangeDatabaseViewExtensionName";
 NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
@@ -104,7 +106,27 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
 
     return [self registerMessageDatabaseViewWithName:TSDynamicMessagesDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
-                                             version:@"2"];
+                                             version:@"3"];
+}
+
++ (BOOL)registerSafetyNumberChangeDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+            TSInteraction *interaction = (TSInteraction *)object;
+            if ([interaction isDynamicInteraction]) {
+                return interaction.uniqueThreadId;
+            }
+        } else {
+            OWSAssert(0);
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSSafetyNumberChangeDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
 }
 
 + (BOOL)registerThreadInteractionsDatabaseView
@@ -218,16 +240,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
           TSInteraction *message1 = (TSInteraction *)object1;
           TSInteraction *message2 = (TSInteraction *)object2;
 
-          uint64_t timestamp1 = message1.timestampForSorting;
-          uint64_t timestamp2 = message2.timestampForSorting;
-
-          if (timestamp1 > timestamp2) {
-              return NSOrderedDescending;
-          } else if (timestamp1 < timestamp2) {
-              return NSOrderedAscending;
-          } else {
-              return NSOrderedSame;
-          }
+          return [message1 compareForSorting:message2];
       }
 
       return NSOrderedSame;

@@ -199,6 +199,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
                           DDLogError(@"%@ Unexpected object in unseen messages: %@", self.tag, object);
+                          OWSFail(@"Unexpected object in unseen messages.");
+                          return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
                   }];
