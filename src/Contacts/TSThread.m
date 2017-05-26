@@ -84,6 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (NSArray<NSString *> *)recipientIdentifiers
+{
+    NSAssert(FALSE, @"Should be implemented in subclasses");
+    return @[];
+}
+
 - (nullable UIImage *)image
 {
     return nil;

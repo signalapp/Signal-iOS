@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 28/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <Foundation/Foundation.h>
 @class TSNumberVerifier;
@@ -39,6 +40,7 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureDeviceProvisioningCodeAPI @"v1/devices/provisioning/code"
 #define textSecureDeviceProvisioningAPIFormat @"v1/provisioning/%@"
 #define textSecureDevicesAPIFormat @"v1/devices/%@"
+#define textSecureProfileAPIFormat @"v1/profile/%@"
 
 #pragma mark Push RegistrationSpecific Constants
 typedef NS_ENUM(NSInteger, TSPushRegistrationError) {

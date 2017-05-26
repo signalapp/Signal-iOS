@@ -36,6 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSString *)contactIdentifier;
 
+/**
+ * @returns recipientId for each recipient in the thread
+ */
+@property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
+
 #if TARGET_OS_IOS
 
 /**
