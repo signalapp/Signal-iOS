@@ -374,19 +374,15 @@ NS_ASSUME_NONNULL_BEGIN
     return imageSize;
 }
 
-- (CGSize)cachedImageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (CGSize)imageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(transaction);
 
-    if (self.cachedImageWidth && self.cachedImageHeight) {
-        return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
-    }
-
     return [self ensureCachedImageSizeWithTransaction:transaction];
 }
 
-- (CGSize)cachedImageSizeWithoutTransaction
+- (CGSize)imageSizeWithoutTransaction
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -449,19 +445,15 @@ NS_ASSUME_NONNULL_BEGIN
     return audioDurationSeconds;
 }
 
-- (CGFloat)cachedAudioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (CGFloat)audioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(transaction);
 
-    if (self.cachedAudioDurationSeconds) {
-        return self.cachedAudioDurationSeconds.floatValue;
-    }
-
     return [self ensureCachedAudioDurationSecondsWithTransaction:transaction];
 }
 
-- (CGFloat)cachedAudioDurationSecondsWithoutTransaction
+- (CGFloat)audioDurationSecondsWithoutTransaction
 {
     OWSAssert([NSThread isMainThread]);
 
