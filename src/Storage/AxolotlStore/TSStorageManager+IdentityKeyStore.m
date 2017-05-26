@@ -3,6 +3,8 @@
 //
 
 #import "NSDate+millisecondTimeStamp.h"
+#import "NotificationsProtocol.h"
+#import "OWSRecipientIdentity.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
@@ -11,7 +13,6 @@
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+SessionStore.h"
 #import "TextSecureKitEnv.h"
-#import "OWSRecipientIdentity.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -266,7 +267,11 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     OWSAssert(contactThread != nil);
 
-    [[TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId] save];
+    TSErrorMessage *errorMessage =
+        [TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId];
+    [errorMessage save];
+
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
         [[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId] save];

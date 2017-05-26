@@ -5,7 +5,6 @@
 #import "TSErrorMessage.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "NotificationsProtocol.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSMessagesManager.h"
@@ -45,15 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _errorType = errorMessageType;
     _recipientId = recipientId;
-
-    // TODO: Move this out of model class.
-    //
-    //       For now, dispatch async to ensure we're not inside a transaction
-    //       and thereby avoid deadlock.
-    TSErrorMessage *errorMessage = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:thread];
-    });
 
     return self;
 }
