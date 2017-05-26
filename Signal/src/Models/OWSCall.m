@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSMessageAdapterType messageType;
 @property (nonatomic) BOOL isExpiringMessage;
 @property (nonatomic) BOOL shouldStartExpireTimer;
-@property (nonatomic) uint64_t expiresAtSeconds;
+@property (nonatomic) double expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) TSInteraction *interaction;
 

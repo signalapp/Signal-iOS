@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/29/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,7 +13,7 @@ static const CGFloat OWSExpirableMessageViewTimerWidth = 10.0f;
 @property (strong, nonatomic, readonly) IBOutlet OWSExpirationTimerView *expirationTimerView;
 @property (strong, nonatomic, readonly) IBOutlet NSLayoutConstraint *expirationTimerViewWidthConstraint;
 
-- (void)startExpirationTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
+- (void)startExpirationTimerWithExpiresAtSeconds:(double)expiresAtSeconds
                           initialDurationSeconds:(uint32_t)initialDurationSeconds;
 
 - (void)stopExpirationTimer;

@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSMessageAdapterType messageType;
 @property (nonatomic) BOOL isExpiringMessage;
 @property (nonatomic) BOOL shouldStartExpireTimer;
-@property (nonatomic) uint64_t expiresAtSeconds;
+@property (nonatomic) double expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
 @property (nonatomic) NSDate *messageDate;
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([interaction isKindOfClass:[TSMessage class]]) {
         TSMessage *message = (TSMessage *)interaction;
         _isExpiringMessage = message.isExpiringMessage;
-        _expiresAtSeconds = message.expiresAt / 1000;
+        _expiresAtSeconds = message.expiresAt / 1000.0;
         _expiresInSeconds = message.expiresInSeconds;
         _shouldStartExpireTimer = message.shouldStartExpireTimer;
     } else {
