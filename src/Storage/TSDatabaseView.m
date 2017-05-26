@@ -115,11 +115,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
             TSInteraction *interaction = (TSInteraction *)object;
-            if ([interaction isDynamicInteraction]) {
-                return interaction.uniqueThreadId;
-            }
-        } else {
-            OWSAssert(0);
+            return interaction.uniqueThreadId;
         }
         return nil;
     }];
