@@ -1702,7 +1702,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-
     [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
@@ -3706,6 +3705,20 @@ typedef enum : NSUInteger {
         return;
     }
 
+    OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending = [self unconfirmedIdentityThatShouldBlockSending];
+    if (unconfirmedIdentityThatShouldBlockSending != nil) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
+                                       confirmationText:NSLocalizedString(@"CONFIRMATION_TITLE",
+                                                            @"Generic button text to proceed with an action")
+                                             completion:^(BOOL didConfirmedIdentity) {
+                                                 if (didConfirmedIdentity) {
+                                                     [weakSelf didPressAccessoryButton:nil];
+                                                 }
+                                             }];
+        return;
+    }
+
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                                    message:nil
                                                                             preferredStyle:UIAlertControllerStyleActionSheet];
@@ -3943,6 +3956,23 @@ typedef enum : NSUInteger {
                     [weakSelf tryToSendAttachmentIfApproved:attachment];
                 }
             }];
+            return;
+        }
+
+        OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending =
+            [self unconfirmedIdentityThatShouldBlockSending];
+        if (unconfirmedIdentityThatShouldBlockSending != nil) {
+            __weak MessagesViewController *weakSelf = self;
+            [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
+                                           confirmationText:NSLocalizedString(
+                                                                @"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                                                                @"button title to confirm sending to a recipient whose "
+                                                                @"safety number recently changed")
+                                                 completion:^(BOOL didConfirmedIdentity) {
+                                                     if (didConfirmedIdentity) {
+                                                         [weakSelf tryToSendAttachmentIfApproved:attachment];
+                                                     }
+                                                 }];
             return;
         }
 
