@@ -333,6 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
                     TSErrorMessage *errorMessage =
                         [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
                     [errorMessage saveWithTransaction:transaction];
+                    [self notififyForErrorMessage:errorMessage withEnvelope:messageEnvelope];
                 }];
                 DDLogError(@"Skipping message envelope for unknown session.");
                 completion(nil);
@@ -974,9 +975,9 @@ NS_ASSUME_NONNULL_BEGIN
         exception.description,
         exception.name,
         exception.reason);
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      TSErrorMessage *errorMessage;
 
+    __block TSErrorMessage *errorMessage;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if ([exception.name isEqualToString:NoSessionException]) {
           errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyException]) {
@@ -997,6 +998,16 @@ NS_ASSUME_NONNULL_BEGIN
 
       [errorMessage saveWithTransaction:transaction];
     }];
+
+    if (errorMessage != nil) {
+        [self notififyForErrorMessage:errorMessage withEnvelope:envelope];
+    }
+}
+
+- (void)notififyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
 }
 
 #pragma mark - helpers
