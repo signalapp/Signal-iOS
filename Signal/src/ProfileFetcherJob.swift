@@ -78,7 +78,7 @@ class ProfileFetcherJob: NSObject {
 }
 
 struct SignalServiceProfile {
-    let TAG = "[ProfileResponse]"
+    let TAG = "[SignalServiceProfile]"
 
     public let recipientId: String
     public let identityKey: Data
