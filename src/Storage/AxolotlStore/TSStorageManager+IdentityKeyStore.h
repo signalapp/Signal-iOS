@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSRecipientIdentity;
+
 extern NSString *const TSStorageManagerTrustedKeysCollection;
 
 @interface TSStorageManager (IdentityKeyStore) <IdentityKeyStore>
@@ -28,6 +30,15 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
                recipientId:(NSString *)recipientId
     approvedForBlockingUse:(BOOL)approvedForBlockingUse
  approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse;
+
+/**
+ * Check if a recipient identity corresponds to an untrusted identity
+ *
+ * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
+ * @returns nil if the identity doesn't exist or if it's trusted
+ *          else returns the untrusted identity
+ */
+- (nullable OWSRecipientIdentity *)unconfirmedIdentityThatShouldBlockSendingForRecipientId:(NSString *)recipientId;
 
 - (void)generateNewIdentityKey;
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
