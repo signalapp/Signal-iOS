@@ -142,6 +142,7 @@
 		45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
 		45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
 		4585C4601ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m in Sources */ = {isa = PBXBuildFile; fileRef = 4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */; };
+		4585C4661ED5DF7A00896AEA /* ProfileFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4651ED5DF7A00896AEA /* ProfileFetcherJob.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
 		458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
@@ -557,6 +558,7 @@
 		45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactAvatarBuilder.m; sourceTree = "<group>"; };
 		4585C45E1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS104CreateRecipientIdentities.h; path = Migrations/OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
 		4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS104CreateRecipientIdentities.m; path = Migrations/OWS104CreateRecipientIdentities.m; sourceTree = "<group>"; };
+		4585C4651ED5DF7A00896AEA /* ProfileFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcherJob.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerConnectionClient.swift; sourceTree = "<group>"; };
@@ -1147,6 +1149,7 @@
 				45D231761DC7E8F10034FA89 /* SessionResetJob.swift */,
 				452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */,
 				459B1C661ED480BB00506A04 /* MarkIdentityAsSeenJob.swift */,
+				4585C4651ED5DF7A00896AEA /* ProfileFetcherJob.swift */,
 			);
 			name = Jobs;
 			sourceTree = "<group>";
@@ -2040,6 +2043,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				34B3F8761E8DF1700035BE1A /* CodeVerificationViewController.m in Sources */,
+				4585C4661ED5DF7A00896AEA /* ProfileFetcherJob.swift in Sources */,
 				76EB063E18170B33006006FC /* Operation.m in Sources */,
 				34B3F8741E8DF1700035BE1A /* AttachmentSharing.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,

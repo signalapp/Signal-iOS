@@ -31,6 +31,7 @@
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <JSQMessagesViewController/JSQMediaItem.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
@@ -54,6 +55,7 @@
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSGetMessagesRequest.h>
+#import <SignalServiceKit/OWSGetProfileRequest.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>

@@ -1212,6 +1212,7 @@ typedef enum : NSUInteger {
     }
     [self updateNavigationBarSubtitleLabel];
     [MarkIdentityAsSeenJob runWithThread:self.thread];
+    [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
