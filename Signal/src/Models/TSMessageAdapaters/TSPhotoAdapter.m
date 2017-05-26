@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     _attachment = attachment;
     _attachmentId = attachment.uniqueId;
     _incoming = incoming;
-    _imageSize = [attachment cachedImageSizeWithoutTransaction];
+    _imageSize = [attachment imageSizeWithoutTransaction];
 
     return self;
 }
