@@ -104,7 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
         __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
         __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
         __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
-        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *safetyNumberChanges = [NSMutableArray new];
         __block TSIncomingMessage *firstIncomingMessage = nil;
         __block TSOutgoingMessage *firstOutgoingMessage = nil;
         __block long outgoingMessageCount = 0;
@@ -124,10 +123,23 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
                               OWSAssert(!existingUnreadIndicator);
                               existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
-                          } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                              [safetyNumberChanges addObject:object];
                           } else {
                               DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
+                              OWSAssert(0);
+                          }
+                      }];
+
+        // We use different views for performance reasons.
+        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *safetyNumberChanges = [NSMutableArray new];
+        [[transaction ext:TSSafetyNumberChangeDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                              [safetyNumberChanges addObject:object];
+                          } else {
+                              DDLogError(@"Unexpected interaction type: %@", [object class]);
                               OWSAssert(0);
                           }
                       }];
@@ -169,8 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   firstIncomingMessage = incomingMessage;
                               } else {
                                   OWSAssert(
-                                      [[firstIncomingMessage dateForSorting] compare:[incomingMessage dateForSorting]]
-                                      == NSOrderedAscending);
+                                      [firstIncomingMessage compareForSorting:incomingMessage] == NSOrderedAscending);
                               }
                           } else if ([object isKindOfClass:[TSOutgoingMessage class]]) {
                               TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)object;
@@ -178,8 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   firstOutgoingMessage = outgoingMessage;
                               } else {
                                   OWSAssert(
-                                      [[firstOutgoingMessage dateForSorting] compare:[outgoingMessage dateForSorting]]
-                                      == NSOrderedAscending);
+                                      [firstOutgoingMessage compareForSorting:outgoingMessage] == NSOrderedAscending);
                               }
                               outgoingMessageCount++;
                               if (outgoingMessageCount >= kMaxBlockOfferOutgoingMessageCount) {
@@ -268,9 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSMessage *firstMessage = firstIncomingMessage;
         if (!firstMessage
-            || (firstOutgoingMessage &&
-                   [[firstOutgoingMessage dateForSorting] compare:[firstMessage dateForSorting]]
-                       == NSOrderedAscending)) {
+            || (firstOutgoingMessage && [firstOutgoingMessage compareForSorting:firstMessage] == NSOrderedAscending)) {
             firstMessage = firstOutgoingMessage;
         }
 
@@ -314,8 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         BOOL hasOutgoingBeforeIncomingInteraction = (firstOutgoingMessage
             && (!firstIncomingMessage ||
-                   [[firstOutgoingMessage dateForSorting] compare:[firstIncomingMessage dateForSorting]]
-                       == NSOrderedAscending));
+                   [firstOutgoingMessage compareForSorting:firstIncomingMessage] == NSOrderedAscending));
         if (hasOutgoingBeforeIncomingInteraction) {
             // If there is an outgoing message before an incoming message
             // the local user initiated this conversation, don't show a block offer.

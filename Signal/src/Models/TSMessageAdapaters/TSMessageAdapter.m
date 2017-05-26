@@ -57,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) double expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 
-@property (nonatomic) NSDate *messageDate;
 @property (nonatomic) NSString *messageBody;
 
 @property (nonatomic) NSString *interactionUniqueId;
@@ -76,7 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _interaction = interaction;
-    _messageDate = interaction.dateForSorting;
 
     self.interactionUniqueId = interaction.uniqueId;
 
@@ -249,7 +247,6 @@ NS_ASSUME_NONNULL_BEGIN
             return call;
         }
     } else if ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-        TSUnreadIndicatorInteraction *unreadIndicator = (TSUnreadIndicatorInteraction *)interaction;
         adapter.messageType = TSUnreadIndicatorAdapter;
     } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
@@ -276,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSDate *)date {
-    return self.messageDate;
+    return self.interaction.dateForSorting;
 }
 
 #pragma mark - OWSMessageEditing Protocol
