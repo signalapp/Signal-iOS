@@ -318,7 +318,7 @@
     action_reply.identifier                       = Signal_Message_Reply_Identifier;
     action_reply.title                            = NSLocalizedString(@"PUSH_MANAGER_REPLY", @"");
     action_reply.destructive                      = NO;
-    action_reply.authenticationRequired           = NO; // Since YES is broken in iOS 9 GM
+    action_reply.authenticationRequired           = NO;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         action_reply.behavior       = UIUserNotificationActionBehaviorTextInput;
         action_reply.activationMode = UIUserNotificationActivationModeBackground;
@@ -329,7 +329,7 @@
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
     messageCategory.identifier                         = Signal_Full_New_Message_Category;
     [messageCategory setActions:@[ action_markRead, action_reply ] forContext:UIUserNotificationActionContextMinimal];
-    [messageCategory setActions:@[] forContext:UIUserNotificationActionContextDefault];
+    [messageCategory setActions:@[ action_markRead, action_reply ] forContext:UIUserNotificationActionContextDefault];
 
     return messageCategory;
 }
