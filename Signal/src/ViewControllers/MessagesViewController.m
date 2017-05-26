@@ -81,7 +81,7 @@
 
 @import Photos;
 
-// Always load up to 50 messsages when user arrives.
+// Always load up to 50 messages when user arrives.
 static const int kYapDatabasePageSize = 50;
 // Never show more than 50*50 = 2,500 messages in conversation view at a time.
 static const int kYapDatabaseMaxPageCount = 50;
@@ -911,15 +911,7 @@ typedef enum : NSUInteger {
                                                      name:YapDatabaseModifiedNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(startReadTimer)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(startExpirationTimerAnimations)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(resetContentAndLayout)
+                                                 selector:@selector(applicationWillEnterForeground:)
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -947,6 +939,14 @@ typedef enum : NSUInteger {
                                                         name:UIApplicationDidEnterBackgroundNotification
                                                       object:nil];
     }
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    [self resetContentAndLayout];
+    [self startReadTimer];
+    [self startExpirationTimerAnimations];
+    [self ensureThreadOffersAndIndicators];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -2578,10 +2578,6 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
 
-    [self.collectionView.collectionViewLayout
-        invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-    [self.collectionView reloadData];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
@@ -2617,27 +2613,6 @@ typedef enum : NSUInteger {
     }];
 
     return show;
-}
-
-- (NSUInteger)scrollToItem {
-    __block NSUInteger item
-        = kYapDatabasePageSize * (self.page + 1) - [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-
-      NSUInteger numberOfVisibleMessages = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-      NSUInteger numberOfTotalMessages =
-          [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
-      NSUInteger numberOfMessagesToLoad = numberOfTotalMessages - numberOfVisibleMessages;
-
-      BOOL canLoadFullRange = numberOfMessagesToLoad >= kYapDatabasePageSize;
-
-      if (!canLoadFullRange) {
-          item = numberOfMessagesToLoad;
-      }
-    }];
-
-    return item == 0 ? item : item - 1;
 }
 
 - (void)updateLoadEarlierVisible {
