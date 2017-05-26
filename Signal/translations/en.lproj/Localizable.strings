@@ -1051,6 +1051,9 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 
+/* button title to confirm calling a recipient whose safety number recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Confirm and Call";
+
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Confirm and Send";
 
@@ -1363,7 +1366,8 @@
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Enter the verification code we sent to %@.";
 
-/* table cell label in conversation settings */
+/* Action sheet item
+   table cell label in conversation settings */
 "VERIFY_PRIVACY" = "Show Safety Number";
 
 /* Indicates how to cancel a voice message. */

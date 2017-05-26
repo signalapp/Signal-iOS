@@ -1583,6 +1583,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)showConfirmIdentityUIForRecipientIdentity:(OWSRecipientIdentity *)recipientIdentity
+                                 confirmationText:(NSString *)confirmationText
                                        completion:(void (^)(BOOL didConfirmedIdentity))completionHandler
 {
     NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientIdentity.recipientId];
@@ -1603,9 +1604,7 @@ typedef enum : NSUInteger {
 
     [actionSheet
         addAction:[UIAlertAction
-                      actionWithTitle:
-                          NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                              @"button title to confirm sending to a recipient whose safety number recently changed")
+                      actionWithTitle:confirmationText
                                 style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction *_Nonnull action) {
                                   DDLogInfo(@"%@ Confirmed sending identity: %@", self.tag, recipientIdentity);
@@ -1688,6 +1687,22 @@ typedef enum : NSUInteger {
         return;
     }
 
+    OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending = [self unconfirmedIdentityThatShouldBlockSending];
+    if (unconfirmedIdentityThatShouldBlockSending != nil) {
+        __weak MessagesViewController *weakSelf = self;
+        [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
+                                       confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
+                                                            @"button title to confirm calling a recipient whose safety "
+                                                            @"number recently changed")
+                                             completion:^(BOOL didConfirmedIdentity) {
+                                                 if (didConfirmedIdentity) {
+                                                     [weakSelf callAction:sender];
+                                                 }
+                                             }];
+        return;
+    }
+
+
     [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
@@ -1737,6 +1752,9 @@ typedef enum : NSUInteger {
     if (unconfirmedIdentityThatShouldBlockSending != nil) {
         __weak MessagesViewController *weakSelf = self;
         [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
+                                       confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                                                            @"button title to confirm sending to a recipient whose "
+                                                            @"safety number recently changed")
                                              completion:^(BOOL didConfirmedIdentity) {
                                                  if (didConfirmedIdentity) {
                                                      [weakSelf didPressSendButton:button
