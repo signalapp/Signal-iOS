@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,11 +20,12 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kq8-RD-txC" userLabel="Container View">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="72"/>
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="47"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="p9o-x6-nT5" customClass="AvatarImageView" customModule="Signal" customModuleProvider="target">
-                                <rect key="frame" x="10" y="10" width="52" height="53"/>
+                                <rect key="frame" x="10" y="10" width="52" height="52"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" secondItem="p9o-x6-nT5" secondAttribute="height" multiplier="1:1" id="IjZ-Ac-GiV"/>
                                     <constraint firstAttribute="width" constant="52" id="mb7-1o-58k"/>
                                 </constraints>
                             </imageView>
@@ -53,7 +55,7 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mfN-2A-QxN">
-                                <rect key="frame" x="75" y="6" width="236" height="25"/>
+                                <rect key="frame" x="75" y="6" width="236" height="0.0"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>

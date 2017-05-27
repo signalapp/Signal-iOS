@@ -27,14 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
                   contactsManager:(OWSContactsManager *)contactsManager
-{
-    const CGFloat kDefaultAvatarDiamater = 100;
-    return [self initWithContactId:contactId name:name contactsManager:contactsManager diameter:kDefaultAvatarDiamater];
-}
-
-- (instancetype)initWithContactId:(NSString *)contactId
-                             name:(NSString *)name
-                  contactsManager:(OWSContactsManager *)contactsManager
                          diameter:(NSUInteger)diameter
 {
     self = [super init];
@@ -50,7 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSContactThread *)thread contactsManager:(OWSContactsManager *)contactsManager diameter:(CGFloat)diameter
+- (instancetype)initWithThread:(TSContactThread *)thread
+               contactsManager:(OWSContactsManager *)contactsManager
+                      diameter:(NSUInteger)diameter
 {
     return [self initWithContactId:thread.contactIdentifier name:thread.name contactsManager:contactsManager diameter:diameter];
 }

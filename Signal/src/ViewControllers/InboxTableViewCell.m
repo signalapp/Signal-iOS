@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 #define DATE_LABEL_SIZE 13
 #define SWIPE_ARCHIVE_OFFSET -50
 
+const NSUInteger kContactPictureViewDiameter = 52;
+
 @interface InboxTableViewCell ()
 
 @property (nonatomic) NSUInteger unreadMessages;
@@ -132,7 +134,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *threadIdCopy = thread.uniqueId;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
+        UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread
+                                                contactsManager:contactsManager
+                                                       diameter:kContactPictureViewDiameter];
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([_threadId isEqualToString:threadIdCopy]) {
                 self.contactPictureView.image = avatar;

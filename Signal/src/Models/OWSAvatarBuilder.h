@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAvatarBuilder : NSObject
 
-+ (UIImage *)buildImageForThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
-+ (UIImage *)buildImageForThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager diameter:(CGFloat)diameter;
++ (UIImage *)buildImageForThread:(TSThread *)thread
+                 contactsManager:(OWSContactsManager *)contactsManager
+                        diameter:(NSUInteger)diameter;
 
 - (nullable UIImage *)buildSavedImage;
 - (UIImage *)buildDefaultImage;

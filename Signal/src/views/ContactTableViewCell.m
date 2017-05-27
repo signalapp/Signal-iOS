@@ -17,6 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
+const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 @interface ContactTableViewCell ()
 
@@ -52,7 +53,6 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 - (void)configureProgrammatically
 {
-    const CGFloat kAvatarSize = 40.f;
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
@@ -64,8 +64,8 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -111,9 +111,10 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
         self.accessoryView = blockedLabel;
     }
     self.nameLabel.attributedText = attributedText;
-    self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId name:avatarName contactsManager:contactsManager]
-            build];
+    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId
+                                                                           name:avatarName
+                                                                contactsManager:contactsManager
+                                                                       diameter:kContactTableViewCellAvatarSize] build];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -135,7 +136,9 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
                                                        }];
     self.nameLabel.attributedText = attributedText;
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
+                                                  contactsManager:contactsManager
+                                                         diameter:kContactTableViewCellAvatarSize];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

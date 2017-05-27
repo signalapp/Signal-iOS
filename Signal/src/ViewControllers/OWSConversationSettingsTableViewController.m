@@ -536,9 +536,11 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    UIImage *avatar = [OWSAvatarBuilder buildImageForThread:self.thread contactsManager:self.contactsManager];
+    const NSUInteger kAvatarSize = 68;
+    UIImage *avatar =
+        [OWSAvatarBuilder buildImageForThread:self.thread contactsManager:self.contactsManager diameter:kAvatarSize];
     OWSAssert(avatar);
-    const CGFloat kAvatarSize = 68.f;
+
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatar];
     _avatarView = avatarView;
     [threadInfoView addSubview:avatarView];
