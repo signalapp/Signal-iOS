@@ -7,6 +7,7 @@
 #import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
+#import "FingerprintViewController.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
@@ -56,6 +57,8 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>

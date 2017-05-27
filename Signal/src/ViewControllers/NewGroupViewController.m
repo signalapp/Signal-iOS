@@ -250,6 +250,28 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                               }
                                                           }];
                                 } else {
+
+                                    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+                                        presentAlertIfNecessaryFromViewController:self
+                                                                      recipientId:recipientId
+                                                                 confirmationText:NSLocalizedString(
+                                                                                      @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                                      @"ADD_TO_GROUP_ACTION",
+                                                                                      @"button title to confirm adding "
+                                                                                      @"a recipient to a group when "
+                                                                                      @"their safety "
+                                                                                      @"number has recently changed")
+                                                                  contactsManager:contactsViewHelper.contactsManager
+                                                                       completion:^(BOOL didConfirmIdentity) {
+                                                                           if (didConfirmIdentity) {
+                                                                               [weakSelf addRecipientId:recipientId];
+                                                                           }
+                                                                       }];
+                                    if (didShowSNAlert) {
+                                        return;
+                                    }
+
+
                                     [weakSelf addRecipientId:recipientId];
                                 }
                             }]];
@@ -319,6 +341,26 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                                 }
                                                             }];
                                 } else {
+                                    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+                                        presentAlertIfNecessaryFromViewController:self
+                                                                      recipientId:signalAccount.recipientId
+                                                                 confirmationText:NSLocalizedString(
+                                                                                      @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                                      @"ADD_TO_GROUP_ACTION",
+                                                                                      @"button title to confirm adding "
+                                                                                      @"a recipient to a group when "
+                                                                                      @"their safety "
+                                                                                      @"number has recently changed")
+                                                                  contactsManager:contactsViewHelper.contactsManager
+                                                                       completion:^(BOOL didConfirmIdentity) {
+                                                                           if (didConfirmIdentity) {
+                                                                               [weakSelf addRecipientId:recipientId];
+                                                                           }
+                                                                       }];
+                                    if (didShowSNAlert) {
+                                        return;
+                                    }
+
                                     [weakSelf addRecipientId:recipientId];
                                 }
                             }]];

@@ -241,13 +241,13 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Link New Device";
 
-/* Action sheet body presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your Safety Number with them to ensure privacy.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety Number with %@ has Changed";
 
-/* No comment provided by engineer. */
+/* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Confirm";
 
 /* An indicator that a contact has been blocked. */
@@ -1051,6 +1051,9 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 
+/* button title to confirm adding a recipient to a group when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Confirm and Add to Group";
+
 /* button title to confirm calling a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Confirm and Call";
 
@@ -1276,7 +1279,7 @@
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
 
-/* No comment provided by engineer. */
+/* generic cancel text */
 "TXT_CANCEL_TITLE" = "Cancel";
 
 /* No comment provided by engineer. */

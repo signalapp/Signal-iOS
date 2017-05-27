@@ -249,9 +249,8 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSFingerprint *fingerprint =
                                 [fingerprintBuilder fingerprintWithTheirSignalId:strongSelf.thread.contactIdentifier];
 
-                            [fingerprintViewController configureWithThread:strongSelf.thread
-                                                               fingerprint:fingerprint
-                                                               contactName:[strongSelf threadName]];
+                            [fingerprintViewController configureWithFingerprint:fingerprint
+                                                                    contactName:[strongSelf threadName]];
                             fingerprintViewController.dismissDelegate = strongSelf;
 
                             [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];

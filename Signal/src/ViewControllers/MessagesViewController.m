@@ -1567,75 +1567,20 @@ typedef enum : NSUInteger {
 #pragma mark - Identity
 
 /**
- * Returns the first unconfirmed recipient identity in the thread.
+ * Shows confirmation dialog if at least one of the recipient id's is not confirmed.
+ *
+ * returns YES if an alert was shown
+ *          NO if there were no unconfirmed identities
  */
-- (nullable OWSRecipientIdentity *)unconfirmedIdentityThatShouldBlockSending
+- (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
+                                                         completion:
+                                                             (void (^)(BOOL didConfirmedIdentity))completionHandler
 {
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        OWSRecipientIdentity *unconfirmedIdentity =
-            [self.storageManager unconfirmedIdentityThatShouldBlockSendingForRecipientId:recipientId];
-        if (unconfirmedIdentity != nil) {
-            DDLogInfo(@"%@ unconfirmedIdentityThatShouldBlockSending: %@", self.tag, recipientId);
-            return unconfirmedIdentity;
-        }
-    }
-    return nil;
-}
-
-- (void)showConfirmIdentityUIForRecipientIdentity:(OWSRecipientIdentity *)recipientIdentity
-                                 confirmationText:(NSString *)confirmationText
-                                       completion:(void (^)(BOOL didConfirmedIdentity))completionHandler
-{
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientIdentity.recipientId];
-
-    NSString *titleFormat = NSLocalizedString(@"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
-        @"Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone "
-        @"number}}");
-    NSString *title = [NSString stringWithFormat:titleFormat, displayName];
-
-    NSString *bodyFormat = NSLocalizedString(@"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT",
-        @"Action sheet body presented when a users's SN have recently changed. Embeds {{contact's name or phone "
-        @"number}}");
-    NSString *body = [NSString stringWithFormat:bodyFormat, displayName];
-
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
-                                                                         message:body
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet
-        addAction:[UIAlertAction
-                      actionWithTitle:confirmationText
-                                style:UIAlertActionStyleDefault
-                              handler:^(UIAlertAction *_Nonnull action) {
-                                  DDLogInfo(@"%@ Confirmed sending identity: %@", self.tag, recipientIdentity);
-                                  dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                      [[TSStorageManager sharedManager] saveRemoteIdentity:recipientIdentity.identityKey
-                                                                               recipientId:recipientIdentity.recipientId
-                                                                    approvedForBlockingUse:YES
-                                                                 approvedForNonBlockingUse:YES];
-                                      dispatch_async(dispatch_get_main_queue(), ^{
-                                          completionHandler(YES);
-                                      });
-                                  });
-                              }]];
-
-    [actionSheet addAction:[UIAlertAction
-                               actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY", @"Action sheet item")
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction *_Nonnull action) {
-                                           DDLogInfo(@"%@ verifying sending identity: %@", self.tag, recipientIdentity);
-                                           [self showFingerprintWithTheirIdentityKey:recipientIdentity.identityKey
-                                                                       theirSignalId:recipientIdentity.recipientId];
-                                           completionHandler(NO);
-                                       }]];
-
-    [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                    style:UIAlertActionStyleCancel
-                                                  handler:^(UIAlertAction *_Nonnull action) {
-                                                      completionHandler(NO);
-                                                  }]];
-
-    [self presentViewController:actionSheet animated:YES completion:nil];
+    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryFromViewController:self
+                                                                       recipientIds:self.thread.recipientIdentifiers
+                                                                   confirmationText:confirmationText
+                                                                    contactsManager:self.contactsManager
+                                                                         completion:completionHandler];
 }
 
 - (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
@@ -1663,7 +1608,7 @@ typedef enum : NSUInteger {
     }
     FingerprintViewController *fingerprintViewController = (FingerprintViewController *)viewController;
 
-    [fingerprintViewController configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+    [fingerprintViewController configureWithFingerprint:fingerprint contactName:contactName];
     [self presentViewController:fingerprintViewController animated:YES completion:nil];
 }
 
@@ -1677,8 +1622,8 @@ typedef enum : NSUInteger {
         return;
     }
 
+    __weak MessagesViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
-        __weak MessagesViewController *weakSelf = self;
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf callAction:nil];
@@ -1687,18 +1632,16 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending = [self unconfirmedIdentityThatShouldBlockSending];
-    if (unconfirmedIdentityThatShouldBlockSending != nil) {
-        __weak MessagesViewController *weakSelf = self;
-        [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
-                                       confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
-                                                            @"button title to confirm calling a recipient whose safety "
-                                                            @"number recently changed")
-                                             completion:^(BOOL didConfirmedIdentity) {
-                                                 if (didConfirmedIdentity) {
-                                                     [weakSelf callAction:sender];
-                                                 }
-                                             }];
+    BOOL didShowSNAlert = [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
+                                    NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
+                                        @"button title to confirm calling a recipient whose safety "
+                                        @"number recently changed")
+                                                                                 completion:^(BOOL didConfirmIdentity) {
+                                                                                     if (didConfirmIdentity) {
+                                                                                         [weakSelf callAction:sender];
+                                                                                     }
+                                                                                 }];
+    if (didShowSNAlert) {
         return;
     }
 
@@ -1732,8 +1675,9 @@ typedef enum : NSUInteger {
                       date:(NSDate *)date
        updateKeyboardState:(BOOL)updateKeyboardState
 {
+
+    __weak MessagesViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
-        __weak MessagesViewController *weakSelf = self;
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf didPressSendButton:button
@@ -1747,23 +1691,22 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending = [self unconfirmedIdentityThatShouldBlockSending];
-    if (unconfirmedIdentityThatShouldBlockSending != nil) {
-        __weak MessagesViewController *weakSelf = self;
-        [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
-                                       confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                                                            @"button title to confirm sending to a recipient whose "
-                                                            @"safety number recently changed")
-                                             completion:^(BOOL didConfirmedIdentity) {
-                                                 if (didConfirmedIdentity) {
-                                                     [weakSelf didPressSendButton:button
-                                                                  withMessageText:text
-                                                                         senderId:senderId
-                                                                senderDisplayName:senderDisplayName
-                                                                             date:date
-                                                              updateKeyboardState:NO];
-                                                 }
-                                             }];
+    BOOL didShowSNAlert =
+        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
+                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                      @"button title to confirm sending to a recipient whose "
+                      @"safety number recently changed")
+                                                               completion:^(BOOL didConfirmIdentity) {
+                                                                   if (didConfirmIdentity) {
+                                                                       [weakSelf didPressSendButton:button
+                                                                                    withMessageText:text
+                                                                                           senderId:senderId
+                                                                                  senderDisplayName:senderDisplayName
+                                                                                               date:date
+                                                                                updateKeyboardState:NO];
+                                                                   }
+                                                               }];
+    if (didShowSNAlert) {
         return;
     }
 
@@ -2757,7 +2700,7 @@ typedef enum : NSUInteger {
         [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
 
     NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:signalId];
-    [fingerprintViewController configureWithThread:self.thread fingerprint:fingerprint contactName:contactName];
+    [fingerprintViewController configureWithFingerprint:fingerprint contactName:contactName];
 
     [self presentViewController:fingerprintViewController animated:YES completion:nil];
 }
@@ -3695,8 +3638,8 @@ typedef enum : NSUInteger {
 
 - (void)didPressAccessoryButton:(UIButton *)sender {
 
+    __weak MessagesViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
-        __weak MessagesViewController *weakSelf = self;
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf didPressAccessoryButton:nil];
@@ -3705,19 +3648,18 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending = [self unconfirmedIdentityThatShouldBlockSending];
-    if (unconfirmedIdentityThatShouldBlockSending != nil) {
-        __weak MessagesViewController *weakSelf = self;
-        [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
-                                       confirmationText:NSLocalizedString(@"CONFIRMATION_TITLE",
-                                                            @"Generic button text to proceed with an action")
-                                             completion:^(BOOL didConfirmedIdentity) {
-                                                 if (didConfirmedIdentity) {
-                                                     [weakSelf didPressAccessoryButton:nil];
-                                                 }
-                                             }];
+    BOOL didShowSNAlert =
+        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
+                  NSLocalizedString(@"CONFIRMATION_TITLE", @"Generic button text to proceed with an action")
+                                                               completion:^(BOOL didConfirmIdentity) {
+                                                                   if (didConfirmIdentity) {
+                                                                       [weakSelf didPressAccessoryButton:nil];
+                                                                   }
+                                                               }];
+    if (didShowSNAlert) {
         return;
     }
+
 
     UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
                                                                                    message:nil
@@ -3949,8 +3891,8 @@ typedef enum : NSUInteger {
     DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
 
     DispatchMainThreadSafe(^{
+        __weak MessagesViewController *weakSelf = self;
         if ([self isBlockedContactConversation]) {
-            __weak MessagesViewController *weakSelf = self;
             [self showUnblockContactUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
                     [weakSelf tryToSendAttachmentIfApproved:attachment];
@@ -3959,20 +3901,18 @@ typedef enum : NSUInteger {
             return;
         }
 
-        OWSRecipientIdentity *unconfirmedIdentityThatShouldBlockSending =
-            [self unconfirmedIdentityThatShouldBlockSending];
-        if (unconfirmedIdentityThatShouldBlockSending != nil) {
-            __weak MessagesViewController *weakSelf = self;
-            [self showConfirmIdentityUIForRecipientIdentity:unconfirmedIdentityThatShouldBlockSending
-                                           confirmationText:NSLocalizedString(
-                                                                @"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                                                                @"button title to confirm sending to a recipient whose "
-                                                                @"safety number recently changed")
-                                                 completion:^(BOOL didConfirmedIdentity) {
-                                                     if (didConfirmedIdentity) {
-                                                         [weakSelf tryToSendAttachmentIfApproved:attachment];
-                                                     }
-                                                 }];
+        BOOL didShowSNAlert = [self
+            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
+                NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                    @"button title to confirm sending to a recipient whose "
+                    @"safety number recently changed")
+                                                             completion:^(BOOL didConfirmIdentity) {
+                                                                 if (didConfirmIdentity) {
+                                                                     [weakSelf
+                                                                         tryToSendAttachmentIfApproved:attachment];
+                                                                 }
+                                                             }];
+        if (didShowSNAlert) {
             return;
         }
 
@@ -3985,7 +3925,6 @@ typedef enum : NSUInteger {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            __weak MessagesViewController *weakSelf = self;
             UIViewController *viewController =
                 [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
                                                            successCompletion:^{
