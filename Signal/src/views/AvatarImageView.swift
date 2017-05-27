@@ -32,9 +32,6 @@ class AvatarImageView: UIImageView {
         self.layer.magnificationFilter = kCAFilterTrilinear
         self.layer.borderWidth = 0.5
         self.layer.masksToBounds = true
-        if self.image == nil {
-            self.image = #imageLiteral(resourceName: "empty-group-avatar")
-        }
         self.contentMode = .scaleToFill
     }
 
