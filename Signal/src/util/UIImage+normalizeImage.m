@@ -153,7 +153,7 @@
         drawRect.origin.x = 0;
         drawRect.size.width = dstSize.width;
         drawRect.size.height = dstSize.width * srcSize.height / srcSize.width;
-        OWSAssert(drawRect.size.height > dstSize.height);
+        OWSAssert(drawRect.size.height >= dstSize.height);
         drawRect.origin.y = (drawRect.size.height - dstSize.height) * -0.5f;
     }
 
