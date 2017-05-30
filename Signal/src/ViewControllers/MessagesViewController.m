@@ -815,9 +815,6 @@ typedef enum : NSUInteger {
     // all messages as read.
     [self ensureThreadOffersAndIndicators];
 
-    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
-    [self markAllMessagesAsRead];
-
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     self.messageMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
@@ -1288,7 +1285,7 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
-    [self markAllMessagesAsRead];
+    [self markVisibleMessagesAsRead];
 }
 
 - (void)cancelReadTimer {
@@ -1316,6 +1313,9 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [MarkIdentityAsSeenJob runWithThread:self.thread];
     [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
+
+    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
+    [self markVisibleMessagesAsRead];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1655,9 +1655,6 @@ typedef enum : NSUInteger {
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
     OWSFingerprint *fingerprint =
         [builder fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
-
-    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
-    [self markAllMessagesAsRead];
 
     NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
@@ -3771,13 +3768,48 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
-- (void)markAllMessagesAsRead
+- (void)markVisibleMessagesAsRead
 {
-    [self.thread markAllAsRead];
+    NSIndexPath *lastVisibleIndexPath = nil;
+    for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
+        if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
+            lastVisibleIndexPath = indexPath;
+        }
+    }
+    if (!lastVisibleIndexPath) {
+        return;
+    }
+    TSInteraction *lastVisibleInteraction = [self interactionAtIndexPath:lastVisibleIndexPath];
+    uint64_t lastVisibleTimestamp = lastVisibleInteraction.timestampForSorting;
 
-    // In theory this should be unnecessary as read-status starts expiration
-    // but in practice I've seen messages not have their timer started.
-    [OWSDisappearingMessagesJob setExpirationsForThread:self.thread];
+    TSThread *thread = self.thread;
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
+        [[transaction ext:TSUnseenDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          TSInteraction *interaction = object;
+                          if (interaction.timestampForSorting > lastVisibleTimestamp) {
+                              *stop = YES;
+                              return;
+                          }
+
+                          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+                          if (!possiblyRead.read) {
+                              [interactions addObject:possiblyRead];
+                          }
+                      }];
+
+        if (interactions.count < 1) {
+            return;
+        }
+        DDLogError(@"Marking %zd messages as read.", interactions.count);
+        for (id<OWSReadTracking> possiblyRead in interactions) {
+            [possiblyRead markAsReadLocallyWithTransaction:transaction];
+        }
+    }];
 }
 
 - (BOOL)collectionView:(UICollectionView *)collectionView
