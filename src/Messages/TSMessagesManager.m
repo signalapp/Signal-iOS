@@ -263,7 +263,11 @@ NS_ASSUME_NONNULL_BEGIN
                                         DDLogDebug(@"%@ handled secure message.", self.tag);
                                         if (error) {
                                             DDLogError(
-                                                @"%@ handling secure message failed with error: %@", self.tag, error);
+                                                @"%@ handling secure message from address: %@.%d failed with error: %@",
+                                                self.tag,
+                                                envelope.source,
+                                                (unsigned int)envelope.sourceDevice,
+                                                error);
                                         }
                                         completion();
                                     }];
@@ -273,10 +277,14 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
                 [self handlePreKeyBundleAsync:envelope
                                    completion:^(NSError *_Nullable error) {
-                                       DDLogDebug(@"%@ handled pre-key bundle", self.tag);
+                                       DDLogDebug(@"%@ handled pre-key whisper message", self.tag);
                                        if (error) {
-                                           DDLogError(
-                                               @"%@ handling pre-key bundle failed with error: %@", self.tag, error);
+                                           DDLogError(@"%@ handling pre-key whisper message from address: %@.%d failed "
+                                                      @"with error: %@",
+                                               self.tag,
+                                               envelope.source,
+                                               (unsigned int)envelope.sourceDevice,
+                                               error);
                                        }
                                        completion();
                                    }];
