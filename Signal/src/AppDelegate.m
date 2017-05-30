@@ -122,6 +122,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
             [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBarHidden = YES;
         self.window.rootViewController = navigationController;
     }
 

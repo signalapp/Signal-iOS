@@ -67,7 +67,7 @@
         // iPhone 5 or smaller.
         [header autoSetDimension:ALDimensionHeight toSize:80];
     } else {
-        [header autoSetDimension:ALDimensionHeight toSize:225];
+        [header autoSetDimension:ALDimensionHeight toSize:220];
 
         UIImage *logo = [UIImage imageNamed:@"logoSignal"];
         OWSAssert(logo);
