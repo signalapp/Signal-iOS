@@ -26,6 +26,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
+
 @interface NewGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
     ContactsViewHelperDelegate,
@@ -39,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) GroupViewHelper *groupViewHelper;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
-@property (nonatomic, readonly) UIImageView *avatarView;
+@property (nonatomic, readonly) AvatarImageView *avatarView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
@@ -134,18 +136,14 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    const CGFloat kAvatarSize = 68.f;
-    UIImageView *avatarView = [UIImageView new];
+    AvatarImageView *avatarView = [AvatarImageView new];
     _avatarView = avatarView;
-    avatarView.layer.borderColor = UIColor.clearColor.CGColor;
-    avatarView.layer.masksToBounds = YES;
-    avatarView.layer.cornerRadius = kAvatarSize / 2.0f;
-    avatarView.contentMode = UIViewContentModeScaleAspectFill;
+
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kNewGroupViewControllerAvatarWidth];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [UITextField new];
@@ -494,13 +492,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    UIImage *image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
-    OWSAssert(image);
-
-    self.avatarView.image = image;
-    self.avatarView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-    self.avatarView.layer.borderWidth = 0.5f;
-    self.avatarView.contentMode = UIViewContentModeScaleAspectFill;
+    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
 }
 
 #pragma mark - Event Handling

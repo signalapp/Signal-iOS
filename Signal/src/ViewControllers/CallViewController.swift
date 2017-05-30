@@ -147,7 +147,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         createViews()
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
-        contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager)
+        contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager, diameter:400)
 
         assert(call != nil)
         // Subscribe for future call updates

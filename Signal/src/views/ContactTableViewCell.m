@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -16,6 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
+const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 @interface ContactTableViewCell ()
 
@@ -51,15 +53,7 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
 - (void)configureProgrammatically
 {
-    const CGFloat kAvatarSize = 40.f;
-    _avatarView = [UIImageView new];
-    _avatarView.image = [UIImage imageNamed:@"empty-group-avatar"];
-    _avatarView.contentMode = UIViewContentModeScaleToFill;
-    // applyRoundedBorderToImageView requires the avatar to have
-    // the correct size.
-    _avatarView.frame = CGRectMake(0, 0, kAvatarSize, kAvatarSize);
-    _avatarView.layer.minificationFilter = kCAFilterTrilinear;
-    _avatarView.layer.magnificationFilter = kCAFilterTrilinear;
+    _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
@@ -70,8 +64,8 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -117,9 +111,10 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
         self.accessoryView = blockedLabel;
     }
     self.nameLabel.attributedText = attributedText;
-    self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId name:avatarName contactsManager:contactsManager]
-            build];
+    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId
+                                                                           name:avatarName
+                                                                contactsManager:contactsManager
+                                                                       diameter:kContactTableViewCellAvatarSize] build];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -141,16 +136,12 @@ NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseI
                                                        }];
     self.nameLabel.attributedText = attributedText;
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
+                                                  contactsManager:contactsManager
+                                                         diameter:kContactTableViewCellAvatarSize];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    [UIUtil applyRoundedBorderToImageView:self.avatarView];
 }
 
 - (void)prepareForReuse
