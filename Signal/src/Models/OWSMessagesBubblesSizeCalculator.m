@@ -5,10 +5,12 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
+#import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
 #import "TSMessageAdapter.h"
 #import "UIFont+OWS.h"
 #import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.
+#import <JSQMessagesViewController/JSQMessagesCollectionView.h>
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayout.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
     if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
         if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
+            return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
+        } else if (message.messageType == TSUnreadIndicatorAdapter) {
+            return [OWSUnreadIndicatorCell
+                cellSizeForInteraction:(TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction
+                   collectionViewWidth:layout.collectionView.bounds.size.width];
             return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
         }
     }
@@ -132,7 +139,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   atIndexPath:(NSIndexPath *)indexPath
                                    withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
         return [cachedSize CGSizeValue];
     }
@@ -199,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
         finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
     }
 
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
 
     return finalSize;
 }
@@ -208,7 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
                            atIndexPath:(NSIndexPath *)indexPath
                             withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
         return [cachedSize CGSizeValue];
     }
@@ -232,9 +243,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
 
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
 
     return finalSize;
+}
+
+- (id)cacheKeyForMessageData:(id<JSQMessageData>)messageData
+{
+    OWSAssert(messageData);
+    OWSAssert([messageData conformsToProtocol:@protocol(OWSMessageData)]);
+    OWSAssert(((id<OWSMessageData>)messageData).interaction);
+    OWSAssert(((id<OWSMessageData>)messageData).interaction.uniqueId);
+
+    return @([messageData messageHash]);
 }
 
 @end

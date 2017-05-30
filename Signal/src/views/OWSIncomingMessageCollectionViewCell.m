@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // pragma mark - OWSExpirableMessageView
 
-- (void)startExpirationTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
+- (void)startExpirationTimerWithExpiresAtSeconds:(double)expiresAtSeconds
                           initialDurationSeconds:(uint32_t)initialDurationSeconds
 {
     self.expirationTimerViewWidthConstraint.constant = OWSExpirableMessageViewTimerWidth;

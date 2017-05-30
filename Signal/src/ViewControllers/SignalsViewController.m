@@ -336,7 +336,7 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 #pragma mark - startup
 
-- (void)displayAnyUnseenUpgradeExperience
+- (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
 {
     AssertIsOnMainThread();
 
@@ -344,14 +344,31 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         unseenUpgrades = [self.experienceUpgradeFinder allUnseenWithTransaction:transaction];
     }];
+    return unseenUpgrades;
+}
+
+- (void)markAllUpgradeExperiencesAsSeen
+{
+    AssertIsOnMainThread();
+
+    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
+    }];
+}
+
+- (void)displayAnyUnseenUpgradeExperience
+{
+    AssertIsOnMainThread();
+
+    NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
     if (unseenUpgrades.count > 0) {
         ExperienceUpgradesPageViewController *experienceUpgradeViewController = [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
-        [self presentViewController:experienceUpgradeViewController animated:YES completion:^{
-            [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-                [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
-            }];
-        }];
+        [self presentViewController:experienceUpgradeViewController
+                           animated:YES
+                         completion:^{
+                             [self markAllUpgradeExperiencesAsSeen];
+                         }];
     }
 }
 
@@ -772,7 +789,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     [self.tableView endUpdates];
     [self checkIfEmptyView];
 }
-
 
 - (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
 }

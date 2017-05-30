@@ -47,6 +47,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         return self;
     }
 
+    // TODO: We need to configure the limits of this cache.
     _avatarCache = [NSCache new];
     _allContacts = @[];
     _signalAccountMap = @{};
