@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (rangeOfLetters.location != NSNotFound) {
         // Contact name contains letters, so it's probably not just a phone number.
         // Make an image from the contact's initials
-        NSCharacterSet *excludeAlphanumeric = [NSCharacterSet alphanumericCharacterSet].invertedSet;
+        NSCharacterSet *excludeAlphanumeric = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"].invertedSet;
         NSArray *words =
             [self.contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (NSString *word in words) {
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [initials appendString:[firstLetter uppercaseString]];
             }
         }
-        
+
         NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
         initials = [[initials substringWithRange:stringRange] mutableCopy];
     }
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We don't have a name for this contact, so we can't make an "initials" image
         [initials appendString:@"#"];
     }
-    
+
     UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
                                                                  backgroundColor:backgroundColor
