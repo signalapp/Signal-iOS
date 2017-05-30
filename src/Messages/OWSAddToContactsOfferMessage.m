@@ -32,14 +32,16 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable NSDate *)receiptDateForSorting
+- (BOOL)shouldUseReceiptDateForSorting
 {
-    // Always use date, since we're creating these interactions after the fact
-    // and back-dating them.
-    //
-    // By default [TSMessage receiptDateForSorting] will prefer to use receivedAtDate
-    // which is not back-dated.
-    return self.date;
+    // Use the timestamp, not the "received at" timestamp to sort,
+    // since we're creating these interactions after the fact and back-dating them.
+    return NO;
+}
+
+- (BOOL)isDynamicInteraction
+{
+    return YES;
 }
 
 @end

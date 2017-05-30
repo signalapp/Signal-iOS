@@ -35,6 +35,13 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
+// The timestamp property is populated by the envelope,
+// which is created by the sender.
+//
+// We typically want to order messages locally by when
+// they were received & decrypted, not by when they were sent.
+@property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+
 @end
 
 #pragma mark -
@@ -104,7 +111,7 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     _expiresInSeconds = expiresInSeconds;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
-    _receivedAtDate = [NSDate date];
+    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
 
     return self;
 }
@@ -133,10 +140,16 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
         _attachmentIds = [NSMutableArray new];
     }
 
-    if (!_receivedAtDate) {
-        // TSIncomingMessage.receivedAt has been superceded by TSMessage.receivedAtDate.
-        NSDate *receivedAt = [coder decodeObjectForKey:@"receivedAt"];
-        _receivedAtDate = receivedAt;
+    if (_receivedAtTimestamp == 0) {
+        // Upgrade from the older "receivedAtDate" and "receivedAt" properties if
+        // necessary.
+        NSDate *receivedAtDate = [coder decodeObjectForKey:@"receivedAtDate"];
+        if (!receivedAtDate) {
+            receivedAtDate = [coder decodeObjectForKey:@"receivedAt"];
+        }
+        if (receivedAtDate) {
+            _receivedAtTimestamp = [NSDate ows_millisecondsSince1970ForDate:receivedAtDate];
+        }
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -224,10 +237,19 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return self.expiresInSeconds > 0;
 }
 
-- (nullable NSDate *)receiptDateForSorting
+- (uint64_t)timestampForSorting
 {
-    // Prefer receivedAtDate if set, otherwise fallback to date.
-    return self.receivedAtDate ?: self.date;
+    if ([self shouldUseReceiptDateForSorting] && self.receivedAtTimestamp > 0) {
+        return self.receivedAtTimestamp;
+    } else {
+        OWSAssert(self.timestamp > 0);
+        return self.timestamp;
+    }
+}
+
+- (BOOL)shouldUseReceiptDateForSorting
+{
+    return YES;
 }
 
 #pragma mark - Logging

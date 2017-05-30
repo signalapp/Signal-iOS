@@ -12,11 +12,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingMessageWasReadOnThisDeviceNotification";
 
+@interface TSIncomingMessage ()
+
+@property (nonatomic, getter=wasRead) BOOL read;
+
+@end
+
+#pragma mark -
+
 @implementation TSIncomingMessage
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -57,8 +70,6 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
 
-    OWSAssert(self.receivedAtDate);
-
     return self;
 }
 
@@ -95,6 +106,13 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     }];
 
     return foundMessage;
+}
+
+#pragma mark - OWSReadTracking
+
+- (BOOL)shouldAffectUnreadCounts
+{
+    return YES;
 }
 
 - (void)markAsReadFromReadReceipt

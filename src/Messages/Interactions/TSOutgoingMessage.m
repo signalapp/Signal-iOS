@@ -186,8 +186,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     _attachmentFilenameMap = [NSMutableDictionary new];
 
-    OWSAssert(self.receivedAtDate);
-
     return self;
 }
 

@@ -3,15 +3,14 @@
 //
 
 #import "TSDatabaseView.h"
-
-#import <YapDatabase/YapDatabaseView.h>
-
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
+#import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabaseView.h>
 
 NSString *TSInboxGroup   = @"TSInboxGroup";
 NSString *TSArchiveGroup = @"TSArchiveGroup";
@@ -22,40 +21,128 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
+NSString *TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
+NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
+NSString *TSSafetyNumberChangeDatabaseViewExtensionName = @"TSSafetyNumberChangeDatabaseViewExtensionName";
 NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
 
-+ (BOOL)registerUnreadDatabaseView {
-    YapDatabaseView *unreadView =
-        [[TSStorageManager sharedManager].database registeredExtension:TSUnreadDatabaseViewExtensionName];
-    if (unreadView) {
++ (BOOL)registerMessageDatabaseViewWithName:(NSString *)viewName
+                               viewGrouping:(YapDatabaseViewGrouping *)viewGrouping
+                                    version:(NSString *)version
+{
+    OWSAssert(viewName.length > 0);
+    OWSAssert((viewGrouping));
+
+    YapDatabaseView *existingView = [[TSStorageManager sharedManager].database registeredExtension:viewName];
+    if (existingView) {
         return YES;
     }
 
+    YapDatabaseViewSorting *viewSorting = [self messagesSorting];
+
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = YES;
+    options.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
+
+    YapDatabaseView *view =
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:version options:options];
+
+    return [[TSStorageManager sharedManager].database registerExtension:view withName:viewName];
+}
+
++ (BOOL)registerUnreadDatabaseView
+{
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
             id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (possiblyRead.read == NO) {
+            if (!possiblyRead.wasRead && possiblyRead.shouldAffectUnreadCounts) {
                 return possiblyRead.uniqueThreadId;
             }
         }
         return nil;
     }];
 
-    YapDatabaseViewSorting *viewSorting = [self messagesSorting];
+    return [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
+}
 
-    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-    options.isPersistent            = YES;
-    options.allowedCollections =
-        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
++ (BOOL)registerUnseenDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
+            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+            if (!possiblyRead.wasRead) {
+                return possiblyRead.uniqueThreadId;
+            }
+        }
+        return nil;
+    }];
 
-    YapDatabaseView *view =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+    return [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
+}
 
-    return
-        [[TSStorageManager sharedManager].database registerExtension:view withName:TSUnreadDatabaseViewExtensionName];
++ (BOOL)registerDynamicMessagesDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSInteraction class]]) {
+            TSInteraction *interaction = (TSInteraction *)object;
+            if ([interaction isDynamicInteraction]) {
+                return interaction.uniqueThreadId;
+            }
+        } else {
+            OWSAssert(0);
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSDynamicMessagesDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"3"];
+}
+
++ (BOOL)registerSafetyNumberChangeDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+            TSInteraction *interaction = (TSInteraction *)object;
+            return interaction.uniqueThreadId;
+        } else if ([object isKindOfClass:[TSErrorMessage class]]) {
+            TSErrorMessage *errorMessage = (TSErrorMessage *)object;
+            if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
+                return errorMessage.uniqueThreadId;
+            }
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSSafetyNumberChangeDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"2"];
+}
+
++ (BOOL)registerThreadInteractionsDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSInteraction class]]) {
+            return ((TSInteraction *)object).uniqueThreadId;
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
 }
 
 + (BOOL)registerThreadDatabaseView {
@@ -95,35 +182,6 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
                 .database registerExtension:databaseView
                                    withName:TSThreadDatabaseViewExtensionName];
 }
-
-+ (BOOL)registerBuddyConversationDatabaseView {
-    if ([[TSStorageManager sharedManager].database registeredExtension:TSMessageDatabaseViewExtensionName]) {
-        return YES;
-    }
-
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping
-        withObjectBlock:^NSString *(
-            YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-          if ([object isKindOfClass:[TSInteraction class]]) {
-              return ((TSInteraction *)object).uniqueThreadId;
-          }
-          return nil;
-        }];
-
-    YapDatabaseViewSorting *viewSorting = [self messagesSorting];
-
-    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-    options.isPersistent            = YES;
-    options.allowedCollections =
-        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
-
-    YapDatabaseView *view =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
-
-    return
-        [[TSStorageManager sharedManager].database registerExtension:view withName:TSMessageDatabaseViewExtensionName];
-}
-
 
 /**
  *  Determines whether a thread belongs to the archive or inbox
@@ -183,23 +241,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
           TSInteraction *message1 = (TSInteraction *)object1;
           TSInteraction *message2 = (TSInteraction *)object2;
 
-          NSDate *date1 = [self localTimeReceiveDateForInteraction:message1];
-          NSDate *date2 = [self localTimeReceiveDateForInteraction:message2];
-
-          NSComparisonResult result = [date1 compare:date2];
-
-          // NSDates are only accurate to the second, we might want finer precision
-          if (result != NSOrderedSame) {
-              return result;
-          }
-
-          if (message1.timestamp > message2.timestamp) {
-              return NSOrderedDescending;
-          } else if (message1.timestamp < message2.timestamp) {
-              return NSOrderedAscending;
-          } else {
-              return NSOrderedSame;
-          }
+          return [message1 compareForSorting:message2];
       }
 
       return NSOrderedSame;
@@ -261,10 +303,6 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
                        DDLogError(@"%@ Unable to setup extension: %@", self.tag, TSSecondaryDevicesGroup);
                    }
                }];
-}
-
-+ (NSDate *)localTimeReceiveDateForInteraction:(TSInteraction *)interaction {
-    return [interaction receiptDateForSorting];
 }
 
 #pragma mark - Logging
