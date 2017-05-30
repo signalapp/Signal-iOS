@@ -214,9 +214,14 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 {
     OWSAssert([NSThread isMainThread]);
 
-    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
+    // Preserve any existing values, so that contacts that have been removed
+    // from system contacts still show up properly in the app.
+    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap
+        = (self.cachedAccountNameMap ? [self.cachedAccountNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap
+        = (self.cachedFirstNameMap ? [self.cachedFirstNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap
+        = (self.cachedLastNameMap ? [self.cachedLastNameMap mutableCopy] : [NSMutableDictionary new]);
     for (SignalAccount *signalAccount in self.signalAccounts) {
         NSString *baseName
             = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
@@ -292,6 +297,13 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
                                          }];
         }];
 
+        if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
+            // If these properties have already been populated from system contacts,
+            // don't overwrite.  In practice this should never happen.
+            OWSAssert(0);
+            return;
+        }
+
         self.cachedAccountNameMap = [cachedAccountNameMap copy];
         self.cachedFirstNameMap = [cachedFirstNameMap copy];
         self.cachedLastNameMap = [cachedLastNameMap copy];
@@ -300,21 +312,21 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 
 - (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.lastPathComponent > 0);
+    OWSAssert(recipientId.length > 0);
 
     return self.cachedAccountNameMap[recipientId];
 }
 
 - (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.lastPathComponent > 0);
+    OWSAssert(recipientId.length > 0);
 
     return self.cachedFirstNameMap[recipientId];
 }
 
 - (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.lastPathComponent > 0);
+    OWSAssert(recipientId.length > 0);
 
     return self.cachedLastNameMap[recipientId];
 }
