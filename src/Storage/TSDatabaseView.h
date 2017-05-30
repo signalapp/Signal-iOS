@@ -14,6 +14,8 @@ extern NSString *TSSecondaryDevicesGroup;
 
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
+extern NSString *TSThreadIncomingMessageDatabaseViewExtensionName;
+extern NSString *TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
 extern NSString *TSUnseenDatabaseViewExtensionName;
 extern NSString *TSDynamicMessagesDatabaseViewExtensionName;
@@ -22,6 +24,8 @@ extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerThreadInteractionsDatabaseView;
++ (BOOL)registerThreadIncomingMessagesDatabaseView;
++ (BOOL)registerThreadOutgoingMessagesDatabaseView;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //

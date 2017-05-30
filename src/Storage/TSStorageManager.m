@@ -198,6 +198,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     // Register extensions which are essential for rendering threads synchronously
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerThreadInteractionsDatabaseView];
+    [TSDatabaseView registerThreadIncomingMessagesDatabaseView];
+    [TSDatabaseView registerThreadOutgoingMessagesDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
     [TSDatabaseView registerUnseenDatabaseView];
     [TSDatabaseView registerDynamicMessagesDatabaseView];
