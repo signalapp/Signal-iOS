@@ -3,16 +3,22 @@
 //
 
 #import "SignalsNavigationController.h"
-
 #import "UIUtil.h"
+#import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/TSSocketManager.h>
+
+static double const STALLED_PROGRESS = 0.9;
 
 @interface SignalsNavigationController ()
 
+@property (nonatomic) UIProgressView *socketStatusView;
+@property (nonatomic) NSTimer *updateStatusTimer;
+
 @end
 
-static double const STALLED_PROGRESS = 0.9;
-@implementation SignalsNavigationController
+#pragma mark -
 
+@implementation SignalsNavigationController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -36,7 +42,8 @@ static double const STALLED_PROGRESS = 0.9;
     }
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -47,6 +54,17 @@ static double const STALLED_PROGRESS = 0.9;
                                              selector:@selector(socketManagerStateDidChange)
                                                  name:kNSNotification_SocketManagerStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(isCensorshipCircumventionActiveDidChange:)
+                                                 name:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                                               object:nil];
+}
+
+- (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateSocketStatusView];
 }
 
 - (void)socketManagerStateDidChange {
@@ -57,7 +75,14 @@ static double const STALLED_PROGRESS = 0.9;
 
 - (void)updateSocketStatusView {
     OWSAssert([NSThread isMainThread]);
-    
+
+    if ([OWSSignalService sharedInstance].isCensorshipCircumventionActive) {
+        [_updateStatusTimer invalidate];
+        [_socketStatusView removeFromSuperview];
+        _socketStatusView = nil;
+        return;
+    }
+
     switch ([TSSocketManager sharedManager].state) {
         case SocketManagerStateClosed:
             if (_socketStatusView == nil) {
@@ -77,12 +102,8 @@ static double const STALLED_PROGRESS = 0.9;
             break;
         case SocketManagerStateOpen:
             [_updateStatusTimer invalidate];
-            for (UIView *view in self.navigationBar.subviews) {
-                if ([view isKindOfClass:[UIProgressView class]]) {
-                    [view removeFromSuperview];
-                    _socketStatusView = nil;
-                }
-            }
+            [_socketStatusView removeFromSuperview];
+            _socketStatusView = nil;
             break;
     }
 }

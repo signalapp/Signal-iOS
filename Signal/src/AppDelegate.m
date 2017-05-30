@@ -18,10 +18,6 @@
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
-#import "TSMessagesManager.h"
-#import "TSSocketManager.h"
-#import "TSStorageManager+Calling.h"
-#import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
@@ -31,7 +27,11 @@
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
+#import <SignalServiceKit/TSStorageManager+Calling.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 
 @import WebRTC;
 @import Intents;

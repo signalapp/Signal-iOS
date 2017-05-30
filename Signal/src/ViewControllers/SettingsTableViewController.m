@@ -13,9 +13,9 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-#import "TSAccountManager.h"
-#import "TSSocketManager.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 @interface SettingsTableViewController ()
 
