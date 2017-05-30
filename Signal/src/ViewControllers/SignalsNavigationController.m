@@ -4,6 +4,7 @@
 
 #import "SignalsNavigationController.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -87,12 +88,13 @@ static double const STALLED_PROGRESS = 0.9;
         case SocketManagerStateClosed:
             if (_socketStatusView == nil) {
                 [self initializeSocketStatusBar];
-                _updateStatusTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
-                                                                      target:self
-                                                                    selector:@selector(updateProgress)
-                                                                    userInfo:nil
-                                                                     repeats:YES];
-                
+                [_updateStatusTimer invalidate];
+                _updateStatusTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.5
+                                                                          target:self
+                                                                        selector:@selector(updateProgress)
+                                                                        userInfo:nil
+                                                                         repeats:YES];
+
             } else if (_socketStatusView.progress >= STALLED_PROGRESS) {
                 [_updateStatusTimer invalidate];
             }

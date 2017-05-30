@@ -585,6 +585,7 @@ typedef enum : NSUInteger {
             }
         }];
 
+    [self.voiceMemoUpdateTimer invalidate];
     self.voiceMemoUpdateTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
                                                                      target:self
                                                                    selector:@selector(updateVoiceMemo)
@@ -972,6 +973,10 @@ typedef enum : NSUInteger {
                                                      name:UIApplicationWillEnterForegroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackground:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationWillResignActive:)
                                                      name:UIApplicationWillResignActiveNotification
                                                    object:nil];
@@ -1004,6 +1009,16 @@ typedef enum : NSUInteger {
     [self startReadTimer];
     [self startExpirationTimerAnimations];
     [self ensureThreadOffersAndIndicators];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    //    self.hasEnteredBackground = YES;
+
+    if (self.hasClearedUnreadMessagesIndicator) {
+        self.hasClearedUnreadMessagesIndicator = NO;
+        self.offersAndIndicators = nil;
+    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -1279,11 +1294,12 @@ typedef enum : NSUInteger {
 }
 
 - (void)startReadTimer {
-    self.readTimer = [NSTimer scheduledTimerWithTimeInterval:1
-                                                      target:self
-                                                    selector:@selector(readTimerDidFire)
-                                                    userInfo:nil
-                                                     repeats:YES];
+    [self.readTimer invalidate];
+    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:2
+                                                          target:self
+                                                        selector:@selector(readTimerDidFire)
+                                                        userInfo:nil
+                                                         repeats:YES];
 }
 
 - (void)readTimerDidFire
@@ -2972,7 +2988,11 @@ typedef enum : NSUInteger {
     // make sure we don't show it again.
     self.hasClearedUnreadMessagesIndicator = YES;
 
-    [self ensureThreadOffersAndIndicators];
+    if (self.offersAndIndicators.unreadIndicatorPosition) {
+        // If we've just cleared the "unread messages" indicator,
+        // update the dynamic interactions.
+        [self ensureThreadOffersAndIndicators];
+    }
 }
 
 #pragma mark - Attachment Picking: Documents

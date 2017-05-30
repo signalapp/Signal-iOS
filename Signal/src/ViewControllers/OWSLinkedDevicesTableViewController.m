@@ -6,6 +6,7 @@
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "UIViewController+CameraPermissions.h"
+#import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -100,11 +101,11 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     self.editing = NO;
 
     __weak typeof(self) wself = self;
-    self.pollingRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:(10.0)
-                                                                target:wself
-                                                              selector:@selector(refreshDevices)
-                                                              userInfo:nil
-                                                               repeats:YES];
+    [self.pollingRefreshTimer invalidate];
+    self.pollingRefreshTimer = [NSTimer weakScheduledTimerWithTimeInterval:(10.0)target:wself
+                                                                  selector:@selector(refreshDevices)
+                                                                  userInfo:nil
+                                                                   repeats:YES];
 
     NSString *progressText = NSLocalizedString(@"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
         @"Activity indicator title, shown upon returning to the device "
