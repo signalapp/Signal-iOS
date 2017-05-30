@@ -242,14 +242,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Just to be defensive, we'll also check for unread messages.
-    OWSAssert([self unreadMessagesWithTransaction:transaction].count < 1);
+    OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
 - (void)markAllAsRead
 {
-    for (id<OWSReadTracking> message in [self unreadMessages]) {
-        [message markAsReadLocally];
-    }
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self markAllAsReadWithTransaction:transaction];
+    }];
 }
 
 - (TSInteraction *) lastInteraction {
