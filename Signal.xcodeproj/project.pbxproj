@@ -143,6 +143,7 @@
 		45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
 		4585C4601ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m in Sources */ = {isa = PBXBuildFile; fileRef = 4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */; };
 		4585C4661ED5DF7A00896AEA /* ProfileFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4651ED5DF7A00896AEA /* ProfileFetcherJob.swift */; };
+		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
 		458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
@@ -559,6 +560,7 @@
 		4585C45E1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS104CreateRecipientIdentities.h; path = Migrations/OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
 		4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS104CreateRecipientIdentities.m; path = Migrations/OWS104CreateRecipientIdentities.m; sourceTree = "<group>"; };
 		4585C4651ED5DF7A00896AEA /* ProfileFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcherJob.swift; sourceTree = "<group>"; };
+		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationAlert.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerConnectionClient.swift; sourceTree = "<group>"; };
@@ -976,6 +978,7 @@
 				340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */,
 				34B3F8A01E8EA6040035BE1A /* ViewControllerUtils.h */,
 				34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */,
+				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -2071,6 +2074,7 @@
 				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
+				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,

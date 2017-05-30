@@ -1,16 +1,11 @@
 //
-//  FingerprintViewController.h
-//  Signal
-//
-//  Created by Dylan Bourgeois on 02/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQRCodeScanningViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSThread;
 @class OWSFingerprint;
 @class OWSConversationSettingsTableViewController;
 
@@ -18,9 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable) OWSConversationSettingsTableViewController *dismissDelegate;
 
-- (void)configureWithThread:(TSThread *)thread
-                fingerprint:(OWSFingerprint *)fingerprint
-                contactName:(NSString *)contactName;
+- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint
+                     contactName:(NSString *)contactName NS_SWIFT_NAME(configure(fingerprint:contactName:));
 
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
 

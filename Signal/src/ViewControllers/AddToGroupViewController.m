@@ -6,6 +6,7 @@
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -50,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(phoneNumber.length > 0);
 
     __weak AddToGroupViewController *weakSelf = self;
+
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([helper isRecipientIdBlocked:phoneNumber]) {
         [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
@@ -61,9 +63,27 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [weakSelf addToGroup:phoneNumber];
                                                 }
                                             }];
-    } else {
-        [self addToGroup:phoneNumber];
+        return;
     }
+
+    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+        presentAlertIfNecessaryFromViewController:self
+                                      recipientId:phoneNumber
+                                 confirmationText:
+                                     NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
+                                         @"button title to confirm adding a recipient to a group when their safety "
+                                         @"number has recently changed")
+                                  contactsManager:helper.contactsManager
+                                       completion:^(BOOL didConfirmIdentity) {
+                                           if (didConfirmIdentity) {
+                                               [weakSelf addToGroup:phoneNumber];
+                                           }
+                                       }];
+    if (didShowSNAlert) {
+        return;
+    }
+
+    [self addToGroup:phoneNumber];
 }
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
@@ -83,7 +103,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(0);
 
         return;
-    } else if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    }
+
+    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
                                               blockingManager:helper.blockingManager
@@ -93,9 +115,27 @@ NS_ASSUME_NONNULL_BEGIN
                                                       [weakSelf addToGroup:signalAccount.recipientId];
                                                   }
                                               }];
-    } else {
-        [self addToGroup:signalAccount.recipientId];
+        return;
     }
+
+    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+        presentAlertIfNecessaryFromViewController:self
+                                      recipientId:signalAccount.recipientId
+                                 confirmationText:
+                                     NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
+                                         @"button title to confirm adding a recipient to a group when their safety "
+                                         @"number has recently changed")
+                                  contactsManager:helper.contactsManager
+                                       completion:^(BOOL didConfirmIdentity) {
+                                           if (didConfirmIdentity) {
+                                               [weakSelf addToGroup:signalAccount.recipientId];
+                                           }
+                                       }];
+    if (didShowSNAlert) {
+        return;
+    }
+
+    [self addToGroup:signalAccount.recipientId];
 }
 
 - (void)addToGroup:(NSString *)recipientId
