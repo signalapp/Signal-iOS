@@ -329,17 +329,29 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     NSAttributedString *_Nullable firstName, *_Nullable lastName;
     if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
         if (contact.firstName) {
-            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:boldFontAttributes];
+            firstName = [[NSAttributedString alloc]
+                initWithString:[contact.firstName
+                                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                    attributes:boldFontAttributes];
         }
         if (contact.lastName) {
-            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:normalFontAttributes];
+            lastName = [[NSAttributedString alloc]
+                initWithString:[contact.lastName
+                                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                    attributes:normalFontAttributes];
         }
     } else {
         if (contact.firstName) {
-            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:normalFontAttributes];
+            firstName = [[NSAttributedString alloc]
+                initWithString:[contact.firstName
+                                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                    attributes:normalFontAttributes];
         }
         if (contact.lastName) {
-            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:boldFontAttributes];
+            lastName = [[NSAttributedString alloc]
+                initWithString:[contact.lastName
+                                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                    attributes:boldFontAttributes];
         }
     }
 
