@@ -187,7 +187,7 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@protocol OWSMessagesToolbarContentDelegate <NSObject>
+@protocol OWSVoiceMemoGestureDelegate <NSObject>
 
 - (void)voiceMemoGestureDidStart;
 
@@ -201,9 +201,19 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
+@protocol OWSSendMessageGestureDelegate <NSObject>
+
+- (void)sendMessageGestureRecognized;
+
+@end
+
+#pragma mark -
+
 @interface OWSMessagesToolbarContentView () <UIGestureRecognizerDelegate>
 
-@property (nonatomic, nullable, weak) id<OWSMessagesToolbarContentDelegate> delegate;
+@property (nonatomic, nullable, weak) id<OWSVoiceMemoGestureDelegate> voiceMemoGestureDelegate;
+
+@property (nonatomic, nullable, weak) id<OWSSendMessageGestureDelegate> sendMessageGestureDelegate;
 
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
 
@@ -255,6 +265,17 @@ typedef enum : NSUInteger {
         longPressGestureRecognizer.minimumPressDuration = 0;
         longPressGestureRecognizer.delegate = self;
         [self addGestureRecognizer:longPressGestureRecognizer];
+
+        // We want to be permissive about taps on the send button, so we:
+        //
+        // * Add the gesture recognizer to the button's superview instead of the button.
+        // * Filter the touches that the gesture recognizer receives by serving as its
+        //   delegate.
+        UITapGestureRecognizer *tapGestureRecognizer =
+            [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        tapGestureRecognizer.delegate = self;
+        [self addGestureRecognizer:tapGestureRecognizer];
+
         self.userInteractionEnabled = YES;
 
         self.voiceMemoButton = button;
@@ -309,19 +330,19 @@ typedef enum : NSUInteger {
             if (self.isRecordingVoiceMemo) {
                 // Cancel voice message if necessary.
                 self.isRecordingVoiceMemo = NO;
-                [self.delegate voiceMemoGestureDidCancel];
+                [self.voiceMemoGestureDelegate voiceMemoGestureDidCancel];
             }
             break;
         case UIGestureRecognizerStateBegan:
             if (self.isRecordingVoiceMemo) {
                 // Cancel voice message if necessary.
                 self.isRecordingVoiceMemo = NO;
-                [self.delegate voiceMemoGestureDidCancel];
+                [self.voiceMemoGestureDelegate voiceMemoGestureDidCancel];
             }
             // Start voice message.
             self.isRecordingVoiceMemo = YES;
             self.voiceMemoGestureStartLocation = [sender locationInView:self];
-            [self.delegate voiceMemoGestureDidStart];
+            [self.voiceMemoGestureDelegate voiceMemoGestureDidStart];
             break;
         case UIGestureRecognizerStateChanged:
             if (self.isRecordingVoiceMemo) {
@@ -335,9 +356,9 @@ typedef enum : NSUInteger {
                 BOOL isCancelled = cancelAlpha >= 1.f;
                 if (isCancelled) {
                     self.isRecordingVoiceMemo = NO;
-                    [self.delegate voiceMemoGestureDidCancel];
+                    [self.voiceMemoGestureDelegate voiceMemoGestureDidCancel];
                 } else {
-                    [self.delegate voiceMemoGestureDidChange:cancelAlpha];
+                    [self.voiceMemoGestureDelegate voiceMemoGestureDidChange:cancelAlpha];
                 }
             }
             break;
@@ -345,8 +366,19 @@ typedef enum : NSUInteger {
             if (self.isRecordingVoiceMemo) {
                 // End voice message.
                 self.isRecordingVoiceMemo = NO;
-                [self.delegate voiceMemoGestureDidEnd];
+                [self.voiceMemoGestureDelegate voiceMemoGestureDidEnd];
             }
+            break;
+    }
+}
+
+- (void)handleTap:(UIGestureRecognizer *)sender
+{
+    switch (sender.state) {
+        case UIGestureRecognizerStateRecognized:
+            [self.sendMessageGestureDelegate sendMessageGestureRecognized];
+            break;
+        default:
             break;
     }
 }
@@ -362,24 +394,40 @@ typedef enum : NSUInteger {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    if (self.rightBarButtonItem != self.voiceMemoButton) {
-        return NO;
-    }
+    if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+        if (self.rightBarButtonItem != self.voiceMemoButton) {
+            return NO;
+        }
 
-    // We want to be permissive about the voice message gesture, so we accept
-    // gesture that begin within N points of the
-    CGFloat kVoiceMemoGestureTolerancePoints = 10;
-    CGPoint location = [touch locationInView:self.voiceMemoButton];
-    CGRect hitTestRect = CGRectInset(
-        self.voiceMemoButton.bounds, -kVoiceMemoGestureTolerancePoints, -kVoiceMemoGestureTolerancePoints);
-    return CGRectContainsPoint(hitTestRect, location);
+        // We want to be permissive about the voice message gesture, so we accept
+        // gesture that begin within N points of its bounds.
+        CGFloat kVoiceMemoGestureTolerancePoints = 10;
+        CGPoint location = [touch locationInView:self.voiceMemoButton];
+        CGRect hitTestRect = CGRectInset(
+            self.voiceMemoButton.bounds, -kVoiceMemoGestureTolerancePoints, -kVoiceMemoGestureTolerancePoints);
+        return CGRectContainsPoint(hitTestRect, location);
+    } else if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+        if (self.rightBarButtonItem == self.voiceMemoButton) {
+            return NO;
+        }
+
+        UIView *sendButton = self.rightBarButtonItem;
+        // We want to be permissive about taps on the send button, so we accept
+        // gesture that begin within N points of its bounds.
+        CGFloat kSendButtonTolerancePoints = 10;
+        CGPoint location = [touch locationInView:sendButton];
+        CGRect hitTestRect = CGRectInset(sendButton.bounds, -kSendButtonTolerancePoints, -kSendButtonTolerancePoints);
+        return CGRectContainsPoint(hitTestRect, location);
+    } else {
+        return YES;
+    }
 }
 
 @end
 
 #pragma mark -
 
-@interface OWSMessagesInputToolbar ()
+@interface OWSMessagesInputToolbar () <OWSSendMessageGestureDelegate>
 
 @property (nonatomic) UIView *voiceMemoUI;
 
@@ -409,6 +457,7 @@ typedef enum : NSUInteger {
     OWSAssert(views.count == 1);
     OWSMessagesToolbarContentView *view = views[0];
     OWSAssert([view isKindOfClass:[OWSMessagesToolbarContentView class]]);
+    view.sendMessageGestureDelegate = self;
     return view;
 }
 
@@ -587,13 +636,21 @@ typedef enum : NSUInteger {
     [self.recordingLabel sizeToFit];
 }
 
+#pragma mark - OWSSendMessageGestureDelegate
+
+- (void)sendMessageGestureRecognized
+{
+    OWSAssert(self.sendButtonOnRight);
+    [self.delegate messagesInputToolbar:self didPressRightBarButton:self.contentView.rightBarButtonItem];
+}
+
 @end
 
 #pragma mark -
 
 @interface MessagesViewController () <JSQMessagesComposerTextViewPasteDelegate,
     OWSTextViewPasteDelegate,
-    OWSMessagesToolbarContentDelegate,
+    OWSVoiceMemoGestureDelegate,
     OWSConversationSettingsViewDelegate,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate,
@@ -1533,7 +1590,7 @@ typedef enum : NSUInteger {
     OWSAssert(self.inputToolbar.contentView.textView);
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     ((OWSMessagesComposerTextView *) self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
-    ((OWSMessagesToolbarContentView *)self.inputToolbar.contentView).delegate = self;
+    ((OWSMessagesToolbarContentView *)self.inputToolbar.contentView).voiceMemoGestureDelegate = self;
 }
 
 // Overiding JSQMVC layout defaults
@@ -3987,7 +4044,7 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:NO];
 }
 
-#pragma mark - OWSMessagesToolbarContentDelegate
+#pragma mark - OWSVoiceMemoGestureDelegate
 
 - (void)voiceMemoGestureDidStart
 {
