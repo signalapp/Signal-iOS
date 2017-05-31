@@ -130,7 +130,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: aaeda003723392cb0fcbdb0b76b36923cbfec4b2
+    :commit: 9bf4423f352981e7b6d22f7ad25803377b9782f0
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
