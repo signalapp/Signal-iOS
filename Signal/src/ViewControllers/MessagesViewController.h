@@ -6,6 +6,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <JSQMessagesViewController/JSQMessagesViewController.h>
 #import "TSGroupModel.h"
+
 @class TSThread;
 
 extern NSString *const OWSMessagesViewControllerDidAppearNotification;
@@ -28,18 +29,14 @@ extern NSString *const OWSMessagesViewControllerDidAppearNotification;
 
 #pragma mark -
 
-@interface MessagesViewController : JSQMessagesViewController <UIImagePickerControllerDelegate,
-                                                               UINavigationControllerDelegate,
-                                                               UITextViewDelegate,
-                                                               AVAudioPlayerDelegate,
-                                                               UIGestureRecognizerDelegate>
-
+@interface MessagesViewController : JSQMessagesViewController
 
 @property (nonatomic, readonly) TSThread *thread;
 
 - (void)configureForThread:(TSThread *)thread
     keyboardOnViewAppearing:(BOOL)keyboardAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;
+
 - (void)popKeyBoard;
 
 #pragma mark 3D Touch Methods
