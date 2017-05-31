@@ -111,41 +111,6 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-@interface OWSMessagesCollectionViewFlowLayout : JSQMessagesCollectionViewFlowLayout
-
-@property (nonatomic) CGRect lastBounds;
-
-@end
-
-#pragma mark -
-
-@implementation OWSMessagesCollectionViewFlowLayout
-
-- (void)prepareLayout
-{
-    [super prepareLayout];
-
-    DDLogError(@"----- OWSMessagesCollectionViewFlowLayout prepareLayout");
-}
-
-//- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
-//    BOOL result = self.lastBounds.size.width != newBounds.size.width;
-//
-//    DDLogError(@"----- OWSMessagesCollectionViewFlowLayout shouldInvalidat: %d, lastBounds: %@, newBounds: %@",
-//    result,
-//               NSStringFromCGRect(self.lastBounds),
-//               NSStringFromCGRect(newBounds)
-//               );
-//
-//    self.lastBounds = newBounds;
-//
-//    return result;
-//}
-
-@end
-
-#pragma mark -
-
 @interface MessagesViewController () <AVAudioPlayerDelegate,
     ContactsViewHelperDelegate,
     ContactEditingDelegate,
@@ -1132,7 +1097,6 @@ typedef enum : NSUInteger {
     self.view.frame = viewFrame;
     self.collectionView.frame = viewFrame;
 
-    self.collectionView.collectionViewLayout = [OWSMessagesCollectionViewFlowLayout new];
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
     self.collectionView.showsVerticalScrollIndicator = NO;
