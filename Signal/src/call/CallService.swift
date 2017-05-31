@@ -110,9 +110,10 @@ protocol CallServiceObserver: class {
     private let accountManager: AccountManager
     private let messageSender: MessageSender
     private let contactsManager: OWSContactsManager
-    private let notificationsAdapter: CallNotificationsAdapter
+    private let storageManager: TSStorageManager
 
     // Exposed by environment.m
+    internal let notificationsAdapter: CallNotificationsAdapter
     internal var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
@@ -200,6 +201,7 @@ protocol CallServiceObserver: class {
         self.contactsManager = contactsManager
         self.messageSender = messageSender
         self.notificationsAdapter = notificationsAdapter
+        self.storageManager = TSStorageManager.shared()
 
         super.init()
 
@@ -465,9 +467,16 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         Logger.info("\(TAG) receivedCallOffer for thread:\(thread)")
+
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard call == nil else {
+        guard !self.storageManager.hasUnseenIdentityChange(forRecipientId: thread.contactIdentifier()) else {
+            let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
+            self.notificationsAdapter.presentRejectedCallWithUnseenIdentityChange(newCall, callerName: callerName)
+            return
+        }
+
+        guard self.call == nil else {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
             Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
 

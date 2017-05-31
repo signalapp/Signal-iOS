@@ -46,6 +46,8 @@ import Foundation
             return false
         }
 
+        // TODO possible to get here when. e.g. dialing from contacts/recent calls. Should verify seen latest SN.
+
         // Check for microphone permissions
         // Alternative way without prompting for permissions:
         // if AVAudioSession.sharedInstance().recordPermission() == .denied {

@@ -16,7 +16,13 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
-#define pushManagerDomain @"org.whispersystems.pushmanager"
+NSString *const Signal_Thread_UserInfo_Key = @"Signal_Thread_Id";
+NSString *const Signal_Message_UserInfo_Key = @"Signal_Message_Id";
+
+NSString *const Signal_Full_New_Message_Category = @"Signal_Full_New_Message";
+
+NSString *const Signal_Message_Reply_Identifier = @"Signal_New_Message_Reply";
+NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRead";
 
 @interface PushManager ()
 
@@ -132,10 +138,9 @@
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ handling action with identifier: %@", self.tag, identifier);
 
     if ([identifier isEqualToString:Signal_Message_Reply_Identifier]) {
-        DDLogInfo(@"%@ received reply identifier", self.tag);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
         if (threadId) {
@@ -146,6 +151,7 @@
                                                  messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]];
             [self.messageSender sendMessage:message
                 success:^{
+                    // TODO do we really want to mark them all as read?
                     [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
                     [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
                 }
@@ -162,10 +168,9 @@
                 }];
         }
     } else if ([identifier isEqualToString:Signal_Message_MarkAsRead_Identifier]) {
+        // TODO mark all as read? Or just this one?
         [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
     } else if ([identifier isEqualToString:PushManagerActionsAcceptCall]) {
-        DDLogInfo(@"%@ received accept call action", self.tag);
-
         NSString *localIdString = notification.userInfo[PushManagerUserInfoKeysLocalCallId];
         if (!localIdString) {
             DDLogError(@"%@ missing localIdString.", self.tag);
@@ -178,11 +183,9 @@
             return;
         }
 
-
         [self.callUIAdapter answerCallWithLocalId:localId];
+        completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsDeclineCall]) {
-        DDLogInfo(@"%@ received decline call action", self.tag);
-
         NSString *localIdString = notification.userInfo[PushManagerUserInfoKeysLocalCallId];
         if (!localIdString) {
             DDLogError(@"%@ missing localIdString.", self.tag);
@@ -196,9 +199,8 @@
         }
 
         [self.callUIAdapter declineCallWithLocalId:localId];
+        completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsCallBack]) {
-        DDLogInfo(@"%@ received call back action", self.tag);
-
         NSString *recipientId = notification.userInfo[PushManagerUserInfoKeysCallBackSignalRecipientId];
         if (!recipientId) {
             DDLogError(@"%@ missing call back id", self.tag);
@@ -206,9 +208,26 @@
         }
 
         [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
-    } else {
-        DDLogDebug(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
+        completionHandler();
+    } else if ([identifier isEqualToString:PushManagerActionsConfirmIdentityAndCallBack]) {
+        NSString *recipientId = notification.userInfo[PushManagerUserInfoKeysCallBackSignalRecipientId];
+        if (!recipientId) {
+            DDLogError(@"%@ missing call back id", self.tag);
+            return;
+        }
 
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        [MarkIdentityAsSeenJob runWithThread:thread];
+
+        [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
+        completionHandler();
+    } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {
+        NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+        [Environment messageThreadId:threadId];
+        completionHandler();
+    } else {
+        DDLogError(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
+        OWSFail(@"Unhandled action");
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
         completionHandler();
@@ -338,10 +357,14 @@
 
 NSString *const PushManagerCategoriesIncomingCall = @"PushManagerCategoriesIncomingCall";
 NSString *const PushManagerCategoriesMissedCall = @"PushManagerCategoriesMissedCall";
+NSString *const PushManagerCategoriesRejectedCallFromUnseenIdentityChange =
+    @"PushManagerCategoriesRejectedCallFromUnseenIdentityChange";
 
 NSString *const PushManagerActionsAcceptCall = @"PushManagerActionsAcceptCall";
 NSString *const PushManagerActionsDeclineCall = @"PushManagerActionsDeclineCall";
 NSString *const PushManagerActionsCallBack = @"PushManagerActionsCallBack";
+NSString *const PushManagerActionsConfirmIdentityAndCallBack = @"PushManagerActionsConfirmIdentityAndCallBack";
+NSString *const PushManagerActionsShowThread = @"PushManagerActionsShowThread";
 
 NSString *const PushManagerUserInfoKeysLocalCallId = @"PushManagerUserInfoKeysLocalCallId";
 NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManagerUserInfoKeysCallBackSignalRecipientId";
@@ -379,12 +402,38 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     callBackAction.destructive = NO;
     callBackAction.authenticationRequired = YES;
 
-    UIMutableUserNotificationCategory *callCategory = [UIMutableUserNotificationCategory new];
-    callCategory.identifier = PushManagerCategoriesMissedCall;
-    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextMinimal];
-    [callCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextDefault];
+    UIMutableUserNotificationCategory *missedCallCategory = [UIMutableUserNotificationCategory new];
+    missedCallCategory.identifier = PushManagerCategoriesMissedCall;
+    [missedCallCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextMinimal];
+    [missedCallCategory setActions:@[ callBackAction ] forContext:UIUserNotificationActionContextDefault];
 
-    return callCategory;
+    return missedCallCategory;
+}
+
+- (UIUserNotificationCategory *)signalRejectedCallWithUnseenIdentityChangeCategory
+{
+    UIMutableUserNotificationAction *confirmAndCallBackAction = [UIMutableUserNotificationAction new];
+    confirmAndCallBackAction.identifier = PushManagerActionsConfirmIdentityAndCallBack;
+    confirmAndCallBackAction.title = [CallStrings confirmIdentityAndCallBackButtonTitle];
+    confirmAndCallBackAction.activationMode = UIUserNotificationActivationModeForeground;
+    confirmAndCallBackAction.destructive = NO;
+    confirmAndCallBackAction.authenticationRequired = YES;
+
+    UIMutableUserNotificationAction *showThreadAction = [UIMutableUserNotificationAction new];
+    showThreadAction.identifier = PushManagerActionsShowThread;
+    showThreadAction.title = [CallStrings showThreadButtonTitle];
+    showThreadAction.activationMode = UIUserNotificationActivationModeForeground;
+    showThreadAction.destructive = NO;
+    showThreadAction.authenticationRequired = YES;
+
+    UIMutableUserNotificationCategory *rejectedCallCategory = [UIMutableUserNotificationCategory new];
+    rejectedCallCategory.identifier = PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+    [rejectedCallCategory setActions:@[ confirmAndCallBackAction, showThreadAction ]
+                          forContext:UIUserNotificationActionContextMinimal];
+    [rejectedCallCategory setActions:@[ confirmAndCallBackAction, showThreadAction ]
+                          forContext:UIUserNotificationActionContextDefault];
+
+    return rejectedCallCategory;
 }
 
 #pragma mark Util
@@ -408,6 +457,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
                                           categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
                                                             [self signalIncomingCallCategory],
                                                             [self signalMissedCallCategory],
+                                                            [self signalRejectedCallWithUnseenIdentityChangeCategory],
                                                             nil]];
 
     [UIApplication.sharedApplication registerUserNotificationSettings:settings];

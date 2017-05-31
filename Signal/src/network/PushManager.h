@@ -10,22 +10,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UILocalNotification;
 
-#define Signal_Thread_UserInfo_Key @"Signal_Thread_Id"
-#define Signal_Message_UserInfo_Key @"Signal_Message_Id"
+FOUNDATION_EXPORT NSString *const Signal_Thread_UserInfo_Key;
+FOUNDATION_EXPORT NSString *const Signal_Message_UserInfo_Key;
 
-#define Signal_Full_New_Message_Category @"Signal_Full_New_Message"
+FOUNDATION_EXPORT NSString *const Signal_Full_New_Message_Category;
 
-#define Signal_Message_Reply_Identifier @"Signal_New_Message_Reply"
-#define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
+FOUNDATION_EXPORT NSString *const Signal_Message_Reply_Identifier;
+FOUNDATION_EXPORT NSString *const Signal_Message_MarkAsRead_Identifier;
 
 #pragma mark Signal Calls constants
 
 FOUNDATION_EXPORT NSString *const PushManagerCategoriesIncomingCall;
 FOUNDATION_EXPORT NSString *const PushManagerCategoriesMissedCall;
+FOUNDATION_EXPORT NSString *const PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
 
 FOUNDATION_EXPORT NSString *const PushManagerActionsAcceptCall;
 FOUNDATION_EXPORT NSString *const PushManagerActionsDeclineCall;
 FOUNDATION_EXPORT NSString *const PushManagerActionsCallBack;
+FOUNDATION_EXPORT NSString *const PushManagerActionsConfirmIdentityAndCallBack;
+FOUNDATION_EXPORT NSString *const PushManagerActionsShowThread;
 
 FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
 FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysLocalCallId;

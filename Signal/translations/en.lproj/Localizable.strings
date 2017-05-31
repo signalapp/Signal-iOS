@@ -212,7 +212,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Call back";
+"CALLBACK_BUTTON_TITLE" = "Call Back";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
@@ -231,6 +231,9 @@
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to delete your account?";
+
+/* notification action, confirming that it's OK to proceed calling after a caller's Safety Number has changed */
+"CONFIRM_IDENTITY_AND_CALLBACK_BUTTON_TITLE" = "Confirm and Call Back";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
@@ -671,9 +674,6 @@
 "LIST_GROUP_MEMBERS_ACTION" = "List Group Members";
 
 /* No comment provided by engineer. */
-"load_earlier_messages" = "load_earlier_messages";
-
-/* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
 /* No comment provided by engineer. */
@@ -735,6 +735,15 @@
 
 /* notification title */
 "MISSED_CALL" = "Missed call";
+
+/* notification action */
+"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY" = "Missed call because the caller's Safety Number changed.";
+
+/* notification action */
+"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their Safety Number changed.";
+
+/* notification action */
+"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's Safety Number changed.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -950,7 +959,7 @@
 "PROCEED_BUTTON" = "Proceed";
 
 /* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "Mark as read";
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Reply";
@@ -1257,6 +1266,9 @@
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Show new safety number";
+
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "Show Thread";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u day";
