@@ -557,8 +557,6 @@ typedef enum : NSUInteger {
                                                                selector:@selector(scrollToDefaultPosition)
                                                                userInfo:nil
                                                                 repeats:NO];
-
-    [self markVisibleMessagesAsRead];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -806,6 +804,8 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [MarkIdentityAsSeenJob runWithThread:self.thread];
     [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
+
+    [self markVisibleMessagesAsRead];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

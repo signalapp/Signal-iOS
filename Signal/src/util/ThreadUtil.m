@@ -167,17 +167,15 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        NSNumber *firstUnseenInteractionTimestamp = nil;
         if (firstUnseenInteractionTimestampParameter) {
-            firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
+            result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
             TSInteraction *firstUnseenInteraction =
                 [[transaction ext:TSUnseenDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
-                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
+                result.firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
             }
         }
-        result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestamp;
 
         TSIncomingMessage *firstIncomingMessage =
             [[transaction ext:TSThreadIncomingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
@@ -196,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
         __block BOOL hasMoreUnseenMessages = NO;
         __block TSInteraction *interactionAfterUnreadIndicator = nil;
         NSUInteger missingUnseenSafetyNumberChangeCount = 0;
-        if (firstUnseenInteractionTimestamp != nil) {
+        if (result.firstUnseenInteractionTimestamp != nil) {
             [[transaction ext:TSMessageDatabaseViewExtensionName]
                 enumerateRowsInGroup:thread.uniqueId
                          withOptions:NSEnumerationReverse
@@ -220,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
                               }
 
                               if (interaction.timestampForSorting
-                                  < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                                  < result.firstUnseenInteractionTimestamp.unsignedLongLongValue) {
                                   // By default we want the unread indicator to appear just before
                                   // the first unread message.
                                   *stop = YES;
@@ -246,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
                 for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
                     BOOL isUnseen = safetyNumberChange.timestampForSorting
-                        >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
+                        >= result.firstUnseenInteractionTimestamp.unsignedLongLongValue;
                     if (!isUnseen) {
                         continue;
                     }
@@ -264,10 +262,11 @@ NS_ASSUME_NONNULL_BEGIN
                     = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
             }
         }
-        if (hasMoreUnseenMessages) {
+        if (result.firstUnseenInteractionTimestamp) {
             // The unread indicator is _before_ the last visible unseen message.
             result.unreadIndicatorPosition = @(visibleUnseenMessageCount);
         }
+        OWSAssert((result.firstUnseenInteractionTimestamp != nil) == (result.unreadIndicatorPosition != nil));
 
         TSMessage *firstMessage = firstIncomingMessage;
         if (!firstMessage
@@ -399,7 +398,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
 
-                DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@", self.tag, indicator.uniqueId);
+                DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
+                    self.tag,
+                    indicator.uniqueId,
+                    indicator.timestampForSorting);
             }
         }
     }];
