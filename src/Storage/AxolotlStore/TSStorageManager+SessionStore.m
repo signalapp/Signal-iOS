@@ -108,9 +108,10 @@ void AssertIsOnSessionStoreQueue()
 
     [dictionary setObject:session forKey:@(deviceId)];
 
-    // TODO copy dictionary back to Immutable
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:dictionary forKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction setObject:[dictionary copy]
+                        forKey:contactIdentifier
+                  inCollection:TSStorageManagerSessionStoreCollection];
     }];
 }
 
@@ -140,9 +141,10 @@ void AssertIsOnSessionStoreQueue()
 
     [dictionary removeObjectForKey:@(deviceId)];
 
-    // TODO copy dictionary back to Immutable
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:dictionary forKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction setObject:[dictionary copy]
+                        forKey:contactIdentifier
+                  inCollection:TSStorageManagerSessionStoreCollection];
     }];
 }
 
