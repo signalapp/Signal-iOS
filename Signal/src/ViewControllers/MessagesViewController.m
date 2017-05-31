@@ -690,8 +690,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) UILabel *backButtonUnreadCountLabel;
 @property (nonatomic, readonly) NSUInteger backButtonUnreadCount;
 
-@property (nonatomic) CGFloat previousCollectionViewFrameWidth;
-
 @property (nonatomic) NSUInteger page;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL callOnOpen;

@@ -166,37 +166,12 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        __block TSIncomingMessage *firstIncomingMessage = nil;
-        __block TSOutgoingMessage *firstOutgoingMessage = nil;
-        __block long outgoingMessageCount = 0;
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          if ([object isKindOfClass:[TSIncomingMessage class]]) {
-                              TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
-                              if (!firstIncomingMessage) {
-                                  firstIncomingMessage = incomingMessage;
-                              } else {
-                                  OWSAssert(
-                                      [firstIncomingMessage compareForSorting:incomingMessage] == NSOrderedAscending);
-                              }
-                          } else if ([object isKindOfClass:[TSOutgoingMessage class]]) {
-                              TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)object;
-                              if (!firstOutgoingMessage) {
-                                  firstOutgoingMessage = outgoingMessage;
-                              } else {
-                                  OWSAssert(
-                                      [firstOutgoingMessage compareForSorting:outgoingMessage] == NSOrderedAscending);
-                              }
-                              outgoingMessageCount++;
-                              if (outgoingMessageCount >= kMaxBlockOfferOutgoingMessageCount) {
-                                  *stop = YES;
-                              }
-                          }
-                      }];
-
+        TSIncomingMessage *firstIncomingMessage =
+            [[transaction ext:TSThreadIncomingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
+        TSOutgoingMessage *firstOutgoingMessage =
+            [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
+        NSUInteger outgoingMessageCount =
+            [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
 
         // Enumerate in reverse to count the number of messages
         // after the unseen messages indicator.  Not all of
