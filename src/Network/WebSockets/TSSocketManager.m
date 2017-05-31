@@ -2,15 +2,15 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "SubProtocol.pb.h"
-
+#import "TSSocketManager.h"
 #import "Cryptography.h"
+#import "NSTimer+OWS.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
+#import "SubProtocol.pb.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSMessagesManager.h"
-#import "TSSocketManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "Threading.h"
 
@@ -533,11 +533,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [self.backgroundKeepAliveTimer invalidate];
         // Start a new timer that will fire every second while the socket is open in the background.
         // This timer will ensure we close the websocket when the time comes.
-        self.backgroundKeepAliveTimer = [NSTimer scheduledTimerWithTimeInterval:1.f
-                                                                         target:self
-                                                                       selector:@selector(backgroundKeepAliveFired)
-                                                                       userInfo:nil
-                                                                        repeats:YES];
+        self.backgroundKeepAliveTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
+                                                                             target:self
+                                                                           selector:@selector(backgroundKeepAliveFired)
+                                                                           userInfo:nil
+                                                                            repeats:YES];
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
 
