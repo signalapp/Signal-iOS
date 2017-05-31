@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        __block NSNumber *firstUnseenInteractionTimestamp = nil;
+        NSNumber *firstUnseenInteractionTimestamp = nil;
         if (firstUnseenInteractionTimestampParameter) {
             firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
