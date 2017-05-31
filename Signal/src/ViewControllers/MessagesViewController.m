@@ -1096,7 +1096,6 @@ typedef enum : NSUInteger {
                                                                userInfo:nil
                                                                 repeats:NO];
 
-    // TODO: Why are we marking as read here? Shouldn't our repeating 1-sec read timer be sufficient?
     [self markVisibleMessagesAsRead];
 }
 
@@ -1306,7 +1305,7 @@ typedef enum : NSUInteger {
 - (void)startReadTimer
 {
     [self.readTimer invalidate];
-    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:2
+    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:3.f
                                                           target:self
                                                         selector:@selector(readTimerDidFire)
                                                         userInfo:nil
@@ -1361,6 +1360,7 @@ typedef enum : NSUInteger {
 
     [self cancelReadTimer];
     [self saveDraft];
+    [self markVisibleMessagesAsRead];
 
     [self cancelVoiceMemo];
 
@@ -3528,7 +3528,7 @@ typedef enum : NSUInteger {
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupThread *gThread = (TSGroupThread *)self.thread;
-
+            
             if (gThread.groupModel) {
                 self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
             }
