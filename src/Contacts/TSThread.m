@@ -225,16 +225,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [messages copy];
 }
 
-- (NSArray<id<OWSReadTracking> > *)unreadMessages
-{
-    __block NSArray<id<OWSReadTracking> > *messages;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        messages = [self unreadMessagesWithTransaction:transaction];
-    }];
-
-    return messages;
-}
-
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
