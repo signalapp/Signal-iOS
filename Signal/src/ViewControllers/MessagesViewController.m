@@ -911,23 +911,6 @@ typedef enum : NSUInteger {
     [self initializeToolbars];
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-
-    // JSQMVC width is initially 375px on iphone6/ios9 (as specified by the xib), which causes
-    // our initial bubble calculations to be off since they happen before the containing
-    // view is layed out. https://github.com/jessesquires/JSQMessagesViewController/issues/1257
-    if (CGRectGetWidth(self.collectionView.frame) != self.previousCollectionViewFrameWidth) {
-        // save frame value from next comparison
-        self.previousCollectionViewFrameWidth = CGRectGetWidth(self.collectionView.frame);
-
-        // invalidate layout
-        [self.collectionView.collectionViewLayout
-            invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-        self.collectionView.collectionViewLayout.bubbleSizeCalculator = [[OWSMessagesBubblesSizeCalculator alloc] init];
-    }
-}
 
 - (void)registerCustomMessageNibs
 {
@@ -1092,6 +1075,9 @@ typedef enum : NSUInteger {
 
 
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+
+    [self.view layoutSubviews];
+    [self scrollToDefaultPosition];
 
     [self.scrollLaterTimer invalidate];
     // We want to scroll to the bottom _after_ the layout has been updated.
@@ -1612,6 +1598,11 @@ typedef enum : NSUInteger {
 // Overiding JSQMVC layout defaults
 - (void)initializeCollectionViewLayout
 {
+    CGRect screenBounds = [UIScreen mainScreen].bounds;
+    CGRect viewFrame = CGRectMake(0, 0, screenBounds.size.width, screenBounds.size.height);
+    self.view.frame = viewFrame;
+    self.collectionView.frame = viewFrame;
+
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
     self.collectionView.showsVerticalScrollIndicator = NO;
