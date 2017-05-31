@@ -64,6 +64,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 @end
 
+#pragma mark -
+
 @implementation SignalsViewController
 
 #pragma mark - Init
