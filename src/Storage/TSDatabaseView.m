@@ -20,6 +20,8 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
+NSString *TSThreadIncomingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
+NSString *TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
 NSString *TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
@@ -141,6 +143,36 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
     }];
 
     return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
+}
+
++ (BOOL)registerThreadIncomingMessagesDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSIncomingMessage class]]) {
+            return ((TSIncomingMessage *)object).uniqueThreadId;
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSThreadIncomingMessageDatabaseViewExtensionName
+                                        viewGrouping:viewGrouping
+                                             version:@"1"];
+}
+
++ (BOOL)registerThreadOutgoingMessagesDatabaseView
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSOutgoingMessage class]]) {
+            return ((TSOutgoingMessage *)object).uniqueThreadId;
+        }
+        return nil;
+    }];
+
+    return [self registerMessageDatabaseViewWithName:TSThreadOutgoingMessageDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
                                              version:@"1"];
 }
