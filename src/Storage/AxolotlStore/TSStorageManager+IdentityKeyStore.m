@@ -278,6 +278,24 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     }
 }
 
+
+- (BOOL)hasUnseenIdentityChangeForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId != nil);
+
+    OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+    if (!recipientIdentity) {
+        return NO;
+    }
+
+    if (recipientIdentity.isFirstKnownKey) {
+        return NO;
+    }
+
+    return !recipientIdentity.wasSeen;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
