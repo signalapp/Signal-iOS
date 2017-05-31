@@ -22,8 +22,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSUIDatabaseConnectionDidUpdateNotification = @"TSUIDatabaseConnectionDidUpdateNotification";
-
 NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessible = @"TSStorageManagerExceptionNameDatabasePasswordInaccessible";
 NSString *const TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded =
     @"TSStorageManagerExceptionNameDatabasePasswordInaccessibleWhileBackgrounded";
