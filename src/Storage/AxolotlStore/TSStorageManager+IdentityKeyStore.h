@@ -40,6 +40,14 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
  */
 - (nullable OWSRecipientIdentity *)unconfirmedIdentityThatShouldBlockSendingForRecipientId:(NSString *)recipientId;
 
+/**
+ * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
+ * @returns nil if the recipient's current id has been seen, or if it's the users first key
+ *          else returns the unseen identity
+ *
+ */
+- (nullable OWSRecipientIdentity *)unseenIdentityChangeForRecipientId:(NSString *)recipientId;
+
 - (void)generateNewIdentityKey;
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
 - (void)removeIdentityKeyForRecipient:(NSString *)receipientId;
