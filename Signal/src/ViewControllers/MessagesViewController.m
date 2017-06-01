@@ -1638,11 +1638,11 @@ typedef enum : NSUInteger {
                                                          completion:
                                                              (void (^)(BOOL didConfirmedIdentity))completionHandler
 {
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryFromViewController:self
-                                                                       recipientIds:self.thread.recipientIdentifiers
-                                                                   confirmationText:confirmationText
-                                                                    contactsManager:self.contactsManager
-                                                                         completion:completionHandler];
+    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
+                                                                 confirmationText:confirmationText
+                                                                  contactsManager:self.contactsManager
+                                                                       verifySeen:NO
+                                                                       completion:completionHandler];
 }
 
 - (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
@@ -1694,15 +1694,13 @@ typedef enum : NSUInteger {
         return;
     }
 
-    BOOL didShowSNAlert = [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                                    NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
-                                        @"button title to confirm calling a recipient whose safety "
-                                        @"number recently changed")
-                                                                                 completion:^(BOOL didConfirmIdentity) {
-                                                                                     if (didConfirmIdentity) {
-                                                                                         [weakSelf callAction:sender];
-                                                                                     }
-                                                                                 }];
+    BOOL didShowSNAlert =
+        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[CallStrings confirmAndCallButtonTitle]
+                                                               completion:^(BOOL didConfirmIdentity) {
+                                                                   if (didConfirmIdentity) {
+                                                                       [weakSelf callAction:sender];
+                                                                   }
+                                                               }];
     if (didShowSNAlert) {
         return;
     }

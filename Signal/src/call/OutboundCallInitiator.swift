@@ -46,7 +46,17 @@ import Foundation
             return false
         }
 
-        // TODO possible to get here when. e.g. dialing from contacts/recent calls. Should verify seen latest SN.
+        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
+                                                                                confirmationText: CallStrings.confirmAndCallButtonTitle,
+                                                                                contactsManager: self.contactsManager,
+                                                                                verifySeen: true) { didConfirmIdentity in
+                                                                                    if didConfirmIdentity {
+                                                                                        _ = self.initiateCall(recipientId: recipientId)
+                                                                                    }
+        }
+        guard !showedAlert else {
+            return false
+        }
 
         // Check for microphone permissions
         // Alternative way without prompting for permissions:

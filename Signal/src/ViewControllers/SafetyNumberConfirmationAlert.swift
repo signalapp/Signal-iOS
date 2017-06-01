@@ -16,14 +16,14 @@ class SafetyNumberConfirmationAlert: NSObject {
         self.storageManager = TSStorageManager.shared()
     }
 
-    public class func presentAlertIfNecessary(fromViewController: UIViewController, recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(fromViewController: fromViewController, recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion)
+    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, verifySeen: verifySeen, completion: completion)
     }
 
-    public class func presentAlertIfNecessary(fromViewController: UIViewController, recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(fromViewController: fromViewController,
-                                                                                                  recipientIds: recipientIds,
+    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
+        return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
                                                                                                   confirmationText: confirmationText,
+                                                                                                  verifySeen: verifySeen,
                                                                                                   completion: completion)
     }
 
@@ -33,18 +33,25 @@ class SafetyNumberConfirmationAlert: NSObject {
      * @returns true  if an alert was shown
      *          false if there were no unconfirmed identities
      */
-    public func presentIfNecessary(fromViewController: UIViewController, recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+    public func presentIfNecessary(recipientIds: [String], confirmationText: String, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
 
-        guard let unconfirmedIdentity = self.unconfirmedIdentityThatShouldBlockSending(recipientIds: recipientIds) else {
+        let unconfirmedIdentity = unconfirmedIdentities(recipientIds: recipientIds).first
+
+        var unseenIdentity: OWSRecipientIdentity?
+        if verifySeen {
+            unseenIdentity = unseenIdentities(recipientIds: recipientIds).first
+        }
+
+        guard let untrustedIdentity = [unseenIdentity, unconfirmedIdentity].flatMap({ $0 }).first else {
             // No identities to confirm, no alert to present.
             return false
         }
 
         let displayName: String = {
-            if let signalAccount = contactsManager.signalAccountMap[unconfirmedIdentity.recipientId] {
+            if let signalAccount = contactsManager.signalAccountMap[untrustedIdentity.recipientId] {
                 return contactsManager.displayName(for: signalAccount)
             } else {
-                return contactsManager.displayName(forPhoneIdentifier: unconfirmedIdentity.recipientId)
+                return contactsManager.displayName(forPhoneIdentifier: untrustedIdentity.recipientId)
             }
         }()
 
@@ -59,12 +66,14 @@ class SafetyNumberConfirmationAlert: NSObject {
         let actionSheetController = UIAlertController(title: title, message:body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
-            Logger.info("\(self.TAG) Confirmed identity: \(unconfirmedIdentity)")
+            Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
+
             OWSDispatch.sessionStoreQueue().async {
-                self.storageManager.saveRemoteIdentity(unconfirmedIdentity.identityKey,
-                                                       recipientId: unconfirmedIdentity.recipientId,
+                self.storageManager.saveRemoteIdentity(untrustedIdentity.identityKey,
+                                                       recipientId: untrustedIdentity.recipientId,
                                                        approvedForBlockingUse: true,
                                                        approvedForNonBlockingUse: true)
+                MarkIdentityAsSeenJob.run(recipientId: untrustedIdentity.recipientId)
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -73,11 +82,10 @@ class SafetyNumberConfirmationAlert: NSObject {
         actionSheetController.addAction(confirmAction)
 
         let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Action sheet item"), style: .default) { _ in
-            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(unconfirmedIdentity)")
+            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(untrustedIdentity)")
 
-            self.presentSafetyNumberViewController(fromViewController: fromViewController,
-                                                   theirIdentityKey: unconfirmedIdentity.identityKey,
-                                                   theirRecipientId: unconfirmedIdentity.recipientId,
+            self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
+                                                   theirRecipientId: untrustedIdentity.recipientId,
                                                    theirDisplayName: displayName,
                                                    completion: { completion(false) })
 
@@ -87,11 +95,11 @@ class SafetyNumberConfirmationAlert: NSObject {
         let dismissAction = UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: "generic cancel text"), style: .cancel)
         actionSheetController.addAction(dismissAction)
 
-        fromViewController.present(actionSheetController, animated: true)
+        UIApplication.shared.frontmostViewController?.present(actionSheetController, animated: true)
         return true
     }
 
-    public func presentSafetyNumberViewController(fromViewController: UIViewController, theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
+    public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
         let fingerprintViewController = UIStoryboard.instantiateFingerprintViewController()
 
         let fingerprintBuilder = OWSFingerprintBuilder(storageManager: self.storageManager, contactsManager: self.contactsManager)
@@ -99,21 +107,19 @@ class SafetyNumberConfirmationAlert: NSObject {
 
         fingerprintViewController.configure(fingerprint: fingerprint, contactName: theirDisplayName)
 
-        fromViewController.present(fingerprintViewController, animated: true, completion: completion)
+        UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
     }
 
-    private func unconfirmedIdentitiesThatShouldBlockSending(recipientIds: [String]) -> [OWSRecipientIdentity] {
+    private func unconfirmedIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
         return recipientIds.flatMap {
-            return self.storageManager.unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
+            self.storageManager.unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
         }
     }
 
-    private func unconfirmedIdentityThatShouldBlockSending(recipientIds: [String]) -> OWSRecipientIdentity? {
-        return unconfirmedIdentitiesThatShouldBlockSending(recipientIds: recipientIds).first
-    }
-
-    private func shouldShow(recipientIds: [String]) -> Bool {
-        return !unconfirmedIdentitiesThatShouldBlockSending(recipientIds: recipientIds).isEmpty
+    private func unseenIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
+        return recipientIds.flatMap {
+            self.storageManager.unseenIdentityChange(forRecipientId: $0)
+        }
     }
 
 }
