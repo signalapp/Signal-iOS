@@ -19,6 +19,11 @@
 		34330A611E788EA900DF2FB9 /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330A601E788EA900DF2FB9 /* AttachmentUploadView.m */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
+		3448BFCC1EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC21EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m */; };
+		3448BFCD1EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC41EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m */; };
+		3448BFCF1EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */; };
+		3448BFD01EDF0EA7005B2D69 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */; };
+		3448BFD11EDF0EA7005B2D69 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
@@ -46,8 +51,6 @@
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */; };
 		34B3F8821E8DF1700035BE1A /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* MessageComposeTableViewController.m */; };
-		34B3F8831E8DF1700035BE1A /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8521E8DF1700035BE1A /* MessagesViewController.m */; };
-		34B3F8841E8DF1700035BE1A /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F8531E8DF1700035BE1A /* MessagesViewController.xib */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8861E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */; };
 		34B3F8871E8DF1700035BE1A /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */; };
@@ -385,6 +388,15 @@
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		343D3D991E9283F100165CA4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
+		3448BFC11EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesToolbarContentView.h; sourceTree = "<group>"; };
+		3448BFC21EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesToolbarContentView.m; sourceTree = "<group>"; };
+		3448BFC31EDF0EA7005B2D69 /* OWSMessagesInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesInputToolbar.h; sourceTree = "<group>"; };
+		3448BFC41EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesInputToolbar.m; sourceTree = "<group>"; };
+		3448BFC71EDF0EA7005B2D69 /* OWSMessagesComposerTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesComposerTextView.h; sourceTree = "<group>"; };
+		3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesComposerTextView.m; sourceTree = "<group>"; };
+		3448BFC91EDF0EA7005B2D69 /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
+		3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
+		3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
 		344F2F651E57A932000D9322 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "util/UIViewController+OWS.h"; sourceTree = "<group>"; };
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
@@ -431,9 +443,6 @@
 		34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockInteractionController.m; sourceTree = "<group>"; };
 		34B3F84F1E8DF1700035BE1A /* MessageComposeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageComposeTableViewController.h; sourceTree = "<group>"; };
 		34B3F8501E8DF1700035BE1A /* MessageComposeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageComposeTableViewController.m; sourceTree = "<group>"; };
-		34B3F8511E8DF1700035BE1A /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
-		34B3F8521E8DF1700035BE1A /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
-		34B3F8531E8DF1700035BE1A /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
 		34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
 		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34B3F8561E8DF1700035BE1A /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
@@ -880,6 +889,22 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
+			isa = PBXGroup;
+			children = (
+				3448BFC91EDF0EA7005B2D69 /* MessagesViewController.h */,
+				3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */,
+				3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */,
+				3448BFC71EDF0EA7005B2D69 /* OWSMessagesComposerTextView.h */,
+				3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */,
+				3448BFC31EDF0EA7005B2D69 /* OWSMessagesInputToolbar.h */,
+				3448BFC41EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m */,
+				3448BFC11EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.h */,
+				3448BFC21EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m */,
+			);
+			path = ConversationView;
+			sourceTree = "<group>";
+		};
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -905,6 +930,7 @@
 				34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */,
 				340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */,
 				340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */,
+				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				34B3F8401E8DF1700035BE1A /* CountryCodeViewController.h */,
 				34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
@@ -925,9 +951,6 @@
 				34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */,
 				34B3F84F1E8DF1700035BE1A /* MessageComposeTableViewController.h */,
 				34B3F8501E8DF1700035BE1A /* MessageComposeTableViewController.m */,
-				34B3F8511E8DF1700035BE1A /* MessagesViewController.h */,
-				34B3F8521E8DF1700035BE1A /* MessagesViewController.m */,
-				34B3F8531E8DF1700035BE1A /* MessagesViewController.xib */,
 				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
 				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
 				3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */,
@@ -957,6 +980,7 @@
 				34B3F8651E8DF1700035BE1A /* PrivacySettingsTableViewController.m */,
 				34B3F8661E8DF1700035BE1A /* RegistrationViewController.h */,
 				34B3F8671E8DF1700035BE1A /* RegistrationViewController.m */,
+				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */,
 				34D5CCAF1EAE7E7F005515DB /* SelectRecipientViewController.h */,
 				34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */,
 				3400C7941EAF99F4008A8584 /* SelectThreadViewController.h */,
@@ -978,7 +1002,6 @@
 				340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */,
 				34B3F8A01E8EA6040035BE1A /* ViewControllerUtils.h */,
 				34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */,
-				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -1839,7 +1862,6 @@
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				45F2B1971D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
-				34B3F8841E8DF1700035BE1A /* MessagesViewController.xib in Resources */,
 				45F2B1981D9CA207000D2C69 /* OWSOutgoingMessageCollectionViewCell.xib in Resources */,
 				45C681C41D305C9E0050903A /* OWSCallCollectionViewCell.xib in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
@@ -1852,6 +1874,7 @@
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				45C681C81D305C9E0050903A /* OWSDisplayedMessageCollectionViewCell.xib in Resources */,
+				3448BFD11EDF0EA7005B2D69 /* MessagesViewController.xib in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
@@ -2052,7 +2075,6 @@
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,
-				34B3F8831E8DF1700035BE1A /* MessagesViewController.m in Sources */,
 				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
@@ -2085,6 +2107,7 @@
 				3400C7961EAF99F4008A8584 /* SelectThreadViewController.m in Sources */,
 				34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */,
 				34B3F88F1E8DF1710035BE1A /* RegistrationViewController.m in Sources */,
+				3448BFCD1EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m in Sources */,
 				34B3F8901E8DF1710035BE1A /* SettingsTableViewController.m in Sources */,
 				34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */,
@@ -2115,6 +2138,7 @@
 				34B3F8921E8DF1710035BE1A /* SignalAttachment.swift in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
+				3448BFCF1EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */,
 				45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */,
@@ -2171,6 +2195,8 @@
 				34B3F8711E8DF1700035BE1A /* AboutTableViewController.m in Sources */,
 				34B3F88D1E8DF1700035BE1A /* OWSQRCodeScanningViewController.m in Sources */,
 				34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */,
+				3448BFCC1EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m in Sources */,
+				3448BFD01EDF0EA7005B2D69 /* MessagesViewController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
