@@ -67,18 +67,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryFromViewController:self
-                                      recipientId:phoneNumber
-                                 confirmationText:
-                                     NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
-                                         @"button title to confirm adding a recipient to a group when their safety "
-                                         @"number has recently changed")
-                                  contactsManager:helper.contactsManager
-                                       completion:^(BOOL didConfirmIdentity) {
-                                           if (didConfirmIdentity) {
-                                               [weakSelf addToGroup:phoneNumber];
-                                           }
-                                       }];
+        presentAlertIfNecessaryWithRecipientId:phoneNumber
+                              confirmationText:
+                                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
+                                      @"button title to confirm adding a recipient to a group when their safety "
+                                      @"number has recently changed")
+                               contactsManager:helper.contactsManager
+                                    verifySeen:YES
+                                    completion:^(BOOL didConfirmIdentity) {
+                                        if (didConfirmIdentity) {
+                                            [weakSelf addToGroup:phoneNumber];
+                                        }
+                                    }];
     if (didShowSNAlert) {
         return;
     }
@@ -119,18 +119,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryFromViewController:self
-                                      recipientId:signalAccount.recipientId
-                                 confirmationText:
-                                     NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
-                                         @"button title to confirm adding a recipient to a group when their safety "
-                                         @"number has recently changed")
-                                  contactsManager:helper.contactsManager
-                                       completion:^(BOOL didConfirmIdentity) {
-                                           if (didConfirmIdentity) {
-                                               [weakSelf addToGroup:signalAccount.recipientId];
-                                           }
-                                       }];
+        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientId
+                              confirmationText:
+                                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
+                                      @"button title to confirm adding a recipient to a group when their safety "
+                                      @"number has recently changed")
+                               contactsManager:helper.contactsManager
+                                    verifySeen:YES
+                                    completion:^(BOOL didConfirmIdentity) {
+                                        if (didConfirmIdentity) {
+                                            [weakSelf addToGroup:signalAccount.recipientId];
+                                        }
+                                    }];
     if (didShowSNAlert) {
         return;
     }

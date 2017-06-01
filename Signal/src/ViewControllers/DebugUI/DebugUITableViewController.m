@@ -84,6 +84,51 @@ NS_ASSUME_NONNULL_BEGIN
 
     [contents addSection:[DebugUIContacts section]];
 
+    // After enqueing the notification you may want to background the app or lock the screen before it triggers, so we
+    // give a little delay.
+    uint64_t notificationDelay = 5;
+    [contents
+        addSection:[OWSTableSection
+                       sectionWithTitle:[NSString stringWithFormat:@"Call Notifications (%llu second delay)",
+                                                  notificationDelay]
+                                  items:@[
+                                      [OWSTableItem itemWithTitle:@"Missed Call"
+                                                      actionBlock:^{
+                                                          SignalCall *call = [SignalCall
+                                                              incomingCallWithLocalId:[NSUUID new]
+                                                                    remotePhoneNumber:thread.contactIdentifier
+                                                                          signalingId:0];
+
+                                                          dispatch_after(
+                                                              dispatch_time(DISPATCH_TIME_NOW,
+                                                                  (int64_t)(notificationDelay * NSEC_PER_SEC)),
+                                                              dispatch_get_main_queue(),
+                                                              ^{
+                                                                  [[Environment getCurrent]
+                                                                          .callService.notificationsAdapter
+                                                                      presentMissedCall:call
+                                                                             callerName:thread.name];
+                                                              });
+                                                      }],
+                                      [OWSTableItem
+                                          itemWithTitle:@"Rejected Call with Unseen Safety Number"
+                                            actionBlock:^{
+                                                SignalCall *call =
+                                                    [SignalCall incomingCallWithLocalId:[NSUUID new]
+                                                                      remotePhoneNumber:thread.contactIdentifier
+                                                                            signalingId:0];
+
+                                                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                                                   (int64_t)(notificationDelay * NSEC_PER_SEC)),
+                                                    dispatch_get_main_queue(),
+                                                    ^{
+                                                        [[Environment getCurrent].callService.notificationsAdapter
+                                                            presentRejectedCallWithUnseenIdentityChange:call
+                                                                                             callerName:thread.name];
+                                                    });
+                                            }],
+                                  ]]];
+
     DebugUITableViewController *viewController = [DebugUITableViewController new];
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];

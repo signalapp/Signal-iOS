@@ -13,14 +13,17 @@ import UserNotifications
 @available(iOS 10.0, *)
 struct AppNotifications {
     enum Category {
-        case missedCall
+        case missedCall,
+             rejectedCallFromUnseenIdentity
 
         // Don't forget to update this! We use it to register categories.
-        static let allValues = [ missedCall ]
+        static let allValues = [ missedCall, rejectedCallFromUnseenIdentity ]
     }
 
     enum Action {
-        case callBack
+        case callBack,
+             showThread,
+             confirmIdentityAndCallBack
     }
 
     static var allCategories: Set<UNNotificationCategory> {
@@ -35,6 +38,12 @@ struct AppNotifications {
                                           actions: [ action(.callBack) ],
                                           intentIdentifiers: [],
                                           options: [])
+
+        case .rejectedCallFromUnseenIdentity:
+            return UNNotificationCategory(identifier: "org.whispersystems.signal.AppNotifications.Category.rejectedCallFromUnseenIdentity",
+                                          actions: [ action(.confirmIdentityAndCallBack), action(.showThread) ],
+                                          intentIdentifiers: [],
+                                          options: [])
         }
     }
 
@@ -43,6 +52,14 @@ struct AppNotifications {
         case .callBack:
             return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.callBack",
                                         title: CallStrings.callBackButtonTitle,
+                                        options: .authenticationRequired)
+        case .showThread:
+            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.showThread",
+                                        title: CallStrings.showThreadButtonTitle,
+                                        options: .authenticationRequired)
+        case .confirmIdentityAndCallBack:
+            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.confirmIdentityAndCallBack",
+                                        title: CallStrings.confirmIdentityAndCallBackButtonTitle,
                                         options: .authenticationRequired)
         }
     }
@@ -88,7 +105,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
     public func presentIncomingCall(_ call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) \(#function) is no-op, because it's handled with callkit.")
         // TODO since CallKit doesn't currently work on the simulator,
-        // we could implement UNNotifications for simulator testing.
+        // we could implement UNNotifications for simulator testing, or if people have opted out of callkit.
     }
 
     public func presentMissedCall(_ call: SignalCall, callerName: String) {
@@ -111,6 +128,32 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         content.body = notificationBody
         content.sound = UNNotificationSound.default()
         content.categoryIdentifier = AppNotifications.category(.missedCall).identifier
+
+        let request = UNNotificationRequest.init(identifier: call.localId.uuidString, content: content, trigger: nil)
+
+        center.add(request)
+    }
+
+    func presentRejectedCallWithUnseenIdentityChange(_ call: SignalCall, callerName: String) {
+        Logger.debug("\(TAG) \(#function)")
+
+        let content = UNMutableNotificationContent()
+        // TODO group by thread identifier
+        // content.threadIdentifier = threadId
+
+        let notificationBody = { () -> String in
+            switch previewType {
+            case .noNameNoPreview:
+                return CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBody
+            case .nameNoPreview, .namePreview:
+                return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
+                    ? CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName
+                    : String(format: CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName, callerName))
+            }}()
+
+        content.body = notificationBody
+        content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = AppNotifications.category(.rejectedCallFromUnseenIdentity).identifier
 
         let request = UNNotificationRequest.init(identifier: call.localId.uuidString, content: content, trigger: nil)
 

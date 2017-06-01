@@ -8,18 +8,24 @@ import Foundation
 class MarkIdentityAsSeenJob: NSObject {
     let TAG = "[MarkIdentityAsSeenJob]"
 
-    private let thread: TSThread
+    private let recipientIds: [String]
 
     public class func run(thread: TSThread) {
-        MarkIdentityAsSeenJob(thread: thread).run()
+        let recipientIds = thread.recipientIdentifiers
+
+        MarkIdentityAsSeenJob(recipientIds: recipientIds).run()
     }
 
-    init(thread: TSThread) {
-        self.thread = thread
+    public class func run(recipientId: String) {
+        MarkIdentityAsSeenJob(recipientIds: [recipientId]).run()
+    }
+
+    init(recipientIds: [String]) {
+        self.recipientIds = recipientIds
     }
 
     public func run() {
-        for recipientId in self.thread.recipientIdentifiers {
+        for recipientId in self.recipientIds {
             markAsSeenIfNecessary(recipientId: recipientId)
         }
     }

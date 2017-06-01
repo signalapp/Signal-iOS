@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
@@ -33,5 +34,10 @@ class CallNotificationsAdapter: NSObject {
     func presentMissedCall(_ call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) in \(#function)")
         adaptee.presentMissedCall(call, callerName: callerName)
+    }
+
+    func presentRejectedCallWithUnseenIdentityChange(_ call: SignalCall, callerName: String) {
+        Logger.debug("\(TAG) in \(#function)")
+        adaptee.presentRejectedCallWithUnseenIdentityChange(call, callerName: callerName)
     }
 }
