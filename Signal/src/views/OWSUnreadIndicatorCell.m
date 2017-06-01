@@ -167,7 +167,7 @@
         CGSize subtitleSize = [self.subtitleLabel
             sizeThatFits:CGSizeMake(
                              self.contentView.width - [OWSUnreadIndicatorCell subtitleHMargin] * 2.f, CGFLOAT_MAX)];
-        self.subtitleLabel.frame = CGRectMake(round((self.titleLabel.superview.width - subtitleSize.width) * 0.5f),
+        self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
             round(self.titleBackgroundView.bottom + OWSUnreadIndicatorCell.subtitleVSpacing),
             ceil(subtitleSize.width),
             ceil(subtitleSize.height));
