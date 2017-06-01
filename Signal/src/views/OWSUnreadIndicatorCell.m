@@ -48,7 +48,7 @@
         [self.bannerView addSubview:self.bannerBottomHighlightView1];
 
         self.bannerBottomHighlightView2 = [UIView new];
-        self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xebe7e2];
+        self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
         [self.bannerView addSubview:self.bannerBottomHighlightView2];
 
         self.titleLabel = [UILabel new];
@@ -70,7 +70,7 @@
 
 + (UIFont *)titleFont
 {
-    return [UIFont ows_regularFontWithSize:12.f];
+    return [UIFont ows_regularFontWithSize:16.f];
 }
 
 + (UIFont *)subtitleFont
@@ -119,9 +119,8 @@
 
 + (CGFloat)titleVMargin
 {
-    return 5.f;
+    return 5.5f;
 }
-
 
 + (CGFloat)topVMargin
 {
@@ -146,12 +145,14 @@
     // This layout logic assumes that the cell insets are symmetrical and can be deduced
     // from the cell frame.
     CGRect bannerViewFrame = CGRectMake(-self.left,
-        OWSUnreadIndicatorCell.topVMargin,
-        self.width + self.left * 2.f,
-        self.titleLabel.height + OWSUnreadIndicatorCell.titleVMargin * 2.f);
+        round(OWSUnreadIndicatorCell.topVMargin),
+        round(self.width + self.left * 2.f),
+        round(self.titleLabel.height + OWSUnreadIndicatorCell.titleVMargin * 2.f));
     self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
 
-    const CGFloat kHighlightThickness = 0.5f;
+    // The highlights should be 1px (not 1pt), so adapt their thickness to
+    // the device resolution.
+    CGFloat kHighlightThickness = 1.f / [UIScreen mainScreen].scale;
     self.bannerTopHighlightView.frame = CGRectMake(0, 0, self.bannerView.width, kHighlightThickness);
     self.bannerBottomHighlightView1.frame
         = CGRectMake(0, self.bannerView.height - kHighlightThickness * 2.f, self.bannerView.width, kHighlightThickness);
