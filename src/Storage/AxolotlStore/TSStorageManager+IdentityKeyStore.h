@@ -42,10 +42,11 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
 
 /**
  * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
- * @returns YES if the recipient's id has not been marked as seen (and it's not a TOFU situation)
- *          NO if the recipient's current id has been seen, or if it's the users first key
+ * @returns nil if the recipient's current id has been seen, or if it's the users first key
+ *          else returns the unseen identity
+ *
  */
-- (BOOL)hasUnseenIdentityChangeForRecipientId:(NSString *)recipientId;
+- (nullable OWSRecipientIdentity *)unseenIdentityChangeForRecipientId:(NSString *)recipientId;
 
 - (void)generateNewIdentityKey;
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;

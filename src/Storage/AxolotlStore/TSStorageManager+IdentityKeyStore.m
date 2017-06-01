@@ -199,6 +199,31 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     }
 }
 
+- (nullable OWSRecipientIdentity *)unseenIdentityChangeForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId != nil);
+
+    @synchronized([[self class] sharedIdentityKeyLock])
+    {
+        OWSRecipientIdentity *currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+        if (currentIdentity == nil) {
+            // No preexisting key, Trust On First Use
+            return nil;
+        }
+
+        if (currentIdentity.isFirstKnownKey) {
+            return nil;
+        }
+
+        if (currentIdentity.wasSeen) {
+            return nil;
+        }
+
+        // identity not yet seen
+        return currentIdentity;
+    }
+}
+
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
     OWSAssert(identityKey != nil);
@@ -276,24 +301,6 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
         [[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId] save];
     }
-}
-
-
-- (BOOL)hasUnseenIdentityChangeForRecipientId:(NSString *)recipientId
-{
-    OWSAssert(recipientId != nil);
-
-    OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-
-    if (!recipientIdentity) {
-        return NO;
-    }
-
-    if (recipientIdentity.isFirstKnownKey) {
-        return NO;
-    }
-
-    return !recipientIdentity.wasSeen;
 }
 
 @end
