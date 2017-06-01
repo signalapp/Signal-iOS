@@ -322,6 +322,12 @@ class SignalAttachment: NSObject {
             return false
         }
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+
+        let mediaUTISet = inputImageUTISet.union(animatedImageUTISet.union(videoUTISet.union(audioUTISet)))
+        if pasteboardUTISet.intersection(mediaUTISet).count > 0 {
+            return false
+        }
+
         return pasteboardUTISet.intersection(textUTISet).count > 0
     }
 
