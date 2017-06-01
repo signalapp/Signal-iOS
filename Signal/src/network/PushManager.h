@@ -10,28 +10,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UILocalNotification;
 
-FOUNDATION_EXPORT NSString *const Signal_Thread_UserInfo_Key;
-FOUNDATION_EXPORT NSString *const Signal_Message_UserInfo_Key;
+extern NSString *const Signal_Thread_UserInfo_Key;
+extern NSString *const Signal_Message_UserInfo_Key;
 
-FOUNDATION_EXPORT NSString *const Signal_Full_New_Message_Category;
+extern NSString *const Signal_Full_New_Message_Category;
 
-FOUNDATION_EXPORT NSString *const Signal_Message_Reply_Identifier;
-FOUNDATION_EXPORT NSString *const Signal_Message_MarkAsRead_Identifier;
+extern NSString *const Signal_Message_Reply_Identifier;
+extern NSString *const Signal_Message_MarkAsRead_Identifier;
 
 #pragma mark Signal Calls constants
 
-FOUNDATION_EXPORT NSString *const PushManagerCategoriesIncomingCall;
-FOUNDATION_EXPORT NSString *const PushManagerCategoriesMissedCall;
-FOUNDATION_EXPORT NSString *const PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+extern NSString *const PushManagerCategoriesIncomingCall;
+extern NSString *const PushManagerCategoriesMissedCall;
+extern NSString *const PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
 
-FOUNDATION_EXPORT NSString *const PushManagerActionsAcceptCall;
-FOUNDATION_EXPORT NSString *const PushManagerActionsDeclineCall;
-FOUNDATION_EXPORT NSString *const PushManagerActionsCallBack;
-FOUNDATION_EXPORT NSString *const PushManagerActionsConfirmIdentityAndCallBack;
-FOUNDATION_EXPORT NSString *const PushManagerActionsShowThread;
+extern NSString *const PushManagerActionsAcceptCall;
+extern NSString *const PushManagerActionsDeclineCall;
+extern NSString *const PushManagerActionsCallBack;
+extern NSString *const PushManagerActionsConfirmIdentityAndCallBack;
+extern NSString *const PushManagerActionsShowThread;
 
-FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
-FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysLocalCallId;
+extern NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
+extern NSString *const PushManagerUserInfoKeysLocalCallId;
 
 typedef void (^failedPushRegistrationBlock)(NSError *error);
 typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken);
