@@ -59,6 +59,7 @@
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
+#import <JSQMessagesViewController/JSQMessagesCollectionViewLayoutAttributes.h>
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
@@ -109,6 +110,40 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
+@protocol OWSMessagesCollectionViewFlowLayoutDelegate <NSObject>
+
+- (BOOL)isSpecialItemAtIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
+#pragma mark -
+
+@interface OWSMessagesCollectionViewFlowLayout : JSQMessagesCollectionViewFlowLayout
+
+@property (nonatomic, weak) id<OWSMessagesCollectionViewFlowLayoutDelegate> delegate;
+
+@property (nonatomic) CGRect lastBounds;
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessagesCollectionViewFlowLayout
+
+- (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    // The unread indicator should be sized according to its desired size.
+    if ([self.delegate isSpecialItemAtIndexPath:indexPath]) {
+        CGSize messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
+        CGFloat finalHeight = messageBubbleSize.height;
+        return CGSizeMake(CGRectGetWidth(self.collectionView.frame), ceilf((float)finalHeight));
+    } else {
+        return [super sizeForItemAtIndexPath:indexPath];
+    }
+}
+
+@end
+
 #pragma mark -
 
 @interface MessagesViewController () <AVAudioPlayerDelegate,
@@ -117,6 +152,7 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     JSQMessagesComposerTextViewPasteDelegate,
     OWSConversationSettingsViewDelegate,
+    OWSMessagesCollectionViewFlowLayoutDelegate,
     OWSTextViewPasteDelegate,
     OWSVoiceMemoGestureDelegate,
     UIDocumentMenuDelegate,
@@ -1097,6 +1133,9 @@ typedef enum : NSUInteger {
     self.view.frame = viewFrame;
     self.collectionView.frame = viewFrame;
 
+    OWSMessagesCollectionViewFlowLayout *layout = [OWSMessagesCollectionViewFlowLayout new];
+    layout.delegate = self;
+    self.collectionView.collectionViewLayout = layout;
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
 
     self.collectionView.showsVerticalScrollIndicator = NO;
@@ -3865,6 +3904,14 @@ typedef enum : NSUInteger {
     } else {
         [self.navigationController popToViewController:self animated:YES];
     }
+}
+
+#pragma mark - OWSMessagesCollectionViewFlowLayoutDelegate
+
+- (BOOL)isSpecialItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
+    return [interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
 }
 
 #pragma mark - Class methods
