@@ -12,10 +12,10 @@
 
 @interface OWSUnreadIndicatorCell ()
 
-@property (nonatomic) UIView *titleBackgroundView;
-@property (nonatomic) UIView *titleTopHighlightView;
-@property (nonatomic) UIView *titleBottomHighlightView;
-@property (nonatomic) UIView *titlePillView;
+@property (nonatomic) UIView *bannerView;
+@property (nonatomic) UIView *bannerTopHighlightView;
+@property (nonatomic) UIView *bannerBottomHighlightView1;
+@property (nonatomic) UIView *bannerBottomHighlightView2;
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UILabel *subtitleLabel;
 
@@ -35,32 +35,32 @@
     self.backgroundColor = [UIColor whiteColor];
 
     if (!self.titleLabel) {
-        self.titleBackgroundView = [UIView new];
-        self.titleBackgroundView.backgroundColor = [UIColor colorWithRGBHex:0xe2e2e2];
-        [self.contentView addSubview:self.titleBackgroundView];
+        self.bannerView = [UIView new];
+        self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
+        [self.contentView addSubview:self.bannerView];
 
-        self.titleTopHighlightView = [UIView new];
-        self.titleTopHighlightView.backgroundColor = [UIColor whiteColor];
-        [self.titleBackgroundView addSubview:self.titleTopHighlightView];
+        self.bannerTopHighlightView = [UIView new];
+        self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
+        [self.bannerView addSubview:self.bannerTopHighlightView];
 
-        self.titleBottomHighlightView = [UIView new];
-        self.titleBottomHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xd1d1d1];
-        [self.titleBackgroundView addSubview:self.titleBottomHighlightView];
+        self.bannerBottomHighlightView1 = [UIView new];
+        self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
+        [self.bannerView addSubview:self.bannerBottomHighlightView1];
 
-        self.titlePillView = [UIView new];
-        self.titlePillView.backgroundColor = [UIColor whiteColor];
-        [self.titleBackgroundView addSubview:self.titlePillView];
+        self.bannerBottomHighlightView2 = [UIView new];
+        self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xebe7e2];
+        [self.bannerView addSubview:self.bannerBottomHighlightView2];
 
         self.titleLabel = [UILabel new];
         self.titleLabel.text = [OWSUnreadIndicatorCell titleForInteraction:self.interaction];
-        self.titleLabel.textColor = [UIColor blackColor];
-        self.titleLabel.font = [OWSUnreadIndicatorCell textFont];
-        [self.titlePillView addSubview:self.titleLabel];
+        self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+        self.titleLabel.font = [OWSUnreadIndicatorCell titleFont];
+        [self.bannerView addSubview:self.titleLabel];
 
         self.subtitleLabel = [UILabel new];
         self.subtitleLabel.text = [OWSUnreadIndicatorCell subtitleForInteraction:self.interaction];
         self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-        self.subtitleLabel.font = [OWSUnreadIndicatorCell textFont];
+        self.subtitleLabel.font = [OWSUnreadIndicatorCell subtitleFont];
         self.subtitleLabel.numberOfLines = 0;
         self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
@@ -68,14 +68,20 @@
     }
 }
 
-+ (UIFont *)textFont
++ (UIFont *)titleFont
 {
-    return [UIFont ows_mediumFontWithSize:12.f];
+    return [UIFont ows_regularFontWithSize:12.f];
+}
+
++ (UIFont *)subtitleFont
+{
+    return [UIFont ows_regularFontWithSize:12.f];
 }
 
 + (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction
 {
-    return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
+    return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.")
+        .uppercaseString;
 }
 
 + (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
@@ -111,15 +117,11 @@
     return 10.f;
 }
 
-+ (CGFloat)titleInnerVMargin
++ (CGFloat)titleVMargin
 {
     return 5.f;
 }
 
-+ (CGFloat)titleOuterVMargin
-{
-    return 5.f;
-}
 
 + (CGFloat)topVMargin
 {
@@ -143,23 +145,18 @@
     //
     // This layout logic assumes that the cell insets are symmetrical and can be deduced
     // from the cell frame.
-    CGRect titleBackgroundViewFrame = CGRectMake(-self.left,
+    CGRect bannerViewFrame = CGRectMake(-self.left,
         OWSUnreadIndicatorCell.topVMargin,
         self.width + self.left * 2.f,
-        self.titleLabel.height + OWSUnreadIndicatorCell.titleInnerVMargin * 2.f
-            + OWSUnreadIndicatorCell.titleOuterVMargin * 2.f);
-    self.titleBackgroundView.frame = [self convertRect:titleBackgroundViewFrame toView:self.contentView];
+        self.titleLabel.height + OWSUnreadIndicatorCell.titleVMargin * 2.f);
+    self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
 
-    self.titleTopHighlightView.frame = CGRectMake(0, 0, self.titleBackgroundView.width, 1.f);
-    self.titleBottomHighlightView.frame
-        = CGRectMake(0, self.titleBackgroundView.height - 1.f, self.titleBackgroundView.width, 1.f);
-
-    self.titlePillView.frame = CGRectMake(0,
-        0,
-        self.titleLabel.width + OWSUnreadIndicatorCell.titleInnerHMargin * 2.f,
-        self.titleLabel.height + OWSUnreadIndicatorCell.titleInnerVMargin * 2.f);
-    self.titlePillView.layer.cornerRadius = self.titlePillView.height * 0.5f;
-    [self.titlePillView centerOnSuperview];
+    const CGFloat kHighlightThickness = 0.5f;
+    self.bannerTopHighlightView.frame = CGRectMake(0, 0, self.bannerView.width, kHighlightThickness);
+    self.bannerBottomHighlightView1.frame
+        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 2.f, self.bannerView.width, kHighlightThickness);
+    self.bannerBottomHighlightView2.frame
+        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 1.f, self.bannerView.width, kHighlightThickness);
 
     [self.titleLabel centerOnSuperview];
 
@@ -168,7 +165,7 @@
             sizeThatFits:CGSizeMake(
                              self.contentView.width - [OWSUnreadIndicatorCell subtitleHMargin] * 2.f, CGFLOAT_MAX)];
         self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
-            round(self.titleBackgroundView.bottom + OWSUnreadIndicatorCell.subtitleVSpacing),
+            round(self.bannerView.bottom + OWSUnreadIndicatorCell.subtitleVSpacing),
             ceil(subtitleSize.width),
             ceil(subtitleSize.height));
     }
@@ -178,8 +175,7 @@
              collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
-    result.height += self.titleInnerVMargin * 2.f;
-    result.height += self.titleOuterVMargin * 2.f;
+    result.height += self.titleVMargin * 2.f;
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
@@ -189,13 +185,14 @@
     // Creating a UILabel to measure the layout is expensive, but it's the only
     // reliable way to do it.  Unread indicators should be rare, so this is acceptable.
     UILabel *label = [UILabel new];
-    label.font = [self textFont];
+    label.font = [self titleFont];
     label.text = title;
     result.height += ceil([label sizeThatFits:CGSizeZero].height);
 
     if (subtitle.length > 0) {
         result.height += self.subtitleVSpacing;
 
+        label.font = [self subtitleFont];
         label.text = subtitle;
         // The subtitle may wrap to a second line.
         label.lineBreakMode = NSLineBreakByWordWrapping;
