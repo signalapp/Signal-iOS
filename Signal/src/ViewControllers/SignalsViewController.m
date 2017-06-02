@@ -44,6 +44,10 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 
+@property (nonatomic) BOOL isViewVisible;
+@property (nonatomic) BOOL isAppInBackground;
+@property (nonatomic) BOOL shouldObserveDBModifications;
+
 // Dependencies
 
 @property (nonatomic, readonly) AccountManager *accountManager;
@@ -107,6 +111,14 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -148,12 +160,9 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
 
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    // Create the database connection.
+    [self uiDatabaseConnection];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:TSUIDatabaseConnectionDidUpdateNotification
-                                               object:nil];
     [self selectedInbox:self];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
@@ -310,12 +319,77 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self checkIfEmptyView];
     if ([TSThread numberOfKeysInCollection] > 0) {
         [self.contactsManager requestSystemContactsOnce];
     }
     [self updateInboxCountLabel];
-    [[self tableView] reloadData];
+
+    self.isViewVisible = YES;
+    [self checkIfEmptyView];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    self.isViewVisible = NO;
+}
+
+- (void)setIsViewVisible:(BOOL)isViewVisible
+{
+    _isViewVisible = isViewVisible;
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)setIsAppInBackground:(BOOL)isAppInBackground
+{
+    _isAppInBackground = isAppInBackground;
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)updateShouldObserveDBModifications
+{
+    self.shouldObserveDBModifications = self.isViewVisible && !self.isAppInBackground;
+}
+
+- (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
+{
+    if (!_shouldObserveDBModifications && shouldObserveDBModifications && self.threadMappings != nil) {
+        // Before we begin observing database modifications, make sure
+        // our mapping and table state is up-to-date.
+        //
+        // We need to `beginLongLivedReadTransaction` before we update our
+        // mapping in order to jump to the most recent commit.
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.threadMappings updateWithTransaction:transaction];
+        }];
+
+        [[self tableView] reloadData];
+    }
+
+    _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    if (shouldObserveDBModifications) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
+    }
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    self.isAppInBackground = NO;
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    self.isAppInBackground = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -395,7 +469,8 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 #pragma mark - Table View Data Source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return (NSInteger)[self.threadMappings numberOfSections];
 }
 
@@ -683,18 +758,17 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 }
 
 - (void)changeToGrouping:(NSString *)grouping {
+    OWSAssert([NSThread isMainThread]);
+
+    self.shouldObserveDBModifications = NO;
+
     self.threadMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      [self.threadMappings updateWithTransaction:transaction];
+    [self updateShouldObserveDBModifications];
 
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self.tableView reloadData];
-        [self checkIfEmptyView];
-      });
-    }];
+    [self checkIfEmptyView];
 }
 
 #pragma mark Database delegates
@@ -705,10 +779,6 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         YapDatabase *database = TSStorageManager.sharedManager.database;
         _uiDatabaseConnection = [database newConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:database];
     }
     return _uiDatabaseConnection;
 }
