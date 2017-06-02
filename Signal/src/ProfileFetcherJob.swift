@@ -67,12 +67,7 @@ class ProfileFetcherJob: NSObject {
                 return
             }
 
-            if self.storageManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId) {
-                Logger.info("\(self.TAG) updated identity key in fetched profile for recipient: \(recipientId)")
-                self.storageManager.deleteAllSessions(forContact: recipientId)
-            } else {
-                // no change in identity.
-            }
+            self.storageManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId)
         }
     }
 }
