@@ -9,7 +9,9 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
+#import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
+#import <SignalServiceKit/TSInfoMessage.h>
 
 @interface OWSSystemMessageCell ()
 
@@ -75,7 +77,7 @@
     //    [self.imageView addRedBorder];
     //    [self addRedBorder];
 
-    UIColor *contentColor = [UIColor ows_darkGrayColor];
+    UIColor *contentColor = [self colorForInteraction:self.interaction];
     UIImage *icon = [self iconForInteraction:self.interaction];
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     //    self.imageView.tintColor = [UIColor colorWithRGBHex:0x505050];
@@ -84,15 +86,114 @@
     self.titleLabel.text = [OWSSystemMessageCell titleForInteraction:self.interaction];
     self.titleLabel.textColor = contentColor;
 
+    //    DDLogError(@"----- %@ %@",
+    //               [self.interaction class],
+    //               self.interaction.description);
+
     [self setNeedsLayout];
+    //    [self addRedBorder];
+}
+
+- (UIColor *)colorForInteraction:(TSInteraction *)interaction
+{
+    //    UIImage *result = nil;
+
+    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+        switch (((TSErrorMessage *)self.interaction).errorType) {
+            case TSErrorMessageInvalidKeyException:
+                return [UIColor ows_yellowColor];
+            case TSErrorMessageNonBlockingIdentityChange:
+            case TSErrorMessageWrongTrustedIdentityKey:
+            case TSErrorMessageMissingKeyId:
+                //                result = [UIImage imageNamed:@"system_message_security"];
+                break;
+            case TSErrorMessageNoSession:
+            case TSErrorMessageInvalidMessage:
+            case TSErrorMessageDuplicateMessage:
+            case TSErrorMessageInvalidVersion:
+            case TSErrorMessageUnknownContactBlockOffer:
+                //                result = [UIImage imageNamed:@"system_message_warning"];
+                break;
+        }
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        switch (((TSInfoMessage *)self.interaction).messageType) {
+            case TSInfoMessageUserNotRegistered:
+                //                result = [UIImage imageNamed:@"system_message_warning"];
+                break;
+            case TSInfoMessageTypeSessionDidEnd:
+            case TSInfoMessageTypeUnsupportedMessage:
+            case TSInfoMessageAddToContactsOffer:
+                //                result = [UIImage imageNamed:@"system_message_info"];
+                break;
+            case TSInfoMessageTypeGroupUpdate:
+            case TSInfoMessageTypeGroupQuit:
+                // TODO:
+                //                result = [UIImage imageNamed:@"system_message_info"];
+                break;
+            case TSInfoMessageTypeDisappearingMessagesUpdate:
+                //                result = [UIImage imageNamed:@"system_message_timer"];
+                break;
+        }
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
+        // TODO:
+        //        result = [UIImage imageNamed:@"system_message_call"];
+    } else {
+        OWSFail(@"Unknown interaction type");
+        return nil;
+    }
+    //    return [UIColor ows_darkGrayColor];
+    return [UIColor colorWithRGBHex:0x505050];
 }
 
 - (UIImage *)iconForInteraction:(TSInteraction *)interaction
 {
     UIImage *result = nil;
+
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+        //        DDLogError(@"----- %@ %@: %d",
+        //                   [self.interaction class],
+        //                   self.interaction.description,
+        //                   (int) ((TSErrorMessage *) self.interaction).errorType);
+        switch (((TSErrorMessage *)self.interaction).errorType) {
+            case TSErrorMessageInvalidKeyException:
+            case TSErrorMessageNonBlockingIdentityChange:
+            case TSErrorMessageWrongTrustedIdentityKey:
+            case TSErrorMessageMissingKeyId:
+                result = [UIImage imageNamed:@"system_message_security"];
+                break;
+            case TSErrorMessageNoSession:
+            case TSErrorMessageInvalidMessage:
+            case TSErrorMessageDuplicateMessage:
+            case TSErrorMessageInvalidVersion:
+            case TSErrorMessageUnknownContactBlockOffer:
+                result = [UIImage imageNamed:@"system_message_warning"];
+                break;
+        }
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        //        DDLogError(@"----- %@ %@: %d",
+        //                   [self.interaction class],
+        //                   self.interaction.description,
+        //                   (int) ((TSInfoMessage *) self.interaction).messageType);
+        switch (((TSInfoMessage *)self.interaction).messageType) {
+            case TSInfoMessageUserNotRegistered:
+                result = [UIImage imageNamed:@"system_message_warning"];
+                break;
+            case TSInfoMessageTypeSessionDidEnd:
+            case TSInfoMessageTypeUnsupportedMessage:
+            case TSInfoMessageAddToContactsOffer:
+                result = [UIImage imageNamed:@"system_message_info"];
+                break;
+            case TSInfoMessageTypeGroupUpdate:
+            case TSInfoMessageTypeGroupQuit:
+                result = [UIImage imageNamed:@"system_message_group"];
+                break;
+            case TSInfoMessageTypeDisappearingMessagesUpdate:
+                result = [UIImage imageNamed:@"system_message_timer"];
+                break;
+        }
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
         // TODO:
-        result = [UIImage imageNamed:@"system_message_security"];
+        result = [UIImage imageNamed:@"system_message_call"];
     } else {
         OWSFail(@"Unknown interaction type");
         return nil;
@@ -109,6 +210,20 @@
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         // TODO: Should we move the copy generation into this view?
         return interaction.description;
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        // TODO: Should we move the copy generation into this view?
+        return interaction.description;
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
+        //        switch (((TSCall *) self.interaction).callType) {
+        //            case <#constant#>:
+        //                <#statements#>
+        //                break;
+        //
+        //            default:
+        //                break;
+        //        }
+        // TODO: Should we move the copy generation into this view?
+        return interaction.description;
     } else {
         OWSFail(@"Unknown interaction type");
         return nil;
@@ -122,51 +237,6 @@
 {
     return [UIFont ows_regularFontWithSize:13.f];
 }
-
-//+ (UIFont *)subtitleFont
-//{
-//    return [UIFont ows_regularFontWithSize:12.f];
-//}
-
-//+ (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
-//{
-//    if (!interaction.hasMoreUnseenMessages) {
-//        return nil;
-//    }
-//    NSString *subtitleFormat = (interaction.missingUnseenSafetyNumberChangeCount > 0
-//            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT",
-//                  @"Messages that indicates that there are more unseen messages that be revealed by tapping the 'load
-//                  "
-//                  @"earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}")
-//            : NSLocalizedString(
-//                  @"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT",
-//                  @"Messages that indicates that there are more unseen messages including safety number changes that "
-//                  @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier
-//                  "
-//                  @"messages' button}}."));
-//    NSString *loadMoreButtonName = [NSBundle jsq_localizedStringForKey:@"load_earlier_messages"];
-//    return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
-//}
-
-//+ (CGFloat)subtitleHMargin
-//{
-//    return 20.f;
-//}
-//
-//+ (CGFloat)subtitleVSpacing
-//{
-//    return 3.f;
-//}
-//
-//+ (CGFloat)titleInnerHMargin
-//{
-//    return 10.f;
-//}
-//
-//+ (CGFloat)titleVMargin
-//{
-//    return 5.5f;
-//}
 
 + (CGFloat)hMargin
 {
@@ -185,52 +255,21 @@
 
 + (CGFloat)hSpacing
 {
-    return 10.f;
+    return 8.f;
 }
 
 + (CGFloat)iconSize
 {
-    return 30.f;
+    return 25.f;
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 
-    //    [self.titleLabel sizeToFit];
-    //
-    //    // It's a bit of a hack, but we use a view that extends _outside_ the cell's bounds
-    //    // to draw its background, since we want the background to extend to the edges of the
-    //    // collection view.
-    //    //
-    //    // This layout logic assumes that the cell insets are symmetrical and can be deduced
-    //    // from the cell frame.
-    //    CGRect bannerViewFrame = CGRectMake(-self.left,
-    //        round(OWSSystemMessageCell.topVMargin),
-    //        round(self.width + self.left * 2.f),
-    //        round(self.titleLabel.height + OWSSystemMessageCell.titleVMargin * 2.f));
-    //    self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
-    //
-    //    // The highlights should be 1px (not 1pt), so adapt their thickness to
-    //    // the device resolution.
-    //    CGFloat kHighlightThickness = 1.f / [UIScreen mainScreen].scale;
-    //    self.bannerTopHighlightView.frame = CGRectMake(0, 0, self.bannerView.width, kHighlightThickness);
-    //    self.bannerBottomHighlightView1.frame
-    //        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 2.f, self.bannerView.width,
-    //        kHighlightThickness);
-    //    self.bannerBottomHighlightView2.frame
-    //        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 1.f, self.bannerView.width,
-    //        kHighlightThickness);
-    //
-    //    [self.titleLabel centerOnSuperview];
-
     CGFloat maxTitleWidth = (self.contentView.width
         - ([OWSSystemMessageCell hMargin] * 2.f + [OWSSystemMessageCell hSpacing] + [OWSSystemMessageCell iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-    //    CGFloat contentWidth = ceil([OWSSystemMessageCell iconSize] +
-    //                                [OWSSystemMessageCell hSpacing] +
-    //                                titleSize.width);
-    //    self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
     self.imageView.frame = CGRectMake(round([OWSSystemMessageCell hMargin]),
         round((self.contentView.height - [OWSSystemMessageCell iconSize]) * 0.5f),
         [OWSSystemMessageCell iconSize],
@@ -239,30 +278,18 @@
         round((self.contentView.height - titleSize.height) * 0.5f),
         ceil(titleSize.width + 1.f),
         ceil(titleSize.height + 1.f));
-    //    [self.titleLabel addRedBorder];
-    //    if (self.subtitleLabel.text.length > 0) {
-    //        CGSize subtitleSize = [self.subtitleLabel
-    //            sizeThatFits:CGSizeMake(
-    //                             self.contentView.width - [OWSSystemMessageCell subtitleHMargin] * 2.f, CGFLOAT_MAX)];
-    //        self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
-    //            round(self.bannerView.bottom + OWSSystemMessageCell.subtitleVSpacing),
-    //            ceil(subtitleSize.width),
-    //            ceil(subtitleSize.height));
-    //    }
 }
 
 + (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
-    //    result.height += self.titleVMargin * 2.f;
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
     NSString *title = [self titleForInteraction:interaction];
-    //    NSString *subtitle = [self subtitleForInteraction:interaction];
 
     // Creating a UILabel to measure the layout is expensive, but it's the only
-    // reliable way to do it.  Unread indicators should be rare, so this is acceptable.
+    // reliable way to do it.
     UILabel *label = [UILabel new];
     label.font = [self titleFont];
     label.text = title;
@@ -272,19 +299,6 @@
     CGSize titleSize = [label sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
     result.height += contentHeight;
-
-    //    if (subtitle.length > 0) {
-    //        result.height += self.subtitleVSpacing;
-    //
-    //        label.font = [self subtitleFont];
-    //        label.text = subtitle;
-    //        // The subtitle may wrap to a second line.
-    //        label.lineBreakMode = NSLineBreakByWordWrapping;
-    //        label.numberOfLines = 0;
-    //        result.height += ceil(
-    //            [label sizeThatFits:CGSizeMake(collectionViewWidth - self.subtitleHMargin * 2.f,
-    //            CGFLOAT_MAX)].height);
-    //    }
 
     return result;
 }

@@ -21,6 +21,8 @@
 @property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
+//@property (nonatomic, readonly) NSMutableArray *recentErrorTimestamps;
+//@property (nonatomic, readonly) NSMutableArray *recentIncomingMessageTimestamps;
 
 @end
 
@@ -36,6 +38,8 @@
     }
 
     _currentNotifications = [NSMutableDictionary new];
+    //    _recentErrorTimestamps = [NSMutableArray new];
+    //    _recentIncomingMessageTimestamps = [NSMutableArray new];
 
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
@@ -257,6 +261,18 @@
         }
     }
 }
+
+//- (BOOL)addNotificationTimestamp:(NSMutableArray *)timestamps
+//{
+//    OWSAssert(timestamps);
+//
+//    [timestamps addObject:[NSDate date]];
+//
+//    // Cull old timestamps.
+//    const CGFloat kThrottlingDuration = 5.f;
+//}
+//_recentErrorTimestamps = [NSMutableArray new];
+//_recentIncomingMessageTimestamps = [NSMutableArray new];
 
 #pragma mark - Util
 

@@ -9,7 +9,9 @@
 #import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
 #import "TSMessageAdapter.h"
+#import "TSUnreadIndicatorInteraction.h"
 #import "UIFont+OWS.h"
+#import "UIView+OWS.h"
 #import "tgmath.h" // generic math allows fmax to handle CGFLoat correctly on 32 & 64bit.
 #import <JSQMessagesViewController/JSQMessagesCollectionView.h>
 #import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayout.h>
@@ -49,22 +51,59 @@ NS_ASSUME_NONNULL_BEGIN
                               atIndexPath:(NSIndexPath *)indexPath
                                withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
+    //    DDLogError(@"----- ?? %@",
+    //               [messageData class]);
+
     if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
-        if (message.messageType == TSErrorMessageAdapter) {
-            return [OWSSystemMessageCell cellSizeForInteraction:((TSMessageAdapter *)messageData).interaction
-                                            collectionViewWidth:layout.collectionView.bounds.size.width];
-        } else if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
-            return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
-        } else if (message.messageType == TSUnreadIndicatorAdapter) {
-            return [OWSUnreadIndicatorCell
-                cellSizeForInteraction:(TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction
-                   collectionViewWidth:layout.collectionView.bounds.size.width];
-        }
-    }
 
-    if ([messageData isKindOfClass:[OWSCall class]]) {
-        return [self messageBubbleSizeForCallData:messageData atIndexPath:indexPath withLayout:layout];
+        //        DDLogError(@"----- ???? %d", (int) message.messageType);
+
+        switch (message.messageType) {
+            case TSCallAdapter:
+            case TSInfoMessageAdapter:
+            case TSErrorMessageAdapter: {
+                id cacheKey = [self cacheKeyForMessageData:messageData];
+                TSInteraction *interaction = ((TSMessageAdapter *)messageData).interaction;
+                return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
+            }
+            case TSUnreadIndicatorAdapter: {
+                id cacheKey = [self cacheKeyForMessageData:messageData];
+
+                TSUnreadIndicatorInteraction *interaction
+                    = (TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction;
+
+                NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+                if (cachedSize != nil) {
+                    //                    DDLogError(@"----- cache hit[%@,%@], %@ %@",
+                    //                               [interaction class],
+                    //                               cacheKey,
+                    //                               NSStringFromCGSize([cachedSize CGSizeValue]),
+                    //                               interaction.description);
+                    return [cachedSize CGSizeValue];
+                }
+
+                CGSize result = [OWSUnreadIndicatorCell cellSizeForInteraction:interaction
+                                                           collectionViewWidth:layout.collectionView.width];
+
+                [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
+
+                //                DDLogError(@"----- cache miss[%@,%@], %@ %@",
+                //                           [interaction class],
+                //                           cacheKey,
+                //                           NSStringFromCGSize(result),
+                //                           interaction.description);
+
+                return result;
+            }
+            default:
+                // TODO: we need to examine the other cases.
+                break;
+        }
+    } else if ([messageData isKindOfClass:[OWSCall class]]) {
+        id cacheKey = [self cacheKeyForMessageData:messageData];
+        TSInteraction *interaction = ((OWSCall *)messageData).interaction;
+        return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
     }
 
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
@@ -77,6 +116,37 @@ NS_ASSUME_NONNULL_BEGIN
 
         return [super messageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
     }
+}
+
+- (CGSize)sizeForSystemMessage:(TSInteraction *)interaction
+                      cacheKey:(id)cacheKey
+                        layout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    OWSAssert(interaction);
+    OWSAssert(cacheKey);
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+    if (cachedSize != nil) {
+        //        DDLogError(@"----- cache hit[%@,%@], %@ %@",
+        //                   [interaction class],
+        //                   cacheKey,
+        //                   NSStringFromCGSize([cachedSize CGSizeValue]),
+        //                   interaction.description);
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize result =
+        [OWSSystemMessageCell cellSizeForInteraction:interaction collectionViewWidth:layout.collectionView.width];
+
+    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
+
+    //    DDLogError(@"----- cache miss[%@,%@], %@ %@",
+    //               [interaction class],
+    //               cacheKey,
+    //               NSStringFromCGSize(result),
+    //               interaction.description);
+
+    return result;
 }
 
 /**
@@ -135,120 +205,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Add an extra pixel per line to fit the emoji.
     // This is a crappy solution. Long messages with only one line of emoji will have an extra pixel per line.
     return CGSizeMake(superSize.width, superSize.height + (CGFloat)1.5 * lines);
-}
-
-
-- (CGSize)messageBubbleSizeForInfoMessageData:(id<JSQMessageData>)messageData
-                                  atIndexPath:(NSIndexPath *)indexPath
-                                   withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
-{
-    id cacheKey = [self cacheKeyForMessageData:messageData];
-
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGSize finalSize = CGSizeZero;
-
-    if ([messageData isMediaMessage]) {
-        finalSize = [[messageData media] mediaViewDisplaySize];
-    } else {
-        ///////////////////
-        // BEGIN InfoMessage sizing HACK
-        // Braindead, and painstakingly produced.
-        // If you want to change, check for clipping / excess space on 1, 2, and 3 line messages with short and long
-        // words very near the edge.
-
-//      CGSize avatarSize = [self jsq_avatarSizeForMessageData:messageData withLayout:layout];
-//      //  from the cell xibs, there is a 2 point space between avatar and bubble
-//      CGFloat spacingBetweenAvatarAndBubble = 2.0f;
-//      CGFloat horizontalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.left + layout.messageBubbleTextViewTextContainerInsets.right;
-//      CGFloat horizontalFrameInsets = layout.messageBubbleTextViewFrameInsets.left + layout.messageBubbleTextViewFrameInsets.right;
-//      CGFloat horizontalInsetsTotal = horizontalContainerInsets + horizontalFrameInsets + spacingBetweenAvatarAndBubble;
-//      CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - avatarSize.width - layout.messageBubbleLeftRightMargin - horizontalInsetsTotal;
-
-        // The full layout width, less the textView margins from xib.
-//        CGFloat horizontalInsetsTotal = 12.0; cropped 3rd line
-        CGFloat horizontalInsetsTotal = 50.0;
-        CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - horizontalInsetsTotal;
-
-        CGRect stringRect = [[messageData text]
-            boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
-                         options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                      attributes:@{
-                                   NSFontAttributeName : [UIFont ows_dynamicTypeBodyFont]
-                      } // Hack to use a slightly larger than actual font, because I'm seeing messages with higher line count get clipped.
-                         context:nil];
-        // END InfoMessage sizing HACK
-        ////////////////////
-
-        CGSize stringSize = CGRectIntegral(stringRect).size;
-
-        CGFloat verticalContainerInsets = layout.messageBubbleTextViewTextContainerInsets.top
-            + layout.messageBubbleTextViewTextContainerInsets.bottom;
-
-        CGFloat verticalFrameInsets
-            = layout.messageBubbleTextViewFrameInsets.top + layout.messageBubbleTextViewFrameInsets.bottom;
-        ///////////////////
-        // BEGIN InfoMessage sizing HACK
-
-        CGFloat topIconPortrusion = 28;
-
-        verticalFrameInsets += topIconPortrusion;
-
-        // END InfoMessage sizing HACK
-        ///////////////////
-
-        //  add extra 2 points of space (`self.additionalInset`), because `boundingRectWithSize:` is slightly off
-        //  not sure why. magix. (shrug) if you know, submit a PR
-        CGFloat verticalInsets = verticalContainerInsets + verticalFrameInsets + self.additionalInset;
-
-        //  same as above, an extra 2 points of magix
-        CGFloat finalWidth
-            = MAX(stringSize.width + horizontalInsetsTotal, self.minimumBubbleWidth) + self.additionalInset;
-
-        finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
-    }
-
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
-
-    return finalSize;
-}
-
-- (CGSize)messageBubbleSizeForCallData:(id<JSQMessageData>)messageData
-                           atIndexPath:(NSIndexPath *)indexPath
-                            withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
-{
-    id cacheKey = [self cacheKeyForMessageData:messageData];
-
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGFloat horizontalInsetsTotal = 0.0;
-    CGFloat maximumTextWidth = [self textBubbleWidthForLayout:layout] - horizontalInsetsTotal;
-
-    CGRect stringRect = [[messageData text]
-        boundingRectWithSize:CGSizeMake(maximumTextWidth, CGFLOAT_MAX)
-                     options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                  attributes:@{
-                      NSFontAttributeName : [UIFont ows_dynamicTypeBodyFont]
-                  } // Hack to use a slightly larger than actual font, because I'm seeing messages with higher line
-                    // count get clipped.
-                     context:nil];
-
-    CGSize stringSize = CGRectIntegral(stringRect).size;
-
-    CGFloat verticalInsets = 0;
-    CGFloat finalWidth = maximumTextWidth + horizontalInsetsTotal;
-
-    CGSize finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
-
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:cacheKey];
-
-    return finalSize;
 }
 
 - (id)cacheKeyForMessageData:(id<JSQMessageData>)messageData

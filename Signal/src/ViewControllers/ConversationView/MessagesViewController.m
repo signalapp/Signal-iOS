@@ -1460,16 +1460,18 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionViewCell *cell;
     switch (message.messageType) {
         case TSCallAdapter: {
-            OWSCall *call = (OWSCall *)message;
-            cell = [self loadCallCellForCall:call atIndexPath:indexPath];
+            //            OWSCall *call = (OWSCall *)message;
+            //            cell = [self loadCallCellForCall:call atIndexPath:indexPath];
+            cell = [self loadSystemMessageCell:indexPath interaction:message.interaction];
             break;
         }
         case TSInfoMessageAdapter: {
-            cell = [self loadInfoMessageCellForMessage:(TSMessageAdapter *)message atIndexPath:indexPath];
+            // TODO: There's more work to here.
+            cell = [self loadSystemMessageCell:indexPath interaction:message.interaction];
             break;
         }
         case TSErrorMessageAdapter: {
-            cell = [self loadErrorMessageCell:indexPath interaction:message.interaction];
+            cell = [self loadSystemMessageCell:indexPath interaction:message.interaction];
             break;
         }
         case TSIncomingMessageAdapter: {
@@ -1573,38 +1575,38 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
-{
-    OWSCallCollectionViewCell *callCell =
-        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
-                                                       forIndexPath:indexPath];
-
-    NSString *text = call.date != nil ? [call text] : call.senderDisplayName;
-    NSString *allText = call.date != nil ? [text stringByAppendingString:[call dateText]] : text;
-
-    UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0f];
-    NSMutableAttributedString *attributedText =
-        [[NSMutableAttributedString alloc] initWithString:allText attributes:@{ NSFontAttributeName : boldFont }];
-    if ([call date] != nil) {
-        // Not a group meta message
-        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
-        const NSRange range = NSMakeRange([text length], [[call dateText] length]);
-        [attributedText setAttributes:@{ NSFontAttributeName : regularFont } range:range];
-    }
-    callCell.textView.text = nil;
-    callCell.textView.attributedText = attributedText;
-
-    callCell.textView.textAlignment = NSTextAlignmentCenter;
-    callCell.textView.textColor = [UIColor ows_materialBlueColor];
-    callCell.layer.shouldRasterize = YES;
-    callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
-
-    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-    callCell.textView.userInteractionEnabled = NO;
-    callCell.textView.selectable = NO;
-
-    return callCell;
-}
+//- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
+//{
+//    OWSCallCollectionViewCell *callCell =
+//        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
+//                                                       forIndexPath:indexPath];
+//
+//    NSString *text = call.date != nil ? [call text] : call.senderDisplayName;
+//    NSString *allText = call.date != nil ? [text stringByAppendingString:[call dateText]] : text;
+//
+//    UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0f];
+//    NSMutableAttributedString *attributedText =
+//        [[NSMutableAttributedString alloc] initWithString:allText attributes:@{ NSFontAttributeName : boldFont }];
+//    if ([call date] != nil) {
+//        // Not a group meta message
+//        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
+//        const NSRange range = NSMakeRange([text length], [[call dateText] length]);
+//        [attributedText setAttributes:@{ NSFontAttributeName : regularFont } range:range];
+//    }
+//    callCell.textView.text = nil;
+//    callCell.textView.attributedText = attributedText;
+//
+//    callCell.textView.textAlignment = NSTextAlignmentCenter;
+//    callCell.textView.textColor = [UIColor ows_materialBlueColor];
+//    callCell.layer.shouldRasterize = YES;
+//    callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
+//
+//    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+//    callCell.textView.userInteractionEnabled = NO;
+//    callCell.textView.selectable = NO;
+//
+//    return callCell;
+//}
 
 - (OWSDisplayedMessageCollectionViewCell *)loadDisplayedMessageCollectionViewCellForIndexPath:(NSIndexPath *)indexPath
 {
@@ -1620,38 +1622,70 @@ typedef enum : NSUInteger {
     return messageCell;
 }
 
-- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(TSMessageAdapter *)infoMessage
-                                                             atIndexPath:(NSIndexPath *)indexPath
-{
-    OWSDisplayedMessageCollectionViewCell *infoCell =
-        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+//- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(TSMessageAdapter *)infoMessage
+//                                                             atIndexPath:(NSIndexPath *)indexPath
+//{
+//    OWSDisplayedMessageCollectionViewCell *infoCell =
+//        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+//
+//    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
+//    OWSDisappearingMessagesConfiguration *configuration =
+//        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+//    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+//
+//    infoCell.textView.text = [infoMessage text];
+//
+//    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+//    infoCell.textView.userInteractionEnabled = NO;
+//    infoCell.textView.selectable = NO;
+//
+//    infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
+//    if (infoMessage.infoMessageType == TSInfoMessageTypeDisappearingMessagesUpdate) {
+//        infoCell.headerImageView.image = [UIImage imageNamed:@"ic_timer"];
+//        infoCell.headerImageView.backgroundColor = [UIColor whiteColor];
+//        // Lighten up the broad stroke header icon to match the perceived color of the border.
+//        infoCell.headerImageView.tintColor = [UIColor ows_infoMessageBorderColor];
+//    } else {
+//        infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
+//    }
+//
+//
+//    return infoCell;
+//}
 
-    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+//- (OWSSystemMessageCell *)loadErrorMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
+////                                                     ForMessage:(TSMessageAdapter *)errorMessage
+////                                                              atIndexPath:(NSIndexPath *)indexPath
+//{
+//    OWSAssert(indexPath);
+//    OWSAssert(interaction);
+//    //    OWSAssert([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
+//
+//    //    TSUnreadIndicatorInteraction *unreadIndicator = (TSUnreadIndicatorInteraction *)interaction;
+//
+//    OWSSystemMessageCell *cell =
+//    [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
+//                                                   forIndexPath:indexPath];
+//    cell.interaction = interaction;
+//    [cell configure];
+//
+//    return cell;
+//
+//    //    OWSDisplayedMessageCollectionViewCell *errorCell =
+//    //        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+//    //    errorCell.textView.text = [errorMessage text];
+//    //
+//    //    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+//    //    errorCell.textView.userInteractionEnabled = NO;
+//    //    errorCell.textView.selectable = NO;
+//    //
+//    //    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
+//    //    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
+//    //
+//    //    return errorCell;
+//}
 
-    infoCell.textView.text = [infoMessage text];
-
-    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-    infoCell.textView.userInteractionEnabled = NO;
-    infoCell.textView.selectable = NO;
-
-    infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
-    if (infoMessage.infoMessageType == TSInfoMessageTypeDisappearingMessagesUpdate) {
-        infoCell.headerImageView.image = [UIImage imageNamed:@"ic_timer"];
-        infoCell.headerImageView.backgroundColor = [UIColor whiteColor];
-        // Lighten up the broad stroke header icon to match the perceived color of the border.
-        infoCell.headerImageView.tintColor = [UIColor ows_infoMessageBorderColor];
-    } else {
-        infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
-    }
-
-
-    return infoCell;
-}
-
-- (OWSSystemMessageCell *)loadErrorMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
+- (OWSSystemMessageCell *)loadSystemMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
 //                                                     ForMessage:(TSMessageAdapter *)errorMessage
 //                                                              atIndexPath:(NSIndexPath *)indexPath
 {
@@ -3930,7 +3964,8 @@ typedef enum : NSUInteger {
     // TODO:
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
     return ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
-        [interaction isKindOfClass:[TSErrorMessage class]]);
+        [interaction isKindOfClass:[TSInfoMessage class]] || [interaction isKindOfClass:[TSErrorMessage class]] ||
+        [interaction isKindOfClass:[TSCall class]]);
 }
 
 #pragma mark - Class methods
