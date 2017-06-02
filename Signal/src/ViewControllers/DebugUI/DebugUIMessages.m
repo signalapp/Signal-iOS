@@ -7,6 +7,11 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
+#import <AxolotlKit/PreKeyBundle.h>
+#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/TSCall.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -35,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection
         sectionWithTitle:@"Messages"
                    items:@[
+                       [OWSTableItem itemWithTitle:@"Create all system messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages createSystemMessagesInThread:thread];
+                                       }],
                        [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
                                        actionBlock:^{
                                            [DebugUIMessages sendTextMessage:10 thread:thread];
@@ -490,6 +499,147 @@ NS_ASSUME_NONNULL_BEGIN
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithData:[self createRandomNSDataOfSize:256] dataUTI:uti filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
+}
+
++ (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    OWSSignalServiceProtosEnvelopeBuilder *builder = [OWSSignalServiceProtosEnvelopeBuilder new];
+
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *gThread = (TSGroupThread *)thread;
+        [builder setSource:gThread.groupModel.groupMemberIds[0]];
+    } else if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [builder setSource:contactThread.contactIdentifier];
+    }
+
+    return [builder build];
+}
+
++ (void)createSystemMessagesInThread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+
+        if ([thread isKindOfClass:[TSContactThread class]]) {
+            TSContactThread *contactThread = (TSContactThread *)thread;
+
+            [[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                withCallNumber:@"+19174054215"
+                                      callType:RPRecentCallTypeIncoming
+                                      inThread:contactThread] saveWithTransaction:transaction];
+            [[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                withCallNumber:@"+19174054215"
+                                      callType:RPRecentCallTypeOutgoing
+                                      inThread:contactThread] saveWithTransaction:transaction];
+            [[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                withCallNumber:@"+19174054215"
+                                      callType:RPRecentCallTypeMissed
+                                      inThread:contactThread] saveWithTransaction:transaction];
+            [[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                withCallNumber:@"+19174054215"
+                                      callType:RPRecentCallTypeOutgoingIncomplete
+                                      inThread:contactThread] saveWithTransaction:transaction];
+            [[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                withCallNumber:@"+19174054215"
+                                      callType:RPRecentCallTypeIncomingIncomplete
+                                      inThread:contactThread] saveWithTransaction:transaction];
+        }
+
+        {
+            NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                       enabled:YES
+                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                               thread:thread
+                                                                        configuration:disappearingMessagesConfiguration
+                                                                  createdByRemoteName:@"Alice"]
+                saveWithTransaction:transaction];
+        }
+        {
+            NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
+            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                       enabled:YES
+                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                               thread:thread
+                                                                        configuration:disappearingMessagesConfiguration
+                                                                  createdByRemoteName:@"Alice"]
+                saveWithTransaction:transaction];
+        }
+        {
+            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                       enabled:NO
+                                                               durationSeconds:0];
+            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                               thread:thread
+                                                                        configuration:disappearingMessagesConfiguration
+                                                                  createdByRemoteName:@"Alice"]
+                saveWithTransaction:transaction];
+        }
+
+        [[TSInfoMessage userNotRegisteredMessageInThread:thread] saveWithTransaction:transaction];
+
+        [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+        // TODO: customMessage?
+        [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupUpdate] saveWithTransaction:transaction];
+        // TODO: customMessage?
+        [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupQuit] saveWithTransaction:transaction];
+
+        [[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread] withTransaction:transaction]
+            saveWithTransaction:transaction];
+        [[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
+                                         withTransaction:transaction] saveWithTransaction:transaction];
+        [[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread] withTransaction:transaction]
+            saveWithTransaction:transaction];
+        [[TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                             withTransaction:transaction]
+            saveWithTransaction:transaction];
+        [[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread] withTransaction:transaction]
+            saveWithTransaction:transaction];
+
+        [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:thread
+                                 failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                       recipientId:@"+19174054215"] saveWithTransaction:transaction];
+
+    }];
+
+    {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+        TSOutgoingMessage *outgoingMessage =
+            [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                inThread:thread
+                                             messageBody:@"hi"
+                                           attachmentIds:[NSMutableArray new]
+                                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        PreKeyBundle *preKeyBundle = [[PreKeyBundle alloc] initWithRegistrationId:0
+                                                                         deviceId:0
+                                                                         preKeyId:0
+                                                                     preKeyPublic:[self createRandomNSDataOfSize:16]
+                                                               signedPreKeyPublic:[self createRandomNSDataOfSize:16]
+                                                                   signedPreKeyId:0
+                                                            signedPreKeySignature:[self createRandomNSDataOfSize:16]
+                                                                      identityKey:[self createRandomNSDataOfSize:16]];
+        [[TSInvalidIdentityKeySendingErrorMessage untrustedKeyWithOutgoingMessage:outgoingMessage
+                                                                         inThread:thread
+                                                                     forRecipient:@"+19174054215"
+                                                                     preKeyBundle:preKeyBundle] save];
+    }
 }
 
 @end

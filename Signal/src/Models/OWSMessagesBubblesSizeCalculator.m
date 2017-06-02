@@ -5,6 +5,7 @@
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
 #import "OWSDisplayedMessageCollectionViewCell.h"
+#import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
 #import "TSMessageAdapter.h"
@@ -50,13 +51,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
-        if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
+        if (message.messageType == TSErrorMessageAdapter) {
+            return [OWSSystemMessageCell cellSizeForInteraction:((TSMessageAdapter *)messageData).interaction
+                                            collectionViewWidth:layout.collectionView.bounds.size.width];
+        } else if (message.messageType == TSInfoMessageAdapter || message.messageType == TSErrorMessageAdapter) {
             return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
         } else if (message.messageType == TSUnreadIndicatorAdapter) {
             return [OWSUnreadIndicatorCell
                 cellSizeForInteraction:(TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction
                    collectionViewWidth:layout.collectionView.bounds.size.width];
-            return [self messageBubbleSizeForInfoMessageData:messageData atIndexPath:indexPath withLayout:layout];
         }
     }
 

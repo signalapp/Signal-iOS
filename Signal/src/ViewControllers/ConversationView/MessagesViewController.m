@@ -30,6 +30,7 @@
 #import "OWSMessagesInputToolbar.h"
 #import "OWSMessagesToolbarContentView.h"
 #import "OWSOutgoingMessageCollectionViewCell.h"
+#import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
@@ -422,6 +423,9 @@ typedef enum : NSUInteger {
 {
     [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
           forCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]];
+
+    [self.collectionView registerClass:[OWSSystemMessageCell class]
+            forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
 
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
@@ -1465,7 +1469,7 @@ typedef enum : NSUInteger {
             break;
         }
         case TSErrorMessageAdapter: {
-            cell = [self loadErrorMessageCellForMessage:(TSMessageAdapter *)message atIndexPath:indexPath];
+            cell = [self loadErrorMessageCell:indexPath interaction:message.interaction];
             break;
         }
         case TSIncomingMessageAdapter: {
@@ -1647,21 +1651,36 @@ typedef enum : NSUInteger {
     return infoCell;
 }
 
-- (OWSDisplayedMessageCollectionViewCell *)loadErrorMessageCellForMessage:(TSMessageAdapter *)errorMessage
-                                                              atIndexPath:(NSIndexPath *)indexPath
+- (OWSSystemMessageCell *)loadErrorMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
+//                                                     ForMessage:(TSMessageAdapter *)errorMessage
+//                                                              atIndexPath:(NSIndexPath *)indexPath
 {
-    OWSDisplayedMessageCollectionViewCell *errorCell =
-        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
-    errorCell.textView.text = [errorMessage text];
+    OWSAssert(indexPath);
+    OWSAssert(interaction);
+    //    OWSAssert([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
 
-    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-    errorCell.textView.userInteractionEnabled = NO;
-    errorCell.textView.selectable = NO;
+    //    TSUnreadIndicatorInteraction *unreadIndicator = (TSUnreadIndicatorInteraction *)interaction;
 
-    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
-    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
+    OWSSystemMessageCell *cell =
+        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
+                                                       forIndexPath:indexPath];
+    cell.interaction = interaction;
+    [cell configure];
 
-    return errorCell;
+    return cell;
+
+    //    OWSDisplayedMessageCollectionViewCell *errorCell =
+    //        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
+    //    errorCell.textView.text = [errorMessage text];
+    //
+    //    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
+    //    errorCell.textView.userInteractionEnabled = NO;
+    //    errorCell.textView.selectable = NO;
+    //
+    //    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
+    //    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
+    //
+    //    return errorCell;
 }
 
 #pragma mark - Adjusting cell label heights
@@ -3908,8 +3927,10 @@ typedef enum : NSUInteger {
 
 - (BOOL)isSpecialItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // TODO:
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return [interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
+    return ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
+        [interaction isKindOfClass:[TSErrorMessage class]]);
 }
 
 #pragma mark - Class methods

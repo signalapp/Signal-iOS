@@ -153,6 +153,13 @@
 #pragma mark - Signal Messages
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
+    OWSAssert(message);
+    OWSAssert(thread);
+
+    if (thread.isMuted) {
+        return;
+    }
+
     NSString *messageDescription = message.description;
 
     if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
@@ -186,6 +193,10 @@
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
+    OWSAssert(message);
+    OWSAssert(thread);
+    OWSAssert(contactsManager);
+
     if (thread.isMuted) {
         return;
     }
