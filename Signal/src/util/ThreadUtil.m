@@ -18,7 +18,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation ThreadOffersAndIndicators
+@implementation ThreadDynamicInteractions
+
+- (void)clearUnreadIndicatorState
+{
+    self.unreadIndicatorPosition = nil;
+    self.firstUnseenInteractionTimestamp = nil;
+}
 
 @end
 
@@ -26,7 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ThreadUtil
 
-+ (void)sendMessageWithText:(NSString *)text inThread:(TSThread *)thread messageSender:(OWSMessageSender *)messageSender
++ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
+                                  inThread:(TSThread *)thread
+                             messageSender:(OWSMessageSender *)messageSender
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(text.length > 0);
@@ -48,12 +56,14 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
         }];
+
+    return message;
 }
 
 
-+ (void)sendMessageWithAttachment:(SignalAttachment *)attachment
-                         inThread:(TSThread *)thread
-                    messageSender:(OWSMessageSender *)messageSender
++ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
+                                        inThread:(TSThread *)thread
+                                   messageSender:(OWSMessageSender *)messageSender
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(attachment);
@@ -79,16 +89,18 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send message attachment with error: %@", self.tag, error);
         }];
+
+    return message;
 }
 
-+ (ThreadOffersAndIndicators *)ensureThreadOffersAndIndicators:(TSThread *)thread
-                                                storageManager:(TSStorageManager *)storageManager
-                                               contactsManager:(OWSContactsManager *)contactsManager
-                                               blockingManager:(OWSBlockingManager *)blockingManager
-                                   hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-                               firstUnseenInteractionTimestamp:
-                                   (nullable NSNumber *)firstUnseenInteractionTimestampParameter
-                                                  maxRangeSize:(int)maxRangeSize
++ (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
+                                                   storageManager:(TSStorageManager *)storageManager
+                                                  contactsManager:(OWSContactsManager *)contactsManager
+                                                  blockingManager:(OWSBlockingManager *)blockingManager
+                                      hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+                                  firstUnseenInteractionTimestamp:
+                                      (nullable NSNumber *)firstUnseenInteractionTimestampParameter
+                                                     maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
     OWSAssert(storageManager);
@@ -96,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
 
-    ThreadOffersAndIndicators *result = [ThreadOffersAndIndicators new];
+    ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
@@ -141,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[TSErrorMessage class]]) {
                               TSErrorMessage *errorMessage = (TSErrorMessage *)object;
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                              [nonBlockingSafetyNumberChanges addObject:object];
+                              [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
                               DDLogError(@"Unexpected interaction type: %@", [object class]);
                               OWSAssert(0);
@@ -155,14 +167,13 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        NSNumber *firstUnseenInteractionTimestamp = nil;
         if (firstUnseenInteractionTimestampParameter) {
-            firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
+            result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
             TSInteraction *firstUnseenInteraction =
                 [[transaction ext:TSUnseenDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
-                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
+                result.firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
             }
         }
 
@@ -183,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
         __block BOOL hasMoreUnseenMessages = NO;
         __block TSInteraction *interactionAfterUnreadIndicator = nil;
         NSUInteger missingUnseenSafetyNumberChangeCount = 0;
-        if (firstUnseenInteractionTimestamp) {
+        if (result.firstUnseenInteractionTimestamp != nil) {
             [[transaction ext:TSMessageDatabaseViewExtensionName]
                 enumerateRowsInGroup:thread.uniqueId
                          withOptions:NSEnumerationReverse
@@ -199,15 +210,15 @@ NS_ASSUME_NONNULL_BEGIN
                                   return;
                               }
 
-                              if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                                  // Ignore existing unread indicator, if any.
+                              TSInteraction *interaction = (TSInteraction *)object;
+
+                              if (interaction.isDynamicInteraction) {
+                                  // Ignore dynamic interactions, if any.
                                   return;
                               }
 
-                              TSInteraction *interaction = (TSInteraction *)object;
-
                               if (interaction.timestampForSorting
-                                  < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                                  < result.firstUnseenInteractionTimestamp.unsignedLongLongValue) {
                                   // By default we want the unread indicator to appear just before
                                   // the first unread message.
                                   *stop = YES;
@@ -233,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
                 for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
                     BOOL isUnseen = safetyNumberChange.timestampForSorting
-                        >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
+                        >= result.firstUnseenInteractionTimestamp.unsignedLongLongValue;
                     if (!isUnseen) {
                         continue;
                     }
@@ -251,11 +262,11 @@ NS_ASSUME_NONNULL_BEGIN
                     = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
             }
         }
-        result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestamp;
-        if (hasMoreUnseenMessages) {
+        if (result.firstUnseenInteractionTimestamp) {
             // The unread indicator is _before_ the last visible unseen message.
             result.unreadIndicatorPosition = @(visibleUnseenMessageCount);
         }
+        OWSAssert((result.firstUnseenInteractionTimestamp != nil) == (result.unreadIndicatorPosition != nil));
 
         TSMessage *firstMessage = firstIncomingMessage;
         if (!firstMessage
@@ -387,7 +398,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
 
-                DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@", self.tag, indicator.uniqueId);
+                DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
+                    self.tag,
+                    indicator.uniqueId,
+                    indicator.timestampForSorting);
             }
         }
     }];
