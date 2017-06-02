@@ -1672,7 +1672,7 @@ typedef enum : NSUInteger {
  */
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
                                                          completion:
-                                                             (void (^)(BOOL didConfirmedIdentity))completionHandler
+                                                             (void (^)(BOOL didConfirmIdentity))completionHandler
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
                                                                  confirmationText:confirmationText

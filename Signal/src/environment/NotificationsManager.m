@@ -13,6 +13,7 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 
@@ -21,6 +22,7 @@
 @property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 
 @end
 
@@ -36,6 +38,7 @@
     }
 
     _currentNotifications = [NSMutableDictionary new];
+    _storageManager = [TSStorageManager sharedManager];
 
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
@@ -203,7 +206,12 @@
 
         switch (self.notificationPreviewType) {
             case NotificationNamePreview:
-                notification.category = Signal_Full_New_Message_Category;
+                
+                // Don't display actions for message with unseen SN
+                if ([self.storageManager unseenIdentityChangesForRecipientIds:thread.recipientIdentifiers].count == 0) {
+                   notification.category = Signal_Full_New_Message_Category;
+                }
+                
                 notification.userInfo =
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 

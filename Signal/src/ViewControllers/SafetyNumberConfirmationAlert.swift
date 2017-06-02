@@ -35,15 +35,15 @@ class SafetyNumberConfirmationAlert: NSObject {
      */
     public func presentIfNecessary(recipientIds: [String], confirmationText: String, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
 
-        let unconfirmedIdentity = unconfirmedIdentities(recipientIds: recipientIds).first
+        let unconfirmedIdentity = firstUnconfirmedIdentity(recipientIds: recipientIds)
 
         var unseenIdentity: OWSRecipientIdentity?
         if verifySeen {
-            unseenIdentity = unseenIdentities(recipientIds: recipientIds).first
+            unseenIdentity = firstUnseenIdentity(recipientIds: recipientIds)
         }
 
-        guard let untrustedIdentity = [unseenIdentity, unconfirmedIdentity].flatMap({ $0 }).first else {
-            // No identities to confirm, no alert to present.
+        guard let untrustedIdentity = unseenIdentity ?? unconfirmedIdentity else {
+            // No identities to confirm/see, so no alert to present.
             return false
         }
 
@@ -110,16 +110,14 @@ class SafetyNumberConfirmationAlert: NSObject {
         UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
     }
 
-    private func unconfirmedIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
+    private func firstUnconfirmedIdentity(recipientIds: [String]) -> OWSRecipientIdentity? {
         return recipientIds.flatMap {
             self.storageManager.unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
-        }
+        }.first
     }
 
-    private func unseenIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
-        return recipientIds.flatMap {
-            self.storageManager.unseenIdentityChange(forRecipientId: $0)
-        }
+    private func firstUnseenIdentity(recipientIds: [String]) -> OWSRecipientIdentity? {
+        return self.storageManager.unseenIdentityChanges(forRecipientIds: recipientIds).first
     }
 
 }
