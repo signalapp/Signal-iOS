@@ -308,6 +308,10 @@ class SignalAttachment: NSObject {
             return false
         }
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        
+        if pasteboardUTISet.contains(kUTTypeURL as String) {
+            return true
+        }
 
         // The pasteboard can be populated with multiple UTI types
         // with different payloads.  iMessage for example will copy
@@ -326,7 +330,6 @@ class SignalAttachment: NSObject {
         var hasTextUTIType = false
         var hasNonTextUTIType = false
         for utiType in pasteboardUTISet {
-            Logger.error("\(utiType) is text? \(UTTypeConformsTo(utiType as CFString, kUTTypeText))")
             if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
                 hasTextUTIType = true
             } else {
