@@ -13,8 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TSUIDatabaseConnectionDidUpdateNotification;
-
 @interface TSStorageManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
