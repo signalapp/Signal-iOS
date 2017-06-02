@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SendExternalFileViewController () <SelectThreadViewControllerDelegate>
 
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
@@ -35,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
+    _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [Environment getCurrent].messageSender;
 
     self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
@@ -47,8 +49,22 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachment);
     OWSAssert(thread);
 
+    NSString *confirmationText = NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION", nil);
+    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
+                                                                                confirmationText:confirmationText
+                                                                                 contactsManager:self.contactsManager
+                                                                                      verifySeen:YES
+                                                                                      completion:^(BOOL didConfirmIdentity){
+                                                                                          if (didConfirmIdentity) {
+                                                                                              [self threadWasSelected:thread];
+                                                                                          }
+                                                                                      }];
+    if (didShowSNAlert) {
+        return;
+    }
+    
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
-
+    
     [Environment messageThreadId:thread.uniqueId];
 }
 
