@@ -13,7 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSUnitTestEnvironment
 
-- (instancetype)init
++ (void)ensureSetup
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self setSharedEnv:[[self alloc] initDefault]];
+    });
+}
+
+- (instancetype)initDefault
 {
     return [super initWithCallMessageHandler:[OWSFakeCallMessageHandler new]
                              contactsManager:[OWSFakeContactsManager new]

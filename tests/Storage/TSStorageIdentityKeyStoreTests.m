@@ -8,6 +8,7 @@
 #import "OWSUnitTestEnvironment.h"
 #import "SecurityUtils.h"
 #import "TSStorageManager+IdentityKeyStore.h"
+#import "OWSRecipientIdentity.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 
@@ -19,8 +20,9 @@
 
 - (void)setUp {
     [super setUp];
+    
     [[TSStorageManager sharedManager] purgeCollection:@"TSStorageManagerTrustedKeysCollection"];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    [OWSRecipientIdentity removeAllObjectsInCollection];
 }
 
 - (void)tearDown {

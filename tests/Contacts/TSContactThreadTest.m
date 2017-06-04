@@ -1,8 +1,10 @@
-//  Created by Michael Kirk on 11/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSContactThread.h"
 #import "TSStorageManager+identityKeyStore.h"
+#import "OWSUnitTestEnvironment.h"
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
+    [OWSUnitTestEnvironment ensureSetup];
     self.contactThread = [TSContactThread getOrCreateThreadWithContactId:@"fake-contact-id"];
     [self.contactThread.storageManager removeIdentityKeyForRecipient:self.contactThread.contactIdentifier];
 }

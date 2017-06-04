@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSFakeContactsManager.h"
 
@@ -14,7 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Fake name";
 }
 
-- (NSArray<Contact *> * _Nonnull)signalContacts
+- (NSArray<Contact *> *)signalContacts
+{
+    return @[];
+}
+
+- (NSArray<SignalAccount *> *)signalAccounts
 {
     return @[];
 }

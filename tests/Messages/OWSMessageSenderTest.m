@@ -94,7 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldSucceed) {
         successHandler();
     } else {
-        failureHandler(OWSErrorMakeFailedToSendOutgoingMessageError());
+        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+        [error setIsRetryable:NO];
+
+        failureHandler(error);
     }
 }
 

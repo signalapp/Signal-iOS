@@ -102,10 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertEqualObjects(@"📽 ATTACHMENT", actualDescription);
 }
 
-
 - (void)testDescriptionWithAudioAttachmentId
 {
-    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:nil];
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:@"some-file.mp3"];
     [attachment save];
 
     TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
@@ -114,6 +113,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                 attachmentIds:@[ attachment.uniqueId ]];
     NSString *actualDescription = [message description];
     XCTAssertEqualObjects(@"📻 ATTACHMENT", actualDescription);
+}
+
+- (void)testDescriptionWithVoiceMessageAttachmentId
+{
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:nil];
+    [attachment save];
+    
+    TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
+                                                     inThread:self.thread
+                                                  messageBody:@"My message body"
+                                                attachmentIds:@[ attachment.uniqueId ]];
+    NSString *actualDescription = [message description];
+    XCTAssertEqualObjects(@"🎤 ATTACHMENT_TYPE_VOICE_MESSAGE", actualDescription);
 }
 
 - (void)testDescriptionWithUnkownAudioContentType
