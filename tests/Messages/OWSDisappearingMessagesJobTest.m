@@ -14,6 +14,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSDisappearingMessagesJob (Testing)
+
+- (void)run;
+- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
+                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager;
+
+@end
+
 @interface OWSDisappearingMessagesJobTest : XCTestCase
 
 @end
@@ -67,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Sanity Check.
     XCTAssertEqual(4, [TSMessage numberOfKeysInCollection]);
-    [job startIfNecessary];
+    [job run];
     XCTAssertEqual(2, [TSMessage numberOfKeysInCollection]);
 }
 
@@ -90,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       expireStartedAt:0];
     [expiringMessage save];
 
-    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:expiringMessage contactsManager:[OWSFakeContactsManager new]];
+    [job becomeConsistentWithConfigurationForMessage:expiringMessage contactsManager:[OWSFakeContactsManager new]];
     configuration = [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     XCTAssertNotNil(configuration);
