@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageSenderFakeNetworkManager : OWSFakeNetworkManager
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init;
 - (instancetype)initWithSuccess:(BOOL)shouldSucceed NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) BOOL shouldSucceed;
@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSuccess:(BOOL)shouldSucceed
 {
-    self = [super init];
+    self = [self init];
     if (!self) {
         return self;
     }
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
     [messageSender sendMessage:message
         success:^() {
-            if (message.messageState == TSOutgoingMessageStateSent) {
+            if (message.messageState == TSOutgoingMessageStateSentToService) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -341,9 +341,10 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
     [messageSender sendAttachmentData:[NSData new]
         contentType:@"image/gif"
+        sourceFilename:nil
         inMessage:message
         success:^() {
-            if (message.messageState == TSOutgoingMessageStateSent) {
+            if (message.messageState == TSOutgoingMessageStateSentToService) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -394,6 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
     [messageSender sendAttachmentData:[NSData new]
         contentType:@"image/gif"
+        sourceFilename:nil
         inMessage:message
         success:^{
             XCTFail(@"sendMessage should fail.");
@@ -422,6 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
     [messageSender sendAttachmentData:[NSData new]
         contentType:@"image/gif"
+        sourceFilename:nil
         inMessage:message
         success:^{
             XCTFail(@"sendMessage should fail.");
@@ -444,15 +447,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *groupIdData = [Cryptography generateRandomBytes:32];
     SignalRecipient *successfulRecipient =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id"
-                                                        relay:nil
-                                                supportsVoice:YES
-                                               supportsWebRTC:YES];
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil];
     SignalRecipient *successfulRecipient2 =
-        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2"
-                                                        relay:nil
-                                                supportsVoice:YES
-                                               supportsWebRTC:YES];
+        [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
     TSGroupModel *groupModel = [[TSGroupModel alloc]
         initWithTitle:@"group title"
@@ -467,7 +464,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
     [messageSender sendMessage:message
         success:^{
-            if (message.messageState == TSOutgoingMessageStateSent) {
+            if (message.messageState == TSOutgoingMessageStateSentToService) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -483,10 +480,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testGetRecipients
 {
-    SignalRecipient *recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id"
-                                                                                 relay:nil
-                                                                         supportsVoice:YES
-                                                                        supportsWebRTC:YES];
+    SignalRecipient *recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil];
     [recipient save];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;

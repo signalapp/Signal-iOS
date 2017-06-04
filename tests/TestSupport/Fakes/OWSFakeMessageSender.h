@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeMessageSender : OWSMessageSender
 
+- (instancetype)init;
 - (instancetype)initWithExpectation:(XCTestExpectation *)expectation;
 
 @property (nonatomic, readonly) XCTestExpectation *expectation;

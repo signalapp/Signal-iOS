@@ -7,6 +7,7 @@
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNotificationsManager.h"
+#import "OWSFakePreferences.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCallMessageHandler:[OWSFakeCallMessageHandler new]
                              contactsManager:[OWSFakeContactsManager new]
                                messageSender:[OWSFakeMessageSender new]
-                        notificationsManager:[OWSFakeNotificationsManager new]];
+                        notificationsManager:[OWSFakeNotificationsManager new]
+                                 preferences:[OWSFakePreferences new]];    
 }
 
 @end

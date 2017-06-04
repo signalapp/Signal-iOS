@@ -77,7 +77,7 @@
 - (void)testFilesWithoutInteractionsAreDeleted
 {
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     [attachmentStream save];
     NSString *orphanedFilePath = [attachmentStream filePath];
@@ -97,7 +97,7 @@
     [savedThread save];
 
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     [attachmentStream save];
 
@@ -125,7 +125,7 @@
 - (void)testFilesWithoutAttachmentStreamsAreDeleted
 {
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 

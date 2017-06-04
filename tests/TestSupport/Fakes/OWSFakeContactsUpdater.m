@@ -13,9 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSLog(@"[OWSFakeContactsUpdater] Faking contact lookup.");
     return [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id"
-                                                           relay:nil
-                                                   supportsVoice:YES
-                                                  supportsWebRTC:YES];
+                                                           relay:nil];
 }
 
 @end

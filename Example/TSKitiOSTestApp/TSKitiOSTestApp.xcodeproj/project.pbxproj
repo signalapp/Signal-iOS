@@ -35,6 +35,8 @@
 		45AE484F1E072906004D96C2 /* OWSFakeNotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 45AE484E1E072906004D96C2 /* OWSFakeNotificationsManager.m */; };
 		45B700971D9841E400269FFD /* OWSDisappearingMessagesConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B700961D9841E400269FFD /* OWSDisappearingMessagesConfigurationTest.m */; };
 		45B840211D988DA100F9E938 /* OWSReadReceiptTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */; };
+		45C5F5A51EE38AB400E1D20D /* OWSFakePreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C5F5A41EE38AB400E1D20D /* OWSFakePreferences.m */; };
+		45C5F5A61EE38AB400E1D20D /* OWSFakePreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C5F5A41EE38AB400E1D20D /* OWSFakePreferences.m */; };
 		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */; };
 		45E741B61E5D14E800735842 /* OWSIncomingMessageFinderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */; };
@@ -100,6 +102,8 @@
 		45AE484E1E072906004D96C2 /* OWSFakeNotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFakeNotificationsManager.m; path = ../../../tests/TestSupport/Fakes/OWSFakeNotificationsManager.m; sourceTree = "<group>"; };
 		45B700961D9841E400269FFD /* OWSDisappearingMessagesConfigurationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDisappearingMessagesConfigurationTest.m; path = ../../../tests/Contacts/OWSDisappearingMessagesConfigurationTest.m; sourceTree = "<group>"; };
 		45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSReadReceiptTest.m; path = ../../../tests/Devices/OWSReadReceiptTest.m; sourceTree = "<group>"; };
+		45C5F5A31EE38AB400E1D20D /* OWSFakePreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFakePreferences.h; path = ../../../tests/TestSupport/Fakes/OWSFakePreferences.h; sourceTree = "<group>"; };
+		45C5F5A41EE38AB400E1D20D /* OWSFakePreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFakePreferences.m; path = ../../../tests/TestSupport/Fakes/OWSFakePreferences.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisionerTest.m; path = ../../../tests/Devices/OWSDeviceProvisionerTest.m; sourceTree = "<group>"; };
 		45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSIncomingMessageFinderTest.m; path = ../../../tests/Messages/OWSIncomingMessageFinderTest.m; sourceTree = "<group>"; };
@@ -169,6 +173,8 @@
 				45AE484E1E072906004D96C2 /* OWSFakeNotificationsManager.m */,
 				452137211E8D6D2F0048FD10 /* OWSFakeMessageSender.h */,
 				452137221E8D6D2F0048FD10 /* OWSFakeMessageSender.m */,
+				45C5F5A31EE38AB400E1D20D /* OWSFakePreferences.h */,
+				45C5F5A41EE38AB400E1D20D /* OWSFakePreferences.m */,
 			);
 			name = Fakes;
 			sourceTree = "<group>";
@@ -457,7 +463,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		276B029791E679B0E87877B7 /* [CP] Copy Pods Resources */ = {
@@ -532,7 +538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -543,6 +549,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6273DDC1C13A2E500738558 /* ViewController.m in Sources */,
+				45C5F5A51EE38AB400E1D20D /* OWSFakePreferences.m in Sources */,
 				B6273DD91C13A2E500738558 /* AppDelegate.m in Sources */,
 				B6273DD61C13A2E500738558 /* main.m in Sources */,
 			);
@@ -572,6 +579,7 @@
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				453E1FDB1DA83EFB00DDD7B7 /* OWSFakeContactsUpdater.m in Sources */,
 				452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */,
+				45C5F5A61EE38AB400E1D20D /* OWSFakePreferences.m in Sources */,
 				D2AECE731DE8C3360068CE15 /* ContactSortingTest.m in Sources */,
 				453E1FD81DA83E1000DDD7B7 /* OWSFakeContactsManager.m in Sources */,
 				454021ED1D960ABF00F2126D /* OWSDisappearingMessageFinderTest.m in Sources */,

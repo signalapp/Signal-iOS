@@ -26,10 +26,7 @@
 {
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
-    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber
-                                                     relay:nil
-                                             supportsVoice:YES
-                                            supportsWebRTC:YES] save];
+    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber relay:nil] save];
     XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
     SignalRecipient *me = [SignalRecipient selfRecipient];

@@ -1,9 +1,5 @@
 //
-//  TSStorageIdentityKeyStoreTests.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 06/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
@@ -11,7 +7,6 @@
 
 #import "OWSUnitTestEnvironment.h"
 #import "SecurityUtils.h"
-#import "TSPrivacyPreferences.h"
 #import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
@@ -37,7 +32,8 @@
     NSData *newKey = [SecurityUtils generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
 - (void)testAlreadyRegisteredKey {
@@ -46,47 +42,27 @@
     
     [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
 
-- (void)testChangedKeyWithBlockingIdentityChanges
+- (void)testChangedKey
 {
-    TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
-    preferences.shouldBlockOnIdentityChange = YES;
-    [preferences save];
+    NSData *originalKey = [SecurityUtils generateRandomBytes:32];
+    NSString *recipientId = @"test@protonmail.com";
 
-    NSData *newKey = [SecurityUtils generateRandomBytes:32];
-    NSString *recipientId = @"test@gmail.com";
-
-    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
+    [[TSStorageManager sharedManager] saveRemoteIdentity:originalKey recipientId:recipientId];
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
     
     NSData *otherKey = [SecurityUtils generateRandomBytes:32];
     
-    XCTAssertFalse([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId]);
+    XCTAssertFalse([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
-
-- (void)testChangedKeyWithNonBlockingIdentityChanges
-{
-    TSPrivacyPreferences *preferences = [TSPrivacyPreferences sharedInstance];
-    preferences.shouldBlockOnIdentityChange = NO;
-    [preferences save];
-
-    NSData *newKey = [SecurityUtils generateRandomBytes:32];
-    NSString *recipientId = @"test@gmail.com";
-
-    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
-
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId]);
-
-    NSData *otherKey = [SecurityUtils generateRandomBytes:32];
-
-    [TextSecureKitEnv setSharedEnv:[OWSUnitTestEnvironment new]];
-    XCTAssertTrue([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId]);
-}
 
 - (void)testIdentityKey {
     [[TSStorageManager sharedManager] generateNewIdentityKey];

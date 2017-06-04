@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSAttachmentStream.h"
@@ -75,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testDescriptionWithPhotoAttachmentId
 {
-    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachment save];
 
     TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
@@ -89,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testDescriptionWithVideoAttachmentId
 {
-    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"];
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4" sourceFilename:nil];
     [attachment save];
 
     TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
@@ -103,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testDescriptionWithAudioAttachmentId
 {
-    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"];
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:nil];
     [attachment save];
 
     TSMessage *message = [[TSMessage alloc] initWithTimestamp:1
@@ -116,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testDescriptionWithUnkownAudioContentType
 {
-    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"non/sense"];
+    TSAttachment *attachment = [[TSAttachmentStream alloc] initWithContentType:@"non/sense" sourceFilename:nil];
     [attachment save];
 
     TSMessage *message = [[TSMessage alloc] initWithTimestamp:1

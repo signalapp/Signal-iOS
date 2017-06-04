@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/7/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
@@ -34,18 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   messageBody:nil
                                                                 attachmentIds:[NSMutableArray new]
                                                              expiresInSeconds:10];
-    message.messageState = TSOutgoingMessageStateSent;
-    XCTAssert(message.shouldStartExpireTimer);
-}
-
-- (void)testShouldStartExpireTimerWithDeliveredMessage
-{
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:100
-                                                                     inThread:self.thread
-                                                                  messageBody:nil
-                                                                attachmentIds:[NSMutableArray new]
-                                                             expiresInSeconds:10];
-    message.messageState = TSOutgoingMessageStateDelivered;
+    [message updateWithMessageState:TSOutgoingMessageStateSentToService];
     XCTAssert(message.shouldStartExpireTimer);
 }
 
@@ -56,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   messageBody:nil
                                                                 attachmentIds:[NSMutableArray new]
                                                              expiresInSeconds:10];
-    message.messageState = TSOutgoingMessageStateUnsent;
+    [message updateWithMessageState:TSOutgoingMessageStateUnsent];
     XCTAssertFalse(message.shouldStartExpireTimer);
 }
 
@@ -67,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   messageBody:nil
                                                                 attachmentIds:[NSMutableArray new]
                                                              expiresInSeconds:10];
-    message.messageState = TSOutgoingMessageStateAttemptingOut;
+    [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
     XCTAssertFalse(message.shouldStartExpireTimer);
 }
 
