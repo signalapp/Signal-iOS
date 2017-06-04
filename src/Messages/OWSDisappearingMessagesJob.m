@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setExpirationForMessage:(TSMessage *)message
 {
-    dispatch_async(self.serialQueue, ^{
+    dispatch_sync(self.serialQueue, ^{
         [[self sharedJob] setExpirationForMessage:message];
     });
 }
