@@ -11,3 +11,18 @@ target 'TSKitiOSTestApp' do
   end
 end
 
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.to_s == "SignalServiceKit"
+      puts "--[!] Disabling singleton enforcement for SSK."
+      target.build_configurations.each do |config|
+        existing_definitions = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS']
+        if existing_definitions == nil || existing.length == 0
+          existing_definitions = "$(inheritied)"
+        end
+
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{existing_definitions} SSK_NO_ENFORCE_SINGLETONS=1"
+      end
+    end
+  end
+end
