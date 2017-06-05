@@ -63,44 +63,7 @@
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        switch (((TSErrorMessage *)self.interaction).errorType) {
-            case TSErrorMessageInvalidKeyException:
-            case TSErrorMessageNonBlockingIdentityChange:
-            case TSErrorMessageWrongTrustedIdentityKey:
-            case TSErrorMessageMissingKeyId:
-                return [UIColor colorWithRGBHex:0x404040];
-                break;
-            case TSErrorMessageNoSession:
-            case TSErrorMessageInvalidMessage:
-            case TSErrorMessageDuplicateMessage:
-            case TSErrorMessageInvalidVersion:
-            case TSErrorMessageUnknownContactBlockOffer:
-                break;
-        }
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        switch (((TSInfoMessage *)self.interaction).messageType) {
-            case TSInfoMessageUserNotRegistered:
-                break;
-            case TSInfoMessageTypeSessionDidEnd:
-            case TSInfoMessageTypeUnsupportedMessage:
-            case TSInfoMessageAddToContactsOffer:
-                break;
-            case TSInfoMessageTypeGroupUpdate:
-            case TSInfoMessageTypeGroupQuit:
-                break;
-            case TSInfoMessageTypeDisappearingMessagesUpdate:
-                return [UIColor colorWithRGBHex:0x404040];
-                break;
-        }
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        return [UIColor colorWithRGBHex:0x404040];
-    } else {
-        OWSFail(@"Unknown interaction type");
-        return nil;
-    }
-
-    return [UIColor colorWithRGBHex:0x303030];
+    return [UIColor colorWithRGBHex:0x404040];
 }
 
 - (UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -189,12 +152,12 @@
 
 + (CGFloat)hSpacing
 {
-    return 7.f;
+    return 8.f;
 }
 
 + (CGFloat)iconSize
 {
-    return 25.f;
+    return 20.f;
 }
 
 - (void)layoutSubviews
