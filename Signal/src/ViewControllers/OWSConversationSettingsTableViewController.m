@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
                 UITableViewCell *cell = [UITableViewCell new];
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-                UIImageView *iconView = [self viewForIconWithName:@"ic_lock_outline"];
+                UIImageView *iconView = [self viewForIconWithName:@"table_ic_lock_outline"];
                 [cell.contentView addSubview:iconView];
                 [iconView autoVCenterInSuperview];
                 [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
                 rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                 [cell.contentView addSubview:rowLabel];
                 [rowLabel autoVCenterInSuperview];
-                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
                 return cell;
             }
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [self viewForIconWithName:@"table_ic_timer"];
+            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [topView addSubview:rowLabel];
             [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
             UISwitch *switchView = [UISwitch new];
             switchView.on = self.disappearingMessagesConfiguration.isEnabled;
@@ -334,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                             [topView addSubview:rowLabel];
                             [rowLabel autoVCenterInSuperview];
-                            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+                            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
                             UISlider *slider = [UISlider new];
                             slider.maximumValue = (float)(self.disappearingMessagesDurations.count - 1);
@@ -364,12 +364,22 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray *groupItems = @[
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
-                    = NSLocalizedString(@"EDIT_GROUP_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+                UIImageView *iconView = [self viewForIconWithName:@"table_ic_group_edit"];
+                [cell.contentView addSubview:iconView];
+                [iconView autoVCenterInSuperview];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
+
+                UILabel *rowLabel = [UILabel new];
+                rowLabel.text = NSLocalizedString(@"EDIT_GROUP_ACTION", @"table cell label in conversation settings");
+                rowLabel.textColor = [UIColor blackColor];
+                rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                [cell.contentView addSubview:rowLabel];
+                [rowLabel autoVCenterInSuperview];
+                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
+
                 return cell;
             }
                 actionBlock:^{
@@ -377,25 +387,23 @@ NS_ASSUME_NONNULL_BEGIN
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
-                    = NSLocalizedString(@"LEAVE_GROUP_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
-            }
-                actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
-                }],
-            [OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
+
+                UIImageView *iconView = [self viewForIconWithName:@"table_ic_group_members"];
+                [cell.contentView addSubview:iconView];
+                [iconView autoVCenterInSuperview];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
+
+                UILabel *rowLabel = [UILabel new];
+                rowLabel.text
                     = NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                rowLabel.textColor = [UIColor blackColor];
+                rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                [cell.contentView addSubview:rowLabel];
+                [rowLabel autoVCenterInSuperview];
+                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
+
                 return cell;
             }
                 actionBlock:^{
@@ -407,6 +415,29 @@ NS_ASSUME_NONNULL_BEGIN
                         [ShowGroupMembersViewController new];
                     [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
+                }],
+            [OWSTableItem itemWithCustomCellBlock:^{
+                UITableViewCell *cell = [UITableViewCell new];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+                UIImageView *iconView = [self viewForIconWithName:@"table_ic_group_leave"];
+                [cell.contentView addSubview:iconView];
+                [iconView autoVCenterInSuperview];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
+
+                UILabel *rowLabel = [UILabel new];
+                rowLabel.text = NSLocalizedString(@"LEAVE_GROUP_ACTION", @"table cell label in conversation settings");
+                rowLabel.textColor = [UIColor blackColor];
+                rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                [cell.contentView addSubview:rowLabel];
+                [rowLabel autoVCenterInSuperview];
+                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
+
+                return cell;
+            }
+                actionBlock:^{
+                    [weakSelf didTapLeaveGroup];
                 }],
         ];
 
@@ -422,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
         UITableViewCell *cell = [UITableViewCell new];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        UIImageView *iconView = [self viewForIconWithName:@"ic_mute_thread"];
+        UIImageView *iconView = [self viewForIconWithName:@"table_ic_mute_thread"];
         [cell.contentView addSubview:iconView];
         [iconView autoVCenterInSuperview];
         [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -435,7 +466,7 @@ NS_ASSUME_NONNULL_BEGIN
         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [cell.contentView addSubview:rowLabel];
         [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+        [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
         NSString *muteStatus = NSLocalizedString(
             @"CONVERSATION_SETTINGS_MUTE_NOT_MUTED", @"Indicates that the current thread is not muted.");
@@ -490,7 +521,7 @@ NS_ASSUME_NONNULL_BEGIN
             UITableViewCell *cell = [UITableViewCell new];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-            UIImageView *iconView = [self viewForIconWithName:@"ic_block"];
+            UIImageView *iconView = [self viewForIconWithName:@"table_ic_block"];
             [cell.contentView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -503,7 +534,7 @@ NS_ASSUME_NONNULL_BEGIN
             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [cell.contentView addSubview:rowLabel];
             [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
             UISwitch *blockUserSwitch = [UISwitch new];
             blockUserSwitch.on = isBlocked;
@@ -616,8 +647,8 @@ NS_ASSUME_NONNULL_BEGIN
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     iconView.tintColor = [UIColor colorWithRGBHex:0x505050];
     iconView.contentMode = UIViewContentModeScaleToFill;
-    [iconView autoSetDimension:ALDimensionWidth toSize:32.f];
-    [iconView autoSetDimension:ALDimensionHeight toSize:32.f];
+    [iconView autoSetDimension:ALDimensionWidth toSize:24.f];
+    [iconView autoSetDimension:ALDimensionHeight toSize:24.f];
     return iconView;
 }
 
