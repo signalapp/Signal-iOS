@@ -1456,7 +1456,11 @@ typedef enum : NSUInteger {
             break;
         }
         case TSInfoMessageAdapter: {
-            // TODO: There's more work to here.
+            // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
+            OWSDisappearingMessagesConfiguration *configuration =
+                [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+            [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+
             cell = [self loadSystemMessageCell:indexPath interaction:message.interaction];
             break;
         }
@@ -1564,37 +1568,6 @@ typedef enum : NSUInteger {
 
     return cell;
 }
-
-//- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(TSMessageAdapter *)infoMessage
-//                                                             atIndexPath:(NSIndexPath *)indexPath
-//{
-//    OWSDisplayedMessageCollectionViewCell *infoCell =
-//        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
-//
-//    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
-//    OWSDisappearingMessagesConfiguration *configuration =
-//        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-//    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
-//
-//    infoCell.textView.text = [infoMessage text];
-//
-//    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-//    infoCell.textView.userInteractionEnabled = NO;
-//    infoCell.textView.selectable = NO;
-//
-//    infoCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_infoMessageBorderColor] CGColor];
-//    if (infoMessage.infoMessageType == TSInfoMessageTypeDisappearingMessagesUpdate) {
-//        infoCell.headerImageView.image = [UIImage imageNamed:@"ic_timer"];
-//        infoCell.headerImageView.backgroundColor = [UIColor whiteColor];
-//        // Lighten up the broad stroke header icon to match the perceived color of the border.
-//        infoCell.headerImageView.tintColor = [UIColor ows_infoMessageBorderColor];
-//    } else {
-//        infoCell.headerImageView.image = [UIImage imageNamed:@"warning_white"];
-//    }
-//
-//
-//    return infoCell;
-//}
 
 - (OWSSystemMessageCell *)loadSystemMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
 {
