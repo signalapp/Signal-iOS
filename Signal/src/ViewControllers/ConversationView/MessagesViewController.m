@@ -122,8 +122,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, weak) id<OWSMessagesCollectionViewFlowLayoutDelegate> delegate;
 
-@property (nonatomic) CGRect lastBounds;
-
 @end
 
 #pragma mark -
