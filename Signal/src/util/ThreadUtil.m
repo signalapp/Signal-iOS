@@ -183,6 +183,8 @@ NS_ASSUME_NONNULL_BEGIN
             [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
         NSUInteger outgoingMessageCount =
             [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+        NSUInteger threadMessageCount =
+            [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
 
         // Enumerate in reverse to count the number of messages
         // after the unseen messages indicator.  Not all of
@@ -365,7 +367,8 @@ NS_ASSUME_NONNULL_BEGIN
             [offerMessage saveWithTransaction:transaction];
         }
 
-        BOOL shouldHaveUnreadIndicator = (interactionAfterUnreadIndicator && !hideUnreadMessagesIndicator);
+        BOOL shouldHaveUnreadIndicator
+            = (interactionAfterUnreadIndicator && !hideUnreadMessagesIndicator && threadMessageCount > 1);
         if (!shouldHaveUnreadIndicator) {
             if (existingUnreadIndicator) {
                 DDLogInfo(@"%@ Removing obsolete TSUnreadIndicatorInteraction: %@",
