@@ -16,12 +16,10 @@
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
-#import "OWSCallCollectionViewCell.h"
 #import "OWSContactsManager.h"
 #import "OWSConversationSettingsTableViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSExpirableMessageView.h"
 #import "OWSIncomingMessageCollectionViewCell.h"
 #import "OWSMessageCollectionViewCell.h"
@@ -421,17 +419,11 @@ typedef enum : NSUInteger {
 
 - (void)registerCustomMessageNibs
 {
-    [self.collectionView registerNib:[OWSCallCollectionViewCell nib]
-          forCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]];
-
     [self.collectionView registerClass:[OWSSystemMessageCell class]
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
 
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
-
-    [self.collectionView registerNib:[OWSDisplayedMessageCollectionViewCell nib]
-          forCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]];
 
     self.outgoingCellIdentifier = [OWSOutgoingMessageCollectionViewCell cellReuseIdentifier];
     [self.collectionView registerNib:[OWSOutgoingMessageCollectionViewCell nib]
@@ -1460,8 +1452,6 @@ typedef enum : NSUInteger {
     JSQMessagesCollectionViewCell *cell;
     switch (message.messageType) {
         case TSCallAdapter: {
-            //            OWSCall *call = (OWSCall *)message;
-            //            cell = [self loadCallCellForCall:call atIndexPath:indexPath];
             cell = [self loadSystemMessageCell:indexPath interaction:message.interaction];
             break;
         }
@@ -1575,53 +1565,6 @@ typedef enum : NSUInteger {
     return cell;
 }
 
-//- (OWSCallCollectionViewCell *)loadCallCellForCall:(OWSCall *)call atIndexPath:(NSIndexPath *)indexPath
-//{
-//    OWSCallCollectionViewCell *callCell =
-//        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallCollectionViewCell cellReuseIdentifier]
-//                                                       forIndexPath:indexPath];
-//
-//    NSString *text = call.date != nil ? [call text] : call.senderDisplayName;
-//    NSString *allText = call.date != nil ? [text stringByAppendingString:[call dateText]] : text;
-//
-//    UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:12.0f];
-//    NSMutableAttributedString *attributedText =
-//        [[NSMutableAttributedString alloc] initWithString:allText attributes:@{ NSFontAttributeName : boldFont }];
-//    if ([call date] != nil) {
-//        // Not a group meta message
-//        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f];
-//        const NSRange range = NSMakeRange([text length], [[call dateText] length]);
-//        [attributedText setAttributes:@{ NSFontAttributeName : regularFont } range:range];
-//    }
-//    callCell.textView.text = nil;
-//    callCell.textView.attributedText = attributedText;
-//
-//    callCell.textView.textAlignment = NSTextAlignmentCenter;
-//    callCell.textView.textColor = [UIColor ows_materialBlueColor];
-//    callCell.layer.shouldRasterize = YES;
-//    callCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
-//
-//    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-//    callCell.textView.userInteractionEnabled = NO;
-//    callCell.textView.selectable = NO;
-//
-//    return callCell;
-//}
-
-- (OWSDisplayedMessageCollectionViewCell *)loadDisplayedMessageCollectionViewCellForIndexPath:(NSIndexPath *)indexPath
-{
-    OWSDisplayedMessageCollectionViewCell *messageCell = [self.collectionView
-        dequeueReusableCellWithReuseIdentifier:[OWSDisplayedMessageCollectionViewCell cellReuseIdentifier]
-                                  forIndexPath:indexPath];
-    messageCell.layer.shouldRasterize = YES;
-    messageCell.layer.rasterizationScale = [UIScreen mainScreen].scale;
-    messageCell.textView.textColor = [UIColor darkGrayColor];
-    messageCell.cellTopLabel.attributedText = [self.collectionView.dataSource collectionView:self.collectionView
-                                                    attributedTextForCellTopLabelAtIndexPath:indexPath];
-
-    return messageCell;
-}
-
 //- (OWSDisplayedMessageCollectionViewCell *)loadInfoMessageCellForMessage:(TSMessageAdapter *)infoMessage
 //                                                             atIndexPath:(NSIndexPath *)indexPath
 //{
@@ -1653,47 +1596,10 @@ typedef enum : NSUInteger {
 //    return infoCell;
 //}
 
-//- (OWSSystemMessageCell *)loadErrorMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
-////                                                     ForMessage:(TSMessageAdapter *)errorMessage
-////                                                              atIndexPath:(NSIndexPath *)indexPath
-//{
-//    OWSAssert(indexPath);
-//    OWSAssert(interaction);
-//    //    OWSAssert([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
-//
-//    //    TSUnreadIndicatorInteraction *unreadIndicator = (TSUnreadIndicatorInteraction *)interaction;
-//
-//    OWSSystemMessageCell *cell =
-//    [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
-//                                                   forIndexPath:indexPath];
-//    cell.interaction = interaction;
-//    [cell configure];
-//
-//    return cell;
-//
-//    //    OWSDisplayedMessageCollectionViewCell *errorCell =
-//    //        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
-//    //    errorCell.textView.text = [errorMessage text];
-//    //
-//    //    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-//    //    errorCell.textView.userInteractionEnabled = NO;
-//    //    errorCell.textView.selectable = NO;
-//    //
-//    //    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
-//    //    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
-//    //
-//    //    return errorCell;
-//}
-
 - (OWSSystemMessageCell *)loadSystemMessageCell:(NSIndexPath *)indexPath interaction:(TSInteraction *)interaction
-//                                                     ForMessage:(TSMessageAdapter *)errorMessage
-//                                                              atIndexPath:(NSIndexPath *)indexPath
 {
     OWSAssert(indexPath);
     OWSAssert(interaction);
-    //    OWSAssert([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
-
-    //    TSUnreadIndicatorInteraction *unreadIndicator = (TSUnreadIndicatorInteraction *)interaction;
 
     OWSSystemMessageCell *cell =
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
@@ -1702,19 +1608,6 @@ typedef enum : NSUInteger {
     [cell configure];
 
     return cell;
-
-    //    OWSDisplayedMessageCollectionViewCell *errorCell =
-    //        [self loadDisplayedMessageCollectionViewCellForIndexPath:indexPath];
-    //    errorCell.textView.text = [errorMessage text];
-    //
-    //    // Disable text selectability. Specifying this in prepareForReuse/awakeFromNib was not sufficient.
-    //    errorCell.textView.userInteractionEnabled = NO;
-    //    errorCell.textView.selectable = NO;
-    //
-    //    errorCell.messageBubbleContainerView.layer.borderColor = [[UIColor ows_errorMessageBorderColor] CGColor];
-    //    errorCell.headerImageView.image = [UIImage imageNamed:@"error_white"];
-    //
-    //    return errorCell;
 }
 
 #pragma mark - Adjusting cell label heights

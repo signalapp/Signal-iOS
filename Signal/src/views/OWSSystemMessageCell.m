@@ -61,7 +61,7 @@
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
-    // "Phone" and "Shield" icons have a lot of "ink" so they
+    // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         switch (((TSErrorMessage *)self.interaction).errorType) {
@@ -90,6 +90,7 @@
             case TSInfoMessageTypeGroupQuit:
                 break;
             case TSInfoMessageTypeDisappearingMessagesUpdate:
+                return [UIColor colorWithRGBHex:0x404040];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
@@ -173,7 +174,7 @@
 
 + (CGFloat)hMargin
 {
-    return 30.f;
+    return 25.f;
 }
 
 + (CGFloat)topVMargin
@@ -188,7 +189,7 @@
 
 + (CGFloat)hSpacing
 {
-    return 8.f;
+    return 7.f;
 }
 
 + (CGFloat)iconSize
@@ -203,7 +204,9 @@
     CGFloat maxTitleWidth = (self.contentView.width
         - ([OWSSystemMessageCell hMargin] * 2.f + [OWSSystemMessageCell hSpacing] + [OWSSystemMessageCell iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-    self.imageView.frame = CGRectMake(round([OWSSystemMessageCell hMargin]),
+
+    CGFloat contentWidth = ([OWSSystemMessageCell iconSize] + [OWSSystemMessageCell hSpacing] + titleSize.width);
+    self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
         round((self.contentView.height - [OWSSystemMessageCell iconSize]) * 0.5f),
         [OWSSystemMessageCell iconSize],
         [OWSSystemMessageCell iconSize]);

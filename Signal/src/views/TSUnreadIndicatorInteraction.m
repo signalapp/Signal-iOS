@@ -29,13 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
     missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
-    //    self = [super initWithTimestamp:timestamp
-    //                           inThread:thread
-    //                        messageBody:nil
-    //                      attachmentIds:@[]
-    //                   expiresInSeconds:0
-    //                    expireStartedAt:0];
-    //    - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
     if (!self) {
         return self;

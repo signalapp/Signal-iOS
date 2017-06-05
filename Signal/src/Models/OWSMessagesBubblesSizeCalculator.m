@@ -4,7 +4,6 @@
 
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
-#import "OWSDisplayedMessageCollectionViewCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
