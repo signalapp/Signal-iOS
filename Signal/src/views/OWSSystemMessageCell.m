@@ -15,13 +15,8 @@
 
 @interface OWSSystemMessageCell ()
 
-//@property (nonatomic) UIView *bannerView;
-//@property (nonatomic) UIView *bannerTopHighlightView;
-//@property (nonatomic) UIView *bannerBottomHighlightView1;
-//@property (nonatomic) UIView *bannerBottomHighlightView2;
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
-//@property (nonatomic) UILabel *subtitleLabel;
 
 @end
 
@@ -39,22 +34,6 @@
     self.backgroundColor = [UIColor whiteColor];
 
     if (!self.titleLabel) {
-        //        self.bannerView = [UIView new];
-        //        self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
-        //        [self.contentView addSubview:self.bannerView];
-        //
-        //        self.bannerTopHighlightView = [UIView new];
-        //        self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
-        //        [self.bannerView addSubview:self.bannerTopHighlightView];
-        //
-        //        self.bannerBottomHighlightView1 = [UIView new];
-        //        self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
-        //        [self.bannerView addSubview:self.bannerBottomHighlightView1];
-        //
-        //        self.bannerBottomHighlightView2 = [UIView new];
-        //        self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
-        //        [self.bannerView addSubview:self.bannerBottomHighlightView2];
-
         self.imageView = [UIImageView new];
         [self.contentView addSubview:self.imageView];
 
@@ -64,85 +43,63 @@
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         [self.contentView addSubview:self.titleLabel];
-
-        //        self.subtitleLabel = [UILabel new];
-        //        self.subtitleLabel.text = [OWSSystemMessageCell subtitleForInteraction:self.interaction];
-        //        self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-        //        self.subtitleLabel.font = [OWSSystemMessageCell subtitleFont];
-        //        self.subtitleLabel.numberOfLines = 0;
-        //        self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        //        self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
-        //        [self.contentView addSubview:self.subtitleLabel];
     }
-    //    [self.imageView addRedBorder];
-    //    [self addRedBorder];
 
-    UIColor *contentColor = [self colorForInteraction:self.interaction];
     UIImage *icon = [self iconForInteraction:self.interaction];
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    //    self.imageView.tintColor = [UIColor colorWithRGBHex:0x505050];
-    self.imageView.tintColor = contentColor;
-    //    self.imageView.image = [OWSSystemMessageCell iconForInteraction:self.interaction];
+    self.imageView.tintColor = [self iconColorForInteraction:self.interaction];
     self.titleLabel.text = [OWSSystemMessageCell titleForInteraction:self.interaction];
-    self.titleLabel.textColor = contentColor;
-
-    //    DDLogError(@"----- %@ %@",
-    //               [self.interaction class],
-    //               self.interaction.description);
+    self.titleLabel.textColor = [self textColorForInteraction:self.interaction];
 
     [self setNeedsLayout];
-    //    [self addRedBorder];
 }
 
-- (UIColor *)colorForInteraction:(TSInteraction *)interaction
+- (UIColor *)textColorForInteraction:(TSInteraction *)interaction
 {
-    //    UIImage *result = nil;
+    return [UIColor colorWithRGBHex:0x303030];
+}
 
+- (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
+{
+    // "Phone" and "Shield" icons have a lot of "ink" so they
+    // are less dark for balance.
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         switch (((TSErrorMessage *)self.interaction).errorType) {
             case TSErrorMessageInvalidKeyException:
-                return [UIColor ows_yellowColor];
             case TSErrorMessageNonBlockingIdentityChange:
             case TSErrorMessageWrongTrustedIdentityKey:
             case TSErrorMessageMissingKeyId:
-                //                result = [UIImage imageNamed:@"system_message_security"];
+                return [UIColor colorWithRGBHex:0x404040];
                 break;
             case TSErrorMessageNoSession:
             case TSErrorMessageInvalidMessage:
             case TSErrorMessageDuplicateMessage:
             case TSErrorMessageInvalidVersion:
             case TSErrorMessageUnknownContactBlockOffer:
-                //                result = [UIImage imageNamed:@"system_message_warning"];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         switch (((TSInfoMessage *)self.interaction).messageType) {
             case TSInfoMessageUserNotRegistered:
-                //                result = [UIImage imageNamed:@"system_message_warning"];
                 break;
             case TSInfoMessageTypeSessionDidEnd:
             case TSInfoMessageTypeUnsupportedMessage:
             case TSInfoMessageAddToContactsOffer:
-                //                result = [UIImage imageNamed:@"system_message_info"];
                 break;
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-                // TODO:
-                //                result = [UIImage imageNamed:@"system_message_info"];
                 break;
             case TSInfoMessageTypeDisappearingMessagesUpdate:
-                //                result = [UIImage imageNamed:@"system_message_timer"];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        // TODO:
-        //        result = [UIImage imageNamed:@"system_message_call"];
+        return [UIColor colorWithRGBHex:0x404040];
     } else {
         OWSFail(@"Unknown interaction type");
         return nil;
     }
-    //    return [UIColor ows_darkGrayColor];
-    return [UIColor colorWithRGBHex:0x505050];
+
+    return [UIColor colorWithRGBHex:0x303030];
 }
 
 - (UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -150,10 +107,6 @@
     UIImage *result = nil;
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        //        DDLogError(@"----- %@ %@: %d",
-        //                   [self.interaction class],
-        //                   self.interaction.description,
-        //                   (int) ((TSErrorMessage *) self.interaction).errorType);
         switch (((TSErrorMessage *)self.interaction).errorType) {
             case TSErrorMessageInvalidKeyException:
             case TSErrorMessageNonBlockingIdentityChange:
@@ -166,17 +119,13 @@
             case TSErrorMessageDuplicateMessage:
             case TSErrorMessageInvalidVersion:
             case TSErrorMessageUnknownContactBlockOffer:
-                result = [UIImage imageNamed:@"system_message_warning"];
+                result = [UIImage imageNamed:@"system_message_info"];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        //        DDLogError(@"----- %@ %@: %d",
-        //                   [self.interaction class],
-        //                   self.interaction.description,
-        //                   (int) ((TSInfoMessage *) self.interaction).messageType);
         switch (((TSInfoMessage *)self.interaction).messageType) {
             case TSInfoMessageUserNotRegistered:
-                result = [UIImage imageNamed:@"system_message_warning"];
+                result = [UIImage imageNamed:@"system_message_info"];
                 break;
             case TSInfoMessageTypeSessionDidEnd:
             case TSInfoMessageTypeUnsupportedMessage:
@@ -192,7 +141,6 @@
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        // TODO:
         result = [UIImage imageNamed:@"system_message_call"];
     } else {
         OWSFail(@"Unknown interaction type");
@@ -200,37 +148,22 @@
     }
     OWSAssert(result);
     return result;
-    //    return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread
-    //    messages.")
-    //        .uppercaseString;
 }
 
 + (NSString *)titleForInteraction:(TSInteraction *)interaction
 {
+    // TODO: Should we move the copy generation into this view?
+
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        // TODO: Should we move the copy generation into this view?
         return interaction.description;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        // TODO: Should we move the copy generation into this view?
         return interaction.description;
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        //        switch (((TSCall *) self.interaction).callType) {
-        //            case <#constant#>:
-        //                <#statements#>
-        //                break;
-        //
-        //            default:
-        //                break;
-        //        }
-        // TODO: Should we move the copy generation into this view?
         return interaction.description;
     } else {
         OWSFail(@"Unknown interaction type");
         return nil;
     }
-    //    return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread
-    //    messages.")
-    //        .uppercaseString;
 }
 
 + (UIFont *)titleFont

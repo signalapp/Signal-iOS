@@ -51,13 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
                               atIndexPath:(NSIndexPath *)indexPath
                                withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    //    DDLogError(@"----- ?? %@",
-    //               [messageData class]);
-
     if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
-
-        //        DDLogError(@"----- ???? %d", (int) message.messageType);
 
         switch (message.messageType) {
             case TSCallAdapter:
@@ -69,32 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case TSUnreadIndicatorAdapter: {
                 id cacheKey = [self cacheKeyForMessageData:messageData];
-
                 TSUnreadIndicatorInteraction *interaction
                     = (TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction;
-
-                NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-                if (cachedSize != nil) {
-                    //                    DDLogError(@"----- cache hit[%@,%@], %@ %@",
-                    //                               [interaction class],
-                    //                               cacheKey,
-                    //                               NSStringFromCGSize([cachedSize CGSizeValue]),
-                    //                               interaction.description);
-                    return [cachedSize CGSizeValue];
-                }
-
-                CGSize result = [OWSUnreadIndicatorCell cellSizeForInteraction:interaction
-                                                           collectionViewWidth:layout.collectionView.width];
-
-                [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
-
-                //                DDLogError(@"----- cache miss[%@,%@], %@ %@",
-                //                           [interaction class],
-                //                           cacheKey,
-                //                           NSStringFromCGSize(result),
-                //                           interaction.description);
-
-                return result;
+                return [self sizeForUnreadIndicator:interaction cacheKey:cacheKey layout:layout];
             }
             default:
                 // TODO: we need to examine the other cases.
@@ -127,11 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
-        //        DDLogError(@"----- cache hit[%@,%@], %@ %@",
-        //                   [interaction class],
-        //                   cacheKey,
-        //                   NSStringFromCGSize([cachedSize CGSizeValue]),
-        //                   interaction.description);
         return [cachedSize CGSizeValue];
     }
 
@@ -140,11 +107,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 
-    //    DDLogError(@"----- cache miss[%@,%@], %@ %@",
-    //               [interaction class],
-    //               cacheKey,
-    //               NSStringFromCGSize(result),
-    //               interaction.description);
+    return result;
+}
+
+- (CGSize)sizeForUnreadIndicator:(TSUnreadIndicatorInteraction *)interaction
+                        cacheKey:(id)cacheKey
+                          layout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    OWSAssert(interaction);
+    OWSAssert(cacheKey);
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize result =
+        [OWSUnreadIndicatorCell cellSizeForInteraction:interaction collectionViewWidth:layout.collectionView.width];
+
+    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 
     return result;
 }
