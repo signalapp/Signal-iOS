@@ -12,9 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName;
 
-- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call
-                                         callerName:(NSString *)callerName
-    NS_SWIFT_NAME(presentRejectedCallWithUnseenIdentityChange(_:callerName:));
+- (void)presentRejectedCallWithIdentityChange:(SignalCall *)call
+                                   callerName:(NSString *)callerName
+    NS_SWIFT_NAME(presentRejectedCallWithIdentityChange(_:callerName
+:));
 
 @end
 

@@ -24,7 +24,7 @@ import Foundation
     static let missedCallNotificationBodyWithoutCallerName = NSLocalizedString("MSGVIEW_MISSED_CALL_WITHOUT_NAME", comment: "notification title.")
 
     // MARK: Missed with Unseen identity Notification
-    static let rejectedCallWithUnseenIdentityChangeNotificationBody =  NSLocalizedString("MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY", comment: "notification action")
-    static let rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName =  NSLocalizedString("MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITHOUT_CALLER_NAME", comment: "notification action")
-    static let rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName =  NSLocalizedString("MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITH_CALLER_NAME", comment: "notification action")
+    static let rejectedCallWithIdentityChangeNotificationBody =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY", comment: "notification action")
+    static let rejectedCallWithIdentityChangeNotificationBodyWithoutCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME", comment: "notification action")
+    static let rejectedCallWithIdentityChangeNotificationBodyWithCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME", comment: "notification action")
 }

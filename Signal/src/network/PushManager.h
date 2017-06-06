@@ -22,12 +22,12 @@ extern NSString *const Signal_Message_MarkAsRead_Identifier;
 
 extern NSString *const PushManagerCategoriesIncomingCall;
 extern NSString *const PushManagerCategoriesMissedCall;
-extern NSString *const PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+extern NSString *const PushManagerCategoriesRejectedCallFromIdentityChange;
 
 extern NSString *const PushManagerActionsAcceptCall;
 extern NSString *const PushManagerActionsDeclineCall;
 extern NSString *const PushManagerActionsCallBack;
-extern NSString *const PushManagerActionsConfirmIdentityAndCallBack;
+extern NSString *const PushManagerActionsIgnoreIdentityChangeAndCallBack;
 extern NSString *const PushManagerActionsShowThread;
 
 extern NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
