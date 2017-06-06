@@ -28,25 +28,27 @@
         NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
     }
 
-#define OWSFail(X)                                                                                                     \
+#define OWSFail(message, ...)                                                                                          \
     {                                                                                                                  \
-        NSLog(@"%s %@", __PRETTY_FUNCTION__, X);                                                                       \
-        NSAssert(0, X);                                                                                                \
+        NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
+        NSLog(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                        \
+        NSAssert(0, formattedMessage);                                                                                 \
     }
 
-#define OWSCFail(X)                                                                                                    \
+#define OWSCFail(message, ...)                                                                                         \
     {                                                                                                                  \
         if (!(X)) {                                                                                                    \
-            NSLog(@"%s %@", __PRETTY_FUNCTION__, X);                                                                   \
-            NSCAssert(0, X);                                                                                           \
+            NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                           \
+            NSLog(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                    \
+            NSCAssert(0, formattedMessage);                                                                            \
         }
 
 #else
 
 #define OWSAssert(X)
 #define OWSCAssert(X)
-#define OWSFail(X)
-#define OWSCFail(X)
+#define OWSFail(message, ...)
+#define OWSCFail(message, ...)
 
 #endif
 
