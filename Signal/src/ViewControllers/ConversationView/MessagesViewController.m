@@ -111,7 +111,8 @@ typedef enum : NSUInteger {
 
 @protocol OWSMessagesCollectionViewFlowLayoutDelegate <NSObject>
 
-- (BOOL)isSpecialItemAtIndexPath:(NSIndexPath *)indexPath;
+// Returns YES for incoming and outgoing text and attachment messages.
+- (BOOL)isUserMessageAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -130,7 +131,7 @@ typedef enum : NSUInteger {
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // The unread indicator should be sized according to its desired size.
-    if ([self.delegate isSpecialItemAtIndexPath:indexPath]) {
+    if (![self.delegate isUserMessageAtIndexPath:indexPath]) {
         CGSize messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
         CGFloat finalHeight = messageBubbleSize.height;
         return CGSizeMake(CGRectGetWidth(self.collectionView.frame), ceilf((float)finalHeight));
@@ -1563,8 +1564,7 @@ typedef enum : NSUInteger {
     OWSUnreadIndicatorCell *cell =
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
-    cell.interaction = unreadIndicator;
-    [cell configure];
+    [cell configureWithInteraction:unreadIndicator];
 
     return cell;
 }
@@ -1577,8 +1577,7 @@ typedef enum : NSUInteger {
     OWSSystemMessageCell *cell =
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
-    cell.interaction = interaction;
-    [cell configure];
+    [cell configureWithInteraction:interaction];
 
     return cell;
 }
@@ -3825,13 +3824,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - OWSMessagesCollectionViewFlowLayoutDelegate
 
-- (BOOL)isSpecialItemAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)isUserMessageAtIndexPath:(NSIndexPath *)indexPath;
 {
-    // TODO:
+    // TODO: Eventually it'd be nice to this in a more performant way.
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
-        [interaction isKindOfClass:[TSInfoMessage class]] || [interaction isKindOfClass:[TSErrorMessage class]] ||
-        [interaction isKindOfClass:[TSCall class]]);
+    return (
+        [interaction isKindOfClass:[TSIncomingMessage class]] || [interaction isKindOfClass:[TSOutgoingMessage class]]);
 }
 
 #pragma mark - Class methods

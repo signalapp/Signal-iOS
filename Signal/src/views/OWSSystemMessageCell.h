@@ -9,9 +9,9 @@
 
 @interface OWSSystemMessageCell : JSQMessagesCollectionViewCell
 
-@property (nonatomic) TSInteraction *interaction;
+@property (nonatomic, nullable, readonly) TSInteraction *interaction;
 
-- (void)configure;
+- (void)configureWithInteraction:(TSInteraction *)interaction;
 
 + (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth;
 

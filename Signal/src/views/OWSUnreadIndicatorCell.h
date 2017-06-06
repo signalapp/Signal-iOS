@@ -9,9 +9,10 @@
 
 @interface OWSUnreadIndicatorCell : JSQMessagesCollectionViewCell
 
-@property (nonatomic) TSUnreadIndicatorInteraction *interaction;
+@property (nonatomic, nullable, readonly) TSUnreadIndicatorInteraction *interaction;
 
-- (void)configure;
+- (void)configureWithInteraction:(TSUnreadIndicatorInteraction *)interaction;
+;
 
 + (CGSize)cellSizeForInteraction:(TSUnreadIndicatorInteraction *)interaction
              collectionViewWidth:(CGFloat)collectionViewWidth;

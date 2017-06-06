@@ -15,6 +15,8 @@
 
 @interface OWSSystemMessageCell ()
 
+@property (nonatomic, nullable) TSInteraction *interaction;
+
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
 
@@ -29,8 +31,12 @@
     return NSStringFromClass([self class]);
 }
 
-- (void)configure
+- (void)configureWithInteraction:(TSInteraction *)interaction;
 {
+    OWSAssert(interaction);
+
+    _interaction = interaction;
+
     self.backgroundColor = [UIColor whiteColor];
 
     if (!self.titleLabel) {
@@ -72,12 +78,12 @@
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         switch (((TSErrorMessage *)self.interaction).errorType) {
-            case TSErrorMessageInvalidKeyException:
             case TSErrorMessageNonBlockingIdentityChange:
             case TSErrorMessageWrongTrustedIdentityKey:
-            case TSErrorMessageMissingKeyId:
                 result = [UIImage imageNamed:@"system_message_security"];
                 break;
+            case TSErrorMessageInvalidKeyException:
+            case TSErrorMessageMissingKeyId:
             case TSErrorMessageNoSession:
             case TSErrorMessageInvalidMessage:
             case TSErrorMessageDuplicateMessage:
@@ -89,8 +95,6 @@
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         switch (((TSInfoMessage *)self.interaction).messageType) {
             case TSInfoMessageUserNotRegistered:
-                result = [UIImage imageNamed:@"system_message_info"];
-                break;
             case TSInfoMessageTypeSessionDidEnd:
             case TSInfoMessageTypeUnsupportedMessage:
             case TSInfoMessageAddToContactsOffer:
@@ -200,6 +204,13 @@
     result.height += contentHeight;
 
     return result;
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+
+    self.interaction = nil;
 }
 
 @end
