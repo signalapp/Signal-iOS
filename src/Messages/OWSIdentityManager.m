@@ -6,13 +6,14 @@
 #import "NotificationsProtocol.h"
 #import "OWSMessageSender.h"
 #import "OWSRecipientIdentity.h"
-#import "TextSecureKitEnv.h"
+#import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import "TSStorageManager.h"
+#import "TextSecureKitEnv.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,6 +24,9 @@ NSString *const TSStorageManagerIdentityKeyStoreCollection = @"TSStorageManagerI
 
 // Storing recipients identity keys
 NSString *const TSStorageManagerTrustedKeysCollection = @"TSStorageManagerTrustedKeysCollection";
+
+NSString *const OWSIdentityManager_QueuedVerificationStateSyncMessages =
+    @"OWSIdentityManager_QueuedVerificationStateSyncMessages";
 
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
@@ -77,9 +81,27 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     OWSSingletonAssert();
 
+    // We want to observe these notifications lazily to avoid accessing
+    // the data store in [application: didFinishLaunchingWithOptions:].
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self tryToSendQueuedVerificationStateSyncMessages];
+        [self observeNotifications];
+    });
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
 
 - (void)generateNewIdentityKey
 {
@@ -132,6 +154,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                      createdAt:[NSDate new]
                                              verificationState:OWSVerificationStateDefault] save];
 
+            // Cancel any pending verification state sync messages for this recipient.
+            [self clearSyncMessageForRecipientId:recipientId];
+
             [self fireIdentityStateChangeNotification];
 
             return NO;
@@ -161,6 +186,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                isFirstKnownKey:NO
                                                      createdAt:[NSDate new]
                                              verificationState:verificationState] save];
+
+            // Cancel any pending verification state sync messages for this recipient.
+            [self clearSyncMessageForRecipientId:recipientId];
 
             [self fireIdentityStateChangeNotification];
 
@@ -204,6 +232,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             OWSVerificationStateToString(verificationState));
 
         [identity updateWithVerificationState:verificationState];
+
+        if (sendSyncMessage) {
+            [self enqueueSyncMessageForVerificationState:verificationState
+                                             identityKey:identityKey
+                                             recipientId:recipientId];
+        } else {
+            // Cancel any pending verification state sync messages for this recipient.
+            [self clearSyncMessageForRecipientId:recipientId];
+        }
     }
 
     [self fireIdentityStateChangeNotification];
@@ -359,6 +396,100 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
         [[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId] save];
     }
+}
+
+- (void)enqueueSyncMessageForVerificationState:(OWSVerificationState)verificationState
+                                   identityKey:(NSData *)identityKey
+                                   recipientId:(NSString *)recipientId
+{
+    OWSAssert(identityKey.length > 0);
+    OWSAssert(recipientId.length > 0);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            [self.storageManager setObject:recipientId
+                                    forKey:recipientId
+                              inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+        }
+
+        [self tryToSendQueuedVerificationStateSyncMessages];
+    });
+}
+
+- (void)tryToSendQueuedVerificationStateSyncMessages
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
+            [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
+                                                      usingBlock:^(NSString *_Nonnull recipientId,
+                                                          id _Nonnull object,
+                                                          BOOL *_Nonnull stop) {
+                                                          [recipientIds addObject:recipientId];
+                                                      }];
+
+                for (NSString *recipientId in recipientIds) {
+                    OWSRecipientIdentity *identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+                    if (!identity) {
+                        OWSFail(@"Could not load identity for recipientId: %@", recipientId);
+                        return;
+                    }
+                    [self sendSyncMessageForVerificationState:identity.verificationState
+                                                  identityKey:identity.identityKey
+                                                  recipientId:recipientId];
+                }
+            }];
+        }
+    });
+}
+
+- (void)sendSyncMessageForVerificationState:(OWSVerificationState)verificationState
+                                identityKey:(NSData *)identityKey
+                                recipientId:(NSString *)recipientId
+{
+    OWSAssert(identityKey.length > 0);
+    OWSAssert(recipientId.length > 0);
+
+    OWSVerificationStateSyncMessage *message =
+        [[OWSVerificationStateSyncMessage alloc] initWithVerificationState:verificationState
+                                                               identityKey:identityKey
+                                                               recipientId:recipientId];
+
+    [self.messageSender sendMessage:message
+        success:^{
+            DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
+
+            // Record that this verification state was successfully synced.
+            [self clearSyncMessageForRecipientId:recipientId];
+        }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to send verification state sync message with error: %@", self.tag, error);
+        }];
+}
+
+- (void)clearSyncMessageForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            [self.storageManager removeObjectForKey:recipientId
+                                       inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+        }
+    });
+}
+
+#pragma mark - Notifications
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self tryToSendQueuedVerificationStateSyncMessages];
 }
 
 #pragma mark - Logging

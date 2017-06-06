@@ -74,6 +74,19 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
 - (void)addBlockedPhoneNumber:(NSString *)phoneNumber
 {
     OWSAssert(phoneNumber.length > 0);
@@ -201,6 +214,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                          inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: [NSArray new])];
 
+    [self syncBlockedPhoneNumbersIfNecessary];
+    [self observeNotifications];
+}
+
+// This method should only be called from within a synchronized block.
+- (void)syncBlockedPhoneNumbersIfNecessary
+{
+    OWSAssert(_blockedPhoneNumberSet);
+
     // If we haven't yet successfully synced the current "blocked phone numbers" changes,
     // try again to sync now.
     NSArray<NSString *> *syncedBlockedPhoneNumbers =
@@ -210,7 +232,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
         DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
+            [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
         });
     }
 }
@@ -231,8 +253,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.tag, error);
-
-            // TODO: We might want to retry more often than just app launch.
         }];
 }
 
@@ -244,6 +264,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     [_storageManager setObject:blockedPhoneNumbers
                         forKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
                   inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
+}
+
+#pragma mark - Notifications
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self syncBlockedPhoneNumbersIfNecessary];
 }
 
 #pragma mark - Logging
