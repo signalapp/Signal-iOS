@@ -146,8 +146,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     dispatch_get_main_queue(),
                                                     ^{
                                                         [[Environment getCurrent].callService.notificationsAdapter
-                                                            presentRejectedCallWithUnseenIdentityChange:call
-                                                                                             callerName:thread.name];
+                                                            presentRejectedCallWithIdentityChange:call
+                                                                                       callerName:thread.name];
                                                     });
                                             }],
                                   ]]];

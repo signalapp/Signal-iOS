@@ -472,7 +472,7 @@ protocol CallServiceObserver: class {
 
         guard OWSIdentityManager.shared().isCurrentIdentityTrustedForSending(toRecipientId: thread.contactIdentifier()) else {
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
-            self.notificationsAdapter.presentRejectedCallWithUnseenIdentityChange(newCall, callerName: callerName)
+            self.notificationsAdapter.presentRejectedCallWithIdentityChange(newCall, callerName: callerName)
             return
         }
 

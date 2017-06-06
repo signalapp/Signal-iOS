@@ -134,7 +134,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         center.add(request)
     }
 
-    func presentRejectedCallWithUnseenIdentityChange(_ call: SignalCall, callerName: String) {
+    func presentRejectedCallWithIdentityChange(_ call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         let content = UNMutableNotificationContent()
@@ -144,11 +144,11 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         let notificationBody = { () -> String in
             switch previewType {
             case .noNameNoPreview:
-                return CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBody
+                return CallStrings.rejectedCallWithIdentityChangeNotificationBody
             case .nameNoPreview, .namePreview:
                 return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
-                    ? CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName
-                    : String(format: CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName, callerName))
+                    ? CallStrings.rejectedCallWithIdentityChangeNotificationBodyWithoutCallerName
+                    : String(format: CallStrings.rejectedCallWithIdentityChangeNotificationBodyWithCallerName, callerName))
             }}()
 
         content.body = notificationBody

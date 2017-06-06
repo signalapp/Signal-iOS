@@ -113,13 +113,13 @@
     [self presentNotification:notification identifier:localCallId];
 }
 
-- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentRejectedCallWithIdentityChange:(SignalCall *)call callerName:(NSString *)callerName
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
-    notification.category = PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+    notification.category = PushManagerCategoriesRejectedCallFromIdentityChange;
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
@@ -130,17 +130,16 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBody];
+            alertMessage = [CallStrings rejectedCallWithIdentityChangeNotificationBody];
             break;
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage = (([UIDevice currentDevice].supportsCallKit &&
                                 [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
-                    ? [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName]
+                    ? [CallStrings rejectedCallWithIdentityChangeNotificationBodyWithoutCallerName]
                     : [NSString
-                          stringWithFormat:[CallStrings
-                                               rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName],
+                          stringWithFormat:[CallStrings rejectedCallWithIdentityChangeNotificationBodyWithCallerName],
                           callerName]);
             break;
         }
