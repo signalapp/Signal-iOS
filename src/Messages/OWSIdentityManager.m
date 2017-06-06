@@ -33,23 +33,11 @@ NSString *const TSStorageManagerTrustedKeysCollection = @"TSStorageManagerTruste
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
-// NSString *const kNSNotificationName_VerificationStateDidChange = @"kNSNotificationName_VerificationStateDidChange";
-//
+NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationName_IdentityStateDidChange";
+
 // NSString *const kOWSIdentityManager_Collection = @"kOWSIdentityManager_Collection";
 //// This key is used to persist the current "verification map" state.
 // NSString *const kOWSIdentityManager_VerificationMapKey = @"kOWSIdentityManager_VerificationMapKey";
-
-NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
-{
-    switch (verificationState) {
-        case OWSVerificationStateDefault:
-            return @"OWSVerificationStateDefault";
-        case OWSVerificationStateVerified:
-            return @"OWSVerificationStateVerified";
-        case OWSVerificationStateNoLongerVerified:
-            return @"OWSVerificationStateNoLongerVerified";
-    }
-}
 
 @interface OWSIdentityManager ()
 
@@ -105,37 +93,6 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     return self;
 }
 
-//- (void)setVerificationState:(OWSVerificationState)verificationState
-//              forPhoneNumber:(NSString *)phoneNumber
-//       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-//{
-//    OWSAssert(phoneNumber.length > 0);
-//
-//    DDLogInfo(@"%@ setVerificationState: %@ forPhoneNumber: %@", self.tag,
-//    OWSVerificationStateToString(verificationState), phoneNumber);
-//
-//    NSDictionary<NSString *, NSNumber *> *verificationMapCopy = nil;
-//
-//    @synchronized(self)
-//    {
-//        [self lazyLoadStateIfNecessary];
-//        OWSAssert(self.verificationMap);
-//
-//        NSNumber * _Nullable existingValue = self.verificationMap[phoneNumber];
-//        if (existingValue && existingValue.intValue == (int) verificationState) {
-//            // Ignore redundant changes.
-//            return;
-//        }
-//
-//        self.verificationMap[phoneNumber] = @(verificationState);
-//
-//        verificationMapCopy = [self.verificationMap copy];
-//    }
-//
-//    [self handleUpdate:verificationMapCopy
-//       sendSyncMessage:isUserInitiatedChange];
-//}
-//
 //- (OWSVerificationState)verificationStateForPhoneNumber:(NSString *)phoneNumber
 //{
 //    OWSAssert(phoneNumber.length > 0);
@@ -183,7 +140,6 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
 //    _verificationMap = (verificationMap ? [verificationMap mutableCopy] : [NSMutableDictionary new]);
 //}
 
-
 - (BOOL)isCurrentIdentityTrustedForSendingWithRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
@@ -196,19 +152,6 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
                                 direction:TSMessageDirectionOutgoing];
     }
 }
-
-
-//@implementation TSStorageManager (IdentityKeyStore)
-
-//+ (id)sharedIdentityKeyLock
-//{
-//    static id identityKeyLock;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        identityKeyLock = [NSObject new];
-//    });
-//    return identityKeyLock;
-//}
 
 - (void)generateNewIdentityKey
 {
@@ -251,65 +194,101 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
                                 forKey:recipientId
                           inCollection:TSStorageManagerTrustedKeysCollection];
 
-        // If send-blocking is disabled at the time the identity was saved, we want to consider the identity as
-        // approved for blocking. Otherwise the user will see inexplicable failures when trying to send to this
-        // identity, if they later enabled send-blocking.
-        BOOL approvedForBlockingUse = ![TextSecureKitEnv sharedEnv].preferences.isSendingIdentityApprovalRequired;
-        return [self saveRemoteIdentity:identityKey
-                            recipientId:recipientId
-                 approvedForBlockingUse:approvedForBlockingUse
-              approvedForNonBlockingUse:NO];
-    }
-}
-
-// TODO: Stuff
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-                  recipientId:(NSString *)recipientId
-       approvedForBlockingUse:(BOOL)approvedForBlockingUse
-    approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse
-{
-    OWSAssert(identityKey != nil);
-    OWSAssert(recipientId != nil);
-
-    NSString const *logTag = @"[IdentityKeyStore]";
-    @synchronized(self)
-    {
         OWSRecipientIdentity *existingIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
 
         if (existingIdentity == nil) {
-            DDLogInfo(@"%@ saving first use identity for recipient: %@", logTag, recipientId);
+            DDLogInfo(@"%@ saving first use identity for recipient: %@", self.tag, recipientId);
             [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                    identityKey:identityKey
                                                isFirstKnownKey:YES
                                                      createdAt:[NSDate new]
-                                        approvedForBlockingUse:approvedForBlockingUse
-                                     approvedForNonBlockingUse:approvedForNonBlockingUse] save];
+                                             verificationState:OWSVerificationStateDefault] save];
+
+            [self fireIdentityStateChangeNotification];
+
             return NO;
         }
 
         if (![existingIdentity.identityKey isEqual:identityKey]) {
-            DDLogInfo(@"%@ replacing identity for existing recipient: %@", logTag, recipientId);
+            OWSVerificationState verificationState;
+            switch (existingIdentity.verificationState) {
+                case OWSVerificationStateDefault:
+                    verificationState = OWSVerificationStateDefault;
+                    break;
+                case OWSVerificationStateVerified:
+                case OWSVerificationStateNoLongerVerified:
+                    verificationState = OWSVerificationStateNoLongerVerified;
+                    break;
+            }
+
+            DDLogInfo(@"%@ replacing identity for existing recipient: %@ (%@ -> %@)",
+                self.tag,
+                recipientId,
+                OWSVerificationStateToString(existingIdentity.verificationState),
+                OWSVerificationStateToString(verificationState));
             [self createIdentityChangeInfoMessageForRecipientId:recipientId];
+
             [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                    identityKey:identityKey
                                                isFirstKnownKey:NO
                                                      createdAt:[NSDate new]
-                                        approvedForBlockingUse:approvedForBlockingUse
-                                     approvedForNonBlockingUse:approvedForNonBlockingUse] save];
+                                             verificationState:verificationState] save];
+
+            [self fireIdentityStateChangeNotification];
 
             return YES;
         }
 
-        if ([self isBlockingApprovalRequiredForIdentity:existingIdentity] ||
-            [self isNonBlockingApprovalRequiredForIdentity:existingIdentity]) {
-            [existingIdentity updateWithApprovedForBlockingUse:approvedForBlockingUse
-                                     approvedForNonBlockingUse:approvedForNonBlockingUse];
-            return NO;
-        }
-
-        DDLogDebug(@"%@ no changes for identity saved for recipient: %@", logTag, recipientId);
+        DDLogDebug(@"%@ no changes for identity saved for recipient: %@", self.tag, recipientId);
         return NO;
     }
+}
+
+- (void)setVerificationState:(OWSVerificationState)verificationState
+                 identityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+             sendSyncMessage:(BOOL)sendSyncMessage
+{
+    OWSAssert(identityKey.length > 0);
+    OWSAssert(recipientId.length > 0);
+
+    //    NSDictionary<NSString *, NSNumber *> *verificationMapCopy = nil;
+
+    @synchronized(self)
+    {
+
+        [self saveRemoteIdentity:identityKey recipientId:recipientId];
+
+        OWSRecipientIdentity *identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+        if (identity == nil) {
+            OWSFail(@"Missing expected identity: %@", recipientId);
+            return;
+        }
+
+        if (identity.verificationState == verificationState) {
+            return;
+        }
+
+        DDLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
+            self.tag,
+            recipientId,
+            OWSVerificationStateToString(identity.verificationState),
+            OWSVerificationStateToString(verificationState));
+
+        [identity updateWithVerificationState:verificationState];
+    }
+
+    [self fireIdentityStateChangeNotification];
+}
+
+- (void)fireIdentityStateChangeNotification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_IdentityStateDidChange
+                                                            object:nil
+                                                          userInfo:nil];
+    });
 }
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
@@ -420,49 +399,35 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
             return NO;
         }
 
-        if ([self isBlockingApprovalRequiredForIdentity:recipientIdentity]) {
-            DDLogWarn(@"%s not trusting until blocking approval is granted. recipient: %@",
-                __PRETTY_FUNCTION__,
-                recipientIdentity.recipientId);
-            return NO;
+        switch (recipientIdentity.verificationState) {
+            case OWSVerificationStateDefault: {
+                BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
+                    < kIdentityKeyStoreNonBlockingSecondsThreshold);
+                if (isNew) {
+                    DDLogWarn(@"%s not trusting new identity for recipient: %@",
+                        __PRETTY_FUNCTION__,
+                        recipientIdentity.recipientId);
+                    return NO;
+                } else {
+                    DDLogWarn(@"%s trusting existing identity for recipient: %@",
+                        __PRETTY_FUNCTION__,
+                        recipientIdentity.recipientId);
+                    return YES;
+                }
+            }
+            case OWSVerificationStateVerified:
+                DDLogWarn(@"%s trusting verified identity for recipient: %@",
+                    __PRETTY_FUNCTION__,
+                    recipientIdentity.recipientId);
+                return YES;
+            case OWSVerificationStateNoLongerVerified:
+                DDLogWarn(@"%s not trusting no longer verified identity for recipient: %@",
+                    __PRETTY_FUNCTION__,
+                    recipientIdentity.recipientId);
+                return NO;
         }
-
-        if ([self isNonBlockingApprovalRequiredForIdentity:recipientIdentity]) {
-            DDLogWarn(@"%s not trusting until non-blocking approval is granted. recipient: %@",
-                __PRETTY_FUNCTION__,
-                recipientIdentity.recipientId);
-            return NO;
-        }
-
-        return YES;
     }
 }
-
-- (BOOL)isBlockingApprovalRequiredForIdentity:(OWSRecipientIdentity *)recipientIdentity
-{
-    OWSAssert(recipientIdentity != nil);
-    OWSAssert([TextSecureKitEnv sharedEnv].preferences != nil);
-
-    return !recipientIdentity.isFirstKnownKey &&
-        [TextSecureKitEnv sharedEnv].preferences.isSendingIdentityApprovalRequired
-        && !recipientIdentity.approvedForBlockingUse;
-}
-
-- (BOOL)isNonBlockingApprovalRequiredForIdentity:(OWSRecipientIdentity *)recipientIdentity
-{
-    OWSAssert(recipientIdentity != nil);
-
-    return !recipientIdentity.isFirstKnownKey &&
-        [[NSDate new] timeIntervalSinceDate:recipientIdentity.createdAt] < kIdentityKeyStoreNonBlockingSecondsThreshold
-        && !recipientIdentity.approvedForNonBlockingUse;
-}
-
-//- (void)removeIdentityKeyForRecipient:(NSString *)recipientId
-//{
-//    OWSAssert(recipientId != nil);
-//
-//    [[OWSRecipientIdentity fetchObjectWithUniqueID:recipientId] remove];
-//}
 
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
 {

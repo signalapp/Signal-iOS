@@ -8,11 +8,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
+{
+    switch (verificationState) {
+        case OWSVerificationStateDefault:
+            return @"OWSVerificationStateDefault";
+        case OWSVerificationStateVerified:
+            return @"OWSVerificationStateVerified";
+        case OWSVerificationStateNoLongerVerified:
+            return @"OWSVerificationStateNoLongerVerified";
+    }
+}
+
 @interface OWSRecipientIdentity ()
 
-@property (atomic) BOOL wasSeen;
-@property (atomic) BOOL approvedForBlockingUse;
-@property (atomic) BOOL approvedForNonBlockingUse;
+@property (atomic) OWSVerificationState verificationState;
 
 @end
 
@@ -24,12 +34,24 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @implementation OWSRecipientIdentity
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+
+    if (self) {
+        if (![coder decodeObjectForKey:@"verificationState"]) {
+            _verificationState = OWSVerificationStateDefault;
+        }
+    }
+
+    return self;
+}
+
 - (instancetype)initWithRecipientId:(NSString *)recipientId
                         identityKey:(NSData *)identityKey
                     isFirstKnownKey:(BOOL)isFirstKnownKey
                           createdAt:(NSDate *)createdAt
-             approvedForBlockingUse:(BOOL)approvedForBlockingUse
-          approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse
+                  verificationState:(OWSVerificationState)verificationState
 {
     self = [super initWithUniqueId:recipientId];
     if (!self) {
@@ -40,27 +62,16 @@ NS_ASSUME_NONNULL_BEGIN
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;
     _createdAt = createdAt;
-    _approvedForBlockingUse = approvedForBlockingUse;
-    _approvedForNonBlockingUse = approvedForNonBlockingUse;
-    _wasSeen = NO;
-    
+    _verificationState = verificationState;
+
     return self;
 }
 
-- (void)updateAsSeen
-{
-    [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
-        obj.wasSeen = YES;
-    }];
-}
-
-- (void)updateWithApprovedForBlockingUse:(BOOL)approvedForBlockingUse
-               approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse
+- (void)updateWithVerificationState:(OWSVerificationState)verificationState
 {
     // Ensure changes are persisted without clobbering any work done on another thread or instance.
     [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
-        obj.approvedForBlockingUse = approvedForBlockingUse;
-        obj.approvedForNonBlockingUse = approvedForNonBlockingUse;
+        obj.verificationState = verificationState;
     }];
 }
 

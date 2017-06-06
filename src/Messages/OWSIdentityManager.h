@@ -8,15 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSStorageManagerTrustedKeysCollection;
 
-// extern NSString *const kNSNotificationName_VerificationStateDidChange;
+extern NSString *const kNSNotificationName_IdentityStateDidChange;
 
 @class OWSRecipientIdentity;
 
-typedef NS_ENUM(NSUInteger, OWSVerificationState) {
-    OWSVerificationStateDefault,
-    OWSVerificationStateVerified,
-    OWSVerificationStateNoLongerVerified,
-};
+// typedef NS_ENUM(NSUInteger, OWSVerificationState) {
+//    OWSVerificationStateDefault,
+//    OWSVerificationStateVerified,
+//    OWSVerificationStateNoLongerVerified,
+//};
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
