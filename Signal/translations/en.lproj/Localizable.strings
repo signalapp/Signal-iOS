@@ -743,7 +743,7 @@
 "MISSED_CALL" = "Missed call";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call because the caller's safety number changed.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
 
 /* notification title */
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";

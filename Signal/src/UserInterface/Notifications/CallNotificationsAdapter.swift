@@ -36,8 +36,12 @@ class CallNotificationsAdapter: NSObject {
         adaptee.presentMissedCall(call, callerName: callerName)
     }
 
-    func presentRejectedCallWithIdentityChange(_ call: SignalCall, callerName: String) {
-        Logger.debug("\(TAG) in \(#function)")
-        adaptee.presentRejectedCallWithIdentityChange(call, callerName: callerName)
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+        adaptee.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: callerName)
     }
+
+    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+       adaptee.presentMissedCallBecauseOfNewIdentity(call: call, callerName: callerName)
+    }
+
 }
