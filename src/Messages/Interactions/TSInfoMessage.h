@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeSessionDidEnd,
     TSInfoMessageUserNotRegistered,
+    // TSInfoMessageTypeUnsupportedMessage appears to be obsolete.
     TSInfoMessageTypeUnsupportedMessage,
     TSInfoMessageTypeGroupUpdate,
     TSInfoMessageTypeGroupQuit,

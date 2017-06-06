@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactId:(NSString *)contactId {
     NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];
 
+    OWSAssert(contactId.length > 0);
+
     self = [super initWithUniqueId:uniqueIdentifier];
 
     return self;
@@ -29,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
                                          relay:(nullable NSString *)relay
 {
-    OWSAssert(contactId);
+    OWSAssert(contactId.length > 0);
+
     SignalRecipient *recipient =
         [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
 
@@ -55,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAssert(contactId.length > 0);
+
     TSContactThread *thread =
         [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
 
@@ -68,6 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
 {
+    OWSAssert(contactId.length > 0);
+
     __block TSContactThread *thread;
     [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];

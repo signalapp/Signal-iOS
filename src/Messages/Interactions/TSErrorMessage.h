@@ -16,7 +16,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageInvalidKeyException,
     TSErrorMessageMissingKeyId, // unused
     TSErrorMessageInvalidMessage,
-    TSErrorMessageDuplicateMessage,
+    TSErrorMessageDuplicateMessage, // unused
     TSErrorMessageInvalidVersion,
     TSErrorMessageNonBlockingIdentityChange,
     TSErrorMessageUnknownContactBlockOffer,
