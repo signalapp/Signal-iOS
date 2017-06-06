@@ -54,8 +54,8 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                                    identityKey:identityKey
                                                isFirstKnownKey:NO
                                                      createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                        approvedForBlockingUse:YES
-                                     approvedForNonBlockingUse:NO] saveWithTransaction:transaction];
+                                             verificationState:OWSVerificationStateDefault]
+                saveWithTransaction:transaction];
         }];
 
         [self saveWithTransaction:transaction];
