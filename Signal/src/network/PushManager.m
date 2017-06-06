@@ -209,25 +209,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
         [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
         completionHandler();
-    } else if ([identifier isEqualToString:PushManagerActionsIgnoreIdentityChangeAndCallBack]) {
-        NSString *recipientId = notification.userInfo[PushManagerUserInfoKeysCallBackSignalRecipientId];
-        if (!recipientId) {
-            DDLogError(@"%@ missing call back id", self.tag);
-            return;
-        }
-
-        NSData *currentIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId];
-        if (currentIdentityKey.length <= 0) {
-            OWSFail(@"%@ currentIdentityKey unexpectedly empty for recipient: %@", self.tag, recipientId);
-            completionHandler();
-            return;
-        }
-        [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
-                                                     identityKey:currentIdentityKey
-                                                     recipientId:recipientId
-                                                 sendSyncMessage:YES];
-        [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
-        completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
@@ -364,8 +345,8 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 NSString *const PushManagerCategoriesIncomingCall = @"PushManagerCategoriesIncomingCall";
 NSString *const PushManagerCategoriesMissedCall = @"PushManagerCategoriesMissedCall";
-NSString *const PushManagerCategoriesRejectedCallFromIdentityChange =
-    @"PushManagerCategoriesRejectedCallFromIdentityChange";
+NSString *const PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity =
+    @"PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity";
 
 NSString *const PushManagerActionsAcceptCall = @"PushManagerActionsAcceptCall";
 NSString *const PushManagerActionsDeclineCall = @"PushManagerActionsDeclineCall";
@@ -418,14 +399,8 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     return missedCallCategory;
 }
 
-- (UIUserNotificationCategory *)signalRejectedCallWithUnseenIdentityChangeCategory
+- (UIUserNotificationCategory *)signalMissedCallWithNoLongerVerifiedIdentityChangeCategory
 {
-    UIMutableUserNotificationAction *confirmAndCallBackAction = [UIMutableUserNotificationAction new];
-    confirmAndCallBackAction.identifier = PushManagerActionsIgnoreIdentityChangeAndCallBack;
-    confirmAndCallBackAction.title = [CallStrings confirmIdentityAndCallBackButtonTitle];
-    confirmAndCallBackAction.activationMode = UIUserNotificationActivationModeForeground;
-    confirmAndCallBackAction.destructive = NO;
-    confirmAndCallBackAction.authenticationRequired = YES;
 
     UIMutableUserNotificationAction *showThreadAction = [UIMutableUserNotificationAction new];
     showThreadAction.identifier = PushManagerActionsShowThread;
@@ -435,11 +410,9 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     showThreadAction.authenticationRequired = YES;
 
     UIMutableUserNotificationCategory *rejectedCallCategory = [UIMutableUserNotificationCategory new];
-    rejectedCallCategory.identifier = PushManagerCategoriesRejectedCallFromIdentityChange;
-    [rejectedCallCategory setActions:@[ confirmAndCallBackAction, showThreadAction ]
-                          forContext:UIUserNotificationActionContextMinimal];
-    [rejectedCallCategory setActions:@[ confirmAndCallBackAction, showThreadAction ]
-                          forContext:UIUserNotificationActionContextDefault];
+    rejectedCallCategory.identifier = PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity;
+    [rejectedCallCategory setActions:@[ showThreadAction ] forContext:UIUserNotificationActionContextMinimal];
+    [rejectedCallCategory setActions:@[ showThreadAction ] forContext:UIUserNotificationActionContextDefault];
 
     return rejectedCallCategory;
 }
@@ -460,13 +433,13 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 - (void)validateUserNotificationSettings
 {
-    UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
-                                          categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
-                                                            [self signalIncomingCallCategory],
-                                                            [self signalMissedCallCategory],
-                                                            [self signalRejectedCallWithUnseenIdentityChangeCategory],
-                                                            nil]];
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings
+        settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
+              categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
+                                [self signalIncomingCallCategory],
+                                [self signalMissedCallCategory],
+                                [self signalMissedCallWithNoLongerVerifiedIdentityChangeCategory],
+                                nil]];
 
     [UIApplication.sharedApplication registerUserNotificationSettings:settings];
 }

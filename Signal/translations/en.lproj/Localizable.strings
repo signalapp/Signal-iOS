@@ -232,9 +232,6 @@
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to delete your account?";
 
-/* notification action, confirming that it's OK to proceed calling after a caller's Safety Number has changed */
-"CONFIRM_IDENTITY_AND_CALLBACK_BUTTON_TITLE" = "Confirm and Call Back";
-
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
 
@@ -736,14 +733,11 @@
 /* notification title */
 "MISSED_CALL" = "Missed call";
 
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY" = "Missed call because the caller's safety number changed.";
+/* notification title. Embeds {{caller's name or phone number}} */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
 
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
-
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
+/* notification title */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -753,11 +747,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* notification title. Embeds {{Caller's Name}} */
+/* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
-
-/* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "You received a call from %@.";
@@ -1063,7 +1054,7 @@
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
 
-/* button title to confirm calling a recipient whose safety number recently changed */
+/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
