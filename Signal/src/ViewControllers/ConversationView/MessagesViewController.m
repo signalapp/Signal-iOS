@@ -1172,7 +1172,6 @@ typedef enum : NSUInteger {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
                                                                  confirmationText:confirmationText
                                                                   contactsManager:self.contactsManager
-                                                                       verifySeen:NO
                                                                        completion:completionHandler];
 }
 

@@ -4,7 +4,6 @@
 
 import Foundation
 
-// TODO:
 class SafetyNumberConfirmationAlert: NSObject {
 
     let TAG = "[SafetyNumberConfirmationAlert]"
@@ -17,14 +16,13 @@ class SafetyNumberConfirmationAlert: NSObject {
         self.storageManager = TSStorageManager.shared()
     }
 
-    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, verifySeen: verifySeen, completion: completion)
+    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion)
     }
 
-    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
         return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
                                                                                                   confirmationText: confirmationText,
-                                                                                                  verifySeen: verifySeen,
                                                                                                   completion: completion)
     }
 
@@ -34,7 +32,7 @@ class SafetyNumberConfirmationAlert: NSObject {
      * @returns true  if an alert was shown
      *          false if there were no unconfirmed identities
      */
-    public func presentIfNecessary(recipientIds: [String], confirmationText: String, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
+    public func presentIfNecessary(recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
 
         guard let noLongerVerifiedIdentity = noLongerVerifiedIdentity(recipientIds: recipientIds) else {
             // No identities to confirm, no alert to present.
