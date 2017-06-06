@@ -26,7 +26,7 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
  * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
  * @returns if the recipient's current identity is trusted.
  */
-- (BOOL)isCurrentIdentityTrustedForSendingWithRecipientId:(NSString *)recipientId;
+- (BOOL)isCurrentIdentityTrustedForSendingToRecipientId:(NSString *)recipientId;
 
 - (void)generateNewIdentityKey;
 
@@ -44,7 +44,8 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
  * @returns nil if the recipient does not exist, or if the recipient exists and is OWSVerificationStateVerified or
  * OWSVerificationStateDefault else return the no longer verified identity
  */
-- (OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId;
+- (nullable OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId
+    NS_SWIFT_NAME(noLongerVerifiedIdentity(recipientId:));
 
 @end
 

@@ -77,7 +77,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return self;
 }
 
-- (BOOL)isCurrentIdentityTrustedForSendingWithRecipientId:(NSString *)recipientId
+- (BOOL)isCurrentIdentityTrustedForSendingToRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -235,7 +235,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
-- (OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId
+- (nullable OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
