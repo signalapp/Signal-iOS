@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
 
 @implementation TSUnreadIndicatorInteraction
 
@@ -27,12 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                    hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
     missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
 {
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:nil
-                      attachmentIds:@[]
-                   expiresInSeconds:0
-                    expireStartedAt:0];
+    self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

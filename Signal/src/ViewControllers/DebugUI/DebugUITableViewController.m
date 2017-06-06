@@ -28,15 +28,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Factory Methods
 
+- (void)pushPageWithSection:(OWSTableSection *)section
+{
+    DebugUITableViewController *viewController = [DebugUITableViewController new];
+    OWSTableContents *contents = [OWSTableContents new];
+    contents.title = section.headerTitle;
+    [contents addSection:section];
+    viewController.contents = contents;
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController
 {
     OWSAssert(thread);
     OWSAssert(fromViewController);
 
+    DebugUITableViewController *viewController = [DebugUITableViewController new];
+    __weak DebugUITableViewController *weakSelf = viewController;
+
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = @"Debug: Conversation";
 
-    [contents addSection:[DebugUIMessages sectionForThread:thread]];
+    [contents
+        addSection:[OWSTableSection
+                       sectionWithTitle:[DebugUIMessages sectionForThread:thread].headerTitle
+                                  items:@[
+                                      [OWSTableItem
+                                          disclosureItemWithText:[DebugUIMessages sectionForThread:thread].headerTitle
+                                                     actionBlock:^{
+                                                         [weakSelf pushPageWithSection:[DebugUIMessages
+                                                                                           sectionForThread:thread]];
+                                                     }],
+                                  ]]];
 
     [contents
         addSection:[OWSTableSection
@@ -129,7 +152,6 @@ NS_ASSUME_NONNULL_BEGIN
                                             }],
                                   ]]];
 
-    DebugUITableViewController *viewController = [DebugUITableViewController new];
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
 }

@@ -2,7 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "group-avi.pdf"
+      "filename" : "empty-group-avatar.png",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

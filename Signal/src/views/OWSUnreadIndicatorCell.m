@@ -12,6 +12,8 @@
 
 @interface OWSUnreadIndicatorCell ()
 
+@property (nonatomic, nullable) TSUnreadIndicatorInteraction *interaction;
+
 @property (nonatomic) UIView *bannerView;
 @property (nonatomic) UIView *bannerTopHighlightView;
 @property (nonatomic) UIView *bannerBottomHighlightView1;
@@ -30,8 +32,12 @@
     return NSStringFromClass([self class]);
 }
 
-- (void)configure
+- (void)configureWithInteraction:(TSUnreadIndicatorInteraction *)interaction;
 {
+    OWSAssert(interaction);
+
+    _interaction = interaction;
+
     self.backgroundColor = [UIColor whiteColor];
 
     if (!self.titleLabel) {
@@ -203,6 +209,13 @@
     }
 
     return result;
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+
+    self.interaction = nil;
 }
 
 @end

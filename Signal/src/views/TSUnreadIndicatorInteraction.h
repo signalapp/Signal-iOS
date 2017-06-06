@@ -2,11 +2,11 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessage.h"
+#import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSUnreadIndicatorInteraction : TSMessage
+@interface TSUnreadIndicatorInteraction : TSInteraction
 
 @property (atomic, readonly) BOOL hasMoreUnseenMessages;
 
