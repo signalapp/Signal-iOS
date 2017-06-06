@@ -57,6 +57,8 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                         approvedForBlockingUse:YES
                                      approvedForNonBlockingUse:NO] saveWithTransaction:transaction];
         }];
+
+        [self saveWithTransaction:transaction];
     }];
 }
 
