@@ -12,6 +12,7 @@
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
+#import "TSStorageManager+keyingMaterial.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
