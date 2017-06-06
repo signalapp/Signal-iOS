@@ -216,9 +216,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
             return;
         }
 
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        [MarkIdentityAsSeenJob runWithThread:thread];
-
         [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
         completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {

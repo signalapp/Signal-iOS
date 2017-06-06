@@ -261,7 +261,6 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                                                    @"their safety "
                                                                                    @"number has recently changed")
                                                                contactsManager:contactsViewHelper.contactsManager
-                                                                    verifySeen:YES
                                                                     completion:^(BOOL didConfirmIdentity) {
                                                                         if (didConfirmIdentity) {
                                                                             [weakSelf addRecipientId:recipientId];
@@ -351,7 +350,6 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                                                    @"their safety "
                                                                                    @"number has recently changed")
                                                                contactsManager:contactsViewHelper.contactsManager
-                                                                    verifySeen:YES
                                                                     completion:^(BOOL didConfirmIdentity) {
                                                                         if (didConfirmIdentity) {
                                                                             [weakSelf addRecipientId:recipientId];

@@ -470,7 +470,7 @@ protocol CallServiceObserver: class {
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard self.storageManager.unseenIdentityChange(forRecipientId: thread.contactIdentifier()) == nil else {
+        guard OWSIdentityManager.shared().isCurrentIdentityTrustedForSending(toRecipientId: thread.contactIdentifier()) else {
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
             self.notificationsAdapter.presentRejectedCallWithUnseenIdentityChange(newCall, callerName: callerName)
             return
