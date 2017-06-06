@@ -34,12 +34,12 @@ class SafetyNumberConfirmationAlert: NSObject {
      */
     public func presentIfNecessary(recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
 
-        guard let noLongerVerifiedIdentity = noLongerVerifiedIdentity(recipientIds: recipientIds) else {
+        guard let untrustedIdentity = untrustedIdentityForSending(recipientIds: recipientIds) else {
             // No identities to confirm, no alert to present.
             return false
         }
 
-        let displayName = contactsManager.displayName(forPhoneIdentifier: noLongerVerifiedIdentity.recipientId)
+        let displayName = contactsManager.displayName(forPhoneIdentifier: untrustedIdentity.recipientId)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
                                             comment: "Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}}")
@@ -52,10 +52,10 @@ class SafetyNumberConfirmationAlert: NSObject {
         let actionSheetController = UIAlertController(title: title, message:body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
-            Logger.info("\(self.TAG) Confirmed identity: \(noLongerVerifiedIdentity)")
+            Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
             OWSDispatch.sessionStoreQueue().async {
-                OWSIdentityManager.shared().setVerificationState(.default, identityKey: noLongerVerifiedIdentity.identityKey, recipientId: noLongerVerifiedIdentity.recipientId, sendSyncMessage: true)
+                OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, sendSyncMessage: true)
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -64,10 +64,10 @@ class SafetyNumberConfirmationAlert: NSObject {
         actionSheetController.addAction(confirmAction)
 
         let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Action sheet item"), style: .default) { _ in
-            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(noLongerVerifiedIdentity)")
+            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(untrustedIdentity)")
 
-            self.presentSafetyNumberViewController(theirIdentityKey: noLongerVerifiedIdentity.identityKey,
-                                                   theirRecipientId: noLongerVerifiedIdentity.recipientId,
+            self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
+                                                   theirRecipientId: untrustedIdentity.recipientId,
                                                    theirDisplayName: displayName,
                                                    completion: { completion(false) })
 
@@ -92,9 +92,9 @@ class SafetyNumberConfirmationAlert: NSObject {
         UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
     }
 
-    private func noLongerVerifiedIdentity(recipientIds: [String]) -> OWSRecipientIdentity? {
+    private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {
         return recipientIds.flatMap {
-            OWSIdentityManager.shared().noLongerVerifiedIdentity(recipientId: $0)
+            OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: $0)
         }.first
     }
 }

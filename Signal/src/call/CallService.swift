@@ -470,9 +470,21 @@ protocol CallServiceObserver: class {
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard OWSIdentityManager.shared().isCurrentIdentityTrustedForSending(toRecipientId: thread.contactIdentifier()) else {
+        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
+
+        guard untrustedIdentity == nil else {
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
-            self.notificationsAdapter.presentRejectedCallWithUnseenIdentityChange(newCall, callerName: callerName)
+
+            switch(untrustedIdentity!.verificationState) {
+            case .verified:
+                assertionFailure("shouldn't have missed a call due to untrusted identity if the identity is verified")
+                self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
+            case .default:
+                self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
+            case .noLongerVerified:
+                self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
+            }
+
             return
         }
 

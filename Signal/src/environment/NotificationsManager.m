@@ -96,7 +96,7 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [CallStrings missedCallNotificationBody];
+            alertMessage = [CallStrings missedCallNotificationBodyWithoutCallerName];
             break;
         }
         case NotificationNameNoPreview:
@@ -113,13 +113,15 @@
     [self presentNotification:notification identifier:localCallId];
 }
 
-- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call callerName:(NSString *)callerName
+
+- (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
-    notification.category = PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+    // Use category which allows call back
+    notification.category = PushManagerCategoriesMissedCall;
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
@@ -130,17 +132,53 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBody];
+            alertMessage = [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName];
             break;
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage = (([UIDevice currentDevice].supportsCallKit &&
                                 [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
-                    ? [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName]
+                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
                     : [NSString
-                          stringWithFormat:[CallStrings
-                                               rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName],
+                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
+                          callerName]);
+            break;
+        }
+    }
+    notification.alertBody = [NSString stringWithFormat:@"☎️ %@", alertMessage];
+
+    [self presentNotification:notification identifier:localCallId];
+}
+
+- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
+{
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    OWSAssert(thread != nil);
+
+    UILocalNotification *notification = [UILocalNotification new];
+    // Use category which does not allow call back
+    notification.category = PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity;
+    NSString *localCallId = call.localId.UUIDString;
+    notification.userInfo = @{
+        PushManagerUserInfoKeysLocalCallId : localCallId,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        Signal_Thread_UserInfo_Key : thread.uniqueId
+    };
+
+    NSString *alertMessage;
+    switch (self.notificationPreviewType) {
+        case NotificationNoNameNoPreview: {
+            alertMessage = [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName];
+            break;
+        }
+        case NotificationNameNoPreview:
+        case NotificationNamePreview: {
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
+                    : [NSString
+                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
                           callerName]);
             break;
         }
