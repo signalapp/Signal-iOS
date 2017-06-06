@@ -11,8 +11,8 @@
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 

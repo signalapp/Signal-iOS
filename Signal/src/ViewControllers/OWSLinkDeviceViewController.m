@@ -8,7 +8,7 @@
 #import "SettingsTableViewController.h"
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
-#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -128,8 +128,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
 {
-    NSData *myPublicKey = [[TSStorageManager sharedManager] identityKeyPair].publicKey;
-    NSData *myPrivateKey = [[TSStorageManager sharedManager] identityKeyPair].ows_privateKey;
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    OWSAssert(identityKeyPair);
+    NSData *myPublicKey = identityKeyPair.publicKey;
+    NSData *myPrivateKey = identityKeyPair.ows_privateKey;
     NSString *accountIdentifier = [TSStorageManager localNumber];
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey

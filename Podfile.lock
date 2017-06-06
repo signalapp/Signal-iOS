@@ -109,35 +109,29 @@ PODS:
     - YapDatabase/SQLCipher/Core
 
 DEPENDENCIES:
-  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
+  - AxolotlKit (from `../SignalProtocolKit`)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/position-edit-menu`)
   - OpenSSL
   - PureLayout
   - Reachability
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `../SignalServiceKit`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
   AxolotlKit:
-    :git: https://github.com/WhisperSystems/SignalProtocolKit.git
+    :path: ../SignalProtocolKit
   JSQMessagesViewController:
     :branch: mkirk/position-edit-menu
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :path: ../SignalServiceKit
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
 CHECKOUT OPTIONS:
-  AxolotlKit:
-    :commit: 9179d4e326df58185f35af45831e7a5d7250ab85
-    :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  SignalServiceKit:
-    :commit: 43d1aa49dc869486cdba8546b56e716beae5c1d0
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
@@ -164,6 +158,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 48e80d7f1e049bbf544a689fdfdf33e8196c640a
+PODFILE CHECKSUM: dc5ed308ade575a81ccadf5c485990530353c4ee
 
 COCOAPODS: 1.2.1
