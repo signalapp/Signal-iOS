@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO:
 class SafetyNumberConfirmationAlert: NSObject {
 
     let TAG = "[SafetyNumberConfirmationAlert]"
@@ -69,10 +70,8 @@ class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
             OWSDispatch.sessionStoreQueue().async {
-                self.storageManager.saveRemoteIdentity(untrustedIdentity.identityKey,
-                                                       recipientId: untrustedIdentity.recipientId,
-                                                       approvedForBlockingUse: true,
-                                                       approvedForNonBlockingUse: true)
+                OWSIdentityManager.shared().saveRemoteIdentity(untrustedIdentity.identityKey,
+                                                       recipientId: untrustedIdentity.recipientId)
                 MarkIdentityAsSeenJob.run(recipientId: untrustedIdentity.recipientId)
                 DispatchQueue.main.async {
                     completion(true)
@@ -111,15 +110,19 @@ class SafetyNumberConfirmationAlert: NSObject {
     }
 
     private func unconfirmedIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
-        return recipientIds.flatMap {
-            self.storageManager.unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
-        }
+        // TODO: Return the _unverified_ identities.
+        return []
+//        return recipientIds.flatMap {
+//            OWSIdentityManager.shared().unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
+//        }
     }
 
     private func unseenIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
-        return recipientIds.flatMap {
-            self.storageManager.unseenIdentityChange(forRecipientId: $0)
-        }
+        // TODO: Return the _unverified_ identities.
+        return []
+//        return recipientIds.flatMap {
+//            OWSIdentityManager.shared().unseenIdentityChange(forRecipientId: $0)
+//        }
     }
 
 }
