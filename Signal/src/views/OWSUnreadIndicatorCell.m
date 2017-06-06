@@ -27,6 +27,64 @@
 
 @implementation OWSUnreadIndicatorCell
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        [self commontInit];
+    }
+
+    return self;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self commontInit];
+    }
+
+    return self;
+}
+
+- (void)commontInit
+{
+    OWSAssert(!self.bannerView);
+
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    self.backgroundColor = [UIColor whiteColor];
+
+    self.bannerView = [UIView new];
+    self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
+    [self.contentView addSubview:self.bannerView];
+
+    self.bannerTopHighlightView = [UIView new];
+    self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
+    [self.bannerView addSubview:self.bannerTopHighlightView];
+
+    self.bannerBottomHighlightView1 = [UIView new];
+    self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
+    [self.bannerView addSubview:self.bannerBottomHighlightView1];
+
+    self.bannerBottomHighlightView2 = [UIView new];
+    self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
+    [self.bannerView addSubview:self.bannerBottomHighlightView2];
+
+    self.titleLabel = [UILabel new];
+    self.titleLabel.text = [OWSUnreadIndicatorCell titleForInteraction:self.interaction];
+    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    self.titleLabel.font = [OWSUnreadIndicatorCell titleFont];
+    [self.bannerView addSubview:self.titleLabel];
+
+    self.subtitleLabel = [UILabel new];
+    self.subtitleLabel.text = [OWSUnreadIndicatorCell subtitleForInteraction:self.interaction];
+    self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
+    self.subtitleLabel.font = [OWSUnreadIndicatorCell subtitleFont];
+    self.subtitleLabel.numberOfLines = 0;
+    self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.contentView addSubview:self.subtitleLabel];
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -40,38 +98,7 @@
 
     self.backgroundColor = [UIColor whiteColor];
 
-    if (!self.titleLabel) {
-        self.bannerView = [UIView new];
-        self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
-        [self.contentView addSubview:self.bannerView];
-
-        self.bannerTopHighlightView = [UIView new];
-        self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
-        [self.bannerView addSubview:self.bannerTopHighlightView];
-
-        self.bannerBottomHighlightView1 = [UIView new];
-        self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
-        [self.bannerView addSubview:self.bannerBottomHighlightView1];
-
-        self.bannerBottomHighlightView2 = [UIView new];
-        self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
-        [self.bannerView addSubview:self.bannerBottomHighlightView2];
-
-        self.titleLabel = [UILabel new];
-        self.titleLabel.text = [OWSUnreadIndicatorCell titleForInteraction:self.interaction];
-        self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-        self.titleLabel.font = [OWSUnreadIndicatorCell titleFont];
-        [self.bannerView addSubview:self.titleLabel];
-
-        self.subtitleLabel = [UILabel new];
-        self.subtitleLabel.text = [OWSUnreadIndicatorCell subtitleForInteraction:self.interaction];
-        self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-        self.subtitleLabel.font = [OWSUnreadIndicatorCell subtitleFont];
-        self.subtitleLabel.numberOfLines = 0;
-        self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
-        [self.contentView addSubview:self.subtitleLabel];
-    }
+    [self setNeedsLayout];
 }
 
 + (UIFont *)titleFont

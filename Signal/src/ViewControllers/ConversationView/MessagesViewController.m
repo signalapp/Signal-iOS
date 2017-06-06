@@ -151,6 +151,7 @@ typedef enum : NSUInteger {
     JSQMessagesComposerTextViewPasteDelegate,
     OWSConversationSettingsViewDelegate,
     OWSMessagesCollectionViewFlowLayoutDelegate,
+    OWSSystemMessageCellDelegate,
     OWSTextViewPasteDelegate,
     OWSVoiceMemoGestureDelegate,
     UIDocumentMenuDelegate,
@@ -1578,6 +1579,7 @@ typedef enum : NSUInteger {
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
     [cell configureWithInteraction:interaction];
+    cell.systemMessageCellDelegate = self;
 
     return cell;
 }
@@ -1795,7 +1797,6 @@ typedef enum : NSUInteger {
     [self showConversationSettings];
 }
 
-
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
     didTapMessageBubbleAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -1968,13 +1969,10 @@ typedef enum : NSUInteger {
             }
         } break;
         case TSErrorMessageAdapter:
-            [self handleErrorMessageTap:(TSErrorMessage *)interaction];
-            break;
         case TSInfoMessageAdapter:
-            [self handleInfoMessageTap:(TSInfoMessage *)interaction];
-            break;
         case TSCallAdapter:
         case TSUnreadIndicatorAdapter:
+            OWSFail(@"Unexpected tap for system message.");
             break;
         default:
             DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);
@@ -2218,17 +2216,38 @@ typedef enum : NSUInteger {
 
 - (void)handleErrorMessageTap:(TSErrorMessage *)message
 {
-    if ([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-        [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-    } else if ([message isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
-        [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
-    } else if (message.errorType == TSErrorMessageInvalidMessage) {
-        [self tappedCorruptedMessage:message];
-    } else if (message.errorType == TSErrorMessageNonBlockingIdentityChange) {
-        [self tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-    } else {
-        DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
+    OWSAssert(message);
+
+    switch (message.errorType) {
+        case TSErrorMessageInvalidKeyException:
+            break;
+        case TSErrorMessageNonBlockingIdentityChange:
+            [self tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
+            return;
+        case TSErrorMessageWrongTrustedIdentityKey:
+            OWSAssert([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]);
+            [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
+            return;
+        case TSErrorMessageMissingKeyId:
+            // Unused.
+            break;
+        case TSErrorMessageNoSession:
+            break;
+        case TSErrorMessageInvalidMessage:
+            [self tappedCorruptedMessage:message];
+            return;
+        case TSErrorMessageDuplicateMessage:
+            // Unused.
+            break;
+        case TSErrorMessageInvalidVersion:
+            break;
+        case TSErrorMessageUnknownContactBlockOffer:
+            OWSAssert([message isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]);
+            [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
+            return;
     }
+
+    DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
 }
 
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(NSString *)signalId
@@ -2251,16 +2270,35 @@ typedef enum : NSUInteger {
 
 - (void)handleInfoMessageTap:(TSInfoMessage *)message
 {
-    if ([message isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
-        [self tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message];
-    } else {
-        DDLogInfo(@"%@ Unhandled tap for info message:%@", self.tag, message);
+    OWSAssert(message);
+
+    switch (message.messageType) {
+        case TSInfoMessageUserNotRegistered:
+            break;
+        case TSInfoMessageTypeSessionDidEnd:
+            break;
+        case TSInfoMessageTypeUnsupportedMessage:
+            // Unused.
+            break;
+        case TSInfoMessageAddToContactsOffer:
+            OWSAssert([message isKindOfClass:[OWSAddToContactsOfferMessage class]]);
+            [self tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message];
+            return;
+        case TSInfoMessageTypeGroupUpdate:
+            [self showConversationSettings];
+            return;
+        case TSInfoMessageTypeGroupQuit:
+            break;
+        case TSInfoMessageTypeDisappearingMessagesUpdate:
+            [self showConversationSettings];
+            return;
     }
+
+    DDLogInfo(@"%@ Unhandled tap for info message:%@", self.tag, message);
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
 {
-
     NSString *alertMessage = [NSString
         stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
 
@@ -2392,6 +2430,59 @@ typedef enum : NSUInteger {
     [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
                                                      fromViewController:self
                                                         editImmediately:YES];
+}
+
+- (void)handleCallTap:(TSCall *)call
+{
+    OWSAssert(call);
+
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSAssert(NO);
+        return;
+    }
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
+
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:[CallStrings callBackAlertTitle]
+                         message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    __weak MessagesViewController *weakSelf = self;
+    UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *_Nonnull action) {
+                                                           [weakSelf callAction:nil];
+                                                       }];
+    [alertController addAction:callAction];
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [alertController addAction:dismissAction];
+
+    [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
+                                                                            animated:YES
+                                                                          completion:nil];
+}
+
+#pragma mark - OWSSystemMessageCellDelegate
+
+- (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(interaction);
+
+    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+        [self handleErrorMessageTap:(TSErrorMessage *)interaction];
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        [self handleInfoMessageTap:(TSInfoMessage *)interaction];
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
+        [self handleCallTap:(TSCall *)interaction];
+    } else {
+        OWSFail(@"Tap for system messages of unknown type: %@", [interaction class]);
+    }
 }
 
 #pragma mark - ContactEditingDelegate
