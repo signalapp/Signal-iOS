@@ -235,6 +235,21 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
+- (OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    @synchronized(self)
+    {
+        OWSRecipientIdentity *_Nullable identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+        if (identity && identity.verificationState == OWSVerificationStateNoLongerVerified) {
+            return identity;
+        }
+    }
+    return nil;
+}
+
 - (void)fireIdentityStateChangeNotification
 {
     dispatch_async(dispatch_get_main_queue(), ^{
