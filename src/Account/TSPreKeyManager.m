@@ -130,7 +130,6 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
-        // TODO: Pull this into OWSIdentityManager?
         if (!identityKeyPair) {
             [[OWSIdentityManager sharedManager] generateNewIdentityKey];
             identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
@@ -157,7 +156,7 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 
             request = [[TSRegisterPrekeysRequest alloc]
                 initWithPrekeyArray:preKeys
-                        identityKey:[[OWSIdentityManager sharedManager] identityKeyPair].publicKey
+                        identityKey:identityKeyPair.publicKey
                  signedPreKeyRecord:signedPreKey
                    preKeyLastResort:lastResortPreKey];
         } else {
