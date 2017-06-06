@@ -14,8 +14,6 @@ NSString *const kNSNotificationName_VerificationStateDidChange = @"kNSNotificati
 NSString *const kOWSVerificationManager_Collection = @"kOWSVerificationManager_Collection";
 // This key is used to persist the current "verification map" state.
 NSString *const kOWSVerificationManager_VerificationMapKey = @"kOWSVerificationManager_VerificationMapKey";
-//// This key is used to persist the most recently synced "blocked phone numbers" state.
-//NSString *const kOWSVerificationManager_SyncedBlockedPhoneNumbersKey = @"kOWSVerificationManager_SyncedBlockedPhoneNumbersKey";
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
 {
@@ -79,10 +77,6 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
 
     OWSSingletonAssert();
 
-//    // Register this manager with the message sender.
-//    // This is a circular dependency.
-//    [messageSender setBlockingManager:self];
-
     return self;
 }
 
@@ -133,96 +127,16 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
-//- (void)removeBlockedPhoneNumber:(NSString *)phoneNumber
-//{
-//    OWSAssert(phoneNumber.length > 0);
-//
-//    DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.tag, phoneNumber);
-//
-//    @synchronized(self)
-//    {
-//        [self lazyLoadStateIfNecessary];
-//
-//        if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
-//            // Ignore redundant changes.
-//            return;
-//        }
-//
-//        [_blockedPhoneNumberSet removeObject:phoneNumber];
-//    }
-//
-//    [self handleUpdate];
-//}
-//
-//- (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage
-//{
-//    OWSAssert(blockedPhoneNumbers != nil);
-//
-//    DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.tag, (int)blockedPhoneNumbers.count);
-//
-//    @synchronized(self)
-//    {
-//        [self lazyLoadStateIfNecessary];
-//
-//        NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
-//        if ([_blockedPhoneNumberSet isEqualToSet:newSet]) {
-//            return;
-//        }
-//
-//        _blockedPhoneNumberSet = [newSet mutableCopy];
-//    }
-//
-//    [self handleUpdate:sendSyncMessage];
-//}
-//
-//- (NSArray<NSString *> *)blockedPhoneNumbers
-//{
-//    @synchronized(self)
-//    {
-//        [self lazyLoadStateIfNecessary];
-//
-//        return [_blockedPhoneNumberSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
-//    }
-//}
-
-//// This should be called every time the block list changes.
-//
-//- (void)handleUpdate
-//{
-//    // By default, always send a sync message when the block list changes.
-//    [self handleUpdate:YES];
-//}
-
 - (void)handleUpdate:(NSDictionary<NSString *, NSNumber *> *)verificationMap
             sendSyncMessage:(BOOL)sendSyncMessage
 {
     OWSAssert(verificationMap);
-    
-//    NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
 
     [_storageManager setObject:verificationMap
                         forKey:kOWSVerificationManager_VerificationMapKey
                   inCollection:kOWSVerificationManager_Collection];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-//        if (sendSyncMessage) {
-//            [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
-//        } else {
-//            // If this update came from an incoming block list sync message,
-//            // update the "synced blocked phone numbers" state immediately,
-//            // since we're now in sync.
-//            //
-//            // There could be data loss if both clients modify the block list
-//            // at the same time, but:
-//            //
-//            // a) Block list changes will be rare.
-//            // b) Conflicting block list changes will be even rarer.
-//            // c) It's unlikely a user will make conflicting changes on two
-//            //    devices around the same time.
-//            // d) There isn't a good way to avoid this.
-//            [self saveVerificationMap:blockedPhoneNumbers];
-//        }
-
         [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_VerificationStateDidChange
                                                             object:nil
                                                           userInfo:nil];
@@ -241,51 +155,7 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
         [_storageManager objectForKey:kOWSVerificationManager_VerificationMapKey
                          inCollection:kOWSVerificationManager_Collection];
     _verificationMap = (verificationMap ? [verificationMap mutableCopy] : [NSMutableDictionary new]);
-
-//    // If we haven't yet successfully synced the current "blocked phone numbers" changes,
-//    // try again to sync now.
-//    NSArray<NSString *> *syncedBlockedPhoneNumbers =
-//        [_storageManager objectForKey:kOWSVerificationManager_SyncedBlockedPhoneNumbersKey
-//                         inCollection:kOWSVerificationManager_BlockedPhoneNumbersCollection];
-//    NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
-//    if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
-//        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
-//        });
-//    }
 }
-
-//- (void)sendBlockedPhoneNumbersMessage:(NSArray<NSString *> *)blockedPhoneNumbers
-//{
-//    OWSAssert(blockedPhoneNumbers);
-//
-//    OWSBlockedPhoneNumbersMessage *message =
-//        [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers];
-//
-//    [self.messageSender sendMessage:message
-//        success:^{
-//            DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.tag);
-//
-//            // Record the last set of "blocked phone numbers" which we successfully synced.
-//            [self saveVerificationMap:blockedPhoneNumbers];
-//        }
-//        failure:^(NSError *error) {
-//            DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.tag, error);
-//
-//            // TODO: We might want to retry more often than just app launch.
-//        }];
-//}
-
-//- (void)saveSyncedVerificationMap:(NSArray<NSString *> *)verificationMap
-//{
-//    OWSAssert(blockedPhoneNumbers);
-//
-//    // Record the last set of "blocked phone numbers" which we successfully synced.
-//    [_storageManager setObject:verificationMap
-//                        forKey:kOWSVerificationManager_VerificationMapKey
-//                  inCollection:kOWSVerificationManager_Collection];
-//}
 
 #pragma mark - Logging
 
