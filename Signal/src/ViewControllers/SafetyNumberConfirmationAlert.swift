@@ -36,12 +36,12 @@ class SafetyNumberConfirmationAlert: NSObject {
      */
     public func presentIfNecessary(recipientIds: [String], confirmationText: String, verifySeen: Bool, completion: @escaping (Bool) -> Void) -> Bool {
 
-        guard let unverifiedIdentity = unverifiedIdentity(recipientIds: recipientIds) else {
+        guard let noLongerVerifiedIdentity = noLongerVerifiedIdentity(recipientIds: recipientIds) else {
             // No identities to confirm, no alert to present.
             return false
         }
 
-        let displayName = contactsManager.displayName(forPhoneIdentifier: unverifiedIdentity.recipientId)
+        let displayName = contactsManager.displayName(forPhoneIdentifier: noLongerVerifiedIdentity.recipientId)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
                                             comment: "Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}}")
@@ -54,10 +54,10 @@ class SafetyNumberConfirmationAlert: NSObject {
         let actionSheetController = UIAlertController(title: title, message:body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
-            Logger.info("\(self.TAG) Confirmed identity: \(unverifiedIdentity)")
+            Logger.info("\(self.TAG) Confirmed identity: \(noLongerVerifiedIdentity)")
 
             OWSDispatch.sessionStoreQueue().async {
-                OWSIdentityManager.shared().setVerificationState(.default, identityKey: unverifiedIdentity.identityKey, recipientId: unverifiedIdentity.recipientId, sendSyncMessage: true)
+                OWSIdentityManager.shared().setVerificationState(.default, identityKey: noLongerVerifiedIdentity.identityKey, recipientId: noLongerVerifiedIdentity.recipientId, sendSyncMessage: true)
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -66,10 +66,10 @@ class SafetyNumberConfirmationAlert: NSObject {
         actionSheetController.addAction(confirmAction)
 
         let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Action sheet item"), style: .default) { _ in
-            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(unverifiedIdentity)")
+            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(noLongerVerifiedIdentity)")
 
-            self.presentSafetyNumberViewController(theirIdentityKey: unverifiedIdentity.identityKey,
-                                                   theirRecipientId: unverifiedIdentity.recipientId,
+            self.presentSafetyNumberViewController(theirIdentityKey: noLongerVerifiedIdentity.identityKey,
+                                                   theirRecipientId: noLongerVerifiedIdentity.recipientId,
                                                    theirDisplayName: displayName,
                                                    completion: { completion(false) })
 
@@ -94,20 +94,9 @@ class SafetyNumberConfirmationAlert: NSObject {
         UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
     }
 
-    private func unconfirmedIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
-        // TODO: Return the _unverified_ identities.
-        return []
-//        return recipientIds.flatMap {
-//            OWSIdentityManager.shared().unconfirmedIdentityThatShouldBlockSending(forRecipientId: $0)
-//        }
+    private func noLongerVerifiedIdentity(recipientIds: [String]) -> OWSRecipientIdentity? {
+        return recipientIds.flatMap {
+            OWSIdentityManager.shared().noLongerVerifiedIdentity(recipientId: $0)
+        }.first
     }
-
-    private func unseenIdentities(recipientIds: [String]) -> [OWSRecipientIdentity] {
-        // TODO: Return the _unverified_ identities.
-        return []
-//        return recipientIds.flatMap {
-//            OWSIdentityManager.shared().unseenIdentityChange(forRecipientId: $0)
-//        }
-    }
-
 }
