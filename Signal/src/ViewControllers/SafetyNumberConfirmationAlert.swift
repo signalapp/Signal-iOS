@@ -72,7 +72,6 @@ class SafetyNumberConfirmationAlert: NSObject {
             OWSDispatch.sessionStoreQueue().async {
                 OWSIdentityManager.shared().saveRemoteIdentity(untrustedIdentity.identityKey,
                                                        recipientId: untrustedIdentity.recipientId)
-                MarkIdentityAsSeenJob.run(recipientId: untrustedIdentity.recipientId)
                 DispatchQueue.main.async {
                     completion(true)
                 }

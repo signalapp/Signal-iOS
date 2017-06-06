@@ -834,7 +834,6 @@ typedef enum : NSUInteger {
         _callOnOpen = NO;
     }
     [self updateNavigationBarSubtitleLabel];
-    [MarkIdentityAsSeenJob runWithThread:self.thread];
     [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
 
     [self markVisibleMessagesAsRead];
