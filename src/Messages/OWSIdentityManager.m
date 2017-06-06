@@ -269,7 +269,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     @synchronized(self)
     {
-        if ([[[self class] localNumber] isEqualToString:recipientId]) {
+        if ([[self.storageManager localNumber] isEqualToString:recipientId]) {
             if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {
