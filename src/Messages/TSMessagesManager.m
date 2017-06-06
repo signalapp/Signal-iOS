@@ -372,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:storageManager
+                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:storageManager
+                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 

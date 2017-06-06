@@ -9,6 +9,7 @@
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
+#import "OWSIdentityManager.h"
 #import "OWSLegacyMessageServiceParams.h"
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -26,7 +27,6 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSPreKeyManager.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyingMaterial.h"
@@ -1225,7 +1225,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
                                                                        preKeyStore:storage
                                                                  signedPreKeyStore:storage
-                                                                  identityKeyStore:storage
+                                                                  identityKeyStore:[OWSIdentityManager sharedManager]
                                                                        recipientId:identifier
                                                                           deviceId:[deviceNumber intValue]];
             @try {
@@ -1248,7 +1248,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
                                                             preKeyStore:storage
                                                       signedPreKeyStore:storage
-                                                       identityKeyStore:storage
+                                                       identityKeyStore:[OWSIdentityManager sharedManager]
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
 

@@ -1,9 +1,5 @@
 //
-//  TSStorageHeaders.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 22/08/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #ifndef Signal_TSStorageHeaders_h
@@ -11,7 +7,7 @@
 
 #import "TSStorageManager.h"
 
-#import "TSStorageManager+IdentityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"

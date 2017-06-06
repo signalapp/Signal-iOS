@@ -3,8 +3,8 @@
 //
 
 #import "SignalRecipient.h"
+#import "OWSIdentityManager.h"
 #import "TSStorageHeaders.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

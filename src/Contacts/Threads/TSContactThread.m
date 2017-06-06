@@ -6,7 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "NotificationsProtocol.h"
-#import "TSStorageManager+identityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![self.storageManager identityKeyForRecipientId:self.contactIdentifier];
+    return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
 }
 
 - (NSString *)name

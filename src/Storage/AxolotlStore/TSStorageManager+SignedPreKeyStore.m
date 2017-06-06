@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager+IdentityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
@@ -26,10 +26,11 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 
     // Signed prekey ids must be > 0.
     int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     return [[SignedPreKeyRecord alloc]
          initWithId:preKeyId
             keyPair:keyPair
-          signature:[Ed25519 sign:keyPair.publicKey.prependKeyType withKeyPair:[self identityKeyPair]]
+          signature:[Ed25519 sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair]
         generatedAt:[NSDate date]];
 }
 
