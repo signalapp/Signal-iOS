@@ -26,6 +26,47 @@
 
 @implementation OWSSystemMessageCell
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        [self commontInit];
+    }
+
+    return self;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self commontInit];
+    }
+
+    return self;
+}
+
+- (void)commontInit
+{
+    OWSAssert(!self.imageView);
+
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    self.backgroundColor = [UIColor whiteColor];
+
+    self.imageView = [UIImageView new];
+    [self.contentView addSubview:self.imageView];
+
+    self.titleLabel = [UILabel new];
+    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    self.titleLabel.font = [OWSSystemMessageCell titleFont];
+    self.titleLabel.numberOfLines = 0;
+    self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [self.contentView addSubview:self.titleLabel];
+
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -36,20 +77,6 @@
     OWSAssert(interaction);
 
     _interaction = interaction;
-
-    self.backgroundColor = [UIColor whiteColor];
-
-    if (!self.titleLabel) {
-        self.imageView = [UIImageView new];
-        [self.contentView addSubview:self.imageView];
-
-        self.titleLabel = [UILabel new];
-        self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-        self.titleLabel.font = [OWSSystemMessageCell titleFont];
-        self.titleLabel.numberOfLines = 0;
-        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        [self.contentView addSubview:self.titleLabel];
-    }
 
     UIImage *icon = [self iconForInteraction:self.interaction];
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -211,6 +238,15 @@
     [super prepareForReuse];
 
     self.interaction = nil;
+}
+
+#pragma mark - Gesture recognizers
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)tap
+{
+    OWSAssert(self.interaction);
+
+    [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
 }
 
 @end

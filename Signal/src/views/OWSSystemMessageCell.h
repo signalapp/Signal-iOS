@@ -7,7 +7,17 @@
 
 @class TSInteraction;
 
+@protocol OWSSystemMessageCellDelegate <NSObject>
+
+- (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction;
+
+@end
+
+#pragma mark -
+
 @interface OWSSystemMessageCell : JSQMessagesCollectionViewCell
+
+@property (nonatomic, weak) id<OWSSystemMessageCellDelegate> systemMessageCellDelegate;
 
 @property (nonatomic, nullable, readonly) TSInteraction *interaction;
 

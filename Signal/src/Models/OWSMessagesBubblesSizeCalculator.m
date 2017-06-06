@@ -67,14 +67,19 @@ NS_ASSUME_NONNULL_BEGIN
                     = (TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction;
                 return [self sizeForUnreadIndicator:interaction cacheKey:cacheKey layout:layout];
             }
+            case TSIncomingMessageAdapter:
+            case TSOutgoingMessageAdapter:
+                break;
             default:
-                // TODO: we need to examine the other cases.
+                OWSFail(@"---- Unknown sizing interaction: %@", [((TSMessageAdapter *)messageData).interaction class]);
                 break;
         }
     } else if ([messageData isKindOfClass:[OWSCall class]]) {
         id cacheKey = [self cacheKeyForMessageData:messageData];
         TSInteraction *interaction = ((OWSCall *)messageData).interaction;
         return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
+    } else {
+        OWSFail(@"Can't size unknown message data type: %@", [messageData class]);
     }
 
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
