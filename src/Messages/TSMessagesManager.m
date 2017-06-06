@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)descriptionForSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
-    NSMutableString *description = [[NSMutableString alloc] initWithString:@"CallMessage: "];
+    NSMutableString *description = [[NSMutableString alloc] initWithString:@""];
     if (syncMessage.hasSent) {
         [description appendString:@"SentTranscript"];
     } else if (syncMessage.hasRequest) {

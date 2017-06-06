@@ -78,18 +78,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return self;
 }
 
-- (BOOL)isCurrentIdentityTrustedForSendingToRecipientId:(NSString *)recipientId
-{
-    OWSAssert(recipientId.length > 0);
-
-    @synchronized(self)
-    {
-        OWSRecipientIdentity *currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-        return [self isTrustedIdentityKey:currentIdentity.identityKey
-                              recipientId:recipientId
-                                direction:TSMessageDirectionOutgoing];
-    }
-}
 
 - (void)generateNewIdentityKey
 {
@@ -236,19 +224,22 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
-- (nullable OWSRecipientIdentity *)noLongerVerifiedIdentityForRecipientId:(NSString *)recipientId
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
     @synchronized(self)
     {
-        OWSRecipientIdentity *_Nullable identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-
-        if (identity && identity.verificationState == OWSVerificationStateNoLongerVerified) {
-            return identity;
+        OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+        BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
+                                        recipientId:recipientId
+                                          direction:TSMessageDirectionOutgoing];
+        if (isTrusted) {
+            return nil;
+        } else {
+            return recipientIdentity;
         }
     }
-    return nil;
 }
 
 - (void)fireIdentityStateChangeNotification
