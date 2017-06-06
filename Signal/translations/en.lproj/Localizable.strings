@@ -792,6 +792,9 @@
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check you're online and try again.";
 
+/* Indicates to the user that censorship circumvention has been activated. */
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Connected";
 
