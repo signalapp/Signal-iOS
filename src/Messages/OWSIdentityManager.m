@@ -3,22 +3,15 @@
 //
 
 #import "OWSIdentityManager.h"
-#import "OWSMessageSender.h"
-#import "TSStorageManager.h"
-#import "TextSecureKitEnv.h"
-
-// TODO: Review
-#import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
-#import "OWSIdentityManager.h"
+#import "OWSMessageSender.h"
 #import "OWSRecipientIdentity.h"
+#import "TextSecureKitEnv.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TSPreferences.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TextSecureKitEnv.h"
+#import "TSStorageManager.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,19 +28,10 @@ const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationName_IdentityStateDidChange";
 
-// NSString *const kOWSIdentityManager_Collection = @"kOWSIdentityManager_Collection";
-//// This key is used to persist the current "verification map" state.
-// NSString *const kOWSIdentityManager_VerificationMapKey = @"kOWSIdentityManager_VerificationMapKey";
-
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-
-//// We don't store the phone numbers as instances of PhoneNumber to avoid
-//// consistency issues between clients, but these should all be valid e164
-//// phone numbers.
-//@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *verificationMap;
 
 @end
 
@@ -92,53 +76,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     return self;
 }
-
-//- (OWSVerificationState)verificationStateForPhoneNumber:(NSString *)phoneNumber
-//{
-//    OWSAssert(phoneNumber.length > 0);
-//
-//    @synchronized(self)
-//    {
-//        [self lazyLoadStateIfNecessary];
-//        OWSAssert(self.verificationMap);
-//
-//        NSNumber * _Nullable existingValue = self.verificationMap[phoneNumber];
-//
-//        return (existingValue
-//                ? (OWSVerificationState) existingValue.intValue
-//                : OWSVerificationStateDefault);
-//    }
-//}
-//
-//- (void)handleUpdate:(NSDictionary<NSString *, NSNumber *> *)verificationMap
-//            sendSyncMessage:(BOOL)sendSyncMessage
-//{
-//    OWSAssert(verificationMap);
-//
-//    [_storageManager setObject:verificationMap
-//                        forKey:kOWSIdentityManager_VerificationMapKey
-//                  inCollection:kOWSIdentityManager_Collection];
-//
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_VerificationStateDidChange
-//                                                            object:nil
-//                                                          userInfo:nil];
-//    });
-//}
-//
-//// This method should only be called from within a synchronized block.
-//- (void)lazyLoadStateIfNecessary
-//{
-//    if (self.verificationMap) {
-//        // verificationMap has already been loaded, abort.
-//        return;
-//    }
-//
-//    NSDictionary<NSString *, NSNumber *> *verificationMap =
-//        [_storageManager objectForKey:kOWSIdentityManager_VerificationMapKey
-//                         inCollection:kOWSIdentityManager_Collection];
-//    _verificationMap = (verificationMap ? [verificationMap mutableCopy] : [NSMutableDictionary new]);
-//}
 
 - (BOOL)isCurrentIdentityTrustedForSendingWithRecipientId:(NSString *)recipientId
 {
@@ -252,11 +189,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(identityKey.length > 0);
     OWSAssert(recipientId.length > 0);
 
-    //    NSDictionary<NSString *, NSNumber *> *verificationMapCopy = nil;
-
     @synchronized(self)
     {
-
+        // Ensure a remote identity exists for this key. We may be learning about
+        // it for the first time.
         [self saveRemoteIdentity:identityKey recipientId:recipientId];
 
         OWSRecipientIdentity *identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
@@ -280,6 +216,23 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 
     [self fireIdentityStateChangeNotification];
+}
+
+- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    @synchronized(self)
+    {
+        OWSRecipientIdentity *_Nullable currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+        if (!currentIdentity) {
+            // We might not know the identity for this recipient yet.
+            return OWSVerificationStateDefault;
+        }
+
+        return currentIdentity.verificationState;
+    }
 }
 
 - (void)fireIdentityStateChangeNotification
@@ -330,56 +283,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         }
     }
 }
-
-// TODO: Cull unused methods within this class.
-
-//- (nullable OWSRecipientIdentity *)unconfirmedIdentityThatShouldBlockSendingForRecipientId:(NSString *)recipientId;
-//{
-//    OWSAssert(recipientId != nil);
-//
-//    @synchronized(self)
-//    {
-//        OWSRecipientIdentity *currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-//        if (currentIdentity == nil) {
-//            // No preexisting key, Trust On First Use
-//            return nil;
-//        }
-//
-//        if ([self isTrustedIdentityKey:currentIdentity.identityKey
-//                           recipientId:currentIdentity.recipientId
-//                             direction:TSMessageDirectionOutgoing]) {
-//            return nil;
-//        }
-//
-//        // identity not yet trusted for sending
-//        return currentIdentity;
-//    }
-//}
-
-//- (nullable OWSRecipientIdentity *)unseenIdentityChangeForRecipientId:(NSString *)recipientId
-//{
-//    OWSAssert(recipientId != nil);
-//
-//    @synchronized(self)
-//    {
-//        OWSRecipientIdentity *currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-//        if (currentIdentity == nil) {
-//            // No preexisting key, Trust On First Use
-//            return nil;
-//        }
-//
-//        if (currentIdentity.isFirstKnownKey) {
-//            return nil;
-//        }
-//
-//        if (currentIdentity.wasSeen) {
-//            return nil;
-//        }
-//
-//        // identity not yet seen
-//        return currentIdentity;
-//    }
-//}
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
