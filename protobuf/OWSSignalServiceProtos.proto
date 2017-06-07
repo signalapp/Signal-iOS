@@ -134,7 +134,6 @@ message SyncMessage {
     optional State  state       = 1;
     // The e164 phone number of the user.
     optional string destination = 2;
-    // identityKey should be set IFF state is VERIFIED.
     optional bytes  identityKey = 3;
   }
 

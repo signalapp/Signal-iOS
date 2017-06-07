@@ -214,24 +214,24 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // it for the first time.
         [self saveRemoteIdentity:identityKey recipientId:recipientId];
 
-        OWSRecipientIdentity *identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+        OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
 
-        if (identity == nil) {
+        if (recipientIdentity == nil) {
             OWSFail(@"Missing expected identity: %@", recipientId);
             return;
         }
 
-        if (identity.verificationState == verificationState) {
+        if (recipientIdentity.verificationState == verificationState) {
             return;
         }
 
         DDLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
             self.tag,
             recipientId,
-            OWSVerificationStateToString(identity.verificationState),
+            OWSVerificationStateToString(recipientIdentity.verificationState),
             OWSVerificationStateToString(verificationState));
 
-        [identity updateWithVerificationState:verificationState];
+        [recipientIdentity updateWithVerificationState:verificationState];
 
         if (sendSyncMessage) {
             [self enqueueSyncMessageForVerificationState:verificationState
@@ -440,6 +440,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
                     continue;
                 }
+                if (recipientIdentity.recipientId.length < 1 || recipientIdentity.identityKey.length < 1) {
+                    OWSFail(@"Invalid recipient identity for recipientId: %@", recipientId);
+                    continue;
+                }
                 if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
                     // We don't want to sync "no longer verified" state.  Other clients can
                     // figure this out from the /profile/ endpoint, and this can cause data
@@ -448,9 +452,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     continue;
                 }
                 [message addVerificationState:recipientIdentity.verificationState
-                                  identityKey:(recipientIdentity.verificationState == OWSVerificationStateVerified
-                                               ? recipientIdentity.identityKey
-                                               : nil)
+                                  identityKey:recipientIdentity.identityKey
                                   recipientId:recipientId];
             }
             if (message.recipientIds.count > 0) {
@@ -476,10 +478,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     // Don't bother syncing default state.
                     return;
                 }
+                if (recipientIdentity.recipientId.length < 1 || recipientIdentity.identityKey.length < 1) {
+                    OWSFail(@"Invalid recipient identity for recipientId: %@", recipientIdentity.recipientId);
+                    return;
+                }
                 [message addVerificationState:recipientIdentity.verificationState
-                                  identityKey:(recipientIdentity.verificationState == OWSVerificationStateVerified
-                                               ? recipientIdentity.identityKey
-                                               : nil)
+                                  identityKey:recipientIdentity.identityKey
                                   recipientId:recipientIdentity.recipientId];
             }];
             if (message.recipientIds.count > 0) {
@@ -526,6 +530,147 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             }
         }
     });
+}
+
+- (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerification *> *)verifications
+{
+    for (OWSSignalServiceProtosSyncMessageVerification *verification in verifications) {
+        NSString *recipientId = [verification destination];
+        if (recipientId.length < 1) {
+            OWSFail(@"Verification state sync message missing recipientId.");
+            continue;
+        }
+        NSData *identityKey = [verification identityKey];
+        if (identityKey.length < 1) {
+            OWSFail(@"Verification state sync message missing identityKey.");
+            continue;
+        }
+        switch (verification.state) {
+            case OWSSignalServiceProtosSyncMessageVerificationStateDefault:
+                [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
+                                                     recipientId:recipientId
+                                                     identityKey:identityKey
+                                             overwriteOnConflict:NO];
+                break;
+            case OWSSignalServiceProtosSyncMessageVerificationStateVerified:
+                [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
+                                                     recipientId:recipientId
+                                                     identityKey:identityKey
+                                             overwriteOnConflict:YES];
+                break;
+            case OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified:
+                OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
+                    recipientId,
+                    OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
+                continue;
+        }
+    }
+}
+
+- (void)tryToApplyVerificationStateFromSyncMessage:(OWSVerificationState)verificationState
+                                       recipientId:(NSString *)recipientId
+                                       identityKey:(NSData *)identityKey
+                               overwriteOnConflict:(BOOL)overwriteOnConflict
+{
+    if (recipientId.length < 1) {
+        OWSFail(@"Verification state sync message missing recipientId.");
+        return;
+    }
+    if (identityKey.length < 1) {
+        OWSFail(@"Verification state sync message missing identityKey.");
+        return;
+    }
+
+    @synchronized(self)
+    {
+        OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+        if (!recipientIdentity) {
+            // There's no existing recipient identity for this recipient.
+            // We should probably create one.
+
+            if (verificationState == OWSVerificationStateDefault) {
+                // There's no point in creating a new recipient identity just to
+                // set its verification state to default.
+                return;
+            }
+
+            // Ensure a remote identity exists for this key. We may be learning about
+            // it for the first time.
+            [self saveRemoteIdentity:identityKey recipientId:recipientId];
+
+            recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+            if (recipientIdentity == nil) {
+                OWSFail(@"Missing expected identity: %@", recipientId);
+                return;
+            }
+
+            if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
+                OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+                return;
+            }
+
+            if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
+                OWSFail(@"recipientIdentity has unexpected identityKey");
+                return;
+            }
+
+            if (recipientIdentity.verificationState == verificationState) {
+                return;
+            }
+
+            DDLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
+                self.tag,
+                recipientId,
+                OWSVerificationStateToString(recipientIdentity.verificationState),
+                OWSVerificationStateToString(verificationState));
+
+            [recipientIdentity updateWithVerificationState:verificationState];
+        } else {
+            // There's an existing recipient identity for this recipient.
+            // We should update it.
+            if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
+                OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+                return;
+            }
+
+            if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
+                // The conflict case where we receive a verification sync message
+                // whose identity key disagrees with the local identity key for
+                // this recipient.
+                if (!overwriteOnConflict) {
+                    DDLogWarn(@"recipientIdentity has non-matching identityKey");
+                    return;
+                }
+
+                DDLogWarn(@"recipientIdentity has non-matching identityKey; overwriting.");
+                [self saveRemoteIdentity:identityKey recipientId:recipientId];
+
+                recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+                if (recipientIdentity == nil) {
+                    OWSFail(@"Missing expected identity: %@", recipientId);
+                    return;
+                }
+
+                if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
+                    OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+                    return;
+                }
+
+                if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
+                    OWSFail(@"recipientIdentity has unexpected identityKey");
+                    return;
+                }
+            }
+
+            if (recipientIdentity.verificationState == verificationState) {
+                return;
+            }
+
+            [recipientIdentity updateWithVerificationState:OWSVerificationStateDefault];
+        }
+    }
 }
 
 #pragma mark - Notifications

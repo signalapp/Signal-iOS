@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSVerificationStateTuple : NSObject
 
 @property (nonatomic) OWSVerificationState verificationState;
-@property (nonatomic, nullable) NSData *identityKey;
+@property (nonatomic) NSData *identityKey;
 @property (nonatomic) NSString *recipientId;
 
 @end
@@ -46,14 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)addVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData * _Nullable)identityKey
+                 identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
 {
+    OWSAssert(identityKey.length > 0);
     OWSAssert(recipientId.length > 0);
     OWSAssert(self.tuples);
-    
-    OWSAssert((identityKey.length > 0) ==
-              verificationState == OWSVerificationStateVerified);
 
     OWSVerificationStateTuple *tuple = [OWSVerificationStateTuple new];
     tuple.verificationState = verificationState;
@@ -70,18 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
     for (OWSVerificationStateTuple *tuple in self.tuples) {
         OWSSignalServiceProtosSyncMessageVerificationBuilder *verificationBuilder = [OWSSignalServiceProtosSyncMessageVerificationBuilder new];
         [verificationBuilder setDestination:tuple.recipientId];
+        [verificationBuilder setIdentityKey:tuple.identityKey];
         switch (tuple.verificationState) {
             case OWSVerificationStateDefault:
-                OWSAssert(!tuple.identityKey);
                 [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateDefault];
                 break;
             case OWSVerificationStateVerified:
-                OWSAssert(tuple.identityKey.length > 0);
                 [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateVerified];
-                [verificationBuilder setIdentityKey:tuple.identityKey];
                 break;
             case OWSVerificationStateNoLongerVerified:
-                OWSAssert(!tuple.identityKey);
                 [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified];
                 break;
         }

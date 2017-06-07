@@ -695,6 +695,10 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read
                                                          storageManager:self.storageManager];
         [readReceiptsProcessor process];
+    } else if (syncMessage.verification.count > 0) {
+        DDLogInfo(@"%@ Received %ld verification state(s)", self.tag, (u_long)syncMessage.verification.count);
+
+        [[OWSIdentityManager sharedManager] processIncomingSyncMessage:syncMessage.verification];
     } else {
         DDLogWarn(@"%@ Ignoring unsupported sync message.", self.tag);
     }
