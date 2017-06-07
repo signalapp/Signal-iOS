@@ -474,10 +474,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 OWSAssert(recipientIdentity.recipientId.length > 0);
                 OWSAssert(recipientIdentity.identityKey.length > 0);
 
-                if (recipientIdentity.verificationState == OWSVerificationStateDefault) {
-                    // Don't bother syncing default state.
-                    return;
-                }
                 if (recipientIdentity.recipientId.length < 1 || recipientIdentity.identityKey.length < 1) {
                     OWSFail(@"Invalid recipient identity for recipientId: %@", recipientIdentity.recipientId);
                     return;
