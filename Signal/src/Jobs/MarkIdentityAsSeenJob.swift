@@ -8,32 +8,25 @@ import Foundation
 class MarkIdentityAsSeenJob: NSObject {
     let TAG = "[MarkIdentityAsSeenJob]"
 
-    private let thread: TSThread
+    private let recipientIds: [String]
 
     public class func run(thread: TSThread) {
-        MarkIdentityAsSeenJob(thread: thread).run()
+        let recipientIds = thread.recipientIdentifiers
+
+        MarkIdentityAsSeenJob(recipientIds: recipientIds).run()
     }
 
-    init(thread: TSThread) {
-        self.thread = thread
+    public class func run(recipientId: String) {
+        MarkIdentityAsSeenJob(recipientIds: [recipientId]).run()
+    }
+
+    init(recipientIds: [String]) {
+        self.recipientIds = recipientIds
     }
 
     public func run() {
-        switch self.thread {
-        case let contactThread as TSContactThread:
-            markAsSeenIfNecessary(recipientId: contactThread.contactIdentifier())
-        case let groupThread as TSGroupThread:
-            groupThread.groupModel.groupMemberIds?.forEach { memberId in
-                guard let recipientId = memberId as? String else {
-                    Logger.error("\(TAG) unexecpted type in group members.")
-                    assertionFailure("\(TAG) unexecpted type in group members.")
-                    return
-                }
-
-                markAsSeenIfNecessary(recipientId: recipientId)
-            }
-        default:
-            assertionFailure("Unexpected thread type: \(self.thread)")
+        for recipientId in self.recipientIds {
+            markAsSeenIfNecessary(recipientId: recipientId)
         }
     }
 

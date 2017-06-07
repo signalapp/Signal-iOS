@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSAvatarBuilder.h"
 #import "OWSContactAvatarBuilder.h"
@@ -11,12 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAvatarBuilder
 
-+ (UIImage *)buildImageForThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
++ (UIImage *)buildImageForThread:(TSThread *)thread
+                 contactsManager:(OWSContactsManager *)contactsManager
+                        diameter:(NSUInteger)diameter
 {
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        avatarBuilder =
-            [[OWSContactAvatarBuilder alloc] initWithThread:(TSContactThread *)thread contactsManager:contactsManager];
+        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithThread:(TSContactThread *)thread contactsManager:contactsManager diameter:diameter];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
     } else {

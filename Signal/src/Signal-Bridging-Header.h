@@ -4,18 +4,16 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Asserts.h"
 #import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
+#import "FingerprintViewController.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
-#import "OWSDispatch.h"
-#import "OWSError.h"
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
 #import "OWSProgressView.h"
@@ -24,19 +22,19 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "SettingsTableViewController.h"
-#import "TSSocketManager.h"
-#import "TSStorageManager+Calling.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <JSQMessagesViewController/JSQMediaItem.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
@@ -51,12 +49,16 @@
 #import <SignalServiceKit/OWSCallIceUpdateMessage.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCallOfferMessage.h>
+#import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSGetMessagesRequest.h>
+#import <SignalServiceKit/OWSGetProfileRequest.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -73,6 +75,8 @@
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
+#import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>

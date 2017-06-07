@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,6 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentIncomingCall:(SignalCall *)call callerName:(NSString *)callerName;
 
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName;
+
+- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call
+                                         callerName:(NSString *)callerName
+    NS_SWIFT_NAME(presentRejectedCallWithUnseenIdentityChange(_:callerName:));
 
 @end
 

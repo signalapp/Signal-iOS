@@ -9,11 +9,16 @@
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/TSStorageManager.h>
 
 @import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     @"OWSContactsManagerSignalAccountsDidChangeNotification";
+
+NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_AccountDisplayNames";
+NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
+NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_AccountLastNames";
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
@@ -27,6 +32,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
+
+@property (atomic) NSDictionary<NSString *, NSString *> *cachedAccountNameMap;
+@property (atomic) NSDictionary<NSString *, NSString *> *cachedFirstNameMap;
+@property (atomic) NSDictionary<NSString *, NSString *> *cachedLastNameMap;
+
 @end
 
 @implementation OWSContactsManager
@@ -37,6 +47,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
         return self;
     }
 
+    // TODO: We need to configure the limits of this cache.
     _avatarCache = [NSCache new];
     _allContacts = @[];
     _signalAccountMap = @{};
@@ -45,6 +56,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     _systemContactsFetcher.delegate = self;
 
     OWSSingletonAssert();
+
+    [self loadCachedDisplayNames];
 
     return self;
 }
@@ -188,6 +201,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
         dispatch_async(dispatch_get_main_queue(), ^{
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
+
+            [self updateCachedDisplayNames];
+
             [[NSNotificationCenter defaultCenter]
                 postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
                               object:nil];
@@ -195,7 +211,129 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     });
 }
 
+- (void)updateCachedDisplayNames
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // Preserve any existing values, so that contacts that have been removed
+    // from system contacts still show up properly in the app.
+    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap
+        = (self.cachedAccountNameMap ? [self.cachedAccountNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap
+        = (self.cachedFirstNameMap ? [self.cachedFirstNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap
+        = (self.cachedLastNameMap ? [self.cachedLastNameMap mutableCopy] : [NSMutableDictionary new]);
+    for (SignalAccount *signalAccount in self.signalAccounts) {
+        NSString *baseName
+            = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
+        OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
+        NSString *displayName = (signalAccount.multipleAccountLabelText
+                ? [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabelText]
+                : baseName);
+        if (![displayName isEqualToString:signalAccount.recipientId]) {
+            cachedAccountNameMap[signalAccount.recipientId] = displayName;
+        }
+
+        if (signalAccount.contact.firstName.length > 0) {
+            cachedFirstNameMap[signalAccount.recipientId] = signalAccount.contact.firstName;
+        }
+        if (signalAccount.contact.lastName.length > 0) {
+            cachedLastNameMap[signalAccount.recipientId] = signalAccount.contact.lastName;
+        }
+    }
+
+    self.cachedAccountNameMap = [cachedAccountNameMap copy];
+    self.cachedFirstNameMap = [cachedFirstNameMap copy];
+    self.cachedLastNameMap = [cachedLastNameMap copy];
+
+    // Write to database off the main thread.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            for (NSString *recipientId in cachedAccountNameMap) {
+                NSString *displayName = cachedAccountNameMap[recipientId];
+                [transaction setObject:displayName
+                                forKey:recipientId
+                          inCollection:kTSStorageManager_AccountDisplayNames];
+            }
+            for (NSString *recipientId in cachedFirstNameMap) {
+                NSString *firstName = cachedFirstNameMap[recipientId];
+                [transaction setObject:firstName forKey:recipientId inCollection:kTSStorageManager_AccountFirstNames];
+            }
+            for (NSString *recipientId in cachedLastNameMap) {
+                NSString *lastName = cachedLastNameMap[recipientId];
+                [transaction setObject:lastName forKey:recipientId inCollection:kTSStorageManager_AccountLastNames];
+            }
+        }];
+    });
+}
+
+- (void)loadCachedDisplayNames
+{
+    // Read from database off the main thread.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
+        NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
+        NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
+
+        [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
+            YapDatabaseReadTransaction *_Nonnull transaction) {
+            [transaction
+                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountDisplayNames
+                                         usingBlock:^(
+                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
+                                             cachedAccountNameMap[key] = object;
+                                         }];
+            [transaction
+                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountFirstNames
+                                         usingBlock:^(
+                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
+                                             cachedFirstNameMap[key] = object;
+                                         }];
+            [transaction
+                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountLastNames
+                                         usingBlock:^(
+                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
+                                             cachedLastNameMap[key] = object;
+                                         }];
+        }];
+
+        if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
+            // If these properties have already been populated from system contacts,
+            // don't overwrite.  In practice this should never happen.
+            OWSAssert(0);
+            return;
+        }
+
+        self.cachedAccountNameMap = [cachedAccountNameMap copy];
+        self.cachedFirstNameMap = [cachedFirstNameMap copy];
+        self.cachedLastNameMap = [cachedLastNameMap copy];
+    });
+}
+
+- (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return self.cachedAccountNameMap[recipientId];
+}
+
+- (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return self.cachedFirstNameMap[recipientId];
+}
+
+- (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return self.cachedLastNameMap[recipientId];
+}
+
 #pragma mark - View Helpers
+
 // TODO move into Contact class.
 + (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
 {
@@ -245,27 +383,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
                              @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)identifier {
-    if (!identifier) {
+- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+{
+    if (!recipientId) {
         return self.unknownContactName;
     }
 
-    // When viewing an old thread with someone who is no longer a Signal user, they won't have a SignalAccount
-    // so we get the name from `allContactsMap` as opposed to `signalAccountForRecipientId`.
-    Contact *contact = self.allContactsMap[identifier];
-
-    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : identifier;
-
-    return displayName;
-}
-
-// TODO move into Contact class.
-- (NSString *_Nonnull)displayNameForContact:(Contact *)contact
-{
-    OWSAssert(contact);
-
-    NSString *displayName = (contact.fullName.length > 0) ? contact.fullName : self.unknownContactName;
-
+    NSString *displayName = [self cachedDisplayNameForRecipientId:recipientId];
+    if (displayName.length < 1) {
+        displayName = recipientId;
+    }
     return displayName;
 }
 
@@ -273,14 +400,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
 {
     OWSAssert(signalAccount);
 
-    NSString *baseName = (signalAccount.contact ? [self displayNameForContact:signalAccount.contact]
-                                                : [self displayNameForPhoneIdentifier:signalAccount.recipientId]);
-    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
-    if (signalAccount.multipleAccountLabelText) {
-        return [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabelText];
-    } else {
-        return baseName;
-    }
+    return [self displayNameForPhoneIdentifier:signalAccount.recipientId];
 }
 
 - (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount
@@ -289,91 +409,75 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
     OWSAssert(signalAccount);
     OWSAssert(font);
 
-    NSAttributedString *baseName = [self formattedFullNameForContact:signalAccount.contact font:font];
-
-    if (baseName.length == 0) {
-        baseName = [self formattedFullNameForRecipientId:signalAccount.recipientId font:font];
-    }
-
-    OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
-    if (signalAccount.multipleAccountLabelText) {
-        NSMutableAttributedString *result = [NSMutableAttributedString new];
-        [result appendAttributedString:baseName];
-        [result appendAttributedString:[[NSAttributedString alloc] initWithString:@" ("
-                                                                       attributes:@{
-                                                                           NSFontAttributeName : font,
-                                                                       }]];
-        [result
-            appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabelText]];
-        [result appendAttributedString:[[NSAttributedString alloc] initWithString:@")"
-                                                                       attributes:@{
-                                                                           NSFontAttributeName : font,
-                                                                       }]];
-        return result;
-    } else {
-        return baseName;
-    }
-}
-
-// TODO move into Contact class.
-- (NSAttributedString *_Nonnull)formattedFullNameForContact:(Contact *)contact font:(UIFont *_Nonnull)font
-{
-    UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
-
-    NSDictionary<NSString *, id> *boldFontAttributes =
-        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [UIColor blackColor] };
-
-    NSDictionary<NSString *, id> *normalFontAttributes =
-        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_darkGrayColor] };
-
-    NSAttributedString *_Nullable firstName, *_Nullable lastName;
-    if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
-        if (contact.firstName) {
-            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:boldFontAttributes];
-        }
-        if (contact.lastName) {
-            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:normalFontAttributes];
-        }
-    } else {
-        if (contact.firstName) {
-            firstName = [[NSAttributedString alloc] initWithString:contact.firstName attributes:normalFontAttributes];
-        }
-        if (contact.lastName) {
-            lastName = [[NSAttributedString alloc] initWithString:contact.lastName attributes:boldFontAttributes];
-        }
-    }
-
-    NSAttributedString *_Nullable leftName, *_Nullable rightName;
-    if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
-        leftName = firstName;
-        rightName = lastName;
-    } else {
-        leftName = lastName;
-        rightName = firstName;
-    }
-
-    NSMutableAttributedString *fullNameString = [NSMutableAttributedString new];
-    if (leftName.length > 0) {
-        [fullNameString appendAttributedString:leftName];
-    }
-    if (leftName.length > 0 && rightName.length > 0) {
-        [fullNameString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
-    }
-    if (rightName.length > 0) {
-        [fullNameString appendAttributedString:rightName];
-    }
-
-    return fullNameString;
+    return [self formattedFullNameForRecipientId:signalAccount.recipientId font:font];
 }
 
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font
 {
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(font);
+
+    UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
+
+    NSDictionary<NSString *, id> *boldFontAttributes =
+        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [UIColor blackColor] };
     NSDictionary<NSString *, id> *normalFontAttributes =
         @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_darkGrayColor] };
+    NSDictionary<NSString *, id> *firstNameAttributes
+        = (ABPersonGetSortOrdering() == kABPersonSortByFirstName ? boldFontAttributes : normalFontAttributes);
+    NSDictionary<NSString *, id> *lastNameAttributes
+        = (ABPersonGetSortOrdering() == kABPersonSortByFirstName ? normalFontAttributes : boldFontAttributes);
 
-    return [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]
-            attributes:normalFontAttributes];
+    NSString *cachedFirstName = [self cachedFirstNameForRecipientId:recipientId];
+    NSString *cachedLastName = [self cachedLastNameForRecipientId:recipientId];
+
+    NSMutableAttributedString *formattedName = [NSMutableAttributedString new];
+
+    if (cachedFirstName.length > 0 && cachedLastName.length > 0) {
+        NSAttributedString *firstName =
+            [[NSAttributedString alloc] initWithString:cachedFirstName attributes:firstNameAttributes];
+        NSAttributedString *lastName =
+            [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
+
+        NSAttributedString *_Nullable leftName, *_Nullable rightName;
+        if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
+            leftName = firstName;
+            rightName = lastName;
+        } else {
+            leftName = lastName;
+            rightName = firstName;
+        }
+
+        [formattedName appendAttributedString:leftName];
+        [formattedName
+            appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:normalFontAttributes]];
+        [formattedName appendAttributedString:rightName];
+    } else if (cachedFirstName.length > 0) {
+        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedFirstName
+                                                                              attributes:firstNameAttributes]];
+    } else if (cachedLastName.length > 0) {
+        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedLastName
+                                                                              attributes:lastNameAttributes]];
+    } else {
+        return [[NSAttributedString alloc]
+            initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]
+                attributes:normalFontAttributes];
+    }
+
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    if (signalAccount && signalAccount.multipleAccountLabelText) {
+        OWSAssert(signalAccount.multipleAccountLabelText.length > 0);
+
+        [formattedName
+            appendAttributedString:[[NSAttributedString alloc] initWithString:@" (" attributes:normalFontAttributes]];
+        [formattedName
+            appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabelText
+                                                                   attributes:normalFontAttributes]];
+        [formattedName
+            appendAttributedString:[[NSAttributedString alloc] initWithString:@")" attributes:normalFontAttributes]];
+    }
+
+    return formattedName;
 }
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId

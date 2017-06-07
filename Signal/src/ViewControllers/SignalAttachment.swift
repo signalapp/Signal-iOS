@@ -279,16 +279,6 @@ class SignalAttachment: NSObject {
         return MIMETypeUtil.supportedAudioUTITypes()
     }
 
-    public class var textUTISet: Set<String> {
-        return [
-            kUTTypeText as String,
-            kUTTypePlainText as String,
-            kUTTypeUTF8PlainText as String,
-            kUTTypeUTF16PlainText as String,
-            kUTTypeURL as String
-        ]
-    }
-
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
@@ -305,10 +295,6 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
-    public var isText: Bool {
-        return SignalAttachment.textUTISet.contains(dataUTI)
-    }
-
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
     }
@@ -322,7 +308,38 @@ class SignalAttachment: NSObject {
             return false
         }
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
-        return pasteboardUTISet.intersection(textUTISet).count > 0
+        
+        if pasteboardUTISet.contains(kUTTypeURL as String) {
+            return true
+        }
+
+        // The pasteboard can be populated with multiple UTI types
+        // with different payloads.  iMessage for example will copy
+        // an animated GIF to the pasteboard with the following UTI
+        // types:
+        //
+        // * "public.url-name"
+        // * "public.utf8-plain-text"
+        // * "com.compuserve.gif"
+        //
+        // We want to paste the animated GIF itself, not it's name.
+        //
+        // In general, our rule is to prefer non-text pasteboard
+        // contents, so we return true IFF there is a text UTI type
+        // and there is no non-text UTI type.
+        var hasTextUTIType = false
+        var hasNonTextUTIType = false
+        for utiType in pasteboardUTISet {
+            if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
+                hasTextUTIType = true
+            } else {
+                hasNonTextUTIType = true
+            }
+        }
+        if hasNonTextUTIType {
+            return false
+        }
+        return hasTextUTIType
     }
 
     // Returns an attachment from the pasteboard, or nil if no attachment

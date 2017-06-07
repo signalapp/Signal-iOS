@@ -215,24 +215,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
         [firstSection
             addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-                UIImageView *iconView = [self viewForIconWithName:@"ic_lock_outline"];
-                [cell.contentView addSubview:iconView];
-                [iconView autoVCenterInSuperview];
-                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
-
-                UILabel *rowLabel = [UILabel new];
-                rowLabel.text = NSLocalizedString(@"VERIFY_PRIVACY", @"table cell label in conversation settings");
-                rowLabel.textColor = [UIColor blackColor];
-                rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                [cell.contentView addSubview:rowLabel];
-                [rowLabel autoVCenterInSuperview];
-                [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
-
-                return cell;
+                return [weakSelf disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                            @"table cell label in conversation settings")
+                                               iconName:@"table_ic_lock_outline"];
             }
                         actionBlock:^{
                             OWSConversationSettingsTableViewController *strongSelf = weakSelf;
@@ -249,9 +234,8 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSFingerprint *fingerprint =
                                 [fingerprintBuilder fingerprintWithTheirSignalId:strongSelf.thread.contactIdentifier];
 
-                            [fingerprintViewController configureWithThread:strongSelf.thread
-                                                               fingerprint:fingerprint
-                                                               contactName:[strongSelf threadName]];
+                            [fingerprintViewController configureWithFingerprint:fingerprint
+                                                                    contactName:[strongSelf threadName]];
                             fingerprintViewController.dismissDelegate = strongSelf;
 
                             [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];
@@ -269,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [self viewForIconWithName:@"table_ic_timer"];
+            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -281,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [topView addSubview:rowLabel];
             [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
             UISwitch *switchView = [UISwitch new];
             switchView.on = self.disappearingMessagesConfiguration.isEnabled;
@@ -323,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass_empty"];
+                            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
                             [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -335,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                             [topView addSubview:rowLabel];
                             [rowLabel autoVCenterInSuperview];
-                            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+                            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
                             UISlider *slider = [UISlider new];
                             slider.maximumValue = (float)(self.disappearingMessagesDurations.count - 1);
@@ -364,40 +348,17 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isGroupThread) {
         NSArray *groupItems = @[
             [OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
-                    = NSLocalizedString(@"EDIT_GROUP_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
+                return [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
+                                                            @"table cell label in conversation settings")
+                                               iconName:@"table_ic_group_edit"];
             }
                 actionBlock:^{
                     [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
-                    = NSLocalizedString(@"LEAVE_GROUP_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
-            }
-                actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
-                }],
-            [OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text
-                    = NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION", @"table cell label in conversation settings");
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:17.f];
-                cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
+                return [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
+                                                            @"table cell label in conversation settings")
+                                               iconName:@"table_ic_group_members"];
             }
                 actionBlock:^{
                     OWSConversationSettingsTableViewController *strongSelf = weakSelf;
@@ -408,6 +369,14 @@ NS_ASSUME_NONNULL_BEGIN
                         [ShowGroupMembersViewController new];
                     [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
                     [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
+                }],
+            [OWSTableItem itemWithCustomCellBlock:^{
+                return [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                            @"table cell label in conversation settings")
+                                               iconName:@"table_ic_group_leave"];
+            }
+                actionBlock:^{
+                    [weakSelf didTapLeaveGroup];
                 }],
         ];
 
@@ -423,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
         UITableViewCell *cell = [UITableViewCell new];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        UIImageView *iconView = [self viewForIconWithName:@"ic_mute_thread"];
+        UIImageView *iconView = [self viewForIconWithName:@"table_ic_mute_thread"];
         [cell.contentView addSubview:iconView];
         [iconView autoVCenterInSuperview];
         [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
@@ -436,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [cell.contentView addSubview:rowLabel];
         [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
+        [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
 
         NSString *muteStatus = NSLocalizedString(
             @"CONVERSATION_SETTINGS_MUTE_NOT_MUTED", @"Indicates that the current thread is not muted.");
@@ -488,23 +457,11 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
 
         OWSTableItem *item = [OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
+            UITableViewCell *cell =
+                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
+                                                     @"table cell label in conversation settings")
+                                        iconName:@"table_ic_block"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-            UIImageView *iconView = [self viewForIconWithName:@"ic_block"];
-            [cell.contentView addSubview:iconView];
-            [iconView autoVCenterInSuperview];
-            [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
-
-            UILabel *rowLabel = [UILabel new];
-            rowLabel.text = NSLocalizedString(
-                @"CONVERSATION_SETTINGS_BLOCK_THIS_USER", @"table cell label in conversation settings");
-            rowLabel.textColor = [UIColor blackColor];
-            rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [cell.contentView addSubview:rowLabel];
-            [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:16.f];
 
             UISwitch *blockUserSwitch = [UISwitch new];
             blockUserSwitch.on = isBlocked;
@@ -528,6 +485,31 @@ NS_ASSUME_NONNULL_BEGIN
     [self.tableView reloadData];
 }
 
+- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
+{
+    OWSAssert(name.length > 0);
+    OWSAssert(iconName.length > 0);
+
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+    UIImageView *iconView = [self viewForIconWithName:iconName];
+    [cell.contentView addSubview:iconView];
+    [iconView autoVCenterInSuperview];
+    [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:16.f];
+
+    UILabel *rowLabel = [UILabel new];
+    rowLabel.text = name;
+    rowLabel.textColor = [UIColor blackColor];
+    rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+    rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [cell.contentView addSubview:rowLabel];
+    [rowLabel autoVCenterInSuperview];
+    [rowLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:iconView withOffset:12.f];
+
+    return cell;
+}
+
 - (UIView *)firstSectionHeader
 {
     UIView *firstSectionHeader = [UIView new];
@@ -536,15 +518,13 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    UIImage *avatar = [OWSAvatarBuilder buildImageForThread:self.thread contactsManager:self.contactsManager];
+    const NSUInteger kAvatarSize = 68;
+    UIImage *avatar =
+        [OWSAvatarBuilder buildImageForThread:self.thread contactsManager:self.contactsManager diameter:kAvatarSize];
     OWSAssert(avatar);
-    const CGFloat kAvatarSize = 68.f;
-    UIImageView *avatarView = [[UIImageView alloc] initWithImage:avatar];
+
+    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatar];
     _avatarView = avatarView;
-    avatarView.layer.borderColor = UIColor.clearColor.CGColor;
-    avatarView.layer.masksToBounds = YES;
-    avatarView.layer.cornerRadius = kAvatarSize / 2.0f;
-    avatarView.contentMode = UIViewContentModeScaleAspectFill;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
@@ -619,8 +599,8 @@ NS_ASSUME_NONNULL_BEGIN
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     iconView.tintColor = [UIColor colorWithRGBHex:0x505050];
     iconView.contentMode = UIViewContentModeScaleToFill;
-    [iconView autoSetDimension:ALDimensionWidth toSize:32.f];
-    [iconView autoSetDimension:ALDimensionHeight toSize:32.f];
+    [iconView autoSetDimension:ALDimensionWidth toSize:24.f];
+    [iconView autoSetDimension:ALDimensionHeight toSize:24.f];
     return iconView;
 }
 

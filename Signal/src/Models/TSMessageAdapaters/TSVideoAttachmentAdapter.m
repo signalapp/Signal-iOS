@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
         _contentType     = attachment.contentType;
         _attachment      = attachment;
         _incoming        = incoming;
-        _imageSize = [attachment cachedImageSizeWithoutTransaction];
+        _imageSize = [attachment imageSizeWithoutTransaction];
     }
     return self;
 }
@@ -267,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self isAudio]);
 
-    self.audioDurationSeconds = [self.attachment cachedAudioDurationSecondsWithoutTransaction];
+    self.audioDurationSeconds = [self.attachment audioDurationSecondsWithoutTransaction];
 
     CGSize viewSize = [self mediaViewDisplaySize];
     UIColor *textColor = [self audioTextColor];

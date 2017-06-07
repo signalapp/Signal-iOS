@@ -18,10 +18,6 @@
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
-#import "TSMessagesManager.h"
-#import "TSSocketManager.h"
-#import "TSStorageManager+Calling.h"
-#import "TextSecureKitEnv.h"
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
@@ -31,7 +27,11 @@
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
+#import <SignalServiceKit/TSStorageManager+Calling.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 
 @import WebRTC;
 @import Intents;
@@ -122,6 +122,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
             [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBarHidden = YES;
         self.window.rootViewController = navigationController;
     }
 
@@ -420,27 +421,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillResignActive.", self.tag);
-    
-    UIBackgroundTaskIdentifier __block bgTask = UIBackgroundTaskInvalid;
-    bgTask                                    = [application beginBackgroundTaskWithExpirationHandler:^{
 
-    }];
-
+    UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      if ([TSAccountManager isRegistered]) {
-          dispatch_sync(dispatch_get_main_queue(), ^{
-              if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-                  // If app has not re-entered active, show screen protection if necessary.
-                  [self showScreenProtection];
-              }
-              [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
-          });
-      }
-
-      [application endBackgroundTask:bgTask];
-      bgTask = UIBackgroundTaskInvalid;
+        if ([TSAccountManager isRegistered]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+                    // If app has not re-entered active, show screen protection if necessary.
+                    [self showScreenProtection];
+                }
+                [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+                [application endBackgroundTask:bgTask];
+            });
+        }
     });
-    
+
     [DDLog flushLog];
 }
 

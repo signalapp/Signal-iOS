@@ -15,14 +15,12 @@
 #import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
-#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController () <OWSHighlightableLabelDelegate, OWSCompareSafetyNumbersActivityDelegate>
 
 @property (strong, nonatomic) TSStorageManager *storageManager;
-@property (strong, nonatomic) TSThread *thread;
 @property (strong, nonatomic) OWSFingerprint *fingerprint;
 @property (strong, nonatomic) NSString *contactName;
 @property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
@@ -45,11 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation FingerprintViewController
 
-- (void)configureWithThread:(TSThread *)thread
-                fingerprint:(OWSFingerprint *)fingerprint
-                contactName:(NSString *)contactName
+- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint
+                     contactName:(NSString *)contactName
 {
-    self.thread = thread;
     self.fingerprint = fingerprint;
     self.contactName = contactName;
 }

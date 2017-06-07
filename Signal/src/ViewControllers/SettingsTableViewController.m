@@ -13,9 +13,9 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-#import "TSAccountManager.h"
-#import "TSSocketManager.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 @interface SettingsTableViewController ()
 
@@ -75,6 +75,13 @@
     [self updateTableContents];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    [self updateTableContents];
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -120,37 +127,47 @@
     }
                                            customRowHeight:96.f
                                                actionBlock:nil]];
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-                                                @"NETWORK_STATUS_HEADER", @"");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        
-        UILabel *accessoryLabel = [UILabel new];
-        accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        switch ([TSSocketManager sharedManager].state) {
-            case SocketManagerStateClosed:
-                accessoryLabel.text      = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                accessoryLabel.textColor = [UIColor ows_redColor];
-                break;
-            case SocketManagerStateConnecting:
-                accessoryLabel.text      = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                accessoryLabel.textColor = [UIColor ows_yellowColor];
-                break;
-            case SocketManagerStateOpen:
-                accessoryLabel.text      = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                accessoryLabel.textColor = [UIColor ows_greenColor];
-                break;
+
+    if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
+        [section
+            addItem:[OWSTableItem disclosureItemWithText:
+                                      NSLocalizedString(@"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE",
+                                          @"Indicates to the user that censorship circumvention has been activated.")
+                                             actionBlock:^{
+                                                 [weakSelf showAdvanced];
+                                             }]];
+    } else {
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
+            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            cell.textLabel.textColor = [UIColor blackColor];
+
+            UILabel *accessoryLabel = [UILabel new];
+            accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
+            switch ([TSSocketManager sharedManager].state) {
+                case SocketManagerStateClosed:
+                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
+                    accessoryLabel.textColor = [UIColor ows_redColor];
+                    break;
+                case SocketManagerStateConnecting:
+                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
+                    accessoryLabel.textColor = [UIColor ows_yellowColor];
+                    break;
+                case SocketManagerStateOpen:
+                    accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
+                    accessoryLabel.textColor = [UIColor ows_greenColor];
+                    break;
+            }
+            [accessoryLabel sizeToFit];
+            cell.accessoryView = accessoryLabel;
+            return cell;
         }
-        [accessoryLabel sizeToFit];
-        cell.accessoryView = accessoryLabel;
-        return cell;
+                             actionBlock:^{
+                                 [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
+                                                       message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
+                             }]];
     }
-                         actionBlock:^{
-                             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
-                                                   message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
-                         }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
                                               actionBlock:^{

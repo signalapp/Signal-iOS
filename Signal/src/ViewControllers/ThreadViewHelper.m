@@ -28,10 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:TSUIDatabaseConnectionDidUpdateNotification
-                                               object:nil];
     [self initializeMapping];
 
     return self;

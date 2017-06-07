@@ -60,9 +60,11 @@ class ContactCell: UITableViewCell {
                 contactIdForDeterminingBackgroundColor = contact.fullName
             }
 
+            let kAvatarWidth: UInt = 40
             let avatarBuilder = OWSContactAvatarBuilder(contactId:contactIdForDeterminingBackgroundColor,
                                                         name:contact.fullName,
-                                                        contactsManager:contactsManager)
+                                                        contactsManager:contactsManager,
+                                                        diameter: kAvatarWidth)
             self.contactImageView?.image = avatarBuilder.buildDefaultImage()
         } else {
             self.contactImageView?.image = contact.image

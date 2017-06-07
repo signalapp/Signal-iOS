@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/29/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSExpirationTimerView.h"
 #import "MessagesViewController.h"
@@ -14,7 +15,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 @interface OWSExpirationTimerView ()
 
 @property (nonatomic) uint32_t initialDurationSeconds;
-@property (atomic) uint64_t expiresAtSeconds;
+@property (atomic) double expiresAtSeconds;
 
 @property (nonatomic, readonly) UIImageView *emptyHourglassImageView;
 @property (nonatomic, readonly) UIImageView *fullHourglassImageView;
@@ -91,8 +92,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     [self startAnimation];
 }
 
-- (void)startTimerWithExpiresAtSeconds:(uint64_t)expiresAtSeconds
-                initialDurationSeconds:(uint32_t)initialDurationSeconds
+- (void)startTimerWithExpiresAtSeconds:(double)expiresAtSeconds initialDurationSeconds:(uint32_t)initialDurationSeconds
 {
     if (expiresAtSeconds == 0) {
         DDLogWarn(
@@ -101,7 +101,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
             initialDurationSeconds);
     }
 
-    DDLogVerbose(@"%@ Starting timer with expiresAtSeconds: %llu initialDurationSeconds: %d",
+    DDLogVerbose(@"%@ Starting timer with expiresAtSeconds: %f initialDurationSeconds: %d",
         self.logTag,
         expiresAtSeconds,
         initialDurationSeconds);
@@ -117,12 +117,12 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 
 - (void)startAnimation
 {
-    DDLogVerbose(@"%@ Starting animation with expiresAtSeconds: %llu initialDurationSeconds: %d",
+    DDLogVerbose(@"%@ Starting animation with expiresAtSeconds: %f initialDurationSeconds: %d",
         self.logTag,
         self.expiresAtSeconds,
         self.initialDurationSeconds);
 
-    double secondsLeft = (double)self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
+    double secondsLeft = self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
 
     if (secondsLeft < 0) {
         secondsLeft = 0;
@@ -186,7 +186,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 
 - (BOOL)itIsTimeToBlink
 {
-    double secondsLeft = (double)self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
+    double secondsLeft = self.expiresAtSeconds - [NSDate new].timeIntervalSince1970;
     return secondsLeft <= OWSExpirationTimerViewBlinkingSeconds;
 }
 

@@ -113,9 +113,53 @@
     [self presentNotification:notification identifier:localCallId];
 }
 
+- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call callerName:(NSString *)callerName
+{
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    OWSAssert(thread != nil);
+
+    UILocalNotification *notification = [UILocalNotification new];
+    notification.category = PushManagerCategoriesRejectedCallFromUnseenIdentityChange;
+    NSString *localCallId = call.localId.UUIDString;
+    notification.userInfo = @{
+        PushManagerUserInfoKeysLocalCallId : localCallId,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        Signal_Thread_UserInfo_Key : thread.uniqueId
+    };
+
+    NSString *alertMessage;
+    switch (self.notificationPreviewType) {
+        case NotificationNoNameNoPreview: {
+            alertMessage = [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBody];
+            break;
+        }
+        case NotificationNameNoPreview:
+        case NotificationNamePreview: {
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                    ? [CallStrings rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName]
+                    : [NSString
+                          stringWithFormat:[CallStrings
+                                               rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName],
+                          callerName]);
+            break;
+        }
+    }
+    notification.alertBody = [NSString stringWithFormat:@"☎️ %@", alertMessage];
+
+    [self presentNotification:notification identifier:localCallId];
+}
+
 #pragma mark - Signal Messages
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
+    OWSAssert(message);
+    OWSAssert(thread);
+
+    if (thread.isMuted) {
+        return;
+    }
+
     NSString *messageDescription = message.description;
 
     if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
@@ -146,15 +190,23 @@
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)message
-                                from:(NSString *)name
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
+    OWSAssert(message);
+    OWSAssert(thread);
+    OWSAssert(contactsManager);
+
     if (thread.isMuted) {
         return;
     }
 
     NSString *messageDescription = message.description;
+    NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
+    NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (groupName.length < 1) {
+        groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    }
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
@@ -167,25 +219,25 @@
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 
                 if ([thread isGroupThread]) {
-                    NSString *sender = [contactsManager displayNameForPhoneIdentifier:message.authorId];
-                    NSString *threadName = [NSString stringWithFormat:@"\"%@\"", name];
+                    NSString *threadName = [NSString stringWithFormat:@"\"%@\"", groupName];
+                    // TODO: Format parameters might change order in l10n.  We should use named parameters.
                     notification.alertBody =
                         [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
-                                                   sender,
-                                                   threadName,
-                                                   messageDescription];
+                                  senderName,
+                                  threadName,
+                                  messageDescription];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
                 }
                 break;
             case NotificationNameNoPreview: {
                 notification.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
                 if ([thread isGroupThread]) {
-                    notification.alertBody =
-                        [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), name];
+                    notification.alertBody = [NSString
+                        stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), groupName];
                 } else {
                     notification.alertBody =
-                        [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                        [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), senderName];
                 }
                 break;
             }

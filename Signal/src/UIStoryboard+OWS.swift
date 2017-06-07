@@ -12,4 +12,8 @@ extension UIStoryboard {
     class var main: UIStoryboard {
         return UIStoryboard(name: StoryboardName.main.rawValue, bundle: Bundle.main)
     }
+
+    class func instantiateFingerprintViewController() -> FingerprintViewController {
+        return  self.main.instantiateViewController(withIdentifier: "FingerprintViewController") as! FingerprintViewController
+    }
 }
