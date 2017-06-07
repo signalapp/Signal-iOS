@@ -27,6 +27,8 @@ NSString *const TSStorageManagerTrustedKeysCollection = @"TSStorageManagerTruste
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
+const NSUInteger kIdentityKeyLength = 32;
+
 NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationName_IdentityStateDidChange";
 
 @interface OWSIdentityManager ()
@@ -299,7 +301,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
-    OWSAssert(identityKey.length == 32);
+    OWSAssert(identityKey.length == kIdentityKeyLength);
 
     @synchronized(self)
     {
@@ -308,7 +310,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return YES;
         }
 
-        OWSAssert(recipientIdentity.identityKey.length == 32);
+        OWSAssert(recipientIdentity.identityKey.length == kIdentityKeyLength);
         if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
             DDLogWarn(@"%@ key mismatch for recipient: %@", self.tag, recipientIdentity.recipientId);
             return NO;
