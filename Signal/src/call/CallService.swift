@@ -477,6 +477,7 @@ protocol CallServiceObserver: class {
 
             switch(untrustedIdentity!.verificationState) {
             case .verified:
+                Logger.error("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
                 assertionFailure("shouldn't have missed a call due to untrusted identity if the identity is verified")
                 self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
             case .default:
