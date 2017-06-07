@@ -231,6 +231,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     @synchronized(self)
     {
         OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+
+        if (recipientIdentity == nil) {
+            // trust on first use
+            return nil;
+        }
+
         BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
                                         recipientId:recipientId
                                           direction:TSMessageDirectionOutgoing];
