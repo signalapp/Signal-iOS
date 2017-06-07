@@ -36,7 +36,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
-    if (_callType == RPRecentCallTypeMissed) {
+    if (_callType == RPRecentCallTypeMissed || _callType == RPRecentCallTypeMissedBecauseOfChangedIdentity) {
         _read = NO;
     } else {
         _read = YES;
@@ -74,6 +74,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"");
         case RPRecentCallTypeIncomingIncomplete:
             return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"");
+        case RPRecentCallTypeMissedBecauseOfChangedIdentity:
+            return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
     }
 }
 
