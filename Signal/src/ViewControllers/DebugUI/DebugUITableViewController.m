@@ -49,34 +49,29 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = @"Debug: Conversation";
 
-    [contents
-        addSection:[OWSTableSection
-                       sectionWithTitle:[DebugUIMessages sectionForThread:thread].headerTitle
-                                  items:@[
-                                      [OWSTableItem
-                                          disclosureItemWithText:[DebugUIMessages sectionForThread:thread].headerTitle
-                                                     actionBlock:^{
-                                                         [weakSelf pushPageWithSection:[DebugUIMessages
-                                                                                           sectionForThread:thread]];
-                                                     }],
-                                  ]]];
+    OWSTableSection *messagesSection = [DebugUIMessages sectionForThread:thread];
+    [contents addSection:[OWSTableSection
+                             sectionWithTitle:messagesSection.headerTitle
+                                        items:@[
+                                            [OWSTableItem disclosureItemWithText:messagesSection.headerTitle
+                                                                     actionBlock:^{
+                                                                         [weakSelf pushPageWithSection:messagesSection];
+                                                                     }],
+                                        ]]];
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [contents
-            addSection:[OWSTableSection
-                           sectionWithTitle:[DebugUISessionState sectionForContactThread:contactThread].headerTitle
-                                      items:@[
-                                          [OWSTableItem
-                                              disclosureItemWithText:[DebugUISessionState
-                                                                         sectionForContactThread:contactThread]
-                                                                         .headerTitle
-                                                         actionBlock:^{
-                                                             [weakSelf pushPageWithSection:
-                                                                           [DebugUISessionState
-                                                                               sectionForContactThread:contactThread]];
-                                                         }],
-                                      ]]];
+
+        OWSTableSection *sessionSection = [DebugUISessionState sectionForContactThread:contactThread];
+        [contents addSection:[OWSTableSection
+                                 sectionWithTitle:sessionSection.headerTitle
+                                            items:@[
+                                                [OWSTableItem disclosureItemWithText:sessionSection.headerTitle
+                                                                         actionBlock:^{
+                                                                             [weakSelf
+                                                                                 pushPageWithSection:sessionSection];
+                                                                         }],
+                                            ]]];
 
         // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
         // we give a little delay.
