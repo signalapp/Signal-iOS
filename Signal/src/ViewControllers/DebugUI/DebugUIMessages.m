@@ -578,6 +578,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
+                                                       callType:RPRecentCallTypeMissedBecauseOfChangedIdentity
+                                                       inThread:contactThread]];
+            [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]

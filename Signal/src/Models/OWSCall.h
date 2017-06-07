@@ -18,6 +18,7 @@ typedef enum : NSUInteger {
     // kGroupUpdateJoin has been deprecated.
     kGroupUpdateLeft = 7,
     kGroupUpdate = 8,
+    kCallMissedBecauseOfChangedIdentity = 9,
 } CallStatus;
 
 @interface OWSCall : NSObject <OWSMessageData>
