@@ -41,6 +41,26 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(messageSender);
 
+    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    OWSAssert(contactsManager);
+
+    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+        presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
+                               confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                                                    @"button title to confirm sending to a recipient whose safety "
+                                                    @"number recently changed")
+                                contactsManager:contactsManager
+                                     completion:^(BOOL didConfirmIdentity) {
+                                         if (didConfirmIdentity) {
+                                             [self sendMessageWithText:text
+                                                              inThread:thread
+                                                         messageSender:messageSender];
+                                         }
+                                     }];
+    if (didShowSNAlert) {
+        return nil;
+    }
+
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
     TSOutgoingMessage *message =
@@ -61,9 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-+ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                        inThread:(TSThread *)thread
-                                   messageSender:(OWSMessageSender *)messageSender
++ (nullable TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
+                                                 inThread:(TSThread *)thread
+                                            messageSender:(OWSMessageSender *)messageSender
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(attachment);
@@ -71,6 +91,27 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([attachment mimeType].length > 0);
     OWSAssert(thread);
     OWSAssert(messageSender);
+
+    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    OWSAssert(contactsManager);
+
+    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+        presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
+                               confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
+                                                    @"button title to confirm sending to a recipient whose safety "
+                                                    @"number recently changed")
+                                contactsManager:contactsManager
+                                     completion:^(BOOL didConfirmIdentity) {
+                                         if (didConfirmIdentity) {
+                                             [self sendMessageWithAttachment:attachment
+                                                                    inThread:thread
+                                                               messageSender:messageSender];
+                                         }
+                                     }];
+
+    if (didShowSNAlert) {
+        return nil;
+    }
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];

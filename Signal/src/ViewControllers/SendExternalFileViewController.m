@@ -47,9 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachment);
     OWSAssert(thread);
 
-    [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
+    TSOutgoingMessage *outgoingMessage =
+        [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
 
-    [Environment messageThreadId:thread.uniqueId];
+    // Don't pop to thread if we were blocked from creating an outgoing message by untrusted SN.
+    if (outgoingMessage != nil) {
+        [Environment messageThreadId:thread.uniqueId];
+    }
 }
 
 - (BOOL)canSelectBlockedContact

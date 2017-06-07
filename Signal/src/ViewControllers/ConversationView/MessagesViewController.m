@@ -1167,8 +1167,7 @@ typedef enum : NSUInteger {
  *          NO if there were no unconfirmed identities
  */
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
-                                                         completion:
-                                                             (void (^)(BOOL didConfirmedIdentity))completionHandler
+                                                         completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
                                                                  confirmationText:confirmationText
@@ -1282,31 +1281,14 @@ typedef enum : NSUInteger {
         return;
     }
 
-    BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                      @"button title to confirm sending to a recipient whose "
-                      @"safety number recently changed")
-                                                               completion:^(BOOL didConfirmIdentity) {
-                                                                   if (didConfirmIdentity) {
-                                                                       [weakSelf didPressSendButton:button
-                                                                                    withMessageText:text
-                                                                                           senderId:senderId
-                                                                                  senderDisplayName:senderDisplayName
-                                                                                               date:date
-                                                                                updateKeyboardState:NO];
-                                                                   }
-                                                               }];
-    if (didShowSNAlert) {
-        return;
-    }
-
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     if (text.length > 0) {
         if ([Environment.preferences soundInForeground]) {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
         }
+
+        TSOutgoingMessage *_Nullable outgoingMessage;
         // Limit outgoing text messages to 16kb.
         //
         // We convert large text messages to attachments
@@ -1317,21 +1299,24 @@ typedef enum : NSUInteger {
                 [SignalAttachment attachmentWithData:[text dataUsingEncoding:NSUTF8StringEncoding]
                                              dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
                                             filename:nil];
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithAttachment:attachment
-                                                                          inThread:self.thread
-                                                                     messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            outgoingMessage =
+                [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+            if (outgoingMessage != nil) {
+                [self updateLastVisibleTimestamp:outgoingMessage.timestampForSorting];
+            }
         } else {
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithText:text
-                                                                    inThread:self.thread
-                                                               messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            outgoingMessage =
+                [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+            if (outgoingMessage != nil) {
+                [self updateLastVisibleTimestamp:outgoingMessage.timestampForSorting];
+            }
         }
 
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
 
-        if (updateKeyboardState) {
+        // Don't pop keyboard if we popped the SN alert, else it obscures the SN alert.
+        if (outgoingMessage != nil && updateKeyboardState) {
             [self toggleDefaultKeyboard];
         }
         [self clearDraft];
@@ -3700,21 +3685,6 @@ typedef enum : NSUInteger {
                     [weakSelf tryToSendAttachmentIfApproved:attachment];
                 }
             }];
-            return;
-        }
-
-        BOOL didShowSNAlert = [self
-            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                    @"button title to confirm sending to a recipient whose "
-                    @"safety number recently changed")
-                                                             completion:^(BOOL didConfirmIdentity) {
-                                                                 if (didConfirmIdentity) {
-                                                                     [weakSelf
-                                                                         tryToSendAttachmentIfApproved:attachment];
-                                                                 }
-                                                             }];
-        if (didShowSNAlert) {
             return;
         }
 
