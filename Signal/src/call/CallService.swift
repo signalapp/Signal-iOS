@@ -486,6 +486,14 @@ protocol CallServiceObserver: class {
                 self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                    withCallNumber: thread.contactIdentifier(),
+                                    callType: RPRecentCallTypeMissedBecauseOfChangedIdentity,
+                                    in: thread)
+            assert(newCall.callRecord == nil)
+            newCall.callRecord = callRecord
+            callRecord.save()
+
             return
         }
 
