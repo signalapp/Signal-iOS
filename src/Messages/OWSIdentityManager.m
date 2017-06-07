@@ -314,6 +314,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return NO;
         }
 
+        if ([recipientIdentity isFirstKnownKey]) {
+            DDLogDebug(@"%@ trusting first known key for recipient: %@", self.tag, recipientIdentity.recipientId);
+            return YES;
+        }
+
         switch (recipientIdentity.verificationState) {
             case OWSVerificationStateDefault: {
                 BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
