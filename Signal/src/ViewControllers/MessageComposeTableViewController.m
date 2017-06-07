@@ -829,6 +829,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self.searchController.searchBar resignFirstResponder];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
