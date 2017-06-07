@@ -271,8 +271,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {
-                DDLogError(@"%s Wrong identity: %@ for local key: %@",
-                    __PRETTY_FUNCTION__,
+                DDLogError(@"%@ Wrong identity: %@ for local key: %@",
+                    self.tag,
                     identityKey,
                     [self identityKeyPair].publicKey);
                 OWSAssert(NO);
@@ -289,7 +289,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
             }
             default: {
-                DDLogError(@"%s unexpected message direction: %ld", __PRETTY_FUNCTION__, (long)direction);
+                DDLogError(@"%@ unexpected message direction: %ld", self.tag, (long)direction);
                 OWSAssert(NO);
                 return NO;
             }
@@ -299,19 +299,18 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
-    OWSAssert(identityKey != nil);
+    OWSAssert(identityKey.length == 32);
 
     @synchronized(self)
     {
         if (recipientIdentity == nil) {
-            DDLogDebug(
-                @"%s Trusting on first use for recipient: %@", __PRETTY_FUNCTION__, recipientIdentity.recipientId);
+            DDLogDebug(@"%@ Trusting previously unknown recipient: %@", self.tag, recipientIdentity.recipientId);
             return YES;
         }
 
-        OWSAssert(recipientIdentity.identityKey != nil);
+        OWSAssert(recipientIdentity.identityKey.length == 32);
         if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-            DDLogWarn(@"%s key mismatch for recipient: %@", __PRETTY_FUNCTION__, recipientIdentity.recipientId);
+            DDLogWarn(@"%@ key mismatch for recipient: %@", self.tag, recipientIdentity.recipientId);
             return NO;
         }
 
@@ -320,26 +319,18 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
                     < kIdentityKeyStoreNonBlockingSecondsThreshold);
                 if (isNew) {
-                    DDLogWarn(@"%s not trusting new identity for recipient: %@",
-                        __PRETTY_FUNCTION__,
-                        recipientIdentity.recipientId);
+                    DDLogWarn(@"%@ not trusting new identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                     return NO;
                 } else {
-                    DDLogWarn(@"%s trusting existing identity for recipient: %@",
-                        __PRETTY_FUNCTION__,
-                        recipientIdentity.recipientId);
+                    DDLogWarn(@"%@ trusting existing identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                     return YES;
                 }
             }
             case OWSVerificationStateVerified:
-                DDLogWarn(@"%s trusting verified identity for recipient: %@",
-                    __PRETTY_FUNCTION__,
-                    recipientIdentity.recipientId);
+                DDLogWarn(@"%@ trusting verified identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                 return YES;
             case OWSVerificationStateNoLongerVerified:
-                DDLogWarn(@"%s not trusting no longer verified identity for recipient: %@",
-                    __PRETTY_FUNCTION__,
-                    recipientIdentity.recipientId);
+                DDLogWarn(@"%@ not trusting no longer verified identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                 return NO;
         }
     }
