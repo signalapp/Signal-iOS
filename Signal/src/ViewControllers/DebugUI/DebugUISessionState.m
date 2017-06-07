@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                [[TSStorageManager sharedManager] printAllSessions];
                                            });
                                        }],
-                       [OWSTableItem itemWithTitle:@"Toggle Key Change (Contact Thread Only)"
+                       [OWSTableItem itemWithTitle:@"Toggle Key Change"
                                        actionBlock:^{
                                            DDLogError(@"Flipping identity Key. Flip again to return.");
 
@@ -45,14 +45,74 @@ NS_ASSUME_NONNULL_BEGIN
                                            OWSAssert(flippedKey.length == currentKey.length);
                                            [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Delete session (Contact Thread Only)"
+                       [OWSTableItem
+                           itemWithTitle:@"Set Verification State"
+                             actionBlock:^{
+                                 DDLogError(@"%@ Choosing verification state.", self.tag);
+
+                                 NSString *title = [NSString
+                                     stringWithFormat:@"Choose verification state for %@", contactThread.name];
+                                 UIAlertController *alertController =
+                                     [UIAlertController alertControllerWithTitle:title
+                                                                         message:nil
+                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
+
+                                 NSString *recipientId = [contactThread contactIdentifier];
+                                 OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
+
+                                 [alertController
+                                     addAction:[UIAlertAction
+                                                   actionWithTitle:@"Default"
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *_Nonnull action) {
+                                                               NSData *identityKey = [identityManger
+                                                                   identityKeyForRecipientId:recipientId];
+                                                               [[OWSIdentityManager sharedManager]
+                                                                   setVerificationState:OWSVerificationStateDefault
+                                                                            identityKey:identityKey
+                                                                            recipientId:recipientId
+                                                                        sendSyncMessage:NO];
+                                                           }]];
+                                 [alertController
+                                     addAction:[UIAlertAction
+                                                   actionWithTitle:@"Verified"
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *_Nonnull action) {
+                                                               NSData *identityKey = [identityManger
+                                                                   identityKeyForRecipientId:recipientId];
+                                                               [[OWSIdentityManager sharedManager]
+                                                                   setVerificationState:OWSVerificationStateVerified
+                                                                            identityKey:identityKey
+                                                                            recipientId:recipientId
+                                                                        sendSyncMessage:NO];
+                                                           }]];
+                                 [alertController
+                                     addAction:[UIAlertAction actionWithTitle:@"No Longer Verified"
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                                          NSData *identityKey = [identityManger
+                                                                              identityKeyForRecipientId:recipientId];
+                                                                          [[OWSIdentityManager sharedManager]
+                                                                              setVerificationState:
+                                                                                  OWSVerificationStateNoLongerVerified
+                                                                                       identityKey:identityKey
+                                                                                       recipientId:recipientId
+                                                                                   sendSyncMessage:NO];
+                                                                      }]];
+
+                                 [[UIApplication sharedApplication].frontmostViewController
+                                     presentViewController:alertController
+                                                  animated:YES
+                                                completion:nil];
+                             }],
+                       [OWSTableItem itemWithTitle:@"Delete session"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                                [[TSStorageManager sharedManager]
                                                    deleteAllSessionsForContact:contactThread.contactIdentifier];
                                            });
                                        }],
-                       [OWSTableItem itemWithTitle:@"Send session reset (Contact Thread Only)"
+                       [OWSTableItem itemWithTitle:@"Send session reset"
                                        actionBlock:^{
                                            [OWSSessionResetJob
                                                runWithContactThread:contactThread
@@ -60,6 +120,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                      storageManager:[TSStorageManager sharedManager]];
                                        }]
                    ]];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
