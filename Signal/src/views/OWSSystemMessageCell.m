@@ -163,22 +163,7 @@
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
             OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
-            UIFont *titleFont = [self titleFont];
-            NSMutableAttributedString *title = [NSMutableAttributedString new];
             BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
-            //            if (isVerified) {
-            //                [title
-            //                 appendAttributedString:[[NSAttributedString alloc]
-            //                                         initWithString:@"\uf00c "
-            //                                         attributes:@{
-            //                                                      NSFontAttributeName : [UIFont
-            //                                                      ows_fontAwesomeFont:titleFont.pointSize],
-            //                                                      NSForegroundColorAttributeName : [UIColor
-            //                                                      ows_signalBrandBlueColor],
-            ////                                                      NSBaselineOffsetAttributeName : @(-1.f),
-            //                                                      }]];
-            //            }
-
             NSString *displayName =
                 [[Environment getCurrent].contactsManager displayNameForPhoneIdentifier:message.recipientId];
             NSString *titleFormat = (isVerified
@@ -196,13 +181,7 @@
                               : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
                                     @"Format for info message indicating that the verification state was unverified on "
                                     @"another device. Embeds {{user's name or phone number}}.")));
-            [title appendAttributedString:[[NSAttributedString alloc]
-                                              initWithString:[NSString stringWithFormat:titleFormat, displayName]
-                                                  attributes:@{
-                                                      NSFontAttributeName : titleFont,
-                                                      NSForegroundColorAttributeName : [self textColor],
-                                                  }]];
-            label.attributedText = title;
+            label.text = [NSString stringWithFormat:titleFormat, displayName];
         } else {
             label.text = interaction.description;
         }
