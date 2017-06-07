@@ -84,7 +84,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     // We want to observe these notifications lazily to avoid accessing
     // the data store in [application: didFinishLaunchingWithOptions:].
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self tryToSendQueuedVerificationStateSyncMessages];
+        [self tryToSyncQueuedVerificationStates];
         [self observeNotifications];
     });
     return self;
@@ -413,11 +413,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                               inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
         }
 
-        [self tryToSendQueuedVerificationStateSyncMessages];
+        [self tryToSyncQueuedVerificationStates];
     });
 }
 
-- (void)tryToSendQueuedVerificationStateSyncMessages
+- (void)tryToSyncQueuedVerificationStates
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
@@ -426,44 +426,80 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
                                                       usingBlock:^(NSString *_Nonnull recipientId,
-                                                          id _Nonnull object,
-                                                          BOOL *_Nonnull stop) {
+                                                                   id _Nonnull object,
+                                                                   BOOL *_Nonnull stop) {
                                                           [recipientIds addObject:recipientId];
                                                       }];
-
-                for (NSString *recipientId in recipientIds) {
-                    OWSRecipientIdentity *identity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-                    if (!identity) {
-                        OWSFail(@"Could not load identity for recipientId: %@", recipientId);
-                        return;
-                    }
-                    [self sendSyncMessageForVerificationState:identity.verificationState
-                                                  identityKey:identity.identityKey
-                                                  recipientId:recipientId];
-                }
             }];
+            
+            OWSVerificationStateSyncMessage *message =
+            [OWSVerificationStateSyncMessage new];
+            for (NSString *recipientId in recipientIds) {
+                OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+                if (!recipientIdentity) {
+                    OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
+                    continue;
+                }
+                if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
+                    // We don't want to sync "no longer verified" state.  Other clients can
+                    // figure this out from the /profile/ endpoint, and this can cause data
+                    // loss as a user's devices overwrite each other's verification.
+                    OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@", OWSVerificationStateToString(recipientIdentity.verificationState), recipientId);
+                    continue;
+                }
+                [message addVerificationState:recipientIdentity.verificationState
+                                  identityKey:(recipientIdentity.verificationState == OWSVerificationStateVerified
+                                               ? recipientIdentity.identityKey
+                                               : nil)
+                                  recipientId:recipientId];
+            }
+            if (message.recipientIds.count > 0) {
+                [self sendSyncVerificationStateMessage:message];
+            }
         }
     });
 }
 
-- (void)sendSyncMessageForVerificationState:(OWSVerificationState)verificationState
-                                identityKey:(NSData *)identityKey
-                                recipientId:(NSString *)recipientId
+- (void)syncAllVerificationStates
 {
-    OWSAssert(identityKey.length > 0);
-    OWSAssert(recipientId.length > 0);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            OWSVerificationStateSyncMessage *message =
+            [OWSVerificationStateSyncMessage new];
+            [OWSRecipientIdentity enumerateCollectionObjectsUsingBlock:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
+                OWSAssert(recipientIdentity);
+                OWSAssert(recipientIdentity.recipientId.length > 0);
+                OWSAssert(recipientIdentity.identityKey.length > 0);
 
-    OWSVerificationStateSyncMessage *message =
-        [[OWSVerificationStateSyncMessage alloc] initWithVerificationState:verificationState
-                                                               identityKey:identityKey
-                                                               recipientId:recipientId];
+                if (recipientIdentity.verificationState == OWSVerificationStateDefault) {
+                    // Don't bother syncing default state.
+                    return;
+                }
+                [message addVerificationState:recipientIdentity.verificationState
+                                  identityKey:(recipientIdentity.verificationState == OWSVerificationStateVerified
+                                               ? recipientIdentity.identityKey
+                                               : nil)
+                                  recipientId:recipientIdentity.recipientId];
+            }];
+            if (message.recipientIds.count > 0) {
+                [self sendSyncVerificationStateMessage:message];
+            }
+        }
+    });
+}
+
+- (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
+{
+    OWSAssert(message);
+    OWSAssert(message.recipientIds.count > 0);
 
     [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
 
             // Record that this verification state was successfully synced.
-            [self clearSyncMessageForRecipientId:recipientId];
+            [self clearSyncMessageForRecipientIds:message.recipientIds];
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send verification state sync message with error: %@", self.tag, error);
@@ -474,11 +510,20 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(recipientId.length > 0);
 
+    [self clearSyncMessageForRecipientIds:@[recipientId]];
+}
+
+- (void)clearSyncMessageForRecipientIds:(NSArray<NSString *> *)recipientIds
+{
+    OWSAssert(recipientIds.count > 0);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            [self.storageManager removeObjectForKey:recipientId
-                                       inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+            for (NSString *recipientId in recipientIds) {
+                [self.storageManager removeObjectForKey:recipientId
+                                           inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+            }
         }
     });
 }
@@ -489,7 +534,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self tryToSendQueuedVerificationStateSyncMessages];
+    [self tryToSyncQueuedVerificationStates];
 }
 
 #pragma mark - Logging

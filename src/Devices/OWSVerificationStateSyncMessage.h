@@ -9,9 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSVerificationStateSyncMessage : OWSOutgoingSyncMessage
 
-- (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
-                              identityKey:(NSData *)identityKey
-                              recipientId:(NSString *)recipientId;
+// identityKey should be set IFF verificationState == OWSVerificationStateVerified;
+- (void)addVerificationState:(OWSVerificationState)verificationState
+                 identityKey:(NSData * _Nullable)identityKey
+                 recipientId:(NSString *)recipientId;
+
+// Returns the list of recipient ids referenced in this message.
+- (NSArray<NSString *> *)recipientIds;
 
 @end
 

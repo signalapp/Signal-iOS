@@ -668,6 +668,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
                                                     }];
             
+            // Also sync all verification state after syncing contacts.
+            [[OWSIdentityManager sharedManager] syncAllVerificationStates];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             

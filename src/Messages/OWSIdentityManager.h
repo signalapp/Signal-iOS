@@ -40,6 +40,9 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
+// Will try to send a sync message with all verification states.
+- (void)syncAllVerificationStates;
+
 @end
 
 NS_ASSUME_NONNULL_END
