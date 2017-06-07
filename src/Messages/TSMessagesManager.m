@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)descriptionForSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
-    NSMutableString *description = [[NSMutableString alloc] initWithString:@"CallMessage: "];
+    NSMutableString *description = [NSMutableString new];
     if (syncMessage.hasSent) {
         [description appendString:@"SentTranscript"];
     } else if (syncMessage.hasRequest) {
@@ -372,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:storageManager
+                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:storageManager
+                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 

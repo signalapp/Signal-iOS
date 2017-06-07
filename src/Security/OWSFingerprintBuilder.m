@@ -5,7 +5,7 @@
 #import "OWSFingerprintBuilder.h"
 #import "ContactsManagerProtocol.h"
 #import "OWSFingerprint.h"
-#import "TSStorageManager+IdentityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import <25519/Curve25519.h>
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
 {
-    NSData *_Nullable theirIdentityKey = [self.storageManager identityKeyForRecipientId:theirSignalId];
+    NSData *_Nullable theirIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:theirSignalId];
 
     if (theirIdentityKey == nil) {
         OWSAssert(NO);
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
     NSString *mySignalId = [self.storageManager localNumber];
-    NSData *myIdentityKey = [self.storageManager identityKeyPair].publicKey;
+    NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableId:mySignalId
                                        myIdentityKey:myIdentityKey

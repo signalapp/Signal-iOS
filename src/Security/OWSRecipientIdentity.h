@@ -6,6 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, OWSVerificationState) {
+    OWSVerificationStateDefault,
+    OWSVerificationStateVerified,
+    OWSVerificationStateNoLongerVerified,
+};
+
+NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
+
 @interface OWSRecipientIdentity : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSString *recipientId;
@@ -13,28 +21,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) BOOL isFirstKnownKey;
 
-#pragma mark - get/set Seen
+#pragma mark - Verification State
 
-@property (atomic, readonly) BOOL wasSeen;
-- (void)updateAsSeen;
+@property (atomic, readonly) OWSVerificationState verificationState;
 
-#pragma mark - get/set Approval
-
-@property (atomic, readonly) BOOL approvedForBlockingUse;
-@property (atomic, readonly) BOOL approvedForNonBlockingUse;
-- (void)updateWithApprovedForBlockingUse:(BOOL)approvedForBlockingUse
-               approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse;
+- (void)updateWithVerificationState:(OWSVerificationState)verificationState;
 
 #pragma mark - Initializers
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
+- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithRecipientId:(NSString *)recipientId
                         identityKey:(NSData *)identityKey
                     isFirstKnownKey:(BOOL)isFirstKnownKey
                           createdAt:(NSDate *)createdAt
-             approvedForBlockingUse:(BOOL)approvedForBlockingUse
-          approvedForNonBlockingUse:(BOOL)approvedForNonBlockingUse NS_DESIGNATED_INITIALIZER;
+                  verificationState:(OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - debug
 

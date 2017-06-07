@@ -4,12 +4,12 @@
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "OWSFingerprint.h"
+#import "OWSIdentityManager.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager+IdentityKeyStore.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -59,10 +59,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 {
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] saveRemoteIdentity:self.newIdentityKey
-                                                 recipientId:self.recipientId
-                                      approvedForBlockingUse:YES
-                                   approvedForNonBlockingUse:YES];
+        [[OWSIdentityManager sharedManager] saveRemoteIdentity:self.newIdentityKey recipientId:self.recipientId];
     });
 }
 

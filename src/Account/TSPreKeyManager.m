@@ -4,6 +4,7 @@
 
 #import "TSPreKeyManager.h"
 #import "NSURLSessionDataTask+StatusCode.h"
+#import "OWSIdentityManager.h"
 #import "TSNetworkManager.h"
 #import "TSRegisterSignedPrekeyRequest.h"
 #import "TSStorageHeaders.h"
@@ -127,11 +128,11 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
 
         RefreshPreKeysMode modeCopy = mode;
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        ECKeyPair *identityKeyPair = [storageManager identityKeyPair];
+        ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
         if (!identityKeyPair) {
-            [storageManager generateNewIdentityKey];
-            identityKeyPair = [storageManager identityKeyPair];
+            [[OWSIdentityManager sharedManager] generateNewIdentityKey];
+            identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
             // Switch modes if necessary.
             modeCopy = RefreshPreKeysMode_SignedAndOneTime;
@@ -152,11 +153,12 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
             // Store the new one-time keys immediately, before they are sent to the
             // service to prevent race conditions and other edge cases.
             [storageManager storePreKeyRecords:preKeys];
-            
-            request = [[TSRegisterPrekeysRequest alloc] initWithPrekeyArray:preKeys
-                                                                identityKey:[storageManager identityKeyPair].publicKey
-                                                         signedPreKeyRecord:signedPreKey
-                                                           preKeyLastResort:lastResortPreKey];
+
+            request = [[TSRegisterPrekeysRequest alloc]
+                initWithPrekeyArray:preKeys
+                        identityKey:identityKeyPair.publicKey
+                 signedPreKeyRecord:signedPreKey
+                   preKeyLastResort:lastResortPreKey];
         } else {
             description = @"just signed prekey";
             request = [[TSRegisterSignedPrekeyRequest alloc] initWithSignedPreKeyRecord:signedPreKey];
