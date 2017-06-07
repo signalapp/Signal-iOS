@@ -72,10 +72,9 @@
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
+#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupModel.h>
@@ -1175,18 +1174,11 @@ typedef enum : NSUInteger {
                                                                        completion:completionHandler];
 }
 
-- (void)showFingerprintWithTheirIdentityKey:(NSData *)theirIdentityKey theirSignalId:(NSString *)theirSignalId
+- (void)showFingerprintWithRecipientId:(NSString *)recipientId
 {
     // Ensure keyboard isn't hiding the "safety numbers changed" interaction when we
     // return from FingerprintViewController.
     [self dismissKeyBoard];
-
-    OWSFingerprintBuilder *builder =
-        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
-    OWSFingerprint *fingerprint =
-        [builder fingerprintWithTheirSignalId:theirSignalId theirIdentityKey:theirIdentityKey];
-
-    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
     UIViewController *viewController =
         [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
@@ -1196,8 +1188,7 @@ typedef enum : NSUInteger {
         return;
     }
     FingerprintViewController *fingerprintViewController = (FingerprintViewController *)viewController;
-
-    [fingerprintViewController configureWithFingerprint:fingerprint contactName:contactName];
+    [fingerprintViewController configureWithRecipientId:recipientId];
     [self presentViewController:fingerprintViewController animated:YES completion:nil];
 }
 
@@ -2248,18 +2239,7 @@ typedef enum : NSUInteger {
 {
     NSParameterAssert(signalId != nil);
 
-    OWSFingerprintBuilder *fingerprintBuilder =
-        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:self.contactsManager];
-
-    OWSFingerprint *fingerprint = [fingerprintBuilder fingerprintWithTheirSignalId:signalId];
-
-    FingerprintViewController *fingerprintViewController =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
-
-    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:signalId];
-    [fingerprintViewController configureWithFingerprint:fingerprint contactName:contactName];
-
-    [self presentViewController:fingerprintViewController animated:YES completion:nil];
+    [self showFingerprintWithRecipientId:signalId];
 }
 
 - (void)handleInfoMessageTap:(TSInfoMessage *)message
@@ -2286,6 +2266,9 @@ typedef enum : NSUInteger {
         case TSInfoMessageTypeDisappearingMessagesUpdate:
             [self showConversationSettings];
             return;
+        case TSInfoMessageVerificationStateChange:
+            [self showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message).recipientId];
+            break;
     }
 
     DDLogInfo(@"%@ Unhandled tap for info message:%@", self.tag, message);
@@ -2345,8 +2328,7 @@ typedef enum : NSUInteger {
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
                                    DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
-                                   [self showFingerprintWithTheirIdentityKey:errorMessage.newIdentityKey
-                                                               theirSignalId:errorMessage.theirSignalId];
+                                   [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
     [actionSheetController addAction:showSafteyNumberAction];
 

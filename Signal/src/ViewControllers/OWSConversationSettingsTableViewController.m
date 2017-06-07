@@ -21,8 +21,6 @@
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -226,18 +224,8 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             FingerprintViewController *fingerprintViewController = [[UIStoryboard main]
                                 instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
-
-                            OWSFingerprintBuilder *fingerprintBuilder =
-                                [[OWSFingerprintBuilder alloc] initWithStorageManager:strongSelf.storageManager
-                                                                      contactsManager:strongSelf.contactsManager];
-
-                            OWSFingerprint *fingerprint =
-                                [fingerprintBuilder fingerprintWithTheirSignalId:strongSelf.thread.contactIdentifier];
-
-                            [fingerprintViewController configureWithFingerprint:fingerprint
-                                                                    contactName:[strongSelf threadName]];
+                            [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
                             fingerprintViewController.dismissDelegate = strongSelf;
-
                             [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];
                         }]];
     }

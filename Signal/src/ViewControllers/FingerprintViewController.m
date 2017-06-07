@@ -11,6 +11,7 @@
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
@@ -20,34 +21,46 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController () <OWSHighlightableLabelDelegate, OWSCompareSafetyNumbersActivityDelegate>
 
-@property (strong, nonatomic) TSStorageManager *storageManager;
-@property (strong, nonatomic) OWSFingerprint *fingerprint;
-@property (strong, nonatomic) NSString *contactName;
-@property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@property (nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) OWSFingerprint *fingerprint;
+@property (nonatomic) NSString *contactName;
+@property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 
-@property (strong, nonatomic) IBOutlet UINavigationBar *modalNavigationBar;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *dismissModalButton;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *shareButton;
-@property (strong, nonatomic) IBOutlet UIView *qrScanningView;
-@property (strong, nonatomic) IBOutlet UILabel *scanningInstructions;
-@property (strong, nonatomic) IBOutlet UIView *scanningContainer;
-@property (strong, nonatomic) IBOutlet UIView *instructionsContainer;
-@property (strong, nonatomic) IBOutlet UIView *qrContainer;
-@property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
-@property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
-@property (strong, nonatomic) IBOutlet OWSHighlightableLabel *privacyVerificationFingerprint;
-@property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
-@property (strong, nonatomic) IBOutlet UIButton *scanButton;
+@property (nonatomic) IBOutlet UINavigationBar *modalNavigationBar;
+@property (nonatomic) IBOutlet UIBarButtonItem *dismissModalButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *shareButton;
+@property (nonatomic) IBOutlet UIView *qrScanningView;
+@property (nonatomic) IBOutlet UILabel *scanningInstructions;
+@property (nonatomic) IBOutlet UIView *scanningContainer;
+@property (nonatomic) IBOutlet UIView *instructionsContainer;
+@property (nonatomic) IBOutlet UIView *qrContainer;
+@property (nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
+@property (nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
+@property (nonatomic) IBOutlet OWSHighlightableLabel *privacyVerificationFingerprint;
+@property (nonatomic) IBOutlet UILabel *instructionsLabel;
+@property (nonatomic) IBOutlet UIButton *scanButton;
 
 @end
 
 @implementation FingerprintViewController
 
-- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint
-                     contactName:(NSString *)contactName
+- (void)configureWithRecipientId:(NSString *)recipientId
 {
-    self.fingerprint = fingerprint;
-    self.contactName = contactName;
+    OWSAssert(recipientId.length > 0);
+
+    self.storageManager = [TSStorageManager sharedManager];
+
+    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+
+    OWSRecipientIdentity *_Nullable recipientIdentity =
+        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+    OWSAssert(recipientIdentity);
+
+    OWSFingerprintBuilder *builder =
+        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
+    self.fingerprint =
+        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
 }
 
 - (void)viewDidLoad
@@ -62,8 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.modalNavigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     self.modalNavigationBar.shadowImage = [UIImage new];
     self.modalNavigationBar.translucent = YES;
-
-    self.storageManager = [TSStorageManager sharedManager];
 
     // HACK to get full width preview layer
     CGRect oldFrame = self.qrScanningView.frame;

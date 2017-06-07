@@ -84,10 +84,7 @@ class SafetyNumberConfirmationAlert: NSObject {
     public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
         let fingerprintViewController = UIStoryboard.instantiateFingerprintViewController()
 
-        let fingerprintBuilder = OWSFingerprintBuilder(storageManager: self.storageManager, contactsManager: self.contactsManager)
-        let fingerprint = fingerprintBuilder.fingerprint(withTheirSignalId: theirRecipientId, theirIdentityKey: theirIdentityKey)
-
-        fingerprintViewController.configure(fingerprint: fingerprint, contactName: theirDisplayName)
+        fingerprintViewController.configure(recipientId: theirRecipientId)
 
         UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
     }

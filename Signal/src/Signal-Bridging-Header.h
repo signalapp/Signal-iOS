@@ -52,8 +52,6 @@
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSGetMessagesRequest.h>
 #import <SignalServiceKit/OWSGetProfileRequest.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
