@@ -214,8 +214,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         [Environment messageThreadId:threadId];
         completionHandler();
     } else {
-        DDLogError(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
-        OWSFail(@"Unhandled action");
+        OWSFail(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         [Environment messageThreadId:threadId];
         completionHandler();
