@@ -11,8 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSVerificationStateChangeMessage : TSInfoMessage
 
+@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) OWSVerificationState verificationState;
+@property (nonatomic, readonly) BOOL isLocalChange;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
+                      recipientId:(NSString *)recipientId
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange;
 

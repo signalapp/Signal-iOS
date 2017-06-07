@@ -3,9 +3,11 @@
 //
 
 #import "OWSIdentityManager.h"
+#import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
 #import "OWSMessageSender.h"
 #import "OWSRecipientIdentity.h"
+#import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
@@ -190,6 +192,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
 
+            // TODO: This may be redundant with the "safety number changes"
+            //       messages.
+            if (existingIdentity.verificationState != verificationState) {
+                [self saveChangeMessagesForRecipientId:recipientId
+                                     verificationState:verificationState
+                                         isLocalChange:YES];
+            }
+
             [self fireIdentityStateChangeNotification];
 
             return YES;
@@ -241,6 +251,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
         }
+
+        [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:YES];
     }
 
     [self fireIdentityStateChangeNotification];
@@ -260,6 +272,16 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         }
 
         return currentIdentity.verificationState;
+    }
+}
+
+- (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    @synchronized(self)
+    {
+        return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
     }
 }
 
@@ -385,18 +407,25 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(recipientId != nil);
 
+    NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
+
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     OWSAssert(contactThread != nil);
 
     TSErrorMessage *errorMessage =
         [TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId];
-    [errorMessage save];
-
+    [messages addObject:errorMessage];
     [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
-        [[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId] save];
+        [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
     }
+
+    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (TSMessage *message in messages) {
+            [message saveWithTransaction:transaction];
+        }
+    }];
 }
 
 - (void)enqueueSyncMessageForVerificationState:(OWSVerificationState)verificationState
@@ -625,6 +654,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 OWSVerificationStateToString(verificationState));
 
             [recipientIdentity updateWithVerificationState:verificationState];
+
+            // No need to call [saveChangeMessagesForRecipientId:..] since this is
+            // a new recipient.
         } else {
             // There's an existing recipient identity for this recipient.
             // We should update it.
@@ -668,8 +700,42 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             }
 
             [recipientIdentity updateWithVerificationState:verificationState];
+
+            [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:NO];
         }
     }
+}
+
+- (void)saveChangeMessagesForRecipientId:(NSString *)recipientId
+                       verificationState:(OWSVerificationState)verificationState
+                           isLocalChange:(BOOL)isLocalChange
+{
+    OWSAssert(recipientId.length > 0);
+
+    NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
+
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    OWSAssert(contactThread);
+    [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                              thread:contactThread
+                                                                         recipientId:recipientId
+                                                                   verificationState:verificationState
+                                                                       isLocalChange:isLocalChange]];
+
+    for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
+        [messages
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:groupThread
+                                                                       recipientId:recipientId
+                                                                 verificationState:verificationState
+                                                                     isLocalChange:isLocalChange]];
+    }
+
+    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (TSMessage *message in messages) {
+            [message saveWithTransaction:transaction];
+        }
+    }];
 }
 
 #pragma mark - Notifications
