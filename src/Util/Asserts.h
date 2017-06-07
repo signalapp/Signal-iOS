@@ -18,20 +18,23 @@
 
 #define OWSAssert(X)                                                                                                   \
     if (!(X)) {                                                                                                        \
-        NSLog(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                             \
+        DDLogError(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                        \
+        [DDLog flushLog];                                                                                              \
         NSAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                               \
     }
 
 #define OWSCAssert(X)                                                                                                  \
     if (!(X)) {                                                                                                        \
-        NSLog(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                             \
+        DDLogError(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                        \
+        [DDLog flushLog];                                                                                              \
         NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
     }
 
 #define OWSFail(message, ...)                                                                                          \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
-        NSLog(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                        \
+        DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
+        [DDLog flushLog];                                                                                              \
         NSAssert(0, formattedMessage);                                                                                 \
     }
 
@@ -39,7 +42,8 @@
     {                                                                                                                  \
         if (!(X)) {                                                                                                    \
             NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                           \
-            NSLog(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                    \
+            DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                               \
+            [DDLog flushLog];                                                                                          \
             NSCAssert(0, formattedMessage);                                                                            \
         }
 

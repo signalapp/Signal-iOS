@@ -14,6 +14,7 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
 extern NSString *const kNSNotificationName_IdentityStateDidChange;
 
 @class OWSRecipientIdentity;
+@class OWSSignalServiceProtosSyncMessageVerification;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -39,6 +40,11 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
  *          else returns the untrusted recipient.
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
+
+// Will try to send a sync message with all verification states.
+- (void)syncAllVerificationStates;
+
+- (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerification *> *)verifications;
 
 @end
 
