@@ -50,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   inThread:(TSThread *)thread
                              messageSender:(OWSMessageSender *)messageSender;
 
-+ (nullable TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                                 inThread:(TSThread *)thread
-                                            messageSender:(OWSMessageSender *)messageSender;
++ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
+                                        inThread:(TSThread *)thread
+                                   messageSender:(OWSMessageSender *)messageSender;
 
 // This method will create and/or remove any offers and indicators
 // necessary for this thread.  This includes:
