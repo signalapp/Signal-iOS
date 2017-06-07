@@ -67,17 +67,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     for (OWSVerificationStateTuple *tuple in self.tuples) {
         OWSSignalServiceProtosSyncMessageVerificationBuilder *verificationBuilder = [OWSSignalServiceProtosSyncMessageVerificationBuilder new];
-        [verificationBuilder setDestination:tuple.recipientId];
-        [verificationBuilder setIdentityKey:tuple.identityKey];
+        verificationBuilder.destination = tuple.recipientId;
+        verificationBuilder.identityKey = tuple.identityKey;
         switch (tuple.verificationState) {
             case OWSVerificationStateDefault:
-                [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateDefault];
+                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateDefault;
                 break;
             case OWSVerificationStateVerified:
-                [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateVerified];
+                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateVerified;
                 break;
             case OWSVerificationStateNoLongerVerified:
-                [verificationBuilder setState:OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified];
+                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified;
                 break;
         }
         [syncMessageBuilder addVerification:[verificationBuilder build]];
@@ -93,8 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(tuple.recipientId.length > 0);
         [result addObject:tuple.recipientId];
     }
-    
-    return result;
+
+    return [result copy];
 }
 
 @end

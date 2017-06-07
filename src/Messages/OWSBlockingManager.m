@@ -25,7 +25,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 // We don't store the phone numbers as instances of PhoneNumber to avoid
 // consistency issues between clients, but these should all be valid e164
 // phone numbers.
-@property (nonatomic, readonly) NSMutableSet<NSString *> *blockedPhoneNumberSet;
+@property (atomic, readonly) NSMutableSet<NSString *> *blockedPhoneNumberSet;
 
 @end
 
@@ -95,7 +95,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
     @synchronized(self)
     {
-        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+        [self ensureLazyInitialization];
 
         if ([_blockedPhoneNumberSet containsObject:phoneNumber]) {
             // Ignore redundant changes.
@@ -116,7 +116,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
     @synchronized(self)
     {
-        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+        [self ensureLazyInitialization];
 
         if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
             // Ignore redundant changes.
@@ -137,7 +137,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
     @synchronized(self)
     {
-        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+        [self ensureLazyInitialization];
 
         NSSet *newSet = [NSSet setWithArray:blockedPhoneNumbers];
         if ([_blockedPhoneNumberSet isEqualToSet:newSet]) {
@@ -154,7 +154,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     @synchronized(self)
     {
-        [self lazyLoadBlockedPhoneNumbersIfNecessary];
+        [self ensureLazyInitialization];
 
         return [_blockedPhoneNumberSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
     }
@@ -202,7 +202,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 }
 
 // This method should only be called from within a synchronized block.
-- (void)lazyLoadBlockedPhoneNumbersIfNecessary
+- (void)ensureLazyInitialization
 {
     if (_blockedPhoneNumberSet) {
         // _blockedPhoneNumberSet has already been loaded, abort.
@@ -272,7 +272,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self syncBlockedPhoneNumbersIfNecessary];
+    @synchronized(self)
+    {
+        [self syncBlockedPhoneNumbersIfNecessary];
+    }
 }
 
 #pragma mark - Logging

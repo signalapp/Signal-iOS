@@ -310,10 +310,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {
-                DDLogError(@"%@ Wrong identity: %@ for local key: %@",
+                DDLogError(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
                     self.tag,
                     identityKey,
-                    [self identityKeyPair].publicKey);
+                    [self identityKeyPair].publicKey,
+                    recipientId);
                 OWSAssert(NO);
                 return NO;
             }
@@ -448,7 +449,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     // We don't want to sync "no longer verified" state.  Other clients can
                     // figure this out from the /profile/ endpoint, and this can cause data
                     // loss as a user's devices overwrite each other's verification.
-                    OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@", OWSVerificationStateToString(recipientIdentity.verificationState), recipientId);
+                    OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@",
+                        OWSVerificationStateToString(recipientIdentity.verificationState),
+                        recipientId);
                     continue;
                 }
                 [message addVerificationState:recipientIdentity.verificationState
@@ -531,14 +534,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerification *> *)verifications
 {
     for (OWSSignalServiceProtosSyncMessageVerification *verification in verifications) {
-        NSString *recipientId = [verification destination];
+        NSString *recipientId = verification.destination;
         if (recipientId.length < 1) {
             OWSFail(@"Verification state sync message missing recipientId.");
             continue;
         }
-        NSData *identityKey = [verification identityKey];
+        NSData *identityKey = verification.identityKey;
         if (identityKey.length < 1) {
-            OWSFail(@"Verification state sync message missing identityKey.");
+            OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
             continue;
         }
         switch (verification.state) {
@@ -573,7 +576,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         return;
     }
     if (identityKey.length < 1) {
-        OWSFail(@"Verification state sync message missing identityKey.");
+        OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
         return;
     }
 
@@ -607,7 +610,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             }
 
             if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-                OWSFail(@"recipientIdentity has unexpected identityKey");
+                OWSFail(@"recipientIdentity has unexpected identityKey: %@", recipientId);
                 return;
             }
 
@@ -635,11 +638,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 // whose identity key disagrees with the local identity key for
                 // this recipient.
                 if (!overwriteOnConflict) {
-                    DDLogWarn(@"recipientIdentity has non-matching identityKey");
+                    DDLogWarn(@"recipientIdentity has non-matching identityKey: %@", recipientId);
                     return;
                 }
 
-                DDLogWarn(@"recipientIdentity has non-matching identityKey; overwriting.");
+                DDLogWarn(@"recipientIdentity has non-matching identityKey; overwriting: %@", recipientId);
                 [self saveRemoteIdentity:identityKey recipientId:recipientId];
 
                 recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
@@ -655,7 +658,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 }
 
                 if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-                    OWSFail(@"recipientIdentity has unexpected identityKey");
+                    OWSFail(@"recipientIdentity has unexpected identityKey: %@", recipientId);
                     return;
                 }
             }
