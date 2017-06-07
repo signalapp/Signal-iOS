@@ -22,8 +22,7 @@ struct AppNotifications {
 
     enum Action {
         case callBack,
-             showThread,
-             confirmIdentityAndCallBack
+             showThread
     }
 
     static var allCategories: Set<UNNotificationCategory> {
@@ -56,10 +55,6 @@ struct AppNotifications {
         case .showThread:
             return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.showThread",
                                         title: CallStrings.showThreadButtonTitle,
-                                        options: .authenticationRequired)
-        case .confirmIdentityAndCallBack:
-            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.confirmIdentityAndCallBack",
-                                        title: CallStrings.confirmIdentityAndCallBackButtonTitle,
                                         options: .authenticationRequired)
         }
     }
