@@ -104,6 +104,7 @@
 		451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
 		451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
 		451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
+		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C46901E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
@@ -518,6 +519,8 @@
 		451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CallNotificationsAdapter.swift; path = ../UserInterface/Notifications/CallNotificationsAdapter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		451DE9F11DC1585F00810E42 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SyncPushTokensJob.swift; path = Models/SyncPushTokensJob.swift; sourceTree = "<group>"; };
+		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
+		452037D01EE84975004E4CDF /* DebugUISessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISessionState.m; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
@@ -1026,6 +1029,8 @@
 				34D8C0241ED3673300188D7C /* DebugUIMessages.m */,
 				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
 				34D8C0261ED3673300188D7C /* DebugUITableViewController.m */,
+				452037CF1EE84975004E4CDF /* DebugUISessionState.h */,
+				452037D01EE84975004E4CDF /* DebugUISessionState.m */,
 			);
 			path = DebugUI;
 			sourceTree = "<group>";
@@ -2097,6 +2102,7 @@
 				450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
 				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
+				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */,
 				45C681B71D305A580050903A /* OWSCall.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
