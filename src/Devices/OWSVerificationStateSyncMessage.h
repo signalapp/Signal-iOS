@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSVerificationStateSyncMessage : OWSOutgoingSyncMessage
 
-// identityKey should be set IFF verificationState == OWSVerificationStateVerified;
 - (void)addVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId;
