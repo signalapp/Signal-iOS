@@ -14,16 +14,15 @@ import UserNotifications
 struct AppNotifications {
     enum Category {
         case missedCall,
-             rejectedCallFromUnseenIdentity
+             missedCallFromNoLongerVerifiedIdentity
 
         // Don't forget to update this! We use it to register categories.
-        static let allValues = [ missedCall, rejectedCallFromUnseenIdentity ]
+        static let allValues = [ missedCall, missedCallFromNoLongerVerifiedIdentity ]
     }
 
     enum Action {
         case callBack,
-             showThread,
-             confirmIdentityAndCallBack
+             showThread
     }
 
     static var allCategories: Set<UNNotificationCategory> {
@@ -39,9 +38,9 @@ struct AppNotifications {
                                           intentIdentifiers: [],
                                           options: [])
 
-        case .rejectedCallFromUnseenIdentity:
-            return UNNotificationCategory(identifier: "org.whispersystems.signal.AppNotifications.Category.rejectedCallFromUnseenIdentity",
-                                          actions: [ action(.confirmIdentityAndCallBack), action(.showThread) ],
+        case .missedCallFromNoLongerVerifiedIdentity:
+            return UNNotificationCategory(identifier: "org.whispersystems.signal.AppNotifications.Category.missedCallFromNoLongerVerifiedIdentity",
+                                          actions: [ action(.showThread) ],
                                           intentIdentifiers: [],
                                           options: [])
         }
@@ -56,10 +55,6 @@ struct AppNotifications {
         case .showThread:
             return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.showThread",
                                         title: CallStrings.showThreadButtonTitle,
-                                        options: .authenticationRequired)
-        case .confirmIdentityAndCallBack:
-            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.confirmIdentityAndCallBack",
-                                        title: CallStrings.confirmIdentityAndCallBackButtonTitle,
                                         options: .authenticationRequired)
         }
     }
@@ -118,7 +113,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         let notificationBody = { () -> String in
             switch previewType {
             case .noNameNoPreview:
-                return CallStrings.missedCallNotificationBody
+                return CallStrings.missedCallNotificationBodyWithoutCallerName
             case .nameNoPreview, .namePreview:
                 return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
                     ? CallStrings.missedCallNotificationBodyWithoutCallerName
@@ -134,7 +129,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         center.add(request)
     }
 
-    func presentRejectedCallWithUnseenIdentityChange(_ call: SignalCall, callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         let content = UNMutableNotificationContent()
@@ -144,16 +139,42 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         let notificationBody = { () -> String in
             switch previewType {
             case .noNameNoPreview:
-                return CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBody
+                return CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
             case .nameNoPreview, .namePreview:
                 return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
-                    ? CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithoutCallerName
-                    : String(format: CallStrings.rejectedCallWithUnseenIdentityChangeNotificationBodyWithCallerName, callerName))
+                    ? CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
+                    : String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName))
             }}()
 
         content.body = notificationBody
         content.sound = UNNotificationSound.default()
-        content.categoryIdentifier = AppNotifications.category(.rejectedCallFromUnseenIdentity).identifier
+        content.categoryIdentifier = AppNotifications.category(.missedCallFromNoLongerVerifiedIdentity).identifier
+
+        let request = UNNotificationRequest.init(identifier: call.localId.uuidString, content: content, trigger: nil)
+
+        center.add(request)
+    }
+
+    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+        Logger.debug("\(TAG) \(#function)")
+
+        let content = UNMutableNotificationContent()
+        // TODO group by thread identifier
+        // content.threadIdentifier = threadId
+
+        let notificationBody = { () -> String in
+            switch previewType {
+            case .noNameNoPreview:
+                return CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
+            case .nameNoPreview, .namePreview:
+                return (Environment.getCurrent().preferences.isCallKitPrivacyEnabled()
+                    ? CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
+                    : String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName))
+            }}()
+
+        content.body = notificationBody
+        content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = AppNotifications.category(.missedCall).identifier
 
         let request = UNNotificationRequest.init(identifier: call.localId.uuidString, content: content, trigger: nil)
 

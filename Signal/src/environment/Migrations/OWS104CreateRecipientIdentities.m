@@ -3,8 +3,8 @@
 //
 
 #import "OWS104CreateRecipientIdentities.h"
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
-#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -54,8 +54,8 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                                    identityKey:identityKey
                                                isFirstKnownKey:NO
                                                      createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                        approvedForBlockingUse:YES
-                                     approvedForNonBlockingUse:NO] saveWithTransaction:transaction];
+                                             verificationState:OWSVerificationStateDefault]
+                saveWithTransaction:transaction];
         }];
 
         [self saveWithTransaction:transaction];
