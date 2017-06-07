@@ -664,7 +664,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 return;
             }
 
-            [recipientIdentity updateWithVerificationState:OWSVerificationStateDefault];
+            [recipientIdentity updateWithVerificationState:verificationState];
         }
     }
 }
