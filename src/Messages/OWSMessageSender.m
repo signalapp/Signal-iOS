@@ -864,9 +864,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // If it's happening a lot, we should rethink our profile fetching strategy.
             OWSAnalyticsInfo(@"Message send failed due to untrusted key.");
 
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
-                NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
-                    @"action sheet header when re-sending message which failed because of untrusted identity keys"));
+            NSString *localizedErrorDescriptionFormat
+                = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
+                    @"action sheet header when re-sending message which failed because of untrusted identity keys");
+
+            NSString *localizedErrorDescription =
+                [NSString stringWithFormat:localizedErrorDescriptionFormat,
+                          [self.contactsManager displayNameForPhoneIdentifier:recipient.recipientId]];
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey, localizedErrorDescription);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
