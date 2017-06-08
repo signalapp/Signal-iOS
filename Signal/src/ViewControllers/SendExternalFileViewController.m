@@ -49,13 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachment);
     OWSAssert(thread);
 
+    __weak typeof(self) weakSelf = self;
+
     BOOL didShowSNAlert =
         [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
                                                               confirmationText:[SafetyNumberStrings confirmSendButton]
                                                                contactsManager:self.contactsManager
                                                                     completion:^(BOOL didConfirm) {
                                                                         if (didConfirm) {
-                                                                            [self threadWasSelected:thread];
+                                                                            [weakSelf threadWasSelected:thread];
                                                                         }
                                                                     }];
     if (didShowSNAlert) {
