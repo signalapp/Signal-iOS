@@ -82,11 +82,10 @@ class SafetyNumberConfirmationAlert: NSObject {
     }
 
     public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
-        let fingerprintViewController = UIStoryboard.instantiateFingerprintViewController()
-
+        let fingerprintViewController = FingerprintViewController()
         fingerprintViewController.configure(recipientId: theirRecipientId)
-
-        UIApplication.shared.frontmostViewController?.present(fingerprintViewController, animated: true, completion: completion)
+        let navigationController = UINavigationController(rootViewController:fingerprintViewController)
+        UIApplication.shared.frontmostViewController?.present(navigationController, animated: true, completion: completion)
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {

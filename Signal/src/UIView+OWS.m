@@ -65,6 +65,37 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     [self autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.superview];
 }
 
+- (void)autoPinWidthToWidthOfView:(UIView *)view
+{
+    OWSAssert(view);
+
+    [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:view];
+    [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:view];
+}
+
+- (void)autoPinHeightToHeightOfView:(UIView *)view
+{
+    OWSAssert(view);
+
+    [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view];
+    [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view];
+}
+
+- (NSLayoutConstraint *)autoPinToSquareAspectRatio
+{
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self
+                                                                  attribute:NSLayoutAttributeHeight
+                                                                 multiplier:1.f
+                                                                   constant:0.f];
+    [constraint autoInstall];
+    return constraint;
+}
+
 #pragma mark - Content Hugging and Compression Resistance
 
 - (void)setContentHuggingLow

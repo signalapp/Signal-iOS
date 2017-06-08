@@ -416,6 +416,10 @@ typedef enum : NSUInteger {
 
     [self initializeToolbars];
     [self createScrollDownButton];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showConversationSettings];
+    });
 }
 
 - (void)registerCustomMessageNibs
@@ -1180,16 +1184,11 @@ typedef enum : NSUInteger {
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    UIViewController *viewController =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
-    if (![viewController isKindOfClass:[FingerprintViewController class]]) {
-        OWSAssert(NO);
-        DDLogError(@"%@ expecting fingerprint view controller, but got: %@", self.tag, viewController);
-        return;
-    }
-    FingerprintViewController *fingerprintViewController = (FingerprintViewController *)viewController;
+    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
     [fingerprintViewController configureWithRecipientId:recipientId];
-    [self presentViewController:fingerprintViewController animated:YES completion:nil];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark - Calls

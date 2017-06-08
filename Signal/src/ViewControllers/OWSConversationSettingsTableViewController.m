@@ -194,6 +194,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateTableContents];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
+        [fingerprintViewController configureWithRecipientId:self.thread.contactIdentifier];
+        fingerprintViewController.dismissDelegate = self;
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
+    });
 }
 
 - (void)updateTableContents
@@ -222,11 +231,12 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!strongSelf) {
                                 return;
                             }
-                            FingerprintViewController *fingerprintViewController = [[UIStoryboard main]
-                                instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+                            FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
                             [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
                             fingerprintViewController.dismissDelegate = strongSelf;
-                            [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];
+                            UINavigationController *navigationController =
+                                [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+                            [strongSelf presentViewController:navigationController animated:YES completion:nil];
                         }]];
     }
 

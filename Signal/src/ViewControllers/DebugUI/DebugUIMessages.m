@@ -710,10 +710,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    signedPreKeyId:0
                                                             signedPreKeySignature:[self createRandomNSDataOfSize:16]
                                                                       identityKey:[self createRandomNSDataOfSize:16]];
-        [result addObject:[TSInvalidIdentityKeySendingErrorMessage untrustedKeyWithOutgoingMessage:outgoingMessage
-                                                                                          inThread:thread
-                                                                                      forRecipient:@"+19174054215"
-                                                                                      preKeyBundle:preKeyBundle]];
+        //        [result addObject:[TSInvalidIdentityKeySendingErrorMessage
+        //        untrustedKeyWithOutgoingMessage:outgoingMessage
+        //                                                                                          inThread:thread
+        //                                                                                      forRecipient:@"+19174054215"
+        //                                                                                      preKeyBundle:preKeyBundle]];
     }
 
     return result;

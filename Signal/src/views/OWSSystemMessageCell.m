@@ -16,6 +16,8 @@
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSSystemMessageCell ()
 
 @property (nonatomic, nullable) TSInteraction *interaction;
@@ -280,3 +282,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

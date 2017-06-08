@@ -1,9 +1,9 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSQRCodeScanningViewController.h"
 #import "UIColor+OWS.h"
-//#import <ZXingObjC/ZXingObjC.h>
-
 
 @interface OWSQRCodeScanningViewController ()
 
@@ -12,8 +12,9 @@
 @property UIView *maskingView;
 @property CALayer *maskingLayer;
 
-
 @end
+
+#pragma mark -
 
 @implementation OWSQRCodeScanningViewController
 
