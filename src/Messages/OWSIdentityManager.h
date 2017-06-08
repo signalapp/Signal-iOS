@@ -37,6 +37,8 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 
+- (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId;
+
 /**
  * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
  * @returns nil if the recipient does not exist, or is trusted for sending
