@@ -138,7 +138,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [UIImage imageNamed:@"system_message_call"];
     } else {
-        OWSFail(@"Unknown interaction type");
+        OWSFail(@"Unknown interaction type: %@", [interaction class]);
         return nil;
     }
     OWSAssert(result);
@@ -156,7 +156,7 @@
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         return interaction.description;
     } else {
-        OWSFail(@"Unknown interaction type");
+        OWSFail(@"Unknown interaction type: %@", [interaction class]);
         return nil;
     }
 }

@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
             case TSOutgoingMessageAdapter:
                 break;
             default:
-                OWSFail(@"---- Unknown sizing interaction: %@", [((TSMessageAdapter *)messageData).interaction class]);
+                OWSFail(@"Unknown sizing interaction: %@", [((TSMessageAdapter *)messageData).interaction class]);
                 break;
         }
     } else if ([messageData isKindOfClass:[OWSCall class]]) {
