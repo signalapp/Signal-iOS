@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.tag, transcript.recipientId);
-        [self.storageManager deleteAllSessionsForContact:transcript.recipientId];
+        [self.storageManager archiveAllSessionsForContact:transcript.recipientId];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] save];

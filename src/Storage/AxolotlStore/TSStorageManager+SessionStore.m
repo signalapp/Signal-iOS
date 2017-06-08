@@ -3,6 +3,7 @@
 //
 
 #import "TSStorageManager+SessionStore.h"
+#import <AxolotlKit/SessionRecord.h>
 
 NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
 NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
@@ -155,6 +156,35 @@ void AssertIsOnSessionStoreQueue()
 
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    }];
+}
+
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
+{
+    AssertIsOnSessionStoreQueue();
+
+    DDLogInfo(@"[TSStorageManager (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
+
+    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords;
+    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        sessionRecords =
+            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+
+
+        for (id deviceId in sessionRecords) {
+            id object = sessionRecords[deviceId];
+            if (![object isKindOfClass:[SessionRecord class]]) {
+                OWSFail(@"Unexpected object in session dict: %@", object);
+                continue;
+            }
+
+            SessionRecord *sessionRecord = (SessionRecord *)object;
+            [sessionRecord archiveCurrentState];
+        }
+
+        [transaction setObject:sessionRecords
+                        forKey:contactIdentifier
+                  inCollection:TSStorageManagerSessionStoreCollection];
     }];
 }
 

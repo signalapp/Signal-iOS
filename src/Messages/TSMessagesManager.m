@@ -721,7 +721,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] deleteAllSessionsForContact:endSessionEnvelope.source];
+        [[TSStorageManager sharedManager] archiveAllSessionsForContact:endSessionEnvelope.source];
     });
 }
 
