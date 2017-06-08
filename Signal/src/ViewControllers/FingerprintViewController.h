@@ -13,8 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable) OWSConversationSettingsTableViewController *dismissDelegate;
 
-- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint
-                     contactName:(NSString *)contactName NS_SWIFT_NAME(configure(fingerprint:contactName:));
+- (void)configureWithRecipientId:(NSString *)recipientId NS_SWIFT_NAME(configure(recipientId:));
 
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data;
 

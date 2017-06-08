@@ -10,6 +10,7 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
@@ -639,6 +640,39 @@ NS_ASSUME_NONNULL_BEGIN
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:thread
                                                        messageType:TSInfoMessageTypeGroupQuit]];
+
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateDefault
+                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateVerified
+                                                                         isLocalChange:YES]];
+        [result
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:thread
+                                                                       recipientId:@"+19174054215"
+                                                                 verificationState:OWSVerificationStateNoLongerVerified
+                                                                     isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateDefault
+                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateVerified
+                                                                         isLocalChange:NO]];
+        [result
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:thread
+                                                                       recipientId:@"+19174054215"
+                                                                 verificationState:OWSVerificationStateNoLongerVerified
+                                                                     isLocalChange:NO]];
 
         [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
                                                      withTransaction:transaction]];

@@ -3,12 +3,15 @@
 //
 
 #import "OWSSystemMessageCell.h"
+#import "Environment.h"
 #import "NSBundle+JSQMessages.h"
+#import "OWSContactsManager.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
+#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
@@ -81,13 +84,13 @@
     UIImage *icon = [self iconForInteraction:self.interaction];
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.imageView.tintColor = [self iconColorForInteraction:self.interaction];
-    self.titleLabel.text = [OWSSystemMessageCell titleForInteraction:self.interaction];
-    self.titleLabel.textColor = [self textColorForInteraction:self.interaction];
+    self.titleLabel.textColor = [OWSSystemMessageCell textColor];
+    [OWSSystemMessageCell applyTitleForInteraction:self.interaction label:self.titleLabel];
 
     [self setNeedsLayout];
 }
 
-- (UIColor *)textColorForInteraction:(TSInteraction *)interaction
++ (UIColor *)textColor
 {
     return [UIColor colorWithRGBHex:0x303030];
 }
@@ -134,6 +137,9 @@
             case TSInfoMessageTypeDisappearingMessagesUpdate:
                 result = [UIImage imageNamed:@"system_message_timer"];
                 break;
+            case TSInfoMessageVerificationStateChange:
+                result = [UIImage imageNamed:@"system_message_verified"];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [UIImage imageNamed:@"system_message_call"];
@@ -145,19 +151,45 @@
     return result;
 }
 
-+ (NSString *)titleForInteraction:(TSInteraction *)interaction
++ (void)applyTitleForInteraction:(TSInteraction *)interaction label:(UILabel *)label
 {
+    OWSAssert(interaction);
+    OWSAssert(label);
+
     // TODO: Should we move the copy generation into this view?
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        return interaction.description;
+        label.text = interaction.description;
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        return interaction.description;
+        if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
+            OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
+            BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
+            NSString *displayName =
+                [[Environment getCurrent].contactsManager displayNameForPhoneIdentifier:message.recipientId];
+            NSString *titleFormat = (isVerified
+                    ? (message.isLocalChange
+                              ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
+                                    @"Format for info message indicating that the verification state was verified on "
+                                    @"this device. Embeds {{user's name or phone number}}.")
+                              : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
+                                    @"Format for info message indicating that the verification state was verified on "
+                                    @"another device. Embeds {{user's name or phone number}}."))
+                    : (message.isLocalChange
+                              ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
+                                    @"Format for info message indicating that the verification state was unverified on "
+                                    @"this device. Embeds {{user's name or phone number}}.")
+                              : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
+                                    @"Format for info message indicating that the verification state was unverified on "
+                                    @"another device. Embeds {{user's name or phone number}}.")));
+            label.text = [NSString stringWithFormat:titleFormat, displayName];
+        } else {
+            label.text = interaction.description;
+        }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        return interaction.description;
+        label.text = interaction.description;
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
-        return nil;
+        label.text = nil;
     }
 }
 
@@ -216,13 +248,11 @@
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
-    NSString *title = [self titleForInteraction:interaction];
-
     // Creating a UILabel to measure the layout is expensive, but it's the only
     // reliable way to do it.
     UILabel *label = [UILabel new];
     label.font = [self titleFont];
-    label.text = title;
+    [OWSSystemMessageCell applyTitleForInteraction:interaction label:label];
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     CGFloat maxTitleWidth = (collectionViewWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
