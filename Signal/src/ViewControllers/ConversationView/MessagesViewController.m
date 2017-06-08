@@ -1167,8 +1167,7 @@ typedef enum : NSUInteger {
  *          NO if there were no unconfirmed identities
  */
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
-                                                         completion:
-                                                             (void (^)(BOOL didConfirmedIdentity))completionHandler
+                                                         completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
                                                                  confirmationText:confirmationText
@@ -1283,10 +1282,7 @@ typedef enum : NSUInteger {
     }
 
     BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                      @"button title to confirm sending to a recipient whose "
-                      @"safety number recently changed")
+        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
                                                                completion:^(BOOL didConfirmIdentity) {
                                                                    if (didConfirmIdentity) {
                                                                        [weakSelf didPressSendButton:button
@@ -3704,10 +3700,7 @@ typedef enum : NSUInteger {
         }
 
         BOOL didShowSNAlert = [self
-            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-                    @"button title to confirm sending to a recipient whose "
-                    @"safety number recently changed")
+            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
                                                              completion:^(BOOL didConfirmIdentity) {
                                                                  if (didConfirmIdentity) {
                                                                      [weakSelf
