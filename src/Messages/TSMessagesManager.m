@@ -1001,8 +1001,12 @@ NS_ASSUME_NONNULL_BEGIN
       } else if ([exception.name isEqualToString:InvalidVersionException]) {
           errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-          errorMessage =
-              [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:envelope withTransaction:transaction];
+          // Should no longer get here, since we now record the new identity for incoming messages.
+          OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
+              self.tag,
+              envelope.source,
+              envelope.sourceDevice);
+          return;
       } else {
           errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
       }
