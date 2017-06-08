@@ -693,29 +693,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     }];
 
-    {
-        OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-        TSOutgoingMessage *outgoingMessage =
-            [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                inThread:thread
-                                             messageBody:@"hi"
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-        PreKeyBundle *preKeyBundle = [[PreKeyBundle alloc] initWithRegistrationId:0
-                                                                         deviceId:0
-                                                                         preKeyId:0
-                                                                     preKeyPublic:[self createRandomNSDataOfSize:16]
-                                                               signedPreKeyPublic:[self createRandomNSDataOfSize:16]
-                                                                   signedPreKeyId:0
-                                                            signedPreKeySignature:[self createRandomNSDataOfSize:16]
-                                                                      identityKey:[self createRandomNSDataOfSize:16]];
-        [result addObject:[TSInvalidIdentityKeySendingErrorMessage untrustedKeyWithOutgoingMessage:outgoingMessage
-                                                                                          inThread:thread
-                                                                                      forRecipient:@"+19174054215"
-                                                                                      preKeyBundle:preKeyBundle]];
-    }
-
     return result;
 }
 
