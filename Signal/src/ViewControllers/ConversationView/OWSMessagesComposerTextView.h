@@ -4,6 +4,8 @@
 
 #import <JSQMessagesViewController/JSQMessagesViewController.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class SignalAttachment;
 
 @protocol OWSTextViewPasteDelegate <NSObject>
@@ -21,3 +23,5 @@
 @property (weak, nonatomic) id<OWSTextViewPasteDelegate> textViewPasteDelegate;
 
 @end
+
+NS_ASSUME_NONNULL_END

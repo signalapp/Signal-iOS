@@ -222,11 +222,12 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!strongSelf) {
                                 return;
                             }
-                            FingerprintViewController *fingerprintViewController = [[UIStoryboard main]
-                                instantiateViewControllerWithIdentifier:@"FingerprintViewController"];
+                            FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
                             [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
                             fingerprintViewController.dismissDelegate = strongSelf;
-                            [strongSelf presentViewController:fingerprintViewController animated:YES completion:nil];
+                            UINavigationController *navigationController =
+                                [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+                            [strongSelf presentViewController:navigationController animated:YES completion:nil];
                         }]];
     }
 

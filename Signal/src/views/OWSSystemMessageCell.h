@@ -5,6 +5,8 @@
 #import <JSQMessagesViewController/JSQMessagesCollectionViewCell.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSInteraction;
 
 @protocol OWSSystemMessageCellDelegate <NSObject>
@@ -26,3 +28,5 @@
 + (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth;
 
 @end
+
+NS_ASSUME_NONNULL_END

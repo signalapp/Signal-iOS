@@ -5,6 +5,8 @@
 #import "OWSMessagesComposerTextView.h"
 #import "Signal-Swift.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation OWSMessagesComposerTextView
 
 - (BOOL)canBecomeFirstResponder
@@ -19,7 +21,7 @@
     return ([SignalAttachment pasteboardHasPossibleAttachment] && ![SignalAttachment pasteboardHasText]);
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
 {
     if (action == @selector(paste:)) {
         if ([self pasteboardHasPossibleAttachment]) {
@@ -29,7 +31,7 @@
     return [super canPerformAction:action withSender:sender];
 }
 
-- (void)paste:(id)sender
+- (void)paste:(nullable id)sender
 {
     if ([self pasteboardHasPossibleAttachment]) {
         SignalAttachment *attachment = [SignalAttachment attachmentFromPasteboard];
@@ -66,3 +68,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
