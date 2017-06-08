@@ -164,7 +164,7 @@ typedef void (^CustomLayoutBlock)();
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scanButtonTapped:)]];
     [mainView addSubview:scanButton];
     [scanButton autoPinWidthToSuperview];
-    [scanButton autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:12.f];
+    [scanButton autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(12.f, 25.f)];
 
     UILabel *scanButtonLabel = [UILabel new];
     scanButtonLabel.text = NSLocalizedString(@"SCAN_CODE_ACTION",
@@ -191,16 +191,14 @@ typedef void (^CustomLayoutBlock)();
         @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
-    UIFont *instructionsFont = [UIFont ows_dynamicTypeBodyFont];
-    instructionsFont = [instructionsFont fontWithSize:instructionsFont.pointSize * 0.65f];
-    instructionsLabel.font = instructionsFont;
+    instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 16.f)];
     instructionsLabel.textColor = darkGrey;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [mainView addSubview:instructionsLabel];
     [instructionsLabel autoPinWidthToSuperviewWithMargin:16.f];
-    [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:scanButton withOffset:-20.f];
+    [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:scanButton withOffset:-ScaleFromIPhone5To7Plus(20.f, 30.f)];
 
     // Fingerprint Label
     UILabel *fingerprintLabel = [UILabel new];
@@ -216,14 +214,14 @@ typedef void (^CustomLayoutBlock)();
     fingerprintLabel.userInteractionEnabled = YES;
     [mainView addSubview:fingerprintLabel];
     [fingerprintLabel autoPinWidthToSuperviewWithMargin:36.f];
-    [fingerprintLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:instructionsLabel withOffset:-8.f];
+    [fingerprintLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:instructionsLabel withOffset:-ScaleFromIPhone5To7Plus(8.f, 15.f)];
 
     // Fingerprint Image
     CustomLayoutView *fingerprintView = [CustomLayoutView new];
     [mainView addSubview:fingerprintView];
     [fingerprintView autoPinWidthToSuperview];
-    [fingerprintView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
-    [fingerprintView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:fingerprintLabel withOffset:-10.f];
+    [fingerprintView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(10.f, 25.f)];
+    [fingerprintView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:fingerprintLabel withOffset:-ScaleFromIPhone5To7Plus(10.f, 15.f)];
     [fingerprintView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(fingerprintViewTapped:)]];
