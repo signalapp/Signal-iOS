@@ -1090,6 +1090,9 @@
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
 
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
 

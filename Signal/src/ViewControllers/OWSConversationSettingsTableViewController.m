@@ -224,7 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
                             [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
-                            fingerprintViewController.dismissDelegate = strongSelf;
                             UINavigationController *navigationController =
                                 [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
                             [strongSelf presentViewController:navigationController animated:YES completion:nil];
@@ -716,12 +715,6 @@ NS_ASSUME_NONNULL_BEGIN
     [gThread save];
 
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)presentedModalWasDismissed
-{
-    // Else row stays selected after dismissing modal.
-    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 }
 
 - (void)disappearingMessagesSwitchValueDidChange:(UISwitch *)sender

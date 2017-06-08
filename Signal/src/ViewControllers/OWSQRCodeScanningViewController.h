@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
@@ -15,10 +17,13 @@
 
 @end
 
+#pragma mark -
+
 @interface OWSQRCodeScanningViewController
     : UIViewController <AVCaptureMetadataOutputObjectsDelegate, ZXCaptureDelegate>
 
 @property (nonatomic, weak) UIViewController<OWSQRScannerDelegate> *scanDelegate;
+
 - (void)startCapture;
 
 @end

@@ -4,12 +4,14 @@
 
 #import "FingerprintViewController.h"
 #import "Environment.h"
+#import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
-#import "OWSConversationSettingsTableViewController.h"
-#import "OWSQRCodeScanningViewController.h"
+#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
 #import "UIUtil.h"
-#import "UIViewController+CameraPermissions.h"
+#import "UIView+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
@@ -44,18 +46,12 @@ typedef void (^CustomLayoutBlock)();
 
 @interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
 
+@property (nonatomic) NSString *recipientId;
 @property (nonatomic) TSStorageManager *storageManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
-@property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 
 @property (nonatomic) UIBarButtonItem *shareButton;
-@property (nonatomic) UIView *mainView;
-@property (nonatomic) UIView *referenceView;
-@property (nonatomic) UIView *cameraView;
-
-@property (nonatomic) NSLayoutConstraint *verticalAlignmentConstraint;
-@property (nonatomic) BOOL isScanning;
 
 @end
 
@@ -64,6 +60,8 @@ typedef void (^CustomLayoutBlock)();
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
+
+    self.recipientId = recipientId;
 
     self.storageManager = [TSStorageManager sharedManager];
 
@@ -104,59 +102,12 @@ typedef void (^CustomLayoutBlock)();
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-    UIView *referenceView = [UIView new];
-    self.referenceView = referenceView;
-    [self.view addSubview:referenceView];
-    [referenceView autoPinWidthToSuperview];
-    [referenceView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [referenceView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-
     UIView *mainView = [UIView new];
-    self.mainView = mainView;
     mainView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:mainView];
     [mainView autoPinWidthToSuperview];
-    [[NSLayoutConstraint constraintWithItem:mainView
-                                  attribute:NSLayoutAttributeHeight
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:referenceView
-                                  attribute:NSLayoutAttributeHeight
-                                 multiplier:1.0
-                                   constant:0.f] autoInstall];
-    [mainView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mainViewTapped:)]];
-    mainView.userInteractionEnabled = YES;
-
-    UIView *cameraView = [UIView new];
-    self.cameraView = cameraView;
-    cameraView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:cameraView];
-    [cameraView autoPinWidthToSuperview];
-    [cameraView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:mainView];
-    [cameraView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:mainView];
-
-    self.qrScanningController = [OWSQRCodeScanningViewController new];
-    self.qrScanningController.scanDelegate = self;
-    [cameraView addSubview:self.qrScanningController.view];
-    [self.qrScanningController.view autoPinWidthToSuperview];
-    [self.qrScanningController.view autoSetDimension:ALDimensionHeight toSize:270];
-    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
-
-    UILabel *cameraInstructionLabel = [UILabel new];
-    cameraInstructionLabel.text
-        = NSLocalizedString(@"SCAN_CODE_INSTRUCTIONS", @"label presented once scanning (camera) view is visible.");
-    cameraInstructionLabel.font = [UIFont ows_regularFontWithSize:14.f];
-    cameraInstructionLabel.textColor = darkGrey;
-    cameraInstructionLabel.textAlignment = NSTextAlignmentCenter;
-    cameraInstructionLabel.numberOfLines = 0;
-    cameraInstructionLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [cameraView addSubview:cameraInstructionLabel];
-    [cameraInstructionLabel autoPinWidthToSuperviewWithMargin:16.f];
-    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
-    [cameraInstructionLabel autoPinEdge:ALEdgeTop
-                                 toEdge:ALEdgeBottom
-                                 ofView:self.qrScanningController.view
-                             withOffset:10.f];
+    [mainView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [mainView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     // Scan Button
     UIView *scanButton = [UIView new];
@@ -249,65 +200,6 @@ typedef void (^CustomLayoutBlock)();
         fingerprintImageView.frame = CGRectMake(
             round((fingerprintView.width - size) * 0.5f), round((fingerprintView.height - size) * 0.5f), size, size);
     };
-
-    [self updateLayoutForIsScanning:NO animated:NO];
-}
-
-- (void)showScanningViews
-{
-    [self updateLayoutForIsScanning:YES animated:YES];
-}
-
-- (void)hideScanningViews
-{
-    [self updateLayoutForIsScanning:NO animated:YES];
-}
-
-- (void)updateLayoutForIsScanning:(BOOL)isScanning animated:(BOOL)animated
-{
-    self.isScanning = isScanning;
-
-    if (self.verticalAlignmentConstraint) {
-        [NSLayoutConstraint deactivateConstraints:@[ self.verticalAlignmentConstraint ]];
-    }
-    if (isScanning) {
-        self.verticalAlignmentConstraint =
-            [self.cameraView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.referenceView];
-    } else {
-        self.verticalAlignmentConstraint =
-            [self.mainView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.referenceView];
-    }
-    [self.view setNeedsLayout];
-
-    // Show scanning views immediately.
-    if (isScanning) {
-        self.shareButton.enabled = NO;
-        self.cameraView.hidden = NO;
-    }
-
-    void (^completion)() = ^{
-        if (!isScanning) {
-            // Hide scanning views after they are offscreen.
-            self.shareButton.enabled = YES;
-            self.cameraView.hidden = YES;
-        }
-    };
-
-    if (animated) {
-        [UIView animateWithDuration:0.4
-            delay:0.0
-            options:UIViewAnimationOptionCurveEaseInOut
-            animations:^{
-                [self.view layoutSubviews];
-            }
-            completion:^(BOOL finished) {
-                if (finished) {
-                    completion();
-                }
-            }];
-    } else {
-        completion();
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -316,15 +208,7 @@ typedef void (^CustomLayoutBlock)();
     [UIUtil applySignalAppearence];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:YES];
-    if (self.dismissDelegate) {
-        [self.dismissDelegate presentedModalWasDismissed];
-    }
-}
-
-#pragma mark - HilightableLableDelegate
+#pragma mark -
 
 - (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
 {
@@ -372,52 +256,6 @@ typedef void (^CustomLayoutBlock)();
     [self showVerificationFailedWithError:error];
 }
 
-#pragma mark - Action
-
-- (void)closeButton
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)didTapShareButton
-{
-    [self showSharingActivityWithCompletion:nil];
-}
-
-- (void)showScanner
-{
-    [self ows_askForCameraPermissions:^{
-        
-        // Camera stops capturing when "sharing" while in capture mode.
-        // Also, it's less obvious whats being "shared" at this point,
-        // so just disable sharing when in capture mode.
-
-        DDLogInfo(@"%@ Showing Scanner", self.tag);
-
-        [self showScanningViews];
-
-        [self.qrScanningController startCapture];
-    }
-                   alertActionHandler:nil];
-}
-
-#pragma mark - OWSQRScannerDelegate
-
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data
-{
-    [self verifyCombinedFingerprintData:data];
-}
-
-- (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
-{
-    NSError *error;
-    if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
-        [self showVerificationSucceeded];
-    } else {
-        [self showVerificationFailedWithError:error];
-    }
-}
-
 - (void)showVerificationSucceeded
 {
     DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
@@ -430,10 +268,11 @@ typedef void (^CustomLayoutBlock)();
         [UIAlertController alertControllerWithTitle:successTitle
                                             message:successDescription
                                      preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-            [self dismissViewControllerAnimated:true completion:nil];
-    }];
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action) {
+                                                              [self dismissViewControllerAnimated:true completion:nil];
+                                                          }];
     [successAlertController addAction:dismissAction];
 
     [self presentViewController:successAlertController animated:YES completion:nil];
@@ -453,28 +292,31 @@ typedef void (^CustomLayoutBlock)();
 
     NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
-        
-        // Restore previous layout
-        [self hideScanningViews];
     }];
     [failureAlertController addAction:dismissAction];
 
-    // TODO
-    //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);
-    //        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryText style:UIAlertActionStyleDefault
-    //        handler:^(UIAlertAction * _Nonnull action) {
-    //
-    //        }];
-    //        [failureAlertController addAction:retryAction];
     [self presentViewController:failureAlertController animated:YES completion:nil];
 
     DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(nullable void (^)(void))completion
+#pragma mark - Action
+
+- (void)closeButton
 {
-    [self updateLayoutForIsScanning:NO animated:NO];
-    [super dismissViewControllerAnimated:flag completion:completion];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didTapShareButton
+{
+    [self showSharingActivityWithCompletion:nil];
+}
+
+- (void)showScanner
+{
+    FingerprintViewScanController *scanView = [FingerprintViewScanController new];
+    [scanView configureWithRecipientId:self.recipientId];
+    [self.navigationController pushViewController:scanView animated:YES];
 }
 
 - (void)scanButtonTapped:(UIGestureRecognizer *)gestureRecognizer
@@ -487,10 +329,6 @@ typedef void (^CustomLayoutBlock)();
 - (void)fingerprintLabelTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        if (self.isScanning) {
-            [self hideScanningViews];
-            return;
-        }
         [self showSharingActivityWithCompletion:nil];
     }
 }
@@ -498,20 +336,7 @@ typedef void (^CustomLayoutBlock)();
 - (void)fingerprintViewTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        if (self.isScanning) {
-            [self hideScanningViews];
-            return;
-        }
         [self showSharingActivityWithCompletion:nil];
-    }
-}
-
-- (void)mainViewTapped:(UIGestureRecognizer *)gestureRecognizer
-{
-    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        if (self.isScanning) {
-            [self hideScanningViews];
-        }
     }
 }
 

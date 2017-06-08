@@ -2729,8 +2729,7 @@ typedef enum : NSUInteger {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
         });
-    }
-                   alertActionHandler:nil];
+    }];
 }
 - (void)chooseFromLibrary
 {
