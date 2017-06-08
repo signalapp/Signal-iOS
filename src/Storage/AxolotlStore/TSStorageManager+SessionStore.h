@@ -7,6 +7,8 @@
 
 @interface TSStorageManager (SessionStore) <SessionStore>
 
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier;
+
 #pragma mark - debug
 
 - (void)printAllSessions;
