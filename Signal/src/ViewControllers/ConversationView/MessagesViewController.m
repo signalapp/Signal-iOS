@@ -79,7 +79,7 @@
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/Threading.h>
@@ -2355,16 +2355,12 @@ typedef enum : NSUInteger {
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *_Nonnull action) {
                     DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
-                    [errorMessage acceptNewIdentityKey];
-                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeySendingErrorMessage class]]) {
-                        [self.messageSender
-                            resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)errorMessage
-                            success:^{
-                                DDLogDebug(@"%@ Successfully resent key-error message.", self.tag);
-                            }
-                            failure:^(NSError *_Nonnull error) {
-                                DDLogError(@"%@ Failed to resend key-error message with error:%@", self.tag, error);
-                            }];
+
+                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
+                    // but there will be some legacy ones in the wild, behind which await as-of-yet-undecrypted
+                    // messages
+                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
+                        [errorMessage acceptNewIdentityKey];
                     }
                 }];
     [actionSheetController addAction:acceptSafetyNumberAction];
