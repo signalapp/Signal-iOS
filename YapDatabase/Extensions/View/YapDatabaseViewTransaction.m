@@ -1218,7 +1218,7 @@
 		
 		// Create pageMetadata
 		
-		YapDatabaseViewPageMetadata *pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
+		pageMetadata = [[YapDatabaseViewPageMetadata alloc] init];
 		pageMetadata->pageKey = pageKey;
 		pageMetadata->prevPageKey = nil;
 		pageMetadata->group = group;
