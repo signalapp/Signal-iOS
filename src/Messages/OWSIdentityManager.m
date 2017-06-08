@@ -192,8 +192,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
 
-            // TODO: This may be redundant with the "safety number changes"
-            //       messages.
             if (existingIdentity.verificationState != verificationState) {
                 [self saveChangeMessagesForRecipientId:recipientId
                                      verificationState:verificationState
