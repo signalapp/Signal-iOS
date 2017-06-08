@@ -416,10 +416,6 @@ typedef enum : NSUInteger {
 
     [self initializeToolbars];
     [self createScrollDownButton];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self showConversationSettings];
-    });
 }
 
 - (void)registerCustomMessageNibs

@@ -194,15 +194,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateTableContents];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-        [fingerprintViewController configureWithRecipientId:self.thread.contactIdentifier];
-        fingerprintViewController.dismissDelegate = self;
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-        [self presentViewController:navigationController animated:YES completion:nil];
-    });
 }
 
 - (void)updateTableContents
