@@ -68,8 +68,8 @@ class ProfileFetcherJob: NSObject {
             }
 
             if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId) {
-                Logger.info("\(self.TAG) updated identity key in fetched profile for recipient: \(recipientId)")
-                self.storageManager.deleteAllSessions(forContact: recipientId)
+                Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
+                self.storageManager.archiveAllSessions(forContact: recipientId)
             } else {
                 // no change in identity.
             }

@@ -49,11 +49,18 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [self presentVerificationStatePickerForContactThread:contactThread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Delete session"
+                       [OWSTableItem itemWithTitle:@"Delete all sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                                [[TSStorageManager sharedManager]
                                                    deleteAllSessionsForContact:contactThread.contactIdentifier];
+                                           });
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Archive all sessions"
+                                       actionBlock:^{
+                                           dispatch_async([OWSDispatch sessionStoreQueue], ^{
+                                               [[TSStorageManager sharedManager]
+                                                   archiveAllSessionsForContact:contactThread.contactIdentifier];
                                            });
                                        }],
                        [OWSTableItem itemWithTitle:@"Send session reset"
