@@ -336,19 +336,6 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *recipientId = messageEnvelope.source;
         int deviceId = messageEnvelope.sourceDevice;
         dispatch_async([OWSDispatch sessionStoreQueue], ^{
-            if (![storageManager containsSession:recipientId deviceId:deviceId]) {
-                __block TSErrorMessage *errorMessage;
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    errorMessage =
-                        [TSErrorMessage missingSessionWithEnvelope:messageEnvelope withTransaction:transaction];
-                    [errorMessage saveWithTransaction:transaction];
-                }];
-                [self notififyForErrorMessage:errorMessage withEnvelope:messageEnvelope];
-                DDLogError(@"Skipping message envelope for unknown session.");
-                completion(nil);
-                return;
-            }
-
             // DEPRECATED - Remove after all clients have been upgraded.
             NSData *encryptedData
                 = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
