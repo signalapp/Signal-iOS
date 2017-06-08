@@ -524,6 +524,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(message);
     OWSAssert(message.recipientIds.count > 0);
 
+    if (YES) {
+        // Don't actually transmit any verification state sync messages
+        // until we finalize the proto schema changes.
+        //
+        // TODO: Remove.
+        return;
+    }
+
     [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
