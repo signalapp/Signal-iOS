@@ -27,7 +27,7 @@ class SessionResetJob: NSObject {
 
         OWSDispatch.sessionStoreQueue().async {
             Logger.info("\(self.TAG) deleting sessions for recipient: \(self.recipientId)")
-            self.storageManager.archiveAllSessions(forContact: self.recipientId)
+            self.storageManager.deleteAllSessions(forContact: self.recipientId)
 
             DispatchQueue.main.async {
                 let endSessionMessage = EndSessionMessage(timestamp:NSDate.ows_millisecondTimeStamp(), in: self.thread)
