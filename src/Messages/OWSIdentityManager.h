@@ -13,6 +13,9 @@ extern NSString *const TSStorageManagerTrustedKeysCollection;
 // or their verification state changes.
 extern NSString *const kNSNotificationName_IdentityStateDidChange;
 
+// number of bytes in a signal identity key, excluding the key-type byte.
+extern const NSUInteger kIdentityKeyLength;
+
 @class OWSRecipientIdentity;
 @class OWSSignalServiceProtosSyncMessageVerification;
 

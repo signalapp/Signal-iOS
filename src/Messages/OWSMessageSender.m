@@ -4,6 +4,7 @@
 
 #import "OWSMessageSender.h"
 #import "ContactsUpdater.h"
+#import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "OWSBlockingManager.h"
 #import "OWSDevice.h"
@@ -540,34 +541,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (void)resendMessageFromKeyError:(TSInvalidIdentityKeySendingErrorMessage *)errorMessage
-                          success:(void (^)())successHandler
-                          failure:(void (^)(NSError *error))failureHandler
-{
-    AssertIsOnMainThread();
-    OWSAssert(errorMessage);
-
-    NSString *failedMessageId = errorMessage.messageId;
-
-    // Here we remove the existing error message because sending a new message will either
-    //  1.) succeed and create a new successful message in the thread or...
-    //  2.) fail and create a new identical error message in the thread.
-    [errorMessage remove];
-
-    // The failedMessageId might be nil for transient, unsaved outgoing messages.
-    // See [TSOutgoingMessage saveWithTransaction:] for details of which messages
-    // we do not save.
-
-    if (!failedMessageId) {
-        return;
-    }
-
-    TSOutgoingMessage *message = [TSOutgoingMessage fetchObjectWithUniqueID:failedMessageId];
-    OWSAssert(message);
-
-    return [self sendMessage:message success:successHandler failure:failureHandler];
-}
-
 - (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error
 {
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
@@ -885,20 +858,47 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } @catch (NSException *exception) {
         deviceMessages = @[];
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-            [[TSInvalidIdentityKeySendingErrorMessage
-                untrustedKeyWithOutgoingMessage:message
-                                       inThread:thread
-                                   forRecipient:exception.userInfo[TSInvalidRecipientKey]
-                                   preKeyBundle:exception.userInfo[TSInvalidPreKeyBundleKey]] save];
+            // This *can* happen under normal usage, but it should happen relatively rarely.
+            // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
+            // she can pull down his latest identity.
+            // If it's happening a lot, we should rethink our profile fetching strategy.
+            OWSAnalyticsInfo(@"Message send failed due to untrusted key.");
+
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey,
                 NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
                     @"action sheet header when re-sending message which failed because of untrusted identity keys"));
+
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
             [error setIsRetryable:NO];
             // Avoid the "Too many failures with this contact" error rate limiting.
             [error setIsFatal:YES];
-            return failureHandler(error);
+
+            PreKeyBundle *newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
+            if (![newKeyBundle isKindOfClass:[PreKeyBundle class]]) {
+                OWSFail(@"%@ unexpected TSInvalidPreKeyBundleKey: %@", self.tag, newKeyBundle);
+                failureHandler(error);
+                return;
+            }
+
+            NSData *newIdentityKeyWithVersion = newKeyBundle.identityKey;
+            if (![newIdentityKeyWithVersion isKindOfClass:[NSData class]]) {
+                OWSFail(@"%@ unexpected TSInvalidRecipientKey: %@", self.tag, newIdentityKeyWithVersion);
+                failureHandler(error);
+                return;
+            }
+
+            NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
+            if (newIdentityKey.length != kIdentityKeyLength) {
+                OWSFail(@"%@ unexpected key length: %lu", self.tag, (unsigned long)newIdentityKey.length);
+                failureHandler(error);
+                return;
+            }
+
+            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
+
+            failureHandler(error);
+            return;
         }
 
         if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
@@ -1313,6 +1313,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
+// Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
 - (void)handleStaleDevicesWithResponse:(NSData *)responseData
                            recipientId:(NSString *)identifier
                             completion:(void (^)())completionHandler

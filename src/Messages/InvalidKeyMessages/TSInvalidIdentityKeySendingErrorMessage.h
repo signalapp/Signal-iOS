@@ -15,11 +15,6 @@ extern NSString *TSInvalidRecipientKey;
 
 @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
-+ (instancetype)untrustedKeyWithOutgoingMessage:(TSOutgoingMessage *)outgoingMessage
-                                       inThread:(TSThread *)thread
-                                   forRecipient:(NSString *)recipientId
-                                   preKeyBundle:(PreKeyBundle *)preKeyBundle;
-
 @property (nonatomic, readonly) NSString *messageId;
 
 @end
