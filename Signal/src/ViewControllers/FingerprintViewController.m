@@ -80,9 +80,40 @@ typedef void (^CustomLayoutBlock)();
 
 @property (nonatomic) UIBarButtonItem *shareButton;
 
+@property (nonatomic) UILabel *verificationStateLabel;
+@property (nonatomic) UILabel *verifyUnverifyButtonLabel;
+
 @end
 
+#pragma mark -
+
 @implementation FingerprintViewController
+
+- (instancetype)init
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    [self observeNotifications];
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
+}
 
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
@@ -130,21 +161,41 @@ typedef void (^CustomLayoutBlock)();
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-    UIView *mainView = [UIView new];
-    mainView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:mainView];
-    [mainView autoPinWidthToSuperview];
-    [mainView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [mainView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    // Verify/Unverify Button
+    UIView *verifyUnverifyButton = [UIView new];
+    [verifyUnverifyButton
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(verifyUnverifyButtonTapped:)]];
+    [self.view addSubview:verifyUnverifyButton];
+    [verifyUnverifyButton autoPinWidthToSuperview];
+    [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
+    UIView *verifyUnverifyPillbox = [UIView new];
+    verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
+    verifyUnverifyPillbox.layer.cornerRadius = 3.f;
+    verifyUnverifyPillbox.clipsToBounds = YES;
+    [verifyUnverifyButton addSubview:verifyUnverifyPillbox];
+    [verifyUnverifyPillbox autoHCenterInSuperview];
+    [verifyUnverifyPillbox autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(10.f, 15.f)];
+    [verifyUnverifyPillbox autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(10.f, 20.f)];
+
+    UILabel *verifyUnverifyButtonLabel = [UILabel new];
+    self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
+    verifyUnverifyButtonLabel.font = [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
+    verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
+    [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
+    [verifyUnverifyButtonLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(50.f, 50.f)];
+    [verifyUnverifyButtonLabel autoPinHeightToSuperviewWithMargin:ScaleFromIPhone5To7Plus(8.f, 8.f)];
 
     // Learn More
     UIView *learnMoreButton = [UIView new];
     [learnMoreButton
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(learnMoreButtonTapped:)]];
-    [mainView addSubview:learnMoreButton];
+    [self.view addSubview:learnMoreButton];
     [learnMoreButton autoPinWidthToSuperview];
-    [learnMoreButton autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0];
+    [learnMoreButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:verifyUnverifyButton withOffset:0];
 
     UILabel *learnMoreLabel = [UILabel new];
     learnMoreLabel.attributedText = [[NSAttributedString alloc]
@@ -153,32 +204,32 @@ typedef void (^CustomLayoutBlock)();
             attributes:@{
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];
-    learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
     learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
     learnMoreLabel.textAlignment = NSTextAlignmentCenter;
     [learnMoreButton addSubview:learnMoreLabel];
     [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];
-    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
-    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(20.f, 25.f)];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(5.f, 10.f)];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(5.f, 10.f)];
 
     // Instructions
     NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
         @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
-    instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 16.f)];
+    instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
     instructionsLabel.textColor = darkGrey;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [mainView addSubview:instructionsLabel];
+    [self.view addSubview:instructionsLabel];
     [instructionsLabel autoPinWidthToSuperviewWithMargin:16.f];
     [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:learnMoreButton withOffset:0];
 
     // Fingerprint Label
     UILabel *fingerprintLabel = [UILabel new];
     fingerprintLabel.text = self.fingerprint.displayableText;
-    fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:23.f];
+    fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
     fingerprintLabel.textColor = darkGrey;
     fingerprintLabel.numberOfLines = 3;
     fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -187,15 +238,14 @@ typedef void (^CustomLayoutBlock)();
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(fingerprintLabelTapped:)]];
     fingerprintLabel.userInteractionEnabled = YES;
-    [mainView addSubview:fingerprintLabel];
-    [fingerprintLabel autoPinWidthToSuperviewWithMargin:36.f];
+    [self.view addSubview:fingerprintLabel];
+    [fingerprintLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(50.f, 60.f)];
     [fingerprintLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:instructionsLabel withOffset:-ScaleFromIPhone5To7Plus(8.f, 15.f)];
 
     // Fingerprint Image
     CustomLayoutView *fingerprintView = [CustomLayoutView new];
-    [mainView addSubview:fingerprintView];
+    [self.view addSubview:fingerprintView];
     [fingerprintView autoPinWidthToSuperview];
-    [fingerprintView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(10.f, 25.f)];
     [fingerprintView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:fingerprintLabel withOffset:-ScaleFromIPhone5To7Plus(10.f, 15.f)];
     [fingerprintView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
@@ -204,7 +254,7 @@ typedef void (^CustomLayoutBlock)();
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
-        layer.fillColor = darkGrey.CGColor;
+        layer.fillColor = [UIColor colorWithWhite:0.8f alpha:1.f].CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
@@ -222,13 +272,13 @@ typedef void (^CustomLayoutBlock)();
 
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
-    scanLabel.font = [UIFont ows_regularFontWithSize:16.f];
+    scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
     scanLabel.textColor = [UIColor whiteColor];
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
 
     fingerprintView.layoutBlock = ^{
-        CGFloat size = round(MIN(fingerprintView.width, fingerprintView.height) * 0.65f);
+        CGFloat size = round(MIN(fingerprintView.width, fingerprintView.height) * 0.675f);
         fingerprintImageView.frame = CGRectMake(
             round((fingerprintView.width - size) * 0.5f), round((fingerprintView.height - size) * 0.5f), size, size);
         CGFloat scanY = round(fingerprintImageView.bottom
@@ -236,6 +286,49 @@ typedef void (^CustomLayoutBlock)();
         scanLabel.frame = CGRectMake(
             round((fingerprintView.width - scanLabel.width) * 0.5f), scanY, scanLabel.width, scanLabel.height);
     };
+
+    // Verification State
+    UILabel *verificationStateLabel = [UILabel new];
+    self.verificationStateLabel = verificationStateLabel;
+    verificationStateLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
+    verificationStateLabel.textColor = darkGrey;
+    verificationStateLabel.textAlignment = NSTextAlignmentCenter;
+    verificationStateLabel.numberOfLines = 0;
+    verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [self.view addSubview:verificationStateLabel];
+    [verificationStateLabel autoPinWidthToSuperviewWithMargin:16.f];
+    [verificationStateLabel autoPinToTopLayoutGuideOfViewController:self withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
+    [verificationStateLabel autoPinEdge:ALEdgeBottom
+                                 toEdge:ALEdgeTop
+                                 ofView:fingerprintView
+                             withOffset:-ScaleFromIPhone5To7Plus(10.f, 15.f)];
+
+    [self updateVerificationStateLabel];
+}
+
+- (void)updateVerificationStateLabel
+{
+    OWSAssert(self.recipientId.length > 0);
+
+    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
+        == OWSVerificationStateVerified;
+
+    self.verificationStateLabel.text = [NSString
+        stringWithFormat:
+            (isVerified
+                    ? NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT",
+                          @"Label indicating that the user is verified. Embeds {{the user's name or phone number}}.")
+                    : NSLocalizedString(@"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT",
+                          @"Label indicating that the user is not verified. Embeds {{the user's name or phone "
+                          @"number}}.")),
+        self.contactName];
+    self.verifyUnverifyButtonLabel.text
+        = (isVerified ? NSLocalizedString(@"PRIVACY_UNVERIFY_BUTTON",
+                            @"Button that lets user mark another user's identity as unverified.")
+                      : NSLocalizedString(@"PRIVACY_VERIFY_BUTTON",
+                            @"Button that lets user mark another user's identity as verified."));
+
+    [self.view setNeedsLayout];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -354,6 +447,28 @@ typedef void (^CustomLayoutBlock)();
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         [self showScanner];
     }
+}
+
+- (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
+            == OWSVerificationStateVerified;
+        [[OWSIdentityManager sharedManager]
+            setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
+                                :self.identityKey
+                     recipientId:self.recipientId
+                 sendSyncMessage:YES];
+    }
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateVerificationStateLabel];
 }
 
 #pragma mark - Logging

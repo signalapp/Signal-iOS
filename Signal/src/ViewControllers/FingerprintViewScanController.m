@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation FingerprintViewScanController
 
 - (void)configureWithRecipientId:(NSString *)recipientId
