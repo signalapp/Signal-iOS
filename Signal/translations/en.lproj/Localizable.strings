@@ -523,6 +523,9 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
+/* Button that verifies user after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Verify";
+
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset this session.";
 
@@ -937,6 +940,21 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
 
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ is not verified.";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Learn More";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "Mark as not Verified";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
@@ -963,6 +981,9 @@
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
@@ -1083,9 +1104,6 @@
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
-
-/* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
-"SCAN_CODE_ACTION" = "Scan Code";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
@@ -1298,7 +1316,7 @@
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
@@ -1404,6 +1422,9 @@
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You verified %@ on another device.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
 
 /* Action sheet item
    table cell label in conversation settings */

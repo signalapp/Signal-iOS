@@ -15,23 +15,30 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewScanController () <OWSQRScannerDelegate>
 
 @property (nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) NSString *recipientId;
+@property (nonatomic) NSData *identityKey;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
 @property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 
 @end
 
+#pragma mark -
+
 @implementation FingerprintViewScanController
 
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
+
+    self.recipientId = recipientId;
 
     self.storageManager = [TSStorageManager sharedManager];
 
@@ -41,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
     OWSAssert(recipientIdentity);
+    // By capturing the identity key when we enter these views, we prevent the edge case
+    // where the user verifies a key that we learned about while this view was open.
+    self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
@@ -143,28 +153,84 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationSucceeded
 {
-    DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
-    NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    NSString *descriptionFormat = NSLocalizedString(
-        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
-    NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
-    UIAlertController *successAlertController =
-        [UIAlertController alertControllerWithTitle:successTitle
-                                            message:successDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {
-                                                              [self dismissViewControllerAnimated:true completion:nil];
-                                                          }];
-    [successAlertController addAction:dismissAction];
-
-    [self presentViewController:successAlertController animated:YES completion:nil];
+    [self.class showVerificationSucceeded:self
+                              identityKey:self.identityKey
+                              recipientId:self.recipientId
+                              contactName:self.contactName
+                                      tag:self.tag];
 }
 
 - (void)showVerificationFailedWithError:(NSError *)error
 {
+
+    [self.class showVerificationFailedWithError:error
+        viewController:self
+        retryBlock:^{
+            [self.qrScanningController startCapture];
+        }
+        cancelBlock:^{
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        tag:self.tag];
+}
+
++ (void)showVerificationSucceeded:(UIViewController *)viewController
+                      identityKey:(NSData *)identityKey
+                      recipientId:(NSString *)recipientId
+                      contactName:(NSString *)contactName
+                              tag:(NSString *)tag
+{
+    OWSAssert(viewController);
+    OWSAssert(identityKey.length > 0);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(contactName.length > 0);
+    OWSAssert(tag.length > 0);
+
+    DDLogInfo(@"%@ Successfully verified safety numbers.", tag);
+
+    NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
+    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
+    NSString *descriptionFormat = NSLocalizedString(
+        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
+    NSString *successDescription = [NSString stringWithFormat:descriptionFormat, contactName];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:successTitle
+                                                                             message:successDescription
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
+                                                     @"Button that verifies user after a successful fingerprint scan.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *action) {
+                                             [OWSIdentityManager.sharedManager
+                                                 setVerificationState:OWSVerificationStateVerified
+                                                          identityKey:identityKey
+                                                          recipientId:recipientId
+                                                      sendSyncMessage:YES];
+                                             [viewController dismissViewControllerAnimated:true completion:nil];
+                                         }]];
+    UIAlertAction *dismissAction =
+        [UIAlertAction actionWithTitle:dismissText
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [viewController dismissViewControllerAnimated:true completion:nil];
+                               }];
+    [alertController addAction:dismissAction];
+
+    [viewController presentViewController:alertController animated:YES completion:nil];
+}
+
++ (void)showVerificationFailedWithError:(NSError *)error
+                         viewController:(UIViewController *)viewController
+                             retryBlock:(void (^_Nullable)())retryBlock
+                            cancelBlock:(void (^_Nonnull)())cancelBlock
+                                    tag:(NSString *)tag
+{
+    OWSAssert(viewController);
+    OWSAssert(cancelBlock);
+    OWSAssert(tag.length > 0);
+
+    DDLogInfo(@"%@ Failed to verify safety numbers.", tag);
+
     NSString *_Nullable failureTitle;
     if (error.code != OWSErrorCodeUserError) {
         failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
@@ -174,25 +240,27 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              message:error.localizedDescription
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController
-        addAction:[UIAlertAction
-                      actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT",
-                                          @"Generic text for button that retries whatever the last action was.")
-                                style:UIAlertActionStyleDefault
-                              handler:^(UIAlertAction *action) {
-                                  [self.qrScanningController startCapture];
-                              }]];
+    if (retryBlock) {
+        [alertController
+            addAction:[UIAlertAction
+                          actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT",
+                                              @"Generic text for button that retries whatever the last action was.")
+                                    style:UIAlertActionStyleDefault
+                                  handler:^(UIAlertAction *action) {
+                                      retryBlock();
+                                  }]];
+    }
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *action) {
-                                                              [self.navigationController popViewControllerAnimated:YES];
+                                                              cancelBlock();
                                                           }];
     [alertController addAction:dismissAction];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [viewController presentViewController:alertController animated:YES completion:nil];
 
-    DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
+    DDLogWarn(@"%@ Identity verification failed with error: %@", tag, error);
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)animated completion:(nullable void (^)(void))completion
