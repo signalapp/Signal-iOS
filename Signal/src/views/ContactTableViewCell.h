@@ -33,6 +33,8 @@ extern NSString *const kContactsTable_CellReuseIdentifier;
 
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 
+- (void)addVerifiedSubtitle;
+
 @end
 
 NS_ASSUME_NONNULL_END

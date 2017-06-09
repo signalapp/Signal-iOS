@@ -182,7 +182,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
-@property (nonatomic) UIView *blockStateIndicator;
+@property (nonatomic) UIView *bannerView;
 
 // Back Button Unread Count
 @property (nonatomic, readonly) UIView *backButtonUnreadCountView;
@@ -294,9 +294,9 @@ typedef enum : NSUInteger {
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self ensureBlockStateIndicator];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    [self ensureBannerState];
 }
 
 - (void)identityStateDidChange:(NSNotification *)notification
@@ -304,6 +304,7 @@ typedef enum : NSUInteger {
     OWSAssert([NSThread isMainThread]);
 
     [self updateNavigationBarSubtitleLabel];
+    [self ensureBannerState];
 }
 
 - (void)peekSetup
@@ -543,7 +544,7 @@ typedef enum : NSUInteger {
     // Triggering modified notification renders "call notification" when leaving full screen call view
     [self.thread touch];
 
-    [self ensureBlockStateIndicator];
+    [self ensureBannerState];
 
     [self resetContentAndLayout];
 
@@ -671,17 +672,49 @@ typedef enum : NSUInteger {
 {
     _userHasScrolled = userHasScrolled;
 
-    [self ensureBlockStateIndicator];
+    [self ensureBannerState];
 }
 
-- (void)ensureBlockStateIndicator
+- (void)ensureBannerState
 {
     // This method should be called rarely, so it's simplest to discard and
     // rebuild the indicator view every time.
-    [self.blockStateIndicator removeFromSuperview];
-    self.blockStateIndicator = nil;
+    [self.bannerView removeFromSuperview];
+    self.bannerView = nil;
 
     if (self.userHasScrolled) {
+        return;
+    }
+
+    // A collection of the group members who are "no longer verified".
+    NSMutableArray<NSString *> *noLongerVerifiedRecipientIds = [NSMutableArray new];
+    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateNoLongerVerified) {
+            [noLongerVerifiedRecipientIds addObject:recipientId];
+        }
+    }
+    if (noLongerVerifiedRecipientIds.count > 0) {
+        NSString *message;
+        if (noLongerVerifiedRecipientIds.count > 1) {
+            message = NSLocalizedString(@"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
+                @"Indicates that more than one member of this group conversation is no longer verified.");
+        } else {
+            NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
+            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
+            NSString *format
+                = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
+                                                  @"Indicates that one member of this group conversation is no longer "
+                                                  @"verified. Embeds {{user's name or phone number}}.")
+                                            : NSLocalizedString(@"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
+                                                  @"Indicates that this 1:1 conversation is no longer verified. Embeds "
+                                                  @"{{user's name or phone number}}."));
+            message = [NSString stringWithFormat:format, displayName];
+        }
+
+        [self createBannerWithTitle:message
+                        bannerColor:[UIColor ows_destructiveRedColor]
+                        tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)];
         return;
     }
 
@@ -704,41 +737,61 @@ typedef enum : NSUInteger {
     }
 
     if (blockStateMessage) {
-        UILabel *label = [UILabel new];
-        label.font = [UIFont ows_mediumFontWithSize:14.f];
-        label.text = blockStateMessage;
-        label.textColor = [UIColor whiteColor];
-
-        UIView *blockStateIndicator = [UIView new];
-        blockStateIndicator.backgroundColor = [UIColor ows_redColor];
-        blockStateIndicator.layer.cornerRadius = 2.5f;
-
-        // Use a shadow to "pop" the indicator above the other views.
-        blockStateIndicator.layer.shadowColor = [UIColor blackColor].CGColor;
-        blockStateIndicator.layer.shadowOffset = CGSizeMake(2, 3);
-        blockStateIndicator.layer.shadowRadius = 2.f;
-        blockStateIndicator.layer.shadowOpacity = 0.35f;
-
-        [blockStateIndicator addSubview:label];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:15];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15];
-
-        [blockStateIndicator addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                                                      initWithTarget:self
-                                                              action:@selector(blockStateIndicatorWasTapped:)]];
-
-        [self.view addSubview:blockStateIndicator];
-        [blockStateIndicator autoHCenterInSuperview];
-        [blockStateIndicator autoPinToTopLayoutGuideOfViewController:self withInset:10];
-        [self.view layoutSubviews];
-
-        self.blockStateIndicator = blockStateIndicator;
+        [self createBannerWithTitle:blockStateMessage
+                        bannerColor:[UIColor ows_destructiveRedColor]
+                        tapSelector:@selector(blockBannerViewWasTapped:)];
     }
 }
 
-- (void)blockStateIndicatorWasTapped:(UIGestureRecognizer *)sender
+- (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
+{
+    OWSAssert(title.length > 0);
+    OWSAssert(bannerColor);
+
+    UILabel *label = [UILabel new];
+    label.font = [UIFont ows_mediumFontWithSize:14.f];
+    label.text = title;
+    label.textColor = [UIColor whiteColor];
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.textAlignment = NSTextAlignmentCenter;
+
+    UIView *bannerView = [UIView new];
+    bannerView.backgroundColor = bannerColor;
+    bannerView.layer.cornerRadius = 2.5f;
+
+    // Use a shadow to "pop" the indicator above the other views.
+    bannerView.layer.shadowColor = [UIColor blackColor].CGColor;
+    bannerView.layer.shadowOffset = CGSizeMake(2, 3);
+    bannerView.layer.shadowRadius = 2.f;
+    bannerView.layer.shadowOpacity = 0.35f;
+
+    [bannerView addSubview:label];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
+    const CGFloat kBannerHPadding = 15.f;
+    [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kBannerHPadding];
+    [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kBannerHPadding];
+
+    [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
+
+    [self.view addSubview:bannerView];
+    [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:10];
+    [bannerView autoHCenterInSuperview];
+
+    CGFloat labelDesiredWidth = [label sizeThatFits:CGSizeZero].width;
+    CGFloat bannerDesiredWidth = labelDesiredWidth + kBannerHPadding * 2.f;
+    const CGFloat kMinBannerHMargin = 20.f;
+    if (bannerDesiredWidth + kMinBannerHMargin * 2.f >= self.view.width) {
+        [bannerView autoPinWidthToSuperviewWithMargin:kMinBannerHMargin];
+    }
+
+    [self.view layoutSubviews];
+
+    self.bannerView = bannerView;
+}
+
+- (void)blockBannerViewWasTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state != UIGestureRecognizerStateRecognized) {
         return;
@@ -755,6 +808,13 @@ typedef enum : NSUInteger {
             BlockListViewController *vc = [[BlockListViewController alloc] init];
             [self.navigationController pushViewController:vc animated:YES];
         }
+    }
+}
+
+- (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self showConversationSettingsAndShowVerification:YES];
     }
 }
 
@@ -1213,11 +1273,7 @@ typedef enum : NSUInteger {
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:recipientId];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
 }
 
 #pragma mark - Calls
@@ -1793,6 +1849,11 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettings
 {
+    [self showConversationSettingsAndShowVerification:NO];
+}
+
+- (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
+{
     if (self.userLeftGroup) {
         DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
         return;
@@ -1801,6 +1862,7 @@ typedef enum : NSUInteger {
     OWSConversationSettingsTableViewController *settingsVC = [OWSConversationSettingsTableViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread];
+    settingsVC.showVerificationOnAppear = showVerification;
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
 

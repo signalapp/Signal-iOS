@@ -61,9 +61,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
 - (void)signalAccountsDidChange:(id)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self sendSyncContactsMessageIfPossible];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    [self sendSyncContactsMessageIfPossible];
 }
 
 #pragma mark - Methods

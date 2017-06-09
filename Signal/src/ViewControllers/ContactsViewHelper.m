@@ -79,18 +79,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateContacts];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateContacts];
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    OWSAssert([NSThread isMainThread]);
 
-        [self updateContacts];
-    });
+    self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+
+    [self updateContacts];
 }
 
 #pragma mark - Contacts

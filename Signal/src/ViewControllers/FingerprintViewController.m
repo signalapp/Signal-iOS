@@ -89,6 +89,27 @@ typedef void (^CustomLayoutBlock)();
 
 @implementation FingerprintViewController
 
++ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    OWSRecipientIdentity *_Nullable recipientIdentity =
+        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+    if (!recipientIdentity) {
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                                          @"Title for alert explaining that a user cannot be verified.")
+                              message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                                          @"Message for alert explaining that a user cannot be verified.")];
+        return;
+    }
+
+    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
+    [fingerprintViewController configureWithRecipientId:recipientId];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+    [viewController presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -493,6 +514,8 @@ typedef void (^CustomLayoutBlock)();
                                 :self.identityKey
                      recipientId:self.recipientId
                  sendSyncMessage:YES];
+
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

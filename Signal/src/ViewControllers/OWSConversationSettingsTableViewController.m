@@ -95,6 +95,21 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+
+    [self observeNotifications];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
 }
 
 - (NSString *)threadName
@@ -196,6 +211,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    if (self.showVerificationOnAppear) {
+        self.showVerificationOnAppear = NO;
+        if (self.isGroupThread) {
+            [self showGroupMembersView];
+        } else {
+            [self showVerificationView];
+        }
+    }
+}
+
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
@@ -211,23 +240,16 @@ NS_ASSUME_NONNULL_BEGIN
     firstSection.customHeaderHeight = @(100.f);
 
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [firstSection
-            addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                return [weakSelf disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
-                                                            @"table cell label in conversation settings")
-                                               iconName:@"table_ic_verify"];
-            }
-                        actionBlock:^{
-                            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                            if (!strongSelf) {
-                                return;
-                            }
-                            FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-                            [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
-                            UINavigationController *navigationController =
-                                [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-                            [strongSelf presentViewController:navigationController animated:YES completion:nil];
-                        }]];
+        [firstSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return [weakSelf
+                disclosureCellWithName:
+                    NSLocalizedString(@"VERIFY_PRIVACY",
+                        @"Label for button or row which allows users to verify the safety number of another user.")
+                              iconName:@"table_ic_verify"];
+        }
+                                  actionBlock:^{
+                                      [weakSelf showVerificationView];
+                                  }]];
     }
 
     [firstSection
@@ -349,14 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                iconName:@"table_ic_group_members"];
             }
                 actionBlock:^{
-                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    ShowGroupMembersViewController *showGroupMembersViewController =
-                        [ShowGroupMembersViewController new];
-                    [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
-                    [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
+                    [weakSelf showGroupMembersView];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 return [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
@@ -535,23 +550,51 @@ NS_ASSUME_NONNULL_BEGIN
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
-    if (![self isGroupThread] && ![self.thread.name isEqualToString:self.thread.contactIdentifier]) {
-        NSString *subtitle =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
+    __block UIView *lastTitleView = threadTitleLabel;
 
-        UILabel *threadSubtitleLabel = [UILabel new];
-        threadSubtitleLabel.text = subtitle;
-        threadSubtitleLabel.textColor = [UIColor blackColor];
-        // TODO:
-        threadSubtitleLabel.font = [UIFont ows_regularFontWithSize:12.f];
-        threadSubtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [threadNameView addSubview:threadSubtitleLabel];
-        [threadSubtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [threadSubtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:threadTitleLabel];
-        [threadSubtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-    } else {
-        [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    if (![self isGroupThread]) {
+        const CGFloat kSubtitlePointSize = 12.f;
+        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+            UILabel *subtitleLabel = [UILabel new];
+            subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+            subtitleLabel.attributedText = subtitle;
+            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+            [threadNameView addSubview:subtitleLabel];
+            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+            [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+            lastTitleView = subtitleLabel;
+        };
+
+        NSString *recipientId = self.thread.contactIdentifier;
+
+        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
+        if (hasName) {
+            NSAttributedString *subtitle = [[NSAttributedString alloc]
+                initWithString:[PhoneNumber
+                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
+            addSubtitle(subtitle);
+        }
+
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateVerified;
+        if (isVerified) {
+            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
+            // "checkmark"
+            [subtitle appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:@"\uf00c "
+                                                     attributes:@{
+                                                         NSFontAttributeName :
+                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                                     }]];
+            [subtitle appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+                                                                    @"Badge indicating that the user is verified.")]];
+            addSubtitle(subtitle);
+        }
     }
+
+    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
@@ -630,6 +673,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showVerificationView
+{
+    NSString *recipientId = self.thread.contactIdentifier;
+    OWSAssert(recipientId.length > 0);
+
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
+}
+
+- (void)showGroupMembersView
+{
+    ShowGroupMembersViewController *showGroupMembersViewController = [ShowGroupMembersViewController new];
+    [showGroupMembersViewController configWithThread:(TSGroupThread *)self.thread];
+    [self.navigationController pushViewController:showGroupMembersViewController animated:YES];
+}
 
 - (void)showUpdateGroupView:(UpdateGroupMode)mode
 {
@@ -925,6 +983,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.thread updateWithMutedUntilDate:value];
     [self.tableView reloadData];
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging

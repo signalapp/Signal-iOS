@@ -63,7 +63,7 @@ class SafetyNumberConfirmationAlert: NSObject {
         }
         actionSheetController.addAction(confirmAction)
 
-        let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Action sheet item"), style: .default) { _ in
+        let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Label for button or row which allows users to verify the safety number of another user."), style: .default) { _ in
             Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(untrustedIdentity)")
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
@@ -82,10 +82,11 @@ class SafetyNumberConfirmationAlert: NSObject {
     }
 
     public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
-        let fingerprintViewController = FingerprintViewController()
-        fingerprintViewController.configure(recipientId: theirRecipientId)
-        let navigationController = UINavigationController(rootViewController:fingerprintViewController)
-        UIApplication.shared.frontmostViewController?.present(navigationController, animated: true, completion: completion)
+        guard let fromViewController = UIApplication.shared.frontmostViewController else {
+            Logger.info("\(self.TAG) Missing frontmostViewController")
+            return
+        }
+        FingerprintViewController.showVerificationView(from:fromViewController, recipientId:theirRecipientId)
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {
