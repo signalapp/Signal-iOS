@@ -92,6 +92,9 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageAddToContactsOffer:
             return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
+        case TSInfoMessageVerificationStateChange:
+            return NSLocalizedString(@"VERIFICATION_STATE_CHANGE_GENERIC",
+                @"Generic message indicating that verification state changed for a given user.");
         default:
             break;
     }
