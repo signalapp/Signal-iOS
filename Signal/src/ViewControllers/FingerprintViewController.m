@@ -137,33 +137,29 @@ typedef void (^CustomLayoutBlock)();
     [mainView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [mainView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
-    // Scan Button
-    UIView *scanButton = [UIView new];
-    [scanButton
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scanButtonTapped:)]];
-    [mainView addSubview:scanButton];
-    [scanButton autoPinWidthToSuperview];
-    [scanButton autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(12.f, 25.f)];
+    // Learn More
+    UIView *learnMoreButton = [UIView new];
+    [learnMoreButton
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(learnMoreButtonTapped:)]];
+    [mainView addSubview:learnMoreButton];
+    [learnMoreButton autoPinWidthToSuperview];
+    [learnMoreButton autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0];
 
-    UILabel *scanButtonLabel = [UILabel new];
-    scanButtonLabel.text = NSLocalizedString(@"SCAN_CODE_ACTION",
-        @"Button label presented with camera icon while verifying privacy credentials. Shows the camera interface.");
-    scanButtonLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    scanButtonLabel.textColor = darkGrey;
-    [scanButton addSubview:scanButtonLabel];
-    [scanButtonLabel autoHCenterInSuperview];
-    [scanButtonLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    UIImage *scanButtonImage = [UIImage imageNamed:@"btnCamera--white"];
-    OWSAssert(scanButtonImage);
-    UIImageView *scanButtonImageView = [UIImageView new];
-    scanButtonImageView.image = [scanButtonImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    scanButtonImageView.tintColor = darkGrey;
-
-    [scanButton addSubview:scanButtonImageView];
-    [scanButtonImageView autoHCenterInSuperview];
-    [scanButtonImageView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [scanButtonImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:scanButtonLabel withOffset:-5.f];
+    UILabel *learnMoreLabel = [UILabel new];
+    learnMoreLabel.attributedText = [[NSAttributedString alloc]
+        initWithString:NSLocalizedString(@"PRIVACY_SAFETY_NUMBERS_LEARN_MORE",
+                           @"Label for a link to more information about safety numbers and verification.")
+            attributes:@{
+                NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+            }];
+    learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
+    learnMoreLabel.textAlignment = NSTextAlignmentCenter;
+    [learnMoreButton addSubview:learnMoreLabel];
+    [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(20.f, 25.f)];
 
     // Instructions
     NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
@@ -177,7 +173,7 @@ typedef void (^CustomLayoutBlock)();
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [mainView addSubview:instructionsLabel];
     [instructionsLabel autoPinWidthToSuperviewWithMargin:16.f];
-    [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:scanButton withOffset:-ScaleFromIPhone5To7Plus(20.f, 30.f)];
+    [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:learnMoreButton withOffset:0];
 
     // Fingerprint Label
     UILabel *fingerprintLabel = [UILabel new];
@@ -224,10 +220,21 @@ typedef void (^CustomLayoutBlock)();
     fingerprintImageView.layer.minificationFilter = kCAFilterNearest;
     [fingerprintView addSubview:fingerprintImageView];
 
+    UILabel *scanLabel = [UILabel new];
+    scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
+    scanLabel.font = [UIFont ows_regularFontWithSize:16.f];
+    scanLabel.textColor = [UIColor whiteColor];
+    [scanLabel sizeToFit];
+    [fingerprintView addSubview:scanLabel];
+
     fingerprintView.layoutBlock = ^{
         CGFloat size = round(MIN(fingerprintView.width, fingerprintView.height) * 0.65f);
         fingerprintImageView.frame = CGRectMake(
             round((fingerprintView.width - size) * 0.5f), round((fingerprintView.height - size) * 0.5f), size, size);
+        CGFloat scanY = round(fingerprintImageView.bottom
+            + ((fingerprintView.height - fingerprintImageView.bottom) - scanLabel.height) * 0.33f);
+        scanLabel.frame = CGRectMake(
+            round((fingerprintView.width - scanLabel.width) * 0.5f), scanY, scanLabel.width, scanLabel.height);
     };
 }
 
@@ -325,10 +332,13 @@ typedef void (^CustomLayoutBlock)();
     [self.navigationController pushViewController:scanView animated:YES];
 }
 
-- (void)scanButtonTapped:(UIGestureRecognizer *)gestureRecognizer
+- (void)learnMoreButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self showScanner];
+        NSString *learnMoreURL = @"https://support.whispersystems.org/hc/en-us/articles/"
+                                 @"213134107-How-do-I-verify-the-person-I-m-sending-messages-to-is-who-they-say-they-"
+                                 @"are-";
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
     }
 }
 
@@ -342,7 +352,7 @@ typedef void (^CustomLayoutBlock)();
 - (void)fingerprintViewTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self showSharingActivityWithCompletion:nil];
+        [self showScanner];
     }
 }
 
