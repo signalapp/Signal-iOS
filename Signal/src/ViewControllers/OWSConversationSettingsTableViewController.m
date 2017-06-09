@@ -95,6 +95,21 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+
+    [self observeNotifications];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
 }
 
 - (NSString *)threadName
@@ -196,6 +211,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    if (self.showVerificationOnAppear) {
+        self.showVerificationOnAppear = NO;
+        if (self.isGroupThread) {
+            [self showGroupMembersView];
+        } else {
+            [self showVerificationView];
+        }
+    }
+}
+
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
@@ -218,15 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                iconName:@"table_ic_verify"];
             }
                         actionBlock:^{
-                            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                            if (!strongSelf) {
-                                return;
-                            }
-                            FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-                            [fingerprintViewController configureWithRecipientId:strongSelf.thread.contactIdentifier];
-                            UINavigationController *navigationController =
-                                [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-                            [strongSelf presentViewController:navigationController animated:YES completion:nil];
+                            [weakSelf showVerificationView];
                         }]];
     }
 
@@ -349,14 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                iconName:@"table_ic_group_members"];
             }
                 actionBlock:^{
-                    OWSConversationSettingsTableViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    ShowGroupMembersViewController *showGroupMembersViewController =
-                        [ShowGroupMembersViewController new];
-                    [showGroupMembersViewController configWithThread:(TSGroupThread *)strongSelf.thread];
-                    [strongSelf.navigationController pushViewController:showGroupMembersViewController animated:YES];
+                    [weakSelf showGroupMembersView];
                 }],
             [OWSTableItem itemWithCustomCellBlock:^{
                 return [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
@@ -535,15 +549,47 @@ NS_ASSUME_NONNULL_BEGIN
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
-    if (![self isGroupThread] && ![self.thread.name isEqualToString:self.thread.contactIdentifier]) {
-        NSString *subtitle =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
+    const CGFloat kSubtitlePointSize = 12.f;
+    NSMutableAttributedString *subtitle = nil;
+    if (![self isGroupThread]) {
+        NSString *recipientId = self.thread.contactIdentifier;
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateVerified;
+        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
 
+        if (isVerified || hasName) {
+            subtitle = [NSMutableAttributedString new];
+
+            if (isVerified) {
+                // "checkmark"
+                [subtitle appendAttributedString:[[NSAttributedString alloc]
+                                                     initWithString:@"\uf00c "
+                                                         attributes:@{
+                                                             NSFontAttributeName :
+                                                                 [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                                         }]];
+            }
+
+            if (hasName) {
+                [subtitle
+                    appendAttributedString:
+                        [[NSAttributedString alloc]
+                            initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:
+                                                            recipientId]]];
+            } else {
+                [subtitle
+                    appendAttributedString:[[NSAttributedString alloc]
+                                               initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+                                                                  @"Badge indicating that the user is verified.")]];
+            }
+        }
+    }
+
+    if (subtitle) {
         UILabel *threadSubtitleLabel = [UILabel new];
-        threadSubtitleLabel.text = subtitle;
-        threadSubtitleLabel.textColor = [UIColor blackColor];
-        // TODO:
-        threadSubtitleLabel.font = [UIFont ows_regularFontWithSize:12.f];
+        threadSubtitleLabel.textColor = [UIColor ows_darkGrayColor];
+        threadSubtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        threadSubtitleLabel.attributedText = subtitle;
         threadSubtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [threadNameView addSubview:threadSubtitleLabel];
         [threadSubtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -630,6 +676,22 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showVerificationView
+{
+    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
+    [fingerprintViewController configureWithRecipientId:self.thread.contactIdentifier];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)showGroupMembersView
+{
+    ShowGroupMembersViewController *showGroupMembersViewController = [ShowGroupMembersViewController new];
+    [showGroupMembersViewController configWithThread:(TSGroupThread *)self.thread];
+    [self.navigationController pushViewController:showGroupMembersViewController animated:YES];
+}
 
 - (void)showUpdateGroupView:(UpdateGroupMode)mode
 {
@@ -925,6 +987,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.thread updateWithMutedUntilDate:value];
     [self.tableView reloadData];
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging

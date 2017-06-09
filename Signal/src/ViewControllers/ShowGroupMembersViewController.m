@@ -63,6 +63,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+
+    [self observeNotifications];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
 }
 
 - (void)configWithThread:(TSGroupThread *)thread
@@ -132,6 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
                 [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
             } else {
                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+            }
+
+            BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+                == OWSVerificationStateVerified;
+            if (isVerified) {
+                [cell addVerifiedSubtitle];
             }
 
             return cell;
@@ -311,6 +332,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogDebug(@"%@ done editing contact.", self.tag);
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging

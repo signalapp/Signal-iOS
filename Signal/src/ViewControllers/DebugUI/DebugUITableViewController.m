@@ -6,6 +6,7 @@
 #import "DebugUIContacts.h"
 #import "DebugUIMessages.h"
 #import "DebugUISessionState.h"
+#import "DebugUIVerification.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -38,41 +39,43 @@ NS_ASSUME_NONNULL_BEGIN
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
++ (OWSTableItem *)itemForSubsection:(OWSTableSection *)section
+                     viewController:(DebugUITableViewController *)viewController
+{
+    OWSAssert(section);
+
+    __weak DebugUITableViewController *weakSelf = viewController;
+    return [OWSTableItem disclosureItemWithText:section.headerTitle
+                                    actionBlock:^{
+                                        [weakSelf pushPageWithSection:section];
+                                    }];
+}
+
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController
 {
     OWSAssert(thread);
     OWSAssert(fromViewController);
 
     DebugUITableViewController *viewController = [DebugUITableViewController new];
-    __weak DebugUITableViewController *weakSelf = viewController;
 
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = @"Debug: Conversation";
 
-    OWSTableSection *messagesSection = [DebugUIMessages sectionForThread:thread];
-    [contents addSection:[OWSTableSection
-                             sectionWithTitle:messagesSection.headerTitle
-                                        items:@[
-                                            [OWSTableItem disclosureItemWithText:messagesSection.headerTitle
-                                                                     actionBlock:^{
-                                                                         [weakSelf pushPageWithSection:messagesSection];
-                                                                     }],
-                                        ]]];
-
+    NSMutableArray<OWSTableItem *> *subsectionItems = [NSMutableArray new];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIMessages sectionForThread:thread] viewController:viewController]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts section] viewController:viewController]];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
 
-        OWSTableSection *sessionSection = [DebugUISessionState sectionForContactThread:contactThread];
-        [contents addSection:[OWSTableSection
-                                 sectionWithTitle:sessionSection.headerTitle
-                                            items:@[
-                                                [OWSTableItem disclosureItemWithText:sessionSection.headerTitle
-                                                                         actionBlock:^{
-                                                                             [weakSelf
-                                                                                 pushPageWithSection:sessionSection];
-                                                                         }],
-                                            ]]];
+        [subsectionItems addObject:[self itemForSubsection:[DebugUISessionState sectionForContactThread:contactThread]
+                                            viewController:viewController]];
+        [subsectionItems addObject:[self itemForSubsection:[DebugUIVerification sectionForThread:contactThread]
+                                            viewController:viewController]];
+    }
+    [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
+    if ([thread isKindOfClass:[TSContactThread class]]) {
         // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
         // we give a little delay.
         uint64_t notificationDelay = 5;
@@ -137,8 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          }],
                                ]]];
     } // end contact thread section
-
-    [contents addSection:[DebugUIContacts section]];
 
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
