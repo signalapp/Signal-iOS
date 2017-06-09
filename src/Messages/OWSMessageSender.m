@@ -11,7 +11,6 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
-#import "OWSLegacyMessageServiceParams.h"
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
@@ -1155,8 +1154,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     messageDict = [self encryptedMessageWithPlaintext:plainText
                                                           toRecipient:recipient.uniqueId
                                                              deviceId:deviceNumber
-                                                        keyingStorage:[TSStorageManager sharedManager]
-                                                               legacy:message.isLegacyMessage];
+                                                        keyingStorage:[TSStorageManager sharedManager]];
                 } @catch (NSException *exception) {
                     encryptionException = exception;
                 }
@@ -1189,7 +1187,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
                                   keyingStorage:(TSStorageManager *)storage
-                                         legacy:(BOOL)isLegacymessage
 {
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
@@ -1263,21 +1260,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
 
-    OWSMessageServiceParams *messageParams;
-    // DEPRECATED - Remove after all clients have been upgraded.
-    if (isLegacymessage) {
-        messageParams = [[OWSLegacyMessageServiceParams alloc] initWithType:messageType
-                                                                recipientId:identifier
-                                                                     device:[deviceNumber intValue]
-                                                                       body:serializedMessage
-                                                             registrationId:cipher.remoteRegistrationId];
-    } else {
-        messageParams = [[OWSMessageServiceParams alloc] initWithType:messageType
-                                                          recipientId:identifier
-                                                               device:[deviceNumber intValue]
-                                                              content:serializedMessage
-                                                       registrationId:cipher.remoteRegistrationId];
-    }
+    OWSMessageServiceParams *messageParams = [[OWSMessageServiceParams alloc] initWithType:messageType
+                                                                               recipientId:identifier
+                                                                                    device:[deviceNumber intValue]
+                                                                                   content:serializedMessage
+                                                                            registrationId:cipher.remoteRegistrationId];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

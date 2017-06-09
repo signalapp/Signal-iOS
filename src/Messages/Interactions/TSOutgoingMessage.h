@@ -97,13 +97,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // If set, this group message should only be sent to a single recipient.
 @property (atomic, readonly) NSString *singleGroupRecipient;
 
-/**
- * Whether the message should be serialized as a modern aka Content, or the old style legacy message.
- * Sync and Call messsages must be sent as Content, but other old style DataMessage payloads should be
- * sent as legacy message until we're confident no significant number of legacy clients exist in the wild.
- */
-@property (nonatomic, readonly) BOOL isLegacyMessage;
-
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
 /**

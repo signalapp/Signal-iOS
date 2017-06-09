@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -15,11 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)shouldSyncTranscript
-{
-    return NO;
-}
-
-- (BOOL)isLegacyMessage
 {
     return NO;
 }
