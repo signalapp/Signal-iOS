@@ -35,8 +35,34 @@ typedef void (^CustomLayoutBlock)();
 
 @implementation CustomLayoutView
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
+
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+
     self.layoutBlock();
 }
 
@@ -191,6 +217,7 @@ typedef void (^CustomLayoutBlock)();
 
     UIImageView *fingerprintImageView = [UIImageView new];
     fingerprintImageView.image = self.fingerprint.image;
+    // Don't antialias QR Codes.
     fingerprintImageView.layer.magnificationFilter = kCAFilterNearest;
     fingerprintImageView.layer.minificationFilter = kCAFilterNearest;
     [fingerprintView addSubview:fingerprintImageView];
