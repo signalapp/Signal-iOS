@@ -2535,7 +2535,7 @@ typedef enum : NSUInteger {
 
 - (void)createScrollDownButton
 {
-    const CGFloat kScrollDownButtonSize = round(ScaleFromIPhone5To7Plus(35.f, 40.f));
+    const CGFloat kScrollDownButtonSize = ScaleFromIPhone5To7Plus(35.f, 40.f);
     UIButton *scrollDownButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.scrollDownButton = scrollDownButton;
     scrollDownButton.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];

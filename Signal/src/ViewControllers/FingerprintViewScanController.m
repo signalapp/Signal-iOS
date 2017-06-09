@@ -79,15 +79,16 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *cameraInstructionLabel = [UILabel new];
     cameraInstructionLabel.text
         = NSLocalizedString(@"SCAN_CODE_INSTRUCTIONS", @"label presented once scanning (camera) view is visible.");
-    cameraInstructionLabel.font = [UIFont ows_regularFontWithSize:14.f];
+    cameraInstructionLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 18.f)];
     cameraInstructionLabel.textColor = [UIColor whiteColor];
     cameraInstructionLabel.textAlignment = NSTextAlignmentCenter;
     cameraInstructionLabel.numberOfLines = 0;
     cameraInstructionLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [footer addSubview:cameraInstructionLabel];
-    [cameraInstructionLabel autoPinWidthToSuperviewWithMargin:16.f];
-    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
-    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
+    [cameraInstructionLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(16.f, 30.f)];
+    CGFloat instructionsVMargin = ScaleFromIPhone5To7Plus(10.f, 20.f);
+    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:instructionsVMargin];
+    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:instructionsVMargin];
 }
 
 - (void)viewWillAppear:(BOOL)animated
