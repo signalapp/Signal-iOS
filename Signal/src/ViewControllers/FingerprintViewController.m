@@ -73,6 +73,7 @@ typedef void (^CustomLayoutBlock)();
 @interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
 
 @property (nonatomic) NSString *recipientId;
+@property (nonatomic) NSData *identityKey;
 @property (nonatomic) TSStorageManager *storageManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
@@ -97,6 +98,7 @@ typedef void (^CustomLayoutBlock)();
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
     OWSAssert(recipientIdentity);
+    self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
@@ -285,46 +287,23 @@ typedef void (^CustomLayoutBlock)();
 
 - (void)showVerificationSucceeded
 {
-    DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
-    NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    NSString *descriptionFormat = NSLocalizedString(
-        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
-    NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
-    UIAlertController *successAlertController =
-        [UIAlertController alertControllerWithTitle:successTitle
-                                            message:successDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {
-                                                              [self dismissViewControllerAnimated:true completion:nil];
-                                                          }];
-    [successAlertController addAction:dismissAction];
-
-    [self presentViewController:successAlertController animated:YES completion:nil];
+    [FingerprintViewScanController showVerificationSucceeded:self
+                                                 identityKey:self.identityKey
+                                                 recipientId:self.recipientId
+                                                 contactName:self.contactName
+                                                         tag:self.tag];
 }
 
 - (void)showVerificationFailedWithError:(NSError *)error
 {
-    NSString *_Nullable failureTitle;
-    if (error.code != OWSErrorCodeUserError) {
-        failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
-    } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
 
-    UIAlertController *failureAlertController =
-        [UIAlertController alertControllerWithTitle:failureTitle
-                                            message:error.localizedDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
-    }];
-    [failureAlertController addAction:dismissAction];
-
-    [self presentViewController:failureAlertController animated:YES completion:nil];
-
-    DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
+    [FingerprintViewScanController showVerificationFailedWithError:error
+                                                    viewController:self
+                                                        retryBlock:nil
+                                                       cancelBlock:^{
+                                                           // Do nothing.
+                                                       }
+                                                               tag:self.tag];
 }
 
 #pragma mark - Action
