@@ -3,14 +3,15 @@
 //
 
 #import "OWSQRCodeScanningViewController.h"
+#import "OWSBezierPathView.h"
 #import "UIColor+OWS.h"
+#import "UIView+OWS.h"
 
 @interface OWSQRCodeScanningViewController ()
 
+@property (atomic) ZXCapture *capture;
 @property (nonatomic) BOOL captureEnabled;
-@property (atomic, strong) ZXCapture *capture;
-@property UIView *maskingView;
-@property CALayer *maskingLayer;
+@property (nonatomic) UIView *maskingView;
 
 @end
 
@@ -47,11 +48,33 @@
     return self;
 }
 
-- (void)viewDidLoad
+- (void)loadView
 {
-    [super viewDidLoad];
-    self.maskingView = [[UIView alloc] initWithFrame:self.view.frame];
-    [self.view addSubview:self.maskingView];
+    [super loadView];
+
+    OWSBezierPathView *maskingView = [OWSBezierPathView new];
+    self.maskingView = maskingView;
+    [maskingView setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
+        // Add a circular mask
+        UIBezierPath *path = [UIBezierPath bezierPathWithRect:bounds];
+        CGFloat margin = ScaleFromIPhone5To7Plus(8.f, 16.f);
+        CGFloat radius = MIN(bounds.size.width, bounds.size.height) * 0.5f - margin;
+
+        // Center the circle's bounding rectangle
+        CGRect circleRect = CGRectMake(
+            bounds.size.width * 0.5f - radius, bounds.size.height * 0.5f - radius, radius * 2.f, radius * 2.f);
+        UIBezierPath *circlePath = [UIBezierPath bezierPathWithRoundedRect:circleRect cornerRadius:radius];
+        [path appendPath:circlePath];
+        [path setUsesEvenOddFillRule:YES];
+
+        layer.path = path.CGPath;
+        layer.fillRule = kCAFillRuleEvenOdd;
+        layer.fillColor = [UIColor grayColor].CGColor;
+        layer.opacity = 0.5f;
+    }];
+    [self.view addSubview:maskingView];
+    [maskingView autoPinWidthToSuperview];
+    [maskingView autoPinHeightToSuperview];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -63,26 +86,10 @@
     }
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    [self layoutMaskingView];
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self stopCapture];
-}
-
-- (void)layoutMaskingView
-{
-    self.maskingView.frame = self.view.frame;
-    if (self.maskingLayer) {
-        [self.maskingLayer removeFromSuperlayer];
-    }
-    self.maskingLayer = [self buildCircularMaskingLayer];
-    [self.maskingView.layer addSublayer:self.maskingLayer];
 }
 
 - (void)startCapture
@@ -93,8 +100,9 @@
             self.capture = [[ZXCapture alloc] init];
             self.capture.camera = self.capture.back;
             self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
-            self.capture.layer.frame = self.view.frame;
+            self.capture.layer.frame = self.view.bounds;
             self.capture.delegate = self;
+
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
@@ -114,38 +122,12 @@
     });
 }
 
-- (CAShapeLayer *)buildCircularMaskingLayer
-{
-    // Add a circular mask
-    UIBezierPath *path = [UIBezierPath
-        bezierPathWithRoundedRect:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)
-                     cornerRadius:0];
-    CGFloat verticalMargin = 8.0;
-    CGFloat radius = self.view.frame.size.height / 2.0f - verticalMargin;
-
-    // Center the circle's bounding rectangle
-    CGFloat horizontalMargin = (self.view.frame.size.width - 2.0f * radius) / 2.0f;
-    UIBezierPath *circlePath = [UIBezierPath
-        bezierPathWithRoundedRect:CGRectMake(horizontalMargin, verticalMargin, 2.0f * radius, 2.0f * radius)
-                     cornerRadius:radius];
-    [path appendPath:circlePath];
-    [path setUsesEvenOddFillRule:YES];
-
-    CAShapeLayer *fillLayer = [CAShapeLayer layer];
-    fillLayer.path = path.CGPath;
-    fillLayer.fillRule = kCAFillRuleEvenOdd;
-    fillLayer.fillColor = [UIColor grayColor].CGColor;
-    fillLayer.opacity = 0.5;
-    return fillLayer;
-}
-
 - (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result
 {
-    if (!self.captureEnabled)
+    if (!self.captureEnabled) {
         return;
+    }
     [self stopCapture];
-
-    // TODO bounding rectangle
 
     // Vibrate
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
