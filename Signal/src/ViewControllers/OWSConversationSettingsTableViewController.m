@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 return [weakSelf disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
                                                             @"table cell label in conversation settings")
-                                               iconName:@"table_ic_lock_outline"];
+                                               iconName:@"table_ic_verify"];
             }
                         actionBlock:^{
                             OWSConversationSettingsTableViewController *strongSelf = weakSelf;

@@ -72,6 +72,7 @@
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -285,6 +286,10 @@ typedef enum : NSUInteger {
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
@@ -292,6 +297,13 @@ typedef enum : NSUInteger {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self ensureBlockStateIndicator];
     });
+}
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateNavigationBarSubtitleLabel];
 }
 
 - (void)peekSetup
@@ -1078,6 +1090,7 @@ typedef enum : NSUInteger {
 - (void)updateNavigationBarSubtitleLabel
 {
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
+
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText
@@ -1088,6 +1101,26 @@ typedef enum : NSUInteger {
                                                NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
                                            }]];
     }
+
+    BOOL isVerified = YES;
+    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            != OWSVerificationStateVerified) {
+            isVerified = NO;
+            break;
+        }
+    }
+    if (isVerified) {
+        // Show a "checkmark" icon before the navigation bar subtitle if this thread is verified.
+        [subtitleText
+            appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:@"\uf00c "
+                                           attributes:@{
+                                               NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
+                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                           }]];
+    }
+
     [subtitleText
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
