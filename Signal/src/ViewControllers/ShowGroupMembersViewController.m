@@ -274,6 +274,14 @@ NS_ASSUME_NONNULL_BEGIN
                                              handler:^(UIAlertAction *_Nonnull action) {
                                                  [self callMember:recipientId];
                                              }]];
+        [actionSheetController
+            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                         @"Label for button or row which allows users to verify the "
+                                                         @"safety number of another user.")
+                                               style:UIAlertActionStyleDefault
+                                             handler:^(UIAlertAction *_Nonnull action) {
+                                                 [self verifySafetyNumber:recipientId];
+                                             }]];
     }
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
@@ -303,6 +311,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)callMember:(NSString *)recipientId
 {
     [Environment callUserWithIdentifier:recipientId];
+}
+
+- (void)verifySafetyNumber:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
 }
 
 #pragma mark - ContactsViewHelperDelegate

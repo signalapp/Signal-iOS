@@ -240,15 +240,16 @@ NS_ASSUME_NONNULL_BEGIN
     firstSection.customHeaderHeight = @(100.f);
 
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [firstSection
-            addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                return [weakSelf disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
-                                                            @"table cell label in conversation settings")
-                                               iconName:@"table_ic_verify"];
-            }
-                        actionBlock:^{
-                            [weakSelf showVerificationView];
-                        }]];
+        [firstSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return [weakSelf
+                disclosureCellWithName:
+                    NSLocalizedString(@"VERIFY_PRIVACY",
+                        @"Label for button or row which allows users to verify the safety number of another user.")
+                              iconName:@"table_ic_verify"];
+        }
+                                  actionBlock:^{
+                                      [weakSelf showVerificationView];
+                                  }]];
     }
 
     [firstSection
@@ -549,55 +550,51 @@ NS_ASSUME_NONNULL_BEGIN
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
-    const CGFloat kSubtitlePointSize = 12.f;
-    NSMutableAttributedString *subtitle = nil;
+    __block UIView *lastTitleView = threadTitleLabel;
+
     if (![self isGroupThread]) {
+        const CGFloat kSubtitlePointSize = 12.f;
+        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+            UILabel *subtitleLabel = [UILabel new];
+            subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+            subtitleLabel.attributedText = subtitle;
+            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+            [threadNameView addSubview:subtitleLabel];
+            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+            [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+            lastTitleView = subtitleLabel;
+        };
+
         NSString *recipientId = self.thread.contactIdentifier;
+
+        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
+        if (hasName) {
+            NSAttributedString *subtitle = [[NSAttributedString alloc]
+                initWithString:[PhoneNumber
+                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
+            addSubtitle(subtitle);
+        }
+
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateVerified;
-        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
-
-        if (isVerified || hasName) {
-            subtitle = [NSMutableAttributedString new];
-
-            if (isVerified) {
-                // "checkmark"
-                [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                     initWithString:@"\uf00c "
-                                                         attributes:@{
-                                                             NSFontAttributeName :
-                                                                 [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
-                                                         }]];
-            }
-
-            if (hasName) {
-                [subtitle
-                    appendAttributedString:
-                        [[NSAttributedString alloc]
-                            initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:
-                                                            recipientId]]];
-            } else {
-                [subtitle
-                    appendAttributedString:[[NSAttributedString alloc]
-                                               initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                                                  @"Badge indicating that the user is verified.")]];
-            }
+        if (isVerified) {
+            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
+            // "checkmark"
+            [subtitle appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:@"\uf00c "
+                                                     attributes:@{
+                                                         NSFontAttributeName :
+                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                                     }]];
+            [subtitle appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+                                                                    @"Badge indicating that the user is verified.")]];
+            addSubtitle(subtitle);
         }
     }
 
-    if (subtitle) {
-        UILabel *threadSubtitleLabel = [UILabel new];
-        threadSubtitleLabel.textColor = [UIColor ows_darkGrayColor];
-        threadSubtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-        threadSubtitleLabel.attributedText = subtitle;
-        threadSubtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [threadNameView addSubview:threadSubtitleLabel];
-        [threadSubtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [threadSubtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:threadTitleLabel];
-        [threadSubtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-    } else {
-        [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    }
+    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
@@ -679,11 +676,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationView
 {
-    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:self.thread.contactIdentifier];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    NSString *recipientId = self.thread.contactIdentifier;
+    OWSAssert(recipientId.length > 0);
+
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
 }
 
 - (void)showGroupMembersView

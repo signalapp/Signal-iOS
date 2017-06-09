@@ -1273,11 +1273,7 @@ typedef enum : NSUInteger {
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:recipientId];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
 }
 
 #pragma mark - Calls

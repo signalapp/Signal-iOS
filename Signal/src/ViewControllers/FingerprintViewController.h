@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController : UIViewController
 
-- (void)configureWithRecipientId:(NSString *)recipientId NS_SWIFT_NAME(configure(recipientId:));
++ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId;
 
 @end
 
