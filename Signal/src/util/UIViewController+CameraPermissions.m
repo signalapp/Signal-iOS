@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ows_askForCameraPermissions:(void (^)())permissionsGrantedCallback
                     failureCallback:(nullable void (^)())failureCallback
 {
+    // Avoid nil tests below.
     if (!failureCallback) {
         failureCallback = ^{
         };
