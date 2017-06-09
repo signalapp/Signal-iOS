@@ -256,7 +256,7 @@ typedef void (^CustomLayoutBlock)();
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
-        layer.fillColor = [UIColor colorWithWhite:0.8f alpha:1.f].CGColor;
+        layer.fillColor = [UIColor colorWithWhite:0.9f alpha:1.f].CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
@@ -275,7 +275,7 @@ typedef void (^CustomLayoutBlock)();
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
     scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
-    scanLabel.textColor = [UIColor whiteColor];
+    scanLabel.textColor = [UIColor colorWithWhite:0.15f alpha:1.f];
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
 
@@ -315,20 +315,53 @@ typedef void (^CustomLayoutBlock)();
     BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
         == OWSVerificationStateVerified;
 
-    self.verificationStateLabel.text = [NSString
-        stringWithFormat:
-            (isVerified
-                    ? NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT",
-                          @"Label indicating that the user is verified. Embeds {{the user's name or phone number}}.")
-                    : NSLocalizedString(@"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT",
-                          @"Label indicating that the user is not verified. Embeds {{the user's name or phone "
-                          @"number}}.")),
-        self.contactName];
-    self.verifyUnverifyButtonLabel.text
-        = (isVerified ? NSLocalizedString(@"PRIVACY_UNVERIFY_BUTTON",
-                            @"Button that lets user mark another user's identity as unverified.")
-                      : NSLocalizedString(@"PRIVACY_VERIFY_BUTTON",
-                            @"Button that lets user mark another user's identity as verified."));
+    if (isVerified) {
+        NSMutableAttributedString *labelText = [NSMutableAttributedString new];
+
+        if (isVerified) {
+            // Show a "checkmark" if this user is verified.
+            [labelText
+                appendAttributedString:[[NSAttributedString alloc]
+                                           initWithString:@"\uf00c "
+                                               attributes:@{
+                                                   NSFontAttributeName : [UIFont
+                                                       ows_fontAwesomeFont:self.verificationStateLabel.font.pointSize],
+                                               }]];
+        }
+
+        [labelText
+            appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:[NSString stringWithFormat:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT",
+                                                                  @"Label indicating that the user is verified. Embeds "
+                                                                  @"{{the user's name or phone number}}."),
+                                             self.contactName]]];
+        self.verificationStateLabel.attributedText = labelText;
+
+        self.verifyUnverifyButtonLabel.text = NSLocalizedString(
+            @"PRIVACY_UNVERIFY_BUTTON", @"Button that lets user mark another user's identity as unverified.");
+    } else {
+        self.verificationStateLabel.text = [NSString
+            stringWithFormat:NSLocalizedString(@"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT",
+                                 @"Label indicating that the user is not verified. Embeds {{the user's name or phone "
+                                 @"number}}."),
+            self.contactName];
+
+        NSMutableAttributedString *buttonText = [NSMutableAttributedString new];
+        // Show a "checkmark" if this user is not verified.
+        [buttonText
+            appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:@"\uf00c  "
+                                           attributes:@{
+                                               NSFontAttributeName : [UIFont
+                                                   ows_fontAwesomeFont:self.verifyUnverifyButtonLabel.font.pointSize],
+                                           }]];
+        [buttonText appendAttributedString:
+                        [[NSAttributedString alloc]
+                            initWithString:NSLocalizedString(@"PRIVACY_VERIFY_BUTTON",
+                                               @"Button that lets user mark another user's identity as verified.")]];
+        self.verifyUnverifyButtonLabel.attributedText = buttonText;
+    }
 
     [self.view setNeedsLayout];
 }
