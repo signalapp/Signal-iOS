@@ -129,6 +129,8 @@ typedef void (^CustomLayoutBlock)();
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
     OWSAssert(recipientIdentity);
+    // By capturing the identity key when we enter these views, we prevent the edge case
+    // where the user verifies a key that we learned about while this view was open.
     self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =
@@ -429,8 +431,7 @@ typedef void (^CustomLayoutBlock)();
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         NSString *learnMoreURL = @"https://support.whispersystems.org/hc/en-us/articles/"
-                                 @"213134107-How-do-I-verify-the-person-I-m-sending-messages-to-is-who-they-say-they-"
-                                 @"are-";
+                                 @"213134107";
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
     }
 }

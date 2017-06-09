@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
     OWSAssert(recipientIdentity);
+    // By capturing the identity key when we enter these views, we prevent the edge case
+    // where the user verifies a key that we learned about while this view was open.
     self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =

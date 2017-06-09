@@ -953,7 +953,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Mark as Not Verified";
+"PRIVACY_UNVERIFY_BUTTON" = "Mark as not Verified";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
