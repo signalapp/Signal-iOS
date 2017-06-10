@@ -240,12 +240,16 @@ NS_ASSUME_NONNULL_BEGIN
     firstSection.customHeaderHeight = @(100.f);
 
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
+        NSString *recipientId = self.thread.contactIdentifier;
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateVerified;
+
         [firstSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 disclosureCellWithName:
                     NSLocalizedString(@"VERIFY_PRIVACY",
                         @"Label for button or row which allows users to verify the safety number of another user.")
-                              iconName:@"table_ic_verify"];
+                              iconName:(isVerified ? @"table_ic_verify" : @"table_ic_not_verified")];
         }
                                   actionBlock:^{
                                       [weakSelf showVerificationView];

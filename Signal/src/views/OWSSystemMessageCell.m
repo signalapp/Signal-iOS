@@ -141,6 +141,15 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             case TSInfoMessageVerificationStateChange:
                 result = [UIImage imageNamed:@"system_message_verified"];
+
+                OWSAssert([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
+                if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
+                    OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
+                    BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
+                    if (!isVerified) {
+                        result = [UIImage imageNamed:@"system_message_info"];
+                    }
+                }
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
