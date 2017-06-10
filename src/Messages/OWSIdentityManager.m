@@ -192,12 +192,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
 
-            if (existingIdentity.verificationState != verificationState) {
-                [self saveChangeMessagesForRecipientId:recipientId
-                                     verificationState:verificationState
-                                         isLocalChange:YES];
-            }
-
             [self fireIdentityStateChangeNotification];
 
             return YES;
@@ -245,12 +239,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             [self enqueueSyncMessageForVerificationState:verificationState
                                              identityKey:identityKey
                                              recipientId:recipientId];
+
+            [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:YES];
         } else {
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
         }
-
-        [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:YES];
     }
 
     [self fireIdentityStateChangeNotification];
@@ -712,6 +706,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
+// We only want to create change messages in response to user activity,
+// on any of their devices.
 - (void)saveChangeMessagesForRecipientId:(NSString *)recipientId
                        verificationState:(OWSVerificationState)verificationState
                            isLocalChange:(BOOL)isLocalChange
