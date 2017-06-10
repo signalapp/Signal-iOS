@@ -6,6 +6,7 @@
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+#import "TSInfoMessage.h"
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
@@ -266,6 +267,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAssert(lastMessage);
+    OWSAssert(transaction);
+
+    if (lastMessage.isDynamicInteraction) {
+        DDLogDebug(@"%@ not updating lastMessage for thread: %@ dynamic interaction: %@",
+            self.tag,
+            self,
+            lastMessage.debugDescription);
+        return;
+    }
+
     NSDate *lastMessageDate = [lastMessage dateForSorting];
 
     if ([lastMessage isKindOfClass:[TSErrorMessage class]]) {
@@ -273,10 +285,19 @@ NS_ASSUME_NONNULL_BEGIN
         if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
             // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
             // there was no meaningful interaction.
-            DDLogDebug(@"%@ not updating lastMessage for thread:%@ nonblocking identity change: %@",
+            DDLogDebug(@"%@ not updating lastMessage for thread: %@ nonblocking identity change: %@",
                 self.tag,
                 self,
                 errorMessage.debugDescription);
+            return;
+        }
+    } else if ([lastMessage isKindOfClass:[TSInfoMessage class]]) {
+        TSInfoMessage *infoMessage = (TSInfoMessage *)lastMessage;
+        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
+            DDLogDebug(@"%@ not updating lastMessage for thread: %@ verification state change: %@",
+                self.tag,
+                self,
+                infoMessage.debugDescription);
             return;
         }
     }
