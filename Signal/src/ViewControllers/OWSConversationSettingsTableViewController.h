@@ -14,8 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
+@property (nonatomic) BOOL showVerificationOnAppear;
+
 - (void)configureWithThread:(TSThread *)thread;
-- (void)presentedModalWasDismissed;
 
 @end
 

@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSRecipientIdentity;
 @class SignalCall;
 
 @protocol OWSCallNotificationsAdaptee <NSObject>
@@ -12,9 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName;
 
-- (void)presentRejectedCallWithUnseenIdentityChange:(SignalCall *)call
-                                         callerName:(NSString *)callerName
-    NS_SWIFT_NAME(presentRejectedCallWithUnseenIdentityChange(_:callerName:));
+- (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call
+                                   callerName:(NSString *)callerName
+    NS_SWIFT_NAME(presentMissedCallBecauseOfNewIdentity(call:callerName:));
+
+- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call
+                                                callerName:(NSString *)callerName
+    NS_SWIFT_NAME(presentMissedCallBecauseOfNoLongerVerifiedIdentity(call:callerName:));
 
 @end
 

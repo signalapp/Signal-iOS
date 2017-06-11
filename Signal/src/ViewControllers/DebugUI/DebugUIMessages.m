@@ -10,6 +10,7 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
@@ -578,6 +579,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
+                                                       callType:RPRecentCallTypeMissedBecauseOfChangedIdentity
+                                                       inThread:contactThread]];
+            [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -636,6 +641,39 @@ NS_ASSUME_NONNULL_BEGIN
                                                           inThread:thread
                                                        messageType:TSInfoMessageTypeGroupQuit]];
 
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateDefault
+                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateVerified
+                                                                         isLocalChange:YES]];
+        [result
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:thread
+                                                                       recipientId:@"+19174054215"
+                                                                 verificationState:OWSVerificationStateNoLongerVerified
+                                                                     isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateDefault
+                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                           recipientId:@"+19174054215"
+                                                                     verificationState:OWSVerificationStateVerified
+                                                                         isLocalChange:NO]];
+        [result
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:thread
+                                                                       recipientId:@"+19174054215"
+                                                                 verificationState:OWSVerificationStateNoLongerVerified
+                                                                     isLocalChange:NO]];
+
         [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
                                                      withTransaction:transaction]];
         [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
@@ -654,29 +692,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                         recipientId:@"+19174054215"]];
 
     }];
-
-    {
-        OWSDisappearingMessagesConfiguration *configuration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-        TSOutgoingMessage *outgoingMessage =
-            [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                inThread:thread
-                                             messageBody:@"hi"
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-        PreKeyBundle *preKeyBundle = [[PreKeyBundle alloc] initWithRegistrationId:0
-                                                                         deviceId:0
-                                                                         preKeyId:0
-                                                                     preKeyPublic:[self createRandomNSDataOfSize:16]
-                                                               signedPreKeyPublic:[self createRandomNSDataOfSize:16]
-                                                                   signedPreKeyId:0
-                                                            signedPreKeySignature:[self createRandomNSDataOfSize:16]
-                                                                      identityKey:[self createRandomNSDataOfSize:16]];
-        [result addObject:[TSInvalidIdentityKeySendingErrorMessage untrustedKeyWithOutgoingMessage:outgoingMessage
-                                                                                          inThread:thread
-                                                                                      forRecipient:@"+19174054215"
-                                                                                      preKeyBundle:preKeyBundle]];
-    }
 
     return result;
 }

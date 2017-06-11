@@ -23,6 +23,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 @property (nonatomic) IBOutlet UILabel *nameLabel;
 @property (nonatomic) IBOutlet UIImageView *avatarView;
+@property (nonatomic, nullable) UILabel *subtitle;
 
 @end
 
@@ -144,11 +145,67 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     [self layoutSubviews];
 }
 
+- (void)addVerifiedSubtitle
+{
+    [self.subtitle removeFromSuperview];
+
+    const CGFloat kSubtitlePointSize = 10.f;
+    NSMutableAttributedString *text = [NSMutableAttributedString new];
+    // "checkmark"
+    [text appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:@"\uf00c "
+                                         attributes:@{
+                                             NSFontAttributeName : [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                         }]];
+    [text appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+                                                        @"Badge indicating that the user is verified.")]];
+    self.subtitle = [UILabel new];
+    self.subtitle.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+    self.subtitle.textColor = [UIColor ows_darkGrayColor];
+    self.subtitle.attributedText = text;
+    [self.subtitle sizeToFit];
+    [self.contentView addSubview:self.subtitle];
+
+    [self setNeedsLayout];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+
+    [self layoutSubviews];
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    [super setBounds:bounds];
+
+    [self layoutSubviews];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    if (self.subtitle) {
+        OWSAssert(self.nameLabel.superview == self.contentView);
+        const CGFloat kSubtitleVMargin
+            = ((self.contentView.height - self.nameLabel.font.lineHeight) * 0.5f - self.subtitle.height) * 0.5f;
+        self.subtitle.frame = CGRectMake(self.nameLabel.left,
+            round((self.contentView.height - self.subtitle.height) - kSubtitleVMargin),
+            self.subtitle.width,
+            self.subtitle.height);
+    }
+}
+
 - (void)prepareForReuse
 {
     self.accessoryMessage = nil;
     self.accessoryView = nil;
     self.accessoryType = UITableViewCellAccessoryNone;
+    [self.subtitle removeFromSuperview];
+    self.subtitle = nil;
 }
 
 @end

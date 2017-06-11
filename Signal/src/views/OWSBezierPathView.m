@@ -4,11 +4,15 @@
 
 #import "OWSBezierPathView.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSBezierPathView ()
 
 @property (nonatomic) NSArray<ConfigureShapeLayerBlock> *configureShapeLayerBlocks;
 
 @end
+
+#pragma mark -
 
 @implementation OWSBezierPathView
 
@@ -109,3 +113,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

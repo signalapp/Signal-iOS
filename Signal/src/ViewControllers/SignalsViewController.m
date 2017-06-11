@@ -132,18 +132,18 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-        
-        [self.tableView reloadData];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+
+    [self.tableView reloadData];
 }
 
 - (void)signalAccountsDidChange:(id)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.tableView reloadData];
-    });
+    OWSAssert([NSThread isMainThread]);
+
+    [self.tableView reloadData];
 }
 
 #pragma mark - View Life Cycle

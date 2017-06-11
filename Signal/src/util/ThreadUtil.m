@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
                               BOOL *stop) {
 
                               if (![object isKindOfClass:[TSInteraction class]]) {
-                                  OWSFail(@"Expected a TSInteraction");
+                                  OWSFail(@"Expected a TSInteraction: %@", [object class]);
                                   return;
                               }
 

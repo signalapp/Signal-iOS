@@ -5,6 +5,8 @@
 #import "OWSMessagesToolbarContentView.h"
 #import "UIColor+OWS.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSMessagesToolbarContentView () <UIGestureRecognizerDelegate>
 
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
@@ -216,3 +218,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

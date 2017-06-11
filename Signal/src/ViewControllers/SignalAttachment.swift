@@ -279,6 +279,12 @@ class SignalAttachment: NSObject {
         return MIMETypeUtil.supportedAudioUTITypes()
     }
 
+    // Returns the set of UTIs that correspond to valid image, video and audio formats
+    // for Signal attachments.
+    private class var mediaUTISet: Set<String> {
+        return audioUTISet.union(videoUTISet).union(animatedImageUTISet).union(inputImageUTISet)
+    }
+
     public var isImage: Bool {
         return SignalAttachment.outputImageUTISet.contains(dataUTI)
     }
@@ -308,7 +314,7 @@ class SignalAttachment: NSObject {
             return false
         }
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
-        
+
         if pasteboardUTISet.contains(kUTTypeURL as String) {
             return true
         }
@@ -332,7 +338,7 @@ class SignalAttachment: NSObject {
         for utiType in pasteboardUTISet {
             if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
                 hasTextUTIType = true
-            } else {
+            } else if mediaUTISet.contains(utiType) {
                 hasNonTextUTIType = true
             }
         }

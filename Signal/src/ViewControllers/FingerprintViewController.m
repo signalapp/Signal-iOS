@@ -4,107 +4,387 @@
 
 #import "FingerprintViewController.h"
 #import "Environment.h"
-#import "OWSConversationSettingsTableViewController.h"
+#import "FingerprintViewScanController.h"
+#import "OWSBezierPathView.h"
+#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
 #import "UIUtil.h"
-#import "UIViewController+CameraPermissions.h"
+#import "UIView+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FingerprintViewController () <OWSHighlightableLabelDelegate, OWSCompareSafetyNumbersActivityDelegate>
+typedef void (^CustomLayoutBlock)();
 
-@property (strong, nonatomic) TSStorageManager *storageManager;
-@property (strong, nonatomic) OWSFingerprint *fingerprint;
-@property (strong, nonatomic) NSString *contactName;
-@property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@interface CustomLayoutView : UIView
 
-@property (strong, nonatomic) IBOutlet UINavigationBar *modalNavigationBar;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *dismissModalButton;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *shareButton;
-@property (strong, nonatomic) IBOutlet UIView *qrScanningView;
-@property (strong, nonatomic) IBOutlet UILabel *scanningInstructions;
-@property (strong, nonatomic) IBOutlet UIView *scanningContainer;
-@property (strong, nonatomic) IBOutlet UIView *instructionsContainer;
-@property (strong, nonatomic) IBOutlet UIView *qrContainer;
-@property (strong, nonatomic) IBOutlet UIView *privacyVerificationQRCodeFrame;
-@property (strong, nonatomic) IBOutlet UIImageView *privacyVerificationQRCode;
-@property (strong, nonatomic) IBOutlet OWSHighlightableLabel *privacyVerificationFingerprint;
-@property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
-@property (strong, nonatomic) IBOutlet UIButton *scanButton;
+@property (nonatomic) CustomLayoutBlock layoutBlock;
 
 @end
 
-@implementation FingerprintViewController
+#pragma mark -
 
-- (void)configureWithFingerprint:(OWSFingerprint *)fingerprint
-                     contactName:(NSString *)contactName
+@implementation CustomLayoutView
+
+- (instancetype)init
 {
-    self.fingerprint = fingerprint;
-    self.contactName = contactName;
+    if (self = [super init]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
 }
 
-- (void)viewDidLoad
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    [super viewDidLoad];
+    if (self = [super initWithFrame:frame]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
 
-    self.navigationItem.leftBarButtonItem = self.dismissModalButton;
-    self.navigationItem.rightBarButtonItem = self.shareButton;
-    [self.modalNavigationBar pushNavigationItem:self.navigationItem animated:NO];
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder]) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
 
-    // HACK for transparent navigation bar.
-    [self.modalNavigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    self.modalNavigationBar.shadowImage = [UIImage new];
-    self.modalNavigationBar.translucent = YES;
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    self.layoutBlock();
+}
+
+@end
+
+#pragma mark -
+
+@interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
+
+@property (nonatomic) NSString *recipientId;
+@property (nonatomic) NSData *identityKey;
+@property (nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) OWSFingerprint *fingerprint;
+@property (nonatomic) NSString *contactName;
+
+@property (nonatomic) UIBarButtonItem *shareButton;
+
+@property (nonatomic) UILabel *verificationStateLabel;
+@property (nonatomic) UILabel *verifyUnverifyButtonLabel;
+
+@end
+
+#pragma mark -
+
+@implementation FingerprintViewController
+
++ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    OWSRecipientIdentity *_Nullable recipientIdentity =
+        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+    if (!recipientIdentity) {
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                                          @"Title for alert explaining that a user cannot be verified.")
+                              message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                                          @"Message for alert explaining that a user cannot be verified.")];
+        return;
+    }
+
+    FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
+    [fingerprintViewController configureWithRecipientId:recipientId];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+    [viewController presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (instancetype)init
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    [self observeNotifications];
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
+}
+
+- (void)configureWithRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    self.recipientId = recipientId;
 
     self.storageManager = [TSStorageManager sharedManager];
 
-    // HACK to get full width preview layer
-    CGRect oldFrame = self.qrScanningView.frame;
-    CGRect newFrame = CGRectMake(oldFrame.origin.x,
-        oldFrame.origin.y,
-        self.view.frame.size.width,
-        self.view.frame.size.height / 2.0f - oldFrame.origin.y);
-    self.qrScanningView.frame = newFrame;
-    // END HACK to get full width preview layer
+    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
 
-    self.title = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
-    NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
-        @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
-    self.instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
+    OWSRecipientIdentity *_Nullable recipientIdentity =
+        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+    OWSAssert(recipientIdentity);
+    // By capturing the identity key when we enter these views, we prevent the edge case
+    // where the user verifies a key that we learned about while this view was open.
+    self.identityKey = recipientIdentity.identityKey;
 
-    NSString *scanTitle = NSLocalizedString(@"SCAN_CODE_ACTION",
-        @"Button label presented with camera icon while verifying privacy credentials. Shows the camera interface.");
-    [self.scanButton setTitle:scanTitle forState:UIControlStateNormal];
-    self.scanningInstructions.text
-        = NSLocalizedString(@"SCAN_CODE_INSTRUCTIONS", @"label presented once scanning (camera) view is visible.");
-
-    // Safety numbers and QR Code
-    self.privacyVerificationFingerprint.text = self.fingerprint.displayableText;
-    self.privacyVerificationQRCode.image = self.fingerprint.image;
-
-    // Don't antialias QRCode
-    self.privacyVerificationQRCode.layer.magnificationFilter = kCAFilterNearest;
-
-    self.privacyVerificationFingerprint.delegate = self;
+    OWSFingerprintBuilder *builder =
+        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
+    self.fingerprint =
+        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)loadView
 {
-    [super viewDidLayoutSubviews];
+    [super loadView];
 
-    // On iOS8, the QRCodeFrame hasn't been layed out yet (causing the QRCode to be hidden), force it here.
-    [self.privacyVerificationQRCodeFrame setNeedsLayout];
-    [self.privacyVerificationQRCodeFrame layoutIfNeeded];
-    // Round QR Code.
-    self.privacyVerificationQRCodeFrame.layer.masksToBounds = YES;
-    self.privacyVerificationQRCodeFrame.layer.cornerRadius = self.privacyVerificationQRCodeFrame.frame.size.height / 2;
+    self.title = NSLocalizedString(@"PRIVACY_VERIFICATION_TITLE", @"Navbar title");
+
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(closeButton)];
+    self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                     target:self
+                                                                     action:@selector(didTapShareButton)];
+    self.navigationItem.rightBarButtonItem = self.shareButton;
+
+    [self createViews];
+}
+
+- (void)createViews
+{
+    UIColor *darkGrey = [UIColor colorWithRGBHex:0x404040];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    // Verify/Unverify Button
+    UIView *verifyUnverifyButton = [UIView new];
+    [verifyUnverifyButton
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(verifyUnverifyButtonTapped:)]];
+    [self.view addSubview:verifyUnverifyButton];
+    [verifyUnverifyButton autoPinWidthToSuperview];
+    [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
+    UIView *verifyUnverifyPillbox = [UIView new];
+    verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
+    verifyUnverifyPillbox.layer.cornerRadius = 3.f;
+    verifyUnverifyPillbox.clipsToBounds = YES;
+    [verifyUnverifyButton addSubview:verifyUnverifyPillbox];
+    [verifyUnverifyPillbox autoHCenterInSuperview];
+    [verifyUnverifyPillbox autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(10.f, 15.f)];
+    [verifyUnverifyPillbox autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(10.f, 20.f)];
+
+    UILabel *verifyUnverifyButtonLabel = [UILabel new];
+    self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
+    verifyUnverifyButtonLabel.font = [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
+    verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
+    [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
+    [verifyUnverifyButtonLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(50.f, 50.f)];
+    [verifyUnverifyButtonLabel autoPinHeightToSuperviewWithMargin:ScaleFromIPhone5To7Plus(8.f, 8.f)];
+
+    // Learn More
+    UIView *learnMoreButton = [UIView new];
+    [learnMoreButton
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(learnMoreButtonTapped:)]];
+    [self.view addSubview:learnMoreButton];
+    [learnMoreButton autoPinWidthToSuperview];
+    [learnMoreButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:verifyUnverifyButton withOffset:0];
+
+    UILabel *learnMoreLabel = [UILabel new];
+    learnMoreLabel.attributedText = [[NSAttributedString alloc]
+        initWithString:NSLocalizedString(@"PRIVACY_SAFETY_NUMBERS_LEARN_MORE",
+                           @"Label for a link to more information about safety numbers and verification.")
+            attributes:@{
+                NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+            }];
+    learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
+    learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
+    learnMoreLabel.textAlignment = NSTextAlignmentCenter;
+    [learnMoreButton addSubview:learnMoreLabel];
+    [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:ScaleFromIPhone5To7Plus(5.f, 10.f)];
+    [learnMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:ScaleFromIPhone5To7Plus(5.f, 10.f)];
+
+    // Instructions
+    NSString *instructionsFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_INSTRUCTIONS",
+        @"Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}");
+    UILabel *instructionsLabel = [UILabel new];
+    instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
+    instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
+    instructionsLabel.textColor = darkGrey;
+    instructionsLabel.textAlignment = NSTextAlignmentCenter;
+    instructionsLabel.numberOfLines = 0;
+    instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [self.view addSubview:instructionsLabel];
+    [instructionsLabel autoPinWidthToSuperviewWithMargin:16.f];
+    [instructionsLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:learnMoreButton withOffset:0];
+
+    // Fingerprint Label
+    UILabel *fingerprintLabel = [UILabel new];
+    fingerprintLabel.text = self.fingerprint.displayableText;
+    fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
+    fingerprintLabel.textColor = darkGrey;
+    fingerprintLabel.numberOfLines = 3;
+    fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    fingerprintLabel.adjustsFontSizeToFitWidth = YES;
+    [fingerprintLabel
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(fingerprintLabelTapped:)]];
+    fingerprintLabel.userInteractionEnabled = YES;
+    [self.view addSubview:fingerprintLabel];
+    [fingerprintLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(50.f, 60.f)];
+    [fingerprintLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:instructionsLabel withOffset:-ScaleFromIPhone5To7Plus(8.f, 15.f)];
+
+    // Fingerprint Image
+    CustomLayoutView *fingerprintView = [CustomLayoutView new];
+    [self.view addSubview:fingerprintView];
+    [fingerprintView autoPinWidthToSuperview];
+    [fingerprintView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:fingerprintLabel withOffset:-ScaleFromIPhone5To7Plus(10.f, 15.f)];
+    [fingerprintView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(fingerprintViewTapped:)]];
+    fingerprintView.userInteractionEnabled = YES;
+
+    OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
+    [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
+        layer.fillColor = [UIColor colorWithWhite:0.9f alpha:1.f].CGColor;
+        CGFloat size = MIN(bounds.size.width, bounds.size.height);
+        CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
+        layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
+    }];
+    [fingerprintView addSubview:fingerprintCircle];
+    [fingerprintCircle autoPinWidthToSuperview];
+    [fingerprintCircle autoPinHeightToSuperview];
+
+    UIImageView *fingerprintImageView = [UIImageView new];
+    fingerprintImageView.image = self.fingerprint.image;
+    // Don't antialias QR Codes.
+    fingerprintImageView.layer.magnificationFilter = kCAFilterNearest;
+    fingerprintImageView.layer.minificationFilter = kCAFilterNearest;
+    [fingerprintView addSubview:fingerprintImageView];
+
+    UILabel *scanLabel = [UILabel new];
+    scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
+    scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    scanLabel.textColor = [UIColor colorWithWhite:0.15f alpha:1.f];
+    [scanLabel sizeToFit];
+    [fingerprintView addSubview:scanLabel];
+
+    fingerprintView.layoutBlock = ^{
+        CGFloat size = round(MIN(fingerprintView.width, fingerprintView.height) * 0.675f);
+        fingerprintImageView.frame = CGRectMake(
+            round((fingerprintView.width - size) * 0.5f), round((fingerprintView.height - size) * 0.5f), size, size);
+        CGFloat scanY = round(fingerprintImageView.bottom
+            + ((fingerprintView.height - fingerprintImageView.bottom) - scanLabel.height) * 0.33f);
+        scanLabel.frame = CGRectMake(
+            round((fingerprintView.width - scanLabel.width) * 0.5f), scanY, scanLabel.width, scanLabel.height);
+    };
+
+    // Verification State
+    UILabel *verificationStateLabel = [UILabel new];
+    self.verificationStateLabel = verificationStateLabel;
+    verificationStateLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
+    verificationStateLabel.textColor = darkGrey;
+    verificationStateLabel.textAlignment = NSTextAlignmentCenter;
+    verificationStateLabel.numberOfLines = 0;
+    verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [self.view addSubview:verificationStateLabel];
+    [verificationStateLabel autoPinWidthToSuperviewWithMargin:16.f];
+    [verificationStateLabel autoPinToTopLayoutGuideOfViewController:self withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
+    [verificationStateLabel autoPinEdge:ALEdgeBottom
+                                 toEdge:ALEdgeTop
+                                 ofView:fingerprintView
+                             withOffset:-ScaleFromIPhone5To7Plus(10.f, 15.f)];
+
+    [self updateVerificationStateLabel];
+}
+
+- (void)updateVerificationStateLabel
+{
+    OWSAssert(self.recipientId.length > 0);
+
+    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
+        == OWSVerificationStateVerified;
+
+    if (isVerified) {
+        NSMutableAttributedString *labelText = [NSMutableAttributedString new];
+
+        if (isVerified) {
+            // Show a "checkmark" if this user is verified.
+            [labelText
+                appendAttributedString:[[NSAttributedString alloc]
+                                           initWithString:@"\uf00c "
+                                               attributes:@{
+                                                   NSFontAttributeName : [UIFont
+                                                       ows_fontAwesomeFont:self.verificationStateLabel.font.pointSize],
+                                               }]];
+        }
+
+        [labelText
+            appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:[NSString stringWithFormat:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT",
+                                                                  @"Label indicating that the user is verified. Embeds "
+                                                                  @"{{the user's name or phone number}}."),
+                                             self.contactName]]];
+        self.verificationStateLabel.attributedText = labelText;
+
+        self.verifyUnverifyButtonLabel.text = NSLocalizedString(
+            @"PRIVACY_UNVERIFY_BUTTON", @"Button that lets user mark another user's identity as unverified.");
+    } else {
+        self.verificationStateLabel.text = [NSString
+            stringWithFormat:NSLocalizedString(@"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT",
+                                 @"Label indicating that the user is not verified. Embeds {{the user's name or phone "
+                                 @"number}}."),
+            self.contactName];
+
+        NSMutableAttributedString *buttonText = [NSMutableAttributedString new];
+        // Show a "checkmark" if this user is not verified.
+        [buttonText
+            appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:@"\uf00c  "
+                                           attributes:@{
+                                               NSFontAttributeName : [UIFont
+                                                   ows_fontAwesomeFont:self.verifyUnverifyButtonLabel.font.pointSize],
+                                           }]];
+        [buttonText appendAttributedString:
+                        [[NSAttributedString alloc]
+                            initWithString:NSLocalizedString(@"PRIVACY_VERIFY_BUTTON",
+                                               @"Button that lets user mark another user's identity as verified.")]];
+        self.verifyUnverifyButtonLabel.attributedText = buttonText;
+    }
+
+    [self.view setNeedsLayout];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -113,30 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
     [UIUtil applySignalAppearence];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:YES];
-    if (self.dismissDelegate) {
-        [self.dismissDelegate presentedModalWasDismissed];
-    }
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.identifier isEqualToString:@"embedIdentityQRScanner"]) {
-        OWSQRCodeScanningViewController *qrScanningController
-            = (OWSQRCodeScanningViewController *)segue.destinationViewController;
-        self.qrScanningController = qrScanningController;
-        qrScanningController.scanDelegate = self;
-    }
-}
-
-#pragma mark - HilightableLableDelegate
-
-- (void)didHighlightLabel:(OWSHighlightableLabel *)label completion:(nullable void (^)(void))completionHandler
-{
-    [self showSharingActivityWithCompletion:completionHandler];
-}
+#pragma mark -
 
 - (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
 {
@@ -184,134 +441,91 @@ NS_ASSUME_NONNULL_BEGIN
     [self showVerificationFailedWithError:error];
 }
 
-#pragma mark - Action
-
-- (IBAction)closeButtonAction:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (IBAction)didTapShareButton
-{
-    [self showSharingActivityWithCompletion:nil];
-}
-
-- (IBAction)didTouchUpInsideScanButton:(id)sender
-{
-    [self showScanner];
-}
-
-- (void)showScanner
-{
-    [self ows_askForCameraPermissions:^{
-        
-        // Camera stops capturing when "sharing" while in capture mode.
-        // Also, it's less obvious whats being "shared" at this point,
-        // so just disable sharing when in capture mode.
-        self.shareButton.enabled = NO;
-
-        DDLogInfo(@"%@ Showing Scanner", self.tag);
-        self.qrScanningView.hidden = NO;
-        self.scanningInstructions.hidden = NO;
-        [UIView animateWithDuration:0.4
-                              delay:0.0
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             self.scanningContainer.frame = self.qrContainer.frame;
-                             self.qrContainer.frame = self.instructionsContainer.frame;
-                             self.instructionsContainer.alpha = 0.0f;
-                         }
-                         completion:nil];
-        
-        [self.qrScanningController startCapture];
-    }
-                   alertActionHandler:nil];
-}
-
-#pragma mark - OWSQRScannerDelegate
-
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data
-{
-    [self verifyCombinedFingerprintData:data];
-}
-
-- (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
-{
-    NSError *error;
-    if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
-        [self showVerificationSucceeded];
-    } else {
-        [self showVerificationFailedWithError:error];
-    }
-}
-
 - (void)showVerificationSucceeded
 {
-    DDLogInfo(@"%@ Successfully verified privacy.", self.tag);
-    NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    NSString *descriptionFormat = NSLocalizedString(
-        @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
-    NSString *successDescription = [NSString stringWithFormat:descriptionFormat, self.contactName];
-    UIAlertController *successAlertController =
-        [UIAlertController alertControllerWithTitle:successTitle
-                                            message:successDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-            [self dismissViewControllerAnimated:true completion:nil];
-    }];
-    [successAlertController addAction:dismissAction];
-
-    [self presentViewController:successAlertController animated:YES completion:nil];
+    [FingerprintViewScanController showVerificationSucceeded:self
+                                                 identityKey:self.identityKey
+                                                 recipientId:self.recipientId
+                                                 contactName:self.contactName
+                                                         tag:self.tag];
 }
 
 - (void)showVerificationFailedWithError:(NSError *)error
 {
-    NSString *_Nullable failureTitle;
-    if (error.code != OWSErrorCodeUserError) {
-        failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
-    } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
 
-    UIAlertController *failureAlertController =
-        [UIAlertController alertControllerWithTitle:failureTitle
-                                            message:error.localizedDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:dismissText style:UIAlertActionStyleCancel handler: ^(UIAlertAction *action){
-        
-        // Restore previous layout
-        self.shareButton.enabled = YES;
-        self.qrScanningView.hidden = YES;
-        self.scanningInstructions.hidden = YES;
-        [UIView animateWithDuration:0.4
-                              delay:0.0
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             self.instructionsContainer.alpha = 1.0f;
-                             self.qrContainer.frame = self.scanningContainer.frame;
-                         }
-                         completion:nil];
-    }];
-    [failureAlertController addAction:dismissAction];
-
-    // TODO
-    //        NSString retryText = NSLocalizedString(@"RETRY_BUTTON_TEXT", nil);
-    //        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryText style:UIAlertActionStyleDefault
-    //        handler:^(UIAlertAction * _Nonnull action) {
-    //
-    //        }];
-    //        [failureAlertController addAction:retryAction];
-    [self presentViewController:failureAlertController animated:YES completion:nil];
-
-    DDLogWarn(@"%@ Identity verification failed with error: %@", self.tag, error);
+    [FingerprintViewScanController showVerificationFailedWithError:error
+                                                    viewController:self
+                                                        retryBlock:nil
+                                                       cancelBlock:^{
+                                                           // Do nothing.
+                                                       }
+                                                               tag:self.tag];
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(nullable void (^)(void))completion
+#pragma mark - Action
+
+- (void)closeButton
 {
-    self.qrScanningView.hidden = YES;
-    [super dismissViewControllerAnimated:flag completion:completion];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didTapShareButton
+{
+    [self showSharingActivityWithCompletion:nil];
+}
+
+- (void)showScanner
+{
+    FingerprintViewScanController *scanView = [FingerprintViewScanController new];
+    [scanView configureWithRecipientId:self.recipientId];
+    [self.navigationController pushViewController:scanView animated:YES];
+}
+
+- (void)learnMoreButtonTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        NSString *learnMoreURL = @"https://support.whispersystems.org/hc/en-us/articles/"
+                                 @"213134107";
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
+    }
+}
+
+- (void)fingerprintLabelTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        [self showSharingActivityWithCompletion:nil];
+    }
+}
+
+- (void)fingerprintViewTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        [self showScanner];
+    }
+}
+
+- (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
+            == OWSVerificationStateVerified;
+        [[OWSIdentityManager sharedManager]
+            setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
+                                :self.identityKey
+                     recipientId:self.recipientId
+                 sendSyncMessage:YES];
+
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateVerificationStateLabel];
 }
 
 #pragma mark - Logging

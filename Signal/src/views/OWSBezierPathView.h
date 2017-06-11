@@ -4,6 +4,8 @@
 
 typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *layer, CGRect bounds);
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSBezierPathView : UIView
 
 // Configure the view with this method if it uses a single Bezier path.
@@ -20,3 +22,5 @@ typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *layer, CGRect bounds);
 - (void)updateLayers;
 
 @end
+
+NS_ASSUME_NONNULL_END

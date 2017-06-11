@@ -4,6 +4,8 @@
 
 #import <JSQMessagesViewController/JSQMessagesViewController.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSMessagesInputToolbar : JSQMessagesInputToolbar
 
 - (void)showVoiceMemoUI;
@@ -13,3 +15,5 @@
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
 
 @end
+
+NS_ASSUME_NONNULL_END

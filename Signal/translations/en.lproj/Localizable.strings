@@ -226,6 +226,12 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
 
+/* Message for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+
+/* Title for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
+
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
 
@@ -241,9 +247,6 @@
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to delete your account?";
 
-/* notification action, confirming that it's OK to proceed calling after a caller's Safety Number has changed */
-"CONFIRM_IDENTITY_AND_CALLBACK_BUTTON_TITLE" = "Confirm and Call Back";
-
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
 
@@ -257,7 +260,7 @@
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has Changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Confirm";
@@ -521,10 +524,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "You must accept the new safety number before you will be able to send.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before resending.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+
+/* Button that verifies user after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Verify";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset this session.";
@@ -619,6 +625,9 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 
+/* info message text shown in conversation view */
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
+
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
 
@@ -704,7 +713,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";
@@ -712,8 +721,14 @@
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading…";
 
+/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer verified.";
+
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked this User";
+
+/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer verified.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Download Failed.";
@@ -726,6 +741,9 @@
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %d Members of this Group";
+
+/* Indicates that more than one member of this group conversation is no longer verified. */
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer verified.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
@@ -745,14 +763,11 @@
 /* notification title */
 "MISSED_CALL" = "Missed call";
 
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY" = "Missed call because the caller's safety number changed.";
+/* notification title. Embeds {{caller's name or phone number}} */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
 
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
-
-/* notification action */
-"MISSED_CALL_WITH_UNSEEN_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
+/* notification title */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -762,11 +777,11 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+/* No comment provided by engineer. */
+"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
 
-/* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+/* notification title. Embeds {{caller's name or phone number}} */
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "You received a call from %@.";
@@ -940,6 +955,24 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
 
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ is not verified.";
+
+/* Badge indicating that the user is verified. */
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Learn More";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "Mark as not Verified";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
 
@@ -966,6 +999,9 @@
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
@@ -1073,13 +1109,13 @@
 "RETRY_BUTTON_TEXT" = "Retry";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Confirm and Add to Group";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Confirm and Call";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Confirm and Send";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Anyway";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
@@ -1087,11 +1123,11 @@
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
-/* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
-"SCAN_CODE_ACTION" = "Scan Code";
-
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
@@ -1298,7 +1334,7 @@
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can be confident your communication is private.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
@@ -1393,8 +1429,22 @@
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Enter the verification code we sent to %@.";
 
-/* Action sheet item
-   table cell label in conversation settings */
+/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+
+/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+
+/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+
+/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+
+/* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Show Safety Number";
 
 /* Indicates how to cancel a voice message. */

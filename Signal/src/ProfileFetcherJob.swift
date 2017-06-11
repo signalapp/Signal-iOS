@@ -62,14 +62,14 @@ class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         OWSDispatch.sessionStoreQueue().async {
-            if self.storageManager.identityKey(forRecipientId: recipientId) == nil {
+            if OWSIdentityManager.shared().identityKey(forRecipientId: recipientId) == nil {
                 // first time use, do nothing, since there's no change.
                 return
             }
 
-            if self.storageManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId) {
-                Logger.info("\(self.TAG) updated identity key in fetched profile for recipient: \(recipientId)")
-                self.storageManager.deleteAllSessions(forContact: recipientId)
+            if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId) {
+                Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
+                self.storageManager.archiveAllSessions(forContact: recipientId)
             } else {
                 // no change in identity.
             }

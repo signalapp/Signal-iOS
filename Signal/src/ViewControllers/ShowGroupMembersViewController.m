@@ -63,6 +63,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+
+    [self observeNotifications];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(identityStateDidChange:)
+                                                 name:kNSNotificationName_IdentityStateDidChange
+                                               object:nil];
 }
 
 - (void)configWithThread:(TSGroupThread *)thread
@@ -132,6 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
                 [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
             } else {
                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+            }
+
+            BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+                == OWSVerificationStateVerified;
+            if (isVerified) {
+                [cell addVerifiedSubtitle];
             }
 
             return cell;
@@ -253,6 +274,14 @@ NS_ASSUME_NONNULL_BEGIN
                                              handler:^(UIAlertAction *_Nonnull action) {
                                                  [self callMember:recipientId];
                                              }]];
+        [actionSheetController
+            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                         @"Label for button or row which allows users to verify the "
+                                                         @"safety number of another user.")
+                                               style:UIAlertActionStyleDefault
+                                             handler:^(UIAlertAction *_Nonnull action) {
+                                                 [self verifySafetyNumber:recipientId];
+                                             }]];
     }
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
@@ -284,6 +313,13 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment callUserWithIdentifier:recipientId];
 }
 
+- (void)verifySafetyNumber:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
+}
+
 #pragma mark - ContactsViewHelperDelegate
 
 - (void)contactsViewHelperDidUpdateContacts
@@ -311,6 +347,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogDebug(@"%@ done editing contact.", self.tag);
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Notifications
+
+- (void)identityStateDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self updateTableContents];
 }
 
 #pragma mark - Logging

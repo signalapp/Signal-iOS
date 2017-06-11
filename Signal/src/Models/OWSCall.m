@@ -54,6 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
         case RPRecentCallTypeIncomingIncomplete:
             status = kCallIncomingIncomplete;
             break;
+        case RPRecentCallTypeMissedBecauseOfChangedIdentity:
+            status = kCallMissedBecauseOfChangedIdentity;
+            break;
         default:
             status = kCallIncoming;
             break;
@@ -77,6 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
         case kCallOutgoingIncomplete:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_TRIED_TO_CALL", nil), name];
             break;
+        case kCallMissedBecauseOfChangedIdentity:
+            detailString = [NSString
+                stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY", nil), name];
         default:
             detailString = @"";
             break;

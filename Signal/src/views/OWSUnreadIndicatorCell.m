@@ -10,6 +10,8 @@
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSUnreadIndicatorCell ()
 
 @property (nonatomic, nullable) TSUnreadIndicatorInteraction *interaction;
@@ -246,3 +248,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -28,6 +28,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)autoHCenterInSuperview;
 - (void)autoVCenterInSuperview;
 
+- (void)autoPinWidthToWidthOfView:(UIView *)view;
+- (void)autoPinHeightToHeightOfView:(UIView *)view;
+
+- (NSLayoutConstraint *)autoPinToSquareAspectRatio;
+
 #pragma mark - Content Hugging and Compression Resistance
 
 - (void)setContentHuggingLow;

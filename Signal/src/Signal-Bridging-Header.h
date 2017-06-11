@@ -54,11 +54,10 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSGetMessagesRequest.h>
 #import <SignalServiceKit/OWSGetProfileRequest.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -77,7 +76,6 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
-#import <SignalServiceKit/TSStorageManager+IdentityKeyStore.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <SignalServiceKit/TSThread.h>
