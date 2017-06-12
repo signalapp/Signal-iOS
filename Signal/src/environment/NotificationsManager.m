@@ -22,6 +22,8 @@
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
+@property (nonatomic, readonly) NSMutableArray<NSDate *> *notificationHistory;
+
 @end
 
 #pragma mark -
@@ -39,6 +41,8 @@
 
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
+
+    _notificationHistory = [NSMutableArray new];
 
     OWSSingletonAssert();
 
@@ -198,12 +202,16 @@
         return;
     }
 
+    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+
     NSString *messageDescription = message.description;
 
     if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         notification.userInfo             = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
-        notification.soundName            = @"NewMessage.aifc";
+        if (shouldPlaySound) {
+            notification.soundName = @"NewMessage.aifc";
+        }
 
         NSString *alertBodyString = @"";
 
@@ -221,7 +229,7 @@
 
         [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
     } else {
-        if ([Environment.preferences soundInForeground]) {
+        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
         }
     }
@@ -239,6 +247,8 @@
         return;
     }
 
+    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+
     NSString *messageDescription = message.description;
     NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
     NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -248,7 +258,9 @@
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.soundName            = @"NewMessage.aifc";
+        if (shouldPlaySound) {
+            notification.soundName = @"NewMessage.aifc";
+        }
 
         switch (self.notificationPreviewType) {
             case NotificationNamePreview:
@@ -290,9 +302,44 @@
 
         [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
     } else {
-        if ([Environment.preferences soundInForeground]) {
+        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
         }
+    }
+}
+
+- (BOOL)shouldPlaySoundForNotification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // Play no more than 2 notification sounds in a given
+    // five-second window.
+    const CGFloat kNotificationWindowSeconds = 5.f;
+    const NSUInteger kMaxNotificationRate = 2;
+
+    // Cull obsolete notification timestamps from the thread's notification history.
+    while (self.notificationHistory.count > 0) {
+        NSDate *notificationTimestamp = self.notificationHistory[0];
+        CGFloat notificationAgeSeconds = fabs(notificationTimestamp.timeIntervalSinceNow);
+        if (notificationAgeSeconds > kNotificationWindowSeconds) {
+            [self.notificationHistory removeObjectAtIndex:0];
+        } else {
+            break;
+        }
+    }
+
+    // Ignore notifications if necessary.
+    BOOL shouldPlaySound = self.notificationHistory.count < kMaxNotificationRate;
+
+    if (shouldPlaySound) {
+        // Add new notification timestamp to the thread's notification history.
+        NSDate *newNotificationTimestamp = [NSDate new];
+        [self.notificationHistory addObject:newNotificationTimestamp];
+
+        return YES;
+    } else {
+        DDLogDebug(@"Skipping sound for notification");
+        return NO;
     }
 }
 
