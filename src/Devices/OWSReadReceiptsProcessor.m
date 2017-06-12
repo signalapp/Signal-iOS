@@ -87,7 +87,9 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
         if (message) {
             OWSAssert(message.thread);
 
-            NSMutableArray<id<OWSReadTracking>> *interactionToMarkAsRead = [NSMutableArray new];
+            // Mark all unread messages in this thread that are as old or older than the read
+            // receipt.
+            NSMutableArray<id<OWSReadTracking>> *interactionsToMarkAsRead = [NSMutableArray new];
             [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [[transaction ext:TSUnseenDatabaseViewExtensionName]
                     enumerateRowsInGroup:message.uniqueThreadId
@@ -99,21 +101,22 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                                   BOOL *stop) {
 
                                   TSInteraction *interaction = object;
-                                  if (interaction.timestampForSorting < message.timestampForSorting) {
+                                  if (interaction.timestampForSorting <= message.timestampForSorting) {
                                       *stop = YES;
                                       return;
                                   }
 
                                   id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
                                   OWSAssert(!possiblyRead.read);
-                                  [interactionToMarkAsRead addObject:possiblyRead];
+                                  [interactionsToMarkAsRead addObject:possiblyRead];
                               }];
 
-                for (id<OWSReadTracking> possiblyRead in interactionToMarkAsRead) {
+                for (id<OWSReadTracking> possiblyRead in interactionsToMarkAsRead) {
                     // Don't send a read receipt in response to a read receipt.
                     [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:NO];
                 }
             }];
+            OWSAssert(interactionsToMarkAsRead.count > 0);
 
             [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:readReceipt.timestamp];
             // If it was previously saved, no need to keep it around any longer.
