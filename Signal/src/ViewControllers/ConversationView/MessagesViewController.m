@@ -675,6 +675,19 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 }
 
+// Returns a collection of the group members who are "no longer verified".
+- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateNoLongerVerified) {
+            [result addObject:recipientId];
+        }
+    }
+    return result;
+}
+
 - (void)ensureBannerState
 {
     // This method should be called rarely, so it's simplest to discard and
@@ -686,14 +699,8 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // A collection of the group members who are "no longer verified".
-    NSMutableArray<NSString *> *noLongerVerifiedRecipientIds = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-            == OWSVerificationStateNoLongerVerified) {
-            [noLongerVerifiedRecipientIds addObject:recipientId];
-        }
-    }
+    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
+
     if (noLongerVerifiedRecipientIds.count > 0) {
         NSString *message;
         if (noLongerVerifiedRecipientIds.count > 1) {
@@ -748,14 +755,6 @@ typedef enum : NSUInteger {
     OWSAssert(title.length > 0);
     OWSAssert(bannerColor);
 
-    UILabel *label = [UILabel new];
-    label.font = [UIFont ows_mediumFontWithSize:14.f];
-    label.text = title;
-    label.textColor = [UIColor whiteColor];
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.textAlignment = NSTextAlignmentCenter;
-
     UIView *bannerView = [UIView new];
     bannerView.backgroundColor = bannerColor;
     bannerView.layer.cornerRadius = 2.5f;
@@ -766,12 +765,30 @@ typedef enum : NSUInteger {
     bannerView.layer.shadowRadius = 2.f;
     bannerView.layer.shadowOpacity = 0.35f;
 
+    UILabel *label = [UILabel new];
+    label.font = [UIFont ows_mediumFontWithSize:14.f];
+    label.text = title;
+    label.textColor = [UIColor whiteColor];
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.textAlignment = NSTextAlignmentCenter;
+
+    UIImage *closeIcon = [UIImage imageNamed:@"banner_close"];
+    UIImageView *closeButton = [[UIImageView alloc] initWithImage:closeIcon];
+    [bannerView addSubview:closeButton];
+    const CGFloat kBannerCloseButtonPadding = 8.f;
+    [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
+    [closeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kBannerCloseButtonPadding];
+    [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
+    [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
+
     [bannerView addSubview:label];
     [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
     [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
     const CGFloat kBannerHPadding = 15.f;
     [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kBannerHPadding];
-    [label autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kBannerHPadding];
+    const CGFloat kBannerHSpacing = 10.f;
+    [label autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:closeButton withOffset:-kBannerHSpacing];
 
     [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
 
@@ -780,7 +797,8 @@ typedef enum : NSUInteger {
     [bannerView autoHCenterInSuperview];
 
     CGFloat labelDesiredWidth = [label sizeThatFits:CGSizeZero].width;
-    CGFloat bannerDesiredWidth = labelDesiredWidth + kBannerHPadding * 2.f;
+    CGFloat bannerDesiredWidth
+        = (labelDesiredWidth + kBannerHPadding + kBannerHSpacing + closeIcon.size.width + kBannerCloseButtonPadding);
     const CGFloat kMinBannerHMargin = 20.f;
     if (bannerDesiredWidth + kMinBannerHMargin * 2.f >= self.view.width) {
         [bannerView autoPinWidthToSuperviewWithMargin:kMinBannerHMargin];
@@ -814,7 +832,57 @@ typedef enum : NSUInteger {
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self showConversationSettingsAndShowVerification:YES];
+        UIAlertController *actionSheetController =
+            [UIAlertController alertControllerWithTitle:nil
+                                                message:nil
+                                         preferredStyle:UIAlertControllerStyleActionSheet];
+
+        __weak MessagesViewController *weakSelf = self;
+        UIAlertAction *unblockAction = [UIAlertAction
+            actionWithTitle:
+                NSLocalizedString(@"VERIFY_PRIVACY",
+                    @"Label for button or row which allows users to verify the safety number of another user.")
+                      style:UIAlertActionStyleDefault
+                    handler:^(UIAlertAction *_Nonnull action) {
+                        [weakSelf showConversationSettingsAndShowVerification:YES];
+                    }];
+        [actionSheetController addAction:unblockAction];
+
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
+                                               @"Generic short text for button to dismiss a dialog")
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [weakSelf resetVerificationStateToDefault];
+                                   }];
+        [actionSheetController addAction:dismissAction];
+
+        [self presentViewController:actionSheetController animated:YES completion:nil];
+    }
+}
+
+- (void)resetVerificationStateToDefault
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
+    for (NSString *recipientId in noLongerVerifiedRecipientIds) {
+        OWSAssert(recipientId.length > 0);
+
+        OWSRecipientIdentity *_Nullable recipientIdentity =
+            [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        OWSAssert(recipientIdentity);
+
+        NSData *identityKey = recipientIdentity.identityKey;
+        OWSAssert(identityKey.length > 0);
+        if (identityKey.length < 1) {
+            continue;
+        }
+
+        [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
+                                                   identityKey:identityKey
+                                                   recipientId:recipientId
+                                               sendSyncMessage:YES];
     }
 }
 
