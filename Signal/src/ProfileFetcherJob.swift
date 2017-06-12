@@ -40,16 +40,20 @@ class ProfileFetcherJob: NSObject {
 
     public func getProfile(recipientId: String, remainingRetries: Int = 3) {
 
-        if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
-            let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-            // Don't check a profile more often than every N minutes.
-            let kGetProfileMaxFrequencySeconds = 60.0 * 5.0
-            if lastTimeInterval < kGetProfileMaxFrequencySeconds {
-                Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
-                return
+        // Only throttle profile fetch in production builds in order to
+        // facilitate debugging.
+        if !_isDebugAssertConfiguration() {
+            if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
+                let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
+                // Don't check a profile more often than every N minutes.
+                let kGetProfileMaxFrequencySeconds = 60.0 * 5.0
+                if lastTimeInterval < kGetProfileMaxFrequencySeconds {
+                    Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                    return
+                }
             }
+            ProfileFetcherJob.fetchDateMap[recipientId] = Date()
         }
-        ProfileFetcherJob.fetchDateMap[recipientId] = Date()
 
         Logger.error("\(self.TAG) getProfile: \(recipientId)")
 
