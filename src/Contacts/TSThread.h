@@ -176,6 +176,9 @@ NS_ASSUME_NONNULL_BEGIN
 // data loss and will resolve all known issues.
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate;
 
+// Returns YES IFF the interaction should show up in the inbox as the last message.
++ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

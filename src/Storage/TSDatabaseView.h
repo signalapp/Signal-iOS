@@ -14,6 +14,7 @@ extern NSString *TSSecondaryDevicesGroup;
 
 extern NSString *TSThreadDatabaseViewExtensionName;
 extern NSString *TSMessageDatabaseViewExtensionName;
+extern NSString *TSThreadInboxMessagesDatabaseViewExtensionName;
 extern NSString *TSThreadIncomingMessageDatabaseViewExtensionName;
 extern NSString *TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *TSUnreadDatabaseViewExtensionName;
@@ -24,6 +25,7 @@ extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)registerThreadDatabaseView;
 + (BOOL)registerThreadInteractionsDatabaseView;
++ (BOOL)registerThreadInboxMessageDatabaseView;
 + (BOOL)registerThreadIncomingMessagesDatabaseView;
 + (BOOL)registerThreadOutgoingMessagesDatabaseView;
 
