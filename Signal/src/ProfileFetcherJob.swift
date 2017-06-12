@@ -14,6 +14,9 @@ class ProfileFetcherJob: NSObject {
 
     let thread: TSThread
 
+    // This property is only accessed on the default global queue.  
+    static var fetchDateMap = [String: Date]()
+
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
         ProfileFetcherJob(thread: thread, networkManager: networkManager).run()
     }
@@ -26,30 +29,60 @@ class ProfileFetcherJob: NSObject {
     }
 
     public func run() {
-        for recipientId in self.thread.recipientIdentifiers {
-            let request = OWSGetProfileRequest(recipientId: recipientId)
+        AssertIsOnMainThread()
 
-            self.networkManager.makeRequest(
-                request,
-                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                    guard let profileResponse = SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject) else {
-                        Logger.error("\(self.TAG) response object had unexpected content")
-                        assertionFailure("\(self.TAG) response object had unexpected content")
-                        return
-                    }
-
-                    self.processResponse(signalServiceProfile: profileResponse)
-            },
-                failure: { (_: URLSessionDataTask?, error: Error?) in
-                    guard let error = error else {
-                        Logger.error("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
-                        assertionFailure("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
-                        return
-                    }
-
-                    Logger.error("\(self.TAG) failed to fetch profile for recipient: \(recipientId) with error: \(error)")
-            })
+        DispatchQueue.global().async {
+            for recipientId in self.thread.recipientIdentifiers {
+                self.getProfile(recipientId: recipientId)
+            }
         }
+    }
+
+    public func getProfile(recipientId: String, remainingRetries: Int = 3) {
+
+        if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
+            let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
+            // Don't check a profile more often than every N minutes.
+            let kGetProfileMaxFrequencySeconds = 60.0 * 5.0
+            if lastTimeInterval < kGetProfileMaxFrequencySeconds {
+                Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                return
+            }
+        }
+        ProfileFetcherJob.fetchDateMap[recipientId] = Date()
+
+        Logger.error("\(self.TAG) getProfile: \(recipientId)")
+
+        let request = OWSGetProfileRequest(recipientId: recipientId)
+
+        // We don't need to retainUntilComplete() since the success and failure
+        // handlers both close over a strong reference to self.
+        self.networkManager.makeRequest(
+            request,
+            success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
+                guard let profileResponse = SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject) else {
+                    Logger.error("\(self.TAG) response object had unexpected content")
+                    assertionFailure("\(self.TAG) response object had unexpected content")
+                    return
+                }
+
+                self.processResponse(signalServiceProfile: profileResponse)
+        },
+            failure: { (_: URLSessionDataTask?, error: Error?) in
+                guard let error = error else {
+                    Logger.error("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
+                    assertionFailure("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
+                    return
+                }
+
+                Logger.error("\(self.TAG) failed to fetch profile for recipient: \(recipientId) with error: \(error)")
+
+                if remainingRetries > 1 {
+                    DispatchQueue.global().async {
+                        self.getProfile(recipientId: recipientId, remainingRetries:remainingRetries - 1)
+                    }
+                }
+        })
     }
 
     private func processResponse(signalServiceProfile: SignalServiceProfile) {
