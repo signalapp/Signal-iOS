@@ -873,8 +873,6 @@ typedef enum : NSUInteger {
             [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
         OWSAssert(recipientIdentity);
 
-        // By capturing the identity key when we enter these views, we prevent the edge case
-        // where the user verifies a key that we learned about while this view was open.
         NSData *identityKey = recipientIdentity.identityKey;
         OWSAssert(identityKey.length > 0);
         if (identityKey.length < 1) {
