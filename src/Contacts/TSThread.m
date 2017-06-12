@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
-    return (TSInteraction *)last;
+    return last;
 }
 
 - (TSInteraction *)lastInteractionForInbox
@@ -249,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         last = [[transaction ext:TSThreadInboxMessagesDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
-    return (TSInteraction *)last;
+    return last;
 }
 
 - (NSDate *)lastMessageDate {
@@ -277,7 +277,6 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogDebug(@"%@ not showing dynamic interaction in inbox: %@", self.tag, interaction.debugDescription);
         return NO;
     }
-
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
@@ -309,29 +308,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSDate *lastMessageDate = [lastMessage dateForSorting];
-
-    if ([lastMessage isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)lastMessage;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            DDLogDebug(@"%@ not updating lastMessage for thread: %@ nonblocking identity change: %@",
-                self.tag,
-                self,
-                errorMessage.debugDescription);
-            return;
-        }
-    } else if ([lastMessage isKindOfClass:[TSInfoMessage class]]) {
-        TSInfoMessage *infoMessage = (TSInfoMessage *)lastMessage;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
-            DDLogDebug(@"%@ not updating lastMessage for thread: %@ verification state change: %@",
-                self.tag,
-                self,
-                infoMessage.debugDescription);
-            return;
-        }
-    }
-
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
 
