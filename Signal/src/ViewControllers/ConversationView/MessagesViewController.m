@@ -3558,6 +3558,7 @@ typedef enum : NSUInteger {
                           }
 
                           id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+                          OWSAssert(!possiblyRead.read);
                           if (!possiblyRead.read) {
                               [interactions addObject:possiblyRead];
                           }
@@ -3568,7 +3569,7 @@ typedef enum : NSUInteger {
         }
         DDLogError(@"Marking %zd messages as read.", interactions.count);
         for (id<OWSReadTracking> possiblyRead in interactions) {
-            [possiblyRead markAsReadLocallyWithTransaction:transaction];
+            [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
         }
     }];
 }
