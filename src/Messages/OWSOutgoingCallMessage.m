@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/1/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOutgoingCallMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -109,10 +110,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (BOOL)isLegacyMessage
-{
-    return NO;
-}
 //
 ///**
 // * override thread accessor in superclass, since this model is never saved.
