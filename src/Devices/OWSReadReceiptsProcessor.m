@@ -7,7 +7,10 @@
 #import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSContactThread.h"
+#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+#import "TSStorageManager.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -82,7 +85,36 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
         TSIncomingMessage *message =
             [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId timestamp:readReceipt.timestamp];
         if (message) {
-            [message markAsReadFromReadReceipt];
+            OWSAssert(message.thread);
+
+            NSMutableArray<id<OWSReadTracking>> *interactionToMarkAsRead = [NSMutableArray new];
+            [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [[transaction ext:TSUnseenDatabaseViewExtensionName]
+                    enumerateRowsInGroup:message.uniqueThreadId
+                              usingBlock:^(NSString *collection,
+                                  NSString *key,
+                                  id object,
+                                  id metadata,
+                                  NSUInteger index,
+                                  BOOL *stop) {
+
+                                  TSInteraction *interaction = object;
+                                  if (interaction.timestampForSorting < message.timestampForSorting) {
+                                      *stop = YES;
+                                      return;
+                                  }
+
+                                  id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+                                  OWSAssert(!possiblyRead.read);
+                                  [interactionToMarkAsRead addObject:possiblyRead];
+                              }];
+
+                for (id<OWSReadTracking> possiblyRead in interactionToMarkAsRead) {
+                    // Don't send a read receipt in response to a read receipt.
+                    [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:NO];
+                }
+            }];
+
             [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:readReceipt.timestamp];
             // If it was previously saved, no need to keep it around any longer.
             [readReceipt remove];

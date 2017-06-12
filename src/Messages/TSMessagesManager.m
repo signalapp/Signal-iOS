@@ -924,7 +924,8 @@ NS_ASSUME_NONNULL_BEGIN
           // automatically marked as read.
           BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
           if (shouldMarkMessageAsRead) {
-              [incomingMessage markAsReadLocallyWithTransaction:transaction];
+              // Don't send a read receipt for messages sent by ourselves.
+              [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO];
           }
 
           // Other clients allow attachments to be sent along with body, we want the text displayed as a separate

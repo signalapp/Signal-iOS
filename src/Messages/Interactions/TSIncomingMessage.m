@@ -3,6 +3,8 @@
 //
 
 #import "TSIncomingMessage.h"
+#import "OWSDisappearingMessagesConfiguration.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
@@ -115,37 +117,29 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     return YES;
 }
 
-- (void)markAsReadFromReadReceipt
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self markAsReadWithoutNotificationWithTransaction:transaction];
-    }];
-}
+    OWSAssert(transaction);
 
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self markAsReadWithoutNotificationWithTransaction:transaction];
-    [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
-                                                        object:self];
-}
+    if (_read) {
+        return;
+    }
 
-- (void)markAsReadLocally
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self markAsReadWithoutNotificationWithTransaction:transaction];
-    }];
-    // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
-    // tries to do anything with the DB.
-    [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
-                                                        object:self];
-}
-
-- (void)markAsReadWithoutNotificationWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
+
+    [OWSDisappearingMessagesJob setExpirationForMessage:self];
+
+    if (sendReadReceipt) {
+        // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
+        // tries to do anything with the DB.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
+                                                                object:self];
+        });
+    }
 }
 
 #pragma mark - Logging

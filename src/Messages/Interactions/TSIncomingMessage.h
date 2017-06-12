@@ -108,20 +108,6 @@ extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
 
-/*
- * Marks a message as having been read on this device (as opposed to responding to a remote read receipt).
- *
- */
-- (void)markAsReadLocally;
-// TODO possible to remove?
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- * Similar to markAsReadWithTransaction, but doesn't send out read receipts.
- * Used for *responding* to a remote read receipt.
- */
-- (void)markAsReadFromReadReceipt;
-
 @end
 
 NS_ASSUME_NONNULL_END

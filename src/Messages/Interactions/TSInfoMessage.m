@@ -109,19 +109,20 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return NO;
 }
 
-- (void)markAsReadLocally
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self markAsReadLocallyWithTransaction:transaction];
-    }];
-}
-
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt
 {
     OWSAssert(transaction);
+
+    if (_read) {
+        return;
+    }
+
     DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
+    [self touchThreadWithTransaction:transaction];
+
+    // Ignore sendReadReceipt; it doesn't apply to info messages.
 }
 
 #pragma mark - Logging

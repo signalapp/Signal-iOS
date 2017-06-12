@@ -86,22 +86,22 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     return YES;
 }
 
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt
 {
-    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    OWSAssert(transaction);
 
+    if (_read) {
+        return;
+    }
+
+    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
-
-    // redraw any thread-related unread count UI.
     [self touchThreadWithTransaction:transaction];
-}
 
-- (void)markAsReadLocally
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self markAsReadLocallyWithTransaction:transaction];
-    }];
+    // Ignore sendReadReceipt; it doesn't apply to calls.
+    //
+    // TODO: Should we update expiration of calls?
 }
 
 #pragma mark - Methods

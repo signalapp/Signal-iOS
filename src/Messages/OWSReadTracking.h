@@ -20,10 +20,8 @@
 - (BOOL)shouldAffectUnreadCounts;
 
 /**
- * Call when the user viewed the message/call on this device. "locally" as opposed to being notified via a read receipt
- * sync message of a remote read.
+ * Used for *responding* to a remote read receipt or in response to user activity.
  */
-- (void)markAsReadLocally;
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt;
 
 @end

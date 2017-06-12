@@ -72,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsRead;
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
