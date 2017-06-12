@@ -22,6 +22,8 @@
 /**
  * Used for *responding* to a remote read receipt or in response to user activity.
  */
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt;
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                  sendReadReceipt:(BOOL)sendReadReceipt
+                 updateExpiration:(BOOL)updateExpiration;
 
 @end

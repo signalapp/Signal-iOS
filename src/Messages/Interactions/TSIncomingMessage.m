@@ -117,7 +117,9 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     return YES;
 }
 
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                  sendReadReceipt:(BOOL)sendReadReceipt
+                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -130,7 +132,9 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    [OWSDisappearingMessagesJob setExpirationForMessage:self];
+    if (updateExpiration) {
+        [OWSDisappearingMessagesJob setExpirationForMessage:self];
+    }
 
     if (sendReadReceipt) {
         // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver

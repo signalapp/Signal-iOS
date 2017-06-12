@@ -167,7 +167,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return NO;
 }
 
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction sendReadReceipt:(BOOL)sendReadReceipt
+- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                  sendReadReceipt:(BOOL)sendReadReceipt
+                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -180,7 +182,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt; it doesn't apply to error messages.
+    // Ignore sendReadReceipt and updateExpiration; they don't apply to error messages.
 }
 
 #pragma mark - Logging

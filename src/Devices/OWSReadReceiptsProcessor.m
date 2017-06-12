@@ -87,7 +87,7 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
         if (message) {
             OWSAssert(message.thread);
 
-            // Mark all unread messages in this thread that are as old or older than the read
+            // Mark all unread messages in this thread that are older than message specified in the read
             // receipt.
             NSMutableArray<id<OWSReadTracking>> *interactionsToMarkAsRead = [NSMutableArray new];
             [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -101,7 +101,7 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                                   BOOL *stop) {
 
                                   TSInteraction *interaction = object;
-                                  if (interaction.timestampForSorting <= message.timestampForSorting) {
+                                  if (interaction.timestampForSorting > message.timestampForSorting) {
                                       *stop = YES;
                                       return;
                                   }
@@ -111,20 +111,26 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                                   [interactionsToMarkAsRead addObject:possiblyRead];
                               }];
 
-                for (id<OWSReadTracking> possiblyRead in interactionsToMarkAsRead) {
-                    // Don't send a read receipt in response to a read receipt.
-                    [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:NO];
+                for (id<OWSReadTracking> interaction in interactionsToMarkAsRead) {
+                    // * Don't send a read receipt in response to a read receipt.
+                    // * Don't update expiration; we'll do that in the next statement.
+                    [interaction markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+
+                    // Update expiration using the timestamp from the readReceipt.
+                    [OWSDisappearingMessagesJob setExpirationForMessage:(TSMessage *)interaction
+                                                    expirationStartedAt:readReceipt.timestamp];
+
+                    // Fire event that will cancel any pending notifications for this message.
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                                          object:(TSMessage *)interaction];
+                    });
                 }
             }];
-            OWSAssert(interactionsToMarkAsRead.count > 0);
 
-            [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:readReceipt.timestamp];
             // If it was previously saved, no need to keep it around any longer.
             [readReceipt remove];
-            [[NSNotificationCenter defaultCenter]
-                postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
-                              object:message];
-
         } else {
             DDLogDebug(@"%@ Received read receipt for an unknown message. Saving it for later.", self.tag);
             [readReceipt save];
