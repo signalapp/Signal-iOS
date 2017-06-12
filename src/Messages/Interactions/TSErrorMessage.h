@@ -58,8 +58,6 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) NSString *recipientId;
 
-- (void)markAsReadLocallyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

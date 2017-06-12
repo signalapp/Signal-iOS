@@ -72,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsRead;
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
@@ -176,6 +175,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This isn't a perfect arrangement, but in practice this will prevent
 // data loss and will resolve all known issues.
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate;
+
+// Returns YES IFF the interaction should show up in the inbox as the last message.
++ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 
 @end
 

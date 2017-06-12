@@ -228,18 +228,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadLocallyWithTransaction:transaction];
+        [message markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
     }
 
     // Just to be defensive, we'll also check for unread messages.
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
-}
-
-- (void)markAllAsRead
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self markAllAsReadWithTransaction:transaction];
-    }];
 }
 
 - (TSInteraction *) lastInteraction {
@@ -247,7 +240,16 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
         last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
-    return (TSInteraction *)last;
+    return last;
+}
+
+- (TSInteraction *)lastInteractionForInbox
+{
+    __block TSInteraction *last;
+    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        last = [[transaction ext:TSThreadInboxMessagesDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
+    }];
+    return last;
 }
 
 - (NSDate *)lastMessageDate {
@@ -259,49 +261,53 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)lastMessageLabel {
-    if (self.lastInteraction == nil) {
+    TSInteraction *interaction = self.lastInteractionForInbox;
+    if (interaction == nil) {
         return @"";
     } else {
-        return [self lastInteraction].description;
+        return interaction.description;
     }
+}
+
++ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
+{
+    OWSAssert(interaction);
+
+    if (interaction.isDynamicInteraction) {
+        DDLogDebug(@"%@ not showing dynamic interaction in inbox: %@", self.tag, interaction.debugDescription);
+        return NO;
+    }
+
+    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
+        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
+            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
+            // there was no meaningful interaction.
+            DDLogDebug(
+                @"%@ not showing nonblocking identity change in inbox: %@", self.tag, errorMessage.debugDescription);
+            return NO;
+        }
+    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
+        TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
+        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
+            DDLogDebug(
+                @"%@ not showing verification state change in inbox: %@", self.tag, infoMessage.debugDescription);
+            return NO;
+        }
+    }
+
+    return YES;
 }
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssert(lastMessage);
     OWSAssert(transaction);
 
-    if (lastMessage.isDynamicInteraction) {
-        DDLogDebug(@"%@ not updating lastMessage for thread: %@ dynamic interaction: %@",
-            self.tag,
-            self,
-            lastMessage.debugDescription);
+    if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
         return;
     }
 
     NSDate *lastMessageDate = [lastMessage dateForSorting];
-
-    if ([lastMessage isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)lastMessage;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            DDLogDebug(@"%@ not updating lastMessage for thread: %@ nonblocking identity change: %@",
-                self.tag,
-                self,
-                errorMessage.debugDescription);
-            return;
-        }
-    } else if ([lastMessage isKindOfClass:[TSInfoMessage class]]) {
-        TSInfoMessage *infoMessage = (TSInfoMessage *)lastMessage;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
-            DDLogDebug(@"%@ not updating lastMessage for thread: %@ verification state change: %@",
-                self.tag,
-                self,
-                infoMessage.debugDescription);
-            return;
-        }
-    }
-
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
 
