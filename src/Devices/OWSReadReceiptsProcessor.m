@@ -90,6 +90,10 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
             // Mark all unread messages in this thread that are older than message specified in the read
             // receipt.
             NSMutableArray<id<OWSReadTracking>> *interactionsToMarkAsRead = [NSMutableArray new];
+
+            // Always mark the message specified by the read receipt as read.
+            [interactionsToMarkAsRead addObject:message];
+
             [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [[transaction ext:TSUnseenDatabaseViewExtensionName]
                     enumerateRowsInGroup:message.uniqueThreadId
