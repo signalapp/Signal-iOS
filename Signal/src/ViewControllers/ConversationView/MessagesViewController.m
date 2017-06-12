@@ -3569,7 +3569,7 @@ typedef enum : NSUInteger {
         }
         DDLogError(@"Marking %zd messages as read.", interactions.count);
         for (id<OWSReadTracking> possiblyRead in interactions) {
-            [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES];
+            [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
         }
     }];
 }
