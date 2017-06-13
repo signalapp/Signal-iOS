@@ -21,6 +21,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageInvalidVersion,
     TSErrorMessageNonBlockingIdentityChange,
     TSErrorMessageUnknownContactBlockOffer,
+    TSErrorMessageGroupCreationFailed,
 };
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

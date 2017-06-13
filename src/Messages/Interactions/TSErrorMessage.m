@@ -115,6 +115,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
         case TSErrorMessageUnknownContactBlockOffer:
             return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
                 @"Message shown in conversation view that offers to block an unknown user.");
+        case TSErrorMessageGroupCreationFailed:
+            return NSLocalizedString(@"GROUP_CREATION_FAILED",
+                @"Message shown in conversation view that indicates there were issues with group creation.");
         default:
             return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
             break;
