@@ -51,7 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
-    OWSAssert(!self.imageView);
+    if (self.imageView) {
+        // Don't init twice.
+        return;
+    }
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
@@ -62,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.titleLabel = [UILabel new];
     self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-    self.titleLabel.font = [OWSSystemMessageCell titleFont];
+    self.titleLabel.font = [self titleFont];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.contentView addSubview:self.titleLabel];
@@ -86,13 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *icon = [self iconForInteraction:self.interaction];
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.imageView.tintColor = [self iconColorForInteraction:self.interaction];
-    self.titleLabel.textColor = [OWSSystemMessageCell textColor];
-    [OWSSystemMessageCell applyTitleForInteraction:self.interaction label:self.titleLabel];
+    self.titleLabel.textColor = [self textColor];
+    [self applyTitleForInteraction:self.interaction label:self.titleLabel];
 
     [self setNeedsLayout];
 }
 
-+ (UIColor *)textColor
+- (UIColor *)textColor
 {
     return [UIColor colorWithRGBHex:0x303030];
 }
@@ -162,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-+ (void)applyTitleForInteraction:(TSInteraction *)interaction label:(UILabel *)label
+- (void)applyTitleForInteraction:(TSInteraction *)interaction label:(UILabel *)label
 {
     OWSAssert(interaction);
     OWSAssert(label);
@@ -204,32 +207,32 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (UIFont *)titleFont
+- (UIFont *)titleFont
 {
     return [UIFont ows_regularFontWithSize:13.f];
 }
 
-+ (CGFloat)hMargin
+- (CGFloat)hMargin
 {
     return 25.f;
 }
 
-+ (CGFloat)topVMargin
+- (CGFloat)topVMargin
 {
     return 5.f;
 }
 
-+ (CGFloat)bottomVMargin
+- (CGFloat)bottomVMargin
 {
     return 5.f;
 }
 
-+ (CGFloat)hSpacing
+- (CGFloat)hSpacing
 {
     return 8.f;
 }
 
-+ (CGFloat)iconSize
+- (CGFloat)iconSize
 {
     return 20.f;
 }
@@ -238,36 +241,32 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super layoutSubviews];
 
-    CGFloat maxTitleWidth = (self.contentView.width
-        - ([OWSSystemMessageCell hMargin] * 2.f + [OWSSystemMessageCell hSpacing] + [OWSSystemMessageCell iconSize]));
+    CGFloat maxTitleWidth = (self.contentView.width - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 
-    CGFloat contentWidth = ([OWSSystemMessageCell iconSize] + [OWSSystemMessageCell hSpacing] + titleSize.width);
+    CGFloat contentWidth = ([self iconSize] + [self hSpacing] + titleSize.width);
     self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
-        round((self.contentView.height - [OWSSystemMessageCell iconSize]) * 0.5f),
-        [OWSSystemMessageCell iconSize],
-        [OWSSystemMessageCell iconSize]);
-    self.titleLabel.frame = CGRectMake(round(self.imageView.right + [OWSSystemMessageCell hSpacing]),
+        round((self.contentView.height - [self iconSize]) * 0.5f),
+        [self iconSize],
+        [self iconSize]);
+    self.titleLabel.frame = CGRectMake(round(self.imageView.right + [self hSpacing]),
         round((self.contentView.height - titleSize.height) * 0.5f),
         ceil(titleSize.width + 1.f),
         ceil(titleSize.height + 1.f));
 }
 
-+ (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
+- (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
-    // Creating a UILabel to measure the layout is expensive, but it's the only
-    // reliable way to do it.
-    UILabel *label = [UILabel new];
-    label.font = [self titleFont];
-    [OWSSystemMessageCell applyTitleForInteraction:interaction label:label];
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
+    self.titleLabel.font = [self titleFont];
+    [self applyTitleForInteraction:interaction label:self.titleLabel];
+    self.titleLabel.numberOfLines = 0;
+    self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     CGFloat maxTitleWidth = (collectionViewWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
-    CGSize titleSize = [label sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
+    CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
     result.height += contentHeight;
 

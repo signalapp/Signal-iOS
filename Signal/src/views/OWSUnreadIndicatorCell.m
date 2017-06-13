@@ -49,7 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
-    OWSAssert(!self.bannerView);
+    if (self.bannerView) {
+        // Don't init twice.
+        return;
+    }
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
@@ -72,15 +75,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bannerView addSubview:self.bannerBottomHighlightView2];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.text = [OWSUnreadIndicatorCell titleForInteraction:self.interaction];
+    self.titleLabel.text = [self titleForInteraction:self.interaction];
     self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-    self.titleLabel.font = [OWSUnreadIndicatorCell titleFont];
+    self.titleLabel.font = [self titleFont];
     [self.bannerView addSubview:self.titleLabel];
 
     self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.text = [OWSUnreadIndicatorCell subtitleForInteraction:self.interaction];
+    self.subtitleLabel.text = [self subtitleForInteraction:self.interaction];
     self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-    self.subtitleLabel.font = [OWSUnreadIndicatorCell subtitleFont];
+    self.subtitleLabel.font = [self subtitleFont];
     self.subtitleLabel.numberOfLines = 0;
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
@@ -103,23 +106,23 @@ NS_ASSUME_NONNULL_BEGIN
     [self setNeedsLayout];
 }
 
-+ (UIFont *)titleFont
+- (UIFont *)titleFont
 {
     return [UIFont ows_regularFontWithSize:16.f];
 }
 
-+ (UIFont *)subtitleFont
+- (UIFont *)subtitleFont
 {
     return [UIFont ows_regularFontWithSize:12.f];
 }
 
-+ (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction
+- (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction
 {
     return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.")
         .uppercaseString;
 }
 
-+ (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
+- (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
 {
     if (!interaction.hasMoreUnseenMessages) {
         return nil;
@@ -137,32 +140,32 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
 }
 
-+ (CGFloat)subtitleHMargin
+- (CGFloat)subtitleHMargin
 {
     return 20.f;
 }
 
-+ (CGFloat)subtitleVSpacing
+- (CGFloat)subtitleVSpacing
 {
     return 3.f;
 }
 
-+ (CGFloat)titleInnerHMargin
+- (CGFloat)titleInnerHMargin
 {
     return 10.f;
 }
 
-+ (CGFloat)titleVMargin
+- (CGFloat)titleVMargin
 {
     return 5.5f;
 }
 
-+ (CGFloat)topVMargin
+- (CGFloat)topVMargin
 {
     return 5.f;
 }
 
-+ (CGFloat)bottomVMargin
+- (CGFloat)bottomVMargin
 {
     return 5.f;
 }
@@ -180,9 +183,9 @@ NS_ASSUME_NONNULL_BEGIN
     // This layout logic assumes that the cell insets are symmetrical and can be deduced
     // from the cell frame.
     CGRect bannerViewFrame = CGRectMake(-self.left,
-        round(OWSUnreadIndicatorCell.topVMargin),
+        round(self.topVMargin),
         round(self.width + self.left * 2.f),
-        round(self.titleLabel.height + OWSUnreadIndicatorCell.titleVMargin * 2.f));
+        round(self.titleLabel.height + self.titleVMargin * 2.f));
     self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
 
     // The highlights should be 1px (not 1pt), so adapt their thickness to
@@ -198,16 +201,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.subtitleLabel.text.length > 0) {
         CGSize subtitleSize = [self.subtitleLabel
-            sizeThatFits:CGSizeMake(
-                             self.contentView.width - [OWSUnreadIndicatorCell subtitleHMargin] * 2.f, CGFLOAT_MAX)];
+            sizeThatFits:CGSizeMake(self.contentView.width - [self subtitleHMargin] * 2.f, CGFLOAT_MAX)];
         self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
-            round(self.bannerView.bottom + OWSUnreadIndicatorCell.subtitleVSpacing),
+            round(self.bannerView.bottom + self.subtitleVSpacing),
             ceil(subtitleSize.width),
             ceil(subtitleSize.height));
     }
 }
 
-+ (CGSize)cellSizeForInteraction:(TSUnreadIndicatorInteraction *)interaction
+- (CGSize)cellSizeForInteraction:(TSUnreadIndicatorInteraction *)interaction
              collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
@@ -220,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Creating a UILabel to measure the layout is expensive, but it's the only
     // reliable way to do it.  Unread indicators should be rare, so this is acceptable.
-    UILabel *label = [UILabel new];
+    UILabel *label = self.titleLabel;
     label.font = [self titleFont];
     label.text = title;
     result.height += ceil([label sizeThatFits:CGSizeZero].height);

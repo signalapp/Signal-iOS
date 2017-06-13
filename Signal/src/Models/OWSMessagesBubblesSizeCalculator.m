@@ -31,7 +31,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)jsq_avatarSizeForMessageData:(id<JSQMessageData>)messageData
                             withLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
 - (CGFloat)textBubbleWidthForLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
+
 @end
+
+#pragma mark -
+
+@interface OWSMessagesBubblesSizeCalculator ()
+
+@property (nonatomic) OWSSystemMessageCell *referenceSystemMessageCell;
+@property (nonatomic) OWSUnreadIndicatorCell *referenceUnreadIndicatorCell;
+
+@end
+
+#pragma mark -
 
 @implementation OWSMessagesBubblesSizeCalculator
 
@@ -98,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                       cacheKey:(id)cacheKey
                         layout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(interaction);
     OWSAssert(cacheKey);
 
@@ -106,8 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
         return [cachedSize CGSizeValue];
     }
 
-    CGSize result =
-        [OWSSystemMessageCell cellSizeForInteraction:interaction collectionViewWidth:layout.collectionView.width];
+    if (!self.referenceSystemMessageCell) {
+        self.referenceSystemMessageCell = [OWSSystemMessageCell new];
+    }
+
+    CGSize result = [self.referenceSystemMessageCell cellSizeForInteraction:interaction
+                                                        collectionViewWidth:layout.collectionView.width];
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 
@@ -126,8 +143,12 @@ NS_ASSUME_NONNULL_BEGIN
         return [cachedSize CGSizeValue];
     }
 
-    CGSize result =
-        [OWSUnreadIndicatorCell cellSizeForInteraction:interaction collectionViewWidth:layout.collectionView.width];
+    if (!self.referenceUnreadIndicatorCell) {
+        self.referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
+    }
+
+    CGSize result = [self.referenceUnreadIndicatorCell cellSizeForInteraction:interaction
+                                                          collectionViewWidth:layout.collectionView.width];
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 

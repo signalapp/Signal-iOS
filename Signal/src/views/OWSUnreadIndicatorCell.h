@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithInteraction:(TSUnreadIndicatorInteraction *)interaction;
 
-+ (CGSize)cellSizeForInteraction:(TSUnreadIndicatorInteraction *)interaction
+- (CGSize)cellSizeForInteraction:(TSUnreadIndicatorInteraction *)interaction
              collectionViewWidth:(CGFloat)collectionViewWidth;
 
 @end
