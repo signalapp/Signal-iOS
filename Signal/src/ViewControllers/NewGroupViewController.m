@@ -450,26 +450,33 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
         }];
     OWSAssert(thread);
 
-    void (^popToThread)() = ^{
+    void (^successHandler)() = ^{
+        DDLogError(@"Group creation successful.");
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES
                                      completion:^{
+                                         // Pop to new group thread.
                                          [Environment messageGroup:thread];
                                      }];
 
         });
     };
 
-    void (^removeThreadWithError)(NSError *error) = ^(NSError *error) {
-        [thread remove];
+    void (^failureHandler)(NSError *error) = ^(NSError *error) {
+        DDLogError(@"Group creation failed: %@", error);
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES
                                      completion:^{
-                                         [OWSAlerts
-                                             showAlertWithTitle:
-                                                 NSLocalizedString(@"GROUP_CREATING_FAILED",
-                                                     "Title of alert indicating that new group could not be created.")
-                                                        message:error.localizedDescription];
+                                         // Add an error message to the new group indicating
+                                         // that group creation didn't succeed.
+                                         [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                           inThread:thread
+                                                                  failedMessageType:TSErrorMessageGroupCreationFailed]
+                                             save];
+
+                                         [Environment messageGroup:thread];
                                      }];
         });
     };
@@ -489,15 +496,16 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
                          // This will save the message.
                          [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
+
                          if (model.groupImage) {
                              [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
                                                         contentType:OWSMimeTypeImagePng
                                                      sourceFilename:nil
                                                           inMessage:message
-                                                            success:popToThread
-                                                            failure:removeThreadWithError];
+                                                            success:successHandler
+                                                            failure:failureHandler];
                          } else {
-                             [self.messageSender sendMessage:message success:popToThread failure:removeThreadWithError];
+                             [self.messageSender sendMessage:message success:successHandler failure:failureHandler];
                          }
                      }];
 }

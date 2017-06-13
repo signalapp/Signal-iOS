@@ -2388,6 +2388,9 @@ typedef enum : NSUInteger {
             OWSAssert([message isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]);
             [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
             return;
+        case TSErrorMessageGroupCreationFailed:
+            [self resendGroupUpdateForErrorMessage:message];
+            return;
     }
 
     DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
@@ -3660,7 +3663,7 @@ typedef enum : NSUInteger {
     [messageData performEditingAction:action];
 }
 
-- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel
+- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)())successCompletion
 {
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
@@ -3686,6 +3689,9 @@ typedef enum : NSUInteger {
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
+                if (successCompletion) {
+                    successCompletion();
+                }
             }
             failure:^(NSError *_Nonnull error) {
                 DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
@@ -3694,6 +3700,9 @@ typedef enum : NSUInteger {
         [self.messageSender sendMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update", self.tag);
+                if (successCompletion) {
+                    successCompletion();
+                }
             }
             failure:^(NSError *_Nonnull error) {
                 DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
@@ -4014,6 +4023,22 @@ typedef enum : NSUInteger {
 
 #pragma mark - OWSConversationSettingsViewDelegate
 
+- (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert([_thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssert(message);
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    TSGroupModel *groupModel = groupThread.groupModel;
+    [self updateGroupModelTo:groupModel
+           successCompletion:^{
+               DDLogInfo(@"Group updated, removing group creation error.");
+
+               [message remove];
+           }];
+}
+
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
 {
     OWSAssert(groupModel);
@@ -4021,7 +4046,7 @@ typedef enum : NSUInteger {
     NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
     [groupMemberIds addObject:[TSAccountManager localNumber]];
     groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
-    [self updateGroupModelTo:groupModel];
+    [self updateGroupModelTo:groupModel successCompletion:nil];
     [self.collectionView.collectionViewLayout
         invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
     [self.collectionView reloadData];
