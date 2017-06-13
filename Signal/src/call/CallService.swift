@@ -470,9 +470,20 @@ protocol CallServiceObserver: class {
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
+        guard self.call == nil else {
+            // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
+            Logger.info("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
+
+            handleLocalBusyCall(newCall, thread: thread)
+
+            return
+        }
+
         let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
 
         guard untrustedIdentity == nil else {
+            Logger.warn("\(TAG) missed a call due to untrusted identity")
+
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
 
             switch(untrustedIdentity!.verificationState) {
@@ -494,19 +505,15 @@ protocol CallServiceObserver: class {
             newCall.callRecord = callRecord
             callRecord.save()
 
+            terminateCall()
+
             return
         }
 
-        guard self.call == nil else {
-            // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.verbose("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
-
-            handleLocalBusyCall(newCall, thread: thread)
-            return
-        }
+        Logger.info("\(TAG) starting new call: \(newCall)")
 
         self.thread = thread
-        call = newCall
+        self.call = newCall
 
         let backgroundTask = UIApplication.shared.beginBackgroundTask {
             let timeout = CallError.timeout(description: "background task time ran out before call connected.")
@@ -808,7 +815,7 @@ protocol CallServiceObserver: class {
         call.callRecord = callRecord
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData())
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"connected")
 
         handleConnectedCall(call)
     }
@@ -914,7 +921,7 @@ protocol CallServiceObserver: class {
 
         // If the call is connected, we can send the hangup via the data channel.
         let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData())
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup")
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
@@ -1320,7 +1327,7 @@ protocol CallServiceObserver: class {
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
         let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled:shouldHaveLocalVideoTrack)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData())
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"videoStreamingStatus")
     }
 
     // MARK: - Observers
