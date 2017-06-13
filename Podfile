@@ -7,7 +7,7 @@ target 'Signal' do
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
-    pod 'OpenSSL'
+    pod 'OpenSSL',                    git: 'https://github.com/charlesmchen/OpenSSL-Pod.git'
     pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/position-edit-menu'
     #pod 'JSQMessagesViewController'   path: '../JSQMessagesViewController'
     pod 'PureLayout'
