@@ -82,6 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.subtitleLabel = [UILabel new];
     self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
     self.subtitleLabel.font = [self subtitleFont];
+    // The subtitle may wrap to a second line.
     self.subtitleLabel.numberOfLines = 0;
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
@@ -221,24 +222,16 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *title = [self titleForInteraction:interaction];
     NSString *subtitle = [self subtitleForInteraction:interaction];
 
-    // Creating a UILabel to measure the layout is expensive, but it's the only
-    // reliable way to do it.  Unread indicators should be rare, so this is acceptable.
-    UILabel *label = self.titleLabel;
-    label.font = [self titleFont];
-    label.text = title;
-    label.numberOfLines = 1;
-    result.height += ceil([label sizeThatFits:CGSizeZero].height);
+    self.titleLabel.text = title;
+    result.height += ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
 
     if (subtitle.length > 0) {
         result.height += self.subtitleVSpacing;
 
-        label.font = [self subtitleFont];
-        label.text = subtitle;
-        // The subtitle may wrap to a second line.
-        label.lineBreakMode = NSLineBreakByWordWrapping;
-        label.numberOfLines = 0;
+        self.subtitleLabel.text = subtitle;
         result.height += ceil(
-            [label sizeThatFits:CGSizeMake(collectionViewWidth - self.subtitleHMargin * 2.f, CGFLOAT_MAX)].height);
+            [self.subtitleLabel sizeThatFits:CGSizeMake(collectionViewWidth - self.subtitleHMargin * 2.f, CGFLOAT_MAX)]
+                .height);
     }
 
     return result;
