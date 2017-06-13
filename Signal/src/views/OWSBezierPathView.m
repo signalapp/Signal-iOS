@@ -106,12 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
-// TODO rename to logTag, tag is an existing UIView method.
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -85,9 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
         @"Paul",
         @"Bertha",
     ];
-    return values[arc4random_uniform(values.count)];
+    return values[(NSUInteger)arc4random_uniform((uint32_t)values.count)];
 }
-
 
 + (NSString *)randomLastName
 {
