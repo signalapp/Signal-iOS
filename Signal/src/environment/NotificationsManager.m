@@ -310,36 +310,37 @@
 
 - (BOOL)shouldPlaySoundForNotification
 {
-    OWSAssert([NSThread isMainThread]);
+    @synchronized(self)
+    {
+        // Play no more than 2 notification sounds in a given
+        // five-second window.
+        const CGFloat kNotificationWindowSeconds = 5.f;
+        const NSUInteger kMaxNotificationRate = 2;
 
-    // Play no more than 2 notification sounds in a given
-    // five-second window.
-    const CGFloat kNotificationWindowSeconds = 5.f;
-    const NSUInteger kMaxNotificationRate = 2;
-
-    // Cull obsolete notification timestamps from the thread's notification history.
-    while (self.notificationHistory.count > 0) {
-        NSDate *notificationTimestamp = self.notificationHistory[0];
-        CGFloat notificationAgeSeconds = fabs(notificationTimestamp.timeIntervalSinceNow);
-        if (notificationAgeSeconds > kNotificationWindowSeconds) {
-            [self.notificationHistory removeObjectAtIndex:0];
-        } else {
-            break;
+        // Cull obsolete notification timestamps from the thread's notification history.
+        while (self.notificationHistory.count > 0) {
+            NSDate *notificationTimestamp = self.notificationHistory[0];
+            CGFloat notificationAgeSeconds = fabs(notificationTimestamp.timeIntervalSinceNow);
+            if (notificationAgeSeconds > kNotificationWindowSeconds) {
+                [self.notificationHistory removeObjectAtIndex:0];
+            } else {
+                break;
+            }
         }
-    }
 
-    // Ignore notifications if necessary.
-    BOOL shouldPlaySound = self.notificationHistory.count < kMaxNotificationRate;
+        // Ignore notifications if necessary.
+        BOOL shouldPlaySound = self.notificationHistory.count < kMaxNotificationRate;
 
-    if (shouldPlaySound) {
-        // Add new notification timestamp to the thread's notification history.
-        NSDate *newNotificationTimestamp = [NSDate new];
-        [self.notificationHistory addObject:newNotificationTimestamp];
+        if (shouldPlaySound) {
+            // Add new notification timestamp to the thread's notification history.
+            NSDate *newNotificationTimestamp = [NSDate new];
+            [self.notificationHistory addObject:newNotificationTimestamp];
 
-        return YES;
-    } else {
-        DDLogDebug(@"Skipping sound for notification");
-        return NO;
+            return YES;
+        } else {
+            DDLogDebug(@"Skipping sound for notification");
+            return NO;
+        }
     }
 }
 
