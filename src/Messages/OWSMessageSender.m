@@ -159,6 +159,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 @property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
 @property (nonatomic) OWSSendMessageOperationState operationState;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (nonatomic) BOOL hasCompleted;
 
 @end
 
@@ -190,6 +191,13 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
+        // Ensure we call the success or failure handler exactly once.
+        @synchronized(strongSelf)
+        {
+            OWSCAssert(!strongSelf.hasCompleted);
+            strongSelf.hasCompleted = YES;
+        }
+
         [message updateWithMessageState:TSOutgoingMessageStateSentToService];
 
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
@@ -202,6 +210,13 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
         if (!strongSelf) {
             OWSCAssert(NO);
             return;
+        }
+
+        // Ensure we call the success or failure handler exactly once.
+        @synchronized(strongSelf)
+        {
+            OWSCAssert(!strongSelf.hasCompleted);
+            strongSelf.hasCompleted = YES;
         }
 
         [strongSelf.message updateWithSendingError:error];
@@ -281,8 +296,13 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 {
     DDLogDebug(@"%@ remainingRetries: %lu", self.tag, (unsigned long)remainingRetries);
 
+    // Use this flag to ensure a given operation only succeeds or fails once.
+    __block BOOL onceFlag = NO;
     RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
         DDLogInfo(@"%@ Sending failed.", self.tag);
+
+        OWSAssert(!onceFlag);
+        onceFlag = YES;
 
         if (![error isRetryable] || [error isFatal]) {
             DDLogInfo(@"%@ Skipping retry due to terminal error: %@", self.tag, error);
@@ -299,7 +319,14 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
         }
     };
 
-    [self.messageSender attemptToSendMessage:self.message success:self.successHandler failure:retryableFailureHandler];
+    [self.messageSender attemptToSendMessage:self.message
+                                     success:^{
+                                         OWSAssert(!onceFlag);
+                                         onceFlag = YES;
+
+                                         self.successHandler();
+                                     }
+                                     failure:retryableFailureHandler];
 }
 
 - (void)markAsComplete
@@ -762,6 +789,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         // retryable errors.
                         if ([error isFatal]) {
                             failureHandler(error);
+                            return;
                         }
 
                         if ([error isRetryable] && !firstRetryableError) {
