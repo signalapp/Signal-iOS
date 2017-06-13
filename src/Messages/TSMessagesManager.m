@@ -605,6 +605,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    DDLogDebug(@"%@ incoming attachment message: %@", self.tag, createdMessage.debugDescription);
+
     [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
         success:^(TSAttachmentStream *attachmentStream) {
             DDLogDebug(
@@ -892,7 +894,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      messageBody:body
                                                                    attachmentIds:attachmentIds
                                                                 expiresInSeconds:dataMessage.expireTimer];
-
+                  DDLogDebug(@"%@ incoming group text message: %@", self.tag, incomingMessage.debugDescription);
                   [incomingMessage saveWithTransaction:transaction];
                   break;
               }
@@ -914,12 +916,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                              messageBody:body
                                                            attachmentIds:attachmentIds
                                                         expiresInSeconds:dataMessage.expireTimer];
+          DDLogDebug(@"%@ incoming 1:1 text message: %@", self.tag, incomingMessage.debugDescription);
+          [incomingMessage saveWithTransaction:transaction];
           thread = cThread;
       }
 
       if (thread && incomingMessage) {
-          [incomingMessage saveWithTransaction:transaction];
-
           // Any messages sent from the current user - from this device or another - should be
           // automatically marked as read.
           BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
@@ -927,6 +929,8 @@ NS_ASSUME_NONNULL_BEGIN
               // Don't send a read receipt for messages sent by ourselves.
               [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
           }
+
+          DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.tag, shouldMarkMessageAsRead, envelope.source);
 
           // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
           // message
@@ -940,6 +944,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                 messageBody:body
                                                                               attachmentIds:@[]
                                                                            expiresInSeconds:dataMessage.expireTimer];
+              DDLogDebug(@"%@ incoming extra text message: %@", self.tag, incomingMessage.debugDescription);
               [textMessage saveWithTransaction:transaction];
           }
       }
