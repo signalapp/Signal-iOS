@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic) BOOL hasMoreUnseenMessages;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
-
 @end
 
 #pragma mark -

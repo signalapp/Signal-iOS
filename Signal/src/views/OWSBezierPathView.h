@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *layer, CGRect bounds);
+typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *_Nonnull layer, CGRect bounds);
 
 NS_ASSUME_NONNULL_BEGIN
 
