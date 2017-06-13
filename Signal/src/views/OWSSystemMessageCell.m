@@ -124,6 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
             case TSErrorMessageDuplicateMessage:
             case TSErrorMessageInvalidVersion:
             case TSErrorMessageUnknownContactBlockOffer:
+            case TSErrorMessageGroupCreationFailed:
                 result = [UIImage imageNamed:@"system_message_info"];
                 break;
         }

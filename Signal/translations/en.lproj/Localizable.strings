@@ -553,8 +553,8 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "Creating new group";
 
-/* Title of alert indicating that new group could not be created. */
-"GROUP_CREATING_FAILED" = "Group creation failed";
+/* Message shown in conversation view that indicates there were issues with group creation. */
+"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Group Management";
