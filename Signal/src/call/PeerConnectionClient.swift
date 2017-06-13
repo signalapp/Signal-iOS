@@ -505,27 +505,29 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data) {
+    public func sendDataChannelMessage(data: Data, description: String) {
         AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
-                Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client: \(description)")
                 return
             }
 
             guard let dataChannel = self.dataChannel else {
-                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
+                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
                 return
             }
+
+            Logger.debug("\(self.TAG) sendDataChannelMessage trying: \(description)")
 
             let buffer = RTCDataBuffer(data: data, isBinary: false)
             let result = dataChannel.sendData(buffer)
 
             if result {
-                Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+                Logger.debug("\(self.TAG) sendDataChannelMessage succeeded: \(description)")
             } else {
-                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed: \(description)")
             }
         }
     }
