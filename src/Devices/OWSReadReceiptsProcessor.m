@@ -120,16 +120,20 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                     // * Don't update expiration; we'll do that in the next statement.
                     [interaction markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
 
-                    // Update expiration using the timestamp from the readReceipt.
-                    [OWSDisappearingMessagesJob setExpirationForMessage:(TSMessage *)interaction
-                                                    expirationStartedAt:readReceipt.timestamp];
+                    if ([interaction isKindOfClass:[TSMessage class]]) {
+                        TSMessage *otherMessage = (TSMessage *)interaction;
 
-                    // Fire event that will cancel any pending notifications for this message.
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NSNotificationCenter defaultCenter]
-                            postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
-                                          object:(TSMessage *)interaction];
-                    });
+                        // Update expiration using the timestamp from the readReceipt.
+                        [OWSDisappearingMessagesJob setExpirationForMessage:otherMessage
+                                                        expirationStartedAt:readReceipt.timestamp];
+
+                        // Fire event that will cancel any pending notifications for this message.
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [[NSNotificationCenter defaultCenter]
+                                postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                                              object:otherMessage];
+                        });
+                    }
                 }
             }];
 
