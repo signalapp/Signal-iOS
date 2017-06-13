@@ -75,13 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bannerView addSubview:self.bannerBottomHighlightView2];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.text = [self titleForInteraction:self.interaction];
     self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
     self.titleLabel.font = [self titleFont];
     [self.bannerView addSubview:self.titleLabel];
 
     self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.text = [self subtitleForInteraction:self.interaction];
     self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
     self.subtitleLabel.font = [self subtitleFont];
     self.subtitleLabel.numberOfLines = 0;
@@ -100,6 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
 
     _interaction = interaction;
+
+    self.titleLabel.text = [self titleForInteraction:self.interaction];
+    self.subtitleLabel.text = [self subtitleForInteraction:self.interaction];
 
     self.backgroundColor = [UIColor whiteColor];
 
@@ -225,6 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *label = self.titleLabel;
     label.font = [self titleFont];
     label.text = title;
+    label.numberOfLines = 1;
     result.height += ceil([label sizeThatFits:CGSizeZero].height);
 
     if (subtitle.length > 0) {

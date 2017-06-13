@@ -261,10 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
-    self.titleLabel.font = [self titleFont];
     [self applyTitleForInteraction:interaction label:self.titleLabel];
-    self.titleLabel.numberOfLines = 0;
-    self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     CGFloat maxTitleWidth = (collectionViewWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
