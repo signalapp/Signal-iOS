@@ -26,7 +26,6 @@ NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPriva
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const PropertyListPreferencesKeyIsSendingIdentityApprovalRequired = @"IsSendingIdentityApprovalRequired";
 
 @implementation PropertyListPreferences
 
@@ -296,23 +295,6 @@ NSString *const PropertyListPreferencesKeyIsSendingIdentityApprovalRequired = @"
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
-}
-
-#pragma mark - Block on Identity Change
-
-- (BOOL)isSendingIdentityApprovalRequired
-{
-    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyIsSendingIdentityApprovalRequired];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
-- (void)setIsSendingIdentityApprovalRequired:(BOOL)value
-{
-    [self setValueForKey:PropertyListPreferencesKeyIsSendingIdentityApprovalRequired toValue:@(value)];
 }
 
 #pragma mark - Push Tokens
