@@ -20,7 +20,6 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
-NSString *TSThreadInboxMessagesDatabaseViewExtensionName = @"TSThreadInboxMessagesDatabaseViewExtensionName";
 NSString *TSThreadIncomingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
@@ -144,27 +143,6 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
     }];
 
     return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
-                                        viewGrouping:viewGrouping
-                                             version:@"1"];
-}
-
-+ (BOOL)registerThreadInboxMessageDatabaseView
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[TSInteraction class]]) {
-            TSInteraction *interaction = (TSInteraction *)object;
-            if (![TSThread shouldInteractionAppearInInbox:interaction]) {
-                return nil;
-            }
-            return interaction.uniqueThreadId;
-        } else {
-            OWSAssert(0);
-        }
-        return nil;
-    }];
-
-    return [self registerMessageDatabaseViewWithName:TSThreadInboxMessagesDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
                                              version:@"1"];
 }

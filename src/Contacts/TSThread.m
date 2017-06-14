@@ -245,9 +245,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSInteraction *)lastInteractionForInbox
 {
-    __block TSInteraction *last;
+    __block TSInteraction *last = nil;
     [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        last = [[transaction ext:TSThreadInboxMessagesDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:self.uniqueId
+                     withOptions:NSEnumerationReverse
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
+
+                          TSInteraction *interaction = (TSInteraction *)object;
+
+                          if ([TSThread shouldInteractionAppearInInbox:interaction]) {
+                              last = interaction;
+                              *stop = YES;
+                          }
+                      }];
     }];
     return last;
 }
