@@ -113,12 +113,14 @@ NS_ASSUME_NONNULL_BEGIN
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
-        // Find any existing "dynamic" interactions.
+        // Find any "dynamic" interactions and safety number changes.
         __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
         __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
         __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
+        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
+        NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
         // We use different views for performance reasons.
-        [[transaction ext:TSDynamicMessagesDatabaseViewExtensionName]
+        [[transaction ext:TSThreadSpecialMessagesDatabaseViewExtensionName]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
@@ -132,30 +134,14 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
                               OWSAssert(!existingUnreadIndicator);
                               existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
-                          } else {
-                              DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
-                              OWSAssert(0);
-                          }
-                      }];
-
-        // Find any existing safety number changes.
-        //
-        // We use different views for performance reasons.
-        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
-        NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-        [[transaction ext:TSSafetyNumberChangeDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                          } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
                               [blockingSafetyNumberChanges addObject:object];
                           } else if ([object isKindOfClass:[TSErrorMessage class]]) {
                               TSErrorMessage *errorMessage = (TSErrorMessage *)object;
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
-                              DDLogError(@"Unexpected interaction type: %@", [object class]);
+                              DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
                               OWSAssert(0);
                           }
                       }];
@@ -177,10 +163,21 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        TSIncomingMessage *firstIncomingMessage =
-            [[transaction ext:TSThreadIncomingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
-        TSOutgoingMessage *firstOutgoingMessage =
-            [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
+        __block TSMessage *firstMessage = nil;
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
+
+                          if ([object isKindOfClass:[TSIncomingMessage class]] ||
+                              [object isKindOfClass:[TSOutgoingMessage class]]) {
+                              firstMessage = (TSMessage *)object;
+                              *stop = YES;
+                          }
+                      }];
+
         NSUInteger outgoingMessageCount =
             [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
         NSUInteger threadMessageCount =
@@ -270,12 +267,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSAssert((result.firstUnseenInteractionTimestamp != nil) == (result.unreadIndicatorPosition != nil));
 
-        TSMessage *firstMessage = firstIncomingMessage;
-        if (!firstMessage
-            || (firstOutgoingMessage && [firstOutgoingMessage compareForSorting:firstMessage] == NSOrderedAscending)) {
-            firstMessage = firstOutgoingMessage;
-        }
-
         BOOL shouldHaveBlockOffer = YES;
         BOOL shouldHaveAddToContactsOffer = YES;
 
@@ -314,9 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveBlockOffer = NO;
         }
 
-        BOOL hasOutgoingBeforeIncomingInteraction = (firstOutgoingMessage
-            && (!firstIncomingMessage ||
-                   [firstOutgoingMessage compareForSorting:firstIncomingMessage] == NSOrderedAscending));
+        BOOL hasOutgoingBeforeIncomingInteraction = [firstMessage isKindOfClass:[TSOutgoingMessage class]];
         if (hasOutgoingBeforeIncomingInteraction) {
             // If there is an outgoing message before an incoming message
             // the local user initiated this conversation, don't show a block offer.
