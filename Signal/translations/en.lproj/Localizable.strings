@@ -1219,12 +1219,6 @@
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
 
-/* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "When a contact's safety number changes, it often means they simply reinstalled Signal. However, you may wish to verify their safety number before responding to ensure privacy.";
-
-/* Table cell label */
-"SETTINGS_BLOCK_SENDING_ON_IDENTITY_CHANGE_TITLE" = "Responding Requires Approval";
-
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Settings";
 
@@ -1278,9 +1272,6 @@
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
-
-/* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "When Safety Numbers Change";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
