@@ -53,6 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendTextMessages:1000 thread:thread];
                                        }],
+                       [OWSTableItem itemWithTitle:@"Create 1,000 fake messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendFakeTextMessage:1000 thread:thread];
+                                       }],
                        [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                                        actionBlock:^{
                                            [DebugUIMessages sendOversizeTextMessage:thread];
@@ -145,28 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
 {
-    NSArray<NSString *> *randomTexts = @[
-        @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
-        (@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-         @"Suspendisse rutrum, nulla vitae pretium hendrerit, tellus "
-         @"turpis pharetra libero, vitae sodales tortor ante vel sem."),
-        @"In a time of universal deceit - telling the truth is a revolutionary act.",
-        @"If you want a vision of the future, imagine a boot stamping on a human face - forever.",
-        @"Who controls the past controls the future. Who controls the present controls the past.",
-        @"All animals are equal, but some animals are more equal than others.",
-        @"War is peace. Freedom is slavery. Ignorance is strength.",
-        (@"All the war-propaganda, all the screaming and lies and hatred, comes invariably from people who are not "
-         @"fighting."),
-        (@"Political language. . . is designed to make lies sound truthful and murder respectable, and to give an "
-         @"appearance of solidity to pure wind."),
-        (@"The nationalist not only does not disapprove of atrocities committed by his own side, but he has a "
-         @"remarkable capacity for not even hearing about them."),
-        (@"Every generation imagines itself to be more intelligent than the one that went before it, and wiser than "
-         @"the "
-         @"one that comes after it."),
-        @"War against a foreign country only happens when the moneyed classes think they are going to profit from it.",
-    ];
-    NSString *randomText = randomTexts[(NSUInteger)arc4random_uniform((uint32_t)randomTexts.count)];
+    NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
@@ -732,6 +715,70 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTextAndSystemMessages:counter - 1 thread:thread];
     });
+}
+
++ (NSString *)randomText
+{
+    NSArray<NSString *> *randomTexts = @[
+        @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+        (@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+         @"Suspendisse rutrum, nulla vitae pretium hendrerit, tellus "
+         @"turpis pharetra libero, vitae sodales tortor ante vel sem."),
+        @"In a time of universal deceit - telling the truth is a revolutionary act.",
+        @"If you want a vision of the future, imagine a boot stamping on a human face - forever.",
+        @"Who controls the past controls the future. Who controls the present controls the past.",
+        @"All animals are equal, but some animals are more equal than others.",
+        @"War is peace. Freedom is slavery. Ignorance is strength.",
+        (@"All the war-propaganda, all the screaming and lies and hatred, comes invariably from people who are not "
+         @"fighting."),
+        (@"Political language. . . is designed to make lies sound truthful and murder respectable, and to give an "
+         @"appearance of solidity to pure wind."),
+        (@"The nationalist not only does not disapprove of atrocities committed by his own side, but he has a "
+         @"remarkable capacity for not even hearing about them."),
+        (@"Every generation imagines itself to be more intelligent than the one that went before it, and wiser than "
+         @"the "
+         @"one that comes after it."),
+        @"War against a foreign country only happens when the moneyed classes think they are going to profit from it.",
+        @"People have only as much liberty as they have the intelligence to want and the courage to take.",
+        @"You cannot buy the revolution. You cannot make the revolution. You can only be the revolution. It is in your "
+        @"spirit, or it is nowhere.",
+        @"That is what I have always understood to be the essence of anarchism: the conviction that the burden of "
+        @"proof has to be placed on authority, and that it should be dismantled if that burden cannot be met.",
+        @"Ask for work. If they don't give you work, ask for bread. If they do not give you work or bread, then take "
+        @"bread.",
+        @"Every society has the criminals it deserves.",
+        @"Anarchism is founded on the observation that since few men are wise enough to rule themselves, even fewer "
+        @"are wise enough to rule others.",
+        @"If you would know who controls you see who you may not criticise.",
+        @"At one time in the world there were woods that no one owned."
+    ];
+    NSString *randomText = randomTexts[(NSUInteger)arc4random_uniform((uint32_t)randomTexts.count)];
+    return randomText;
+}
+
++ (void)sendFakeTextMessage:(int)counter thread:(TSThread *)thread
+{
+    NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
+    for (int i = 0; i < counter; i++) {
+        NSString *randomText = [self randomText];
+        BOOL isIncoming = arc4random_uniform(2) == 0;
+        if (isIncoming) {
+            [messages addObject:[[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                    inThread:thread
+                                                                    authorId:@"+19174054215"
+                                                              sourceDeviceId:0
+                                                                 messageBody:randomText]];
+        } else {
+            [messages addObject:[[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                    inThread:thread
+                                                                 messageBody:randomText]];
+        }
+    }
+    [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (TSMessage *message in messages) {
+            [message saveWithTransaction:transaction];
+        }
+    }];
 }
 
 @end
