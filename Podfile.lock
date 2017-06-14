@@ -134,7 +134,7 @@ CHECKOUT OPTIONS:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: 1f1410ffaedd2204f0f84ef009a8b0fb76785717
+    :commit: d8199a444f643d142824d6e7b7c507a1b2c8032d
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
@@ -161,6 +161,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 3fe10cfcd1dd37c576801acc145e1706fd4ce240
+PODFILE CHECKSUM: 89fd7aee1e2b0ca592ecc9dba0389e57b70f959b
 
 COCOAPODS: 1.2.1
