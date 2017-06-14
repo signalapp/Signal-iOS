@@ -108,6 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
 
+    NSString *localNumber = [TSAccountManager localNumber];
+    OWSAssert(localNumber.length > 0);
+
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
     [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -279,19 +282,26 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
-            if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
-                // Only create "add to contacts" offers for users which are not already blocked.
+            if ([recipientId isEqualToString:localNumber]) {
+                // Don't add self to contacts.
                 shouldHaveAddToContactsOffer = NO;
-                // Only create block offers for users which are not already blocked.
+                // Don't bother to block self.
                 shouldHaveBlockOffer = NO;
-            }
+            } else {
+                if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+                    // Only create "add to contacts" offers for users which are not already blocked.
+                    shouldHaveAddToContactsOffer = NO;
+                    // Only create block offers for users which are not already blocked.
+                    shouldHaveBlockOffer = NO;
+                }
 
-            SignalAccount *signalAccount = contactsManager.signalAccountMap[recipientId];
-            if (signalAccount) {
-                // Only create "add to contacts" offers for non-contacts.
-                shouldHaveAddToContactsOffer = NO;
-                // Only create block offers for non-contacts.
-                shouldHaveBlockOffer = NO;
+                SignalAccount *signalAccount = contactsManager.signalAccountMap[recipientId];
+                if (signalAccount) {
+                    // Only create "add to contacts" offers for non-contacts.
+                    shouldHaveAddToContactsOffer = NO;
+                    // Only create block offers for non-contacts.
+                    shouldHaveBlockOffer = NO;
+                }
             }
         }
 
