@@ -20,12 +20,10 @@ NSString *TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 
 NSString *TSThreadDatabaseViewExtensionName  = @"TSThreadDatabaseViewExtensionName";
 NSString *TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
-NSString *TSThreadIncomingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *TSUnreadDatabaseViewExtensionName  = @"TSUnreadDatabaseViewExtensionName";
 NSString *TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
-NSString *TSDynamicMessagesDatabaseViewExtensionName = @"TSDynamicMessagesDatabaseViewExtensionName";
-NSString *TSSafetyNumberChangeDatabaseViewExtensionName = @"TSSafetyNumberChangeDatabaseViewExtensionName";
+NSString *TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
 NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
 @implementation TSDatabaseView
@@ -91,31 +89,16 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
                                              version:@"1"];
 }
 
-+ (BOOL)registerDynamicMessagesDatabaseView
++ (BOOL)registerThreadSpecialMessagesDatabaseView
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[TSInteraction class]]) {
-            TSInteraction *interaction = (TSInteraction *)object;
-            if ([interaction isDynamicInteraction]) {
-                return interaction.uniqueThreadId;
-            }
-        } else {
-            OWSAssert(0);
-        }
-        return nil;
-    }];
+        OWSAssert([object isKindOfClass:[TSInteraction class]]);
 
-    return [self registerMessageDatabaseViewWithName:TSDynamicMessagesDatabaseViewExtensionName
-                                        viewGrouping:viewGrouping
-                                             version:@"3"];
-}
-
-+ (BOOL)registerSafetyNumberChangeDatabaseView
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+        TSInteraction *interaction = (TSInteraction *)object;
+        if ([interaction isDynamicInteraction]) {
+            return interaction.uniqueThreadId;
+        } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
             TSInteraction *interaction = (TSInteraction *)object;
             return interaction.uniqueThreadId;
         } else if ([object isKindOfClass:[TSErrorMessage class]]) {
@@ -127,37 +110,22 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
         return nil;
     }];
 
-    return [self registerMessageDatabaseViewWithName:TSSafetyNumberChangeDatabaseViewExtensionName
+    return [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
-                                             version:@"2"];
+                                             version:@"1"];
 }
 
 + (BOOL)registerThreadInteractionsDatabaseView
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[TSInteraction class]]) {
-            return ((TSInteraction *)object).uniqueThreadId;
-        }
-        return nil;
+        OWSAssert([object isKindOfClass:[TSInteraction class]]);
+
+        TSInteraction *interaction = (TSInteraction *)object;
+        return interaction.uniqueThreadId;
     }];
 
     return [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
-                                        viewGrouping:viewGrouping
-                                             version:@"1"];
-}
-
-+ (BOOL)registerThreadIncomingMessagesDatabaseView
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[TSIncomingMessage class]]) {
-            return ((TSIncomingMessage *)object).uniqueThreadId;
-        }
-        return nil;
-    }];
-
-    return [self registerMessageDatabaseViewWithName:TSThreadIncomingMessageDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
                                              version:@"1"];
 }
@@ -174,7 +142,7 @@ NSString *TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesData
 
     return [self registerMessageDatabaseViewWithName:TSThreadOutgoingMessageDatabaseViewExtensionName
                                         viewGrouping:viewGrouping
-                                             version:@"1"];
+                                             version:@"2"];
 }
 
 + (BOOL)registerThreadDatabaseView {
