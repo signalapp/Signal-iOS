@@ -36,7 +36,6 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - OpenSSL (1.0.212)
   - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
   - Reachability (3.2)
@@ -111,7 +110,6 @@ PODS:
 DEPENDENCIES:
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/position-edit-menu`)
-  - OpenSSL (from `https://github.com/charlesmchen/OpenSSL-Pod.git`)
   - PureLayout
   - Reachability
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
@@ -123,8 +121,6 @@ EXTERNAL SOURCES:
   JSQMessagesViewController:
     :branch: mkirk/position-edit-menu
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  OpenSSL:
-    :git: https://github.com/charlesmchen/OpenSSL-Pod.git
   SignalServiceKit:
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
@@ -137,9 +133,6 @@ CHECKOUT OPTIONS:
   JSQMessagesViewController:
     :commit: 7054e4b13ee5bcd6d524adb6dc9a726e8c466308
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  OpenSSL:
-    :commit: f42e018f9b800305038ae03b919797fbcd8db105
-    :git: https://github.com/charlesmchen/OpenSSL-Pod.git
   SignalServiceKit:
     :commit: 1f1410ffaedd2204f0f84ef009a8b0fb76785717
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
@@ -157,7 +150,6 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  OpenSSL: 60dae0b3f35e3ba31642260f4695c37d6a4c0fef
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -169,6 +161,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: f9c80edac4f9f01e6f23d404c38e1300d6f200b0
+PODFILE CHECKSUM: 3fe10cfcd1dd37c576801acc145e1706fd4ce240
 
 COCOAPODS: 1.2.1
