@@ -3617,7 +3617,7 @@ typedef enum : NSUInteger {
     uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
-        [[transaction ext:TSUnseenDatabaseViewExtensionName]
+        [[TSDatabaseView unseenDatabaseViewExtension:transaction]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {

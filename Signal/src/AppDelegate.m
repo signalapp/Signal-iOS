@@ -27,6 +27,7 @@
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -44,7 +45,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @interface AppDelegate ()
 
-@property (nonatomic, retain) UIWindow *screenProtectionWindow;
+@property (nonatomic) UIWindow *screenProtectionWindow;
+@property (nonatomic) UIWindow *databaseViewRegistrationOverlay;
 @property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
 @property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 @property (nonatomic) OWSContactsSyncing *contactsSyncing;
@@ -188,6 +190,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
                                                                  messageSender:[Environment getCurrent].messageSender];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(databaseViewRegistrationComplete)
+                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                               object:nil];
+
     return YES;
 }
 
@@ -205,7 +212,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                         notificationsManager:[Environment getCurrent].notificationsManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
-    [[TSStorageManager sharedManager] setupDatabase];
+    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
+        [VersionMigrations runSafeBlockingMigrations];
+    }];
 
     self.incomingMessageReadObserver =
         [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
@@ -407,6 +416,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                            }];
     
     [self removeScreenProtection];
+
+    [self ensureDatabaseViewRegistrationOverlay];
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -672,6 +683,74 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [DDLog flushLog];
         exit(0);
     }
+}
+
+- (void)databaseViewRegistrationComplete
+{
+    DDLogInfo(@"databaseViewRegistrationComplete");
+
+    [self ensureDatabaseViewRegistrationOverlay];
+}
+
+- (void)ensureDatabaseViewRegistrationOverlay
+{
+    BOOL shouldShowOverlay = [TSDatabaseView hasPendingViewRegistrations];
+
+    if (!shouldShowOverlay) {
+        if (self.databaseViewRegistrationOverlay && !self.databaseViewRegistrationOverlay.hidden) {
+            DDLogWarn(@"Hiding database view registration overlay.");
+        }
+        self.databaseViewRegistrationOverlay.hidden = YES;
+        return;
+    }
+
+    if (!self.databaseViewRegistrationOverlay || self.databaseViewRegistrationOverlay.hidden) {
+        DDLogWarn(@"Showing database view registration overlay.");
+    }
+
+    if (!self.databaseViewRegistrationOverlay) {
+        // Recycle the "screen lock view", but add a label.
+        UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
+        window.hidden = YES;
+        window.opaque = YES;
+        window.userInteractionEnabled = NO;
+        window.windowLevel = CGFLOAT_MAX;
+        window.backgroundColor = UIColor.ows_materialBlueColor;
+        window.rootViewController =
+            [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+
+        BOOL shouldShowUpgradeLabel = NO;
+        NSString *previousVersion = AppVersion.instance.lastAppVersion;
+        // We added a number of database views in v2.13.0.
+        if ([VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
+            shouldShowUpgradeLabel = YES;
+        }
+        if (shouldShowUpgradeLabel) {
+            UIView *rootView = window.rootViewController.view;
+            UIImageView *iconView = nil;
+            for (UIView *subview in rootView.subviews) {
+                if ([subview isKindOfClass:[UIImageView class]]) {
+                    iconView = (UIImageView *)subview;
+                    break;
+                }
+            }
+            if (!iconView) {
+                OWSFail(@"Database view registration overlay has unexpected contents.");
+            } else {
+                UILabel *label = [UILabel new];
+                label.text = NSLocalizedString(
+                    @"DATABASE_VIEW_OVERLAY_TITLE", @"Indicates that the app is updating its database.");
+                label.font = [UIFont ows_mediumFontWithSize:18.f];
+                label.textColor = [UIColor whiteColor];
+                [rootView addSubview:label];
+                [label autoHCenterInSuperview];
+                [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:iconView withOffset:25.f];
+            }
+        }
+
+        self.databaseViewRegistrationOverlay = window;
+    }
+    self.databaseViewRegistrationOverlay.hidden = NO;
 }
 
 #pragma mark - Logging

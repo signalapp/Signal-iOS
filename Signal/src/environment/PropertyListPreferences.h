@@ -52,8 +52,6 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
-+ (nullable NSString *)lastRanVersion;
-+ (NSString *)setAndGetCurrentVersion;
 
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;

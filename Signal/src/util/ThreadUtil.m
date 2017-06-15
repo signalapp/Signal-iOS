@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
         // We use different views for performance reasons.
-        [[transaction ext:TSThreadSpecialMessagesDatabaseViewExtensionName]
+        [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
             result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
             TSInteraction *firstUnseenInteraction =
-                [[transaction ext:TSUnseenDatabaseViewExtensionName] firstObjectInGroup:thread.uniqueId];
+                [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
                 result.firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
             }
@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
                       }];
 
         NSUInteger outgoingMessageCount =
-            [[transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+            [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
         NSUInteger threadMessageCount =
             [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
 
