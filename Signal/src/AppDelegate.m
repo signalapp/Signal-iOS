@@ -46,10 +46,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
-@property (nonatomic) UIWindow *databaseViewRegistrationOverlay;
 @property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
 @property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 @property (nonatomic) OWSContactsSyncing *contactsSyncing;
+@property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
 
@@ -118,15 +118,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    if ([TSAccountManager isRegistered]) {
-        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
-    } else {
-        RegistrationViewController *viewController = [RegistrationViewController new];
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBarHidden = YES;
-        self.window.rootViewController = navigationController;
-    }
+    // Show the launch screen until the async database view registrations are complete.
+    self.window.rootViewController = [self loadingRootViewController];
 
     [self.window makeKeyAndVisible];
 
@@ -196,6 +189,43 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                object:nil];
 
     return YES;
+}
+
+- (UIViewController *)loadingRootViewController
+{
+    UIViewController *viewController =
+        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+
+    BOOL shouldShowUpgradeLabel = NO;
+    NSString *previousVersion = AppVersion.instance.lastAppVersion;
+    // We added a number of database views in v2.13.0.
+    if ([VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
+        shouldShowUpgradeLabel = YES;
+    }
+    if (shouldShowUpgradeLabel) {
+        UIView *rootView = viewController.view;
+        UIImageView *iconView = nil;
+        for (UIView *subview in viewController.view.subviews) {
+            if ([subview isKindOfClass:[UIImageView class]]) {
+                iconView = (UIImageView *)subview;
+                break;
+            }
+        }
+        if (!iconView) {
+            OWSFail(@"Database view registration overlay has unexpected contents.");
+        } else {
+            UILabel *label = [UILabel new];
+            label.text = NSLocalizedString(
+                @"DATABASE_VIEW_OVERLAY_TITLE", @"Indicates that the app is updating its database.");
+            label.font = [UIFont ows_mediumFontWithSize:18.f];
+            label.textColor = [UIColor whiteColor];
+            [rootView addSubview:label];
+            [label autoHCenterInSuperview];
+            [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:iconView withOffset:25.f];
+        }
+    }
+
+    return viewController;
 }
 
 - (void)setupEnvironment
@@ -417,7 +447,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     
     [self removeScreenProtection];
 
-    [self ensureDatabaseViewRegistrationOverlay];
+    [self ensureRootViewController];
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -689,68 +719,29 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"databaseViewRegistrationComplete");
 
-    [self ensureDatabaseViewRegistrationOverlay];
+    [self ensureRootViewController];
 }
 
-- (void)ensureDatabaseViewRegistrationOverlay
+- (void)ensureRootViewController
 {
-    BOOL shouldShowOverlay = [TSDatabaseView hasPendingViewRegistrations];
+    DDLogInfo(@"ensureRootViewController");
 
-    if (!shouldShowOverlay) {
-        if (self.databaseViewRegistrationOverlay && !self.databaseViewRegistrationOverlay.hidden) {
-            DDLogWarn(@"Hiding database view registration overlay.");
-        }
-        self.databaseViewRegistrationOverlay.hidden = YES;
+    if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
         return;
     }
+    self.hasInitialRootViewController = YES;
 
-    if (!self.databaseViewRegistrationOverlay || self.databaseViewRegistrationOverlay.hidden) {
-        DDLogWarn(@"Showing database view registration overlay.");
+    DDLogInfo(@"Presenting initial root view controller");
+
+    if ([TSAccountManager isRegistered]) {
+        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
+    } else {
+        RegistrationViewController *viewController = [RegistrationViewController new];
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBarHidden = YES;
+        self.window.rootViewController = navigationController;
     }
-
-    if (!self.databaseViewRegistrationOverlay) {
-        // Recycle the "screen lock view", but add a label.
-        UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
-        window.hidden = YES;
-        window.opaque = YES;
-        window.userInteractionEnabled = NO;
-        window.windowLevel = CGFLOAT_MAX;
-        window.backgroundColor = UIColor.ows_materialBlueColor;
-        window.rootViewController =
-            [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-        BOOL shouldShowUpgradeLabel = NO;
-        NSString *previousVersion = AppVersion.instance.lastAppVersion;
-        // We added a number of database views in v2.13.0.
-        if ([VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
-            shouldShowUpgradeLabel = YES;
-        }
-        if (shouldShowUpgradeLabel) {
-            UIView *rootView = window.rootViewController.view;
-            UIImageView *iconView = nil;
-            for (UIView *subview in rootView.subviews) {
-                if ([subview isKindOfClass:[UIImageView class]]) {
-                    iconView = (UIImageView *)subview;
-                    break;
-                }
-            }
-            if (!iconView) {
-                OWSFail(@"Database view registration overlay has unexpected contents.");
-            } else {
-                UILabel *label = [UILabel new];
-                label.text = NSLocalizedString(
-                    @"DATABASE_VIEW_OVERLAY_TITLE", @"Indicates that the app is updating its database.");
-                label.font = [UIFont ows_mediumFontWithSize:18.f];
-                label.textColor = [UIColor whiteColor];
-                [rootView addSubview:label];
-                [label autoHCenterInSuperview];
-                [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:iconView withOffset:25.f];
-            }
-        }
-
-        self.databaseViewRegistrationOverlay = window;
-    }
-    self.databaseViewRegistrationOverlay.hidden = NO;
 }
 
 #pragma mark - Logging
