@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingMessagesJob ()
 
 // This property should only be accessed on the serialQueue.
+@property (nonatomic, readonly) TSStorageManager *storageManager;
+
+// This property should only be accessed on the serialQueue.
 @property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
 
 // These three properties should only be accessed on the main thread.
@@ -48,7 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _disappearingMessagesFinder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:storageManager];
+    _storageManager = storageManager;
+    _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
 
     OWSSingletonAssert();
 
@@ -84,16 +88,20 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
     __block uint expirationCount = 0;
-    [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
-        // sanity check
-        if (message.expiresAt > now) {
-            DDLogError(@"%@ Refusing to remove message which doesn't expire until: %lld", self.tag, message.expiresAt);
-            return;
-        }
+    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
+            // sanity check
+            if (message.expiresAt > now) {
+                DDLogError(
+                    @"%@ Refusing to remove message which doesn't expire until: %lld", self.tag, message.expiresAt);
+                return;
+            }
 
-        DDLogDebug(@"%@ Removing message which expired at: %lld", self.tag, message.expiresAt);
-        [message remove];
-        expirationCount++;
+            DDLogDebug(@"%@ Removing message which expired at: %lld", self.tag, message.expiresAt);
+            [message removeWithTransaction:transaction];
+            expirationCount++;
+        }
+                                                               transaction:transaction];
     }];
 
     DDLogDebug(@"%@ Removed %u expired messages", self.tag, expirationCount);
@@ -106,7 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self run];
 
     uint64_t now = [NSDate ows_millisecondTimeStamp];
-    NSNumber *nextExpirationTimestampNumber = [self.disappearingMessagesFinder nextExpirationTimestamp];
+    __block NSNumber *nextExpirationTimestampNumber;
+    [self.storageManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        nextExpirationTimestampNumber =
+            [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
+    }];
     if (!nextExpirationTimestampNumber) {
         // In theory we could kill the loop here. It should resume when the next expiring message is saved,
         // But this is a safeguard for any race conditions that exist while running the job as a new message is saved.
@@ -142,15 +154,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self setExpirationForMessage:message expirationStartedAt:[NSDate ows_millisecondTimeStamp]];
 }
 
-+ (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
-{
-    dispatch_async(self.serialQueue, ^{
-        [[self sharedJob] setExpirationForMessage:message expirationStartedAt:expirationStartedAt];
-    });
-}
-
 - (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
 {
+    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
+    }];
+}
+
+- (void)setExpirationForMessage:(TSMessage *)message
+            expirationStartedAt:(uint64_t)expirationStartedAt
+                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+{
+    OWSAssert(transaction);
+
     if (!message.isExpiringMessage) {
         return;
     }
@@ -161,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
         message.expireStartedAt = expirationStartedAt;
-        [message save];
+        [message saveWithTransaction:transaction];
     }
 
     // Necessary that the async expiration run happens *after* the message is saved with expiration configuration.
@@ -178,16 +194,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setExpirationsForThread:(TSThread *)thread
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
-    [self.disappearingMessagesFinder
-        enumerateUnstartedExpiringMessagesInThread:thread
-                                             block:^(TSMessage *_Nonnull message) {
-                                                 DDLogWarn(@"%@ Starting expiring message which should have already "
-                                                           @"been started.",
-                                                     self.tag);
-                                                 // specify "now" in case D.M. have since been disabled, but we have
-                                                 // existing unstarted expiring messages that still need to expire.
-                                                 [self setExpirationForMessage:message expirationStartedAt:now];
-                                             }];
+    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.disappearingMessagesFinder
+            enumerateUnstartedExpiringMessagesInThread:thread
+                                                 block:^(TSMessage *_Nonnull message) {
+                                                     DDLogWarn(
+                                                         @"%@ Starting expiring message which should have already "
+                                                         @"been started.",
+                                                         self.tag);
+                                                     // specify "now" in case D.M. have since been disabled, but we have
+                                                     // existing unstarted expiring messages that still need to expire.
+                                                     [self setExpirationForMessage:message
+                                                               expirationStartedAt:now
+                                                                       transaction:transaction];
+                                                 }
+                                           transaction:transaction];
+    }];
 }
 
 + (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message

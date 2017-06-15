@@ -37,33 +37,36 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     return self;
 }
 
-- (NSArray<NSString *> *)fetchAttemptingOutMessageIds:(YapDatabaseConnection *)dbConnection
+- (NSArray<NSString *> *)fetchAttemptingOutMessageIdsWithTransaction:
+    (YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
+    OWSAssert(transaction);
+
     NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
 
     NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ == %d",
                                           OWSFailedMessagesJobMessageStateColumn,
                                           (int)TSOutgoingMessageStateAttemptingOut];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
-            enumerateKeysMatchingQuery:query
-                            usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
-                                [messageIds addObject:key];
-                            }];
-    }];
+    [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
+        enumerateKeysMatchingQuery:query
+                        usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
+                            [messageIds addObject:key];
+                        }];
 
     return [messageIds copy];
 }
 
 - (void)enumerateAttemptingOutMessagesWithBlock:(void (^_Nonnull)(TSOutgoingMessage *message))block
+                                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    YapDatabaseConnection *dbConnection = [self.storageManager newDatabaseConnection];
+    OWSAssert(transaction);
 
     // Since we can't directly mutate the enumerated "attempting out" expired messages, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSMessage objects one at a time.
-    for (NSString *expiredMessageId in [self fetchAttemptingOutMessageIds:dbConnection]) {
-        TSOutgoingMessage *_Nullable message = [TSOutgoingMessage fetchObjectWithUniqueID:expiredMessageId];
+    for (NSString *expiredMessageId in [self fetchAttemptingOutMessageIdsWithTransaction:transaction]) {
+        TSOutgoingMessage *_Nullable message =
+            [TSOutgoingMessage fetchObjectWithUniqueID:expiredMessageId transaction:transaction];
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
             block(message);
         } else {
@@ -75,18 +78,26 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (void)run
 {
     __block uint count = 0;
-    [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
-        // sanity check
-        OWSAssert(message.messageState == TSOutgoingMessageStateAttemptingOut);
-        if (message.messageState != TSOutgoingMessageStateAttemptingOut) {
-            DDLogError(@"%@ Refusing to mark as unsent message with state: %d", self.tag, (int)message.messageState);
-            return;
-        }
 
-        DDLogDebug(@"%@ marking message as unsent", self.tag);
-        [message updateWithMessageState:TSOutgoingMessageStateUnsent];
-        count++;
-    }];
+    [[self.storageManager newDatabaseConnection]
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
+                // sanity check
+                OWSAssert(message.messageState == TSOutgoingMessageStateAttemptingOut);
+                if (message.messageState != TSOutgoingMessageStateAttemptingOut) {
+                    DDLogError(
+                        @"%@ Refusing to mark as unsent message with state: %d", self.tag, (int)message.messageState);
+                    return;
+                }
+
+                DDLogDebug(@"%@ marking message as unsent: %@", self.tag, message.uniqueId);
+                [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
+                OWSAssert(message.messageState == TSOutgoingMessageStateUnsent);
+
+                count++;
+            }
+                                              transaction:transaction];
+        }];
 
     DDLogDebug(@"%@ Marked %u messages as unsent", self.tag, count);
 }

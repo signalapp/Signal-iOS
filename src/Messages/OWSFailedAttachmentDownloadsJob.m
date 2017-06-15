@@ -36,33 +36,36 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     return self;
 }
 
-- (NSArray<NSString *> *)fetchAttemptingOutAttachmentIds:(YapDatabaseConnection *)dbConnection
+- (NSArray<NSString *> *)fetchAttemptingOutAttachmentIdsWithTransaction:
+    (YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
+    OWSAssert(transaction);
+
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
 
     NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ != %d",
                                           OWSFailedAttachmentDownloadsJobAttachmentStateColumn,
                                           (int)TSAttachmentPointerStateFailed];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [[transaction ext:OWSFailedAttachmentDownloadsJobAttachmentStateIndex]
-            enumerateKeysMatchingQuery:query
-                            usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
-                                [attachmentIds addObject:key];
-                            }];
-    }];
+    [[transaction ext:OWSFailedAttachmentDownloadsJobAttachmentStateIndex]
+        enumerateKeysMatchingQuery:query
+                        usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
+                            [attachmentIds addObject:key];
+                        }];
 
     return [attachmentIds copy];
 }
 
 - (void)enumerateAttemptingOutAttachmentsWithBlock:(void (^_Nonnull)(TSAttachmentPointer *attachment))block
+                                       transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    YapDatabaseConnection *dbConnection = [self.storageManager newDatabaseConnection];
+    OWSAssert(transaction);
 
     // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
-    for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIds:dbConnection]) {
-        TSAttachmentPointer *_Nullable attachment = [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId];
+    for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIdsWithTransaction:transaction]) {
+        TSAttachmentPointer *_Nullable attachment =
+            [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             block(attachment);
         } else {
@@ -74,15 +77,19 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 - (void)run
 {
     __block uint count = 0;
-    [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
-        // sanity check
-        if (attachment.state != TSAttachmentPointerStateFailed) {
-            DDLogDebug(@"%@ marking attachment as failed", self.tag);
-            attachment.state = TSAttachmentPointerStateFailed;
-            [attachment save];
-            count++;
-        }
-    }];
+    [[self.storageManager newDatabaseConnection]
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
+                // sanity check
+                if (attachment.state != TSAttachmentPointerStateFailed) {
+                    DDLogDebug(@"%@ marking attachment as failed", self.tag);
+                    attachment.state = TSAttachmentPointerStateFailed;
+                    [attachment saveWithTransaction:transaction];
+                    count++;
+                }
+            }
+                                                 transaction:transaction];
+        }];
 
     DDLogDebug(@"%@ Marked %u attachments as unsent", self.tag, count);
 }

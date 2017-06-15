@@ -206,8 +206,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [[OWSIncomingMessageFinder new] asyncRegisterExtension];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
     [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
-    OWSDisappearingMessagesFinder *finder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:self];
-    [finder asyncRegisterDatabaseExtensions];
+    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     OWSFailedMessagesJob *failedMessagesJob = [[OWSFailedMessagesJob alloc] initWithStorageManager:self];
     [failedMessagesJob asyncRegisterDatabaseExtensions];
     OWSFailedAttachmentDownloadsJob *failedAttachmentDownloadsMessagesJob =
