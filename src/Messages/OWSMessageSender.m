@@ -159,7 +159,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 @property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
 @property (nonatomic) OWSSendMessageOperationState operationState;
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
-@property (nonatomic) BOOL hasCompleted;
 
 @end
 
@@ -191,18 +190,17 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        // Ensure we call the success or failure handler exactly once.
-        @synchronized(strongSelf)
-        {
-            OWSCAssert(!strongSelf.hasCompleted);
-            strongSelf.hasCompleted = YES;
-        }
-
         [message updateWithMessageState:TSOutgoingMessageStateSentToService];
 
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
         aSuccessHandler();
-        [strongSelf markAsComplete];
+
+        // Ensure we call the success or failure handler exactly once.
+        @synchronized(strongSelf)
+        {
+            OWSCAssert(strongSelf.operationState != OWSSendMessageOperationStateFinished);
+            [strongSelf markAsComplete];
+        }
     };
 
     _failureHandler = ^(NSError *_Nonnull error) {
@@ -212,18 +210,17 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        // Ensure we call the success or failure handler exactly once.
-        @synchronized(strongSelf)
-        {
-            OWSCAssert(!strongSelf.hasCompleted);
-            strongSelf.hasCompleted = YES;
-        }
-
         [strongSelf.message updateWithSendingError:error];
 
         DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
         aFailureHandler(error);
-        [strongSelf markAsComplete];
+
+        // Ensure we call the success or failure handler exactly once.
+        @synchronized(strongSelf)
+        {
+            OWSCAssert(strongSelf.operationState != OWSSendMessageOperationStateFinished);
+            [strongSelf markAsComplete];
+        }
     };
 
     return self;
