@@ -685,7 +685,7 @@ typedef enum : NSUInteger {
             [result addObject:recipientId];
         }
     }
-    return result;
+    return [result copy];
 }
 
 - (void)ensureBannerState
@@ -838,7 +838,7 @@ typedef enum : NSUInteger {
                                          preferredStyle:UIAlertControllerStyleActionSheet];
 
         __weak MessagesViewController *weakSelf = self;
-        UIAlertAction *unblockAction = [UIAlertAction
+        UIAlertAction *verifyAction = [UIAlertAction
             actionWithTitle:
                 NSLocalizedString(@"VERIFY_PRIVACY",
                     @"Label for button or row which allows users to verify the safety number of another user.")
@@ -846,7 +846,7 @@ typedef enum : NSUInteger {
                     handler:^(UIAlertAction *_Nonnull action) {
                         [weakSelf showConversationSettingsAndShowVerification:YES];
                     }];
-        [actionSheetController addAction:unblockAction];
+        [actionSheetController addAction:verifyAction];
 
         UIAlertAction *dismissAction =
             [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
@@ -882,7 +882,7 @@ typedef enum : NSUInteger {
         [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
                                                    identityKey:identityKey
                                                    recipientId:recipientId
-                                               sendSyncMessage:YES];
+                                         isUserInitiatedChange:YES];
     }
 }
 

@@ -38,21 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)init
-{
-    if (self = [super init]) {
-        [self commontInit];
-    }
-
-    return self;
-}
-
 - (void)commontInit
 {
-    if (self.bannerView) {
-        // Don't init twice.
-        return;
-    }
+    OWSAssert(!self.bannerView);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 

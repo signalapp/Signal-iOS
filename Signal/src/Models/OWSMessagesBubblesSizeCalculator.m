@@ -38,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessagesBubblesSizeCalculator ()
 
-@property (nonatomic) OWSSystemMessageCell *referenceSystemMessageCell;
-@property (nonatomic) OWSUnreadIndicatorCell *referenceUnreadIndicatorCell;
+@property (nonatomic, readonly) OWSSystemMessageCell *referenceSystemMessageCell;
+@property (nonatomic, readonly) OWSUnreadIndicatorCell *referenceUnreadIndicatorCell;
 
 @end
 
@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.referenceSystemMessageCell) {
-        self.referenceSystemMessageCell = [OWSSystemMessageCell new];
+        _referenceSystemMessageCell = [OWSSystemMessageCell new];
     }
 
     CGSize result = [self.referenceSystemMessageCell cellSizeForInteraction:interaction
@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.referenceUnreadIndicatorCell) {
-        self.referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
+        _referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
     }
 
     CGSize result = [self.referenceUnreadIndicatorCell cellSizeForInteraction:interaction

@@ -510,10 +510,10 @@ typedef void (^CustomLayoutBlock)();
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
             == OWSVerificationStateVerified;
         [[OWSIdentityManager sharedManager]
-            setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
-                                :self.identityKey
-                     recipientId:self.recipientId
-                 sendSyncMessage:YES];
+             setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
+                                 :self.identityKey
+                      recipientId:self.recipientId
+            isUserInitiatedChange:YES];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

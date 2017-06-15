@@ -40,21 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)init
-{
-    if (self = [super init]) {
-        [self commontInit];
-    }
-
-    return self;
-}
-
 - (void)commontInit
 {
-    if (self.imageView) {
-        // Don't init twice.
-        return;
-    }
+    OWSAssert(!self.imageView);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 

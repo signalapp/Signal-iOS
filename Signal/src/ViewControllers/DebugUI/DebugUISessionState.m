@@ -90,10 +90,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                           NSData *identityKey =
                                                               [identityManger identityKeyForRecipientId:recipientId];
                                                           [[OWSIdentityManager sharedManager]
-                                                              setVerificationState:OWSVerificationStateDefault
-                                                                       identityKey:identityKey
-                                                                       recipientId:recipientId
-                                                                   sendSyncMessage:NO];
+                                                               setVerificationState:OWSVerificationStateDefault
+                                                                        identityKey:identityKey
+                                                                        recipientId:recipientId
+                                                              isUserInitiatedChange:NO];
                                                       }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Verified"
                                                         style:UIAlertActionStyleDefault
@@ -101,10 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                           NSData *identityKey =
                                                               [identityManger identityKeyForRecipientId:recipientId];
                                                           [[OWSIdentityManager sharedManager]
-                                                              setVerificationState:OWSVerificationStateVerified
-                                                                       identityKey:identityKey
-                                                                       recipientId:recipientId
-                                                                   sendSyncMessage:NO];
+                                                               setVerificationState:OWSVerificationStateVerified
+                                                                        identityKey:identityKey
+                                                                        recipientId:recipientId
+                                                              isUserInitiatedChange:NO];
                                                       }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"No Longer Verified"
                                                         style:UIAlertActionStyleDefault
@@ -112,10 +112,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                           NSData *identityKey =
                                                               [identityManger identityKeyForRecipientId:recipientId];
                                                           [[OWSIdentityManager sharedManager]
-                                                              setVerificationState:OWSVerificationStateNoLongerVerified
-                                                                       identityKey:identityKey
-                                                                       recipientId:recipientId
-                                                                   sendSyncMessage:NO];
+                                                               setVerificationState:OWSVerificationStateNoLongerVerified
+                                                                        identityKey:identityKey
+                                                                        recipientId:recipientId
+                                                              isUserInitiatedChange:NO];
                                                       }]];
 
     [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
