@@ -89,7 +89,7 @@ typedef void (^CustomLayoutBlock)();
 
 @implementation FingerprintViewController
 
-+ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
++ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 

@@ -1341,7 +1341,7 @@ typedef enum : NSUInteger {
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
 }
 
 #pragma mark - Calls

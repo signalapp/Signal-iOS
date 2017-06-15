@@ -679,7 +679,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *recipientId = self.thread.contactIdentifier;
     OWSAssert(recipientId.length > 0);
 
-    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
 }
 
 - (void)showGroupMembersView

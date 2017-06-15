@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewController : UIViewController
 
-+ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId;
++ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId;
 
 @end
 
