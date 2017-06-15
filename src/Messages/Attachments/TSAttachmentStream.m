@@ -131,7 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (shouldPersist) {
         // It's not ideal to do this asynchronously, but we can create a new transaction
         // within initWithCoder: which will be called from within a transaction.
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //
+        // We use a serial queue to ensure we don't spawn a ton of threads each doing
+        // database writes.
+        dispatch_async([TSAttachmentStream serialQueue], ^{
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 OWSAssert(transaction);
 
@@ -139,6 +142,16 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         });
     }
+}
+
++ (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("org.whispersystems.attachment.stream", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
 }
 
 #pragma mark - File Management
