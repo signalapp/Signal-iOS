@@ -470,15 +470,6 @@ protocol CallServiceObserver: class {
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        guard self.call == nil else {
-            // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.info("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
-
-            handleLocalBusyCall(newCall, thread: thread)
-
-            return
-        }
-
         let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
 
         guard untrustedIdentity == nil else {
@@ -507,6 +498,15 @@ protocol CallServiceObserver: class {
 
             terminateCall()
 
+            return
+        }
+        
+        guard self.call == nil else {
+            // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
+            Logger.info("\(TAG) receivedCallOffer for thread: \(thread) but we're already in call: \(call!)")
+            
+            handleLocalBusyCall(newCall, thread: thread)
+            
             return
         }
 
