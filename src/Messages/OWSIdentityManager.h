@@ -33,7 +33,7 @@ extern const NSUInteger kIdentityKeyLength;
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
-             isUserInitiatedChange:(BOOL)isUserInitiatedChange;
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 
