@@ -157,6 +157,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This isn't a perfect arrangement, but in practice this will prevent
 // data loss and will resolve all known issues.
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState;
+- (void)updateWithMessageState:(TSOutgoingMessageState)messageState
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSendingError:(NSError *)error;
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;

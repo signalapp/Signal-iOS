@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
-    [[transaction ext:TSUnseenDatabaseViewExtensionName]
+    [[TSDatabaseView unseenDatabaseViewExtension:transaction]
         enumerateRowsInGroup:self.uniqueId
                   usingBlock:^(
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {

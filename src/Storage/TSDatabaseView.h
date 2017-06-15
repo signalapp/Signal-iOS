@@ -5,36 +5,53 @@
 #import <Foundation/Foundation.h>
 #import <YapDatabase/YapDatabaseViewTransaction.h>
 
+extern NSString *const kNSNotificationName_DatabaseViewRegistrationComplete;
+
+extern NSString *const TSInboxGroup;
+extern NSString *const TSArchiveGroup;
+extern NSString *const TSUnreadIncomingMessagesGroup;
+extern NSString *const TSSecondaryDevicesGroup;
+
+extern NSString *const TSThreadDatabaseViewExtensionName;
+
+extern NSString *const TSMessageDatabaseViewExtensionName;
+extern NSString *const TSUnreadDatabaseViewExtensionName;
+
+extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
+
 @interface TSDatabaseView : NSObject
 
-extern NSString *TSInboxGroup;
-extern NSString *TSArchiveGroup;
-extern NSString *TSUnreadIncomingMessagesGroup;
-extern NSString *TSSecondaryDevicesGroup;
+- (instancetype)init NS_UNAVAILABLE;
 
-extern NSString *TSThreadDatabaseViewExtensionName;
-extern NSString *TSMessageDatabaseViewExtensionName;
-extern NSString *TSThreadOutgoingMessageDatabaseViewExtensionName;
-extern NSString *TSUnreadDatabaseViewExtensionName;
-extern NSString *TSUnseenDatabaseViewExtensionName;
-extern NSString *TSThreadSpecialMessagesDatabaseViewExtensionName;
-extern NSString *TSSecondaryDevicesDatabaseViewExtensionName;
++ (BOOL)hasPendingViewRegistrations;
 
-+ (BOOL)registerThreadDatabaseView;
-+ (BOOL)registerThreadInteractionsDatabaseView;
-+ (BOOL)registerThreadOutgoingMessagesDatabaseView;
++ (void)registerThreadDatabaseView;
+
++ (void)registerThreadInteractionsDatabaseView;
++ (void)asyncRegisterThreadOutgoingMessagesDatabaseView;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //
 // Should be used for "unread message counts".
-+ (BOOL)registerUnreadDatabaseView;
++ (void)registerUnreadDatabaseView;
 
 // Should be used for "unread indicator".
 //
 // Instances of OWSReadTracking for wasRead is NO.
-+ (BOOL)registerUnseenDatabaseView;
++ (void)asyncRegisterUnseenDatabaseView;
 
-+ (BOOL)registerThreadSpecialMessagesDatabaseView;
++ (void)asyncRegisterThreadSpecialMessagesDatabaseView;
+
 + (void)asyncRegisterSecondaryDevicesDatabaseView;
+
+// Returns the "unseen" database view if it is ready;
+// otherwise it returns the "unread" database view.
++ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
+
+// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
++ (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
+// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
++ (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 @end

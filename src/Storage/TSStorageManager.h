@@ -27,7 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (BOOL)isDatabasePasswordAccessible;
 
-- (void)setupDatabase;
+/**
+ * The safeBlockingMigrationsBlock block will
+ * run any outstanding version migrations that are a) blocking and b) safe
+ * to be run before the environment and storage is completely configured.
+ *
+ * Specifically, these migration should not depend on or affect the data
+ * of any database view.
+ */
+- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock;
+
 - (void)deleteThreadsAndMessages;
 - (void)resetSignalStorage;
 

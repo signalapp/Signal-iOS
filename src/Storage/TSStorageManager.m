@@ -191,23 +191,35 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     };
 }
 
-- (void)setupDatabase
+- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock
 {
     // Synchronously register extensions which are essential for views.
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerThreadInteractionsDatabaseView];
-    [TSDatabaseView registerThreadOutgoingMessagesDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
-    [TSDatabaseView registerUnseenDatabaseView];
-    [TSDatabaseView registerThreadSpecialMessagesDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+
+    // Run the blocking migrations.
+    //
+    // These need to run _before_ the async registered database views or
+    // they will block on them, which (in the upgrade case) can block
+    // return of appDidFinishLaunching... which in term can cause the
+    // app to crash on launch.
+    safeBlockingMigrationsBlock();
+
+    // Asynchronously register other extensions.
+    //
+    // All sync registrations must be done before all async registrations,
+    // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterUnseenDatabaseView];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];
 
     // Register extensions which aren't essential for rendering threads async
     [[OWSIncomingMessageFinder new] asyncRegisterExtension];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
     [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
-    OWSDisappearingMessagesFinder *finder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:self];
-    [finder asyncRegisterDatabaseExtensions];
+    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     OWSFailedMessagesJob *failedMessagesJob = [[OWSFailedMessagesJob alloc] initWithStorageManager:self];
     [failedMessagesJob asyncRegisterDatabaseExtensions];
     OWSFailedAttachmentDownloadsJob *failedAttachmentDownloadsMessagesJob =

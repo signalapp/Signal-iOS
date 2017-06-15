@@ -95,7 +95,7 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
             [interactionsToMarkAsRead addObject:message];
 
             [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [[transaction ext:TSUnseenDatabaseViewExtensionName]
+                [[TSDatabaseView unseenDatabaseViewExtension:transaction]
                     enumerateRowsInGroup:message.uniqueThreadId
                               usingBlock:^(NSString *collection,
                                   NSString *key,
