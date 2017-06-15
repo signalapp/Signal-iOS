@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange = @"kNSNotificationName_BlockedPhoneNumbersDidChange";
+
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
 // This key is used to persist the current "blocked phone numbers" state.
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
