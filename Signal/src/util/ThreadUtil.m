@@ -94,16 +94,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                   storageManager:(TSStorageManager *)storageManager
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
+                                                     dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
                                       (nullable NSNumber *)firstUnseenInteractionTimestampParameter
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
-    OWSAssert(storageManager);
+    OWSAssert(dbConnection);
     OWSAssert(contactsManager);
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
-    [storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
         // Find any "dynamic" interactions and safety number changes.

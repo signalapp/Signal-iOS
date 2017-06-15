@@ -2661,9 +2661,9 @@ typedef enum : NSUInteger {
 
     self.dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                        storageManager:self.storageManager
                                        contactsManager:self.contactsManager
                                        blockingManager:self.blockingManager
+                                          dbConnection:self.uiDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
                                           maxRangeSize:maxRangeSize];
