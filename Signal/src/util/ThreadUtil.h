@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAttachment;
 @class TSContactThread;
 @class TSInteraction;
-@class TSStorageManager;
+@class YapDatabaseConnection;
 @class TSThread;
 @class TSUnreadIndicatorInteraction;
 
@@ -73,9 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
 //   size of the "load window" in that view. The unread indicator should
 //   always be inserted within that window.
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                   storageManager:(TSStorageManager *)storageManager
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
+                                                     dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
                                                      maxRangeSize:(int)maxRangeSize;

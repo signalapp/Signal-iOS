@@ -16,7 +16,6 @@ NSString *const PropertyListPreferencesKeyEnableDebugLog = @"Debugging Log Enabl
 NSString *const PropertyListPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const PropertyListPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const PropertyListPreferencesKeyHasArchivedAMessage = @"User archived a message";
-NSString *const PropertyListPreferencesKeyLastRunSignalVersion = @"SignalUpdateVersionKey";
 NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
@@ -159,20 +158,6 @@ NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNag
     [self setValueForKey:PropertyListPreferencesKeyHasArchivedAMessage toValue:@(enabled)];
 }
 
-+ (nullable NSString *)lastRanVersion
-{
-    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
-}
-
-+ (NSString *)setAndGetCurrentVersion
-{
-    NSString *currentVersion =
-        [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
-    [NSUserDefaults.standardUserDefaults setObject:currentVersion
-                                            forKey:PropertyListPreferencesKeyLastRunSignalVersion];
-    [NSUserDefaults.standardUserDefaults synchronize];
-    return currentVersion;
-}
 
 - (BOOL)hasDeclinedNoContactsView
 {

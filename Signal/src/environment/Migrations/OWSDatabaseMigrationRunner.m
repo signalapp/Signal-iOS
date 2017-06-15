@@ -42,9 +42,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)runSafeBlockingMigrations
+{
+    [self runMigrations:@[
+        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager],
+    ]];
+}
+
 - (void)runAllOutstanding
 {
-    for (OWSDatabaseMigration *migration in self.allMigrations) {
+    [self runMigrations:self.allMigrations];
+}
+
+- (void)runMigrations:(NSArray<OWSDatabaseMigration *> *)migrations
+{
+    OWSAssert(migrations);
+
+    for (OWSDatabaseMigration *migration in migrations) {
         if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
             DDLogDebug(@"%@ Skipping previously run migration: %@", self.tag, migration);
         } else {

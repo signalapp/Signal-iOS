@@ -53,9 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendTextMessages:1000 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Create 1,000 fake messages"
+                       [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                                        actionBlock:^{
                                            [DebugUIMessages sendFakeTextMessage:1000 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Create 10k fake messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendFakeTextMessage:10 * 1000 thread:thread];
                                        }],
                        [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                                        actionBlock:^{

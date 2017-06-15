@@ -5,6 +5,7 @@
 #import "SettingsTableViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
+#import "DebugSettingsTableViewController.h"
 #import "Environment.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSContactsManager.h"
@@ -196,6 +197,13 @@
                                                   [weakSelf showAbout];
                                               }]];
 
+#ifdef DEBUG
+    [section addItem:[OWSTableItem disclosureItemWithText:@"Debugging"
+                                              actionBlock:^{
+                                                  [weakSelf showDebugging];
+                                              }]];
+#endif
+
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -264,6 +272,12 @@
     AboutTableViewController *vc = [[AboutTableViewController alloc] init];
     NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
     NSAssert(vc != nil, @"About View Controller must not be nil");
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showDebugging
+{
+    DebugSettingsTableViewController *vc = [[DebugSettingsTableViewController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

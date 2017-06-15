@@ -187,6 +187,22 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)labelItemWithText:(NSString *)text
+{
+    OWSAssert(text.length > 0);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        return cell;
+    };
+    return item;
+}
+
 - (nullable UITableViewCell *)customCell
 {
     if (_customCell) {
