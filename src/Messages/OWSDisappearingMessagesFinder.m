@@ -21,7 +21,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 @implementation OWSDisappearingMessagesFinder
 
 - (NSArray<NSString *> *)fetchUnstartedExpiringMessageIdsInThread:(TSThread *)thread
-                                                      transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                                                      transaction:(YapDatabaseReadTransaction *_Nonnull)transaction
 {
     OWSAssert(transaction);
 
@@ -41,7 +41,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     return [messageIds copy];
 }
 
-- (NSArray<NSString *> *)fetchExpiredMessageIdsWithTransaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+- (NSArray<NSString *> *)fetchExpiredMessageIdsWithTransaction:(YapDatabaseReadTransaction *_Nonnull)transaction
 {
     OWSAssert(transaction);
 
@@ -63,7 +63,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     return [messageIds copy];
 }
 
-- (nullable NSNumber *)nextExpirationTimestampWithTransaction:(YapDatabaseReadTransaction *_Nonnull)transaction
+- (nullable NSNumber *)nextExpirationTimestampWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
 
@@ -89,7 +89,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 
 - (void)enumerateUnstartedExpiringMessagesInThread:(TSThread *)thread
                                              block:(void (^_Nonnull)(TSMessage *message))block
-                                       transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                                       transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
 
@@ -109,13 +109,13 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
  * We don't want to instantiate potentially many messages at once.
  */
 - (NSArray<TSMessage *> *)fetchUnstartedExpiringMessagesInThread:(TSThread *)thread
-                                                     transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                                                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
     [self enumerateUnstartedExpiringMessagesInThread:thread
-                                               block:^(TSMessage *_Nonnull message) {
+                                               block:^(TSMessage *message) {
                                                    [messages addObject:message];
                                                }
                                          transaction:transaction];
@@ -125,7 +125,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 
 
 - (void)enumerateExpiredMessagesWithBlock:(void (^_Nonnull)(TSMessage *message))block
-                              transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                              transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
 
@@ -145,12 +145,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
  * Don't use this in production. Useful for testing.
  * We don't want to instantiate potentially many messages at once.
  */
-- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
-    [self enumerateExpiredMessagesWithBlock:^(TSMessage *_Nonnull message) {
+    [self enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
         [messages addObject:message];
     }
                                 transaction:transaction];

@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesJob ()
 
-// This property should only be accessed on the serialQueue.
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 
-// This property should only be accessed on the serialQueue.
+@property (nonatomic, readonly) YapDatabaseConnection *databaseConnection;
+
 @property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
 
 // These three properties should only be accessed on the main thread.
@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _storageManager = storageManager;
+    _databaseConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
 
     OWSSingletonAssert();
@@ -83,12 +84,13 @@ NS_ASSUME_NONNULL_BEGIN
     return queue;
 }
 
+// This method should only be called on the serialQueue.
 - (void)run
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
     __block uint expirationCount = 0;
-    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
@@ -107,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogDebug(@"%@ Removed %u expired messages", self.tag, expirationCount);
 }
 
+// This method should only be called on the serialQueue.
 - (void)runLoop
 {
     DDLogVerbose(@"%@ Run", self.tag);
@@ -115,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     __block NSNumber *nextExpirationTimestampNumber;
-    [self.storageManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         nextExpirationTimestampNumber =
             [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
     }];
@@ -154,9 +157,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self setExpirationForMessage:message expirationStartedAt:[NSDate ows_millisecondTimeStamp]];
 }
 
++ (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
+{
+    dispatch_async(self.serialQueue, ^{
+        [[self sharedJob] setExpirationForMessage:message expirationStartedAt:expirationStartedAt];
+    });
+}
+
+// This method should only be called on the serialQueue.
 - (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
 {
-    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
     }];
 }
@@ -191,10 +202,11 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
+// This method should only be called on the serialQueue.
 - (void)setExpirationsForThread:(TSThread *)thread
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
-    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder
             enumerateUnstartedExpiringMessagesInThread:thread
                                                  block:^(TSMessage *_Nonnull message) {

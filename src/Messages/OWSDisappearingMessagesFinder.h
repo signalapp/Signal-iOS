@@ -8,15 +8,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSDisappearingMessagesFinder : NSObject
 
 - (void)enumerateExpiredMessagesWithBlock:(void (^_Nonnull)(TSMessage *message))block
-                              transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
+                              transaction:(YapDatabaseReadTransaction *)transaction;
 - (void)enumerateUnstartedExpiringMessagesInThread:(TSThread *)thread
                                              block:(void (^_Nonnull)(TSMessage *message))block
-                                       transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
+                                       transaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * @return
