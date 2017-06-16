@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, AboutTableViewControllerSection) {
     self.versionCell.textLabel.text = NSLocalizedString(@"SETTINGS_VERSION", @"");
 
     self.versionLabel           = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 75, 30)];
-    self.versionLabel.text      = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     self.versionLabel.textColor = [UIColor lightGrayColor];
     self.versionLabel.font      = [UIFont ows_regularFontWithSize:16.0f];
     self.versionLabel.textAlignment = NSTextAlignmentRight;
