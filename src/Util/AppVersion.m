@@ -73,4 +73,9 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (BOOL)isFirstLaunch
+{
+    return self.firstAppVersion != nil;
+}
+
 @end

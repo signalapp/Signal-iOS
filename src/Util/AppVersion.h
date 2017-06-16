@@ -16,4 +16,6 @@
 
 - (void)appLaunchDidComplete;
 
+- (BOOL)isFirstLaunch;
+
 @end
