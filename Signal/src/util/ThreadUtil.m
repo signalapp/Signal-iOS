@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.unreadIndicatorPosition = nil;
     self.firstUnseenInteractionTimestamp = nil;
+    self.hasMoreUnseenMessages = NO;
 }
 
 @end
@@ -200,7 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
         // so that it can widen its "load window" to always show
         // the unread indicator.
         __block long visibleUnseenMessageCount = 0;
-        __block BOOL hasMoreUnseenMessages = NO;
         __block TSInteraction *interactionAfterUnreadIndicator = nil;
         NSUInteger missingUnseenSafetyNumberChangeCount = 0;
         if (result.firstUnseenInteractionTimestamp != nil) {
@@ -243,13 +243,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   // messages view, show the unread indicator at the top of the
                                   // displayed messages.
                                   *stop = YES;
-                                  hasMoreUnseenMessages = YES;
+                                  result.hasMoreUnseenMessages = YES;
                               }
                           }];
 
             OWSAssert(interactionAfterUnreadIndicator);
 
-            if (hasMoreUnseenMessages) {
+            if (result.hasMoreUnseenMessages) {
                 NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
                 for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
                     BOOL isUnseen = safetyNumberChange.timestampForSorting
@@ -403,7 +403,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSUnreadIndicatorInteraction *indicator =
                     [[TSUnreadIndicatorInteraction alloc] initWithTimestamp:indicatorTimestamp
                                                                      thread:thread
-                                                      hasMoreUnseenMessages:hasMoreUnseenMessages
+                                                      hasMoreUnseenMessages:result.hasMoreUnseenMessages
                                        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
 

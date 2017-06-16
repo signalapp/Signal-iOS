@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 // YES in ensureDynamicInteractionsForThread:...
 @property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
 
+@property (nonatomic) BOOL hasMoreUnseenMessages;
+
 - (void)clearUnreadIndicatorState;
 
 @end
