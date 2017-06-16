@@ -183,20 +183,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)attachmentsFolder
 {
-    NSString *documentsPath =
-        [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *attachmentFolder = [documentsPath stringByAppendingFormat:@"/Attachments"];
+    static NSString *attachmentsFolder = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSString *documentsPath =
+            [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+        attachmentsFolder = [documentsPath stringByAppendingFormat:@"/Attachments"];
 
-    NSError *error = nil;
-    [[NSFileManager defaultManager] createDirectoryAtPath:attachmentFolder
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:&error];
-    if (error) {
-        DDLogError(@"Failed to create attachments directory: %@", error);
-    }
+        BOOL isDirectory;
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentsFolder isDirectory:&isDirectory];
+        if (exists) {
+            OWSAssert(isDirectory);
 
-    return attachmentFolder;
+            DDLogInfo(@"Attachments directory already exists");
+        } else {
+            NSError *error = nil;
+            [[NSFileManager defaultManager] createDirectoryAtPath:attachmentsFolder
+                                      withIntermediateDirectories:YES
+                                                       attributes:nil
+                                                            error:&error];
+            if (error) {
+                DDLogError(@"Failed to create attachments directory: %@", error);
+            }
+        }
+    });
+    return attachmentsFolder;
 }
 
 + (NSUInteger)numberOfItemsInAttachmentsFolder
