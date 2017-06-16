@@ -75,8 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImage *image = self.attachment.image;
         if (!image) {
             DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
-            OWSAssert(0);
-            return nil;
+            return [UIView new];
         }
         CGSize size             = [self mediaViewDisplaySize];
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];

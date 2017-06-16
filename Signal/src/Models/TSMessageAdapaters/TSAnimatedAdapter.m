@@ -103,8 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
         if (!fileData) {
             DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
-            OWSAssert(0);
-            return nil;
+            return [UIView new];
         }
         FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
