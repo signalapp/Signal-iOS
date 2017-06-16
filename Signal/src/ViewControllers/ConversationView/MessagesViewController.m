@@ -2399,9 +2399,16 @@ typedef enum : NSUInteger {
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId
 {
     if (signalId == nil) {
-        // Before 2.13 we didn't track the recipient id in the identity change error.
-        DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.tag);
-        return;
+        if (self.thread.isGroupThread) {
+            // Before 2.13 we didn't track the recipient id in the identity change error.
+            DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.tag);
+        } else {
+            DDLogInfo(
+                @"%@ Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
+                self.tag,
+                self.thread.contactIdentifier);
+            signalId = self.thread.contactIdentifier;
+        }
     }
 
     [self showFingerprintWithRecipientId:signalId];
