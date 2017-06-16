@@ -328,7 +328,10 @@
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "Create new group";
 
-/* Indicates that the app is updating its database. */
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a couple of minutes. Please be patient.";
+
+/* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
