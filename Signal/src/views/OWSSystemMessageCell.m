@@ -242,12 +242,6 @@ NS_ASSUME_NONNULL_BEGIN
     return 20.f;
 }
 
-/// The default layout spacing for the top label (e.g. timestamp) feels a little too close for the system messages.
-- (CGFloat)topLabelBottomMargin
-{
-    return 4.f;
-}
-
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -260,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize topLabelSize = [self.cellTopLabel sizeThatFits:CGSizeMake(self.contentView.width, CGFLOAT_MAX)];
     self.cellTopLabel.frame = CGRectMake(0, 0, self.contentView.frame.size.width, topLabelSize.height);
 
-    CGFloat topLabelSpacing = topLabelSize.height + [self topLabelBottomMargin];
+    CGFloat topLabelSpacing = topLabelSize.height;
 
     self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
         round((self.contentView.height - [self iconSize] + topLabelSpacing) * 0.5f),
@@ -273,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
         ceil(titleSize.height + 1.f));
 }
 
-- (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
+- (CGSize)bubbleSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
     result.height += self.topVMargin;
@@ -285,8 +279,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
     result.height += contentHeight;
-
-    result.height += [self topLabelBottomMargin];
 
     return result;
 }
