@@ -532,8 +532,8 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
-/* Button that verifies user after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Verify";
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset this session.";
@@ -1328,10 +1328,10 @@
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Verified!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Cancel";
