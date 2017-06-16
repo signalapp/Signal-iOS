@@ -53,13 +53,29 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendTextMessages:1000 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Create 1k fake messages"
+                       [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
                                        actionBlock:^{
-                                           [DebugUIMessages sendFakeTextMessage:1000 thread:thread];
+                                           [DebugUIMessages sendTinyAttachments:10 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Create 10k fake messages"
+                       [OWSTableItem itemWithTitle:@"Send 100 tiny attachments"
                                        actionBlock:^{
-                                           [DebugUIMessages sendFakeTextMessage:10 * 1000 thread:thread];
+                                           [DebugUIMessages sendTinyAttachments:100 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Send 1,000 tiny attachments"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendTinyAttachments:1000 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Send fake 10 messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendFakeMessages:10 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Send fake 1k messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendFakeMessages:1000 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Send fake 10k messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
                                        }],
                        [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                                        actionBlock:^{
@@ -518,12 +534,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti
 {
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithData:[self createRandomNSDataOfSize:256] dataUTI:uti filename:nil];
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
+    [self sendRandomAttachment:thread uti:uti length:256];
 }
 
++ (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
+{
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithData:[self createRandomNSDataOfSize:length] dataUTI:uti filename:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
+}
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
@@ -760,29 +780,103 @@ NS_ASSUME_NONNULL_BEGIN
     return randomText;
 }
 
-+ (void)sendFakeTextMessage:(int)counter thread:(TSThread *)thread
++ (void)sendFakeMessages:(int)counter thread:(TSThread *)thread
 {
-    NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
-    for (int i = 0; i < counter; i++) {
-        NSString *randomText = [self randomText];
-        BOOL isIncoming = arc4random_uniform(2) == 0;
-        if (isIncoming) {
-            [messages addObject:[[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                    inThread:thread
-                                                                    authorId:@"+19174054215"
-                                                              sourceDeviceId:0
-                                                                 messageBody:randomText]];
-        } else {
-            [messages addObject:[[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                    inThread:thread
-                                                                 messageBody:randomText]];
-        }
-    }
     [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (TSMessage *message in messages) {
-            [message saveWithTransaction:transaction];
+        for (int i = 0; i < counter; i++) {
+            NSString *randomText = [self randomText];
+            switch (arc4random_uniform(4)) {
+                case 0: {
+                    TSIncomingMessage *message =
+                        [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                            inThread:thread
+                                                            authorId:@"+19174054215"
+                                                      sourceDeviceId:0
+                                                         messageBody:randomText];
+                    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                    break;
+                }
+                case 1: {
+                    TSOutgoingMessage *message =
+                        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                            inThread:thread
+                                                         messageBody:randomText];
+                    [message saveWithTransaction:transaction];
+                    break;
+                }
+                case 2: {
+                    TSAttachmentPointer *pointer =
+                        [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
+                                                                  key:[self createRandomNSDataOfSize:64]
+                                                               digest:nil
+                                                          contentType:@"audio/mp3"
+                                                                relay:@""
+                                                       sourceFilename:@"test.mp3"
+                                                       attachmentType:TSAttachmentTypeDefault];
+                    [pointer saveWithTransaction:transaction];
+                    TSIncomingMessage *message =
+                        [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                            inThread:thread
+                                                            authorId:@"+19174054215"
+                                                      sourceDeviceId:0
+                                                         messageBody:nil
+                                                       attachmentIds:@[
+                                                           pointer.uniqueId,
+                                                       ]
+                                                    expiresInSeconds:0];
+                    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                    break;
+                }
+                case 3: {
+                    OWSDisappearingMessagesConfiguration *configuration =
+                        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
+                                                                          transaction:transaction];
+                    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                 inThread:thread
+                           isVoiceMessage:NO
+                         expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+
+                    NSString *filename = @"test.mp3";
+                    TSAttachmentStream *attachmentStream =
+                        [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:filename];
+
+                    NSError *error;
+                    [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
+                    OWSAssert(!error);
+
+                    [attachmentStream saveWithTransaction:transaction];
+                    [message.attachmentIds addObject:attachmentStream.uniqueId];
+                    if (filename) {
+                        message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+                    }
+                    [message saveWithTransaction:transaction];
+                    break;
+                }
+            }
         }
     }];
+}
+
++ (void)sendTinyAttachments:(int)counter thread:(TSThread *)thread
+{
+    if (counter < 1) {
+        return;
+    }
+
+    NSArray<NSString *> *utis = @[
+        (NSString *)kUTTypePDF,
+        (NSString *)kUTTypeMP3,
+        (NSString *)kUTTypeGIF,
+        (NSString *)kUTTypeMPEG4,
+        (NSString *)kUTTypeJPEG,
+    ];
+    NSString *uti = utis[(NSUInteger)arc4random_uniform((uint32_t)utis.count)];
+    [self sendRandomAttachment:thread uti:uti length:16];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self sendTinyAttachments:counter - 1 thread:thread];
+    });
 }
 
 @end
