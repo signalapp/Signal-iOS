@@ -60,14 +60,21 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
-
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
 {
+    return [self sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:NO];
+}
+
++ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
+                                        inThread:(TSThread *)thread
+                                   messageSender:(OWSMessageSender *)messageSender
+                                    ignoreErrors:(BOOL)ignoreErrors
+{
     OWSAssert([NSThread isMainThread]);
     OWSAssert(attachment);
-    OWSAssert(![attachment hasError]);
+    OWSAssert(ignoreErrors || ![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);
     OWSAssert(thread);
     OWSAssert(messageSender);
