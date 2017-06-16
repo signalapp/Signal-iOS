@@ -65,15 +65,15 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendTinyAttachments:1000 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Send fake 10 messages"
+                       [OWSTableItem itemWithTitle:@"Create 10 fake messages"
                                        actionBlock:^{
                                            [DebugUIMessages sendFakeMessages:10 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Send fake 1k messages"
+                       [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                                        actionBlock:^{
                                            [DebugUIMessages sendFakeMessages:1000 thread:thread];
                                        }],
-                       [OWSTableItem itemWithTitle:@"Send fake 10k messages"
+                       [OWSTableItem itemWithTitle:@"Create 10k fake messages"
                                        actionBlock:^{
                                            [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
                                        }],
@@ -828,14 +828,11 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
                 }
                 case 3: {
-                    OWSDisappearingMessagesConfiguration *configuration =
-                        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
-                                                                          transaction:transaction];
-                    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-                        initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                 inThread:thread
-                           isVoiceMessage:NO
-                         expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+                    TSOutgoingMessage *message =
+                        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                            inThread:thread
+                                                      isVoiceMessage:NO
+                                                    expiresInSeconds:0];
 
                     NSString *filename = @"test.mp3";
                     TSAttachmentStream *attachmentStream =

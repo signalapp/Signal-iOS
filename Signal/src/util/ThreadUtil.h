@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender;
 
+// We only should set ignoreErrors in debug or test code.
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
