@@ -197,17 +197,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              message:successDescription
                                                                       preferredStyle:UIAlertControllerStyleAlert];
     [alertController
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
-                                                     @"Button that verifies user after a successful fingerprint scan.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *action) {
-                                             [OWSIdentityManager.sharedManager
-                                                 setVerificationState:OWSVerificationStateVerified
-                                                          identityKey:identityKey
-                                                          recipientId:recipientId
-                                                      sendSyncMessage:YES];
-                                             [viewController dismissViewControllerAnimated:true completion:nil];
-                                         }]];
+        addAction:[UIAlertAction
+                      actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
+                                          @"Button that marks user as verified after a successful fingerprint scan.")
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction *action) {
+                                  [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
+                                                                             identityKey:identityKey
+                                                                             recipientId:recipientId
+                                                                         sendSyncMessage:YES];
+                                  [viewController dismissViewControllerAnimated:true completion:nil];
+                              }]];
     UIAlertAction *dismissAction =
         [UIAlertAction actionWithTitle:dismissText
                                  style:UIAlertActionStyleDefault
