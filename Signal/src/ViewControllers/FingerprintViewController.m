@@ -204,7 +204,7 @@ typedef void (^CustomLayoutBlock)();
 
     UILabel *verifyUnverifyButtonLabel = [UILabel new];
     self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
-    verifyUnverifyButtonLabel.font = [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
     verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
     verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
     [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
