@@ -199,7 +199,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     BOOL shouldShowUpgradeLabel = NO;
     NSString *previousVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
     // We added a number of database views in v2.13.0.
-    if ([VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
+    if ([TSAccountManager isRegistered] &&
+        [VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
         shouldShowUpgradeLabel = YES;
     }
     if (shouldShowUpgradeLabel) {
