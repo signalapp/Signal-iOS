@@ -197,7 +197,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
     BOOL shouldShowUpgradeLabel = NO;
-    NSString *previousVersion = AppVersion.instance.lastAppVersion;
+    NSString *previousVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
     // We added a number of database views in v2.13.0.
     if ([VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
         shouldShowUpgradeLabel = YES;
@@ -734,6 +734,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)databaseViewRegistrationComplete
 {
     DDLogInfo(@"databaseViewRegistrationComplete");
+
+    [AppVersion.instance appLaunchDidComplete];
 
     [self ensureRootViewController];
 }
