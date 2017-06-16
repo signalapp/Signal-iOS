@@ -329,7 +329,7 @@
 "CREATE_NEW_GROUP" = "Create new group";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a couple of minutes. Please be patient.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
