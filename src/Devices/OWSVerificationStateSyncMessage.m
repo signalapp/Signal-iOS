@@ -66,24 +66,39 @@ NS_ASSUME_NONNULL_BEGIN
     
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSSignalServiceProtosSyncMessageVerificationBuilder *verificationBuilder = [OWSSignalServiceProtosSyncMessageVerificationBuilder new];
-        verificationBuilder.destination = tuple.recipientId;
-        verificationBuilder.identityKey = tuple.identityKey;
+        OWSSignalServiceProtosSyncMessageVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosSyncMessageVerifiedBuilder new];
+        verifiedBuilder.destination = tuple.recipientId;
+        verifiedBuilder.identityKey = tuple.identityKey;
         switch (tuple.verificationState) {
             case OWSVerificationStateDefault:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateDefault;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateDefault;
                 break;
             case OWSVerificationStateVerified:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateVerified;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateVerified;
                 break;
             case OWSVerificationStateNoLongerVerified:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateUnverified;
                 break;
         }
-        [syncMessageBuilder addVerification:[verificationBuilder build]];
+        [syncMessageBuilder addVerified:[verifiedBuilder build]];
     }
     
+
+    // Add 1-512 bytes of random padding bytes.
+    size_t paddingLengthBytes = arc4random_uniform(512) + 1;
+    [syncMessageBuilder setPadding:[self createRandomNSDataOfSize:paddingLengthBytes]];
+
     return [syncMessageBuilder build];
+}
+
+- (NSData *)createRandomNSDataOfSize:(size_t)size
+{
+    NSMutableData *data = [NSMutableData dataWithCapacity:size];
+    for (size_t i = 0; i < size; ++i) {
+        u_int32_t randomBits = arc4random_uniform(256);
+        [data appendBytes:(void *)&randomBits length:1];
+    }
+    return data;
 }
 
 - (NSArray<NSString *> *)recipientIds
