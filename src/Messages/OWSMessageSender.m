@@ -195,12 +195,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
         DDLogDebug(@"%@ succeeded.", strongSelf.tag);
         aSuccessHandler();
 
-        // Ensure we call the success or failure handler exactly once.
-        @synchronized(strongSelf)
-        {
-            OWSCAssert(strongSelf.operationState != OWSSendMessageOperationStateFinished);
-            [strongSelf markAsComplete];
-        }
+        [strongSelf markAsComplete];
     };
 
     _failureHandler = ^(NSError *_Nonnull error) {
@@ -215,12 +210,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
         DDLogDebug(@"%@ failed with error: %@", strongSelf.tag, error);
         aFailureHandler(error);
 
-        // Ensure we call the success or failure handler exactly once.
-        @synchronized(strongSelf)
-        {
-            OWSCAssert(strongSelf.operationState != OWSSendMessageOperationStateFinished);
-            [strongSelf markAsComplete];
-        }
+        [strongSelf markAsComplete];
     };
 
     return self;
@@ -330,7 +320,15 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 {
     [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     [self willChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
-    self.operationState = OWSSendMessageOperationStateFinished;
+
+    // Ensure we call the success or failure handler exactly once.
+    @synchronized(self)
+    {
+        OWSAssert(self.operationState != OWSSendMessageOperationStateFinished);
+
+        self.operationState = OWSSendMessageOperationStateFinished;
+    }
+
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
 
