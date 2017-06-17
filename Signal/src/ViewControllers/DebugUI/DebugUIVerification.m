@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSIdentityManager.sharedManager setVerificationState:verificationState
                                                identityKey:identityKey
                                                recipientId:recipientId
-                                           sendSyncMessage:verificationState != OWSVerificationStateNoLongerVerified];
+                                     isUserInitiatedChange:verificationState != OWSVerificationStateNoLongerVerified];
 }
 
 @end

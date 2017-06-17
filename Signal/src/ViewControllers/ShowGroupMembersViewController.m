@@ -317,7 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [FingerprintViewController showVerificationViewFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
 }
 
 #pragma mark - ContactsViewHelperDelegate

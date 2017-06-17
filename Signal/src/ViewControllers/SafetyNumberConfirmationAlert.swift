@@ -55,7 +55,7 @@ class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
             OWSDispatch.sessionStoreQueue().async {
-                OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, sendSyncMessage: true)
+                OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true)
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -86,7 +86,7 @@ class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("\(self.TAG) Missing frontmostViewController")
             return
         }
-        FingerprintViewController.showVerificationView(from:fromViewController, recipientId:theirRecipientId)
+        FingerprintViewController.present(from:fromViewController, recipientId:theirRecipientId)
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {

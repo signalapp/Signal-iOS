@@ -89,7 +89,7 @@ typedef void (^CustomLayoutBlock)();
 
 @implementation FingerprintViewController
 
-+ (void)showVerificationViewFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
++ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -510,10 +510,10 @@ typedef void (^CustomLayoutBlock)();
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
             == OWSVerificationStateVerified;
         [[OWSIdentityManager sharedManager]
-            setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
-                                :self.identityKey
-                     recipientId:self.recipientId
-                 sendSyncMessage:YES];
+             setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
+                                 :self.identityKey
+                      recipientId:self.recipientId
+            isUserInitiatedChange:YES];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

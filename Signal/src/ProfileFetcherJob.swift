@@ -14,7 +14,7 @@ class ProfileFetcherJob: NSObject {
 
     let thread: TSThread
 
-    // This property is only accessed on the default global queue.  
+    // This property is only accessed on the main queue.
     static var fetchDateMap = [String: Date]()
 
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
@@ -31,7 +31,7 @@ class ProfileFetcherJob: NSObject {
     public func run() {
         AssertIsOnMainThread()
 
-        DispatchQueue.global().async {
+        DispatchQueue.main.async {
             for recipientId in self.thread.recipientIdentifiers {
                 self.getProfile(recipientId: recipientId)
             }
@@ -40,27 +40,24 @@ class ProfileFetcherJob: NSObject {
 
     public func getProfile(recipientId: String, remainingRetries: Int = 3) {
 
-        // Only throttle profile fetch in production builds in order to
-        // facilitate debugging.
-        if !_isDebugAssertConfiguration() {
-            if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
-                let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-                // Don't check a profile more often than every N minutes.
-                let kGetProfileMaxFrequencySeconds = 60.0 * 5.0
-                if lastTimeInterval < kGetProfileMaxFrequencySeconds {
-                    Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
-                    return
-                }
+        if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
+            let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
+            // Don't check a profile more often than every N minutes.
+            //
+            // Only throttle profile fetch in production builds in order to
+            // facilitate debugging.
+            let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
+            guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
+                Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                return
             }
-            ProfileFetcherJob.fetchDateMap[recipientId] = Date()
         }
+        ProfileFetcherJob.fetchDateMap[recipientId] = Date()
 
         Logger.error("\(self.TAG) getProfile: \(recipientId)")
 
         let request = OWSGetProfileRequest(recipientId: recipientId)
 
-        // We don't need to retainUntilComplete() since the success and failure
-        // handlers both close over a strong reference to self.
         self.networkManager.makeRequest(
             request,
             success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in

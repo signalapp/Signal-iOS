@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
                                                                              identityKey:identityKey
                                                                              recipientId:recipientId
-                                                                         sendSyncMessage:YES];
+                                                                         isUserInitiatedChange:YES];
                                   [viewController dismissViewControllerAnimated:true completion:nil];
                               }]];
     UIAlertAction *dismissAction =
