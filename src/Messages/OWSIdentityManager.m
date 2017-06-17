@@ -513,16 +513,24 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     });
 }
 
+- (BOOL)isSyncEnabled
+{
+    // Feature Flag
+    //
+    // Don't transmit or process verification state sync messages
+    // until desktop is ready.
+    //
+    // TODO: Remove.
+    return NO;
+}
+
 - (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
 {
     OWSAssert(message);
     OWSAssert(message.recipientIds.count > 0);
 
-    if (YES) {
-        // Don't actually transmit any verification state sync messages
-        // until we finalize the proto schema changes.
-        //
-        // TODO: Remove.
+    if (![self isSyncEnabled]) {
+        DDLogInfo(@"Skipping outgoing sync message.");
         return;
     }
 
@@ -560,33 +568,33 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     });
 }
 
-- (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerification *> *)verifications
+- (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerified *> *)verifieds
 {
-    for (OWSSignalServiceProtosSyncMessageVerification *verification in verifications) {
-        NSString *recipientId = verification.destination;
+    for (OWSSignalServiceProtosSyncMessageVerified *verified in verifieds) {
+        NSString *recipientId = verified.destination;
         if (recipientId.length < 1) {
             OWSFail(@"Verification state sync message missing recipientId.");
             continue;
         }
-        NSData *identityKey = verification.identityKey;
+        NSData *identityKey = verified.identityKey;
         if (identityKey.length < 1) {
             OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
             continue;
         }
-        switch (verification.state) {
-            case OWSSignalServiceProtosSyncMessageVerificationStateDefault:
+        switch (verified.state) {
+            case OWSSignalServiceProtosSyncMessageVerifiedStateDefault:
                 [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
                                                      recipientId:recipientId
                                                      identityKey:identityKey
                                              overwriteOnConflict:NO];
                 break;
-            case OWSSignalServiceProtosSyncMessageVerificationStateVerified:
+            case OWSSignalServiceProtosSyncMessageVerifiedStateVerified:
                 [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
                                                      recipientId:recipientId
                                                      identityKey:identityKey
                                              overwriteOnConflict:YES];
                 break;
-            case OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified:
+            case OWSSignalServiceProtosSyncMessageVerifiedStateUnverified:
                 OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
                     recipientId,
                     OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
@@ -606,6 +614,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
     if (identityKey.length < 1) {
         OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
+        return;
+    }
+    
+    if (![self isSyncEnabled]) {
+        DDLogInfo(@"Ignoring incoming sync message.");
         return;
     }
 

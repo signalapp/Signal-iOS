@@ -3,6 +3,7 @@
 //
 
 #import "OWSVerificationStateSyncMessage.h"
+#import "Cryptography.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -66,23 +67,27 @@ NS_ASSUME_NONNULL_BEGIN
     
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSSignalServiceProtosSyncMessageVerificationBuilder *verificationBuilder = [OWSSignalServiceProtosSyncMessageVerificationBuilder new];
-        verificationBuilder.destination = tuple.recipientId;
-        verificationBuilder.identityKey = tuple.identityKey;
+        OWSSignalServiceProtosSyncMessageVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosSyncMessageVerifiedBuilder new];
+        verifiedBuilder.destination = tuple.recipientId;
+        verifiedBuilder.identityKey = tuple.identityKey;
         switch (tuple.verificationState) {
             case OWSVerificationStateDefault:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateDefault;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateDefault;
                 break;
             case OWSVerificationStateVerified:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateVerified;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateVerified;
                 break;
             case OWSVerificationStateNoLongerVerified:
-                verificationBuilder.state = OWSSignalServiceProtosSyncMessageVerificationStateNoLongerVerified;
+                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateUnverified;
                 break;
         }
-        [syncMessageBuilder addVerification:[verificationBuilder build]];
+        [syncMessageBuilder addVerified:[verifiedBuilder build]];
     }
-    
+
+    // Add 1-512 bytes of random padding bytes.
+    size_t paddingLengthBytes = arc4random_uniform(512) + 1;
+    [syncMessageBuilder setPadding:[Cryptography generateRandomBytes:paddingLengthBytes]];
+
     return [syncMessageBuilder build];
 }
 
