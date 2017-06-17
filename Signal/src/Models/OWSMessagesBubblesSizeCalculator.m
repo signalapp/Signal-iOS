@@ -47,6 +47,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessagesBubblesSizeCalculator
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _referenceSystemMessageCell = [OWSSystemMessageCell new];
+        _referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
+    }
+    return self;
+}
+
 /**
  *  Computes and returns the size of the `messageBubbleImageView` property
  *  of a `JSQMessagesCollectionViewCell` for the specified messageData at indexPath.
@@ -119,10 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
         return [cachedSize CGSizeValue];
     }
 
-    if (!self.referenceSystemMessageCell) {
-        _referenceSystemMessageCell = [OWSSystemMessageCell new];
-    }
-
     CGSize result = [self.referenceSystemMessageCell cellSizeForInteraction:interaction
                                                         collectionViewWidth:layout.collectionView.width];
 
@@ -141,10 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSValue *cachedSize = [self.cache objectForKey:cacheKey];
     if (cachedSize != nil) {
         return [cachedSize CGSizeValue];
-    }
-
-    if (!self.referenceUnreadIndicatorCell) {
-        _referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
     }
 
     CGSize result = [self.referenceUnreadIndicatorCell cellSizeForInteraction:interaction

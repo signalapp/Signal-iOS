@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSystemMessageCell
 
+// `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {

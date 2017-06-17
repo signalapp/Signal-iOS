@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSUnreadIndicatorCell
 
+// `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
