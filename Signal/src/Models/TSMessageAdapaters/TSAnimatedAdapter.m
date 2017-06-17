@@ -7,6 +7,7 @@
 #import "FLAnimatedImage.h"
 #import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
+#import "UIColor+OWS.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -103,8 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
         if (!fileData) {
             DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
-            OWSAssert(0);
-            return nil;
+            UIView *view = [UIView new];
+            view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+            return view;
         }
         FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
