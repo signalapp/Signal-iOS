@@ -561,6 +561,13 @@ typedef enum : NSUInteger {
     // or on another device.
     [self hideInputIfNeeded];
 
+    // We need to `beginLongLivedReadTransaction` before we update our
+    // mapping in order to jump to the most recent commit.
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.messageMappings updateWithTransaction:transaction];
+    }];
+
     [self toggleObservers:YES];
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
