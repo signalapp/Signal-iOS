@@ -102,8 +102,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     [self touchThreadWithTransaction:transaction];
 
     // Ignore sendReadReceipt and updateExpiration; they don't apply to calls.
-    //
-    // TODO: Should we update expiration of calls?
 }
 
 #pragma mark - Methods

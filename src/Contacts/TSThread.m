@@ -283,6 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// Returns YES IFF the interaction should show up in the inbox as the last message.
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
 {
     OWSAssert(interaction);

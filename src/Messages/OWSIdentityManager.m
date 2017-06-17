@@ -205,7 +205,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
-             sendSyncMessage:(BOOL)sendSyncMessage
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange
 {
     OWSAssert(identityKey.length > 0);
     OWSAssert(recipientId.length > 0);
@@ -235,7 +235,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
         [recipientIdentity updateWithVerificationState:verificationState];
 
-        if (sendSyncMessage) {
+        if (isUserInitiatedChange) {
             [self enqueueSyncMessageForVerificationState:verificationState
                                              identityKey:identityKey
                                              recipientId:recipientId];
