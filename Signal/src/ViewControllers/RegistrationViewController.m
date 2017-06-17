@@ -151,7 +151,7 @@
         @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
     self.phoneNumberTextField = phoneNumberTextField;
     phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];
-    phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
     [phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
