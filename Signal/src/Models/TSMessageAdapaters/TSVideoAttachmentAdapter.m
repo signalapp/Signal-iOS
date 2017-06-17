@@ -227,7 +227,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *image = self.attachment.image;
     if (!image) {
         DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
-        return [UIView new];
+        UIView *view = [UIView new];
+        view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+        return view;
     }
     UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     imageView.contentMode = UIViewContentModeScaleAspectFill;

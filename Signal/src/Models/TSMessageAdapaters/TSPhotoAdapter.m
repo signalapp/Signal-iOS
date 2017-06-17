@@ -6,6 +6,7 @@
 #import "AttachmentUploadView.h"
 #import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
+#import "UIColor+OWS.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -75,7 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
         UIImage *image = self.attachment.image;
         if (!image) {
             DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
-            return [UIView new];
+            UIView *view = [UIView new];
+            view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+            return view;
         }
         CGSize size             = [self mediaViewDisplaySize];
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
