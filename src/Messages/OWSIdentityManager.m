@@ -530,6 +530,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(message.recipientIds.count > 0);
 
     if (![self isSyncEnabled]) {
+        DDLogInfo(@"Skipping outgoing sync message.");
         return;
     }
 
@@ -617,6 +618,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
     
     if (![self isSyncEnabled]) {
+        DDLogInfo(@"Ignoring incoming sync message.");
         return;
     }
 

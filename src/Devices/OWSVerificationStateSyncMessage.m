@@ -3,6 +3,7 @@
 //
 
 #import "OWSVerificationStateSyncMessage.h"
+#import "Cryptography.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -82,23 +83,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [syncMessageBuilder addVerified:[verifiedBuilder build]];
     }
-    
 
     // Add 1-512 bytes of random padding bytes.
     size_t paddingLengthBytes = arc4random_uniform(512) + 1;
-    [syncMessageBuilder setPadding:[self createRandomNSDataOfSize:paddingLengthBytes]];
+    [syncMessageBuilder setPadding:[Cryptography generateRandomBytes:paddingLengthBytes]];
 
     return [syncMessageBuilder build];
-}
-
-- (NSData *)createRandomNSDataOfSize:(size_t)size
-{
-    NSMutableData *data = [NSMutableData dataWithCapacity:size];
-    for (size_t i = 0; i < size; ++i) {
-        u_int32_t randomBits = arc4random_uniform(256);
-        [data appendBytes:(void *)&randomBits length:1];
-    }
-    return data;
 }
 
 - (NSArray<NSString *> *)recipientIds
