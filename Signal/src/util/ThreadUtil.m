@@ -18,6 +18,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ThreadDynamicInteractions ()
+
+@property (nonatomic, nullable) NSNumber *unreadIndicatorPosition;
+
+@property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
+
+@property (nonatomic) BOOL hasMoreUnseenMessages;
+
+@end
+
+#pragma mark -
+
 @implementation ThreadDynamicInteractions
 
 - (void)clearUnreadIndicatorState

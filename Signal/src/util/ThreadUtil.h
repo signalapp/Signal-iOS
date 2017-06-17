@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This is used by MessageViewController to increase the
 // range size of the mappings (the load window of the conversation)
 // to include the unread indicator.
-@property (nonatomic, nullable) NSNumber *unreadIndicatorPosition;
+@property (nonatomic, nullable, readonly) NSNumber *unreadIndicatorPosition;
 
 // If there are unseen messages in the thread, this is the timestamp
 // of the oldest unseen messaage.
@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 // repeatedly. The unread indicator should continue to show up until
 // it has been cleared, at which point hideUnreadMessagesIndicator is
 // YES in ensureDynamicInteractionsForThread:...
-@property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
+@property (nonatomic, nullable, readonly) NSNumber *firstUnseenInteractionTimestamp;
 
-@property (nonatomic) BOOL hasMoreUnseenMessages;
+@property (nonatomic, readonly) BOOL hasMoreUnseenMessages;
 
 - (void)clearUnreadIndicatorState;
 

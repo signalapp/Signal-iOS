@@ -2186,7 +2186,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert(!self.isUserScrolling);
 
-    BOOL hasMoreUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
+    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
 
     // We want to restore the current scroll state after we update the range, update
     // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
@@ -2234,7 +2234,10 @@ typedef enum : NSUInteger {
     self.collectionView.contentOffset = CGPointMake(0, self.collectionView.contentSize.height - scrollDistanceToBottom);
 
     [self.scrollLaterTimer invalidate];
-    if (hasMoreUnseenMessages) {
+    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
+    //
+    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
+    if (hasEarlierUnseenMessages) {
         // We want to scroll to the bottom _after_ the layout has been updated.
         self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
                                                                      target:self
