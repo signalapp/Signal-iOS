@@ -536,27 +536,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     });
 }
 
-- (BOOL)isSyncEnabled
-{
-    // Feature Flag
-    //
-    // Don't transmit or process verification state sync messages
-    // until desktop is ready.
-    //
-    // TODO: Remove.
-    return NO;
-}
-
 - (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
 {
     OWSAssert(message);
     OWSAssert(message.recipientIds.count > 0);
     OWSAssert([NSThread isMainThread]);
-
-    if (![self isSyncEnabled]) {
-        DDLogInfo(@"Skipping outgoing sync message.");
-        return;
-    }
 
     [self.messageSender sendMessage:message
         success:^{
@@ -646,11 +630,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         return;
     }
     
-    if (![self isSyncEnabled]) {
-        DDLogInfo(@"Ignoring incoming sync message.");
-        return;
-    }
-
     @synchronized(self)
     {
         OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
