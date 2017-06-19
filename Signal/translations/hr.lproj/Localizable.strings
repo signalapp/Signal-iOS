@@ -227,7 +227,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal Korisnik";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ovaj korisnik ne može verifikovan sve dok sa njim ne razmijenite poruke.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ovaj korisnik ne može biti provjeren sve dok sa njim ne razmijenite poruke.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Greška";
@@ -328,8 +328,11 @@
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "Kreiraj novu grupu";
 
-/* Indicates that the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "Ažuriranje podataka";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u dana";
@@ -527,13 +530,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha sa ovim kontaktom. Pokušajte malo kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj sa %@ nedavno je promijenjen. Možda biste ga trebali verifikovatii prije ponovnog slanja.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj sa %@ nedavno je promijenjen. Možda biste ga trebali provjeriti prije ponovnog slanja.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja nije uspjela!";
+"FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
 
-/* Button that verifies user after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Verifikacija";
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetuj ovu sesiju.";
@@ -557,7 +560,7 @@
 "GROUP_CREATING" = "Kreiranje nove grupe";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
+"GROUP_CREATION_FAILED" = "Nisu svi članovi mogli biti dodani u grupu. Dodirnite za ponovni pokušaj.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Upravljanje grupom";
@@ -716,7 +719,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Isporučeno";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo. Dodir za informacije.";
+"MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo. Dodirni za informacije.";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Poslano";
@@ -725,13 +728,13 @@
 "MESSAGE_STATUS_UPLOADING" = "Prijenos...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Blokirali ste ovog korisnika";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Preuzimanje nije uspjelo.";
@@ -746,7 +749,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Blokirali ste %d članova ove grupe";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Dodirni ovdje za postavke";
@@ -959,22 +962,22 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Poslovni Fax";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@nije verifikovan/a.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verifikovan/a";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Provjeren/a";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@je verifikovan/a.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ je provjeren/a.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Nauči više";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Saznaj više";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Dodirni za skeniranje";
+"PRIVACY_TAP_TO_SCAN" = "Skeniraj kôd";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Označi kao neverifikovano";
+"PRIVACY_UNVERIFY_BUTTON" = "Označi da nije provjeren/a.";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
@@ -998,13 +1001,13 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kôd ne izgleda kao kôd sigurnosnih brojeva. Da li oboje koristite najnoviju verziju Signala?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite verifikovati sigurnost end-to-end šifriranja sa %@, uporedite brojeve iznad sa brojevima na njegovom/njezinom uređaju.\n\nAlternativno, možete skenirati kôd na njegovom/njezinom telefonu ili upitati ih da skeniraju vaš kôd.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite provjeriti sigurnost end-to-end šifriranja sa %@, uporedite brojeve iznad sa brojevima na njegovom/njezinom uređaju.\n\nAlternativno, možete skenirati kôd na njegovom/njezinom telefonu ili upitati ih da skeniraju vaš kôd.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verifikacija sigurnosnog broja";
+"PRIVACY_VERIFICATION_TITLE" = "Provjera sigurnosnog broja";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Označi kao verifikovano";
+"PRIVACY_VERIFY_BUTTON" = "Označi da je provjeren/a";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavljanje";
@@ -1124,7 +1127,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Naš Signal sigurnosni broj:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj sa %@ je promijenjen. Možda ga želite verifikovati.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj sa %@ je promijenjen. Možda ga želite provjeriti.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skenirajte QR kôd na uređaju vašeg kontakta.";
@@ -1196,7 +1199,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Korištenje cenzure može se aktivirati samo ako ste povezani na internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Zaobilazak cenzure nije potreban; već ste spojeni na uslugu Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Zaobilazak cenzure";
@@ -1328,10 +1331,10 @@
 "SMS_INVITE_BODY" = "Pozivam vas da instalirate Signal! Ovdje je link:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ has been verified. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj verifikovan!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Otkaži";
@@ -1424,16 +1427,16 @@
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite verifikacijski kôd koji smo poslali na %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Označili ste da %@ nije provjeren/a.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Označili ste da %@ nije provjeren/a na drugom uređaju.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Označili ste da je %@ provjeren/a.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Označili ste da je %@ provjeren/a na drugom uređaju.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Status verifikacije je promijenjen.";
