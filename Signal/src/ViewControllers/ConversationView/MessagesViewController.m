@@ -111,8 +111,8 @@ typedef enum : NSUInteger {
 
 @protocol OWSMessagesCollectionViewFlowLayoutDelegate <NSObject>
 
-// Returns YES for incoming and outgoing text and attachment messages.
-- (BOOL)isUserMessageAtIndexPath:(NSIndexPath *)indexPath;
+// Returns YES for all but the unread indicator
+- (BOOL)shouldShowCellDecorationsAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -131,12 +131,12 @@ typedef enum : NSUInteger {
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // The unread indicator should be sized according to its desired size.
-    if (![self.delegate isUserMessageAtIndexPath:indexPath]) {
+    if ([self.delegate shouldShowCellDecorationsAtIndexPath:indexPath]) {
+        return [super sizeForItemAtIndexPath:indexPath];
+    } else {
         CGSize messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
         CGFloat finalHeight = messageBubbleSize.height;
         return CGSizeMake(CGRectGetWidth(self.collectionView.frame), ceilf((float)finalHeight));
-    } else {
-        return [super sizeForItemAtIndexPath:indexPath];
     }
 }
 
@@ -1723,6 +1723,9 @@ typedef enum : NSUInteger {
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
     [cell configureWithInteraction:interaction];
+    cell.cellTopLabel.attributedText =
+        [self collectionView:self.collectionView attributedTextForCellTopLabelAtIndexPath:indexPath];
+
     cell.systemMessageCellDelegate = self;
 
     return cell;
@@ -4094,12 +4097,13 @@ typedef enum : NSUInteger {
 
 #pragma mark - OWSMessagesCollectionViewFlowLayoutDelegate
 
-- (BOOL)isUserMessageAtIndexPath:(NSIndexPath *)indexPath;
+
+- (BOOL)shouldShowCellDecorationsAtIndexPath:(NSIndexPath *)indexPath
 {
-    // TODO: Eventually it'd be nice to this in a more performant way.
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    return (
-        [interaction isKindOfClass:[TSIncomingMessage class]] || [interaction isKindOfClass:[TSOutgoingMessage class]]);
+    
+    // Show any top/bottom labels for all but the unread indicator
+    return ![interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
 }
 
 #pragma mark - Class methods

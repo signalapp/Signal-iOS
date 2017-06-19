@@ -24,12 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UILabel *cellTopLabel;
 
 @end
 
 #pragma mark -
 
 @implementation OWSSystemMessageCell
+
+// override from JSQMessagesCollectionViewCell
+@synthesize cellTopLabel = _cellTopLabel;
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
@@ -48,6 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.backgroundColor = [UIColor whiteColor];
+
+    self.cellTopLabel = [UILabel new];
+    self.cellTopLabel.textAlignment = NSTextAlignmentCenter;
+    self.cellTopLabel.font = self.topLabelFont;
+    self.cellTopLabel.textColor = [UIColor lightGrayColor];
+    [self.contentView addSubview:self.cellTopLabel];
 
     self.imageView = [UIImageView new];
     [self.contentView addSubview:self.imageView];
@@ -82,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyTitleForInteraction:self.interaction label:self.titleLabel];
 
     [self setNeedsLayout];
+}
+
+- (UIFont *)topLabelFont
+{
+    return [UIFont boldSystemFontOfSize:12.0f];
 }
 
 - (UIColor *)textColor
@@ -235,17 +250,24 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 
     CGFloat contentWidth = ([self iconSize] + [self hSpacing] + titleSize.width);
+
+    CGSize topLabelSize = [self.cellTopLabel sizeThatFits:CGSizeMake(self.contentView.width, CGFLOAT_MAX)];
+    self.cellTopLabel.frame = CGRectMake(0, 0, self.contentView.frame.size.width, topLabelSize.height);
+
+    CGFloat topLabelSpacing = topLabelSize.height;
+
     self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
-        round((self.contentView.height - [self iconSize]) * 0.5f),
+        round((self.contentView.height - [self iconSize] + topLabelSpacing) * 0.5f),
         [self iconSize],
         [self iconSize]);
+
     self.titleLabel.frame = CGRectMake(round(self.imageView.right + [self hSpacing]),
-        round((self.contentView.height - titleSize.height) * 0.5f),
+        round((self.contentView.height - titleSize.height + topLabelSpacing) * 0.5f),
         ceil(titleSize.width + 1.f),
         ceil(titleSize.height + 1.f));
 }
 
-- (CGSize)cellSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
+- (CGSize)bubbleSizeForInteraction:(TSInteraction *)interaction collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
     result.height += self.topVMargin;
@@ -254,6 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGFloat maxTitleWidth = (collectionViewWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
+
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
     result.height += contentHeight;
 
