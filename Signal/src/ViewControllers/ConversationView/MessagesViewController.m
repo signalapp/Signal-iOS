@@ -332,8 +332,6 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-
     // We need to create the "unread indicator" before we mark
     // all messages as read.
     [self ensureDynamicInteractions];
@@ -540,6 +538,8 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    DDLogDebug(@"%@ viewWillAppear", self.tag);
+
     // We need to update the dynamic interactions before we do any layout.
     [self ensureDynamicInteractions];
 
@@ -990,6 +990,8 @@ typedef enum : NSUInteger {
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    DDLogDebug(@"%@ viewWillDisappear", self.tag);
+
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
 
@@ -2221,10 +2223,6 @@ typedef enum : NSUInteger {
     // while updating the range and the dynamic interactions.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
 
-    // We need to `beginLongLivedReadTransaction` before we update our
-    // mapping in order to jump to the most recent commit.
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-
     // We need to update the dynamic interactions after loading earlier messages,
     // since the unseen indicator may need to move or change.
     [self ensureDynamicInteractions];
@@ -2702,8 +2700,7 @@ typedef enum : NSUInteger {
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
                                        blockingManager:self.blockingManager
-                                      readDBConnection:self.uiDatabaseConnection
-                                     writeDBConnection:self.editingDatabaseConnection
+                                          dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
                                           maxRangeSize:maxRangeSize];
