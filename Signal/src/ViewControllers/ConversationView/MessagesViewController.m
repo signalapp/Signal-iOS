@@ -332,6 +332,8 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+
     // We need to create the "unread indicator" before we mark
     // all messages as read.
     [self ensureDynamicInteractions];
@@ -564,9 +566,12 @@ typedef enum : NSUInteger {
     // We need to `beginLongLivedReadTransaction` before we update our
     // mapping in order to jump to the most recent commit.
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.thread.uniqueId ]
+                                                                      view:TSMessageDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    [self updateMessageMappingRangeOptions];
 
     [self toggleObservers:YES];
 
@@ -2218,6 +2223,10 @@ typedef enum : NSUInteger {
     // while updating the range and the dynamic interactions.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
 
+    // We need to `beginLongLivedReadTransaction` before we update our
+    // mapping in order to jump to the most recent commit.
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+
     // We need to update the dynamic interactions after loading earlier messages,
     // since the unseen indicator may need to move or change.
     [self ensureDynamicInteractions];
@@ -2566,7 +2575,7 @@ typedef enum : NSUInteger {
                                    DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
                                    [self.blockingManager addBlockedPhoneNumber:errorMessage.contactId];
                                    // Delete the block offer.
-                                   [self.storageManager.dbConnection
+                                   [self.editingDatabaseConnection
                                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                            [errorMessage removeWithTransaction:transaction];
                                        }];
@@ -2693,7 +2702,8 @@ typedef enum : NSUInteger {
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
                                        blockingManager:self.blockingManager
-                                          dbConnection:self.editingDatabaseConnection
+                                      readDBConnection:self.uiDatabaseConnection
+                                     writeDBConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
                                           maxRangeSize:maxRangeSize];
@@ -3206,8 +3216,8 @@ typedef enum : NSUInteger {
         [self setNavigationTitle];
     }
 
-    if (!
-        [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications]) {
+    if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForGroup:self.thread.uniqueId
+                                                                                inNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
@@ -3223,12 +3233,24 @@ typedef enum : NSUInteger {
 
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges = nil;
-    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
-                                                                               rowChanges:&messageRowChanges
-                                                                         forNotifications:notifications
-                                                                             withMappings:self.messageMappings];
+    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName]
+        getSectionChanges:&sectionChanges
+               rowChanges:&messageRowChanges
+         forNotifications:notifications
+             withMappings:self.messageMappings];
 
-    if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
+    if ([sectionChanges count] == 0 && [messageRowChanges count] == 0) {
+        // YapDatabase will ignore insertions within the message mapping's
+        // range that are not within the current mapping's contents.  We
+        // may need to extend the mapping's contents to reflect the current
+        // range.
+        [self updateMessageMappingRangeOptions];
+
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+        [self resetContentAndLayout];
+
         return;
     }
 

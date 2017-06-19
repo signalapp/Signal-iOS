@@ -116,14 +116,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
-                                                     dbConnection:(YapDatabaseConnection *)dbConnection
+                                                 readDBConnection:(YapDatabaseConnection *)readDBConnection
+                                                writeDBConnection:(YapDatabaseConnection *)writeDBConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
                                       (nullable NSNumber *)firstUnseenInteractionTimestampParameter
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
-    OWSAssert(dbConnection);
+    OWSAssert(readDBConnection);
+    OWSAssert(writeDBConnection);
     OWSAssert(contactsManager);
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
@@ -133,15 +135,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        const int kMaxBlockOfferOutgoingMessageCount = 10;
+    const int kMaxBlockOfferOutgoingMessageCount = 10;
+
+    __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
+    __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
+    __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
+    NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
+    NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
+    __block TSMessage *firstMessage = nil;
+    __block NSUInteger outgoingMessageCount;
+    __block NSUInteger threadMessageCount;
+    __block long visibleUnseenMessageCount = 0;
+    __block TSInteraction *interactionAfterUnreadIndicator = nil;
+    __block NSUInteger missingUnseenSafetyNumberChangeCount = 0;
+
+    [readDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 
         // Find any "dynamic" interactions and safety number changes.
-        __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
-        __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
-        __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
-        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
-        NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
         // We use different views for performance reasons.
         [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
             enumerateRowsInGroup:thread.uniqueId
@@ -186,7 +196,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        __block TSMessage *firstMessage = nil;
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
@@ -201,9 +210,9 @@ NS_ASSUME_NONNULL_BEGIN
                           }
                       }];
 
-        NSUInteger outgoingMessageCount =
+        outgoingMessageCount =
             [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
-        NSUInteger threadMessageCount =
+        threadMessageCount =
             [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
 
         // Enumerate in reverse to count the number of messages
@@ -212,9 +221,6 @@ NS_ASSUME_NONNULL_BEGIN
         // the messages view the position of the unread indicator,
         // so that it can widen its "load window" to always show
         // the unread indicator.
-        __block long visibleUnseenMessageCount = 0;
-        __block TSInteraction *interactionAfterUnreadIndicator = nil;
-        NSUInteger missingUnseenSafetyNumberChangeCount = 0;
         if (result.firstUnseenInteractionTimestamp != nil) {
             [[transaction ext:TSMessageDatabaseViewExtensionName]
                 enumerateRowsInGroup:thread.uniqueId
@@ -288,7 +294,9 @@ NS_ASSUME_NONNULL_BEGIN
             result.unreadIndicatorPosition = @(visibleUnseenMessageCount);
         }
         OWSAssert((result.firstUnseenInteractionTimestamp != nil) == (result.unreadIndicatorPosition != nil));
+    }];
 
+    [writeDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         BOOL shouldHaveBlockOffer = YES;
         BOOL shouldHaveAddToContactsOffer = YES;
 
@@ -347,7 +355,11 @@ NS_ASSUME_NONNULL_BEGIN
         const int kUnreadIndicatorOfferOffset = -1;
 
         if (existingBlockOffer && !shouldHaveBlockOffer) {
-            DDLogInfo(@"Removing block offer");
+            DDLogInfo(@"%@ Removing block offer: %@ (%llu)",
+                self.tag,
+                existingBlockOffer.uniqueId,
+                existingBlockOffer.timestampForSorting);
+            ;
             [existingBlockOffer removeWithTransaction:transaction];
         } else if (!existingBlockOffer && shouldHaveBlockOffer) {
             DDLogInfo(@"Creating block offer for unknown contact");
@@ -363,10 +375,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              thread:thread
                                                                           contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+
+            DDLogInfo(@"%@ Creating block offer: %@ (%llu)",
+                self.tag,
+                offerMessage.uniqueId,
+                offerMessage.timestampForSorting);
         }
 
         if (existingAddToContactsOffer && !shouldHaveAddToContactsOffer) {
-            DDLogInfo(@"Removing 'add to contacts' offer");
+            DDLogInfo(@"%@ Removing 'add to contacts' offer: %@ (%llu)",
+                self.tag,
+                existingAddToContactsOffer.uniqueId,
+                existingAddToContactsOffer.timestampForSorting);
             [existingAddToContactsOffer removeWithTransaction:transaction];
         } else if (!existingAddToContactsOffer && shouldHaveAddToContactsOffer) {
 
@@ -383,6 +403,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                        thread:thread
                                                                                     contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+
+            DDLogInfo(@"%@ Creating 'add to contacts' offer: %@ (%llu)",
+                self.tag,
+                offerMessage.uniqueId,
+                offerMessage.timestampForSorting);
         }
 
         BOOL shouldHaveUnreadIndicator
