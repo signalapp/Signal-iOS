@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canBecomeFirstResponder
 {
+    // Intercept to scroll to bottom when text view is tapped.
+    [self.textViewPasteDelegate textViewDidChangeSize];
+
     return YES;
 }
 
