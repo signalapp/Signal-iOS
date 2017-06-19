@@ -4,6 +4,7 @@
 
 #import "OWSVerificationStateSyncMessage.h"
 #import "Cryptography.h"
+#import "OWSIdentityManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -50,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
 {
-    OWSAssert(identityKey.length > 0);
+    OWSAssert(identityKey.length == kIdentityKeyLength);
     OWSAssert(recipientId.length > 0);
     OWSAssert(self.tuples);
 
