@@ -909,18 +909,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSData *newIdentityKeyWithVersion = newKeyBundle.identityKey;
+
             if (![newIdentityKeyWithVersion isKindOfClass:[NSData class]]) {
                 OWSFail(@"%@ unexpected TSInvalidRecipientKey: %@", self.tag, newIdentityKeyWithVersion);
                 failureHandler(error);
                 return;
             }
 
-            NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
-            if (newIdentityKey.length != kIdentityKeyLength) {
-                OWSFail(@"%@ unexpected key length: %lu", self.tag, (unsigned long)newIdentityKey.length);
+            // TODO migrate to storing the full 33 byte representation of the identity key.
+            if (newIdentityKeyWithVersion.length != kIdentityKeyLength) {
+                OWSFail(@"%@ unexpected key length: %lu", self.tag, (unsigned long)newIdentityKeyWithVersion.length);
                 failureHandler(error);
                 return;
             }
+
+            NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
 
             [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 

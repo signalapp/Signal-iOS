@@ -17,6 +17,7 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import <25519/Curve25519.h>
+#import <AxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +34,13 @@ NSString *const OWSIdentityManager_QueuedVerificationStateSyncMessages =
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
-const NSUInteger kIdentityKeyLength = 32;
+// The canonical key includes 32 bytes of identity material plus one byte specifying the key type
+const NSUInteger kIdentityKeyLength = 33;
+
+// Cryptographic operations do not use the "type" byte of the identity key, so, for legacy reasons we store just
+// the identity material.
+// TODO: migrate to storing the full 33 byte representation.
+const NSUInteger kStoredIdentityKeyLength = 32;
 
 NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationName_IdentityStateDidChange";
 
@@ -133,8 +140,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId
 {
-    OWSAssert(identityKey != nil);
-    OWSAssert(recipientId != nil);
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
 
     @synchronized(self)
     {
@@ -207,7 +214,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
 {
-    OWSAssert(identityKey.length > 0);
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
     OWSAssert(recipientId.length > 0);
 
     @synchronized(self)
@@ -236,11 +243,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [recipientIdentity updateWithVerificationState:verificationState];
 
         if (isUserInitiatedChange) {
-            [self enqueueSyncMessageForVerificationState:verificationState
-                                             identityKey:identityKey
-                                             recipientId:recipientId];
-
             [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:YES];
+            [self enqueueSyncMessageForVerificationStateForRecipientId:recipientId];
         } else {
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
@@ -314,8 +318,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  recipientId:(NSString *)recipientId
                    direction:(TSMessageDirection)direction
 {
-    OWSAssert(identityKey != nil);
-    OWSAssert(recipientId != nil);
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
     OWSAssert(direction != TSMessageDirectionUnknown);
 
     @synchronized(self)
@@ -353,7 +357,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
-    OWSAssert(identityKey.length == kIdentityKeyLength);
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
 
     @synchronized(self)
     {
@@ -362,7 +366,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return YES;
         }
 
-        OWSAssert(recipientIdentity.identityKey.length == kIdentityKeyLength);
+        OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
         if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
             DDLogWarn(@"%@ key mismatch for recipient: %@", self.tag, recipientIdentity.recipientId);
             return NO;
@@ -397,7 +401,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId != nil);
+    OWSAssert(recipientId.length > 0);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
@@ -420,11 +424,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }];
 }
 
-- (void)enqueueSyncMessageForVerificationState:(OWSVerificationState)verificationState
-                                   identityKey:(NSData *)identityKey
-                                   recipientId:(NSString *)recipientId
+- (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(identityKey.length > 0);
     OWSAssert(recipientId.length > 0);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -453,17 +454,24 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                           [recipientIds addObject:recipientId];
                                                       }];
             }];
-            
-            OWSVerificationStateSyncMessage *message =
-            [OWSVerificationStateSyncMessage new];
+
+            OWSVerificationStateSyncMessage *message = [OWSVerificationStateSyncMessage new];
             for (NSString *recipientId in recipientIds) {
                 OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
                 if (!recipientIdentity) {
                     OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
                     continue;
                 }
-                if (recipientIdentity.recipientId.length < 1 || recipientIdentity.identityKey.length < 1) {
+                if (recipientIdentity.recipientId.length < 1) {
                     OWSFail(@"Invalid recipient identity for recipientId: %@", recipientId);
+                    continue;
+                }
+
+                // Prepend key type for transit.
+                // TODO we should just be storing the key type so we don't have to juggle re-adding it.
+                NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
+                if (identityKey.length != kIdentityKeyLength) {
+                    OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@", recipientId, identityKey);
                     continue;
                 }
                 if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
@@ -476,7 +484,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     continue;
                 }
                 [message addVerificationState:recipientIdentity.verificationState
-                                  identityKey:recipientIdentity.identityKey
+                                  identityKey:identityKey
                                   recipientId:recipientId];
             }
             if (message.recipientIds.count > 0) {
@@ -498,14 +506,25 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             [OWSRecipientIdentity enumerateCollectionObjectsUsingBlock:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
                 OWSAssert(recipientIdentity);
                 OWSAssert(recipientIdentity.recipientId.length > 0);
-                OWSAssert(recipientIdentity.identityKey.length > 0);
+                OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
 
-                if (recipientIdentity.recipientId.length < 1 || recipientIdentity.identityKey.length < 1) {
+                if (recipientIdentity.recipientId.length < 1) {
                     OWSFail(@"Invalid recipient identity for recipientId: %@", recipientIdentity.recipientId);
                     return;
                 }
+
+                // Prepend key type for transit.
+                // TODO we should just be storing the key type so we don't have to juggle re-adding it.
+                NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
+                if (identityKey.length != kIdentityKeyLength) {
+                    OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@",
+                        recipientIdentity.recipientId,
+                        identityKey);
+                    return;
+                }
+
                 [message addVerificationState:recipientIdentity.verificationState
-                                  identityKey:recipientIdentity.identityKey
+                                  identityKey:identityKey
                                   recipientId:recipientIdentity.recipientId];
             }];
             if (message.recipientIds.count > 0) {
@@ -581,11 +600,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             OWSFail(@"Verification state sync message missing recipientId.");
             continue;
         }
-        NSData *identityKey = verified.identityKey;
-        if (identityKey.length < 1) {
-            OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
+        NSData *rawIdentityKey = verified.identityKey;
+        if (rawIdentityKey.length != kIdentityKeyLength) {
+            OWSFail(@"Verification state sync message for recipient: %@ with malformed identityKey: %@",
+                recipientId,
+                rawIdentityKey);
             continue;
         }
+        NSData *identityKey = [rawIdentityKey removeKeyType];
+
         switch (verified.state) {
             case OWSSignalServiceProtosSyncMessageVerifiedStateDefault:
                 [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
@@ -617,7 +640,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         OWSFail(@"Verification state sync message missing recipientId.");
         return;
     }
-    if (identityKey.length < 1) {
+
+    if (identityKey.length != kStoredIdentityKeyLength) {
         OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
         return;
     }
