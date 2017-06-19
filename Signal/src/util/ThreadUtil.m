@@ -347,7 +347,11 @@ NS_ASSUME_NONNULL_BEGIN
         const int kUnreadIndicatorOfferOffset = -1;
 
         if (existingBlockOffer && !shouldHaveBlockOffer) {
-            DDLogInfo(@"Removing block offer");
+            DDLogInfo(@"%@ Removing block offer: %@ (%llu)",
+                self.tag,
+                existingBlockOffer.uniqueId,
+                existingBlockOffer.timestampForSorting);
+            ;
             [existingBlockOffer removeWithTransaction:transaction];
         } else if (!existingBlockOffer && shouldHaveBlockOffer) {
             DDLogInfo(@"Creating block offer for unknown contact");
@@ -363,10 +367,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              thread:thread
                                                                           contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+
+            DDLogInfo(@"%@ Creating block offer: %@ (%llu)",
+                self.tag,
+                offerMessage.uniqueId,
+                offerMessage.timestampForSorting);
         }
 
         if (existingAddToContactsOffer && !shouldHaveAddToContactsOffer) {
-            DDLogInfo(@"Removing 'add to contacts' offer");
+            DDLogInfo(@"%@ Removing 'add to contacts' offer: %@ (%llu)",
+                self.tag,
+                existingAddToContactsOffer.uniqueId,
+                existingAddToContactsOffer.timestampForSorting);
             [existingAddToContactsOffer removeWithTransaction:transaction];
         } else if (!existingAddToContactsOffer && shouldHaveAddToContactsOffer) {
 
@@ -383,6 +395,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                        thread:thread
                                                                                     contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+
+            DDLogInfo(@"%@ Creating 'add to contacts' offer: %@ (%llu)",
+                self.tag,
+                offerMessage.uniqueId,
+                offerMessage.timestampForSorting);
         }
 
         BOOL shouldHaveUnreadIndicator

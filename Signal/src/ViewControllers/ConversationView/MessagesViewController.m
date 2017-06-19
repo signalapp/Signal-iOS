@@ -538,6 +538,8 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    DDLogDebug(@"%@ viewWillAppear", self.tag);
+
     // We need to update the dynamic interactions before we do any layout.
     [self ensureDynamicInteractions];
 
@@ -545,8 +547,6 @@ typedef enum : NSUInteger {
     [self.thread touch];
 
     [self ensureBannerState];
-
-    [self resetContentAndLayout];
 
     [super viewWillAppear:animated];
 
@@ -567,6 +567,9 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    [self updateMessageMappingRangeOptions];
+    
+    [self resetContentAndLayout];
 
     [self toggleObservers:YES];
 
@@ -987,6 +990,8 @@ typedef enum : NSUInteger {
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    DDLogDebug(@"%@ viewWillDisappear", self.tag);
+
     [super viewWillDisappear:animated];
     [self toggleObservers:NO];
 
@@ -2566,7 +2571,7 @@ typedef enum : NSUInteger {
                                    DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
                                    [self.blockingManager addBlockedPhoneNumber:errorMessage.contactId];
                                    // Delete the block offer.
-                                   [self.storageManager.dbConnection
+                                   [self.editingDatabaseConnection
                                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                            [errorMessage removeWithTransaction:transaction];
                                        }];
@@ -2689,6 +2694,8 @@ typedef enum : NSUInteger {
     const int currentMaxRangeSize = (int)(self.page + 1) * kYapDatabasePageSize;
     const int maxRangeSize = MAX(initialMaxRangeSize, currentMaxRangeSize);
 
+    // `ensureDynamicInteractionsForThread` should operate on the latest thread contents, so
+    // we should _read_ from uiDatabaseConnection and _write_ to `editingDatabaseConnection`.
     self.dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
@@ -3206,8 +3213,8 @@ typedef enum : NSUInteger {
         [self setNavigationTitle];
     }
 
-    if (!
-        [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForNotifications:notifications]) {
+    if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForGroup:self.thread.uniqueId
+                                                                                inNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
@@ -3223,12 +3230,24 @@ typedef enum : NSUInteger {
 
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges = nil;
-    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
-                                                                               rowChanges:&messageRowChanges
-                                                                         forNotifications:notifications
-                                                                             withMappings:self.messageMappings];
+    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName]
+        getSectionChanges:&sectionChanges
+               rowChanges:&messageRowChanges
+         forNotifications:notifications
+             withMappings:self.messageMappings];
 
-    if ([sectionChanges count] == 0 & [messageRowChanges count] == 0) {
+    if ([sectionChanges count] == 0 && [messageRowChanges count] == 0) {
+        // YapDatabase will ignore insertions within the message mapping's
+        // range that are not within the current mapping's contents.  We
+        // may need to extend the mapping's contents to reflect the current
+        // range.
+        [self updateMessageMappingRangeOptions];
+
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+        [self resetContentAndLayout];
+
         return;
     }
 
