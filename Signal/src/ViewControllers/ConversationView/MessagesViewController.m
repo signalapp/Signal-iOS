@@ -548,8 +548,6 @@ typedef enum : NSUInteger {
 
     [self ensureBannerState];
 
-    [self resetContentAndLayout];
-
     [super viewWillAppear:animated];
 
     // In case we're dismissing a CNContactViewController which requires default system appearance
@@ -570,6 +568,8 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     [self updateMessageMappingRangeOptions];
+    
+    [self resetContentAndLayout];
 
     [self toggleObservers:YES];
 
