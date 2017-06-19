@@ -566,8 +566,6 @@ typedef enum : NSUInteger {
     // We need to `beginLongLivedReadTransaction` before we update our
     // mapping in order to jump to the most recent commit.
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.thread.uniqueId ]
-                                                                      view:TSMessageDatabaseViewExtensionName];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
