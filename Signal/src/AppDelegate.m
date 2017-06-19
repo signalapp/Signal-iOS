@@ -416,26 +416,49 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
         DDLogInfo(@"Application opened with URL: %@", url);
 
-        [[TSAccountManager sharedInstance]
-            ifRegistered:YES
-                runAsync:^{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        SendExternalFileViewController *viewController = [SendExternalFileViewController new];
-                        viewController.attachment = attachment;
-                        UINavigationController *navigationController =
-                            [[UINavigationController alloc] initWithRootViewController:viewController];
-                        [[[Environment getCurrent] signalsViewController]
-                            presentTopLevelModalViewController:navigationController
-                                              animateDismissal:NO
-                                           animatePresentation:YES];
-                    });
-                }];
+        [[TSAccountManager sharedInstance] ifRegistered:YES
+                                               runAsync:^{
+                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                       // Wait up to N seconds for database view registrations to
+                                                       // complete.
+                                                       [self showImportUIForAttachment:attachment remainingRetries:5];
+                                                   });
+                                               }];
 
         return YES;
     } else {
         DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
+}
+
+- (void)showImportUIForAttachment:(SignalAttachment *)attachment remainingRetries:(int)remainingRetries
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(attachment);
+    OWSAssert(remainingRetries > 0);
+
+    if ([TSDatabaseView hasPendingViewRegistrations]) {
+        if (remainingRetries < 1) {
+            DDLogInfo(@"Ignoring 'Import with Signal...' due to pending view registrations.");
+        } else {
+            DDLogInfo(@"Delaying 'Import with Signal...' due to pending view registrations.");
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                if (![TSDatabaseView hasPendingViewRegistrations]) {
+                    [self showImportUIForAttachment:attachment remainingRetries:remainingRetries - 1];
+                }
+            });
+        }
+        return;
+    }
+
+    SendExternalFileViewController *viewController = [SendExternalFileViewController new];
+    viewController.attachment = attachment;
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:viewController];
+    [[[Environment getCurrent] signalsViewController] presentTopLevelModalViewController:navigationController
+                                                                        animateDismissal:NO
+                                                                     animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
