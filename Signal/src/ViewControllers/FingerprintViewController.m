@@ -320,6 +320,12 @@ typedef void (^CustomLayoutBlock)();
     verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.view addSubview:verificationStateLabel];
     [verificationStateLabel autoPinWidthToSuperviewWithMargin:16.f];
+    // Bind height of label to height of two lines of text.
+    // This should always be sufficient, and will prevent the view's
+    // layout from changing if the user is marked as verified or not
+    // verified.
+    [verificationStateLabel autoSetDimension:ALDimensionHeight
+                                      toSize:round(verificationStateLabel.font.lineHeight * 2.25f)];
     [verificationStateLabel autoPinToTopLayoutGuideOfViewController:self withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
     [verificationStateLabel autoPinEdge:ALEdgeBottom
                                  toEdge:ALEdgeTop
