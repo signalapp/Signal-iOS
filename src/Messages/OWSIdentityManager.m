@@ -480,7 +480,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                   recipientId:recipientId];
             }
             if (message.recipientIds.count > 0) {
-                [self sendSyncVerificationStateMessage:message];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self sendSyncVerificationStateMessage:message];
+                });
             }
         }
     });
@@ -507,7 +509,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                   recipientId:recipientIdentity.recipientId];
             }];
             if (message.recipientIds.count > 0) {
-                [self sendSyncVerificationStateMessage:message];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self sendSyncVerificationStateMessage:message];
+                });
             }
         }
     });
@@ -528,6 +532,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(message);
     OWSAssert(message.recipientIds.count > 0);
+    OWSAssert([NSThread isMainThread]);
 
     if (![self isSyncEnabled]) {
         DDLogInfo(@"Skipping outgoing sync message.");

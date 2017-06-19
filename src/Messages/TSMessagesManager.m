@@ -219,6 +219,9 @@ NS_ASSUME_NONNULL_BEGIN
         [description appendString:@"Blocked"];
     } else if (syncMessage.read.count > 0) {
         [description appendString:@"ReadReceipt"];
+    } else if (syncMessage.verified.count > 0){
+        NSString *verifiedString = [NSString stringWithFormat:@"Verifications: (%lu)", (unsigned long)syncMessage.verified.count];
+        [description appendString:verifiedString];
     } else {
         // Shouldn't happen
         OWSAssert(NO);
