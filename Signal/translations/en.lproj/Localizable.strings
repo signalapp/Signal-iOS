@@ -828,9 +828,6 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Offline";
 
-/* No comment provided by engineer. */
-"NETWORK_STATUS_TEXT" = "You can check your network status by looking at the colored bar above your inbox.";
-
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
 
