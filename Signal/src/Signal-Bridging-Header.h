@@ -22,6 +22,7 @@
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "SettingsTableViewController.h"
+#import "SignalsViewController.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"

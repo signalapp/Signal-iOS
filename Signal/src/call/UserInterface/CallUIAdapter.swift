@@ -40,9 +40,9 @@ extension CallUIAdaptee {
         callViewController.thread = thread
         callViewController.modalTransitionStyle = .crossDissolve
 
-        guard let presentingViewController = UIApplication.shared.frontmostViewController else {
-            Logger.error("in \(#function) frontmost view controller unexpectedly nil")
-            assertionFailure("in \(#function) frontmost view controller unexpectedly nil")
+        guard let presentingViewController = Environment.getCurrent().signalsViewController else {
+            Logger.error("in \(#function) view controller unexpectedly nil")
+            assertionFailure("in \(#function) view controller unexpectedly nil")
             return
         }
 
