@@ -1497,6 +1497,8 @@ typedef enum : NSUInteger {
     if (![self.inputToolbar.contentView.textView.textInputMode primaryLanguage]) {
         return;
     }
+
+    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
     [self.keyboardController endListeningForKeyboard];
     [self dismissKeyBoard];
     [self popKeyBoard];
