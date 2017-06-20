@@ -121,24 +121,60 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableContents *contents = [OWSTableContents new];
 
-    __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
+
+    OWSTableSection *membersSection = [OWSTableSection new];
 
     // Group Members
 
-    OWSTableSection *section = [OWSTableSection new];
+    // If there are "no longer verified" members of the group,
+    // highlight them in a special section.
+    NSSet<NSString *> *noLongerVerifiedRecipientIds = [NSSet setWithArray:[self noLongerVerifiedRecipientIds]];
+    if (noLongerVerifiedRecipientIds.count > 0) {
+        OWSTableSection *noLongerVerifiedSection = [OWSTableSection new];
+        noLongerVerifiedSection.headerTitle = NSLocalizedString(@"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED",
+            @"Title for the 'no longer verified' section of the 'group members' view.");
+        membersSection.headerTitle = NSLocalizedString(
+            @"GROUP_MEMBERS_SECTION_TITLE_MEMBERS", @"Title for the 'members' section of the 'group members' view.");
+        [self addMembers:noLongerVerifiedRecipientIds.allObjects
+                               toSection:noLongerVerifiedSection
+            noLongerVerifiedRecipientIds:noLongerVerifiedRecipientIds];
+        [contents addSection:noLongerVerifiedSection];
+    }
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[helper localNumber]];
-    for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+    [self addMembers:memberRecipientIds.allObjects
+                           toSection:membersSection
+        noLongerVerifiedRecipientIds:noLongerVerifiedRecipientIds];
+    [contents addSection:membersSection];
+
+    self.contents = contents;
+}
+
+- (void)addMembers:(NSArray<NSString *> *)recipientIds
+                       toSection:(OWSTableSection *)section
+    noLongerVerifiedRecipientIds:(NSSet<NSString *> *)noLongerVerifiedRecipientIds
+{
+    OWSAssert(recipientIds);
+    OWSAssert(section);
+    OWSAssert(noLongerVerifiedRecipientIds);
+
+    __weak ShowGroupMembersViewController *weakSelf = self;
+    ContactsViewHelper *helper = self.contactsViewHelper;
+    for (NSString *recipientId in [recipientIds sortedArrayUsingSelector:@selector(compare:)]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ShowGroupMembersViewController *strongSelf = weakSelf;
             OWSAssert(strongSelf);
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+            BOOL isNoLongerVerified = [noLongerVerifiedRecipientIds containsObject:recipientId];
             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
-            if (isBlocked) {
+            if (isNoLongerVerified) {
+                cell.accessoryMessage = NSLocalizedString(
+                    @"CONTACT_CELL_IS_NO_LONGER_VERIFIED", @"An indicator that a contact is no longer verified.");
+            } else if (isBlocked) {
                 cell.accessoryMessage
                     = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
             }
@@ -162,9 +198,19 @@ NS_ASSUME_NONNULL_BEGIN
                                  [weakSelf didSelectRecipientId:recipientId];
                              }]];
     }
-    [contents addSection:section];
+}
 
-    self.contents = contents;
+// Returns a collection of the group members who are "no longer verified".
+- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+            == OWSVerificationStateNoLongerVerified) {
+            [result addObject:recipientId];
+        }
+    }
+    return [result copy];
 }
 
 - (void)didSelectRecipientId:(NSString *)recipientId
