@@ -2682,8 +2682,9 @@ typedef enum : NSUInteger {
     [systemMessageCell becomeFirstResponder];
 
     UIMenuController *theMenu = [UIMenuController sharedMenuController];
-
-    [theMenu setTargetRect:systemMessageCell.titleLabel.frame inView:systemMessageCell];
+    CGRect targetRect = [systemMessageCell.titleLabel.superview convertRect:systemMessageCell.titleLabel.frame
+                                                                     toView:systemMessageCell];
+    [theMenu setTargetRect:targetRect inView:systemMessageCell];
     [theMenu setMenuVisible:YES animated:YES];
 }
 
