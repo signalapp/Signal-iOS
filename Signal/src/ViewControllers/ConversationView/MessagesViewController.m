@@ -1531,6 +1531,24 @@ typedef enum : NSUInteger {
     return YES;
 }
 
+- (BOOL)collectionView:(UICollectionView *)collectionView
+      canPerformAction:(SEL)action
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    return [messageData canPerformEditingAction:action];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView
+         performAction:(SEL)action
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    [messageData performEditingAction:action];
+}
+
 - (void)collectionView:(UICollectionView *)collectionView
        willDisplayCell:(UICollectionViewCell *)cell
     forItemAtIndexPath:(NSIndexPath *)indexPath
@@ -3692,24 +3710,6 @@ typedef enum : NSUInteger {
             [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
         }
     }];
-}
-
-- (BOOL)collectionView:(UICollectionView *)collectionView
-      canPerformAction:(SEL)action
-    forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender
-{
-    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
-    return [messageData canPerformEditingAction:action];
-}
-
-- (void)collectionView:(UICollectionView *)collectionView
-         performAction:(SEL)action
-    forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender
-{
-    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
-    [messageData performEditingAction:action];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)())successCompletion
