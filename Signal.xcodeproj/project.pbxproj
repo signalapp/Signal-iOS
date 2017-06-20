@@ -14,6 +14,7 @@
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341207271EE19F6A00463194 /* OWSSystemMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 341207261EE19F6A00463194 /* OWSSystemMessageCell.m */; };
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
+		342FCE6B1EF9C375002690AD /* OWS105AttachmentFilePaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -376,6 +377,8 @@
 		341207261EE19F6A00463194 /* OWSSystemMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = OWSSystemMessageCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		341BB7471DB727EE001E2975 /* JSQMediaItem+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMediaItem+OWS.h"; sourceTree = "<group>"; };
 		341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMediaItem+OWS.m"; sourceTree = "<group>"; };
+		342FCE691EF9C375002690AD /* OWS105AttachmentFilePaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS105AttachmentFilePaths.h; path = Migrations/OWS105AttachmentFilePaths.h; sourceTree = "<group>"; };
+		342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS105AttachmentFilePaths.m; path = Migrations/OWS105AttachmentFilePaths.m; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
 		34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ElegantIcons.ttf; sourceTree = "<group>"; };
@@ -1093,10 +1096,6 @@
 		45666F731D9BFDB9008FE134 /* Migrations */ = {
 			isa = PBXGroup;
 			children = (
-				45666F791D9C0533008FE134 /* OWSDatabaseMigration.h */,
-				45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */,
-				45666F7C1D9C0814008FE134 /* OWSDatabaseMigrationRunner.h */,
-				45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */,
 				45666F741D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.h */,
 				45666F751D9BFE00008FE134 /* OWS100RemoveTSRecipientsMigration.m */,
 				4516E3FD1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.h */,
@@ -1107,6 +1106,12 @@
 				450573FD1E78A06D00615BB4 /* OWS103EnableVideoCalling.m */,
 				4585C45E1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.h */,
 				4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */,
+				342FCE691EF9C375002690AD /* OWS105AttachmentFilePaths.h */,
+				342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */,
+				45666F791D9C0533008FE134 /* OWSDatabaseMigration.h */,
+				45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */,
+				45666F7C1D9C0814008FE134 /* OWSDatabaseMigrationRunner.h */,
+				45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */,
 			);
 			name = Migrations;
 			sourceTree = "<group>";
@@ -2117,6 +2122,7 @@
 				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
+				342FCE6B1EF9C375002690AD /* OWS105AttachmentFilePaths.m in Sources */,
 				45BFFFA81D898AF0004A12A7 /* OWSStaleNotificationObserver.m in Sources */,
 				45C681B71D305A580050903A /* OWSCall.m in Sources */,
 				76EB062618170B33006006FC /* Queue.m in Sources */,
