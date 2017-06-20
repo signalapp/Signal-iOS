@@ -248,15 +248,6 @@ protocol CallServiceObserver: class {
         self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationsAdapter: self.notificationsAdapter)
     }
 
-    // MARK: - Class Methods
-
-    // MARK: Notifications
-
-    // Wrapping these class constants in a method to make it accessible to objc
-//    class func callServiceActiveCallNotificationName() -> String {
-//        return  "CallServiceActiveCallNotification"
-//    }
-
     // MARK: - Service Actions
 
     /**

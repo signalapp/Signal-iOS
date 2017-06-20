@@ -34,23 +34,15 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-//        let callNotificationName = CallService.callServiceActiveCallNotificationName()
-//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
-
         let callViewController = CallViewController()
         let thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         callViewController.call = call
         callViewController.thread = thread
         callViewController.modalTransitionStyle = .crossDissolve
 
-        //Environment.getCurrent().signalsViewController
-        // TODO dismiss any modal, can/should we present from frontmost?
-//        let presentingViewController = UIApplication.shared.frontmostViewController
-//        presentingViewController?.present(callViewController, animated: true)
-
-        guard let presentingViewController = Environment.getCurrent().signalsViewController else {
-            Logger.error("in \(#function) signals view controller unexpectedly nil")
-            assertionFailure("in \(#function) signals view controller unexpectedly nil")
+        guard let presentingViewController = UIApplication.shared.frontmostViewController else {
+            Logger.error("in \(#function) frontmost view controller unexpectedly nil")
+            assertionFailure("in \(#function) frontmost view controller unexpectedly nil")
             return
         }
 
