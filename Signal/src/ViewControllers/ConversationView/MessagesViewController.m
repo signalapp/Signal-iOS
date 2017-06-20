@@ -3812,7 +3812,8 @@ typedef enum : NSUInteger {
 - (void)updateBackButtonUnreadCount
 {
     AssertIsOnMainThread();
-    self.backButtonUnreadCount = [self.messagesManager unreadMessagesCountExcept:self.thread];
+    // Max out the unread count at 99.
+    self.backButtonUnreadCount = MIN((NSUInteger)99, [self.messagesManager unreadMessagesCountExcept:self.thread]);
 }
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount

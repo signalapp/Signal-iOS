@@ -117,6 +117,8 @@ const NSUInteger kContactPictureViewDiameter = 52;
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
+    // Max out the per-thread unread count at 99.
+    unreadCount = MIN((NSUInteger)99, unreadCount);
 
     self.nameLabel.text = name;
     self.snippetLabel.attributedText = snippetText;
