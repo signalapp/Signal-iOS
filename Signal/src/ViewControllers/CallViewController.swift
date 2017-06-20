@@ -8,7 +8,6 @@ import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-@objc(OWSCallViewController)
 class CallViewController: UIViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
 
     let TAG = "[CallViewController]"
@@ -147,7 +146,11 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         createViews()
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
-        contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager, diameter:400)
+        updateAvatarImage()
+        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { _ in
+            Logger.info("\(self.TAG) updating avatar image")
+            self.updateAvatarImage()
+        }
 
         assert(call != nil)
         // Subscribe for future call updates
@@ -313,6 +316,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         let image = UIImage(named:imageName)
         assert(image != nil)
         button.setImage(image, for:.selected)
+    }
+
+    func updateAvatarImage() {
+        contactAvatarView.image = OWSAvatarBuilder.buildImage(for: thread, contactsManager: contactsManager, diameter:400)
     }
 
     func createIncomingCallControls() {

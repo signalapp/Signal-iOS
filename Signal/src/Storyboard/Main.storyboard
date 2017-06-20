@@ -95,7 +95,6 @@
                         <outlet property="hideMissingContactsPermissionViewConstraint" destination="b7U-Ma-c6S" id="bcT-sh-weS"/>
                         <outlet property="missingContactsPermissionView" destination="7iZ-hQ-Iik" id="aWf-NH-kn6"/>
                         <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
-                        <segue destination="Tyf-mN-gzf" kind="modal" identifier="ShowIncomingCallSegue" id="G2B-Fr-Ezs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -149,23 +148,6 @@
                 </view>
             </objects>
             <point key="canvasLocation" x="-2287" y="-1516"/>
-        </scene>
-        <!--New Call-->
-        <scene sceneID="Xck-Ph-UlV">
-            <objects>
-                <viewController storyboardIdentifier="OWSCallViewController" title="New Call" definesPresentationContext="YES" modalTransitionStyle="crossDissolve" modalPresentationStyle="currentContext" id="Tyf-mN-gzf" customClass="OWSCallViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="0w2-kv-AfM"/>
-                        <viewControllerLayoutGuide type="bottom" id="d8M-LU-Hfa"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="fjB-Ns-OQs">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5mi-rT-gg5" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1790" y="-2348"/>
         </scene>
         <!--Signals Navigation Controller-->
         <scene sceneID="miN-Ma-3eR">
