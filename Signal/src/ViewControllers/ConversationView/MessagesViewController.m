@@ -1497,6 +1497,8 @@ typedef enum : NSUInteger {
     if (![self.inputToolbar.contentView.textView.textInputMode primaryLanguage]) {
         return;
     }
+
+    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
     [self.keyboardController endListeningForKeyboard];
     [self dismissKeyBoard];
     [self popKeyBoard];
@@ -1529,6 +1531,24 @@ typedef enum : NSUInteger {
 
     // Super method returns false for media methods. We want menu for *all* items
     return YES;
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView
+      canPerformAction:(SEL)action
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    return [messageData canPerformEditingAction:action];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView
+         performAction:(SEL)action
+    forItemAtIndexPath:(NSIndexPath *)indexPath
+            withSender:(id)sender
+{
+    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
+    [messageData performEditingAction:action];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView
@@ -2653,6 +2673,23 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)didLongPressSystemMessageCell:(OWSSystemMessageCell *)systemMessageCell;
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(systemMessageCell);
+    OWSAssert(systemMessageCell.interaction);
+
+    DDLogDebug(@"%@ long pressed system message cell: %@", self.tag, systemMessageCell);
+
+    [systemMessageCell becomeFirstResponder];
+
+    UIMenuController *theMenu = [UIMenuController sharedMenuController];
+    CGRect targetRect = [systemMessageCell.titleLabel.superview convertRect:systemMessageCell.titleLabel.frame
+                                                                     toView:systemMessageCell];
+    [theMenu setTargetRect:targetRect inView:systemMessageCell];
+    [theMenu setMenuVisible:YES animated:YES];
+}
+
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
@@ -3692,24 +3729,6 @@ typedef enum : NSUInteger {
             [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
         }
     }];
-}
-
-- (BOOL)collectionView:(UICollectionView *)collectionView
-      canPerformAction:(SEL)action
-    forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender
-{
-    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
-    return [messageData canPerformEditingAction:action];
-}
-
-- (void)collectionView:(UICollectionView *)collectionView
-         performAction:(SEL)action
-    forItemAtIndexPath:(NSIndexPath *)indexPath
-            withSender:(id)sender
-{
-    id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
-    [messageData performEditingAction:action];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)())successCompletion
