@@ -25,6 +25,8 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     private let contactStore = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
+    private var lastSortOrder: CNContactSortOrder?
+
     let supportsContactEditing = true
 
     private let allowedContactKeys: [CNKeyDescriptor] = [
@@ -52,7 +54,23 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         // should only call once
         assert(self.changeHandler == nil)
         self.changeHandler = changeHandler
+        self.lastSortOrder = CNContactsUserDefaults.shared().sortOrder
         NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: .CNContactStoreDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .UIApplicationDidBecomeActive, object: nil)
+    }
+
+    @objc
+    func didBecomeActive() {
+        let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
+
+        guard currentSortOrder != self.lastSortOrder else {
+            // sort order unchanged
+            return
+        }
+
+        Logger.info("\(TAG) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
+        self.lastSortOrder = currentSortOrder
+        self.runChangeHandler()
     }
 
     @objc
@@ -73,6 +91,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         var systemContacts = [CNContact]()
         do {
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
+            contactFetchRequest.sortOrder = .userDefault
             try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 systemContacts.append(contact)
             }
@@ -492,8 +511,11 @@ struct HashableArray<Element: Hashable>: Hashable {
     var hashValue: Int {
         // random generated 32bit number
         let base = 224712574
+        var position = 0
         return elements.reduce(base) { (result, element) -> Int in
-            return result ^ element.hashValue
+            // Make sure change in sort order invalidates hash
+            position += 1
+            return result ^ element.hashValue + position
         }
     }
 
