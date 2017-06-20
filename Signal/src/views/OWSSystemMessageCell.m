@@ -73,9 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
 
-    UILongPressGestureRecognizer *longpress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongpressGesture:)];
-    [self addGestureRecognizer:longpress];
+    UILongPressGestureRecognizer *longPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+    [self addGestureRecognizer:longPress];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -318,10 +318,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
 }
 
-- (void)handleLongpressGesture:(UILongPressGestureRecognizer *)longpress
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)longPress
 {
     OWSAssert(self.interaction);
-    if (longpress.state == UIGestureRecognizerStateBegan) {
+    if (longPress.state == UIGestureRecognizerStateBegan) {
         [self.systemMessageCellDelegate didLongPressSystemMessageCell:self];
     }
 }
