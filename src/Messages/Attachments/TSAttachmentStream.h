@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This only applies for attachments being uploaded.
 @property (atomic) BOOL isUploaded;
 
+@property (atomic) BOOL hasUnsavedFilePath;
+
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
 #endif

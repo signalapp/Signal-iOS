@@ -129,29 +129,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.filePath);
 
     if (shouldPersist) {
-        // It's not ideal to do this asynchronously, but we can create a new transaction
-        // within initWithCoder: which will be called from within a transaction.
-        //
-        // We use a serial queue to ensure we don't spawn a ton of threads each doing
-        // database writes.
-        dispatch_async([TSAttachmentStream serialQueue], ^{
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                OWSAssert(transaction);
-
-                [self saveWithTransaction:transaction];
-            }];
-        });
+        self.hasUnsavedFilePath = YES;
     }
 }
 
-+ (dispatch_queue_t)serialQueue
++ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
 {
-    static dispatch_queue_t queue = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.attachment.stream", DISPATCH_QUEUE_SERIAL);
-    });
-    return queue;
+    // Don't persist transient properties
+    if ([propertyKey isEqualToString:@"hasUnsavedFilePath"]) {
+        return MTLPropertyStorageNone;
+    } else {
+        return [super storageBehaviorForPropertyWithKey:propertyKey];
+    }
 }
 
 #pragma mark - File Management
