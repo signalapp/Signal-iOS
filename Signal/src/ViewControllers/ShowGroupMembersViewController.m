@@ -129,24 +129,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If there are "no longer verified" members of the group,
     // highlight them in a special section.
-    NSSet<NSString *> *noLongerVerifiedRecipientIds = [NSSet setWithArray:[self noLongerVerifiedRecipientIds]];
+    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
     if (noLongerVerifiedRecipientIds.count > 0) {
         OWSTableSection *noLongerVerifiedSection = [OWSTableSection new];
         noLongerVerifiedSection.headerTitle = NSLocalizedString(@"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED",
             @"Title for the 'no longer verified' section of the 'group members' view.");
         membersSection.headerTitle = NSLocalizedString(
             @"GROUP_MEMBERS_SECTION_TITLE_MEMBERS", @"Title for the 'members' section of the 'group members' view.");
-        [self addMembers:noLongerVerifiedRecipientIds.allObjects
-                               toSection:noLongerVerifiedSection
-            noLongerVerifiedRecipientIds:noLongerVerifiedRecipientIds];
+        [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection];
         [contents addSection:noLongerVerifiedSection];
     }
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[helper localNumber]];
-    [self addMembers:memberRecipientIds.allObjects
-                           toSection:membersSection
-        noLongerVerifiedRecipientIds:noLongerVerifiedRecipientIds];
+    [self addMembers:memberRecipientIds.allObjects toSection:membersSection];
     [contents addSection:membersSection];
 
     self.contents = contents;
@@ -154,11 +150,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addMembers:(NSArray<NSString *> *)recipientIds
                        toSection:(OWSTableSection *)section
-    noLongerVerifiedRecipientIds:(NSSet<NSString *> *)noLongerVerifiedRecipientIds
 {
     OWSAssert(recipientIds);
     OWSAssert(section);
-    OWSAssert(noLongerVerifiedRecipientIds);
 
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
@@ -169,7 +163,10 @@ NS_ASSUME_NONNULL_BEGIN
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
-            BOOL isNoLongerVerified = [noLongerVerifiedRecipientIds containsObject:recipientId];
+            OWSVerificationState verificationState =
+                [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+            BOOL isVerified = verificationState == OWSVerificationStateVerified;
+            BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
             if (isNoLongerVerified) {
                 cell.accessoryMessage = NSLocalizedString(
@@ -185,8 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
             }
 
-            BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-                == OWSVerificationStateVerified;
             if (isVerified) {
                 [cell addVerifiedSubtitle];
             }
