@@ -218,7 +218,9 @@ const NSUInteger kContactPictureViewDiameter = 52;
                 [_messageCounter addSubview:_unreadLabel];
             }
 
-            _unreadLabel.text = [[NSNumber numberWithUnsignedInteger:unreadMessages] stringValue];
+            // Max out the unread count at 99+.
+            const NSUInteger kMaxUnreadCount = 99;
+            _unreadLabel.text = [@(MIN(kMaxUnreadCount, unreadMessages)) stringValue];
             [_unreadLabel sizeToFit];
 
             CGPoint offset = CGPointMake(0.0f, 5.0f);
