@@ -580,6 +580,12 @@
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Call";
 
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Mark All As Not Verified";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will mark all of the group members whose safety numbers have changed since they were last verified as not verified.";
+
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
 

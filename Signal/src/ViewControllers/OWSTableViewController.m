@@ -169,6 +169,15 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                         customRowHeight:(CGFloat)customRowHeight
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
+    item.customRowHeight = @(customRowHeight);
+    return item;
+}
+
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssert(text.length > 0);

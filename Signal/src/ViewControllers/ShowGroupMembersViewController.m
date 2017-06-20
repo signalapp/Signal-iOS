@@ -121,6 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableContents *contents = [OWSTableContents new];
 
+    __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
     OWSTableSection *membersSection = [OWSTableSection new];
@@ -136,6 +137,14 @@ NS_ASSUME_NONNULL_BEGIN
             @"Title for the 'no longer verified' section of the 'group members' view.");
         membersSection.headerTitle = NSLocalizedString(
             @"GROUP_MEMBERS_SECTION_TITLE_MEMBERS", @"Title for the 'members' section of the 'group members' view.");
+        [noLongerVerifiedSection
+            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED",
+                                                             @"Label for the button that clears all verification "
+                                                             @"errors in the 'group members' view.")
+                                         customRowHeight:ContactTableViewCell.rowHeight
+                                             actionBlock:^{
+                                                 [weakSelf offerResetAllNoLongerVerified];
+                                             }]];
         [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection useVerifyAction:YES];
         [contents addSection:noLongerVerifiedSection];
     }
@@ -198,6 +207,57 @@ NS_ASSUME_NONNULL_BEGIN
                                  }
                              }]];
     }
+}
+
+- (void)offerResetAllNoLongerVerified
+{
+    OWSAssert([NSThread isMainThread]);
+
+    UIAlertController *actionSheetController = [UIAlertController
+        alertControllerWithTitle:nil
+                         message:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE",
+                                     @"Label for the 'reset all no-longer-verified group members' confirmation alert.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    __weak ShowGroupMembersViewController *weakSelf = self;
+    UIAlertAction *verifyAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"OK", nil)
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [weakSelf resetAllNoLongerVerified];
+                }];
+    [actionSheetController addAction:verifyAction];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:nil];
+    [actionSheetController addAction:cancelAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
+- (void)resetAllNoLongerVerified
+{
+    OWSAssert([NSThread isMainThread]);
+
+    OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
+    NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
+    for (NSString *recipientId in recipientIds) {
+        OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
+        if (verificationState == OWSVerificationStateNoLongerVerified) {
+            NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
+            if (identityKey.length < 1) {
+                OWSFail(@"Missing identity key for: %@", recipientId);
+                continue;
+            }
+            [identityManger setVerificationState:OWSVerificationStateDefault
+                                     identityKey:identityKey
+                                     recipientId:recipientId
+                           isUserInitiatedChange:YES];
+        }
+    }
+
+    [self updateTableContents];
 }
 
 // Returns a collection of the group members who are "no longer verified".
