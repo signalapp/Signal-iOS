@@ -72,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
+
+    UILongPressGestureRecognizer *longpress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongpressGesture:)];
+    [self addGestureRecognizer:longpress];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -290,6 +294,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.interaction = nil;
 }
 
+#pragma mark - editing
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)delete:(nullable id)sender
+{
+    DDLogInfo(@"%@ chose delete", self.logTag);
+    OWSAssert(self.interaction);
+
+    [self.interaction remove];
+}
+
 #pragma mark - Gesture recognizers
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)tap
@@ -297,6 +316,26 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.interaction);
 
     [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+}
+
+- (void)handleLongpressGesture:(UILongPressGestureRecognizer *)longpress
+{
+    OWSAssert(self.interaction);
+    if (longpress.state == UIGestureRecognizerStateBegan) {
+        [self.systemMessageCellDelegate didLongPressSystemMessageCell:self];
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end

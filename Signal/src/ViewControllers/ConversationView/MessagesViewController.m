@@ -2671,6 +2671,22 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)didLongPressSystemMessageCell:(OWSSystemMessageCell *)systemMessageCell;
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(systemMessageCell);
+    OWSAssert(systemMessageCell.interaction);
+
+    DDLogDebug(@"%@ long pressed system message cell: %@", self.tag, systemMessageCell);
+
+    [systemMessageCell becomeFirstResponder];
+
+    UIMenuController *theMenu = [UIMenuController sharedMenuController];
+
+    [theMenu setTargetRect:systemMessageCell.titleLabel.frame inView:systemMessageCell];
+    [theMenu setMenuVisible:YES animated:YES];
+}
+
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
