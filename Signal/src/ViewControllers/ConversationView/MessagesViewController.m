@@ -215,6 +215,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
+@property (nonatomic) BOOL hasAppeared;
 
 @property (nonatomic) UIView *scrollDownButton;
 
@@ -456,48 +457,32 @@ typedef enum : NSUInteger {
           forCellWithReuseIdentifier:[OWSIncomingMessageCollectionViewCell mediaCellReuseIdentifier]];
 }
 
-- (void)toggleObservers:(BOOL)shouldObserve
+- (void)addObservers
 {
-    if (shouldObserve) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didChangePreferredContentSize:)
-                                                     name:UIContentSizeCategoryDidChangeNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackground:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillResignActive:)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(cancelReadTimer)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIContentSizeCategoryDidChangeNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationWillEnterForegroundNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationWillResignActiveNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationDidEnterBackgroundNotification
-                                                      object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didChangePreferredContentSize:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(cancelReadTimer)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -561,17 +546,21 @@ typedef enum : NSUInteger {
     // or on another device.
     [self hideInputIfNeeded];
 
-    // We need to `beginLongLivedReadTransaction` before we update our
-    // mapping in order to jump to the most recent commit.
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.messageMappings updateWithTransaction:transaction];
-    }];
-    [self updateMessageMappingRangeOptions];
-    
-    [self resetContentAndLayout];
+    if (!self.hasAppeared) {
+        self.hasAppeared = YES;
 
-    [self toggleObservers:YES];
+        // We need to `beginLongLivedReadTransaction` before we update our
+        // mapping in order to jump to the most recent commit.
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+        [self updateMessageMappingRangeOptions];
+
+        [self resetContentAndLayout];
+
+        [self addObservers];
+    }
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
     [self startExpirationTimerAnimations];
@@ -993,7 +982,6 @@ typedef enum : NSUInteger {
     DDLogDebug(@"%@ viewWillDisappear", self.tag);
 
     [super viewWillDisappear:animated];
-    [self toggleObservers:NO];
 
     // Since we're using a custom back button, we have to do some extra work to manage the
     // interactivePopGestureRecognizer
