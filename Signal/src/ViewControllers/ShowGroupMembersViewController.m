@@ -136,20 +136,21 @@ NS_ASSUME_NONNULL_BEGIN
             @"Title for the 'no longer verified' section of the 'group members' view.");
         membersSection.headerTitle = NSLocalizedString(
             @"GROUP_MEMBERS_SECTION_TITLE_MEMBERS", @"Title for the 'members' section of the 'group members' view.");
-        [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection];
+        [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection useVerifyAction:YES];
         [contents addSection:noLongerVerifiedSection];
     }
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[helper localNumber]];
-    [self addMembers:memberRecipientIds.allObjects toSection:membersSection];
+    [self addMembers:memberRecipientIds.allObjects toSection:membersSection useVerifyAction:NO];
     [contents addSection:membersSection];
 
     self.contents = contents;
 }
 
 - (void)addMembers:(NSArray<NSString *> *)recipientIds
-                       toSection:(OWSTableSection *)section
+          toSection:(OWSTableSection *)section
+    useVerifyAction:(BOOL)useVerifyAction
 {
     OWSAssert(recipientIds);
     OWSAssert(section);
@@ -190,7 +191,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
                              customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
-                                 [weakSelf didSelectRecipientId:recipientId];
+                                 if (useVerifyAction) {
+                                     [weakSelf verifySafetyNumber:recipientId];
+                                 } else {
+                                     [weakSelf didSelectRecipientId:recipientId];
+                                 }
                              }]];
     }
 }
