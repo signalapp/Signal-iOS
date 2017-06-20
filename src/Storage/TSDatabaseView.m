@@ -31,7 +31,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
 @interface TSDatabaseView ()
 
-@property (nonatomic) int pendingViewRegistrations;
+@property (nonatomic) BOOL areAllAsyncRegistrationsComplete;
 
 @end
 
@@ -62,24 +62,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     return self;
 }
 
-- (void)setPendingViewRegistrations:(int)pendingViewRegistrations
-{
-    OWSAssert([NSThread isMainThread]);
-
-    _pendingViewRegistrations = pendingViewRegistrations;
-
-    if (pendingViewRegistrations == 0) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_DatabaseViewRegistrationComplete
-                                                            object:nil
-                                                          userInfo:nil];
-    }
-}
-
 + (BOOL)hasPendingViewRegistrations
 {
     OWSAssert([NSThread isMainThread]);
 
-    return [TSDatabaseView sharedInstance].pendingViewRegistrations > 0;
+    return ![TSDatabaseView sharedInstance].areAllAsyncRegistrationsComplete;
 }
 
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName
@@ -107,8 +94,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:version options:options];
 
     if (async) {
-        TSDatabaseView.sharedInstance.pendingViewRegistrations++;
-
         [[TSStorageManager sharedManager].database
             asyncRegisterExtension:view
                           withName:viewName
@@ -116,10 +101,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                        OWSCAssert(ready);
 
                        DDLogInfo(@"%@ asyncRegisterExtension: %@ -> %d", self.tag, viewName, ready);
-
-                       dispatch_async(dispatch_get_main_queue(), ^{
-                           TSDatabaseView.sharedInstance.pendingViewRegistrations--;
-                       });
                    }];
     } else {
         [[TSStorageManager sharedManager].database registerExtension:view withName:viewName];
@@ -415,6 +396,23 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     OWSAssert(result);
 
     return result;
+}
+
++ (void)asyncRegistrationCompletion
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // All async registrations are complete when writes are unblocked.
+    [[TSStorageManager sharedManager].newDatabaseConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                TSDatabaseView.sharedInstance.areAllAsyncRegistrationsComplete = YES;
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationName:kNSNotificationName_DatabaseViewRegistrationComplete
+                                  object:nil
+                                userInfo:nil];
+            });
+        }];
 }
 
 #pragma mark - Logging
