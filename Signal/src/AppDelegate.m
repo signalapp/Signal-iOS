@@ -188,6 +188,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                  name:kNSNotificationName_DatabaseViewRegistrationComplete
                                                object:nil];
 
+    DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
+
     return YES;
 }
 
@@ -203,6 +205,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [VersionMigrations isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]) {
         shouldShowUpgradeLabel = YES;
     }
+    DDLogInfo(@"%@ shouldShowUpgradeLabel: %d", self.tag, shouldShowUpgradeLabel);
     if (shouldShowUpgradeLabel) {
         UIView *rootView = viewController.view;
         UIImageView *iconView = nil;
@@ -491,6 +494,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
+
+    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
