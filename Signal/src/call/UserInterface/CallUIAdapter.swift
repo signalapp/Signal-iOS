@@ -34,8 +34,22 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callNotificationName = CallService.callServiceActiveCallNotificationName()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
+        let callViewController = CallViewController()
+        let thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
+        callViewController.call = call
+        callViewController.thread = thread
+        callViewController.modalTransitionStyle = .crossDissolve
+
+        guard let presentingViewController = Environment.getCurrent().signalsViewController else {
+            Logger.error("in \(#function) view controller unexpectedly nil")
+            assertionFailure("in \(#function) view controller unexpectedly nil")
+            return
+        }
+
+        if let presentedViewController = presentingViewController.presentedViewController {
+            presentedViewController.dismiss(animated: false)
+        }
+        presentingViewController.present(callViewController, animated: true)
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
