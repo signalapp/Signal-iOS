@@ -3812,8 +3812,7 @@ typedef enum : NSUInteger {
 - (void)updateBackButtonUnreadCount
 {
     AssertIsOnMainThread();
-    // Max out the unread count at 99.
-    self.backButtonUnreadCount = MIN((NSUInteger)99, [self.messagesManager unreadMessagesCountExcept:self.thread]);
+    self.backButtonUnreadCount = [self.messagesManager unreadMessagesCountExcept:self.thread];
 }
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
@@ -3829,7 +3828,10 @@ typedef enum : NSUInteger {
     _backButtonUnreadCountView.hidden = unreadCount <= 0;
 
     OWSAssert(_backButtonUnreadCountLabel != nil);
-    _backButtonUnreadCountLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)unreadCount];
+
+    // Max out the unread count at 99+.
+    const NSUInteger kMaxUnreadCount = 99;
+    _backButtonUnreadCountLabel.text = [@(MIN(kMaxUnreadCount, unreadCount)) stringValue];
 }
 
 #pragma mark 3D Touch Preview Actions
