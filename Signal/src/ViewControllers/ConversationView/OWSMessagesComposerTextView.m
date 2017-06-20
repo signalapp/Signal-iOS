@@ -11,10 +11,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canBecomeFirstResponder
 {
-    // Intercept to scroll to bottom when text view is tapped.
-    [self.textViewPasteDelegate textViewDidChangeSize];
-
     return YES;
+}
+
+- (BOOL)becomeFirstResponder
+{
+    BOOL becameFirstResponder = [super becomeFirstResponder];
+    if (becameFirstResponder) {
+        // Intercept to scroll to bottom when text view is tapped.
+        [self.textViewPasteDelegate textViewDidChangeSize];
+    }
+    return becameFirstResponder;
 }
 
 - (BOOL)pasteboardHasPossibleAttachment
