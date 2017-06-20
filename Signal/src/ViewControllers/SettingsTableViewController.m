@@ -164,10 +164,7 @@
             cell.accessoryView = accessoryLabel;
             return cell;
         }
-                             actionBlock:^{
-                                 [OWSAlerts showAlertWithTitle:NSLocalizedString(@"NETWORK_STATUS_HEADER", @"")
-                                                       message:NSLocalizedString(@"NETWORK_STATUS_TEXT", @"")];
-                             }]];
+                                                   actionBlock:nil]];
     }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
