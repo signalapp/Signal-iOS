@@ -253,9 +253,9 @@ protocol CallServiceObserver: class {
     // MARK: Notifications
 
     // Wrapping these class constants in a method to make it accessible to objc
-    class func callServiceActiveCallNotificationName() -> String {
-        return  "CallServiceActiveCallNotification"
-    }
+//    class func callServiceActiveCallNotificationName() -> String {
+//        return  "CallServiceActiveCallNotification"
+//    }
 
     // MARK: - Service Actions
 

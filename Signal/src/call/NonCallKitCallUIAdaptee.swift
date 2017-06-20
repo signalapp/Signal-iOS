@@ -42,8 +42,9 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         Logger.debug("\(TAG) \(#function)")
 
         // present Call View controller
-        let callNotificationName = CallService.callServiceActiveCallNotificationName()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
+//        let callNotificationName = CallService.callServiceActiveCallNotificationName()
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
+        self.showCall(call)
 
         // present lock screen notification
         if UIApplication.shared.applicationState == .active {

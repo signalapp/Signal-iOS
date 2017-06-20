@@ -31,7 +31,7 @@
 #define CELL_HEIGHT 72.0f
 #define HEADER_HEIGHT 44.0f
 
-NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallSegue";
+// NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallSegue";
 
 @interface SignalsViewController ()
 
@@ -195,12 +195,12 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleActiveCallNotification:)
-                                                 name:[CallService callServiceActiveCallNotificationName]
-                                               object:nil];
-    
+
+    //    [[NSNotificationCenter defaultCenter] addObserver:self
+    //                                             selector:@selector(handleActiveCallNotification:)
+    //                                                 name:[CallService callServiceActiveCallNotificationName]
+    //                                               object:nil];
+    //
     [self updateBarButtonItems];
 }
 
@@ -260,29 +260,30 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
     }
 }
 
-- (void)handleActiveCallNotification:(NSNotification *)notification
-{
-    AssertIsOnMainThread();
-    
-    if (![notification.object isKindOfClass:[SignalCall class]]) {
-        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
-                   self.tag,
-                   notification.object);
-        return;
-    }
-    
-    SignalCall *call = (SignalCall *)notification.object;
-    
-    // Dismiss any other modals so we can present call modal.
-    if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-            [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
-        }];
-    } else {
-        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
-    }
-}
+//- (void)handleActiveCallNotification:(NSNotification *)notification
+//{
+//    // TODO insteead at the callsite lets present as topmost VC
+//    AssertIsOnMainThread();
+//
+//    if (![notification.object isKindOfClass:[SignalCall class]]) {
+//        DDLogError(@"%@ expected presentCall observer to be notified with a SignalCall, but found %@",
+//                   self.tag,
+//                   notification.object);
+//        return;
+//    }
+//
+//    SignalCall *call = (SignalCall *)notification.object;
+//
+//    // Dismiss any other modals so we can present call modal.
+//    if (self.presentedViewController) {
+//        [self dismissViewControllerAnimated:YES
+//                                 completion:^{
+//            [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+//        }];
+//    } else {
+//        [self performSegueWithIdentifier:SignalsViewControllerSegueShowIncomingCall sender:call];
+//    }
+//}
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
      commitViewController:(UIViewController *)viewControllerToCommit {
@@ -727,25 +728,25 @@ NSString *const SignalsViewControllerSegueShowIncomingCall = @"ShowIncomingCallS
 
 #pragma mark - Navigation
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
-        DDLogDebug(@"%@ preparing for incoming call segue", self.tag);
-        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
-            DDLogError(@"%@ Received unexpected destination view controller: %@", self.tag, segue.destinationViewController);
-            return;
-        }
-        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
-
-        if (![sender isKindOfClass:[SignalCall class]]) {
-            DDLogError(@"%@ expecting call segueu to be sent by a SignalCall, but found: %@", self.tag, sender);
-            return;
-        }
-        SignalCall *call = (SignalCall *)sender;
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
-        callViewController.thread = thread;
-        callViewController.call = call;
-    }
-}
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+//    if ([segue.identifier isEqualToString:SignalsViewControllerSegueShowIncomingCall]) {
+//        DDLogDebug(@"%@ preparing for incoming call segue", self.tag);
+//        if (![segue.destinationViewController isKindOfClass:[OWSCallViewController class]]) {
+//            DDLogError(@"%@ Received unexpected destination view controller: %@", self.tag,
+//            segue.destinationViewController); return;
+//        }
+//        OWSCallViewController *callViewController = (OWSCallViewController *)segue.destinationViewController;
+//
+//        if (![sender isKindOfClass:[SignalCall class]]) {
+//            DDLogError(@"%@ expecting call segueu to be sent by a SignalCall, but found: %@", self.tag, sender);
+//            return;
+//        }
+//        SignalCall *call = (SignalCall *)sender;
+//        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+//        callViewController.thread = thread;
+//        callViewController.call = call;
+//    }
+//}
 
 #pragma mark - IBAction
 
