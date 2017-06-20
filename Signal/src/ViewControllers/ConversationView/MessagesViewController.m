@@ -3946,7 +3946,7 @@ typedef enum : NSUInteger {
     [self presentViewController:controller animated:YES completion:nil];
 }
 
-- (void)textViewDidChangeSize
+- (void)textViewDidChangePosition
 {
     OWSAssert([NSThread isMainThread]);
 
