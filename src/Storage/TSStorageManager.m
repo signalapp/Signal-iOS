@@ -225,6 +225,11 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     OWSFailedAttachmentDownloadsJob *failedAttachmentDownloadsMessagesJob =
         [[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:self];
     [failedAttachmentDownloadsMessagesJob asyncRegisterDatabaseExtensions];
+
+    // NOTE: [TSDatabaseView asyncRegistrationCompletion] ensures that
+    // kNSNotificationName_DatabaseViewRegistrationComplete is not fired until all
+    // of the async registrations are complete.
+    [TSDatabaseView asyncRegistrationCompletion];
 }
 
 - (void)protectSignalFiles {

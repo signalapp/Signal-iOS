@@ -54,4 +54,7 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 // NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
+// This method should be called _after_ all async database registrations have been started.
++ (void)asyncRegistrationCompletion;
+
 @end
