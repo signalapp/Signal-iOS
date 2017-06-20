@@ -561,6 +561,8 @@ typedef enum : NSUInteger {
     // or on another device.
     [self hideInputIfNeeded];
 
+    self.messageAdapterCache = [[NSCache alloc] init];
+
     // We need to `beginLongLivedReadTransaction` before we update our
     // mapping in order to jump to the most recent commit.
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -3306,6 +3308,7 @@ typedef enum : NSUInteger {
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
 
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
+                    OWSAssert(collectionKey.key.length > 0);
                     if (collectionKey.key) {
                         [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                     }
@@ -3329,6 +3332,7 @@ typedef enum : NSUInteger {
                 }
                 case YapDatabaseViewChangeUpdate: {
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
+                    OWSAssert(collectionKey.key.length > 0);
                     if (collectionKey.key) {
                         [self.messageAdapterCache removeObjectForKey:collectionKey.key];
                     }
