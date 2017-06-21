@@ -41,7 +41,6 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
     }
 }
 
-
 #pragma mark - Logging
 
 + (NSString *)tag
