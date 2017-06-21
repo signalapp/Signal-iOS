@@ -42,8 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
 
-    // This instance hasn't been persisted yet.
-    [self ensureFilePathAndPersist:NO];
+    [self ensureFilePath];
 
     return self;
 }
@@ -64,8 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
 
-    // This instance hasn't been persisted yet.
-    [self ensureFilePathAndPersist:NO];
+    [self ensureFilePath];
 
     return self;
 }
@@ -77,9 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    // This instance has been persisted, we need to
-    // update it in the database.
-    [self ensureFilePathAndPersist:YES];
+    [self ensureFilePath];
 
     return self;
 }
@@ -97,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)ensureFilePathAndPersist:(BOOL)shouldPersist
+- (void)ensureFilePath
 {
     if (self.localRelativeFilePath) {
         return;
@@ -127,20 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.localRelativeFilePath = localRelativeFilePath;
     OWSAssert(self.filePath);
-
-    if (shouldPersist) {
-        self.hasUnsavedFilePath = YES;
-    }
-}
-
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
-{
-    // Don't persist transient properties
-    if ([propertyKey isEqualToString:@"hasUnsavedFilePath"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
 }
 
 #pragma mark - File Management
