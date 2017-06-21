@@ -844,6 +844,12 @@ typedef enum : NSUInteger {
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
+        NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
+        if (noLongerVerifiedRecipientIds.count < 1) {
+            return;
+        }
+        BOOL hasMultiple = noLongerVerifiedRecipientIds.count > 1;
+
         UIAlertController *actionSheetController =
             [UIAlertController alertControllerWithTitle:nil
                                                 message:nil
@@ -851,12 +857,14 @@ typedef enum : NSUInteger {
 
         __weak MessagesViewController *weakSelf = self;
         UIAlertAction *verifyAction = [UIAlertAction
-            actionWithTitle:
-                NSLocalizedString(@"VERIFY_PRIVACY",
-                    @"Label for button or row which allows users to verify the safety number of another user.")
-                      style:UIAlertActionStyleDefault
+            actionWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
+                                               @"Label for button or row which allows users to verify the safety "
+                                               @"numbers of multiple users.")
+                                         : NSLocalizedString(@"VERIFY_PRIVACY",
+                                               @"Label for button or row which allows users to verify the safety "
+                                               @"number of another user."))style:UIAlertActionStyleDefault
                     handler:^(UIAlertAction *_Nonnull action) {
-                        [weakSelf showConversationSettingsAndShowVerification:YES];
+                        [weakSelf showNoLongerVerifiedUI];
                     }];
         [actionSheetController addAction:verifyAction];
 
@@ -1951,6 +1959,18 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Actions
+
+- (void)showNoLongerVerifiedUI
+{
+    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
+    if (noLongerVerifiedRecipientIds.count > 1) {
+        [self showConversationSettingsAndShowVerification:YES];
+    } else if (noLongerVerifiedRecipientIds.count == 1) {
+        // Pick one in an arbitrary but deterministic manner.
+        NSString *recipientId = noLongerVerifiedRecipientIds.lastObject;
+        [self showFingerprintWithRecipientId:recipientId];
+    }
+}
 
 - (void)showConversationSettings
 {
