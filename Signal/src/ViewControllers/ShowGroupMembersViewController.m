@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
                              customRowHeight:[ContactTableViewCell rowHeight]
                              actionBlock:^{
                                  if (useVerifyAction) {
-                                     [weakSelf verifySafetyNumber:recipientId];
+                                     [weakSelf showSafetyNumberView:recipientId];
                                  } else {
                                      [weakSelf didSelectRecipientId:recipientId];
                                  }
@@ -386,7 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"safety number of another user.")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self verifySafetyNumber:recipientId];
+                                                 [self showSafetyNumberView:recipientId];
                                              }]];
     }
 
@@ -419,7 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment callUserWithIdentifier:recipientId];
 }
 
-- (void)verifySafetyNumber:(NSString *)recipientId
+- (void)showSafetyNumberView:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
