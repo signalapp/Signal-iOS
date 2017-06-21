@@ -40,12 +40,11 @@
 
 #define OWSCFail(message, ...)                                                                                         \
     {                                                                                                                  \
-        if (!(X)) {                                                                                                    \
-            NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                           \
-            DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                               \
-            [DDLog flushLog];                                                                                          \
-            NSCAssert(0, formattedMessage);                                                                            \
-        }
+        NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
+        DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
+        [DDLog flushLog];                                                                                              \
+        NSCAssert(0, formattedMessage);                                                                                \
+    }
 
 #else
 
