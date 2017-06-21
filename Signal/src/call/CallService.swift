@@ -140,7 +140,7 @@ protocol CallServiceObserver: class {
             updateIsVideoEnabled()
             updateLockTimerEnabling()
 
-            Logger.debug("\(self.TAG) .call setter: \(oldValue?.debugString as Optional) -> \(call?.debugString as Optional)")
+            Logger.debug("\(self.TAG) .call setter: \(oldValue?.identifiersForLogs as Optional) -> \(call?.identifiersForLogs as Optional)")
 
             for observer in observers {
                 observer.value?.didUpdateCall(call:call)
@@ -268,7 +268,7 @@ protocol CallServiceObserver: class {
         call.callRecord = callRecord
 
         let promise = getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
-            Logger.debug("\(self.TAG) got ice servers:\(iceServers) for call: \(call.debugString)")
+            Logger.debug("\(self.TAG) got ice servers:\(iceServers) for call: \(call.identifiersForLogs)")
 
             guard self.call == call else {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
@@ -283,7 +283,7 @@ protocol CallServiceObserver: class {
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
-            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for call: \(call.debugString)")
+            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for call: \(call.identifiersForLogs)")
             self.peerConnectionClient = peerConnectionClient
 
             return peerConnectionClient.createOffer()
@@ -318,10 +318,10 @@ protocol CallServiceObserver: class {
             return race(timeout, callConnectedPromise)
         }.then {
             Logger.info(self.call == call
-                ? "\(self.TAG) outgoing call connected: \(call.debugString)."
-                : "\(self.TAG) obsolete outgoing call connected: \(call.debugString).")
+                ? "\(self.TAG) outgoing call connected: \(call.identifiersForLogs)."
+                : "\(self.TAG) obsolete outgoing call connected: \(call.identifiersForLogs).")
         }.catch { error in
-            Logger.error("\(self.TAG) placing call \(call.debugString) failed with error: \(error)")
+            Logger.error("\(self.TAG) placing call \(call.identifiersForLogs) failed with error: \(error)")
 
             if let callError = error as? CallError {
                 self.handleFailedCall(failedCall: call, error: callError)
@@ -411,7 +411,7 @@ protocol CallServiceObserver: class {
      * Received a call while already in another call.
      */
     private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
-        Logger.info("\(TAG) \(#function) for call: \(call.debugString) thread: \(thread.contactIdentifier())")
+        Logger.info("\(TAG) \(#function) for call: \(call.identifiersForLogs) thread: \(thread.contactIdentifier())")
         AssertIsOnMainThread()
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
@@ -453,12 +453,12 @@ protocol CallServiceObserver: class {
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
-        Logger.info("\(TAG) receivedCallOffer: \(newCall.debugString)")
+        Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs)")
 
         let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
 
         guard untrustedIdentity == nil else {
-            Logger.warn("\(TAG) missed a call due to untrusted identity: \(newCall.debugString)")
+            Logger.warn("\(TAG) missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
 
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
 
@@ -488,7 +488,7 @@ protocol CallServiceObserver: class {
 
         guard self.call == nil else {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.info("\(TAG) receivedCallOffer: \(newCall.debugString) but we're already in call: \(call!.debugString)")
+            Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
 
             handleLocalBusyCall(newCall, thread: thread)
 
@@ -505,7 +505,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        Logger.info("\(TAG) starting new call: \(newCall.debugString)")
+        Logger.info("\(TAG) starting new call: \(newCall.identifiersForLogs)")
 
         self.call = newCall
 
@@ -536,7 +536,7 @@ protocol CallServiceObserver: class {
 
             let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
 
-            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(newCall.debugString)")
+            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
             self.peerConnectionClient = peerConnectionClient
 
@@ -549,7 +549,7 @@ protocol CallServiceObserver: class {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) set the remote description for: \(newCall.debugString)")
+            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
@@ -559,7 +559,7 @@ protocol CallServiceObserver: class {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.debugString)")
+            Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
             let (promise, fulfill, _) = Promise<Void>.pending()
 
@@ -574,11 +574,11 @@ protocol CallServiceObserver: class {
             return race(promise, timeout)
         }.then {
             Logger.info(self.call == newCall
-                ? "\(self.TAG) incoming call connected: \(newCall.debugString)."
-                : "\(self.TAG) obsolete incoming call connected: \(newCall.debugString).")
+                ? "\(self.TAG) incoming call connected: \(newCall.identifiersForLogs)."
+                : "\(self.TAG) obsolete incoming call connected: \(newCall.identifiersForLogs).")
         }.catch { error in
             guard self.call == newCall else {
-                Logger.debug("\(self.TAG) error: \(error)  for obsolete call: \(newCall.debugString).")
+                Logger.debug("\(self.TAG) error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
                 return
             }
             if let callError = error as? CallError {
@@ -602,7 +602,7 @@ protocol CallServiceObserver: class {
         Logger.info("\(TAG) called \(#function)")
 
         guard let call = self.call else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current thread. Call already ended?")
+            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
             return
         }
 
@@ -678,7 +678,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        Logger.info("\(TAG) in \(#function): \(call.debugString).")
+        Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         switch call.state {
         case .dialing:
@@ -687,11 +687,11 @@ protocol CallServiceObserver: class {
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
-            Logger.info("\(TAG) call already ringing. Ignoring \(#function): \(call.debugString).")
+            Logger.info("\(TAG) call already ringing. Ignoring \(#function): \(call.identifiersForLogs).")
         case .connected:
-            Logger.info("\(TAG) Call reconnected \(#function): \(call.debugString).")
+            Logger.info("\(TAG) Call reconnected \(#function): \(call.identifiersForLogs).")
         default:
-            Logger.debug("\(TAG) unexpected call state for \(#function): \(call.state): \(call.debugString).")
+            Logger.debug("\(TAG) unexpected call state for \(#function): \(call.state): \(call.identifiersForLogs).")
         }
     }
 
@@ -711,11 +711,11 @@ protocol CallServiceObserver: class {
         guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("\(TAG) ignoring hangup for thread: \(thread.contactIdentifier()) which is not the current call: \(call.debugString)")
+            Logger.warn("\(TAG) ignoring hangup for thread: \(thread.contactIdentifier()) which is not the current call: \(call.identifiersForLogs)")
             return
         }
 
-        Logger.info("\(TAG) in \(#function): \(call.debugString).")
+        Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         switch call.state {
         case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
@@ -782,7 +782,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        Logger.info("\(TAG) in \(#function): \(call.debugString).")
+        Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
         callRecord.save()
@@ -807,7 +807,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        Logger.info("\(TAG) handleConnectedCall: \(call.debugString).")
+        Logger.info("\(TAG) handleConnectedCall: \(call.identifiersForLogs).")
 
         assert(self.fulfillCallConnectedPromise != nil)
         // cancel connection timeout
@@ -855,7 +855,7 @@ protocol CallServiceObserver: class {
     public func handleDeclineCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        Logger.info("\(TAG) in \(#function): \(call.debugString).")
+        Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
         handleLocalHungupCall(call)
@@ -884,7 +884,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        Logger.info("\(TAG) in \(#function): \(call.debugString).")
+        Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         call.state = .localHangup
 
@@ -1017,7 +1017,7 @@ protocol CallServiceObserver: class {
         }
 
         if message.hasConnected() {
-            Logger.debug("\(TAG) remote participant sent Connected via data channel: \(call.debugString).")
+            Logger.debug("\(TAG) remote participant sent Connected via data channel: \(call.identifiersForLogs).")
 
             let connected = message.connected!
 
@@ -1032,7 +1032,7 @@ protocol CallServiceObserver: class {
             handleConnectedCall(call)
 
         } else if message.hasHangup() {
-            Logger.debug("\(TAG) remote participant sent Hangup via data channel: \(call.debugString).")
+            Logger.debug("\(TAG) remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
 
             let hangup = message.hangup!
 
@@ -1045,11 +1045,11 @@ protocol CallServiceObserver: class {
 
             handleRemoteHangup(thread: call.thread)
         } else if message.hasVideoStreamingStatus() {
-            Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel: \(call.debugString).")
+            Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
 
             self.isRemoteVideoEnabled = message.videoStreamingStatus.enabled()
         } else {
-            Logger.info("\(TAG) received unknown or empty DataChannelMessage: \(call.debugString).")
+            Logger.info("\(TAG) received unknown or empty DataChannelMessage: \(call.identifiersForLogs).")
         }
     }
 
@@ -1195,11 +1195,11 @@ protocol CallServiceObserver: class {
 
             // Only terminate the current call if the error pertains to the current call.
             guard failedCall == self.call else {
-                Logger.debug("\(TAG) in \(#function) ignoring obsolete call: \(failedCall.debugString).")
+                Logger.debug("\(TAG) in \(#function) ignoring obsolete call: \(failedCall.identifiersForLogs).")
                 return
             }
 
-            Logger.error("\(TAG) call: \(failedCall.debugString) failed with error: \(error)")
+            Logger.error("\(TAG) call: \(failedCall.identifiersForLogs) failed with error: \(error)")
         } else {
             Logger.error("\(TAG) unknown call failed with error: \(error)")
         }

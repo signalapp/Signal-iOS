@@ -73,7 +73,7 @@ protocol CallObserver: class {
     var state: CallState {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.debugString)")
+            Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
             if self.state == .connected {
@@ -134,7 +134,8 @@ protocol CallObserver: class {
         self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
     }
 
-    var debugString: String {
+    // A string containing the three identifiers for this call.
+    var identifiersForLogs: String {
         return "{\(remotePhoneNumber), \(localId), \(signalingId)}"
     }
 
