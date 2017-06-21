@@ -462,7 +462,7 @@ protocol CallServiceObserver: class {
 
             let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
 
-            switch(untrustedIdentity!.verificationState) {
+            switch untrustedIdentity!.verificationState {
             case .verified:
                 Logger.error("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
                 assertionFailure("shouldn't have missed a call due to untrusted identity if the identity is verified")
@@ -491,6 +491,16 @@ protocol CallServiceObserver: class {
             Logger.info("\(TAG) receivedCallOffer: \(newCall.debugString) but we're already in call: \(call!.debugString)")
 
             handleLocalBusyCall(newCall, thread: thread)
+
+            if self.call?.remotePhoneNumber == newCall.remotePhoneNumber {
+                // If we're receiving a new call offer from the user we think we have a call with, terminate
+                // our current call to get back to a known good state.  If they call back, we'll be ready.
+                // 
+                // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
+                // b) ever connected.  There will be a bit of complexity around making sure that two
+                // parties that call each other at the same time end up connected.
+                terminateCall()
+            }
 
             return
         }
