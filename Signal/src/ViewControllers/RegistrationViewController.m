@@ -12,9 +12,21 @@
 #import "TSAccountManager.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SAMKeychain/SAMKeychain.h>
 
-@interface RegistrationViewController () <CountryCodeViewControllerDelegate>
+NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
+NSString *const kKeychainServiceDebug = @"kKeychainServiceDebug";
+NSString *const kKeychainLastRegisteredCountryCode = @"kKeychainLastRegisteredCountryCode";
+NSString *const kKeychainLastRegisteredPhoneNumber = @"kKeychainLastRegisteredPhoneNumber";
+
+#endif
+
+@interface RegistrationViewController () <CountryCodeViewControllerDelegate, UITextFieldDelegate>
+
+@property (nonatomic) NSString *countryCode;
 @property (nonatomic) NSString *callingCode;
 
 @property (nonatomic) UILabel *countryCodeLabel;
@@ -194,7 +206,7 @@
                          ofView:separatorView2
                      withOffset:ScaleFromIPhone5To7Plus(12.f, 15.f)];
     [activateButton autoSetDimension:ALDimensionHeight toSize:47.f];
-    [activateButton addTarget:self action:@selector(sendCodeAction:) forControlEvents:UIControlEventTouchUpInside];
+    [activateButton addTarget:self action:@selector(sendCodeAction) forControlEvents:UIControlEventTouchUpInside];
 
     UIActivityIndicatorView *spinnerView =
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -237,6 +249,14 @@
 - (void)populateDefaultCountryNameAndCode {
     NSLocale *locale      = NSLocale.currentLocale;
     NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
+
+#ifdef DEBUG
+    if ([self lastRegisteredCountryCode].length > 0) {
+        countryCode = [self lastRegisteredCountryCode];
+    }
+    self.phoneNumberTextField.text = [self lastRegisteredPhoneNumber];
+#endif
+
     NSNumber *callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
     NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     [self updateCountryWithName:countryName
@@ -249,7 +269,12 @@
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(countryName.length > 0);
+    OWSAssert(callingCode.length > 0);
+    OWSAssert(countryCode.length > 0);
 
+    _countryCode = countryCode;
     _callingCode = callingCode;
 
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",
@@ -277,7 +302,7 @@
                    message:NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_BODY", @"during registration")];
 }
 
-- (void)sendCodeAction:(id)sender
+- (void)sendCodeAction
 {
     NSString *phoneNumberText =
         [_phoneNumberTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -290,6 +315,7 @@
                                @"Message of alert indicating that users needs to enter a phone number to register.")];
         return;
     }
+    NSString *countryCode = self.countryCode;
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     NSString *parsedPhoneNumber = localNumber.toE164;
@@ -314,6 +340,11 @@
 
             CodeVerificationViewController *vc = [CodeVerificationViewController new];
             [weakSelf.navigationController pushViewController:vc animated:YES];
+
+#ifdef DEBUG
+            [weakSelf setLastRegisteredCountryCode:countryCode];
+            [weakSelf setLastRegisteredPhoneNumber:phoneNumberText];
+#endif
         }
         failure:^(NSError *error) {
             if (error.code == 400) {
@@ -396,9 +427,65 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [self sendCodeAction:nil];
+    [self sendCodeAction];
     [textField resignFirstResponder];
     return NO;
 }
 
+#pragma mark - Debug
+
+#ifdef DEBUG
+
+- (NSString *_Nullable)debugKeychainValueForKey:(NSString *)key
+{
+    OWSCAssert([NSThread isMainThread]);
+    OWSCAssert(key.length > 0);
+
+    NSError *error;
+    NSString *value = [SAMKeychain passwordForService:kKeychainServiceDebug account:key error:&error];
+    if (error) {
+        // Ignore errors; these values may not be present.
+        return nil;
+    } else {
+        return value;
+    }
+}
+
+- (void)setDebugKeychainValue:(NSString *)value forKey:(NSString *)key
+{
+    OWSCAssert([NSThread isMainThread]);
+    OWSCAssert(key.length > 0);
+    OWSCAssert(value.length > 0);
+
+    NSError *error;
+    [SAMKeychain setPassword:value forService:kKeychainServiceDebug account:key error:&error];
+    if (error) {
+        OWSCFail(@"SetLastRegisteredPhoneNumber error: %@", error);
+    }
+}
+
+- (NSString *_Nullable)lastRegisteredCountryCode
+{
+    return [self debugKeychainValueForKey:kKeychainLastRegisteredCountryCode];
+}
+
+- (void)setLastRegisteredCountryCode:(NSString *)value
+{
+    [self setDebugKeychainValue:value forKey:kKeychainLastRegisteredCountryCode];
+}
+
+- (NSString *_Nullable)lastRegisteredPhoneNumber
+{
+    return [self debugKeychainValueForKey:kKeychainLastRegisteredPhoneNumber];
+}
+
+- (void)setLastRegisteredPhoneNumber:(NSString *)value
+{
+    [self setDebugKeychainValue:value forKey:kKeychainLastRegisteredPhoneNumber];
+}
+
+#endif
+
 @end
+
+NS_ASSUME_NONNULL_END
