@@ -29,9 +29,7 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
                                                   return;
                                               }
                                               TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                                              if (attachmentStream.hasUnsavedFilePath) {
-                                                  [attachmentStreams addObject:attachmentStream];
-                                              }
+                                              [attachmentStreams addObject:attachmentStream];
                                           }];
 
     DDLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
