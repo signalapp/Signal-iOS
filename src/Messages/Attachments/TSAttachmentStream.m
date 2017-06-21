@@ -42,8 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
 
-    // This instance hasn't been persisted yet.
-    [self ensureFilePathAndPersist:NO];
+    [self ensureFilePath];
 
     return self;
 }
@@ -64,8 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
 
-    // This instance hasn't been persisted yet.
-    [self ensureFilePathAndPersist:NO];
+    [self ensureFilePath];
 
     return self;
 }
@@ -77,9 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    // This instance has been persisted, we need to
-    // update it in the database.
-    [self ensureFilePathAndPersist:YES];
+    [self ensureFilePath];
 
     return self;
 }
@@ -97,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)ensureFilePathAndPersist:(BOOL)shouldPersist
+- (void)ensureFilePath
 {
     if (self.localRelativeFilePath) {
         return;
@@ -127,31 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.localRelativeFilePath = localRelativeFilePath;
     OWSAssert(self.filePath);
-
-    if (shouldPersist) {
-        // It's not ideal to do this asynchronously, but we can create a new transaction
-        // within initWithCoder: which will be called from within a transaction.
-        //
-        // We use a serial queue to ensure we don't spawn a ton of threads each doing
-        // database writes.
-        dispatch_async([TSAttachmentStream serialQueue], ^{
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                OWSAssert(transaction);
-
-                [self saveWithTransaction:transaction];
-            }];
-        });
-    }
-}
-
-+ (dispatch_queue_t)serialQueue
-{
-    static dispatch_queue_t queue = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.attachment.stream", DISPATCH_QUEUE_SERIAL);
-    });
-    return queue;
 }
 
 #pragma mark - File Management
