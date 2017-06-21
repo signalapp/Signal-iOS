@@ -49,6 +49,8 @@ protocol CallObserver: class {
     // Distinguishes between calls locally, e.g. in CallKit
     let localId: UUID
 
+    let thread: TSContactThread
+
     var callRecord: TSCall? {
         didSet {
             AssertIsOnMainThread()
@@ -71,7 +73,7 @@ protocol CallObserver: class {
     var state: CallState {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state)")
+            Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
             if self.state == .connected {
@@ -128,6 +130,13 @@ protocol CallObserver: class {
         self.signalingId = signalingId
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
+
+        self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+    }
+
+    // A string containing the three identifiers for this call.
+    var identifiersForLogs: String {
+        return "{\(remotePhoneNumber), \(localId), \(signalingId)}"
     }
 
     class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> SignalCall {
