@@ -52,8 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)audioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (CGFloat)audioDurationSecondsWithoutTransaction;
 
-//- (BOOL)hasUnsavedFilePath;
-
 @end
 
 NS_ASSUME_NONNULL_END
