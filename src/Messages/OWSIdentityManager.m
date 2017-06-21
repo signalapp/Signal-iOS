@@ -613,6 +613,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 continue;
         }
     }
+    
+    if (verifieds.count > 0) {
+        [self fireIdentityStateChangeNotification];
+    }
 }
 
 - (void)tryToApplyVerificationStateFromSyncMessage:(OWSVerificationState)verificationState
