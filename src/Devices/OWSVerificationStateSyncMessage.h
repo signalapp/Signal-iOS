@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This is a clunky name, but we want to differentiate it from `recipientIdentifier` inherited from `TSOutgoingMessage`
 @property (nonatomic, readonly) NSString *verificationForRecipientId;
 
+@property (nonatomic, readonly) size_t paddingBytesLength;
+
 @end
 
 NS_ASSUME_NONNULL_END

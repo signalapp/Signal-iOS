@@ -171,6 +171,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [NSString stringWithFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
     } else if (content.hasCallMessage) {
         return [NSString stringWithFormat:@"<CallMessage: %@ />", content.callMessage];
+    } else if (content.hasNullMessage) {
+        return [NSString stringWithFormat:@"<NullMessage: %@ />", content.nullMessage];
     } else {
         OWSAssert(NO);
         return @"UnknownContent";

@@ -7,6 +7,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSMessageSender.h"
 #import "OWSRecipientIdentity.h"
+#import "OWSOutgoingNullMessage.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
@@ -550,6 +551,20 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(message.verificationForRecipientId.length > 0);
     OWSAssert([NSThread isMainThread]);
 
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
+    
+    // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
+    // subsequently
+    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
+                                                                   verificationStateSyncMessage:message];
+    [self.messageSender sendMessage:nullMessage
+                            success:^{
+                                DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.tag);
+                            }
+                            failure:^(NSError * _Nonnull error) {
+                                DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
+                            }];
+    
     [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);

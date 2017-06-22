@@ -68,6 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
     _verificationState = verificationState;
     _identityKey = identityKey;
     _verificationForRecipientId = verificationForRecipientId;
+    
+    // Add 1-512 bytes of random padding bytes.
+    _paddingBytesLength = arc4random_uniform(512) + 1;
 
     return self;
 }
@@ -110,11 +113,10 @@ NS_ASSUME_NONNULL_BEGIN
                 return OWSSignalServiceProtosVerifiedStateUnverified;
         }
     }();
-
-    // Add 1-512 bytes of random padding bytes.
-    size_t paddingLengthBytes = arc4random_uniform(512) + 1;
-    syncMessageBuilder.padding = [Cryptography generateRandomBytes:paddingLengthBytes];
-
+    
+    OWSAssert(self.paddingBytesLength != 0);
+    syncMessageBuilder.padding = [Cryptography generateRandomBytes:self.paddingBytesLength];
+    
     return [syncMessageBuilder build];
 }
 
