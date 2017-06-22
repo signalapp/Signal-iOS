@@ -1,9 +1,5 @@
 //
-//  DebugLogger.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 08/08/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugLogger.h"
@@ -30,10 +26,14 @@
 
 
 - (void)enableFileLogging {
-    self.fileLogger = [[DDFileLogger alloc]
-        init]; // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
-    self.fileLogger.rollingFrequency                       = 60 * 60 * 24; // 24 hour rolling.
-    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;            // Keep three days of logs.
+    // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
+    self.fileLogger = [DDFileLogger new];
+    // 24 hour rolling.
+    self.fileLogger.rollingFrequency = 60 * 60 * 24;
+    // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
+    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;
+    // Raise the max file size per log file to 3 MB.
+    self.fileLogger.maximumFileSize = 1024 * 1024 * 3;
     self.fileLogger.logFormatter = [OWSScrubbingLogFormatter new];
 
     [DDLog addLogger:self.fileLogger];

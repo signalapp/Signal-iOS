@@ -3592,7 +3592,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"cancelRecordingVoiceMemo");
+    DDLogDebug(@"cancelRecordingVoiceMemo");
 
     [self resetRecordingVoiceMemo];
 }
