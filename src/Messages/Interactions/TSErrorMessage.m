@@ -180,7 +180,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
         return;
     }
 
-    DDLogInfo(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    DDLogDebug(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];

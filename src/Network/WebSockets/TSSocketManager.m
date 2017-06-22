@@ -234,7 +234,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    DDLogWarn(@"%@ Socket state change: %@ -> %@",
+    DDLogWarn(@"%@ Socket state: %@ -> %@",
         self.tag,
         [self stringFromSocketManagerState:_state],
         [self stringFromSocketManagerState:state]);
