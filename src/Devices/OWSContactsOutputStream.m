@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
+#import "OWSRecipientIdentity.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSContactsOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
+         recipientIdentity:(OWSRecipientIdentity *)recipientIdentity
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
@@ -21,7 +23,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
-
+    
+    // Don't sync default or no-longer-verified state in contact sync.
+    if (recipientIdentity.verificationState == OWSVerificationStateVerified) {
+        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+        verifiedBuilder.state = OWSSignalServiceProtosVerifiedStateVerified;
+        verifiedBuilder.destination = recipientIdentity.recipientId;
+        verifiedBuilder.identityKey = recipientIdentity.identityKey;
+        // TODO do we need to set null message here?
+        contactBuilder.verified = [verifiedBuilder build];
+    }
+    
     NSData *avatarPng;
     if (signalAccount.contact.image) {
         OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =

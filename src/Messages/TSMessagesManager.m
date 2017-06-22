@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
 @end
 
@@ -73,13 +74,16 @@ NS_ASSUME_NONNULL_BEGIN
     id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
     id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
+    OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    
 
     return [self initWithNetworkManager:networkManager
                          storageManager:storageManager
                      callMessageHandler:callMessageHandler
                         contactsManager:contactsManager
                         contactsUpdater:contactsUpdater
+                        identityManager:identityManager
                           messageSender:messageSender];
 }
 
@@ -88,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                     callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                       identityManager:(OWSIdentityManager *)identityManager
                          messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
@@ -101,6 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
+    _identityManager = identityManager;
     _messageSender = messageSender;
 
     _dbConnection = storageManager.newDatabaseConnection;
@@ -364,7 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
+                                                                   identityKeyStore:self.identityManager
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 
@@ -416,7 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                         preKeyStore:storageManager
                                                                   signedPreKeyStore:storageManager
-                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
+                                                                   identityKeyStore:self.identityManager
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 
@@ -450,7 +456,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            sourceId:envelope.source
                                                                      sourceDeviceId:envelope.sourceDevice];
     if (duplicateEnvelope) {
-        DDLogInfo(@"%@ Ignoring previously received envelope with timestamp: %llu", self.tag, envelope.timestamp);
+        DDLogInfo(@"%@ Ignoring previously received envelope from %@.%d with timestamp: %llu", self.tag, envelope.source, (unsigned int)envelope.sourceDevice, envelope.timestamp);
         return;
     }
 
@@ -649,7 +655,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
+            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
+                                                    identityManager:self.identityManager];
             
             [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
                                                 contentType:OWSMimeTypeApplicationOctetStream
@@ -661,8 +668,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
                                                     }];
             
-            // Also sync all verification state after syncing contacts.
-            [[OWSIdentityManager sharedManager] syncAllVerificationStates];
+//            // Also sync all verification state after syncing contacts.
+//            [[OWSIdentityManager sharedManager] syncAllVerificationStates];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             
@@ -690,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
         [readReceiptsProcessor process];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
-        [[OWSIdentityManager sharedManager] processIncomingSyncMessage:syncMessage.verified];
+        [self.identityManager processIncomingSyncMessage:syncMessage.verified];
     } else {
         DDLogWarn(@"%@ Ignoring unsupported sync message.", self.tag);
     }

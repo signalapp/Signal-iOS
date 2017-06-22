@@ -500,49 +500,49 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     });
 }
 
-- (void)syncAllVerificationStates
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-
-            NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
-            [OWSRecipientIdentity enumerateCollectionObjectsUsingBlock:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
-                OWSAssert(recipientIdentity);
-                OWSAssert(recipientIdentity.recipientId.length > 0);
-                OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
-
-                if (recipientIdentity.recipientId.length < 1) {
-                    OWSFail(@"Invalid recipient identity for recipientId: %@", recipientIdentity.recipientId);
-                    return;
-                }
-
-                // Prepend key type for transit.
-                // TODO we should just be storing the key type so we don't have to juggle re-adding it.
-                NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
-                if (identityKey.length != kIdentityKeyLength) {
-                    OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@",
-                        recipientIdentity.recipientId,
-                        identityKey);
-                    return;
-                }
-
-                OWSVerificationStateSyncMessage *message = [[OWSVerificationStateSyncMessage alloc]
-                     initWithVerificationState:recipientIdentity.verificationState
-                                   identityKey:identityKey
-                    verificationForRecipientId:recipientIdentity.recipientId];
-                [messages addObject:message];
-            }];
-            if (messages.count > 0) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    for (OWSVerificationStateSyncMessage *message in messages) {
-                        [self sendSyncVerificationStateMessage:message];
-                    }
-                });
-            }
-        }
-    });
-}
+//- (void)syncAllVerificationStates
+//{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        @synchronized(self)
+//        {
+//
+//            NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
+//            [OWSRecipientIdentity enumerateCollectionObjectsUsingBlock:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
+//                OWSAssert(recipientIdentity);
+//                OWSAssert(recipientIdentity.recipientId.length > 0);
+//                OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
+//
+//                if (recipientIdentity.recipientId.length < 1) {
+//                    OWSFail(@"Invalid recipient identity for recipientId: %@", recipientIdentity.recipientId);
+//                    return;
+//                }
+//
+//                // Prepend key type for transit.
+//                // TODO we should just be storing the key type so we don't have to juggle re-adding it.
+//                NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
+//                if (identityKey.length != kIdentityKeyLength) {
+//                    OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@",
+//                        recipientIdentity.recipientId,
+//                        identityKey);
+//                    return;
+//                }
+//
+//                OWSVerificationStateSyncMessage *message = [[OWSVerificationStateSyncMessage alloc]
+//                     initWithVerificationState:recipientIdentity.verificationState
+//                                   identityKey:identityKey
+//                    verificationForRecipientId:recipientIdentity.recipientId];
+//                [messages addObject:message];
+//            }];
+//            if (messages.count > 0) {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    for (OWSVerificationStateSyncMessage *message in messages) {
+//                        [self sendSyncVerificationStateMessage:message];
+//                    }
+//                });
+//            }
+//        }
+//    });
+//}
 
 - (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
 {

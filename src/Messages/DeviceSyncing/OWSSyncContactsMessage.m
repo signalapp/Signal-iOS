@@ -8,6 +8,7 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSIdentityManager.h"
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
@@ -17,12 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSyncContactsMessage ()
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
 @end
 
 @implementation OWSSyncContactsMessage
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
+                        identityManager:(OWSIdentityManager *)identityManager
 {
     self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
     if (!self) {
@@ -30,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _contactsManager = contactsManager;
+    _identityManager = identityManager;
 
     return self;
 }
@@ -66,7 +70,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContactsOutputStream *contactsOutputStream = [OWSContactsOutputStream streamWithOutputStream:dataOutputStream];
 
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
-        [contactsOutputStream writeSignalAccount:signalAccount];
+        OWSRecipientIdentity *recipientIdentity = [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
+        
+        [contactsOutputStream writeSignalAccount:signalAccount recipientIdentity:recipientIdentity];
     }
 
     [contactsOutputStream flush];
