@@ -15,21 +15,22 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSContactsOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
-         recipientIdentity:(OWSRecipientIdentity *)recipientIdentity
+         recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
-    OWSAssert(recipientIdentity);
 
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
 
-    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
-    verifiedBuilder.destination = recipientIdentity.recipientId;
-    verifiedBuilder.identityKey = recipientIdentity.identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
-    contactBuilder.verified = [verifiedBuilder build];
+    if (recipientIdentity != nil) {
+        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+        verifiedBuilder.destination = recipientIdentity.recipientId;
+        verifiedBuilder.identityKey = recipientIdentity.identityKey;
+        verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
+        contactBuilder.verifiedBuilder = verifiedBuilder;
+    }
 
     NSData *avatarPng;
     if (signalAccount.contact.image) {
