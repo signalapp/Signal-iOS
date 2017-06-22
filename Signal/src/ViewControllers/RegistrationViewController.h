@@ -4,6 +4,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RegistrationViewController : UIViewController <UITextFieldDelegate>
+NS_ASSUME_NONNULL_BEGIN
+
+@interface RegistrationViewController : UIViewController
 
 @end
+
+NS_ASSUME_NONNULL_END
