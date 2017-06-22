@@ -40,20 +40,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
 
-    // TODO padding size.
     NSUInteger contentLength = self.verificationStateSyncMessage.buildPlainTextData.length;
     contentLength -= self.verificationStateSyncMessage.paddingBytesLength;
     
     OWSAssert(contentLength > 0)
-    
-    // Add 1-512 bytes of random padding bytes.
-    contentLength += arc4random_uniform(512) + 1;
     
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
     
     contentBuilder.nullMessage = [nullMessageBuilder build];
     
     return [contentBuilder build].data;
+}
+
+- (BOOL)shouldSyncTranscript
+{
+    return NO;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

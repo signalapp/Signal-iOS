@@ -69,13 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
     _identityKey = identityKey;
     _verificationForRecipientId = verificationForRecipientId;
     
-    // Add 1-512 bytes of random padding bytes.
+    // This sync message should be 1-512 bytes longer than the corresponding NullMessage
+    // we store this values so the corresponding NullMessage can subtract it from the total length.
     _paddingBytesLength = arc4random_uniform(512) + 1;
 
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     //    OWSAssert(self.tuples.count > 0);
 
@@ -101,6 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
 
     OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    
     verifiedBuilder.destination = self.verificationForRecipientId;
     verifiedBuilder.identityKey = self.identityKey;
     verifiedBuilder.state = ^{
@@ -115,9 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
     }();
     
     OWSAssert(self.paddingBytesLength != 0);
-    syncMessageBuilder.padding = [Cryptography generateRandomBytes:self.paddingBytesLength];
+    verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
     
-    return [syncMessageBuilder build];
+    syncMessageBuilder.verifiedBuilder = verifiedBuilder;
+    
+    return syncMessageBuilder;
 }
 
 //- (NSArray<NSString *> *)recipientIds

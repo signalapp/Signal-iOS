@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     [syncMessageBuilder setContactsBuilder:contactsBuilder];
 
-    return [syncMessageBuilder build];
+    return syncMessageBuilder;
 }
 
 - (NSData *)buildPlainTextAttachmentData

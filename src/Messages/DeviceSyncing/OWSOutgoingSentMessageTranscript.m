@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -37,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
 
@@ -49,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [syncMessageBuilder setSentBuilder:sentBuilder];
 
-    return [syncMessageBuilder build];
+    return syncMessageBuilder;
 }
 
 @end
