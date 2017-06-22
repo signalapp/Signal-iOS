@@ -17,7 +17,7 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
 extern const NSUInteger kIdentityKeyLength;
 
 @class OWSRecipientIdentity;
-@class OWSSignalServiceProtosSyncMessageVerified;
+@class OWSSignalServiceProtosVerified;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -46,10 +46,7 @@ extern const NSUInteger kIdentityKeyLength;
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
-// Will try to send a sync message with all verification states.
-- (void)syncAllVerificationStates;
-
-- (void)processIncomingSyncMessage:(NSArray<OWSSignalServiceProtosSyncMessageVerified *> *)verifieds;
+- (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
 
 @end
 

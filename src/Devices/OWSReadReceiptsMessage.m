@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSReadReceiptsMessage.h"
 #import "OWSReadReceipt.h"
@@ -26,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     for (OWSReadReceipt *readReceipt in self.readReceipts) {
@@ -37,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
         [syncMessageBuilder addRead:[readProtoBuilder build]];
     }
 
-    return [syncMessageBuilder build];
+    return syncMessageBuilder;
 }
 
 @end

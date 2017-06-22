@@ -2,7 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import "OWSSignalServiceProtos.pb.h"
+#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
 };
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
+OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState);
 
 @interface OWSRecipientIdentity : TSYapDatabaseObject
 

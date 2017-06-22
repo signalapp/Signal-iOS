@@ -7,10 +7,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalAccount;
+@class OWSRecipientIdentity;
 
 @interface OWSContactsOutputStream : OWSChunkedOutputStream
 
-- (void)writeSignalAccount:(SignalAccount *)signalAccount;
+- (void)writeSignalAccount:(SignalAccount *)signalAccount
+         recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity;
 
 @end
 

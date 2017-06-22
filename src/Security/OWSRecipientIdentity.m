@@ -20,6 +20,18 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
+OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
+{
+    switch (verificationState) {
+        case OWSVerificationStateDefault:
+            return OWSSignalServiceProtosVerifiedStateDefault;
+        case OWSVerificationStateVerified:
+            return OWSSignalServiceProtosVerifiedStateVerified;
+        case OWSVerificationStateNoLongerVerified:
+            return OWSSignalServiceProtosVerifiedStateUnverified;
+    }
+}
+
 @interface OWSRecipientIdentity ()
 
 @property (atomic) OWSVerificationState verificationState;

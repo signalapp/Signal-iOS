@@ -36,6 +36,8 @@
 @class OWSSignalServiceProtosGroupDetailsAvatar;
 @class OWSSignalServiceProtosGroupDetailsAvatarBuilder;
 @class OWSSignalServiceProtosGroupDetailsBuilder;
+@class OWSSignalServiceProtosNullMessage;
+@class OWSSignalServiceProtosNullMessageBuilder;
 @class OWSSignalServiceProtosSyncMessage;
 @class OWSSignalServiceProtosSyncMessageBlocked;
 @class OWSSignalServiceProtosSyncMessageBlockedBuilder;
@@ -50,8 +52,8 @@
 @class OWSSignalServiceProtosSyncMessageRequestBuilder;
 @class OWSSignalServiceProtosSyncMessageSent;
 @class OWSSignalServiceProtosSyncMessageSentBuilder;
-@class OWSSignalServiceProtosSyncMessageVerified;
-@class OWSSignalServiceProtosSyncMessageVerifiedBuilder;
+@class OWSSignalServiceProtosVerified;
+@class OWSSignalServiceProtosVerifiedBuilder;
 @class ObjectiveCFileOptions;
 @class ObjectiveCFileOptionsBuilder;
 @class PBDescriptorProto;
@@ -109,6 +111,15 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosEnvelopeType) {
 BOOL OWSSignalServiceProtosEnvelopeTypeIsValidValue(OWSSignalServiceProtosEnvelopeType value);
 NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosEnvelopeType value);
 
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosVerifiedState) {
+  OWSSignalServiceProtosVerifiedStateDefault = 0,
+  OWSSignalServiceProtosVerifiedStateVerified = 1,
+  OWSSignalServiceProtosVerifiedStateUnverified = 2,
+};
+
+BOOL OWSSignalServiceProtosVerifiedStateIsValidValue(OWSSignalServiceProtosVerifiedState value);
+NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtosVerifiedState value);
+
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageFlags) {
   OWSSignalServiceProtosDataMessageFlagsEndSession = 1,
   OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate = 2,
@@ -126,15 +137,6 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosSyncMessageRequestType) {
 
 BOOL OWSSignalServiceProtosSyncMessageRequestTypeIsValidValue(OWSSignalServiceProtosSyncMessageRequestType value);
 NSString *NSStringFromOWSSignalServiceProtosSyncMessageRequestType(OWSSignalServiceProtosSyncMessageRequestType value);
-
-typedef NS_ENUM(SInt32, OWSSignalServiceProtosSyncMessageVerifiedState) {
-  OWSSignalServiceProtosSyncMessageVerifiedStateDefault = 0,
-  OWSSignalServiceProtosSyncMessageVerifiedStateVerified = 1,
-  OWSSignalServiceProtosSyncMessageVerifiedStateUnverified = 2,
-};
-
-BOOL OWSSignalServiceProtosSyncMessageVerifiedStateIsValidValue(OWSSignalServiceProtosSyncMessageVerifiedState value);
-NSString *NSStringFromOWSSignalServiceProtosSyncMessageVerifiedState(OWSSignalServiceProtosSyncMessageVerifiedState value);
 
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosAttachmentPointerFlags) {
   OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage = 1,
@@ -274,21 +276,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Content_dataMessage @"dataMessage"
 #define Content_syncMessage @"syncMessage"
 #define Content_callMessage @"callMessage"
+#define Content_nullMessage @"nullMessage"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
   BOOL hasCallMessage_:1;
+  BOOL hasNullMessage_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
   OWSSignalServiceProtosCallMessage* callMessage;
+  OWSSignalServiceProtosNullMessage* nullMessage;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
 - (BOOL) hasCallMessage;
+- (BOOL) hasNullMessage;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
+@property (readonly, strong) OWSSignalServiceProtosNullMessage* nullMessage;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -345,6 +352,143 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) setCallMessageBuilder:(OWSSignalServiceProtosCallMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosContentBuilder*) mergeCallMessage:(OWSSignalServiceProtosCallMessage*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearCallMessage;
+
+- (BOOL) hasNullMessage;
+- (OWSSignalServiceProtosNullMessage*) nullMessage;
+- (OWSSignalServiceProtosContentBuilder*) setNullMessage:(OWSSignalServiceProtosNullMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) setNullMessageBuilder:(OWSSignalServiceProtosNullMessageBuilder*) builderForValue;
+- (OWSSignalServiceProtosContentBuilder*) mergeNullMessage:(OWSSignalServiceProtosNullMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) clearNullMessage;
+@end
+
+#define NullMessage_padding @"padding"
+@interface OWSSignalServiceProtosNullMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasPadding_:1;
+  NSData* padding;
+}
+- (BOOL) hasPadding;
+@property (readonly, strong) NSData* padding;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosNullMessageBuilder*) builder;
++ (OWSSignalServiceProtosNullMessageBuilder*) builder;
++ (OWSSignalServiceProtosNullMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosNullMessage*) prototype;
+- (OWSSignalServiceProtosNullMessageBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosNullMessageBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosNullMessage* resultNullMessage;
+}
+
+- (OWSSignalServiceProtosNullMessage*) defaultInstance;
+
+- (OWSSignalServiceProtosNullMessageBuilder*) clear;
+- (OWSSignalServiceProtosNullMessageBuilder*) clone;
+
+- (OWSSignalServiceProtosNullMessage*) build;
+- (OWSSignalServiceProtosNullMessage*) buildPartial;
+
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFrom:(OWSSignalServiceProtosNullMessage*) other;
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasPadding;
+- (NSData*) padding;
+- (OWSSignalServiceProtosNullMessageBuilder*) setPadding:(NSData*) value;
+- (OWSSignalServiceProtosNullMessageBuilder*) clearPadding;
+@end
+
+#define Verified_destination @"destination"
+#define Verified_identityKey @"identityKey"
+#define Verified_state @"state"
+#define Verified_nullMessage @"nullMessage"
+@interface OWSSignalServiceProtosVerified : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasDestination_:1;
+  BOOL hasIdentityKey_:1;
+  BOOL hasNullMessage_:1;
+  BOOL hasState_:1;
+  NSString* destination;
+  NSData* identityKey;
+  NSData* nullMessage;
+  OWSSignalServiceProtosVerifiedState state;
+}
+- (BOOL) hasDestination;
+- (BOOL) hasIdentityKey;
+- (BOOL) hasState;
+- (BOOL) hasNullMessage;
+@property (readonly, strong) NSString* destination;
+@property (readonly, strong) NSData* identityKey;
+@property (readonly) OWSSignalServiceProtosVerifiedState state;
+@property (readonly, strong) NSData* nullMessage;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosVerifiedBuilder*) builder;
++ (OWSSignalServiceProtosVerifiedBuilder*) builder;
++ (OWSSignalServiceProtosVerifiedBuilder*) builderWithPrototype:(OWSSignalServiceProtosVerified*) prototype;
+- (OWSSignalServiceProtosVerifiedBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosVerifiedBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosVerified* resultVerified;
+}
+
+- (OWSSignalServiceProtosVerified*) defaultInstance;
+
+- (OWSSignalServiceProtosVerifiedBuilder*) clear;
+- (OWSSignalServiceProtosVerifiedBuilder*) clone;
+
+- (OWSSignalServiceProtosVerified*) build;
+- (OWSSignalServiceProtosVerified*) buildPartial;
+
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFrom:(OWSSignalServiceProtosVerified*) other;
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasDestination;
+- (NSString*) destination;
+- (OWSSignalServiceProtosVerifiedBuilder*) setDestination:(NSString*) value;
+- (OWSSignalServiceProtosVerifiedBuilder*) clearDestination;
+
+- (BOOL) hasIdentityKey;
+- (NSData*) identityKey;
+- (OWSSignalServiceProtosVerifiedBuilder*) setIdentityKey:(NSData*) value;
+- (OWSSignalServiceProtosVerifiedBuilder*) clearIdentityKey;
+
+- (BOOL) hasState;
+- (OWSSignalServiceProtosVerifiedState) state;
+- (OWSSignalServiceProtosVerifiedBuilder*) setState:(OWSSignalServiceProtosVerifiedState) value;
+- (OWSSignalServiceProtosVerifiedBuilder*) clearState;
+
+- (BOOL) hasNullMessage;
+- (NSData*) nullMessage;
+- (OWSSignalServiceProtosVerifiedBuilder*) setNullMessage:(NSData*) value;
+- (OWSSignalServiceProtosVerifiedBuilder*) clearNullMessage;
 @end
 
 #define CallMessage_offer @"offer"
@@ -852,21 +996,23 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasGroups_:1;
   BOOL hasRequest_:1;
   BOOL hasBlocked_:1;
+  BOOL hasVerified_:1;
   BOOL hasPadding_:1;
   OWSSignalServiceProtosSyncMessageSent* sent;
   OWSSignalServiceProtosSyncMessageContacts* contacts;
   OWSSignalServiceProtosSyncMessageGroups* groups;
   OWSSignalServiceProtosSyncMessageRequest* request;
   OWSSignalServiceProtosSyncMessageBlocked* blocked;
+  OWSSignalServiceProtosVerified* verified;
   NSData* padding;
   NSMutableArray * readArray;
-  NSMutableArray * verifiedArray;
 }
 - (BOOL) hasSent;
 - (BOOL) hasContacts;
 - (BOOL) hasGroups;
 - (BOOL) hasRequest;
 - (BOOL) hasBlocked;
+- (BOOL) hasVerified;
 - (BOOL) hasPadding;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageSent* sent;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
@@ -874,10 +1020,9 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageRequest* request;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageRead*> * read;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
-@property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageVerified*> * verified;
+@property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 @property (readonly, strong) NSData* padding;
 - (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosSyncMessageVerified*)verifiedAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1253,76 +1398,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageReadBuilder*) clearTimestamp;
 @end
 
-#define Verified_destination @"destination"
-#define Verified_identityKey @"identityKey"
-#define Verified_state @"state"
-@interface OWSSignalServiceProtosSyncMessageVerified : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  BOOL hasDestination_:1;
-  BOOL hasIdentityKey_:1;
-  BOOL hasState_:1;
-  NSString* destination;
-  NSData* identityKey;
-  OWSSignalServiceProtosSyncMessageVerifiedState state;
-}
-- (BOOL) hasDestination;
-- (BOOL) hasIdentityKey;
-- (BOOL) hasState;
-@property (readonly, strong) NSString* destination;
-@property (readonly, strong) NSData* identityKey;
-@property (readonly) OWSSignalServiceProtosSyncMessageVerifiedState state;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageVerified*) prototype;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) toBuilder;
-
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromData:(NSData*) data;
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-@interface OWSSignalServiceProtosSyncMessageVerifiedBuilder : PBGeneratedMessageBuilder {
-@private
-  OWSSignalServiceProtosSyncMessageVerified* resultVerified;
-}
-
-- (OWSSignalServiceProtosSyncMessageVerified*) defaultInstance;
-
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) clear;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) clone;
-
-- (OWSSignalServiceProtosSyncMessageVerified*) build;
-- (OWSSignalServiceProtosSyncMessageVerified*) buildPartial;
-
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageVerified*) other;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (BOOL) hasDestination;
-- (NSString*) destination;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) setDestination:(NSString*) value;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) clearDestination;
-
-- (BOOL) hasIdentityKey;
-- (NSData*) identityKey;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) setIdentityKey:(NSData*) value;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) clearIdentityKey;
-
-- (BOOL) hasState;
-- (OWSSignalServiceProtosSyncMessageVerifiedState) state;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) setState:(OWSSignalServiceProtosSyncMessageVerifiedState) value;
-- (OWSSignalServiceProtosSyncMessageVerifiedBuilder*) clearState;
-@end
-
 @interface OWSSignalServiceProtosSyncMessageBuilder : PBGeneratedMessageBuilder {
 @private
   OWSSignalServiceProtosSyncMessage* resultSyncMessage;
@@ -1381,11 +1456,12 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageBuilder*) mergeBlocked:(OWSSignalServiceProtosSyncMessageBlocked*) value;
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearBlocked;
 
-- (NSMutableArray<OWSSignalServiceProtosSyncMessageVerified*> *)verified;
-- (OWSSignalServiceProtosSyncMessageVerified*)verifiedAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosSyncMessageBuilder *)addVerified:(OWSSignalServiceProtosSyncMessageVerified*)value;
-- (OWSSignalServiceProtosSyncMessageBuilder *)setVerifiedArray:(NSArray<OWSSignalServiceProtosSyncMessageVerified*> *)array;
-- (OWSSignalServiceProtosSyncMessageBuilder *)clearVerified;
+- (BOOL) hasVerified;
+- (OWSSignalServiceProtosVerified*) verified;
+- (OWSSignalServiceProtosSyncMessageBuilder*) setVerified:(OWSSignalServiceProtosVerified*) value;
+- (OWSSignalServiceProtosSyncMessageBuilder*) setVerifiedBuilder:(OWSSignalServiceProtosVerifiedBuilder*) builderForValue;
+- (OWSSignalServiceProtosSyncMessageBuilder*) mergeVerified:(OWSSignalServiceProtosVerified*) value;
+- (OWSSignalServiceProtosSyncMessageBuilder*) clearVerified;
 
 - (BOOL) hasPadding;
 - (NSData*) padding;
@@ -1609,25 +1685,30 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define ContactDetails_name @"name"
 #define ContactDetails_avatar @"avatar"
 #define ContactDetails_color @"color"
+#define ContactDetails_verified @"verified"
 @interface OWSSignalServiceProtosContactDetails : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasNumber_:1;
   BOOL hasName_:1;
   BOOL hasColor_:1;
   BOOL hasAvatar_:1;
+  BOOL hasVerified_:1;
   NSString* number;
   NSString* name;
   NSString* color;
   OWSSignalServiceProtosContactDetailsAvatar* avatar;
+  OWSSignalServiceProtosVerified* verified;
 }
 - (BOOL) hasNumber;
 - (BOOL) hasName;
 - (BOOL) hasAvatar;
 - (BOOL) hasColor;
+- (BOOL) hasVerified;
 @property (readonly, strong) NSString* number;
 @property (readonly, strong) NSString* name;
 @property (readonly, strong) OWSSignalServiceProtosContactDetailsAvatar* avatar;
 @property (readonly, strong) NSString* color;
+@property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1745,6 +1826,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSString*) color;
 - (OWSSignalServiceProtosContactDetailsBuilder*) setColor:(NSString*) value;
 - (OWSSignalServiceProtosContactDetailsBuilder*) clearColor;
+
+- (BOOL) hasVerified;
+- (OWSSignalServiceProtosVerified*) verified;
+- (OWSSignalServiceProtosContactDetailsBuilder*) setVerified:(OWSSignalServiceProtosVerified*) value;
+- (OWSSignalServiceProtosContactDetailsBuilder*) setVerifiedBuilder:(OWSSignalServiceProtosVerifiedBuilder*) builderForValue;
+- (OWSSignalServiceProtosContactDetailsBuilder*) mergeVerified:(OWSSignalServiceProtosVerified*) value;
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearVerified;
 @end
 
 #define GroupDetails_id @"id"

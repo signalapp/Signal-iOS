@@ -9,25 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSVerificationStateTuple : NSObject
-
-@property (nonatomic) OWSVerificationState verificationState;
-@property (nonatomic) NSData *identityKey;
-@property (nonatomic) NSString *recipientId;
-
-@end
-
-#pragma mark -
-
-@implementation OWSVerificationStateTuple
-
-@end
-
 #pragma mark -
 
 @interface OWSVerificationStateSyncMessage ()
 
-@property (nonatomic, readonly) NSMutableArray<OWSVerificationStateTuple *> *tuples;
+@property (nonatomic, readonly) OWSVerificationState verificationState;
+@property (nonatomic, readonly) NSData *identityKey;
 
 @end
 
@@ -35,72 +22,78 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSVerificationStateSyncMessage
 
-- (instancetype)init
+- (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
+                              identityKey:(NSData *)identityKey
+               verificationForRecipientId:(NSString *)verificationForRecipientId
 {
+    OWSAssert(identityKey.length == kIdentityKeyLength);
+    OWSAssert(verificationForRecipientId.length > 0);
+
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(verificationState != OWSVerificationStateNoLongerVerified);
+
     self = [super init];
     if (!self) {
         return self;
     }
+
+    _verificationState = verificationState;
+    _identityKey = identityKey;
+    _verificationForRecipientId = verificationForRecipientId;
     
-    _tuples = [NSMutableArray new];
-    
+    // This sync message should be 1-512 bytes longer than the corresponding NullMessage
+    // we store this values so the corresponding NullMessage can subtract it from the total length.
+    _paddingBytesLength = arc4random_uniform(512) + 1;
+
     return self;
 }
 
-- (void)addVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSAssert(identityKey.length == kIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(self.tuples);
+    OWSAssert(self.identityKey.length == kIdentityKeyLength);
+    OWSAssert(self.verificationForRecipientId.length > 0);
 
-    OWSVerificationStateTuple *tuple = [OWSVerificationStateTuple new];
-    tuple.verificationState = verificationState;
-    tuple.identityKey = identityKey;
-    tuple.recipientId = recipientId;
-    [self.tuples addObject:tuple];
-}
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
-{
-    OWSAssert(self.tuples.count > 0);
-    
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSSignalServiceProtosSyncMessageVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosSyncMessageVerifiedBuilder new];
-        verifiedBuilder.destination = tuple.recipientId;
-        verifiedBuilder.identityKey = tuple.identityKey;
-        switch (tuple.verificationState) {
-            case OWSVerificationStateDefault:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateDefault;
-                break;
-            case OWSVerificationStateVerified:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateVerified;
-                break;
-            case OWSVerificationStateNoLongerVerified:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateUnverified;
-                break;
-        }
-        [syncMessageBuilder addVerified:[verifiedBuilder build]];
-    }
 
-    // Add 1-512 bytes of random padding bytes.
-    size_t paddingLengthBytes = arc4random_uniform(512) + 1;
-    [syncMessageBuilder setPadding:[Cryptography generateRandomBytes:paddingLengthBytes]];
+    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    verifiedBuilder.destination = self.verificationForRecipientId;
+    verifiedBuilder.identityKey = self.identityKey;
+    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
 
-    return [syncMessageBuilder build];
+    OWSAssert(self.paddingBytesLength != 0);
+
+    // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
+    // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
+    // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
+    // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
+    // verification sync which is ~1-512 bytes larger then that.
+    verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
+    
+    syncMessageBuilder.verifiedBuilder = verifiedBuilder;
+    
+    return syncMessageBuilder;
 }
 
-- (NSArray<NSString *> *)recipientIds
+- (size_t)unpaddedVerifiedLength
 {
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSAssert(tuple.recipientId.length > 0);
-        [result addObject:tuple.recipientId];
-    }
+    OWSAssert(self.identityKey.length == kIdentityKeyLength);
+    OWSAssert(self.verificationForRecipientId.length > 0);
 
-    return [result copy];
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
+
+    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    verifiedBuilder.destination = self.verificationForRecipientId;
+    verifiedBuilder.identityKey = self.identityKey;
+    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
+
+    return [verifiedBuilder build].data.length;
 }
 
 @end

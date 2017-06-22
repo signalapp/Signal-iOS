@@ -455,8 +455,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return [[self dataMessageBuilder] build];
 }
 
-// For legacy message this is a serialized DataMessage.
-// For modern messages, e.g. Sync and Call messages, this is a serialized Contact
 - (NSData *)buildPlainTextData
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];

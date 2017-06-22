@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
 
     if (self.attachmentIds.count != 1) {
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     [syncMessageBuilder setGroupsBuilder:groupsBuilder];
 
-    return [syncMessageBuilder build];
+    return syncMessageBuilder;
 }
 
 - (NSData *)buildPlainTextAttachmentData

@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     OWSSignalServiceProtosSyncMessageBlockedBuilder *blockedPhoneNumbersBuilder =
         [OWSSignalServiceProtosSyncMessageBlockedBuilder new];
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     [syncMessageBuilder setBlocked:[blockedPhoneNumbersBuilder build]];
 
-    return [syncMessageBuilder build];
+    return syncMessageBuilder;
 }
 
 @end

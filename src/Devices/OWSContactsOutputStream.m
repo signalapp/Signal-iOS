@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
+#import "OWSRecipientIdentity.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,13 +15,22 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSContactsOutputStream
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
+         recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
-    
+
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
+
+    if (recipientIdentity != nil) {
+        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+        verifiedBuilder.destination = recipientIdentity.recipientId;
+        verifiedBuilder.identityKey = recipientIdentity.identityKey;
+        verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
+        contactBuilder.verifiedBuilder = verifiedBuilder;
+    }
 
     NSData *avatarPng;
     if (signalAccount.contact.image) {
