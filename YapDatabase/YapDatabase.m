@@ -10,7 +10,7 @@
 #import "sqlite3.h"
 
 #import <mach/mach_time.h>
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -132,6 +132,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	NSString *sqliteVersion;
 	uint64_t pageSize;
+	atomic_flag pendingCheckpoint;
 }
 
 /**
@@ -2918,12 +2919,19 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 {
 	__weak YapDatabase *weakSelf = self;
 	
+	bool hasPendingCheckpoint = atomic_flag_test_and_set(&pendingCheckpoint);
+	if (hasPendingCheckpoint) {
+		return;
+	}
+	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
 	#pragma clang diagnostic push
 	#pragma clang diagnostic warning "-Wimplicit-retain-self"
 		
 		__strong YapDatabase *strongSelf = weakSelf;
 		if (strongSelf == nil) return;
+		
+		atomic_flag_clear(&strongSelf->pendingCheckpoint);
 		
 		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
 		
