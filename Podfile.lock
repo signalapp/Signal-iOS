@@ -112,7 +112,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/retain-keyboard-view`)
   - PureLayout
   - Reachability
-  - SignalServiceKit (from `../SignalServiceKit`)
+  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
@@ -122,7 +122,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/retain-keyboard-view
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :path: ../SignalServiceKit
+    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -133,6 +133,9 @@ CHECKOUT OPTIONS:
   JSQMessagesViewController:
     :commit: 521686c112bbae7a762f85d52b1e41eeb1760772
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
+  SignalServiceKit:
+    :commit: 8b04e2a880bf31533c17359657ad9ae8a4db0d3d
+    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
@@ -158,6 +161,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 2088b6153dfaf0ce79fdf9141c7885c1ab84dd2b
+PODFILE CHECKSUM: 01734aea935bf91b25ee9aed90e20403075e5d19
 
 COCOAPODS: 1.2.1
