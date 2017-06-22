@@ -471,6 +471,7 @@ static int connectionBusyHandler(void *ptr, int count)
 - (void)_flushStatements
 {
 	sqlite_finalize_null(&beginTransactionStatement);
+	sqlite_finalize_null(&beginImmediateTransactionStatement);
 	sqlite_finalize_null(&commitTransactionStatement);
 	sqlite_finalize_null(&rollbackTransactionStatement);
 	
