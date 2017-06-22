@@ -9,99 +9,125 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSVerificationStateTuple : NSObject
-
-@property (nonatomic) OWSVerificationState verificationState;
-@property (nonatomic) NSData *identityKey;
-@property (nonatomic) NSString *recipientId;
-
-@end
-
-#pragma mark -
-
-@implementation OWSVerificationStateTuple
-
-@end
+//@interface OWSVerificationStateTuple : NSObject
+//
+//@property (nonatomic) OWSVerificationState verificationState;
+//@property (nonatomic) NSData *identityKey;
+//@property (nonatomic) NSString *recipientId;
+//
+//@end
+//
+//#pragma mark -
+//
+//@implementation OWSVerificationStateTuple
+//
+//@end
 
 #pragma mark -
 
 @interface OWSVerificationStateSyncMessage ()
 
-@property (nonatomic, readonly) NSMutableArray<OWSVerificationStateTuple *> *tuples;
+//@property (nonatomic, readonly) NSMutableArray<OWSVerificationStateTuple *> *tuples;
+@property (nonatomic, readonly) OWSVerificationState verificationState;
+@property (nonatomic, readonly) NSData *identityKey;
 
 @end
 
 #pragma mark -
 
 @implementation OWSVerificationStateSyncMessage
+//
+//- (instancetype)init
+//{
+//    self = [super init];
+//    if (!self) {
+//        return self;
+//    }
+//
+//    _tuples = [NSMutableArray new];
+//
+//    return self;
+//}
 
-- (instancetype)init
+- (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
+                              identityKey:(NSData *)identityKey
+               verificationForRecipientId:(NSString *)verificationForRecipientId
 {
+
+    OWSAssert(identityKey.length == kIdentityKeyLength);
+    OWSAssert(verificationForRecipientId.length > 0);
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(verificationState != OWSVerificationStateNoLongerVerified);
+
     self = [super init];
     if (!self) {
         return self;
     }
-    
-    _tuples = [NSMutableArray new];
-    
+
+    _verificationState = verificationState;
+    _identityKey = identityKey;
+    _verificationForRecipientId = verificationForRecipientId;
+
     return self;
-}
-
-- (void)addVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-{
-    OWSAssert(identityKey.length == kIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(self.tuples);
-
-    OWSVerificationStateTuple *tuple = [OWSVerificationStateTuple new];
-    tuple.verificationState = verificationState;
-    tuple.identityKey = identityKey;
-    tuple.recipientId = recipientId;
-    [self.tuples addObject:tuple];
 }
 
 - (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
 {
-    OWSAssert(self.tuples.count > 0);
-    
+    //    OWSAssert(self.tuples.count > 0);
+
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSSignalServiceProtosSyncMessageVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosSyncMessageVerifiedBuilder new];
-        verifiedBuilder.destination = tuple.recipientId;
-        verifiedBuilder.identityKey = tuple.identityKey;
-        switch (tuple.verificationState) {
+
+    //    for (OWSVerificationStateTuple *tuple in self.tuples) {
+    //        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    //        verifiedBuilder.destination = tuple.recipientId;
+    //        verifiedBuilder.identityKey = tuple.identityKey;
+    //        switch (tuple.verificationState) {
+    //            case OWSVerificationStateDefault:
+    //                verifiedBuilder.state = OWSSignalServiceProtosVerifiedStateDefault;
+    //                break;
+    //            case OWSVerificationStateVerified:
+    //                verifiedBuilder.state = OWSSignalServiceProtosVerifiedStateVerified;
+    //                break;
+    //            case OWSVerificationStateNoLongerVerified:
+    //                verifiedBuilder.state = OWSSignalServiceProtosVerifiedStateUnverified;
+    //                break;
+    //        }
+    //        [syncMessageBuilder addVerified:[verifiedBuilder build]];
+    //    }
+    //
+
+    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    verifiedBuilder.destination = self.verificationForRecipientId;
+    verifiedBuilder.identityKey = self.identityKey;
+    verifiedBuilder.state = ^{
+        switch (self.verificationState) {
             case OWSVerificationStateDefault:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateDefault;
-                break;
+                return OWSSignalServiceProtosVerifiedStateDefault;
             case OWSVerificationStateVerified:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateVerified;
-                break;
+                return OWSSignalServiceProtosVerifiedStateVerified;
             case OWSVerificationStateNoLongerVerified:
-                verifiedBuilder.state = OWSSignalServiceProtosSyncMessageVerifiedStateUnverified;
-                break;
+                return OWSSignalServiceProtosVerifiedStateUnverified;
         }
-        [syncMessageBuilder addVerified:[verifiedBuilder build]];
-    }
+    }();
 
     // Add 1-512 bytes of random padding bytes.
     size_t paddingLengthBytes = arc4random_uniform(512) + 1;
-    [syncMessageBuilder setPadding:[Cryptography generateRandomBytes:paddingLengthBytes]];
+    syncMessageBuilder.padding = [Cryptography generateRandomBytes:paddingLengthBytes];
 
     return [syncMessageBuilder build];
 }
 
-- (NSArray<NSString *> *)recipientIds
-{
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (OWSVerificationStateTuple *tuple in self.tuples) {
-        OWSAssert(tuple.recipientId.length > 0);
-        [result addObject:tuple.recipientId];
-    }
-
-    return [result copy];
-}
+//- (NSArray<NSString *> *)recipientIds
+//{
+//    NSMutableArray<NSString *> *result = [NSMutableArray new];
+//    for (OWSVerificationStateTuple *tuple in self.tuples) {
+//        OWSAssert(tuple.recipientId.length > 0);
+//        [result addObject:tuple.recipientId];
+//    }
+//
+//    return [result copy];
+//}
 
 @end
 

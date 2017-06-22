@@ -219,8 +219,9 @@ NS_ASSUME_NONNULL_BEGIN
         [description appendString:@"Blocked"];
     } else if (syncMessage.read.count > 0) {
         [description appendString:@"ReadReceipt"];
-    } else if (syncMessage.verified.count > 0){
-        NSString *verifiedString = [NSString stringWithFormat:@"Verifications: (%lu)", (unsigned long)syncMessage.verified.count];
+    } else if (syncMessage.hasVerified) {
+        NSString *verifiedString =
+            [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
         [description appendString:verifiedString];
     } else {
         // Shouldn't happen
@@ -687,9 +688,8 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read
                                                          storageManager:self.storageManager];
         [readReceiptsProcessor process];
-    } else if (syncMessage.verified.count > 0) {
-        DDLogInfo(@"%@ Received %ld verification state(s)", self.tag, (u_long)syncMessage.verified.count);
-
+    } else if (syncMessage.hasVerified) {
+        DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
         [[OWSIdentityManager sharedManager] processIncomingSyncMessage:syncMessage.verified];
     } else {
         DDLogWarn(@"%@ Ignoring unsupported sync message.", self.tag);
