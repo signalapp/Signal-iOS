@@ -53,19 +53,29 @@
 		371A7BC01EF18B80004176EC /* YapDatabaseViewLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 371A7BBB1EF18B7B004176EC /* YapDatabaseViewLocator.m */; };
 		65580CA61BF36A020055E65C /* yap_vfs_shim.h in Headers */ = {isa = PBXBuildFile; fileRef = 65580CA41BF36A020055E65C /* yap_vfs_shim.h */; };
 		65580CA81BF36AA20055E65C /* yap_vfs_shim.h in Headers */ = {isa = PBXBuildFile; fileRef = 65580CA41BF36A020055E65C /* yap_vfs_shim.h */; };
+		DC06EEB61EFC3F2C0002CB40 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAA1EFC3AA70002CB40 /* CocoaLumberjack.framework */; };
+		DC06EEB71EFC3F2C0002CB40 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAA1EFC3AA70002CB40 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EEB91EFC3F300002CB40 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2AE1BCC8E610087ED39 /* YapDatabase.framework */; };
+		DC06EEBA1EFC3F300002CB40 /* YapDatabase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2AE1BCC8E610087ED39 /* YapDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EEBD1EFC3F440002CB40 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAC1EFC3B070002CB40 /* CocoaLumberjack.framework */; };
+		DC06EEBE1EFC3F440002CB40 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAC1EFC3B070002CB40 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EEC01EFC3F490002CB40 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2BE1BCC8E870087ED39 /* YapDatabase.framework */; };
+		DC06EEC11EFC3F490002CB40 /* YapDatabase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2BE1BCC8E870087ED39 /* YapDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EEC61EFC3F840002CB40 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760DD1D78B4CC009C83A0 /* CocoaLumberjack.framework */; };
+		DC06EEC71EFC3F840002CB40 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760DD1D78B4CC009C83A0 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EEC91EFC3F890002CB40 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760911D78ADEF009C83A0 /* YapDatabase.framework */; };
+		DC06EECA1EFC3F890002CB40 /* YapDatabase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760911D78ADEF009C83A0 /* YapDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EECD1EFC40230002CB40 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAE1EFC3C310002CB40 /* CocoaLumberjack.framework */; };
+		DC06EECE1EFC40230002CB40 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC06EEAE1EFC3C310002CB40 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DC06EECF1EFC40290002CB40 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D031D80C901000721B8 /* YapDatabase.framework */; };
+		DC06EED01EFC40290002CB40 /* YapDatabase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D031D80C901000721B8 /* YapDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC1E7D101D80CC26000721B8 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D0F1D80CC26000721B8 /* libsqlite3.tbd */; };
 		DC302B0A1BE94F99009F8C4D /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216F1BCED5D100188E23 /* libsqlite3.tbd */; };
 		DC302B0B1BE94FDF009F8C4D /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B081BE94F31009F8C4D /* libsqlite3.tbd */; };
-		DC302B121BE950D9009F8C4D /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */; };
-		DC302B131BE950D9009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC302B171BE9517B009F8C4D /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */; };
-		DC302B181BE9517B009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC302B471BE98DAC009F8C4D /* YapMutationStack.h in Headers */ = {isa = PBXBuildFile; fileRef = DC302B451BE98DAC009F8C4D /* YapMutationStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC302B481BE98DAC009F8C4D /* YapMutationStack.h in Headers */ = {isa = PBXBuildFile; fileRef = DC302B451BE98DAC009F8C4D /* YapMutationStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC302B491BE98DAC009F8C4D /* YapMutationStack.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B461BE98DAC009F8C4D /* YapMutationStack.m */; };
 		DC302B4A1BE98DAC009F8C4D /* YapMutationStack.m in Sources */ = {isa = PBXBuildFile; fileRef = DC302B461BE98DAC009F8C4D /* YapMutationStack.m */; };
-		DC55F4591D78BB44007CEF3A /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760DD1D78B4CC009C83A0 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC55F45B1D78BB58007CEF3A /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE760911D78ADEF009C83A0 /* YapDatabase.framework */; };
 		DC55F45C1D78BBE6007CEF3A /* CompileTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524C1C4866F500562C92 /* CompileTest.m */; };
 		DC55F47B1D78E065007CEF3A /* YapDatabaseCrossProcessNotificationPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6C28BE1CAAF8DF00166CE4 /* YapDatabaseCrossProcessNotificationPrivate.h */; };
 		DC55F47C1D78E069007CEF3A /* YapDatabaseCrossProcessNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6C28BF1CAAF8DF00166CE4 /* YapDatabaseCrossProcessNotification.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -248,14 +258,10 @@
 		DC6266D61D80D3E100557968 /* TestModuleMap-watchOS Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DC6266D51D80D3E000557968 /* TestModuleMap-watchOS Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DC6266E51D80D3E100557968 /* TestModuleMap-watchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = DC6266C91D80D3E000557968 /* TestModuleMap-watchOS.app */; };
 		DC6266F41D80D46D00557968 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC6266EF1D80D46D00557968 /* Assets.xcassets */; };
-		DC6266F51D80D46D00557968 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC6266F11D80D46D00557968 /* Interface.storyboard */; };
 		DC6266FE1D80D52A00557968 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC6266F81D80D52A00557968 /* Assets.xcassets */; };
 		DC6266FF1D80D52A00557968 /* ExtensionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6266FA1D80D52A00557968 /* ExtensionDelegate.m */; };
 		DC6267011D80D52A00557968 /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6266FD1D80D52A00557968 /* InterfaceController.m */; };
 		DC6267021D80D57600557968 /* CompileTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524C1C4866F500562C92 /* CompileTest.m */; };
-		DC6267031D80D5A600557968 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D031D80C901000721B8 /* YapDatabase.framework */; };
-		DC6267071D80D75100557968 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D111D80CC52000721B8 /* CocoaLumberjack.framework */; };
-		DC6267081D80D75100557968 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DC1E7D111D80CC52000721B8 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC62670B1D80E46600557968 /* yap_vfs_shim.m in Sources */ = {isa = PBXBuildFile; fileRef = DC62670A1D80E46600557968 /* yap_vfs_shim.m */; };
 		DC62670C1D80E46600557968 /* yap_vfs_shim.m in Sources */ = {isa = PBXBuildFile; fileRef = DC62670A1D80E46600557968 /* yap_vfs_shim.m */; };
 		DC62670D1D80E46600557968 /* yap_vfs_shim.m in Sources */ = {isa = PBXBuildFile; fileRef = DC62670A1D80E46600557968 /* yap_vfs_shim.m */; };
@@ -670,7 +676,6 @@
 		DC6C28FF1CAAFE7F00166CE4 /* NSDate+YapDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = DC6C28FC1CAAFE7F00166CE4 /* NSDate+YapDatabase.h */; };
 		DC6C29001CAAFE7F00166CE4 /* NSDate+YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6C28FD1CAAFE7F00166CE4 /* NSDate+YapDatabase.m */; };
 		DC6C29011CAAFE7F00166CE4 /* NSDate+YapDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6C28FD1CAAFE7F00166CE4 /* NSDate+YapDatabase.m */; };
-		DC8664E71BE94DC0002F7800 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2AE1BCC8E610087ED39 /* YapDatabase.framework */; };
 		DCAF523F1C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DCAF52401C48636C00562C92 /* YapDatabaseConnectionProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = DCAF523D1C48636C00562C92 /* YapDatabaseConnectionProxy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DCAF52411C48636C00562C92 /* YapDatabaseConnectionProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF523E1C48636C00562C92 /* YapDatabaseConnectionProxy.m */; };
@@ -682,7 +687,6 @@
 		DCAF52501C4867B000562C92 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAF524F1C4867B000562C92 /* main.m */; };
 		DCAF52541C48681000562C92 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCAF52521C48681000562C92 /* Main.storyboard */; };
 		DCAF52581C48685400562C92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCAF52571C48685400562C92 /* Assets.xcassets */; };
-		DCD881421BE93C6200317214 /* YapDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCF7C2BE1BCC8E870087ED39 /* YapDatabase.framework */; };
 		DCD881441BE941E200317214 /* YapDatabaseSearchQueuePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DCD881431BE941D200317214 /* YapDatabaseSearchQueuePrivate.h */; };
 		DCD881451BE941E300317214 /* YapDatabaseSearchQueuePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DCD881431BE941D200317214 /* YapDatabaseSearchQueuePrivate.h */; };
 		DCD881521BE94BC400317214 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCD881481BE94BC400317214 /* AppDelegate.m */; };
@@ -923,6 +927,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DC06EEBB1EFC3F300002CB40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCF7C2AD1BCC8E610087ED39;
+			remoteInfo = "YapDatabase-macOS";
+		};
+		DC06EECB1EFC3F890002CB40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCE760901D78ADEF009C83A0;
+			remoteInfo = "YapDatabase-tvOS";
+		};
+		DC06EED11EFC40290002CB40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC1E7D021D80C901000721B8;
+			remoteInfo = "YapDatabase-watchOS";
+		};
 		DC6266D71D80D3E100557968 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
@@ -937,13 +962,6 @@
 			remoteGlobalIDString = DC6266C81D80D3E000557968;
 			remoteInfo = "TestModuleMap-watchOS";
 		};
-		DC8664E51BE94DB5002F7800 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DCF7C2AD1BCC8E610087ED39;
-			remoteInfo = YapDatabase;
-		};
 		DCD881401BE93C5400317214 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCF7C2A51BCC8E610087ED39 /* Project object */;
@@ -954,35 +972,38 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		DC302B141BE950D9009F8C4D /* Embed Frameworks */ = {
+		DC06EEB81EFC3F2C0002CB40 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DC302B131BE950D9009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */,
+				DC06EEBA1EFC3F300002CB40 /* YapDatabase.framework in Embed Frameworks */,
+				DC06EEB71EFC3F2C0002CB40 /* CocoaLumberjack.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC302B191BE9517B009F8C4D /* Embed Frameworks */ = {
+		DC06EEBF1EFC3F440002CB40 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DC302B181BE9517B009F8C4D /* CocoaLumberjack.framework in Embed Frameworks */,
+				DC06EEC11EFC3F490002CB40 /* YapDatabase.framework in Embed Frameworks */,
+				DC06EEBE1EFC3F440002CB40 /* CocoaLumberjack.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DC55F45A1D78BB44007CEF3A /* Embed Frameworks */ = {
+		DC06EEC81EFC3F840002CB40 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DC55F4591D78BB44007CEF3A /* CocoaLumberjack.framework in Embed Frameworks */,
+				DC06EECA1EFC3F890002CB40 /* YapDatabase.framework in Embed Frameworks */,
+				DC06EEC71EFC3F840002CB40 /* CocoaLumberjack.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1015,7 +1036,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DC6267081D80D75100557968 /* CocoaLumberjack.framework in Embed Frameworks */,
+				DC06EED01EFC40290002CB40 /* YapDatabase.framework in Embed Frameworks */,
+				DC06EECE1EFC40230002CB40 /* CocoaLumberjack.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1037,12 +1059,13 @@
 		371A7BBA1EF18B7B004176EC /* YapDatabaseViewLocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YapDatabaseViewLocator.h; sourceTree = "<group>"; };
 		371A7BBB1EF18B7B004176EC /* YapDatabaseViewLocator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseViewLocator.m; sourceTree = "<group>"; };
 		65580CA41BF36A020055E65C /* yap_vfs_shim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yap_vfs_shim.h; sourceTree = "<group>"; };
+		DC06EEAA1EFC3AA70002CB40 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/Mac/CocoaLumberjack.framework; sourceTree = SOURCE_ROOT; };
+		DC06EEAC1EFC3B070002CB40 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = SOURCE_ROOT; };
+		DC06EEAE1EFC3C310002CB40 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/watchOS/CocoaLumberjack.framework; sourceTree = SOURCE_ROOT; };
 		DC1E7D031D80C901000721B8 /* YapDatabase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YapDatabase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC1E7D0B1D80CBA3000721B8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Framework/watchOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		DC1E7D0E1D80CBED000721B8 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Framework/watchOS/module.modulemap; sourceTree = SOURCE_ROOT; };
 		DC1E7D0F1D80CC26000721B8 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS2.2.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
-		DC1E7D111D80CC52000721B8 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../Carthage/Build/watchOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
-		DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC302B081BE94F31009F8C4D /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.1.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		DC302B451BE98DAC009F8C4D /* YapMutationStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapMutationStack.h; sourceTree = "<group>"; };
 		DC302B461BE98DAC009F8C4D /* YapMutationStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapMutationStack.m; sourceTree = "<group>"; };
@@ -1052,7 +1075,6 @@
 		DC6266C91D80D3E000557968 /* TestModuleMap-watchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TestModuleMap-watchOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC6266D51D80D3E000557968 /* TestModuleMap-watchOS Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "TestModuleMap-watchOS Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC6266EF1D80D46D00557968 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "Framework/TestModuleMap-watchOS/App/Assets.xcassets"; sourceTree = SOURCE_ROOT; };
-		DC6266F21D80D46D00557968 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Interface.storyboard; sourceTree = "<group>"; };
 		DC6266F31D80D46D00557968 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Framework/TestModuleMap-watchOS/App/Info.plist"; sourceTree = SOURCE_ROOT; };
 		DC6266F81D80D52A00557968 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "Framework/TestModuleMap-watchOS/Extension/Assets.xcassets"; sourceTree = SOURCE_ROOT; };
 		DC6266F91D80D52A00557968 /* ExtensionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionDelegate.h; path = "Framework/TestModuleMap-watchOS/Extension/ExtensionDelegate.h"; sourceTree = SOURCE_ROOT; };
@@ -1246,7 +1268,6 @@
 		DC651FEC1BCEC77E00188E23 /* YapDatabaseTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseTransaction.m; sourceTree = "<group>"; };
 		DC6521651BCED4C600188E23 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Framework/Mac/Info.plist; sourceTree = SOURCE_ROOT; };
 		DC6521681BCED4D800188E23 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Framework/iOS/Info.plist; sourceTree = SOURCE_ROOT; };
-		DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/Mac/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		DC65216F1BCED5D100188E23 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		DC6C28921CAAF03200166CE4 /* YapBidirectionalCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapBidirectionalCache.h; sourceTree = "<group>"; };
 		DC6C28931CAAF03200166CE4 /* YapBidirectionalCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapBidirectionalCache.m; sourceTree = "<group>"; };
@@ -1257,8 +1278,6 @@
 		DC6C28C21CAAF8DF00166CE4 /* YapDatabaseCrossProcessNotificationConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCrossProcessNotificationConnection.m; sourceTree = "<group>"; };
 		DC6C28C31CAAF8DF00166CE4 /* YapDatabaseCrossProcessNotificationTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseCrossProcessNotificationTransaction.h; sourceTree = "<group>"; };
 		DC6C28C41CAAF8DF00166CE4 /* YapDatabaseCrossProcessNotificationTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YapDatabaseCrossProcessNotificationTransaction.m; sourceTree = "<group>"; };
-		DC6C28D31CAAFD8600166CE4 /* Reachability.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reachability.framework; path = Carthage/Build/Mac/Reachability.framework; sourceTree = "<group>"; };
-		DC6C28D61CAAFDD800166CE4 /* Reachability.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reachability.framework; path = ../Carthage/Build/iOS/Reachability.framework; sourceTree = "<group>"; };
 		DC6C28DB1CAAFE3B00166CE4 /* YapActionItemPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapActionItemPrivate.h; sourceTree = "<group>"; };
 		DC6C28DC1CAAFE3B00166CE4 /* YapDatabaseActionManagerPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapDatabaseActionManagerPrivate.h; sourceTree = "<group>"; };
 		DC6C28DD1CAAFE3B00166CE4 /* YapActionable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YapActionable.h; sourceTree = "<group>"; };
@@ -1328,8 +1347,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC6267071D80D75100557968 /* CocoaLumberjack.framework in Frameworks */,
-				DC6267031D80D5A600557968 /* YapDatabase.framework in Frameworks */,
+				DC06EECF1EFC40290002CB40 /* YapDatabase.framework in Frameworks */,
+				DC06EECD1EFC40230002CB40 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1337,8 +1356,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC302B171BE9517B009F8C4D /* CocoaLumberjack.framework in Frameworks */,
-				DCD881421BE93C6200317214 /* YapDatabase.framework in Frameworks */,
+				DC06EEC01EFC3F490002CB40 /* YapDatabase.framework in Frameworks */,
+				DC06EEBD1EFC3F440002CB40 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1346,8 +1365,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC8664E71BE94DC0002F7800 /* YapDatabase.framework in Frameworks */,
-				DC302B121BE950D9009F8C4D /* CocoaLumberjack.framework in Frameworks */,
+				DC06EEB91EFC3F300002CB40 /* YapDatabase.framework in Frameworks */,
+				DC06EEB61EFC3F2C0002CB40 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1363,7 +1382,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC55F45B1D78BB58007CEF3A /* YapDatabase.framework in Frameworks */,
+				DC06EEC91EFC3F890002CB40 /* YapDatabase.framework in Frameworks */,
+				DC06EEC61EFC3F840002CB40 /* CocoaLumberjack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1424,8 +1444,8 @@
 		DC1E7D0D1D80CBBF000721B8 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				DC06EEAE1EFC3C310002CB40 /* CocoaLumberjack.framework */,
 				DC1E7D0F1D80CC26000721B8 /* libsqlite3.tbd */,
-				DC1E7D111D80CC52000721B8 /* CocoaLumberjack.framework */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -1434,8 +1454,7 @@
 			isa = PBXGroup;
 			children = (
 				DC302B081BE94F31009F8C4D /* libsqlite3.tbd */,
-				DC302B041BE94F0B009F8C4D /* CocoaLumberjack.framework */,
-				DC6C28D61CAAFDD800166CE4 /* Reachability.framework */,
+				DC06EEAC1EFC3B070002CB40 /* CocoaLumberjack.framework */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -1453,7 +1472,6 @@
 		DC6266EE1D80D45600557968 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				DC6266F11D80D46D00557968 /* Interface.storyboard */,
 				DC6266EF1D80D46D00557968 /* Assets.xcassets */,
 				DC6266F31D80D46D00557968 /* Info.plist */,
 			);
@@ -1883,9 +1901,8 @@
 		DC65216A1BCED55300188E23 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				DC06EEAA1EFC3AA70002CB40 /* CocoaLumberjack.framework */,
 				DC65216F1BCED5D100188E23 /* libsqlite3.tbd */,
-				DC65216B1BCED5A500188E23 /* CocoaLumberjack.framework */,
-				DC6C28D31CAAFD8600166CE4 /* Reachability.framework */,
 			);
 			name = Dependencies;
 			path = ..;
@@ -2668,6 +2685,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DC06EED21EFC40290002CB40 /* PBXTargetDependency */,
 			);
 			name = "TestModuleMap-watchOS Extension";
 			productName = "TestModuleMap-watchOS Extension";
@@ -2681,8 +2699,8 @@
 				DCD881251BE93C1000317214 /* Sources */,
 				DCD881261BE93C1000317214 /* Frameworks */,
 				DCD881271BE93C1000317214 /* Resources */,
-				DC302B191BE9517B009F8C4D /* Embed Frameworks */,
 				DC6266ED1D80D3E100557968 /* Embed Watch Content */,
+				DC06EEBF1EFC3F440002CB40 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2702,12 +2720,12 @@
 				DCD881591BE94C9300317214 /* Sources */,
 				DCD8815A1BE94C9300317214 /* Frameworks */,
 				DCD8815B1BE94C9300317214 /* Resources */,
-				DC302B141BE950D9009F8C4D /* Embed Frameworks */,
+				DC06EEB81EFC3F2C0002CB40 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DC8664E61BE94DB5002F7800 /* PBXTargetDependency */,
+				DC06EEBC1EFC3F300002CB40 /* PBXTargetDependency */,
 			);
 			name = "TestModuleMap-macOS";
 			productName = TestModuleMap;
@@ -2739,11 +2757,12 @@
 				DCE761681D78B899009C83A0 /* Sources */,
 				DCE761691D78B899009C83A0 /* Frameworks */,
 				DCE7616A1D78B899009C83A0 /* Resources */,
-				DC55F45A1D78BB44007CEF3A /* Embed Frameworks */,
+				DC06EEC81EFC3F840002CB40 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DC06EECC1EFC3F890002CB40 /* PBXTargetDependency */,
 			);
 			name = "TestModuleMap-tvOS";
 			productName = "TestModuleMap-tvOS";
@@ -2862,7 +2881,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC6266F51D80D46D00557968 /* Interface.storyboard in Resources */,
 				DC6266F41D80D46D00557968 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3391,6 +3409,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DC06EEBC1EFC3F300002CB40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCF7C2AD1BCC8E610087ED39 /* YapDatabase-macOS */;
+			targetProxy = DC06EEBB1EFC3F300002CB40 /* PBXContainerItemProxy */;
+		};
+		DC06EECC1EFC3F890002CB40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCE760901D78ADEF009C83A0 /* YapDatabase-tvOS */;
+			targetProxy = DC06EECB1EFC3F890002CB40 /* PBXContainerItemProxy */;
+		};
+		DC06EED21EFC40290002CB40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC1E7D021D80C901000721B8 /* YapDatabase-watchOS */;
+			targetProxy = DC06EED11EFC40290002CB40 /* PBXContainerItemProxy */;
+		};
 		DC6266D81D80D3E100557968 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DC6266D41D80D3E000557968 /* TestModuleMap-watchOS Extension */;
@@ -3401,11 +3434,6 @@
 			target = DC6266C81D80D3E000557968 /* TestModuleMap-watchOS */;
 			targetProxy = DC6266E31D80D3E100557968 /* PBXContainerItemProxy */;
 		};
-		DC8664E61BE94DB5002F7800 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DCF7C2AD1BCC8E610087ED39 /* YapDatabase-macOS */;
-			targetProxy = DC8664E51BE94DB5002F7800 /* PBXContainerItemProxy */;
-		};
 		DCD881411BE93C5400317214 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DCF7C2BD1BCC8E870087ED39 /* YapDatabase-iOS */;
@@ -3414,15 +3442,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		DC6266F11D80D46D00557968 /* Interface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DC6266F21D80D46D00557968 /* Base */,
-			);
-			name = Interface.storyboard;
-			path = "../Framework/TestModuleMap-watchOS/App/Base.lproj";
-			sourceTree = "<group>";
-		};
 		DCAF52521C48681000562C92 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3836,6 +3855,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3865,6 +3885,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
