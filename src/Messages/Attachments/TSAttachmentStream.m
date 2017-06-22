@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     // state, but this constructor is used only for new outgoing
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
+    _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
 
@@ -62,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attachments which don't need to be uploaded.
     _isUploaded = YES;
     self.attachmentType = pointer.attachmentType;
+    _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
 
@@ -75,7 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    // OWS105AttachmentFilePaths will ensure the file path is saved if necessary.
     [self ensureFilePath];
+
+    // OWS105AttachmentFilePaths will ensure the creation timestamp is saved if necessary.
+    if (!_creationTimestamp) {
+        _creationTimestamp = [NSDate new];
+    }
 
     return self;
 }
