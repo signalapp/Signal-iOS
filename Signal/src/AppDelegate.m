@@ -181,6 +181,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             }];
 
     self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
+                                                               identityManager:[OWSIdentityManager sharedManager]
                                                                  messageSender:[Environment getCurrent].messageSender];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
