@@ -38,6 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                            actionBlock:^{
                                                                [DebugUIContacts createRandomContacts:100];
                                                            }],
+                                           [OWSTableItem itemWithTitle:@"Create 1k Random Contacts"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts createRandomContacts:1000];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"Create 10k Random Contacts"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts createRandomContacts:10 * 1000];
+                                                           }],
                                            [OWSTableItem itemWithTitle:@"Delete Random Contacts"
                                                            actionBlock:^{
                                                                [DebugUIContacts deleteRandomContacts];
@@ -49,8 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSArray<NSString *> *values = @[
         @"Alice",
+        @"Arthur",
+        @"Bertha",
         @"Bob",
         @"Carol",
+        @"Carole",
         @"Carlos",
         @"Charlie",
         @"Chuck",
@@ -59,31 +70,31 @@ NS_ASSUME_NONNULL_BEGIN
         @"Dave",
         @"David",
         @"Erin",
-        @"Eve.",
         @"Eve",
         @"Faythe",
         @"Frank",
         @"Grace",
         @"Heidi",
+        @"Lilia",
         @"Mallory",
         @"Mallet",
+        @"Moxie",
         @"Oscar",
         @"Peggy",
         @"Pat",
+        @"Paul",
+        @"Riya",
+        @"Scott",
         @"Sybil",
         @"Trent",
         @"Ted",
+        @"Trevor",
         @"Trudy",
         @"Victor",
         @"Vanna",
         @"Walter",
         @"Wendy",
-        @"Arthur",
         @"Merlin",
-        @"Paul",
-        @"Carole",
-        @"Paul",
-        @"Bertha",
     ];
     return values[(NSUInteger)arc4random_uniform((uint32_t)values.count)];
 }
