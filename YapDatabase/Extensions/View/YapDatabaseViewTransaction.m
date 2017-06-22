@@ -3674,13 +3674,8 @@
 		return NO;
 	}
 	
-#if TARGET_OS_IOS
-	NSUInteger section = indexPath.section;
-	NSUInteger row = indexPath.row;
-#else
 	NSUInteger section = [indexPath indexAtPosition:0];
 	NSUInteger row = [indexPath indexAtPosition:1];
-#endif
 	
 	YapCollectionKey *ck = nil;
 	BOOL result = [self getRowid:NULL
@@ -3779,13 +3774,8 @@
 		return nil;
 	}
 	
-#if TARGET_OS_IOS
-	NSUInteger section = indexPath.section;
-	NSUInteger row = indexPath.row;
-#else
 	NSUInteger section = [indexPath indexAtPosition:0];
 	NSUInteger row = [indexPath indexAtPosition:1];
-#endif
 	
 	id object = nil;
 	
@@ -3846,13 +3836,8 @@
 		return nil;
 	}
 	
-#if TARGET_OS_IOS
-	NSUInteger section = indexPath.section;
-	NSUInteger row = indexPath.row;
-#else
 	NSUInteger section = [indexPath indexAtPosition:0];
 	NSUInteger row = [indexPath indexAtPosition:1];
-#endif
 	
 	id metadata = nil;
 	
