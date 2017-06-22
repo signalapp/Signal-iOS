@@ -24,7 +24,6 @@ framework module YapDatabase {
 	
 	explicit module YapDatabaseView {
 		header "YapDatabaseView.h"
-		header "YapDatabaseViewTypes.h"
 		header "YapDatabaseViewOptions.h"
 		header "YapDatabaseViewConnection.h"
 		header "YapDatabaseViewTransaction.h"
@@ -32,6 +31,17 @@ framework module YapDatabase {
 		header "YapDatabaseViewChange.h"
 		header "YapDatabaseViewRangeOptions.h"
 	}
+
+    // Extension: AutoView
+
+    explicit module YapDatabaseAutoView {
+        header "YapDatabaseViewTypes.h"
+        header "YapDatabaseAutoView.h"
+        header "YapDatabaseAutoViewConnection.h"
+        header "YapDatabaseAutoViewTransaction.h"
+
+        export YapDatabaseView
+    }
 	
 	// Extension: FilteredView
 	
