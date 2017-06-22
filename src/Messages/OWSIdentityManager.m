@@ -198,7 +198,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                      createdAt:[NSDate new]
                                              verificationState:verificationState] save];
 
-            [self.storageManager archiveAllSessionsForContact:recipientId];
+            dispatch_async([OWSDispatch sessionStoreQueue], ^{
+                [self.storageManager archiveAllSessionsForContact:recipientId];
+            });
 
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];
