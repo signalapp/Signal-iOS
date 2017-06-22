@@ -105,17 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     verifiedBuilder.destination = self.verificationForRecipientId;
     verifiedBuilder.identityKey = self.identityKey;
-    verifiedBuilder.state = ^{
-        switch (self.verificationState) {
-            case OWSVerificationStateDefault:
-                return OWSSignalServiceProtosVerifiedStateDefault;
-            case OWSVerificationStateVerified:
-                return OWSSignalServiceProtosVerifiedStateVerified;
-            case OWSVerificationStateNoLongerVerified:
-                return OWSSignalServiceProtosVerifiedStateUnverified;
-        }
-    }();
-    
+    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
+
     OWSAssert(self.paddingBytesLength != 0);
     verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
     

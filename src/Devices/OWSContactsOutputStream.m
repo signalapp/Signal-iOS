@@ -19,21 +19,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
-    
+    OWSAssert(recipientIdentity);
+
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
-    
-    // Don't sync default or no-longer-verified state in contact sync.
-    if (recipientIdentity.verificationState == OWSVerificationStateVerified) {
-        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
-        verifiedBuilder.state = OWSSignalServiceProtosVerifiedStateVerified;
-        verifiedBuilder.destination = recipientIdentity.recipientId;
-        verifiedBuilder.identityKey = recipientIdentity.identityKey;
-        // TODO do we need to set null message here?
-        contactBuilder.verified = [verifiedBuilder build];
-    }
-    
+
+    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    verifiedBuilder.destination = recipientIdentity.recipientId;
+    verifiedBuilder.identityKey = recipientIdentity.identityKey;
+    verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
+    contactBuilder.verified = [verifiedBuilder build];
+
     NSData *avatarPng;
     if (signalAccount.contact.image) {
         OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
