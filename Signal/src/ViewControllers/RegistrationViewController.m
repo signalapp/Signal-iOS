@@ -18,9 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-NSString *const kKeychainServiceDebug = @"kKeychainServiceDebug";
-NSString *const kKeychainLastRegisteredCountryCode = @"kKeychainLastRegisteredCountryCode";
-NSString *const kKeychainLastRegisteredPhoneNumber = @"kKeychainLastRegisteredPhoneNumber";
+NSString *const kNSUserDefaultsKey_LastRegisteredCountryCode = @"kNSUserDefaultsKey_LastRegisteredCountryCode";
+NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaultsKey_LastRegisteredPhoneNumber";
 
 #endif
 
@@ -436,52 +435,41 @@ NSString *const kKeychainLastRegisteredPhoneNumber = @"kKeychainLastRegisteredPh
 
 #ifdef DEBUG
 
-- (NSString *_Nullable)debugKeychainValueForKey:(NSString *)key
+- (NSString *_Nullable)debugValueForKey:(NSString *)key
 {
     OWSCAssert([NSThread isMainThread]);
     OWSCAssert(key.length > 0);
 
-    NSError *error;
-    NSString *value = [SAMKeychain passwordForService:kKeychainServiceDebug account:key error:&error];
-    if (error) {
-        // Ignore errors; these values may not be present.
-        return nil;
-    } else {
-        return value;
-    }
+    return [[NSUserDefaults standardUserDefaults] stringForKey:key];
 }
 
-- (void)setDebugKeychainValue:(NSString *)value forKey:(NSString *)key
+- (void)setDebugValue:(NSString *)value forKey:(NSString *)key
 {
     OWSCAssert([NSThread isMainThread]);
     OWSCAssert(key.length > 0);
     OWSCAssert(value.length > 0);
 
-    NSError *error;
-    [SAMKeychain setPassword:value forService:kKeychainServiceDebug account:key error:&error];
-    if (error) {
-        OWSCFail(@"SetLastRegisteredPhoneNumber error: %@", error);
-    }
+    [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
 }
 
 - (NSString *_Nullable)lastRegisteredCountryCode
 {
-    return [self debugKeychainValueForKey:kKeychainLastRegisteredCountryCode];
+    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
 }
 
 - (void)setLastRegisteredCountryCode:(NSString *)value
 {
-    [self setDebugKeychainValue:value forKey:kKeychainLastRegisteredCountryCode];
+    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
 }
 
 - (NSString *_Nullable)lastRegisteredPhoneNumber
 {
-    return [self debugKeychainValueForKey:kKeychainLastRegisteredPhoneNumber];
+    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
 }
 
 - (void)setLastRegisteredPhoneNumber:(NSString *)value
 {
-    [self setDebugKeychainValue:value forKey:kKeychainLastRegisteredPhoneNumber];
+    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
 }
 
 #endif
