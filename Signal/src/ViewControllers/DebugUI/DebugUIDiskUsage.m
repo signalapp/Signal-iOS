@@ -27,21 +27,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name
 {
-    return @"Disk Usage";
+    return @"Orphans & Disk Usage";
 }
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     return [OWSTableSection sectionWithTitle:self.name
                                        items:@[
-                                           [OWSTableItem itemWithTitle:@"Log Disk Usage Stats"
+                                           [OWSTableItem itemWithTitle:@"Audit & Log"
                                                            actionBlock:^{
-                                                               [DebugUIDiskUsage logDiskUsageStats];
+                                                               [DebugUIDiskUsage auditWithoutCleanup];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"Audit & Clean Up"
+                                                           actionBlock:^{
+                                                               [DebugUIDiskUsage auditWithCleanup];
                                                            }],
                                        ]];
 }
 
-+ (void)logDiskUsageStats
++ (void)auditWithoutCleanup
+{
+    [self auditAndCleanup:NO];
+}
+
++ (void)auditWithCleanup
+{
+    [self auditAndCleanup:YES];
+}
+
++ (void)auditAndCleanup:(BOOL)shouldCleanup
 {
     NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
     DDLogError(@"attachmentsFolder: %@", attachmentsFolder);
@@ -57,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
         if (error) {
             OWSFail(@"contentsOfDirectoryAtPath error: %@", error);
+            return;
         }
         for (NSString *fileName in fileNames) {
             NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
@@ -69,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize];
                 if (error) {
                     OWSFail(@"attributesOfItemAtPath: %@ error: %@", filePath, error);
+                    continue;
                 }
                 totalFileSize += fileSize.longLongValue;
                 fileCount++;
@@ -80,11 +96,13 @@ NS_ASSUME_NONNULL_BEGIN
     visitAttachmentFiles(attachmentsFolder);
 
     __block int attachmentStreamCount = 0;
-    NSMutableSet *attachmentFilePaths = [NSMutableSet new];
+    NSMutableSet<NSString *> *attachmentFilePaths = [NSMutableSet new];
+    NSMutableSet<NSString *> *attachmentIds = [NSMutableSet new];
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    [storageManager.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [storageManager.newDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
                                               usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
+                                                  [attachmentIds addObject:attachment.uniqueId];
                                                   if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                                                       return;
                                                   }
@@ -102,9 +120,9 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogError(@"attachmentStreams: %d", attachmentStreamCount);
     DDLogError(@"attachmentStreams with file paths: %zd", attachmentFilePaths.count);
 
-    NSMutableSet *orphanDiskFilePaths = [diskFilePaths mutableCopy];
+    NSMutableSet<NSString *> *orphanDiskFilePaths = [diskFilePaths mutableCopy];
     [orphanDiskFilePaths minusSet:attachmentFilePaths];
-    NSMutableSet *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
+    NSMutableSet<NSString *> *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:diskFilePaths];
 
     DDLogError(@"orphan disk file paths: %zd", orphanDiskFilePaths.count);
@@ -112,6 +130,79 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self printPaths:orphanDiskFilePaths.allObjects label:@"orphan disk file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
+
+    NSMutableSet *threadIds = [NSMutableSet new];
+    [storageManager.newDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [transaction enumerateKeysInCollection:TSThread.collection
+                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                        [threadIds addObject:key];
+                                    }];
+    }];
+
+    NSMutableSet<TSInteraction *> *orphanInteractions = [NSMutableSet new];
+    NSMutableSet<NSString *> *messageAttachmentIds = [NSMutableSet new];
+    [storageManager.newDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [transaction enumerateKeysAndObjectsInCollection:TSMessage.collection
+                                              usingBlock:^(NSString *key, TSInteraction *interaction, BOOL *stop) {
+                                                  if (![threadIds containsObject:interaction.uniqueThreadId]) {
+                                                      [orphanInteractions addObject:interaction];
+                                                  }
+
+                                                  if (![interaction isKindOfClass:[TSMessage class]]) {
+                                                      return;
+                                                  }
+                                                  TSMessage *message = (TSMessage *)interaction;
+                                                  if (message.attachmentIds.count > 0) {
+                                                      [messageAttachmentIds addObjectsFromArray:message.attachmentIds];
+                                                  }
+                                              }];
+    }];
+
+    DDLogError(@"attachmentIds: %zd", attachmentIds.count);
+    DDLogError(@"messageAttachmentIds: %zd", messageAttachmentIds.count);
+
+    NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
+    [orphanAttachmentIds minusSet:messageAttachmentIds];
+    NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
+    [missingAttachmentIds minusSet:attachmentIds];
+
+    DDLogError(@"orphan attachmentIds: %zd", orphanAttachmentIds.count);
+    DDLogError(@"missing attachmentIds: %zd", missingAttachmentIds.count);
+
+    DDLogError(@"orphan interactions: %zd", orphanInteractions.count);
+
+    if (shouldCleanup) {
+        [storageManager.newDatabaseConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                for (TSInteraction *interaction in orphanInteractions) {
+                    [interaction removeWithTransaction:transaction];
+                }
+                for (NSString *attachmentId in orphanAttachmentIds) {
+                    TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+                    OWSAssert(attachment);
+                    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                        continue;
+                    }
+                    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                    // Don't delete attachments which were created in the last N minutes.
+                    const NSTimeInterval kMinimumOrphanAttachmentAge = 2 * 60.f;
+                    if (fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]) < kMinimumOrphanAttachmentAge) {
+                        DDLogInfo(@"Skipping orphan attachment due to age: %f",
+                            fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]));
+                        continue;
+                    }
+                    [attachmentStream removeWithTransaction:transaction];
+                }
+            }];
+
+        for (NSString *filePath in orphanDiskFilePaths) {
+            NSError *error;
+            [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+            if (error) {
+                OWSFail(@"Could not remove orphan file at: %@", filePath);
+            }
+        }
+    }
 }
 
 + (void)printPaths:(NSArray<NSString *> *)paths label:(NSString *)label
