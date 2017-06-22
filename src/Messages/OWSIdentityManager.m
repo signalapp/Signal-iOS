@@ -514,22 +514,24 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
                                                                    verificationStateSyncMessage:message];
     [self.messageSender sendMessage:nullMessage
-                            success:^{
-                                DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.tag);
-                            }
-                            failure:^(NSError * _Nonnull error) {
-                                DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
-                            }];
-    
-    [self.messageSender sendMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.tag);
+                [self.messageSender sendMessage:message
+                    success:^{
+                        DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
 
-            // Record that this verification state was successfully synced.
-            [self clearSyncMessageForRecipientId:message.verificationForRecipientId];
+                        // Record that this verification state was successfully synced.
+                        [self clearSyncMessageForRecipientId:message.verificationForRecipientId];
+                    }
+                    failure:^(NSError *error) {
+                        DDLogError(
+                            @"%@ Failed to send verification state sync message with error: %@", self.tag, error);
+                    }];
+            });
         }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send verification state sync message with error: %@", self.tag, error);
+        failure:^(NSError *_Nonnull error) {
+            DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
         }];
 }
 
