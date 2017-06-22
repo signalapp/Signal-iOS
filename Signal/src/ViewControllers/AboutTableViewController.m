@@ -2,129 +2,72 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Social/Social.h>
 #import "AboutTableViewController.h"
 #import "UIUtil.h"
-
-@interface AboutTableViewController ()
-
-@property (strong, nonatomic) UITableViewCell *versionCell;
-@property (strong, nonatomic) UITableViewCell *supportCell;
-@property (strong, nonatomic) UITableViewCell *twitterInviteCell;
-
-@property (strong, nonatomic) UILabel *versionLabel;
-
-@property (strong, nonatomic) UILabel *footerView;
-
-@end
-
-typedef NS_ENUM(NSUInteger, AboutTableViewControllerSection) {
-    AboutTableViewControllerSectionInformation,
-    AboutTableViewControllerSectionHelp
-};
+#import "UIView+OWS.h"
+#import <SignalServiceKit/TSDatabaseView.h>
+#import <SignalServiceKit/TSStorageManager.h>
 
 @implementation AboutTableViewController
 
-- (instancetype)init {
-    return [super initWithStyle:UITableViewStyleGrouped];
-}
-
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-- (void)loadView {
-    [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"Navbar title");
 
-    // Version
-    self.versionCell                = [[UITableViewCell alloc] init];
-    self.versionCell.textLabel.text = NSLocalizedString(@"SETTINGS_VERSION", @"");
-
-    self.versionLabel           = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 75, 30)];
-    self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-    self.versionLabel.textColor = [UIColor lightGrayColor];
-    self.versionLabel.font      = [UIFont ows_regularFontWithSize:16.0f];
-    self.versionLabel.textAlignment = NSTextAlignmentRight;
-
-    self.versionCell.accessoryView          = self.versionLabel;
-    self.versionCell.userInteractionEnabled = NO;
-
-    // Support
-    self.supportCell                = [[UITableViewCell alloc] init];
-    self.supportCell.textLabel.text = NSLocalizedString(@"SETTINGS_SUPPORT", @"");
-    self.supportCell.accessoryType  = UITableViewCellAccessoryDisclosureIndicator;
-
-    // Footer
-    self.footerView               = [[UILabel alloc] init];
-    self.footerView.text          = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
-    self.footerView.textColor     = [UIColor ows_darkGrayColor];
-    self.footerView.font          = [UIFont ows_regularFontWithSize:15.0f];
-    self.footerView.numberOfLines = 2;
-    self.footerView.textAlignment = NSTextAlignmentCenter;
+    [self updateTableContents];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table Contents
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
-}
+- (void)updateTableContents
+{
+    OWSTableContents *contents = [OWSTableContents new];
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    switch (section) {
-        case AboutTableViewControllerSectionInformation:
-            return 1;
-        case AboutTableViewControllerSectionHelp:
-            return 1;
-        default:
-            return 0;
-    }
-}
+    OWSTableSection *informationSection = [OWSTableSection new];
+    informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
+    [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
+                                                  accessoryText:[[[NSBundle mainBundle] infoDictionary]
+                                                                    objectForKey:@"CFBundleVersion"]]];
+    [contents addSection:informationSection];
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    switch (section) {
-        case AboutTableViewControllerSectionInformation:
-            return NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
-        case AboutTableViewControllerSectionHelp:
-            return NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-        default:
-            return nil;
-    }
-}
+    OWSTableSection *helpSection = [OWSTableSection new];
+    helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
+    [helpSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
+                                         actionBlock:^{
+                                             [[UIApplication sharedApplication]
+                                                 openURL:[NSURL URLWithString:@"http://support.whispersystems.org"]];
+                                         }]];
+    [contents addSection:helpSection];
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    switch (indexPath.section) {
-        case AboutTableViewControllerSectionInformation:
-            return self.versionCell;
-        case AboutTableViewControllerSectionHelp:
-            return self.supportCell;
-    }
+    UILabel *copyrightLabel = [UILabel new];
+    copyrightLabel.text = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
+    copyrightLabel.textColor = [UIColor ows_darkGrayColor];
+    copyrightLabel.font = [UIFont ows_regularFontWithSize:15.0f];
+    copyrightLabel.numberOfLines = 2;
+    copyrightLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    copyrightLabel.textAlignment = NSTextAlignmentCenter;
+    helpSection.customFooterView = copyrightLabel;
+    helpSection.customFooterHeight = @(60.f);
 
-    return nil;
-}
+#ifdef DEBUG
+    __block NSUInteger threadCount;
+    __block NSUInteger messageCount;
+    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        threadCount = [[transaction ext:TSThreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+        messageCount = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInAllGroups];
+    }];
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    OWSTableSection *debugSection = [OWSTableSection new];
+    debugSection.headerTitle = @"Debug";
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %zd", threadCount]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %zd", messageCount]]];
+    [contents addSection:debugSection];
+#endif
 
-    switch (indexPath.section) {
-        case AboutTableViewControllerSectionHelp:
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://support.whispersystems.org"]];
-            break;
-
-        default:
-            break;
-    }
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    return section == AboutTableViewControllerSectionHelp ? self.footerView : nil;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return section == AboutTableViewControllerSectionHelp ? 60.0f : 0;
+    self.contents = contents;
 }
 
 @end

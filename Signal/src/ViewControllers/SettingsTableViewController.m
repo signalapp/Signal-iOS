@@ -5,7 +5,7 @@
 #import "SettingsTableViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
-#import "DebugSettingsTableViewController.h"
+#import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSContactsManager.h"
@@ -195,9 +195,9 @@
                                               }]];
 
 #ifdef DEBUG
-    [section addItem:[OWSTableItem disclosureItemWithText:@"Debugging"
+    [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
                                               actionBlock:^{
-                                                  [weakSelf showDebugging];
+                                                  [weakSelf showDebugUI];
                                               }]];
 #endif
 
@@ -272,10 +272,9 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
-- (void)showDebugging
+- (void)showDebugUI
 {
-    DebugSettingsTableViewController *vc = [[DebugSettingsTableViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
+    [DebugUITableViewController presentDebugUIFromViewController:self];
 }
 
 - (void)dismissWasPressed:(id)sender

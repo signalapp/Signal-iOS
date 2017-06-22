@@ -4,6 +4,7 @@
 
 #import "DebugUITableViewController.h"
 #import "DebugUIContacts.h"
+#import "DebugUIDiskUsage.h"
 #import "DebugUIMessages.h"
 #import "DebugUISessionState.h"
 #import "DebugUIVerification.h"
@@ -39,15 +40,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-+ (OWSTableItem *)itemForSubsection:(OWSTableSection *)section
++ (OWSTableItem *)itemForSubsection:(DebugUIPage *)page
                      viewController:(DebugUITableViewController *)viewController
+                             thread:(nullable TSThread *)thread
 {
-    OWSAssert(section);
+    OWSAssert(page);
+    OWSAssert(viewController);
 
     __weak DebugUITableViewController *weakSelf = viewController;
-    return [OWSTableItem disclosureItemWithText:section.headerTitle
+    return [OWSTableItem disclosureItemWithText:page.name
                                     actionBlock:^{
-                                        [weakSelf pushPageWithSection:section];
+                                        [weakSelf pushPageWithSection:[page sectionForThread:thread]];
                                     }];
 }
 
@@ -63,16 +66,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSTableItem *> *subsectionItems = [NSMutableArray new];
     [subsectionItems
-        addObject:[self itemForSubsection:[DebugUIMessages sectionForThread:thread] viewController:viewController]];
-    [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts section] viewController:viewController]];
+        addObject:[self itemForSubsection:[DebugUIMessages new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:thread]];
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-
-        [subsectionItems addObject:[self itemForSubsection:[DebugUISessionState sectionForContactThread:contactThread]
-                                            viewController:viewController]];
-        [subsectionItems addObject:[self itemForSubsection:[DebugUIVerification sectionForThread:contactThread]
-                                            viewController:viewController]];
+        [subsectionItems
+            addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
+        [subsectionItems
+            addObject:[self itemForSubsection:[DebugUIVerification new] viewController:viewController thread:thread]];
     }
+
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -140,6 +145,25 @@ NS_ASSUME_NONNULL_BEGIN
                                          }],
                                ]]];
     } // end contact thread section
+
+    viewController.contents = contents;
+    [viewController presentFromViewController:fromViewController];
+}
+
++ (void)presentDebugUIFromViewController:(UIViewController *)fromViewController
+{
+    OWSAssert(fromViewController);
+
+    DebugUITableViewController *viewController = [DebugUITableViewController new];
+
+    OWSTableContents *contents = [OWSTableContents new];
+    contents.title = @"Debug UI";
+
+    NSMutableArray<OWSTableItem *> *subsectionItems = [NSMutableArray new];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:nil]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:nil]];
+    [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];

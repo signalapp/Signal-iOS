@@ -13,10 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUISessionState
 
-+ (OWSTableSection *)sectionForContactThread:(TSContactThread *)contactThread
+- (NSString *)name
 {
+    return @"Session State";
+}
+
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
+{
+    OWSAssert([threadParameter isKindOfClass:[TSContactThread class]]);
+
+    TSContactThread *thread = (TSContactThread *)threadParameter;
+
     return [OWSTableSection
-        sectionWithTitle:@"Session State"
+        sectionWithTitle:self.name
                    items:@[
                        [OWSTableItem itemWithTitle:@"Log All Recipient Identities"
                                        actionBlock:^{
@@ -33,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            DDLogError(@"Flipping identity Key. Flip again to return.");
 
                                            OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                           NSString *recipientId = [contactThread contactIdentifier];
+                                           NSString *recipientId = [thread contactIdentifier];
 
                                            NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
                                            NSMutableData *flippedKey = [NSMutableData new];
@@ -47,26 +56,26 @@ NS_ASSUME_NONNULL_BEGIN
                                        }],
                        [OWSTableItem itemWithTitle:@"Set Verification State"
                                        actionBlock:^{
-                                           [self presentVerificationStatePickerForContactThread:contactThread];
+                                           [DebugUISessionState presentVerificationStatePickerForContactThread:thread];
                                        }],
                        [OWSTableItem itemWithTitle:@"Delete all sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                                [[TSStorageManager sharedManager]
-                                                   deleteAllSessionsForContact:contactThread.contactIdentifier];
+                                                   deleteAllSessionsForContact:thread.contactIdentifier];
                                            });
                                        }],
                        [OWSTableItem itemWithTitle:@"Archive all sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                                [[TSStorageManager sharedManager]
-                                                   archiveAllSessionsForContact:contactThread.contactIdentifier];
+                                                   archiveAllSessionsForContact:thread.contactIdentifier];
                                            });
                                        }],
                        [OWSTableItem itemWithTitle:@"Send session reset"
                                        actionBlock:^{
                                            [OWSSessionResetJob
-                                               runWithContactThread:contactThread
+                                               runWithContactThread:thread
                                                       messageSender:[Environment getCurrent].messageSender
                                                      storageManager:[TSStorageManager sharedManager]];
                                        }]

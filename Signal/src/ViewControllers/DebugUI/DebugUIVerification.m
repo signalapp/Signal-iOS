@@ -4,6 +4,7 @@
 
 #import "DebugUIVerification.h"
 #import "DebugUIMessages.h"
+#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
 
@@ -25,15 +26,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Factory Methods
 
-+ (OWSTableSection *)sectionForThread:(TSContactThread *)thread
+- (NSString *)name
 {
-    OWSAssert(thread);
+    return @"Verification";
+}
+
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
+{
+    OWSAssert([threadParameter isKindOfClass:[TSContactThread class]]);
+
+    TSContactThread *thread = (TSContactThread *)threadParameter;
 
     NSString *recipientId = thread.contactIdentifier;
     OWSAssert(recipientId.length > 0);
 
     return [OWSTableSection
-        sectionWithTitle:@"Verification"
+        sectionWithTitle:self.name
                    items:@[
                        [OWSTableItem itemWithTitle:@"Default"
                                        actionBlock:^{

@@ -207,6 +207,34 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor blackColor];
+        cell.userInteractionEnabled = NO;
+        return cell;
+    };
+    return item;
+}
+
++ (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText
+{
+    OWSAssert(text.length > 0);
+    OWSAssert(accessoryText.length > 0);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+
+        UILabel *accessoryLabel = [UILabel new];
+        accessoryLabel.text = accessoryText;
+        accessoryLabel.textColor = [UIColor lightGrayColor];
+        accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
+        accessoryLabel.textAlignment = NSTextAlignmentRight;
+        [accessoryLabel sizeToFit];
+        cell.accessoryView = accessoryLabel;
+
+        cell.userInteractionEnabled = NO;
         return cell;
     };
     return item;
