@@ -1089,16 +1089,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
 {
     if (message.shouldSyncTranscript) {
-        __block BOOL hasSecondaryDevices = NO;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            hasSecondaryDevices = [OWSDevice hasSecondaryDevicesWithTransaction:transaction];
-        }];
-        if (hasSecondaryDevices) {
-            // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
-            //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
-            [message updateWithHasSyncedTranscript:YES];
-            [self sendSyncTranscriptForMessage:message];
-        }
+        // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
+        //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
+        [message updateWithHasSyncedTranscript:YES];
+        [self sendSyncTranscriptForMessage:message];
     }
 
     [OWSDisappearingMessagesJob setExpirationForMessage:message];

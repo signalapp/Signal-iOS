@@ -43,8 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSData *)buildPlainTextData
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    contentBuilder.syncMessage = [self buildSyncMessage];
-    
+    [contentBuilder setSyncMessage:[self buildSyncMessage]];
 
     return [[contentBuilder build] data];
 }

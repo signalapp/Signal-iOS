@@ -46,9 +46,6 @@ extern const NSUInteger kIdentityKeyLength;
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
-// Will try to send a sync message with all verification states.
-//- (void)syncAllVerificationStates;
-
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
 
 @end
