@@ -16,4 +16,6 @@
           atLeast:(NSString *)openLowerBoundVersionString
       andLessThan:(NSString *)closedUpperBoundVersionString;
 
++ (BOOL)isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString;
+
 @end
