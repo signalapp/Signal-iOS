@@ -49,12 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *center = insertionText.digitsOnly;
     // 4. Construct the "raw" new text by concatenating left, center and right.
     NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
-    // 4a. Ensure we don't exceed the maximum length for a e164 phone number,
-    //     15 digits, per: https://en.wikipedia.org/wiki/E.164
-    const int kMaxPhoneNumberLength = 15;
-    if (textAfterChange.length > kMaxPhoneNumberLength) {
-        textAfterChange = [textAfterChange substringToIndex:kMaxPhoneNumberLength];
-    }
+    // NOTE: We can't ensure that the number does not exceed the maximum length for a e164 phone number,
+    //       15 digits, per: https://en.wikipedia.org/wiki/E.164
+    //       because "valid numbers in Germany have been assigned that are longer than this" per:
+    //       https://github.com/googlei18n/libphonenumber/blob/master/FALSEHOODS.md
     // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     bool isJustDeletion = insertionText.length == 0;
