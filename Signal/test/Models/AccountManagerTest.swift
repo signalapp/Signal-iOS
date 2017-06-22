@@ -29,6 +29,10 @@ class FailingTSAccountManager: TSAccountManager {
             successHandler()
         }
     }
+
+    override func isMockForTests() -> Bool {
+        return true
+    }
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
@@ -42,7 +46,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 
 class AccountManagerTest: XCTestCase {
 
-    let tsAccountManager = FailingTSAccountManager()
+    let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
 
     func testRegisterWhenEmptyCode() {
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
@@ -86,7 +90,7 @@ class AccountManagerTest: XCTestCase {
     }
 
     func testSuccessfulRegistration() {
-        let tsAccountManager = TokenObtainingTSAccountManager()
+        let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
 
         let expectation = self.expectation(description: "should succeed")
