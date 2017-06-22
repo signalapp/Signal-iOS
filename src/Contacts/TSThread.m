@@ -289,7 +289,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
 
     if (interaction.isDynamicInteraction) {
-        DDLogDebug(@"%@ not showing dynamic interaction in inbox: %@", self.tag, interaction.debugDescription);
         return NO;
     }
 
@@ -298,15 +297,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
             // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
             // there was no meaningful interaction.
-            DDLogDebug(
-                @"%@ not showing nonblocking identity change in inbox: %@", self.tag, errorMessage.debugDescription);
             return NO;
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
         if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
-            DDLogDebug(
-                @"%@ not showing verification state change in inbox: %@", self.tag, infoMessage.debugDescription);
             return NO;
         }
     }
