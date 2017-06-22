@@ -26,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
                               identityKey:(NSData *)identityKey
                verificationForRecipientId:(NSString *)verificationForRecipientId
 {
-
     OWSAssert(identityKey.length == kIdentityKeyLength);
     OWSAssert(verificationForRecipientId.length > 0);
+
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
     OWSAssert(verificationState != OWSVerificationStateNoLongerVerified);
@@ -51,6 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
+    OWSAssert(self.identityKey.length == kIdentityKeyLength);
+    OWSAssert(self.verificationForRecipientId.length > 0);
+
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
+
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
 
     OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
@@ -64,6 +71,23 @@ NS_ASSUME_NONNULL_BEGIN
     syncMessageBuilder.verifiedBuilder = verifiedBuilder;
     
     return syncMessageBuilder;
+}
+
+- (size_t)unpaddedVerifiedLength
+{
+    OWSAssert(self.identityKey.length == kIdentityKeyLength);
+    OWSAssert(self.verificationForRecipientId.length > 0);
+
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
+
+    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    verifiedBuilder.destination = self.verificationForRecipientId;
+    verifiedBuilder.identityKey = self.identityKey;
+    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
+
+    return [verifiedBuilder build].data.length;
 }
 
 @end

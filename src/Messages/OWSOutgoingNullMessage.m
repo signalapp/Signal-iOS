@@ -40,9 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
 
-    NSUInteger contentLength = self.verificationStateSyncMessage.buildPlainTextData.length;
-    contentLength -= self.verificationStateSyncMessage.paddingBytesLength;
-    
+    NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
+
+    OWSAssert(self.verificationStateSyncMessage.paddingBytesLength > 0);
+    contentLength += self.verificationStateSyncMessage.paddingBytesLength;
+
     OWSAssert(contentLength > 0)
     
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];

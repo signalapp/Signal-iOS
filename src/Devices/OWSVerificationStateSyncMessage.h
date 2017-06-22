@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *verificationForRecipientId;
 
 @property (nonatomic, readonly) size_t paddingBytesLength;
+@property (nonatomic, readonly) size_t unpaddedVerifiedLength;
 
 @end
 
