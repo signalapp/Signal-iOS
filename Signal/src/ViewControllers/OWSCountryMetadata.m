@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     instance.googleDomain = googleDomain;
     instance.countryCode = countryCode;
 
-    NSString *localizedCountryName = [[NSLocale currentLocale] localizedStringForCountryCode:countryCode];
+    NSString *localizedCountryName = [[NSLocale currentLocale] displayNameForKey:NSLocaleCountryCode value:countryCode];
     if (localizedCountryName.length < 1) {
         localizedCountryName = name;
     }
