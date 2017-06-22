@@ -6,8 +6,8 @@
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
 #import "OWSMessageSender.h"
-#import "OWSRecipientIdentity.h"
 #import "OWSOutgoingNullMessage.h"
+#import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
@@ -15,6 +15,7 @@
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager+keyingMaterial.h"
+#import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import <25519/Curve25519.h>
@@ -196,6 +197,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                isFirstKnownKey:NO
                                                      createdAt:[NSDate new]
                                              verificationState:verificationState] save];
+
+            [self.storageManager archiveAllSessionsForContact:recipientId];
 
             // Cancel any pending verification state sync messages for this recipient.
             [self clearSyncMessageForRecipientId:recipientId];

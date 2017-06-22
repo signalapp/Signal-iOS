@@ -170,7 +170,6 @@ void AssertIsOnSessionStoreQueue()
         sessionRecords =
             [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
-
         for (id deviceId in sessionRecords) {
             id object = sessionRecords[deviceId];
             if (![object isKindOfClass:[SessionRecord class]]) {
