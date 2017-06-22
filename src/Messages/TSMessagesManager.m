@@ -469,6 +469,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage];
         } else if (content.hasCallMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
+        } else if (content.hasNullMessage) {
+            DDLogInfo(@"%@ Received null message.", self.tag);
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
