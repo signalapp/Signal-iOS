@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL becameFirstResponder = [super becomeFirstResponder];
     if (becameFirstResponder) {
         // Intercept to scroll to bottom when text view is tapped.
-        [self.textViewPasteDelegate textViewDidChangePosition];
+        [self.textViewPasteDelegate textViewDidChangeLayout];
     }
     return becameFirstResponder;
 }
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setFrame:frame];
 
     if (didChangeSize && isNonEmpty) {
-        [self.textViewPasteDelegate textViewDidChangePosition];
+        [self.textViewPasteDelegate textViewDidChangeLayout];
     }
 }
 
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setBounds:bounds];
 
     if (didChangeSize && isNonEmpty) {
-        [self.textViewPasteDelegate textViewDidChangePosition];
+        [self.textViewPasteDelegate textViewDidChangeLayout];
     }
 }
 
