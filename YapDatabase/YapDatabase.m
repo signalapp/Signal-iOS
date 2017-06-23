@@ -10,6 +10,7 @@
 #import "sqlite3.h"
 
 #import <mach/mach_time.h>
+#import <libkern/OSAtomic.h>
 #import <stdatomic.h>
 
 #if ! __has_feature(objc_arc)
@@ -132,7 +133,10 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	NSString *sqliteVersion;
 	uint64_t pageSize;
-	atomic_flag pendingCheckpoint;
+	
+	atomic_flag pendingPassiveCheckpoint;
+	atomic_flag pendingAggressiveCheckpoint;
+	atomic_bool aggressiveCheckpointEnabled;
 }
 
 /**
@@ -1378,7 +1382,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	[self beginTransaction];
 	{
-        snapshot = [self readSnapshot];
+		snapshot = [self readSnapshot];
         
 		sqliteVersion = [YapDatabase sqliteVersionUsing:db];
 		YDBLogVerbose(@"sqlite version = %@", sqliteVersion);
@@ -1450,42 +1454,6 @@ static int connectionBusyHandler(void *ptr, int count) {
     }
     
     return result;
-}
-
-- (void)writeSnapshot
-{
-	int status;
-	sqlite3_stmt *statement;
-	
-	char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
-	
-	int const bind_idx_extension = SQLITE_BIND_START + 0;
-	int const bind_idx_key       = SQLITE_BIND_START + 1;
-	int const bind_idx_data      = SQLITE_BIND_START + 2;
-	
-	status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
-	if (status != SQLITE_OK)
-	{
-		YDBLogError(@"%@: Error creating statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-	}
-	else
-	{
-		char *extension = "";
-		sqlite3_bind_text(statement, bind_idx_extension, extension, (int)strlen(extension), SQLITE_STATIC);
-		
-		char *key = "snapshot";
-		sqlite3_bind_text(statement, bind_idx_key, key, (int)strlen(key), SQLITE_STATIC);
-		
-		sqlite3_bind_int64(statement, bind_idx_data, (sqlite3_int64)snapshot);
-		
-		status = sqlite3_step(statement);
-		if (status != SQLITE_DONE)
-		{
-			YDBLogError(@"%@: Error in statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
-		}
-		
-		sqlite3_finalize(statement);
-	}
 }
 
 - (void)fetchPreviouslyRegisteredExtensionNames
@@ -2903,10 +2871,6 @@ static int connectionBusyHandler(void *ptr, int count) {
 #pragma mark Manual Checkpointing
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
-static BOOL const YDB_PRINT_WAL_SIZE = YES;
-#endif
-
 /**
  * This method should be called whenever the maximum checkpointable snapshot is incremented.
  * That is, the state of every connection is known to the system.
@@ -2917,276 +2881,409 @@ static BOOL const YDB_PRINT_WAL_SIZE = YES;
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot
 {
-	__weak YapDatabase *weakSelf = self;
+	if (maxCheckpointableSnapshot > 0) {
+		YDBLogVerbose(@"Checkpoint possible up to snapshot %llu", maxCheckpointableSnapshot);
+	}
 	
-	bool hasPendingCheckpoint = atomic_flag_test_and_set(&pendingCheckpoint);
+	bool aggressive = atomic_load(&aggressiveCheckpointEnabled);
+	if (aggressive)
+	{
+		[self asyncAggressiveCheckpoint];
+	}
+	else
+	{
+		[self asyncPassiveCheckpoint];
+	}
+}
+
+- (void)asyncPassiveCheckpoint
+{
+	bool hasPendingCheckpoint = atomic_flag_test_and_set(&pendingPassiveCheckpoint);
 	if (hasPendingCheckpoint) {
 		return;
 	}
 	
+	__weak YapDatabase *weakSelf = self;
+	
 	dispatch_async(checkpointQueue, ^{ @autoreleasepool {
+#pragma clang diagnostic push
+#pragma clang diagnostic warning "-Wimplicit-retain-self"
+		
+		__strong YapDatabase *strongSelf = weakSelf;
+		if (strongSelf == nil) return;
+		
+		atomic_flag_clear(&strongSelf->pendingPassiveCheckpoint);
+		
+		if (atomic_load(&strongSelf->aggressiveCheckpointEnabled)) {
+			return;
+		}
+		
+		[strongSelf passiveCheckpoint];
+		
+#pragma clang diagnostic pop
+	}});
+}
+
+- (void)asyncAggressiveCheckpoint
+{
+	bool hasPendingCheckpoint = atomic_flag_test_and_set(&pendingAggressiveCheckpoint);
+	if (hasPendingCheckpoint) {
+		return;
+	}
+	
+	__weak YapDatabase *weakSelf = self;
+	
+	dispatch_async(writeQueue, ^{
 	#pragma clang diagnostic push
 	#pragma clang diagnostic warning "-Wimplicit-retain-self"
 		
 		__strong YapDatabase *strongSelf = weakSelf;
 		if (strongSelf == nil) return;
 		
-		atomic_flag_clear(&strongSelf->pendingCheckpoint);
+		atomic_flag_clear(&strongSelf->pendingAggressiveCheckpoint);
 		
-		YDBLogVerbose(@"Checkpointing up to snapshot %llu", maxCheckpointableSnapshot);
-		
-	#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
-		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
-		{
-			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
-			
-			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
-			unsigned long long walFileSize = [walAttr fileSize];
-			
-			YDBLogVerbose(@"Pre-checkpoint (mode=passive) file size: %@",
-			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
-			                                 countStyle:NSByteCountFormatterCountStyleFile]);
-		}
-	#endif
-		
-		// We're ready to checkpoint more frames.
-		//
-		// So we're going to execute a passive checkpoint.
-		// That is, without disrupting any connections, we're going to write pages from the WAL into the database.
-		// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
-		// Thus, this method is only called by a connection that moves the min snapshot forward.
-		
-		int totalFrameCount = 0;
-		int checkpointedFrameCount = 0;
-		
-		int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", SQLITE_CHECKPOINT_PASSIVE,
-		                                       &totalFrameCount, &checkpointedFrameCount);
-		
-		// frameCount      = total number of frames in the log file
-		// checkpointCount = total number of checkpointed frames
-		//                  (including any that were already checkpointed before the function was called)
-		
-		if (result != SQLITE_OK)
-		{
-			if (result == SQLITE_BUSY) {
-				YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
-			}
-			else {
-				YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", result);
-			}
-			
-			return;// from_block
+		if (!atomic_load(&strongSelf->aggressiveCheckpointEnabled)) {
+			return;
 		}
 		
-		YDBLogVerbose(@"Post-checkpoint (mode=passive) (snapshot=%llu): frames(%d) checkpointed(%d)",
-		              maxCheckpointableSnapshot, totalFrameCount, checkpointedFrameCount);
-		
-	#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
-		if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
-		{
-			NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
-			
-			NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
-			unsigned long long walFileSize = [walAttr fileSize];
-			
-			YDBLogVerbose(@"Post-checkpoint (mode=passive) file size: %@",
-			  [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
-			                                 countStyle:NSByteCountFormatterCountStyleFile]);
-		}
-	#endif
-		
-		// Check for oversized WAL file
-		
-		uint64_t walApproximateFileSize = totalFrameCount * strongSelf->pageSize;
-		
-		BOOL needsAggressiveCheckpoint = (walApproximateFileSize >= strongSelf->options.aggressiveWALTruncationSize);
-		
-		// Have we checkpointed the entire WAL yet?
-		
-		if (totalFrameCount == checkpointedFrameCount)
-		{
-			// We've checkpointed every single frame in the WAL.
-			// This means the next read-write transaction may be able to reset the WAL (instead of appending to it).
-			//
-			// However, the WAL reset will get spoiled if there are active read-only transactions that
-			// were started before our checkpoint finished, and continue to exist during the next read-write.
-			// It's not a big deal if the occasional read-only transaction happens to spoil the WAL reset.
-			// In those cases, the WAL generally gets reset shortly thereafter (on a subsequent write).
-			// Long-lived read transactions are a different case entirely.
-			// These transactions spoil it every single time, and could potentially cause the WAL to grow indefinitely.
-			//
-			// The solution is to notify active long-lived connections, and tell them to re-begin their transaction
-			// on the same snapshot. But this time the sqlite machinery will read directly from the database,
-			// and thus unlock the WAL so it can be reset.
-			
-			dispatch_block_t block = ^{
-				
-				__strong YapDatabase *strongSelf2 = weakSelf;
-				if (strongSelf2 == nil) return;
-				
-				for (YapDatabaseConnectionState *state in strongSelf2->connectionStates)
-				{
-					if (state->longLivedReadTransaction &&
-						state->lastTransactionSnapshot == strongSelf2->snapshot)
-					{
-						[state->connection maybeResetLongLivedReadTransaction];
-					}
-				}
-			};
-			
-			// if (needsAggressiveCheckpoint)
-			// --> sqlite3_wal_checkpoint_v2 needs all readers reading from the database file only (not WAL)
-			
-			if (needsAggressiveCheckpoint)
-				dispatch_sync(strongSelf->snapshotQueue, block);
-			else
-				dispatch_async(strongSelf->snapshotQueue, block);
-		}
-		
-		// Take steps to ensure the WAL gets reset/truncated (if needed).
-		
-		if (needsAggressiveCheckpoint)
-		{
-			int64_t lastCheckpointTime = mach_absolute_time();
-			[self aggressiveTryTruncateLargeWAL:lastCheckpointTime];
-		}
+		[strongSelf aggressiveCheckpoint];
 		
 	#pragma clang diagnostic pop
-	}});
+	});
 }
 
-- (void)aggressiveTryTruncateLargeWAL:(int64_t)lastCheckpointTime
+- (void)passiveCheckpoint
 {
-	__weak YapDatabase *weakSelf = self;
+	int checkpointResult = 0;
+	int totalFrameCount = 0;
+	int checkpointedFrameCount = 0;
 	
-	dispatch_async(writeQueue, ^{
+	// We're going to execute a passive checkpoint.
+	// That is, without disrupting any connections, we're going to write pages from the WAL into the database.
+	// The checkpoint can only write pages from snapshots if all connections are at or beyond the snapshot.
+	// Thus, this method is only called by a connection that moves the min snapshot forward.
+	
+	checkpointResult = sqlite3_wal_checkpoint_v2(db, "main", SQLITE_CHECKPOINT_PASSIVE,
+	                                             &totalFrameCount, &checkpointedFrameCount);
+	
+	// totalFrameCount        = total number of frames in the WAL file
+	// checkpointedFrameCount = total number of checkpointed frames (those copied into db file)
+	//                          (including any that were already checkpointed before the function was called)
+	
+	YDBLogVerbose(@"Post-checkpoint: src(a) mode(passive) result(%d) frames(%d) checkpointed(%d)",
+	              checkpointResult, totalFrameCount, checkpointedFrameCount);
+	
+	if (checkpointResult != SQLITE_OK)
+	{
+		if (checkpointResult == SQLITE_BUSY) {
+			YDBLogVerbose(@"sqlite3_wal_checkpoint_v2 returned SQLITE_BUSY");
+		}
+		else {
+			YDBLogWarn(@"sqlite3_wal_checkpoint_v2 returned error code: %d", checkpointResult);
+		}
 		
-		dispatch_sync(checkpointQueue, ^{ @autoreleasepool {
+		return;// from_block
+	}
+	
+	// Did we checkpoint the entire WAL file ?
+	
+	BOOL didCheckpointEntireWAL = (totalFrameCount == checkpointedFrameCount);
+	
+	if (didCheckpointEntireWAL)
+	{
+		// We've checkpointed every single frame in the WAL.
+		// This means the next read-write transaction may be able to reset the WAL (instead of appending to it).
+		//
+		// However, the WAL reset will get spoiled if there are active read-only transactions that
+		// were started before our checkpoint finished, and continue to exist during the next read-write.
+		// It's not a big deal if the occasional read-only transaction happens to spoil the WAL reset.
+		// In those cases, the WAL generally gets reset shortly thereafter (on a subsequent write).
+		// Long-lived read transactions are a different case entirely.
+		// These transactions spoil it every single time, and could potentially cause the WAL to grow indefinitely.
+		//
+		// The solution is to notify active long-lived connections, and tell them to re-begin their transaction
+		// on the same snapshot. But this time the sqlite machinery will read directly from the database,
+		// and thus unlock the WAL so it can be reset.
+		
+		__weak YapDatabase *weakSelf = self;
+		
+		dispatch_async(writeQueue, ^{ @autoreleasepool {
 		#pragma clang diagnostic push
 		#pragma clang diagnostic warning "-Wimplicit-retain-self"
 			
 			__strong YapDatabase *strongSelf = weakSelf;
 			if (strongSelf == nil) return;
 			
-			// First we set an adequate busy timeout on our database connection.
-			// We're going to run a non-passive checkpoint.
-			// Which may cause it to busy-wait while waiting on read transactions to complete.
-			
-			sqlite3_busy_timeout(strongSelf->db, 2000); // milliseconds
-			
-			// Can we use SQLITE_CHECKPOINT_TRUNCATE ?
-			//
-			// This feature was added in sqlite v3.8.8.
-			// But it was buggy until v3.8.8.2 when the following fix was added:
-			//
-			//   "Enhance sqlite3_wal_checkpoint_v2(TRUNCATE) interface so that it truncates the
-			//    WAL file even if there is no checkpoint work to be done."
-			//
-			//   http://www.sqlite.org/changes.html
-			//
-			// It is often the case, when we call checkpoint here, that there is no checkpoint work to be done.
-			// So we really can't depend on it until 3.8.8.2
-			
-			int checkpointMode = SQLITE_CHECKPOINT_RESTART;
-			
-			// Remember: The compiler defines (SQLITE_VERSION, SQLITE_VERSION_NUMBER) only tell us
-			// what version we're compiling against. But we may encounter an earlier sqlite version at runtime.
-			
-		#ifndef SQLITE_VERSION_NUMBER_3_8_8
-		#define SQLITE_VERSION_NUMBER_3_8_8 3008008
-		#endif
-			
-		#if SQLITE_VERSION_NUMBER > SQLITE_VERSION_NUMBER_3_8_8
-			
-			checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
-			
-		#elif SQLITE_VERSION_NUMBER == SQLITE_VERSION_NUMBER_3_8_8
-			
-			NSComparisonResult cmp = [strongSelf->sqliteVersion compare:@"3.8.8.2" options:NSNumericSearch];
-			if (cmp != NSOrderedAscending)
-			{
-				checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
-			}
-			
-		#endif
-			
-			int totalFrameCount = 0;
-			int checkpointedFrameCount = 0;
-			
-			int result = sqlite3_wal_checkpoint_v2(strongSelf->db, "main", checkpointMode,
-			                                       &totalFrameCount, &checkpointedFrameCount);
-			
-			YDBLogInfo(@"Post-checkpoint (mode=%@): result(%d): frames(%d) checkpointed(%d)",
-			             (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
-			             result, totalFrameCount, checkpointedFrameCount);
-			
-			if ((checkpointMode == SQLITE_CHECKPOINT_RESTART) && (result == SQLITE_OK))
-			{
-				// Write something to the database to force restart the WAL.
-				// We're just going to set a random value in the yap2 table.
-				
-				NSString *uuid = [[NSUUID UUID] UUIDString];
-				
-				[strongSelf beginTransaction];
-				
-				int status;
-				sqlite3_stmt *statement;
-				
-				char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
-				
-				int const bind_extension = SQLITE_BIND_START + 0;
-				int const bind_key       = SQLITE_BIND_START + 1;
-				int const bind_data      = SQLITE_BIND_START + 2;
-				
-				status = sqlite3_prepare_v2(strongSelf->db, stmt, (int)strlen(stmt)+1, &statement, NULL);
-				if (status != SQLITE_OK)
-				{
-					YDBLogError(@"%@: Error creating statement: %d %s",
-					            THIS_METHOD, status, sqlite3_errmsg(strongSelf->db));
-				}
-				else
-				{
-					char *extension = "";
-					sqlite3_bind_text(statement, bind_extension, extension, (int)strlen(extension), SQLITE_STATIC);
-					
-					char *key = "random";
-					sqlite3_bind_text(statement, bind_key, key, (int)strlen(key), SQLITE_STATIC);
-					
-					YapDatabaseString _uuid; MakeYapDatabaseString(&_uuid, uuid);
-					sqlite3_bind_text(statement, bind_data, _uuid.str, _uuid.length, SQLITE_STATIC);
-					
-					status = sqlite3_step(statement);
-					if (status != SQLITE_DONE)
-					{
-						YDBLogError(@"%@: Error in statement: %d %s",
-						            THIS_METHOD, status, sqlite3_errmsg(strongSelf->db));
-					}
-					
-					sqlite3_finalize(statement);
-					FreeYapDatabaseString(&_uuid);
-				}
-				
-				[strongSelf commitTransaction];
-			}
-			
-		#if (YapDatabaseLoggingTechnique != YapDatabaseLoggingTechnique_Disabled)
-			if (YDB_LOG_VERBOSE && YDB_PRINT_WAL_SIZE)
-			{
-				NSString *walFilePath = [strongSelf.databasePath stringByAppendingString:@"-wal"];
-				
-				NSDictionary *walAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:walFilePath error:NULL];
-				unsigned long long walFileSize = [walAttr fileSize];
-				
-				YDBLogVerbose(@"Post-checkpoint (mode=%@) file size: %@",
-				    (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
-				    [NSByteCountFormatter stringFromByteCount:(long long)walFileSize
-				                                   countStyle:NSByteCountFormatterCountStyleFile]);
-			}
-		#endif
+			[strongSelf tryResetLongLivedReadTransactions];
 			
 		#pragma clang diagnostic pop
 		}});
-	});
+	}
+	
+	// Is the WAL file getting too big ?
+	
+	uint64_t walApproximateFileSize = totalFrameCount * pageSize;
+	BOOL needsAggressiveCheckpoint = (walApproximateFileSize >= options.aggressiveWALTruncationSize);
+	
+	if (needsAggressiveCheckpoint)
+	{
+		atomic_store(&aggressiveCheckpointEnabled, true);
+		
+		[self asyncAggressiveCheckpoint];
+	}
+}
+
+- (void)aggressiveCheckpoint
+{
+	int checkpointResult = 0;
+	int totalFrameCount = 0;
+	int checkpointedFrameCount = 0;
+	
+	// First we set an adequate busy timeout on our database connection.
+	// We're going to run a non-passive checkpoint.
+	// Which may cause it to busy-wait while waiting on read transactions to complete.
+	
+	sqlite3_busy_timeout(db, 50); // milliseconds
+	
+	// Step 1 of 3:
+	//
+	// Perform FULL checkpoint.
+	//
+	// This will checkpoint as many frames as possible,
+	// and busy-wait until all readers are on the latest commit.
+	
+	checkpointResult = sqlite3_wal_checkpoint_v2(db, "main", SQLITE_CHECKPOINT_FULL,
+	                                             &totalFrameCount, &checkpointedFrameCount);
+	
+	YDBLogInfo(@"Post-checkpoint: src(b) mode(full) result(%d) frames(%d) checkpointed(%d)",
+	           checkpointResult, totalFrameCount, checkpointedFrameCount);
+	
+	if (totalFrameCount != checkpointedFrameCount)
+	{
+		return;
+	}
+	
+	// STEP 2 of 3:
+	//
+	// Check for longLivedReadTransactions, and attempt to silently move them to reading directly from the database.
+	// (As oppossed to reading from the latest commit in the WAL.)
+	
+	if (![self tryResetLongLivedReadTransactions])
+	{
+		YDBLogInfo(@"Aggressive checkpoint spoiled: longLivedReadTransaction is blocking");
+		return;
+	}
+	
+	// STEP 3 of 3:
+	//
+	// Perform TRUNCATE checkpoint.
+	//
+	// At this point, we've checkpointed every single frame.
+	// And every connection should be reading directly from the database.
+	// So we should be able to truncate the WAL file now.
+	
+	// Can we use SQLITE_CHECKPOINT_TRUNCATE ?
+	//
+	// This feature was added in sqlite v3.8.8.
+	// But it was buggy until v3.8.8.2 when the following fix was added:
+	//
+	//   "Enhance sqlite3_wal_checkpoint_v2(TRUNCATE) interface so that it truncates the
+	//    WAL file even if there is no checkpoint work to be done."
+	//
+	//   http://www.sqlite.org/changes.html
+	//
+	// It is often the case, when we call checkpoint here, that there is no checkpoint work to be done.
+	// So we really can't depend on it until 3.8.8.2
+	
+	int checkpointMode = SQLITE_CHECKPOINT_RESTART;
+	
+	// Remember: The compiler defines (SQLITE_VERSION, SQLITE_VERSION_NUMBER) only tell us
+	// what version we're compiling against. But we may encounter an earlier sqlite version at runtime.
+	
+#ifndef SQLITE_VERSION_NUMBER_3_8_8
+#define SQLITE_VERSION_NUMBER_3_8_8 3008008
+#endif
+	
+#if SQLITE_VERSION_NUMBER > SQLITE_VERSION_NUMBER_3_8_8
+	
+	checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
+	
+#elif SQLITE_VERSION_NUMBER == SQLITE_VERSION_NUMBER_3_8_8
+	
+	NSComparisonResult cmp = [strongSelf->sqliteVersion compare:@"3.8.8.2" options:NSNumericSearch];
+	if (cmp != NSOrderedAscending)
+	{
+		checkpointMode = SQLITE_CHECKPOINT_TRUNCATE;
+	}
+	
+#endif
+	
+	checkpointResult = sqlite3_wal_checkpoint_v2(db, "main", checkpointMode,
+	                                             &totalFrameCount, &checkpointedFrameCount);
+	
+	YDBLogInfo(@"Post-checkpoint: src(c) mode(%@) result(%d) frames(%d) checkpointed(%d)",
+	           (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
+	           checkpointResult, totalFrameCount, checkpointedFrameCount);
+	
+	if (checkpointResult == SQLITE_BUSY)
+	{
+		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+		
+			YDBLogInfo(@"===========================================");
+			for (YapDatabaseConnectionState *state in connectionStates)
+			{
+				/*
+				 __weak YapDatabaseConnection *connection;
+				 
+				 BOOL activeReadTransaction;
+				 BOOL longLivedReadTransaction;
+				 BOOL sqlLevelSharedReadLock;
+				 
+				 BOOL activeWriteTransaction;
+				 BOOL waitingForWriteLock;
+				 
+				 uint64_t lastTransactionSnapshot;
+				 uint64_t lastTransactionTime;
+				*/
+				
+				YDBLogInfo(@"state->connection: %p", state->connection);
+				
+				YDBLogInfo(@"state->activeReadTransaction: %d", state->activeReadTransaction);
+				YDBLogInfo(@"state->longLivedReadTransaction: %d", state->longLivedReadTransaction);
+				YDBLogInfo(@"state->sqlLevelSharedReadLock: %d", state->sqlLevelSharedReadLock);
+				
+				YDBLogInfo(@"state->activeWriteTransaction: %d", state->activeWriteTransaction);
+				YDBLogInfo(@"state->waitingForWriteLock: %d", state->waitingForWriteLock);
+				
+				YDBLogInfo(@"===========================================");
+			}
+		}});
+	}
+	
+	if (checkpointResult == SQLITE_OK)
+	{
+		if (checkpointMode == SQLITE_CHECKPOINT_RESTART)
+		{
+			// Write something to the database to force restart the WAL.
+			// We're just going to set a random value in the yap2 table.
+			
+			NSString *uuid = [[NSUUID UUID] UUIDString];
+			
+			[self beginTransaction];
+			
+			int status;
+			sqlite3_stmt *statement;
+			
+			char *stmt = "INSERT OR REPLACE INTO \"yap2\" (\"extension\", \"key\", \"data\") VALUES (?, ?, ?);";
+			
+			int const bind_extension = SQLITE_BIND_START + 0;
+			int const bind_key       = SQLITE_BIND_START + 1;
+			int const bind_data      = SQLITE_BIND_START + 2;
+			
+			status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt)+1, &statement, NULL);
+			if (status != SQLITE_OK)
+			{
+				YDBLogError(@"%@: Error creating statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+			}
+			else
+			{
+				char *extension = "";
+				sqlite3_bind_text(statement, bind_extension, extension, (int)strlen(extension), SQLITE_STATIC);
+				
+				char *key = "random";
+				sqlite3_bind_text(statement, bind_key, key, (int)strlen(key), SQLITE_STATIC);
+				
+				YapDatabaseString _uuid; MakeYapDatabaseString(&_uuid, uuid);
+				sqlite3_bind_text(statement, bind_data, _uuid.str, _uuid.length, SQLITE_STATIC);
+				
+				status = sqlite3_step(statement);
+				if (status != SQLITE_DONE)
+				{
+					YDBLogError(@"%@: Error in statement: %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+				}
+				
+				sqlite3_finalize(statement);
+				FreeYapDatabaseString(&_uuid);
+			}
+			
+			[self commitTransaction];
+		}
+		
+		atomic_store(&aggressiveCheckpointEnabled, false);
+	}
+}
+
+- (BOOL)tryResetLongLivedReadTransactions
+{
+	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
+	
+	dispatch_group_t group = dispatch_group_create();
+	
+	__block OSSpinLock spinLock = OS_SPINLOCK_INIT;
+	__block atomic_bool hasWriteQueue = true;
+	
+	dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
+		
+		for (YapDatabaseConnectionState *state in connectionStates)
+		{
+			if (state->activeReadTransaction && state->longLivedReadTransaction)
+			{
+				__strong YapDatabaseConnection *connection = state->connection;
+				if (connection)
+				{
+					dispatch_group_async(group, connection->connectionQueue, ^{
+						
+						OSSpinLockLock(&spinLock);
+						{
+							if (atomic_load(&hasWriteQueue))
+							{
+								[connection resetLongLivedReadTransaction];
+							}
+						}
+						OSSpinLockUnlock(&spinLock);
+					});
+				}
+			}
+		}
+	}});
+	
+	long ready = dispatch_group_wait(group, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(50 * NSEC_PER_MSEC)));
+	
+	if (ready != 0)
+	{
+		OSSpinLockLock(&spinLock);
+		{
+			atomic_store(&hasWriteQueue, false);
+		}
+		OSSpinLockUnlock(&spinLock);
+		
+		return NO;
+	}
+	else
+	{
+		return YES;
+	}
+}
+
+/**
+ * Consulted by YapDatabaseConnection after performing a read-write transaction.
+ *
+ * When aggressive checkpointing is triggered,
+ * the connections will perform a checkpoint after every read-write transaction.
+**/
+- (BOOL)aggressiveCheckpointEnabled
+{
+	return atomic_load(&aggressiveCheckpointEnabled);
+}
+
+- (void)noteCheckpointWithTotalFrames:(int)totalFrameCount checkpointedFrames:(int)checkpointedFrameCount
+{
+	uint64_t walApproximateFileSize = totalFrameCount * pageSize;
+	
+	if (walApproximateFileSize < options.aggressiveWALTruncationSize)
+	{
+		atomic_store(&aggressiveCheckpointEnabled, false);
+	}
 }
 
 @end

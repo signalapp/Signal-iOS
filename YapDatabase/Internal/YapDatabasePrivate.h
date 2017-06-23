@@ -171,13 +171,21 @@ static NSString *const ext_key_class = @"class";
 
 /**
  * This method should be called whenever the maximum checkpointable snapshot is incremented.
- * That is, the state of every connection is known to the system.
- * And a snaphot cannot be checkpointed until every connection is at or past that snapshot.
- * Thus, we can know the point at which a snapshot becomes checkpointable,
+ * 
+ * A commit/snapshot cannot be checkpointed until every connection is at or past that commit/snapshot.
+ * Luckily the state of every connection is known to the system.
+ * Thus we know the point at which a commit/snapshot becomes checkpointable,
  * and we can thus optimize the checkpoint invocations such that
  * each invocation is able to checkpoint one or more commits.
 **/
 - (void)asyncCheckpoint:(uint64_t)maxCheckpointableSnapshot;
+
+/**
+ * When aggressive checkpointing is enabled (occurs automatically if the WAL grows too big),
+ * then read-write transactions will automatically start performing checkpoint operations after each commit.
+**/
+- (BOOL)aggressiveCheckpointEnabled;
+- (void)noteCheckpointWithTotalFrames:(int)totalFrameCount checkpointedFrames:(int)checkpointedFrameCount;
 
 #ifdef SQLITE_HAS_CODEC
 /**
@@ -293,7 +301,7 @@ static NSString *const ext_key_class = @"class";
 - (void)getInternalChangeset:(NSMutableDictionary **)internalPtr externalChangeset:(NSMutableDictionary **)externalPtr;
 - (void)noteCommittedChangeset:(NSDictionary *)changeset;
 
-- (void)maybeResetLongLivedReadTransaction;
+- (BOOL)resetLongLivedReadTransaction;
 
 @end
 

@@ -13,7 +13,6 @@
 
 #import <objc/runtime.h>
 #import <mach/mach_time.h>
-#import <libkern/OSAtomic.h>
 
 #if TARGET_OS_IOS || TARGET_OS_TV
 #import <UIKit/UIKit.h>
@@ -148,10 +147,6 @@ static int connectionBusyHandler(void *ptr, int count)
 	sqlite3_stmt *enumerateKeysAndObjectsInAllCollectionsStatement;
 	sqlite3_stmt *enumerateRowsInCollectionStatement;
 	sqlite3_stmt *enumerateRowsInAllCollectionsStatement;
-	
-	OSSpinLock lock;
-	BOOL writeQueueSuspended;
-	BOOL activeReadWriteTransaction;
 }
 
 + (void)load
@@ -252,8 +247,6 @@ static int connectionBusyHandler(void *ptr, int count)
 		#if TARGET_OS_IOS || TARGET_OS_TV
 		self.autoFlushMemoryFlags = defaults.autoFlushMemoryFlags;
 		#endif
-		
-		lock = OS_SPINLOCK_INIT;
 		
 		BOOL recycled = [database connectionPoolDequeue:&db main_file:&main_file wal_file:&wal_file];
 		if (recycled)
@@ -1918,7 +1911,6 @@ static int connectionBusyHandler(void *ptr, int count)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
@@ -1928,8 +1920,8 @@ static int connectionBusyHandler(void *ptr, int count)
 			[self postReadWriteTransaction:transaction];
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	});      // End dispatch_sync(connectionQueue)
+		
+	}); // End dispatch_sync(connectionQueue)
 }
 
 /**
@@ -2100,7 +2092,6 @@ static int connectionBusyHandler(void *ptr, int count)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			YapDatabaseReadWriteTransaction *transaction = [self newReadWriteTransaction];
@@ -2113,8 +2104,8 @@ static int connectionBusyHandler(void *ptr, int count)
 				dispatch_async(completionQueue, completionBlock);
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	});      // End dispatch_async(connectionQueue)
+		
+	}); // End dispatch_async(connectionQueue)
 }
 
 /**
@@ -2751,14 +2742,14 @@ static int connectionBusyHandler(void *ptr, int count)
 	}
 	else // if (!transaction->rollback)
 	{
-		// Post-Write-Transaction: Step 1 of 10
+		// Post-Write-Transaction: Step 1 of 11
 		//
 		// Run any pre-commit operations.
 		// This allows extensions to to perform any cleanup before the changeset is requested.
 		
 		[transaction preCommitReadWriteTransaction];
 		
-		// Post-Write-Transaction: Step 2 of 10
+		// Post-Write-Transaction: Step 2 of 11
 		//
 		// Fetch changesets.
 		// Then update the snapshot in the 'yap' database (if any changes were made).
@@ -2810,7 +2801,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			[changeset setObject:notification forKey:YapDatabaseNotificationKey];
 		}
 		
-		// Post-Write-Transaction: Step 3 of 10
+		// Post-Write-Transaction: Step 3 of 11
 		//
 		// Auto-drop tables from previous extensions that aren't being used anymore.
 		//
@@ -2834,7 +2825,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			clearPreviouslyRegisteredExtensionNames = YES;
 		}
 		
-		// Post-Write-Transaction: Step 4 of 10
+		// Post-Write-Transaction: Step 4 of 11
 		//
 		// Check to see if it's safe to commit our changes.
 		//
@@ -2887,7 +2878,7 @@ static int connectionBusyHandler(void *ptr, int count)
 					myState->waitingForWriteLock = NO;
 					safeToCommit = YES;
 					
-					// Post-Write-Transaction: Step 5 of 10
+					// Post-Write-Transaction: Step 5 of 11
 					//
 					// Register pending changeset with database.
 					// Our commit is actually a two step process.
@@ -2932,7 +2923,7 @@ static int connectionBusyHandler(void *ptr, int count)
 			
 		} while (!safeToCommit);
 	
-		// Post-Write-Transaction: Step 6 of 10
+		// Post-Write-Transaction: Step 6 of 11
 		//
 		// Execute "COMMIT TRANSACTION" on database connection.
 		// This will write the changes to the WAL, and may invoke a checkpoint.
@@ -2957,7 +2948,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 		dispatch_sync(database->snapshotQueue, ^{ @autoreleasepool {
 			
-			// Post-Write-Transaction: Step 7 of 10
+			// Post-Write-Transaction: Step 7 of 11
 			//
 			// Notify database of changes, and drop reference to set of changed keys.
 			
@@ -2966,7 +2957,7 @@ static int connectionBusyHandler(void *ptr, int count)
 				[database noteCommittedChangeset:changeset fromConnection:self];
 			}
 			
-			// Post-Write-Transaction: Step 8 of 10
+			// Post-Write-Transaction: Step 8 of 11
 			//
 			// Update our connection state within the state table.
 			//
@@ -2989,7 +2980,7 @@ static int connectionBusyHandler(void *ptr, int count)
 	
 		if (changeset)
 		{
-			// Post-Write-Transaction: Step 9 of 10
+			// Post-Write-Transaction: Step 9 of 11
 			//
 			// We added frames to the WAL.
 			// We can invoke a checkpoint if there are no other active connections.
@@ -3006,7 +2997,30 @@ static int connectionBusyHandler(void *ptr, int count)
 			}
 		}
 	
-		// Post-Write-Transaction: Step 10 of 10
+		// Post-Write-Transaction: Step 10 of 11
+		//
+		// If the WAL has gotten too big, then we perform a checkpoint right away.
+		// We purposefuly do this BEFORE posting the notification.
+		
+		if ([database aggressiveCheckpointEnabled])
+		{
+			int totalFrameCount = 0;
+			int checkpointedFrameCount = 0;
+			
+			int checkpointResult = sqlite3_wal_checkpoint_v2(db, "main", SQLITE_CHECKPOINT_PASSIVE,
+			                                                 &totalFrameCount, &checkpointedFrameCount);
+			
+			YDBLogInfo(@"Post-checkpoint: src(d) mode(passive) result(%d) frames(%d) checkpointed(%d)",
+			           checkpointResult, totalFrameCount, checkpointedFrameCount);
+
+			
+			if (checkpointResult == SQLITE_OK)
+			{
+				[database noteCheckpointWithTotalFrames:totalFrameCount checkpointedFrames:checkpointedFrameCount];
+			}
+		}
+		
+		// Post-Write-Transaction: Step 11 of 11
 		//
 		// Post YapDatabaseModifiedNotification (if needed)
 		
@@ -3539,91 +3553,24 @@ static int connectionBusyHandler(void *ptr, int count)
  * then we want to reset the connection such that it's reading commit X directly from the database file.
  * This will mean the WAL is no longer locked, and can be reset on the next write.
  * 
- * We use the maybeResetLongLivedReadTransaction method to achieve this.
+ * We use this method as part of the solution to achieving this.
 **/
-- (void)maybeResetLongLivedReadTransaction
+- (BOOL)resetLongLivedReadTransaction
 {
-	// Async dispatch onto the writeQueue so we know there aren't any other active readWrite transactions
+	if (longLivedReadTransaction && (snapshot == [database snapshot]))
+	{
+		NSArray *empty = [self beginLongLivedReadTransaction];
 	
-	dispatch_async(database->writeQueue, ^{
-		
-		// Pause the writeQueue so readWrite operations can't interfere with us.
-		// We abort if our connection has a readWrite transaction pending.
-		
-		BOOL abort = NO;
-		
-		OSSpinLockLock(&lock);
+		if ([empty count] != 0)
 		{
-			if (activeReadWriteTransaction) {
-				abort = YES;
-			}
-			else if (!writeQueueSuspended) {
-				dispatch_suspend(database->writeQueue);
-				writeQueueSuspended = YES;
-			}
+			YDBLogError(@"Core logic failure! "
+							@"Silent longLivedReadTransaction reset resulted in non-empty notification array!");
 		}
-		OSSpinLockUnlock(&lock);
 		
-		if (abort) return;
-		
-		// Async dispatch onto our connectionQueue.
-		
-		dispatch_async(connectionQueue, ^{
-			
-			// If possible, silently reset the longLivedReadTransaction (same snapshot, no longer locking the WAL)
-			
-			BOOL writeQueueStillSuspended = NO;
-			OSSpinLockLock(&lock);
-			{
-				writeQueueStillSuspended = writeQueueSuspended;
-			}
-			OSSpinLockUnlock(&lock);
-			
-			if (writeQueueStillSuspended && longLivedReadTransaction && (snapshot == [database snapshot]))
-			{
-				NSArray *empty = [self beginLongLivedReadTransaction];
-				
-				if ([empty count] != 0)
-				{
-					YDBLogError(@"Core logic failure! "
-					            @"Silent longLivedReadTransaction reset resulted in non-empty notification array!");
-				}
-			}
-			
-			// Resume the writeQueue
-			
-			OSSpinLockLock(&lock);
-			{
-				if (writeQueueSuspended) {
-					dispatch_resume(database->writeQueue);
-					writeQueueSuspended = NO;
-				}
-			}
-			OSSpinLockUnlock(&lock);
-		});
-	});
-}
-
-NS_INLINE void __preWriteQueue(YapDatabaseConnection *connection)
-{
-	OSSpinLockLock(&connection->lock);
-	{
-		if (connection->writeQueueSuspended) {
-			dispatch_resume(connection->database->writeQueue);
-			connection->writeQueueSuspended = NO;
-		}
-		connection->activeReadWriteTransaction = YES;
+		return YES;
 	}
-	OSSpinLockUnlock(&connection->lock);
-}
-
-NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
-{
-	OSSpinLockLock(&connection->lock);
-	{
-		connection->activeReadWriteTransaction = NO;
-	}
-	OSSpinLockUnlock(&connection->lock);
+	
+	return NO;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5421,7 +5368,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			[self prePseudoReadWriteTransaction];
@@ -5448,8 +5394,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			[self postPseudoReadWriteTransaction];
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	}});     // End dispatch_sync(connectionQueue)
+		
+	}}); // End dispatch_sync(connectionQueue)
 }
 
 /**
@@ -5513,7 +5459,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			[self prePseudoReadWriteTransaction];
@@ -5544,8 +5489,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	}});     // End dispatch_async(connectionQueue)
+		
+	}}); // End dispatch_async(connectionQueue)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5588,7 +5533,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			[self prePseudoReadWriteTransaction];
@@ -5599,8 +5543,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			[self postPseudoReadWriteTransaction];
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	}});     // End dispatch_sync(connectionQueue)
+		
+	}}); // End dispatch_sync(connectionQueue)
 	
 	return error;
 }
@@ -5682,7 +5626,6 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 		}
 		
-		__preWriteQueue(self);
 		dispatch_sync(database->writeQueue, ^{ @autoreleasepool {
 			
 			[self prePseudoReadWriteTransaction];
@@ -5700,8 +5643,8 @@ NS_INLINE void __postWriteQueue(YapDatabaseConnection *connection)
 			}
 			
 		}}); // End dispatch_sync(database->writeQueue)
-		__postWriteQueue(self);
-	}});     // End dispatch_async(connectionQueue)
+		
+	}}); // End dispatch_async(connectionQueue)
 	
 	return progress;
 }
