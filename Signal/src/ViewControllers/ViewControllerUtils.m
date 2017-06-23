@@ -51,7 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
     // 4a. Ensure we don't exceed the maximum length for a e164 phone number,
     //     15 digits, per: https://en.wikipedia.org/wiki/E.164
-    const int kMaxPhoneNumberLength = 15;
+    //
+    // NOTE: The actual limit is 18, not 15, because of certain invalid phone numbers in Germany.
+    //       https://github.com/googlei18n/libphonenumber/blob/master/FALSEHOODS.md
+    const int kMaxPhoneNumberLength = 18;
     if (textAfterChange.length > kMaxPhoneNumberLength) {
         textAfterChange = [textAfterChange substringToIndex:kMaxPhoneNumberLength];
     }
