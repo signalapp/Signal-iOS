@@ -263,8 +263,13 @@
         }
 
         switch (self.notificationPreviewType) {
-            case NotificationNamePreview:
-                notification.category = Signal_Full_New_Message_Category;
+            case NotificationNamePreview: {
+                BOOL senderIsNoLongerVerified =
+                    [OWSIdentityManager.sharedManager verificationStateForRecipientId:message.authorId]
+                    == OWSVerificationStateNoLongerVerified;
+
+                notification.category = (senderIsNoLongerVerified ? Signal_Full_New_Message_Category_No_Longer_Verified
+                                                                  : Signal_Full_New_Message_Category);
                 notification.userInfo =
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 
@@ -280,6 +285,7 @@
                     notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
                 }
                 break;
+            }
             case NotificationNameNoPreview: {
                 notification.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
                 if ([thread isGroupThread]) {
