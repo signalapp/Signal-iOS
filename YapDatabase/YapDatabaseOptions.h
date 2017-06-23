@@ -255,7 +255,7 @@ typedef NSData *_Nonnull (^YapDatabaseCipherKeyBlock)(void);
  * unless you were benchmarking or stress testing your database system.
  * In which case you may notice this aggressive checkpoint as something of a "stutter" in the system.
  *
- * The default value is (1024 * 1024) (i.e. 1 MB)
+ * The default value is (1024 * 1024 * 4) (i.e. 4 MB)
  * 
  * Remember: This value is specified as a number of bytes. For example:
  * -   1 KB == 1024 * 1

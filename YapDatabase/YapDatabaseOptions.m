@@ -37,7 +37,7 @@
 		pragmaJournalSizeLimit = 0;
 		pragmaPageSize = 0;
 		pragmaMMapSize = 0;
-		aggressiveWALTruncationSize = (1024 * 1024); // 1 MB
+		aggressiveWALTruncationSize = (1024 * 1024 * 4); // 4 MB
         enableMultiProcessSupport = NO;
 	}
 	return self;
