@@ -3125,41 +3125,6 @@ static int connectionBusyHandler(void *ptr, int count) {
 	           (checkpointMode == SQLITE_CHECKPOINT_RESTART ? @"restart" : @"truncate"),
 	           checkpointResult, totalFrameCount, checkpointedFrameCount);
 	
-	if (checkpointResult == SQLITE_BUSY)
-	{
-		dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
-		
-			YDBLogInfo(@"===========================================");
-			for (YapDatabaseConnectionState *state in connectionStates)
-			{
-				/*
-				 __weak YapDatabaseConnection *connection;
-				 
-				 BOOL activeReadTransaction;
-				 BOOL longLivedReadTransaction;
-				 BOOL sqlLevelSharedReadLock;
-				 
-				 BOOL activeWriteTransaction;
-				 BOOL waitingForWriteLock;
-				 
-				 uint64_t lastTransactionSnapshot;
-				 uint64_t lastTransactionTime;
-				*/
-				
-				YDBLogInfo(@"state->connection: %p", state->connection);
-				
-				YDBLogInfo(@"state->activeReadTransaction: %d", state->activeReadTransaction);
-				YDBLogInfo(@"state->longLivedReadTransaction: %d", state->longLivedReadTransaction);
-				YDBLogInfo(@"state->sqlLevelSharedReadLock: %d", state->sqlLevelSharedReadLock);
-				
-				YDBLogInfo(@"state->activeWriteTransaction: %d", state->activeWriteTransaction);
-				YDBLogInfo(@"state->waitingForWriteLock: %d", state->waitingForWriteLock);
-				
-				YDBLogInfo(@"===========================================");
-			}
-		}});
-	}
-	
 	if (checkpointResult == SQLITE_OK)
 	{
 		if (checkpointMode == SQLITE_CHECKPOINT_RESTART)
