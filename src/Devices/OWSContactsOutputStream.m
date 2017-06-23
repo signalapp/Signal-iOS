@@ -5,9 +5,10 @@
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
 #import "MIMETypeUtil.h"
+#import "NSData+keyVersionByte.h"
+#import "OWSRecipientIdentity.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
-#import "OWSRecipientIdentity.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (recipientIdentity != nil) {
         OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
         verifiedBuilder.destination = recipientIdentity.recipientId;
-        verifiedBuilder.identityKey = recipientIdentity.identityKey;
+        verifiedBuilder.identityKey = [recipientIdentity.identityKey prependKeyType];
         verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
         contactBuilder.verifiedBuilder = verifiedBuilder;
     }
