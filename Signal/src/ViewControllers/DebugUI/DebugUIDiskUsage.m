@@ -5,6 +5,8 @@
 #import "DebugUIDiskUsage.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import <SignalServiceKit/TSDatabaseView.h>
+#import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -41,6 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
                                            [OWSTableItem itemWithTitle:@"Audit & Clean Up"
                                                            actionBlock:^{
                                                                [DebugUIDiskUsage auditWithCleanup];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"Save All Attachments"
+                                                           actionBlock:^{
+                                                               [DebugUIDiskUsage saveAllAttachments];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"Delete Messages older than 3 Months"
+                                                           actionBlock:^{
+                                                               [DebugUIDiskUsage deleteOldMessages_3Months];
                                                            }],
                                        ]];
 }
@@ -210,6 +220,78 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *path in [paths sortedArrayUsingSelector:@selector(compare:)]) {
         DDLogError(@"%@: %@", label, path);
     }
+}
+
++ (void)saveAllAttachments
+{
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    [storageManager.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+
+        NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
+        [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
+                                              usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
+                                                  if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                      return;
+                                                  }
+                                                  TSAttachmentStream *attachmentStream
+                                                      = (TSAttachmentStream *)attachment;
+                                                  [attachmentStreams addObject:attachmentStream];
+                                              }];
+
+        DDLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
+
+        // Persist the new localRelativeFilePath property of TSAttachmentStream.
+        // For performance, we want to upgrade all existing attachment streams in
+        // a single transaction.
+        for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+            [attachmentStream saveWithTransaction:transaction];
+        }
+    }];
+}
+
++ (void)deleteOldMessages_3Months
+{
+    NSTimeInterval kMinute = 60.f;
+    NSTimeInterval kHour = 60 * kMinute;
+    NSTimeInterval kDay = 24 * kHour;
+    NSTimeInterval kMonth = 30 * kDay;
+    [self deleteOldMessages:kMonth * 3];
+}
+
++ (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds
+{
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    [storageManager.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+
+        NSMutableArray<NSString *> *threadIds = [NSMutableArray new];
+        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+        [interactionsByThread enumerateGroupsUsingBlock:^(NSString *group, BOOL *stop) {
+            [threadIds addObject:group];
+        }];
+        NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
+        for (NSString *threadId in threadIds) {
+            [interactionsByThread enumerateKeysAndObjectsInGroup:threadId
+                                                      usingBlock:^(NSString *collection,
+                                                          NSString *key,
+                                                          TSInteraction *interaction,
+                                                          NSUInteger index,
+                                                          BOOL *stop) {
+                                                          NSTimeInterval ageSeconds
+                                                              = fabs(interaction.dateForSorting.timeIntervalSinceNow);
+                                                          if (ageSeconds < maxAgeSeconds) {
+                                                              *stop = YES;
+                                                              return;
+                                                          }
+                                                          [interactionsToDelete addObject:interaction];
+                                                      }];
+        }
+
+        DDLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);
+
+        for (TSInteraction *interaction in interactionsToDelete) {
+            [interaction removeWithTransaction:transaction];
+        }
+    }];
 }
 
 @end
