@@ -268,6 +268,9 @@
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Užblokuotas";
 
+/* An indicator that a contact is no longer verified. */
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Neregistruotas numeris";
 
@@ -329,7 +332,7 @@
 "CREATE_NEW_GROUP" = "Sukurti naują grupę";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tai gali užimti kelias minutes.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Atnaujinamos duomenų bazės";
@@ -536,7 +539,7 @@
 "FAILED_VERIFICATION_TITLE" = "Nepavyko patvirtinti saugumo numerio!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Žymėti kaip patvirtintą";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atstatyti šį seansą.";
@@ -576,6 +579,18 @@
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Skambinti";
+
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification For All";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
+
+/* Title for the 'members' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+
+/* Title for the 'no longer verified' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Siųsti žinutę";
@@ -728,13 +743,13 @@
 "MESSAGE_STATUS_UPLOADING" = "Įkeliama…";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ daugiau nebėra pažymėta(-s) kaip patvirtinta(-s). Bakstelėkite norėdami matyti parinktis.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Jūs užblokavote šį naudotoją";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ daugiau nebėra pažymėta(-s) kaip patvirtinta(-s). Bakstelėkite norėdami matyti parinktis.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Atsiuntimas nepavyko.";
@@ -749,7 +764,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Jūs užblokavote %d šios grupės dalyvius(-ių)";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Daugiau nei vienas šios grupės dalyvis daugiau nebėra pažymėtas kaip patvirtintas. Bakstelėkite, norėdami matyti parinktis.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Bakstelėkite čia, nustatymams rodyti";
@@ -827,9 +842,6 @@
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Atsijungta";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_TEXT" = "Jūs galite tikrinti savo tinklo būseną, žvilgteldami į spalvotą juostą virš jūsų skyrelio Gauta.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Rasti pagal telefono numerį";
@@ -962,7 +974,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Darbo faksas";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Jūs nesate pažymėję %@ kaip patvirtintą.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Patvirtinta(-s)";
@@ -977,7 +989,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Bakstelėkite, norėdami skenuoti.";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Žymėti kaip nepatvirtintą";
+"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tai neatrodo kaip jūsų saugumo numeris, skirtas %@. Ar tikrai tvirtinate teisingą kontaktą?";
@@ -1331,10 +1343,10 @@
 "SMS_INVITE_BODY" = "Siūlau tau įdiegti Signal! Štai čia yra nuoroda:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Jūsų saugumo numeris su %@ sutampa. Dabar galite pažymėti šį kontaktą kaip patvirtintą.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Saugumo numeris sutampa!";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Atsisakyti";
@@ -1443,6 +1455,9 @@
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Rodyti saugumo numerį";
+
+/* Label for button or row which allows users to verify the safety numbers of multiple users. */
+"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Perbraukite, norėdami atsisakyti";

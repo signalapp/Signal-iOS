@@ -22,7 +22,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 @property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+
 @property (nonatomic) BOOL isRequestInFlight;
 
 @end
@@ -30,6 +32,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 @implementation OWSContactsSyncing
 
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+                        identityManager:(OWSIdentityManager *)identityManager
                           messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
@@ -40,8 +43,10 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
     OWSAssert(contactsManager);
     OWSAssert(messageSender);
+    OWSAssert(identityManager);
 
     _contactsManager = contactsManager;
+    _identityManager = identityManager;
     _messageSender = messageSender;
 
     OWSSingletonAssert();
@@ -85,8 +90,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
             return;
         }
 
-        OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager];
+        OWSSyncContactsMessage *syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
+                                                                                              identityManager:self.identityManager];
 
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 

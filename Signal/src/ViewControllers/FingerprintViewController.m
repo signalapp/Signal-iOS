@@ -515,11 +515,13 @@ typedef void (^CustomLayoutBlock)();
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
             == OWSVerificationStateVerified;
-        [[OWSIdentityManager sharedManager]
-             setVerificationState:(isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified)identityKey
-                                 :self.identityKey
-                      recipientId:self.recipientId
-            isUserInitiatedChange:YES];
+
+        OWSVerificationState newVerificationState
+            = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+        [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                     identityKey:self.identityKey
+                                                     recipientId:self.recipientId
+                                           isUserInitiatedChange:YES];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

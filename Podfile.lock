@@ -128,13 +128,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: f8f44d143bffd38e8470fdca0db7adf73a844956
+    :commit: 81047679f6791462e9b8de293c89a141ea2d254d
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
     :commit: 521686c112bbae7a762f85d52b1e41eeb1760772
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :commit: 4609c508ec51c69af171ea227eca7ac010f065d5
+    :commit: 14c64239a36fa13d337b2b0090274302970842c8
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf

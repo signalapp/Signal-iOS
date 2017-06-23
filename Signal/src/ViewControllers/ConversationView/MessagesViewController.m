@@ -2793,6 +2793,7 @@ typedef enum : NSUInteger {
     [super viewDidLayoutSubviews];
 
     [self updateLastVisibleTimestamp];
+    [self ensureScrollDownButton];
 }
 
 - (void)createScrollDownButton
@@ -2838,12 +2839,22 @@ typedef enum : NSUInteger {
 
     BOOL shouldShowScrollDownButton = NO;
     NSUInteger numberOfMessages = [self.messageMappings numberOfItemsInSection:0];
+    CGFloat scrollSpaceToBottom = (self.collectionView.contentSize.height + self.collectionView.contentInset.bottom
+        - (self.collectionView.contentOffset.y + self.collectionView.frame.size.height));
+    CGFloat pageHeight = (self.collectionView.frame.size.height
+        - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom));
+    // Show "scroll down" button if user is scrolled up at least
+    // one page.
+    BOOL isScrolledUp = scrollSpaceToBottom > pageHeight * 1.f;
+
     if (numberOfMessages > 0) {
         TSInteraction *lastInteraction =
             [self interactionAtIndexPath:[NSIndexPath indexPathForRow:(NSInteger)numberOfMessages - 1 inSection:0]];
         OWSAssert(lastInteraction);
 
         if (lastInteraction.timestampForSorting > self.lastVisibleTimestamp) {
+            shouldShowScrollDownButton = YES;
+        } else if (isScrolledUp) {
             shouldShowScrollDownButton = YES;
         }
     }
@@ -3592,7 +3603,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"cancelRecordingVoiceMemo");
+    DDLogDebug(@"cancelRecordingVoiceMemo");
 
     [self resetRecordingVoiceMemo];
 }
@@ -3992,7 +4003,7 @@ typedef enum : NSUInteger {
     [self presentViewController:controller animated:YES completion:nil];
 }
 
-- (void)textViewDidChangePosition
+- (void)textViewDidChangeLayout
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -4006,6 +4017,8 @@ typedef enum : NSUInteger {
                                                                    userInfo:nil
                                                                     repeats:NO];
     }
+
+    [self ensureScrollDownButton];
 }
 
 - (void)scrollToBottomImmediately
@@ -4096,6 +4109,8 @@ typedef enum : NSUInteger {
     // We want to show the "voice message" button if the text input is empty
     // and the "send" button if it isn't.
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
+
+    [self ensureScrollDownButton];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -4161,7 +4176,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - OWSMessagesCollectionViewFlowLayoutDelegate
-
 
 - (BOOL)shouldShowCellDecorationsAtIndexPath:(NSIndexPath *)indexPath
 {
