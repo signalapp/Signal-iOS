@@ -1,9 +1,5 @@
 //
-//  UIImage+normalizeImage.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 26/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIImage+normalizeImage.h"
@@ -11,8 +7,9 @@
 @implementation UIImage (normalizeImage)
 
 - (UIImage *)normalizedImage {
-    if (self.imageOrientation == UIImageOrientationUp)
+    if (self.imageOrientation == UIImageOrientationUp) {
         return self;
+    }
 
     UIGraphicsBeginImageContextWithOptions(self.size, NO, self.scale);
     [self drawInRect:(CGRect){{0, 0}, self.size}];
@@ -20,7 +17,6 @@
     UIGraphicsEndImageContext();
     return normalizedImage;
 }
-
 
 - (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate {
     UIImage *resized = nil;
@@ -132,49 +128,42 @@
     return resizedImage;
 }
 
-- (UIImage *)resizedImageToFitInSize:(CGSize)boundingSize scaleIfSmaller:(BOOL)scale {
-    // get the image size (independant of imageOrientation)
-    CGImageRef imgRef = self.CGImage;
-    CGSize srcSize =
-        CGSizeMake(CGImageGetWidth(imgRef),
-                   CGImageGetHeight(imgRef)); // not equivalent to self.size (which depends on the imageOrientation)!
+- (UIImage *)resizedImageToFillPixelSize:(CGSize)dstSize
+{
+    OWSAssert(dstSize.width > 0);
+    OWSAssert(dstSize.height > 0);
 
-    // adjust boundingSize to make it independant on imageOrientation too for farther computations
-    UIImageOrientation orient = self.imageOrientation;
-    switch (orient) {
-        case UIImageOrientationLeft:
-        case UIImageOrientationRight:
-        case UIImageOrientationLeftMirrored:
-        case UIImageOrientationRightMirrored:
-            boundingSize = CGSizeMake(boundingSize.height, boundingSize.width);
-            break;
-        default:
-            // NOP
-            break;
-    }
+    UIImage *normalized = [self normalizedImage];
 
-    // Compute the target CGRect in order to keep aspect-ratio
-    CGSize dstSize;
+    // Get the size in pixels, not points.
+    CGSize srcSize = CGSizeMake(CGImageGetWidth(normalized.CGImage), CGImageGetHeight(normalized.CGImage));
+    OWSAssert(srcSize.width > 0);
+    OWSAssert(srcSize.height > 0);
 
-    if (!scale && (srcSize.width < boundingSize.width) && (srcSize.height < boundingSize.height)) {
-        // NSLog(@"Image is smaller, and we asked not to scale it in this case (scaleIfSmaller:NO)");
-        dstSize = srcSize; // no resize (we could directly return 'self' here, but we draw the image anyway to take
-                           // image orientation into account)
+    CGFloat widthRatio = srcSize.width / dstSize.width;
+    CGFloat heightRatio = srcSize.height / dstSize.height;
+    CGRect drawRect = CGRectZero;
+    if (widthRatio > heightRatio) {
+        drawRect.origin.y = 0;
+        drawRect.size.height = dstSize.height;
+        drawRect.size.width = dstSize.height * srcSize.width / srcSize.height;
+        OWSAssert(drawRect.size.width > dstSize.width);
+        drawRect.origin.x = (drawRect.size.width - dstSize.width) * -0.5f;
     } else {
-        CGFloat wRatio = boundingSize.width / srcSize.width;
-        CGFloat hRatio = boundingSize.height / srcSize.height;
-
-        if (wRatio < hRatio) {
-            // NSLog(@"Width imposed, Height scaled ; ratio = %f",wRatio);
-            dstSize = CGSizeMake(boundingSize.width, (CGFloat)floor(srcSize.height * wRatio));
-        } else {
-            // NSLog(@"Height imposed, Width scaled ; ratio = %f",hRatio);
-            dstSize = CGSizeMake((CGFloat)floor(srcSize.width * hRatio), boundingSize.height);
-        }
+        drawRect.origin.x = 0;
+        drawRect.size.width = dstSize.width;
+        drawRect.size.height = dstSize.width * srcSize.height / srcSize.width;
+        OWSAssert(drawRect.size.height >= dstSize.height);
+        drawRect.origin.y = (drawRect.size.height - dstSize.height) * -0.5f;
     }
 
-    return [self resizedImageToSize:dstSize];
+    UIGraphicsBeginImageContextWithOptions(dstSize, NO, 1.f);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    [self drawInRect:drawRect];
+    UIImage *dstImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return dstImage;
 }
-
 
 @end

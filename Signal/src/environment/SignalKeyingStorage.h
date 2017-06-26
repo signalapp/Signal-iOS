@@ -1,34 +1,24 @@
 //
-//  SignalKeyingStorage.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 09/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "PhoneNumber.h"
-#import "Zid.h"
 
 #define LOCAL_NUMBER_KEY @"Number"
 #define PASSWORD_COUNTER_KEY @"PasswordCounter"
-#define SAVED_PASSWORD_KEY @"Password"
 #define SIGNALING_MAC_KEY @"Signaling Mac Key"
 #define SIGNALING_CIPHER_KEY @"Signaling Cipher Key"
 #define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
 
+// TODO:
 @interface SignalKeyingStorage : NSObject
 
 + (void)generateSignaling;
-+ (void)generateServerAuthPassword;
 
 #pragma mark Signaling Key
 
 + (int64_t)getAndIncrementOneTimeCounter;
-
-#pragma mark Server Auth
-
-+ (NSString *)serverAuthPassword;
 
 #pragma mark Signaling
 

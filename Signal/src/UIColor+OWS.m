@@ -3,6 +3,7 @@
 //
 
 #import "Cryptography.h"
+#import "OWSMath.h"
 #import "UIColor+OWS.h"
 
 @implementation UIColor (OWS)
@@ -46,6 +47,11 @@
     return [UIColor colorWithRed:245.f / 255.f green:186.f / 255.f blue:98.f / 255.f alpha:1.f];
 }
 
++ (UIColor *)ows_reminderYellowColor
+{
+    return [UIColor colorWithRed:252.f / 255.f green:240.f / 255.f blue:217.f / 255.f alpha:1.f];
+}
+
 + (UIColor *)ows_greenColor
 {
     // green: #BF4240
@@ -56,6 +62,11 @@
 {
     // red: #FF3867
     return [UIColor colorWithRed:255. / 255.f green:56.f / 255.f blue:103.f / 255.f alpha:1.f];
+}
+
++ (UIColor *)ows_destructiveRedColor
+{
+    return [UIColor colorWithRed:0.98639106750488281 green:0.10408364236354828 blue:0.33135244250297546 alpha:1.f];
 }
 
 + (UIColor *)ows_errorMessageBorderColor
@@ -113,6 +124,28 @@
     CGFloat green = ((value >> 8) & 0xff) / 255.f;
     CGFloat blue = ((value >> 0) & 0xff) / 255.f;
     return [UIColor colorWithRed:red green:green blue:blue alpha:1.f];
+}
+
+- (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha
+{
+    CGFloat r0, g0, b0, a0;
+#ifdef DEBUG
+    BOOL result =
+#endif
+        [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
+    OWSAssert(result);
+
+    CGFloat r1, g1, b1, a1;
+#ifdef DEBUG
+    result =
+#endif
+        [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+    OWSAssert(result);
+
+    return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
+                           green:CGFloatLerp(g0, g1, alpha)
+                            blue:CGFloatLerp(b0, b1, alpha)
+                           alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
 @end

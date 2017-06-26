@@ -3,20 +3,15 @@
 //
 
 #import "Environment.h"
-#import "DH3KKeyAgreementProtocol.h"
 #import "DebugLogger.h"
 #import "FunctionalUtil.h"
-#import "KeyAgreementProtocol.h"
 #import "MessagesViewController.h"
-#import "RecentCallManager.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "SignalsViewController.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
-
-#define isRegisteredUserDefaultString @"isRegistered"
 
 static Environment *environment = nil;
 
@@ -25,6 +20,10 @@ static Environment *environment = nil;
 @synthesize accountManager = _accountManager,
             callMessageHandler = _callMessageHandler,
             callService = _callService,
+            contactsManager = _contactsManager,
+            contactsUpdater = _contactsUpdater,
+            messageSender = _messageSender,
+            networkManager = _networkManager,
             notificationsManager = _notificationsManager,
             preferences = _preferences,
             outboundCallInitiator = _outboundCallInitiator;
@@ -37,95 +36,23 @@ static Environment *environment = nil;
 + (void)setCurrent:(Environment *)curEnvironment {
     environment = curEnvironment;
 }
-+ (ErrorHandlerBlock)errorNoter {
-    return self.getCurrent.errorNoter;
-}
-+ (bool)hasEnabledTestingOrLegacyOption:(NSString *)flag {
-    return [self.getCurrent.testingAndLegacyOptions containsObject:flag];
-}
 
-+ (NSString *)relayServerNameToHostName:(NSString *)name {
-    return [NSString stringWithFormat:@"%@.%@", name, Environment.getCurrent.relayServerHostNameSuffix];
-}
-+ (SecureEndPoint *)getMasterServerSecureEndPoint {
-    return Environment.getCurrent.masterServerSecureEndPoint;
-}
-+ (SecureEndPoint *)getSecureEndPointToDefaultRelayServer {
-    return [Environment getSecureEndPointToSignalingServerNamed:Environment.getCurrent.defaultRelayName];
-}
-+ (SecureEndPoint *)getSecureEndPointToSignalingServerNamed:(NSString *)name {
-    ows_require(name != nil);
-    Environment *env = Environment.getCurrent;
-
-    NSString *hostName         = [self relayServerNameToHostName:name];
-    HostNameEndPoint *location = [HostNameEndPoint hostNameEndPointWithHostName:hostName andPort:env.serverPort];
-    return [SecureEndPoint secureEndPointForHost:location identifiedByCertificate:env.certificate];
-}
-
-- (instancetype)initWithLogging:(id<Logging>)logging
-                     errorNoter:(ErrorHandlerBlock)errorNoter
-                     serverPort:(in_port_t)serverPort
-           masterServerHostName:(NSString *)masterServerHostName
-               defaultRelayName:(NSString *)defaultRelayName
-      relayServerHostNameSuffix:(NSString *)relayServerHostNameSuffix
-                    certificate:(Certificate *)certificate
- supportedKeyAgreementProtocols:(NSArray *)keyAgreementProtocolsInDescendingPriority
-                   phoneManager:(PhoneManager *)phoneManager
-              recentCallManager:(RecentCallManager *)recentCallManager
-        testingAndLegacyOptions:(NSArray *)testingAndLegacyOptions
-                   zrtpClientId:(NSData *)zrtpClientId
-                  zrtpVersionId:(NSData *)zrtpVersionId
-                contactsManager:(OWSContactsManager *)contactsManager
-                contactsUpdater:(ContactsUpdater *)contactsUpdater
-                 networkManager:(TSNetworkManager *)networkManager
-                  messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         networkManager:(TSNetworkManager *)networkManager
+                          messageSender:(OWSMessageSender *)messageSender
 {
-    ows_require(errorNoter != nil);
-    ows_require(zrtpClientId != nil);
-    ows_require(zrtpVersionId != nil);
-    ows_require(testingAndLegacyOptions != nil);
-    ows_require(keyAgreementProtocolsInDescendingPriority != nil);
-    ows_require([keyAgreementProtocolsInDescendingPriority all:^int(id p) {
-      return [p conformsToProtocol:@protocol(KeyAgreementProtocol)];
-    }]);
-
-    // must support DH3k
-    ows_require([keyAgreementProtocolsInDescendingPriority any:^int(id p) {
-      return [p isKindOfClass:DH3KKeyAgreementProtocol.class];
-    }]);
-
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _errorNoter = errorNoter;
-    _logging = logging;
-    _testingAndLegacyOptions = testingAndLegacyOptions;
-    _serverPort = serverPort;
-    _masterServerSecureEndPoint = [SecureEndPoint
-          secureEndPointForHost:[HostNameEndPoint hostNameEndPointWithHostName:masterServerHostName andPort:serverPort]
-        identifiedByCertificate:certificate];
-
-    _defaultRelayName = defaultRelayName;
-    _certificate = certificate;
-    _relayServerHostNameSuffix = relayServerHostNameSuffix;
-    _keyAgreementProtocolsInDescendingPriority = keyAgreementProtocolsInDescendingPriority;
-    _phoneManager = phoneManager;
-    _recentCallManager = recentCallManager;
-    _zrtpClientId = zrtpClientId;
-    _zrtpVersionId = zrtpVersionId;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
     _messageSender = messageSender;
 
-    if (recentCallManager != nil) {
-        // recentCallManagers are nil in unit tests because they would require unnecessary allocations. Detailed
-        // explanation: https://github.com/WhisperSystems/Signal-iOS/issues/62#issuecomment-51482195
-
-        [recentCallManager watchForCallsThrough:phoneManager untilCancelled:nil];
-    }
+    OWSSingletonAssert();
 
     return self;
 }
@@ -134,8 +61,8 @@ static Environment *environment = nil;
 {
     @synchronized (self) {
         if (!_accountManager) {
-            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                redPhoneAccountManager:[RPAccountManager sharedInstance]];
+            _accountManager =
+                [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]];
         }
     }
 
@@ -181,7 +108,6 @@ static Environment *environment = nil;
 {
     @synchronized (self) {
         if (!_outboundCallInitiator) {
-            OWSAssert(self.phoneManager);
             OWSAssert(self.contactsManager);
             OWSAssert(self.contactsUpdater);
             _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithContactsManager:self.contactsManager
@@ -192,42 +118,28 @@ static Environment *environment = nil;
     return _outboundCallInitiator;
 }
 
-+ (PhoneManager *)phoneManager {
-    return Environment.getCurrent.phoneManager;
+- (OWSContactsManager *)contactsManager
+{
+    OWSAssert(_contactsManager != nil);
+    return _contactsManager;
 }
 
-+ (id<Logging>)logging {
-    // Many tests create objects that rely on Environment only for logging.
-    // So we bypass the nil check in getCurrent and silently don't log during unit testing, instead of failing hard.
-    if (environment == nil)
-        return nil;
-
-    return Environment.getCurrent.logging;
+- (ContactsUpdater *)contactsUpdater
+{
+    OWSAssert(_contactsUpdater != nil);
+    return _contactsUpdater;
 }
 
-+ (BOOL)isRedPhoneRegistered {
-    // Attributes that need to be set
-    NSData *signalingKey = SignalKeyingStorage.signalingCipherKey;
-    NSData *macKey       = SignalKeyingStorage.signalingMacKey;
-    NSData *extra        = SignalKeyingStorage.signalingExtraKey;
-    NSString *serverAuth = SignalKeyingStorage.serverAuthPassword;
-
-    return signalingKey && macKey && extra && serverAuth;
+- (TSNetworkManager *)networkManager
+{
+    OWSAssert(_networkManager != nil);
+    return _networkManager;
 }
 
-- (void)initCallListener {
-    [self.phoneManager.currentCallObservable watchLatestValue:^(CallState *latestCall) {
-      if (latestCall == nil) {
-          return;
-      }
-
-      SignalsViewController *vc = [[Environment getCurrent] signalsViewController];
-      [vc dismissViewControllerAnimated:NO completion:nil];
-      vc.latestCall = latestCall;
-      [vc performSegueWithIdentifier:kRedphoneCallSegue sender:self];
-    }
-                                                     onThread:NSThread.mainThread
-                                               untilCancelled:nil];
+- (OWSMessageSender *)messageSender
+{
+    OWSAssert(_messageSender != nil);
+    return _messageSender;
 }
 
 - (NotificationsManager *)notificationsManager
@@ -300,16 +212,27 @@ static Environment *environment = nil;
     [[TSStorageManager sharedManager]
             .dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
       TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
-      [vc presentThread:thread keyboardOnViewAppearing:YES];
-
+      [vc presentThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
     }];
+}
+
++ (void)callUserWithIdentifier:(NSString *)identifier
+{
+    Environment *env = [self getCurrent];
+    SignalsViewController *vc = env.signalsViewController;
+
+    [[TSStorageManager sharedManager].dbConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
+            [vc presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:YES];
+        }];
 }
 
 + (void)messageGroup:(TSGroupThread *)groupThread {
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
 
-    [vc presentThread:groupThread keyboardOnViewAppearing:YES];
+    [vc presentThread:groupThread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
 }
 
 + (void)resetAppData {

@@ -4,9 +4,10 @@
 
 #import "OWSDatabaseMigrationRunner.h"
 #import "OWS100RemoveTSRecipientsMigration.h"
-#import "OWS101ExistingUsersBlockOnIdentityChange.h"
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
 #import "OWS103EnableVideoCalling.h"
+#import "OWS104CreateRecipientIdentities.h"
+#import "OWS105AttachmentFilePaths.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,9 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @[
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
-        [[OWS101ExistingUsersBlockOnIdentityChange alloc] initWithStorageManager:self.storageManager],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
-        [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager]
+        [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
+        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager],
+        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager]
     ];
 }
 
@@ -42,9 +44,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)runSafeBlockingMigrations
+{
+    [self runMigrations:@[
+        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager],
+    ]];
+}
+
 - (void)runAllOutstanding
 {
-    for (OWSDatabaseMigration *migration in self.allMigrations) {
+    [self runMigrations:self.allMigrations];
+}
+
+- (void)runMigrations:(NSArray<OWSDatabaseMigration *> *)migrations
+{
+    OWSAssert(migrations);
+
+    for (OWSDatabaseMigration *migration in migrations) {
         if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
             DDLogDebug(@"%@ Skipping previously run migration: %@", self.tag, migration);
         } else {

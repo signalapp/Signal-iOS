@@ -11,15 +11,9 @@
 
 #define SIGNALING_MAC_KEY_LENGTH 20
 #define SIGNALING_CIPHER_KEY_LENGTH 16
-#define SAVED_PASSWORD_LENGTH 18
 #define SIGNALING_EXTRA_KEY_LENGTH 4
 
 @implementation SignalKeyingStorage
-
-+ (void)generateServerAuthPassword {
-    [self storeString:[[CryptoTools generateSecureRandomData:SAVED_PASSWORD_LENGTH] encodedAsBase64]
-               forKey:SAVED_PASSWORD_KEY];
-}
 
 + (void)generateSignaling {
     [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
@@ -45,10 +39,6 @@
 
 + (NSData *)signalingExtraKey {
     return [self dataForKey:SIGNALING_EXTRA_KEY andVerifyLength:SIGNALING_EXTRA_KEY_LENGTH];
-}
-
-+ (NSString *)serverAuthPassword {
-    return [self stringForKey:SAVED_PASSWORD_KEY];
 }
 
 #pragma mark Keychain wrapper methods

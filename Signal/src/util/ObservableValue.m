@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "Environment.h"
 #import "ObservableValue.h"
 #import "Util.h"
@@ -61,8 +65,7 @@
         @try {
             action();
         } @catch (id ex) {
-            [[Environment.logging getConditionLoggerForSender:self]
-                logError:@"A queued action failed and may have stalled an ObservableValue."];
+            DDLogError(@"A queued action failed and may have stalled an ObservableValue.");
             @synchronized(self) {
                 isRunningActions = false;
             }
@@ -92,6 +95,7 @@
       }
     }];
 }
+
 - (void)adjustValue:(id (^)(id))adjustment {
     ows_require(adjustment != nil);
     [self queueRun:^{

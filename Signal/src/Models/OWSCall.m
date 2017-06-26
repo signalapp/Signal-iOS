@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSMessageAdapterType messageType;
 @property (nonatomic) BOOL isExpiringMessage;
 @property (nonatomic) BOOL shouldStartExpireTimer;
-@property (nonatomic) uint64_t expiresAtSeconds;
+@property (nonatomic) double expiresAtSeconds;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) TSInteraction *interaction;
 
@@ -54,6 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
         case RPRecentCallTypeIncomingIncomplete:
             status = kCallIncomingIncomplete;
             break;
+        case RPRecentCallTypeMissedBecauseOfChangedIdentity:
+            status = kCallMissedBecauseOfChangedIdentity;
+            break;
         default:
             status = kCallIncoming;
             break;
@@ -77,6 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
         case kCallOutgoingIncomplete:
             detailString = [NSString stringWithFormat:NSLocalizedString(@"MSGVIEW_YOU_TRIED_TO_CALL", nil), name];
             break;
+        case kCallMissedBecauseOfChangedIdentity:
+            detailString = [NSString
+                stringWithFormat:NSLocalizedString(@"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY", nil), name];
         default:
             detailString = @"";
             break;
@@ -85,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithInteraction:callRecord
                             callerId:contactThread.contactIdentifier
                    callerDisplayName:name
-                                date:callRecord.date
+                                date:callRecord.dateForSorting
                               status:status
                        displayString:detailString];
 }
@@ -191,14 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (BOOL)isOutgoingAndDelivered
-{
-    return NO;
-}
-
 - (NSUInteger)messageHash
 {
-    return self.hash;
+    return self.interaction.hash;
 }
 
 - (NSString *)text

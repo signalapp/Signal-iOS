@@ -9,10 +9,10 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "RecentCallManager.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"
 #import "TSNetworkManager.h"
+#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSOrphanedDataCleaner.h>
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
@@ -35,9 +35,8 @@
     // upgrade process may depend on Environment.
     OWSAssert([Environment getCurrent]);
 
-    NSString *previousVersion = PropertyListPreferences.lastRanVersion;
-    NSString *currentVersion =
-        [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
+    NSString *previousVersion = AppVersion.instance.lastAppVersion;
+    NSString *currentVersion = AppVersion.instance.currentAppVersion;
 
     DDLogInfo(
         @"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@", self.tag, currentVersion, previousVersion);
@@ -47,7 +46,6 @@
         OWSDatabaseMigrationRunner *runner =
             [[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]];
         [runner assumeAllExistingMigrationsRun];
-        [PropertyListPreferences setAndGetCurrentVersion];
         return;
     }
 
@@ -94,7 +92,12 @@
     }
 
     [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];
-    [PropertyListPreferences setAndGetCurrentVersion];
+}
+
++ (void)runSafeBlockingMigrations
+{
+    [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]]
+        runSafeBlockingMigrations];
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

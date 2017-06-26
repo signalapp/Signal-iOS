@@ -5,7 +5,7 @@
 import Foundation
 
 /**
- * Creates an outbound call via either Redphone or WebRTC depending on participant preferences.
+ * Creates an outbound call via WebRTC.
  */
 @objc class OutboundCallInitiator: NSObject {
     let TAG = "[OutboundCallInitiator]"
@@ -46,7 +46,31 @@ import Foundation
             return false
         }
 
-        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
+        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
+                                                                                confirmationText: CallStrings.confirmAndCallButtonTitle,
+                                                                                contactsManager: self.contactsManager) { didConfirmIdentity in
+                                                                                    if didConfirmIdentity {
+                                                                                        _ = self.initiateCall(recipientId: recipientId)
+                                                                                    }
+        }
+        guard !showedAlert else {
+            return false
+        }
+
+        // Check for microphone permissions
+        // Alternative way without prompting for permissions:
+        // if AVAudioSession.sharedInstance().recordPermission() == .denied {
+        AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
+            DispatchQueue.main.async {
+                // Here the permissions are either granted or denied
+                guard isGranted == true else {
+                    Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
+                    OWSAlerts.showNoMicrophonePermissionAlert()
+                    return
+                }
+                callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
+            }
+        }
         return true
     }
 }

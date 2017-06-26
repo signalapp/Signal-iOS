@@ -3,7 +3,6 @@
 //
 
 #import "UIFont+OWS.h"
-#import "iOSVersions.h"
 
 @implementation UIFont (OWS)
 
@@ -69,6 +68,11 @@
 + (UIFont *)ows_infoMessageFont
 {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
++ (UIFont *)ows_footnoteFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
 }
 
 + (UIFont *)ows_dynamicTypeTitle2Font {

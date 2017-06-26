@@ -1,23 +1,41 @@
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_ACTION" = "ផ្តល់សិទ្ធិប្រើប្រាស់";
-
-/* No comment provided by engineer. */
-"AB_PERMISSION_MISSING_BODY" = "Signal ត្រូវការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។ យើងមិនរក្សាទុកលេខទំនាក់ទំនងរបស់អ្នក លើម៉ាស៊ីនមេរបស់យើងឡើយ។";
-
-/* Alert title when contacts disabled */
-"AB_PERMISSION_MISSING_TITLE" = "សុំទោស!";
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "លើកក្រោយ";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "ទទួលយកលេខសុវត្ថិភាពថ្មី";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
 
-/* No comment provided by engineer. */
-"ACTION_REQUIRED_TITLE" = "ទាមទារសកម្មភាព";
+/* A label for the 'add by phone number' button in the 'add group member' view */
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "បន្ថែម";
 
-/* Alert body when contacts disabled */
-"ADDRESSBOOK_RESTRICTED_ALERT_BODY" = "Signal ត្រូវការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។ ការចូលប្រើប្រាស់ត្រូវបានហាមឃាត់។ Signal និងត្រូវបិទ។ អ្នកអាចបិទការហាមឃាត់ជាបណ្តោះអាសន្ន ដើម្បីកំណត់ការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង ដោយចូលទៅកាន់ ការកំណត់ >> ទូទៅ >> ការហាមឃាត់ >> បញ្ជីទំនាក់ទំនង >> អនុញ្ញាតការផ្លាស់ប្តូរ។";
+/* Title for the 'add contact' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "បន្ថែមលេខទំនាក់ទំនង";
 
-/* No comment provided by engineer. */
-"ADDRESSBOOK_RESTRICTED_ALERT_BUTTON" = "បិទ";
+/* Title for the 'add by phone number' section of the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "បន្ថែមលេខទូរស័ព្ទ";
+
+/* Title for the 'add group member' view. */
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "បន្ថែមសមាជិក";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"ADD_TO_CONTACTS_OFFER" = "Would you like to add this user to your contacts?";
+
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "បោះបង់";
+
+/* The label for the 'don't save' button in action sheets. */
+"ALERT_DONT_SAVE" = "មិនរក្សាទុក";
+
+/* Title for a generic error alert. */
+"ALERT_ERROR_TITLE" = "បញ្ហា";
+
+/* The label for the 'save' button in action sheets. */
+"ALERT_SAVE" = "រក្សាទុក";
+
+/* A message for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "ត្រួតពិនិត្យថា នេះជាគណនីត្រឹមត្រូវ។";
+
+/* A title for the alert shown while validating a signal account */
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "កំពុងត្រួតពិនិត្យ";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "មានគណនីស៊ីកណល?";
@@ -50,22 +68,49 @@
 "ATTACHMENT" = "ឯកសារភ្ជាប់";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "ឯកសារភ្ជាប់";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ប្រភេទឯកសារ៖ %@";
 
-/* Format string for file size label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "File size: %@";
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ទំហំ៖ %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "បញ្ជូន";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOAD_FAILED" = "ទាញយកឯកសារភ្ជាប់បរាជ័យ ចុចដើម្បីសាកល្បងម្តងទៀត។";
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "ឯកសារភ្ជាប់";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_DOWNLOADING" = "កំពុងទាញយកឯកសារភ្ជាប់";
+/* Status label when an attachment download has failed. */
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "បរាជ័យ។ ចុច ដើម្បីព្យាយាមម្តងទៀត។";
+
+/* Status label when an attachment is currently downloading */
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "កំពុងទាញយក...";
+
+/* Status label when an attachment is enqueued, but hasn't yet started downloading */
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "បានតម្រុងជួរ";
+
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "បញ្ហាបញ្ជូនឯកសារភ្ជាប់";
+
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ឯកសារភ្ជាប់មិនអាចប្តូរទំហំបាន។";
+
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ឯកសារភ្ជាប់មិនអាចញែកបាន។";
+
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ឯកសារភ្ជាប់ធំពេក។";
+
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "ឯកសារភ្ជាប់មានខ្លឹមសារមិនត្រឹមត្រូវ។";
+
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ឯកសារភ្ជាប់មានទម្រង់មិនត្រឹមត្រូវ។";
+
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "ឯកសារភ្ជាប់ទទេរ។";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "ជ្រើសរើស ឬថតរូបភាព និងបញ្ជូនវា";
@@ -73,14 +118,77 @@
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
 
-/* No comment provided by engineer. */
-"ATTACHMENT_QUEUED" = "ឯកសារភ្ជាប់ថ្មីបានដាក់ជាជួរសម្រាប់ការទាញយក។";
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "បរាជ័យក្នុងការជ្រើសរើសឯកសារ។";
 
-/* No comment provided by engineer. */
-"AUDIO_PERMISSION_MESSAGE" = "Signal ត្រូវការចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេងរបស់អ្នកដើម្បីដំណើរការ។ អ្នកអាចផ្តល់សិទ្ធិនៅក្នុង ការកំណត់ >> ឯកជនភាព >> ប្រដាប់ស្រូបសំឡេង >> Signal";
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal មិនអាចទ្រទ្រង់ឯកសារនេះបាន។ ព្យាយាមពង្រួម មុនពេលផ្ញើចេញ។";
 
-/* Title for call interstitial view */
-"CALL_INTERSTITIAL_CALLING_LABEL" = "កំពុងហៅ...";
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ឯកសារមិនស្គាល់";
+
+/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "សារសំឡេង";
+
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_BEHAVIOR_EXPLANATION" = "អ្នកប្រើប្រាស់ដែលបានហាមឃាត់ នឹងមិនអាចហៅ ឬផ្ញើសារមកអ្នកបានទេ។";
+
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "ហាមឃាត់";
+
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "ហាមឃាត់ %@?";
+
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "លែងហាមឃាត់";
+
+/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "លែងហាមឃាត់ %@?";
+
+/* A label for the block button in the block list view */
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ហាមឃាត់";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "បរាជ័យក្នុងការហាមឃាត់អ្នកប្រើប្រាស់។";
+
+/* The title of the 'block user failed' alert. */
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "បញ្ហា";
+
+/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ត្រូវបានហាមឃាត់";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "អ្នកប្រើប្រាស់បានហាមឃាត់";
+
+/* The message of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "អ្នកមិនអាចហាមឃាត់ខ្លួនអ្នកទេ។";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "បញ្ហា";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "បរាជ័យក្នុងការលែលហាមឃាត់អ្នកប្រើប្រាស់។";
+
+/* The title of the 'unblock user failed' alert. */
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "បញ្ហា";
+
+/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ត្រូវបានលែងហាមឃាត់។";
+
+/* The title of the 'user unblocked' alert. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "អ្នកប្រើប្រាស់បានលែងហាមឃាត់";
+
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "ហាមឃាត់";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ហាមឃាត់ %@?";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal ទាមទារចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេងរបស់អ្នក ដើម្បីធ្វើការហៅចេញ និងថតសារសំឡេង។ អ្នកអាចផ្តល់សិទ្ធិនេះក្នុងការកំណត់។";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "ទាមទារចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេង";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "ការហៅ";
@@ -91,6 +199,15 @@
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
 
+/* Label for call button for alert offering to call a user. */
+"CALL_USER_ALERT_CALL_BUTTON" = "Call";
+
+/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
+
+/* Title for alert offering to call a user. */
+"CALL_USER_ALERT_TITLE" = "Call?";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "អ្នកអាចលើកទូរស័ព្ទដោយផ្ទាល់ពីអេក្រង់ចាក់សោរ ហើយឃើញឈ្មោះ និងលេខទូរស័ព្ទហៅចូល ប្រសិនបើ​អ្នកផ្លាស់ប្តូរក្នុងការកំណត់។\n\nមើលការកំណត់ឯកជនភាពសម្រាប់លម្អិត។";
 
@@ -98,19 +215,31 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "អ្នកអាចឃើញឈ្មោះ និងលេខទូរស័ព្ទហៅចូល ប្រសិនបើ​អ្នកផ្លាស់ប្តូរក្នុងការកំណត់។\n\nមើលការកំណត់ឯកជនភាពសម្រាប់លម្អិត។";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "មិនមែនឥលូវ";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "លើកក្រោយ";
 
 /* Label for button that shows the privacy settings */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "បង្ហាញការកំណត់ឯកជន";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "ហៅត្រលប់ទៅវិញ";
+"CALLBACK_BUTTON_TITLE" = "Call Back";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "អ្នកប្រើប្រាស់ Signal";
 
+/* Message for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+
+/* Title for alert explaining that a user cannot be verified. */
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
+
+/* Title for the 'censorship circumvention country' view. */
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ Clipboard";
+
+/* Multiline label explaining why compose-screen contact picker is empty. */
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "អនុញ្ញាតចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងក្នុងការកំណត់ប្រព័ន្ធរបស់អ្នក ដើម្បីពិនិត្យមើលថាលេខទំនាក់ទំនងណាមួយជា អ្នកប្រើប្រាស់ Signal។";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "នេះនឹងកំណត់កម្មវិធីឡើងវិញ ដោយលុបសាររបស់អ្នក និងលុបឈ្មោះអ្នកពីម៉ាស៊ីនមេ។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីទិន្នន័យត្រូវបានលុប។";
@@ -127,8 +256,20 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "ភ្ជាប់ឧបករណ៍ថ្មី";
 
-/* No comment provided by engineer. */
+/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+
+/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+
+/* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "បញ្ជាក់";
+
+/* An indicator that a contact has been blocked. */
+"CONTACT_CELL_IS_BLOCKED" = "បានហាមឃាត់";
+
+/* An indicator that a contact is no longer verified. */
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "លេខមិនបានចុះឈ្មោះ";
@@ -142,11 +283,44 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "ការកំណត់ការសន្ទនា";
 
-/* The message of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_MESSAGE" = "This message is too long to send.";
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ហាមឃាត់អ្នកប្រើប្រាស់នេះ";
 
-/* The title of the 'text message too large' alert. */
-"CONVERSATION_VIEW_TEXT_MESSAGE_TOO_LARGE_ALERT_TITLE" = "Error";
+/* Navbar title when viewing settings for a 1-on-1 thread */
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "ព័ត៌មានលេខទំនាក់ទំនង";
+
+/* Navbar title when viewing settings for a group thread */
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "ព័ត៌មានក្រុម";
+
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "បិទសំឡេង";
+
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "បិទសំឡេង";
+
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "បើកសំឡេង";
+
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "បិទសំឡេងសម្រាប់មួយថ្ងៃ";
+
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "បិទសំឡេងសម្រាប់មួយម៉ោង";
+
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "បិទសំឡេងសម្រាប់មួយនាទី";
+
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "បិទសំឡេងសម្រាប់មួយសប្តាហ៍";
+
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "បិទសំឡេងសម្រាប់មួយឆ្នាំ";
+
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "រហូតដល់ %@";
+
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "បើកសំឡេង";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ការកំណត់ការចូលប្រើប្រាស់របស់អ្នកឡើងវិញ នឹងអនុញ្ញាតអ្នក ឲ្យទទួលសារក្នុងពេលខាងមុខពី %@, ប៉ុន្តែ វានឹងមិនស្តារសារណាដែលខូចខាតទេ។";
@@ -156,6 +330,12 @@
 
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "បង្កើតក្រុមថ្មី";
+
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "DAYS_TIME_AMOUNT" = "%u ថ្ងៃ";
@@ -184,8 +364,41 @@
 /* Generic short text for button to dismiss a dialog */
 "DISMISS_BUTTON_TEXT" = "ច្រានចោល";
 
+/* Section title for the 'domain fronting country' view. */
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "អ្នកអាចផ្តល់សិទ្ធិក្នុងការកំណត់។";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal ត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
+
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "កែក្រុម";
+
+/* a title for the contacts section of the 'new/update group' view. */
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "បញ្ជីទំនាក់ទំនង";
+
+/* The navbar title for the 'update group' view. */
+"EDIT_GROUP_DEFAULT_TITLE" = "កែប្រែក្រុម";
+
+/* Label for the cell that lets you add a new member to a group. */
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "បន្ថែម...";
+
+/* a title for the members section of the 'new/update group' view. */
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "សមាជិក";
+
+/* An indicator that a user is a new member of the group. */
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "បានបន្ថែម";
+
+/* The title for the 'update group' button. */
+"EDIT_GROUP_UPDATE_BUTTON" = "បច្ចុប្បន្នភាព";
+
+/* The alert message if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "អ្នកបានកែប្រែក្រុមនេះ។ តើអ្នកចង់រក្សាទុកការកែប្រែទេ?";
+
+/* The alert title if user tries to exit update group view without saving changes. */
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "ការកែប្រែមិនរក្សាទុក";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "ចម្លង";
@@ -195,6 +408,9 @@
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "ចែករំលែក";
+
+/* No comment provided by engineer. */
+"EDIT_TXT" = "កែប្រែ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "សួស្តី,\n\nថ្មីៗនេះ ខ្ញុំបានប្រើប្រាស់ Signal ដើម្បីរក្សាការសន្ទនាឯកជនលើទូរស័ព្ទ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឲ្យអ្នកបញ្ចូលវាដែរ ដូចនេះ យើងអាចទុកចិត្តថា មានតែអ្នកនិងខ្ញុំ ដែលអាចអានសាររបស់យើង ឬស្តាប់ការហៅរបស់យើង។\n\nSignal មានសម្រាប់ ទូរស័ព្ទ iPhone និង Android។ ទាញយកនៅទីនេះ៖ %@\n\nSignal ដំណើរការដូចគ្នានឹងកម្មវិធីផ្ញើសារ ដែលមានស្រាប់ដែរ។ យើងអាចបញ្ជូនរូបភាព និងវីដេអូ ហៅទូរស័ព្ទ និងចាប់ផ្តើមការជជែកជាក្រុម។ ផ្នែកដែលល្អបំផុតគឺ គ្មាននរណាអាចមើលឃើញ សូម្បីអ្នកដែលបង្កើត Signal ក៏ដោយ!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems, មនុស្សបង្កើត Signal នៅទីនេះ %@";
@@ -232,47 +448,8 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "ស្អាតមែនទែន.";
 
-/* No comment provided by engineer. */
-"END_CALL_BAD_INTERACTION_WITH_SERVER" = "ម៉ាស៊ីនមេបរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_BUTTON_TITLE" = "បញ្ចប់";
-
-/* No comment provided by engineer. */
-"END_CALL_HANDSHAKE_FAILED" = "ការចាប់ដៃបរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_LOCAL" = "អ្នកបានដាក់ទូរស័ព្ទចុះ។";
-
-/* No comment provided by engineer. */
-"END_CALL_HANGUP_REMOTE" = "គេបានដាក់ទូរស័ព្ទចុះ។";
-
-/* No comment provided by engineer. */
-"END_CALL_LOGIN_FAILED" = "ការចូលប្រើប្រាស់បរាជ័យ!";
-
-/* No comment provided by engineer. */
-"END_CALL_MESSAGE_FROM_SERVER_PREFIX" = "សារពីម៉ាស៊ីនមេ៖";
-
-/* No comment provided by engineer. */
-"END_CALL_NO_SUCH_USER" = "លេខមិនបានចុះឈ្មោះជាមួយ Signal ឬ RedPhone!";
-
-/* No comment provided by engineer. */
-"END_CALL_RECIPIENT_UNAVAILABLE" = "អ្នកទទួលមិនទំនេរ។";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_LOCAL" = "អ្នកបានច្រានចោលការហៅ។";
-
-/* No comment provided by engineer. */
-"END_CALL_REJECTED_REMOTE" = "ការហៅត្រូវបានច្រានចោល។";
-
-/* No comment provided by engineer. */
-"END_CALL_REPLACED_BY_NEXT" = "អ្នកហៅទៅលេខផ្សេង។";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "រវល់";
-
-/* No comment provided by engineer. */
-"END_CALL_STALE_SESSION" = "ខកការហៅ";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ការហៅបរាជ័យ";
@@ -283,8 +460,14 @@
 /* Error mesage indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "មិនអាចបញ្ជូនដោយសារទិន្នន័យឯកជនចាស់ពេក។";
 
+/* Error mesage indicating that message send failed due to block list */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "បរាជ័យក្នុងការផ្ញើសារ ព្រោះអ្នកបានហាមឃាត់ពួកគេ។";
+
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal មិនអាចតភ្ជាប់ទៅកាន់អ៊ីនធើណែត។ សូមព្យាយាមពីបណ្តាញ WiFi ផ្សេង ឬប្រើប្រាស់ទិន្នន័យទូរស័ព្ទ។";
+
+/* Error indicating that an outgoing message had no valid recipients. */
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "ផ្ញើសារបរាជ័យ ដោយសារឈ្មោះអ្នកទទួលមិនត្រឹមត្រូវ។";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "ឧបករណ៍អ្នក លែងមានលេខទូរស័ព្ទរបស់អ្នកទៀតហើយ។ អ្នកត្រូវលុបចោល និងបញ្ចូល Signal ឡើងវិញ។";
@@ -293,7 +476,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "បញ្ហាម៉ាស៊ីនមេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "បញ្ហាមួយកើតឡើង។";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "បញ្ហាមិនស្គាល់កើតឡើង។";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "លេខទំនាក់ទំនងមិនមែនជាអ្នកប្រើប្រាស់ Signal។";
@@ -313,8 +496,11 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "គ្មានការប្រើទំនេរសម្រាប់លេខទំនាក់ទំនង។";
 
-/* No comment provided by engineer. */
+/* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។";
+
+/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "បញ្ហាមិនស្គាល់កើតឡើង។";
@@ -322,29 +508,50 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។ ចុច ដើម្បីផ្ទៀងផ្ទាត់។";
 
-/* No comment provided by engineer. */
-"ERROR_WAS_DETECTED_TITLE" = "ចុម!";
-
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "ពេលនេះ Signal អាចសកម្ម បានទូរស័ព្ទមួយ លេខទូរស័ព្ទមួយ តែប៉ុណ្ណោះ។";
 
 /* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
 "EXISTING_USER_REGISTRATION_ALERT_TITLE" = "ការបើកសកម្ម %@ នេះ នឹងបិទ Signal លើឧបករណ៍ដទៃ ដែលភ្ជាប់ដោយលេខទូរស័ព្ទនេះ។";
 
+/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "ឈ្មោះឯកសារមិនត្រឹមត្រូវ។";
+
+/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "មិនអាចផ្ទុកឯកសារ។";
+
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "មិនអាចផ្ទុកឯកសារ។";
+
+/* Message for the alert indicating the 'export with signal' file had unknown type. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "ប្រភេទឯកសារមិនស្គាល់។";
+
+/* Title for the alert indicating the 'export with signal' attachment had an error. */
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "បញ្ហា";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "មានការបរាជ័យច្រើនដងជាមួយលេខទំនាក់ទំនងនេះ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "អ្នកត្រូវទទួលយកលេខសុវត្ថិភាពថ្មី មុនពេលអ្នកអាចបញ្ជូន។";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before resending.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "បរាជ័យក្នុងការផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព!";
+
+/* Button that marks user as verified after a successful fingerprint scan. */
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "កំណត់ការប្រើប្រាស់ឡើងវិញ។";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "ការបង្កើតក្រុមត្រូវបានបញ្ចប់";
+
+/* A default label for attachment whose file extension cannot be determined. */
+"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
+
+/* A label for generic attachments. */
+"GENERIC_ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "រូបតំណាងបានផ្លាស់ប្តូរ។";
@@ -355,8 +562,8 @@
 /* No comment provided by engineer. */
 "GROUP_CREATING" = "កំពុងបង្កើតក្រុមថ្មី";
 
-/* No comment provided by engineer. */
-"GROUP_CREATING_FAILED" = "ការបង្កើតក្រុមបរាជ័យ";
+/* Message shown in conversation view that indicates there were issues with group creation. */
+"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "ការគ្រប់គ្រងក្រុម";
@@ -367,13 +574,34 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ បានចាកចេញពីក្រុម។";
 
-/* header for table which lists the members of this group thread */
-"GROUP_MEMBERS_HEADER" = "សមាជិកក្រុម";
+/* Button label to add information to an unknown contact */
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "បន្ថែមលេខទំនាក់ទំនង";
+
+/* Button label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "ការហៅ";
+
+/* Label for the button that clears all verification errors in the 'group members' view. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification For All";
+
+/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
+
+/* Title for the 'members' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+
+/* Title for the 'no longer verified' section of the 'group members' view. */
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
+
+/* Button label for the 'send message to group member' button */
+"GROUP_MEMBERS_SEND_MESSAGE" = "ផ្ញើសារ";
+
+/* Button label for the 'show contact info' button */
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "ព័ត៌មានលេខទំនាក់ទំនង";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "ចាកចេញពីក្រុម %@";
 
-/* No comment provided by engineer. */
+/* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "បរាជ័យក្នុងការចាកចេញពីក្រុម";
 
 /* No comment provided by engineer. */
@@ -385,6 +613,9 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
 
+/* A label for conversations with blocked users. */
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "បានហាមឃាត់";
+
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "HOURS_TIME_AMOUNT" = "%u ម៉ោង";
 
@@ -395,13 +626,16 @@
 "IN_CALL_RINGING" = "កំពុងរោទិ៍...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "បានទទួល។ កំពុងការពារ...";
+"IN_CALL_SECURING" = "បានទទួល។ កំពុងពង្រឹងសុវត្ថិភាព...";
 
 /* Call setup status label */
 "IN_CALL_TALKING" = "សុវត្ថិភាព។ សកម្ម។";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "ការហៅបញ្ចប់។";
+
+/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "ដើម្បីមើលឈ្មោះនៃបញ្ជីទំនាក់ទំនងរបស់អ្នក សូមធ្វើបច្ចុប្បភាពការកំណត់ប្រព័ន្ធរបស់អ្នក ដើម្បីបើកអោយចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
 
 /* notification body */
 "INCOMING_CALL" = "ការហៅចូល";
@@ -412,10 +646,19 @@
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "ការហៅចូលមិនត្រឹមត្រូវពី";
 
-/* Generic error text when message contents are undisplayable */
-"INFO_MESSAGE_UNABLE_TO_DISPLAY_MESSAGE" = "មិនអាចបង្ហាញសារ។";
+/* info message text shown in conversation view */
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
 
-/* Text for button at the top of the contact picker */
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ឯកសារសំឡេងមិនត្រឹមត្រូវ។";
+
+/* Alert body when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "ដើម្បីអញ្ជើញលេខទំនាក់ទំនងរបស់អ្នក អ្នកត្រូវតែអនុញ្ញាតអោយ Signal ចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក ក្នុងកម្មវិធី ការកំណត់។";
+
+/* Alert title when contacts disabled while trying to invite contacts to signal */
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "អនុញ្ញាតចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង";
+
+/* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "អញ្ជើញមិត្តភក្តិមកកាន់ Signal";
 
 /* Search */
@@ -470,12 +713,6 @@
 "LIST_GROUP_MEMBERS_ACTION" = "បញ្ជីក្រុមសមាជិក";
 
 /* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE1" = "កំពុងបើកបញ្ជីទំនាក់ទំនងរបស់អ្នក។";
-
-/* No comment provided by engineer. */
-"LOADING_CONTACTS_LABEL_LINE2" = "អង្គុយស្រួលបួល។";
-
-/* No comment provided by engineer. */
 "LOGGING_SECTION" = "កំពុងចូល";
 
 /* No comment provided by engineer. */
@@ -484,6 +721,9 @@
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "កាមេរ៉ា";
 
+/* action sheet button title when choosing attachment type */
+"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "ឯកសារ";
+
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "បណ្ណាល័យរូបភាព";
 
@@ -491,25 +731,64 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "សារថ្មី";
 
 /* message footer for delivered messages */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "បានទទួល";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap to retry.";
+"MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "បានបញ្ជូន";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading...";
+"MESSAGE_STATUS_UPLOADING" = "កំពុងបញ្ជូន...";
+
+/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+
+/* Indicates that this 1:1 conversation has been blocked. */
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "អ្នកបានហាមឃាត់អ្នកប្រើប្រាស់នេះ";
+
+/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+
+/* Action sheet title after tapping on failed download. */
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "ការទាញយកបរាជ័យ។";
+
+/* Action sheet button text */
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "ទាញយកម្តងទៀត";
+
+/* Indicates that a single member of this group has been blocked. */
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "អ្នកបានហាមឃាត់សមាជិក1 ក្នុងក្រុមនេះ";
+
+/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "អ្នកបានហាមឃាត់សមាជិក%d ក្នុងក្រុមនេះ";
+
+/* Indicates that more than one member of this group conversation is no longer verified. */
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "ចុចទីនេះ សម្រាប់ការកំណត់";
+
+/* Indicator that separates read from unread messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Unread Messages";
+
+/* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "There are more unread messages (including safety number changes) above. Tap \"%@\" to see them.";
+
+/* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "MINUTES_TIME_AMOUNT" = "%u នាទី";
 
 /* notification title */
 "MISSED_CALL" = "ខកការហៅ";
+
+/* notification title. Embeds {{caller's name or phone number}} */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
+
+/* notification title */
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -519,11 +798,11 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal ត្រូវការចូលប្រើប្រាស់កាមេរ៉ារបស់អ្នក។";
 
-/* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
+/* No comment provided by engineer. */
+"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
 
-/* notification title. */
-"MSGVIEW_MISSED_CALL_WITHOUT_NAME" = "Missed call from Signal User.";
+/* notification title. Embeds {{caller's name or phone number}} */
+"MSGVIEW_MISSED_CALL_WITH_NAME" = "ខកការហៅពី %@។";
 
 /* No comment provided by engineer. */
 "MSGVIEW_RECEIVED_CALL" = "អ្នកបានទទួលការហៅមួយ ពី%@។";
@@ -543,8 +822,14 @@
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "អ្នកបានភ្ជាប់ចំនួនឧបករណ៍ច្រើនពេក ជាមួយគណនីរបស់អ្នក។ សូមលុបឧបករណ៍មួយចោល ឬព្យយាមភ្ជាប់ម្តងទៀតពេលក្រោយ។";
 
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "អ្នកនឹងមិនទទួលសារជូនដំណឹង សម្រាប់ការសន្ទនាបិទសំឡេងទេ។";
+
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "សូមពិនិត្យថា អ្នកកំពុងលើបណ្តាញ និងព្យាយាមម្តងទៀត។";
+
+/* Indicates to the user that censorship circumvention has been activated. */
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "បានភ្ជាប់";
@@ -558,23 +843,41 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "ក្រៅបណ្តាញ";
 
-/* No comment provided by engineer. */
-"NETWORK_STATUS_TEXT" = "អ្នកអាចពិនិត្យស្ថានភាពបណ្តាញ ដោយមើលលើរបារពណ៌ នៅលើប្រអប់សបុត្ររបស់អ្នក។";
+/* A label the cell that lets you add a new member to a group. */
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ស្វែងរកលេខទូរស័ព្ទ";
 
-/* Text for button to start a new conversation with a non-contact */
-"NEW_CONVERSATION_FOR_NON_CONTACT_FORMAT" = "ការសន្ទនាថ្មីជាមួយ %@";
+/* A label for the cell that lets you add a new non-contact member to a group. */
+"NEW_GROUP_ADD_NON_CONTACT" = "បន្ថែមតាមលេខទូរស័ព្ទ";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "កំណត់រូបថតក្រុម";
 
-/* No comment provided by engineer. */
+/* The title for the 'create group' button. */
+"NEW_GROUP_CREATE_BUTTON" = "បង្កើត";
+
+/* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "ក្រុមថ្មី";
 
-/* No comment provided by engineer. */
+/* An indicator that a user is a member of the new group. */
+"NEW_GROUP_MEMBER_LABEL" = "សមាជិក";
+
+/* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ដាក់ឈ្មោះក្រុមជជែកនេះ";
 
-/* No comment provided by engineer. */
-"NEW_GROUP_REQUEST_ADDPEOPLE" = "បន្ថែមមនុស្ស";
+/* a title for the non-contacts section of the 'new group' view. */
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "អ្នកប្រើប្រាស់ផ្សេងទៀត";
+
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "តើអ្នកចង់បោះបង់ការកែប្រែទាំងនេះទេ?";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "ការកែប្រែមិនរក្សាទុក";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ស្វែងរក";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ស្វែងរកអ្នកប្រើប្រាស់";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ស្វែងរកលេខទំនាក់ទំនងតាមលេខទូរស័ព្ទ";
@@ -625,6 +928,69 @@
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "ការហៅចេញក្រៅមិនពេញលេញ";
 
+/* A display format for oversize text messages. */
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [ចុច សម្រាប់មើលបន្ថែម]";
+
+/* The title of the 'oversize text message' view. */
+"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "សារ";
+
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "ឧទាហរណ៍៖ %@";
+
+/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
+"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+
+/* Label for 'Home' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME" = "ផ្ទះ";
+
+/* Label for 'HomeFAX' phone numbers. */
+"PHONE_NUMBER_TYPE_HOME_FAX" = "ទូរសារនៅផ្ទះ";
+
+/* Label for 'IPhone' phone numbers. */
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+
+/* Label for 'Main' phone numbers. */
+"PHONE_NUMBER_TYPE_MAIN" = "ចម្បង";
+
+/* Label for 'Mobile' phone numbers. */
+"PHONE_NUMBER_TYPE_MOBILE" = "ទូរស័ព្ទ";
+
+/* Label for 'Other' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER" = "ផ្សេងៗ";
+
+/* Label for 'Other FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "ទូរសារផ្សេងៗ";
+
+/* Label for 'Pager' phone numbers. */
+"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+
+/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
+"PHONE_NUMBER_TYPE_UNKNOWN" = "មិនស្គាល់";
+
+/* Label for 'Work' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK" = "ការងារ";
+
+/* Label for 'Work FAX' phone numbers. */
+"PHONE_NUMBER_TYPE_WORK_FAX" = "ទូរសារការងារ";
+
+/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+
+/* Badge indicating that the user is verified. */
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+
+/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
+
+/* Label for a link to more information about safety numbers and verification. */
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Learn More";
+
+/* Button that shows the 'scan with camera' view. */
+"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+
+/* Button that lets user mark another user's identity as unverified. */
+"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
+
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "នេះទំនងមិនមែនជាលេខសុវត្ថិភាពរបស់អ្នក ជាមួយ%@ ទេ។ តើអ្នកបានផ្ទៀងផ្ទាត់លេខទំនាក់ទំនង ត្រឹមត្រូវហើយ?";
 
@@ -652,23 +1018,23 @@
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព";
 
+/* Button that lets user mark another user's identity as verified. */
+"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ដំណើរការ";
 
 /* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "ដាក់ថាអានហើយ";
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "តប";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "បានចុះឈ្មោះឡើងវិញដោយជោគជ័យ សម្រាប់ការផ្តល់ដំណឹង។";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "ការផ្តល់ដំណឹង";
-
-/* No comment provided by engineer. */
-"PUSH_SETTINGS_MESSAGE" = " Signal ទាមទារការផ្តល់ដំណឹង និងសំឡេង ដើម្បីដំណើរការដោយប្រក្រតី។ សូមផ្លាស់ប្តូរវាក្នុង ការកំណត់  >> មជ្ឈមណ្ឌលដំណឹង  >> Signal។";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -689,12 +1055,6 @@
 "REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "បញ្ហាកូដប្រទេស";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_BODY" = "Signal អនុញ្ញាតអ្នកមានការសន្ទនាផ្ទាល់ខ្លួនជាមួយលេខទំនាក់ទំនងដែលមានស្រាប់របស់អ្នក។ ដើម្បីប្រើប្រាស់ Signal សូមអនុញ្ញាតការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក។";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_CONTINUE" = "បន្ត";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ស្វាគមន៍!";
 
 /* No comment provided by engineer. */
@@ -706,13 +1066,13 @@
 /* No comment provided by engineer. */
 "REGISTERED_NUMBER_TEXT" = "លេខបានចុះឈ្មោះ";
 
-/* Alert title */
+/* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "បរាជ័យក្នុងការចុះឈ្មោះឡើងវិញ​ សម្រាប់ការផ្តល់ដំណឹង។";
 
-/* No comment provided by engineer. */
+/* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "កូដប្រទេស";
 
-/* No comment provided by engineer. */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "បញ្ចូលលេខ";
 
 /* No comment provided by engineer. */
@@ -724,7 +1084,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "មិនគាំទ្រទម្រង់លេខទូរស័ព្ទនេះទេ សូមទំនាក់ទំនងផ្នែកជំនួយ។";
 
-/* No comment provided by engineer. */
+/* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "លេខទូរស័ព្ទ";
 
 /* No comment provided by engineer. */
@@ -742,6 +1102,18 @@
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "បើកប្រើសកម្មឧបករណ៍នេះ";
 
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "សូមបញ្ចូលលេខទូរស័ព្ទត្រឹមត្រូវមួយ ដើម្បីចុះឈ្មោះ។";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "លេខទូរស័ព្ទមិនត្រឹមត្រូវ";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "សូមបញ្ចូលលេខទូរស័ព្ទមួយ ដើម្បីចុះឈ្មោះ។";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "គ្មានលេខទូរស័ព្ទ";
+
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "ច្រានចោល";
 
@@ -754,17 +1126,26 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ព្យាយាមម្តងទៀត";
 
+/* button title to confirm adding a recipient to a group when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
+
+/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
+
+/* button title to confirm sending to a recipient whose safety number recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Anyway";
+
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "លេខសុវត្ថិភាព Signal របស់យើង៖\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្លាស់ប្តូរ។ អ្នកប្រហែលចង់ផ្ទៀងផ្ទាត់វា។";
 
-/* Button label presented with camera icon while verifying privacy credentials. Shows the camera interface. */
-"SCAN_CODE_ACTION" = "ស្កេនកូដ";
-
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "ស្កេនកូដ QR លើឧបករណ៍ទំនាក់ទំនងរបស់អ្នក។";
+
+/* Title for the 'scan QR code' view. */
+"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ស្វែងរកឈ្មោះ ឬលេខទូរស័ព្ទ";
@@ -781,6 +1162,12 @@
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "បញ្ជូន";
 
+/* Header title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "ជ្រើសរើសអ្នកទទូលសម្រាប់៖";
+
+/* Title for the 'send external file' view. */
+"SEND_EXTERNAL_FILE_VIEW_TITLE" = "បញ្ជូនឯកសារ";
+
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "ការផ្ញើលិខិតអញ្ជើញបរាជ័យ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
 
@@ -788,7 +1175,7 @@
 "SEND_INVITE_SUCCESS" = "អ្នកបានអញ្ជើញមិត្តភក្តិរបស់អ្នកប្រើប្រាស់ Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "ផ្ញើលិខិតអញ្ជើញតាម SMS ទៅកាន់៖ %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "អញ្ជើញតាមសារ SMS៖ %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
@@ -799,6 +1186,36 @@
 /* Navbar title */
 "SETTINGS_ABOUT" = "អំពី";
 
+/* Title for the 'block contact' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "ហាមឃាត់លេខទំនាក់ទំនង";
+
+/* Title for the 'block phone number' section of the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "ហាមឃាត់លេខទូរស័ព្ទ";
+
+/* Title for the 'add to block list' view. */
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ហាមឃាត់";
+
+/* Label for the  'manual censorship circumvention' switch. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+
+/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
+
+/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+
+/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+
+/* Table header for the 'censorship circumvention' section. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "បើកកំណត់ត្រាកំហុស";
 
@@ -808,11 +1225,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "កម្រិតខ្ពស់";
 
-/* User settings section footer, a detailed explanation */
-"SETTINGS_BLOCK_ON_IDENITY_CHANGE_DETAIL" = "ទាមទារការអនុញ្ញាតរបស់អ្នក មុនពេលទាក់ទងជាមួយអ្នកណាដែលមានលេខសុវត្ថិភាពថ្មី ជាធម្មតាពីការដំឡើង Signal ឡើងវិញ។";
+/* A label for the 'add phone number' button in the block list table. */
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "បន្ថែម...";
 
-/* Table cell label */
-"SETTINGS_BLOCK_ON_IDENTITY_CHANGE_TITLE" = "ទាមទារការអនុញ្ញាតលើការផ្លាស់ប្តូរ";
+/* A label that indicates the user has no Signal contacts. */
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "អ្នកមិនមានលេខទំនាក់ទំនងលើ Signal ទេ។";
+
+/* A label that indicates the user's search has no matching results. */
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "គ្មានលទ្ធផលស្វែងរក";
+
+/* Label for the block list section of the settings view */
+"SETTINGS_BLOCK_LIST_TITLE" = "បានហាមឃាត់";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "ការកំណត់";
@@ -833,7 +1256,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "លុបគណនី";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "តើអ្នកច្បាស់ថា ចង់លុបរាល់កំណត់ត្រាទាំងអស់​ (សារ, ឯកសារភ្ជាប់, កំណត់ត្រាការហៅ ...)? សកម្មភាពនេះ មិនអាចត្រលប់ក្រោយបានទេ។";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "តើអ្នកច្បាស់ថា ចង់លុបប្រវត្តិទាំងអស់របស់អ្នក (សារ, ឯកសារភ្ជាប់, ប្រវត្តិការហៅទូរស័ព្ទ...)? សកម្មភាពនេះ មិនអាចត្រឡប់ក្រោយបានទេ។";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ខ្ញុំច្បាស់ហើយ។";
@@ -865,11 +1288,8 @@
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "សមាហរណកម្មការហៅតាម iOS";
 
-/* No comment provided by engineer. */
+/* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "ឯកជនភាព";
-
-/* Section header */
-"SETTINGS_PRIVACY_VERIFICATION_TITLE" = "ការអនុញ្ញាតលេខសុវត្ថិភាព";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "បើកអេក្រង់សុវត្ថិភាព";
@@ -878,7 +1298,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលមុន Signal ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "សមាហរណកម្មការហៅ iOS បង្ហាញការហៅតាម Signal លើអេក្រង់ជាប់សោររបស់អ្នក និង ក្នុងបញ្ជីការហៅរបស់ប្រព័ន្ធ។ អ្នកអាចមានជម្រើសក្នុងការបង្ហាញឈ្មោះ និងលេខទំនាក់ទំនងរបស់អ្នក។ ប្រសិនបើ iCloud បានបើក ប្រវត្តិរបស់ការហៅនេះ នឹងត្រូវបានចែករំលែកជាមួយ Apple​ ដែរ។";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "ការហៅ";
@@ -902,7 +1322,10 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "បង្ហាញលេខទំនាក់ទំនងថ្មី";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";
+
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "SINGLE_DAY_TIME_AMOUNT" = "%u ថ្ងៃ";
@@ -920,28 +1343,25 @@
 "SMS_INVITE_BODY" = "ខ្ញុំអញ្ជើញអ្នក ដំឡើង Signal! នេះជាតំណ៖";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្ទៀងផ្ទាត់។ អ្នកទាក់ទងដោយទុកចិត្តបាន។";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "លេខសុវត្ថិភាពបានផ្ទៀងផ្ទាត់!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
 
-/* No comment provided by engineer. */
-"TIMEOUT_CONTACTS_DETAIL" = "យើងមិនអាចទាញយកបញ្ជីទំនាក់ទំនងពីម៉ាស៊ីនមេនេះបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។";
-
-/* No comment provided by engineer. */
+/* generic cancel text */
 "TXT_CANCEL_TITLE" = "បោះបង់";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "លុបចោល";
-
-/* Alert Title */
-"UNABLE_TO_PLACE_CALL" = "មិនអាចហៅចេញបាន។";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "បិទបណ្ណសារ";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
 "UNKNOWN_ATTACHMENT_LABEL" = "ឯកសារមិនស្គាល់";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "អ្នកប្រើប្រាស់មិននៅក្នុងបញ្ជីទំនាក់ទំនងទេ។ តើអ្នកចង់ហាមឃាត់អ្នកប្រើប្រាស់នេះទេ?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "លេខទំនាក់ទំនងមិនស្គាល់";
@@ -970,8 +1390,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "ឧបករណ៍របស់អ្នកមិនគាំទ្រមុខងារនេះទេ។";
 
-/* No comment provided by engineer. */
-"UPDATE_BUTTON_TITLE" = "បច្ចុប្បន្នភាព";
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "អ្នកមិនអាចលុបសមាជិកក្រុមបានទេ។ សមាជិកផ្សេងត្រូវចេញពីក្រុម ឬអ្នកអាចបង្កើតក្រុមថ្មីដោយមិនដាក់សមាជិកនេះចូលក្នុងក្រុម។";
+
+/* Title for alert indicating that group members can't be removed. */
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "មិនអនុញ្ញាត";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "ការឆ្លើយការហៅពីអេក្រង់ចាក់សោរ មានភាពងាយស្រួលជាមួយសមាហរណកម្មការហៅ iOS។ យើងមិនបញ្ចេញអ្នកហៅចូលដោយលំនាំដើមទេ ដូចនេះវាជាលក្ខណៈឯកជនផងដែរ។";
@@ -987,6 +1410,12 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "សួស្តី ការហៅវីដេអូសុវត្ថិភាព!";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal នឹងទាមទារ iOS 9 ឬថ្មីជាងនេះ។ សូមដំឡើងក្នុង ការកំណត់ >> ទូទៅ >> បច្ចុប្បភាពកម្មវិធី។";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "ដំឡើង iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "កំពុងធ្វើបច្ចុប្បន្នភាព Signal ...";
@@ -1006,14 +1435,41 @@
 /* button text during registration to submit your SMS verification code */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "បញ្ជូនកូដផ្ទៀងផ្ទាត់";
 
-/* Navigation title in the registration flow - during the sms code verification process. */
-"VERIFICATION_HEADER" = "ផ្ទៀងផ្ទាត់";
-
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "កំពុងផ្ទៀងផ្ទាត់៖ %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "បញ្ចូលលេខកូដផ្ទៀងផ្ទាត់ ដែលផ្ញើទៅកាន់ %@។";
 
-/* table cell label in conversation settings */
-"VERIFY_PRIVACY" = "ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព";
+/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+
+/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+
+/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+
+/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+
+/* Generic message indicating that verification state changed for a given user. */
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+
+/* Label for button or row which allows users to verify the safety number of another user. */
+"VERIFY_PRIVACY" = "Show Safety Number";
+
+/* Label for button or row which allows users to verify the safety numbers of multiple users. */
+"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+
+/* Indicates how to cancel a voice message. */
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "អូសដើម្បីបោះបង់";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "សារសំឡេង";
+
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "ចុច អោយជាប់ដើម្បីថតសារសំឡេង។";
+
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "សារសំឡេង";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ Signal Desktop។";

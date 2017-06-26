@@ -7,10 +7,10 @@ target 'Signal' do
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
-    pod 'OpenSSL'
-    pod 'SCWaveformView',             '~> 1.0'
-    pod 'JSQMessagesViewController'
+    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/retain-keyboard-view'
+    #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
     pod 'PureLayout'
+    pod 'Reachability'
     target 'SignalTests' do
         inherit! :search_paths
     end

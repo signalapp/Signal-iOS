@@ -52,8 +52,12 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
-+ (nullable NSString *)lastRanVersion;
-+ (NSString *)setAndGetCurrentVersion;
+
+- (BOOL)hasDeclinedNoContactsView;
+- (void)setHasDeclinedNoContactsView:(BOOL)value;
+
+- (void)setIOSUpgradeNagVersion:(NSString *)value;
+- (nullable NSString *)iOSUpgradeNagVersion;
 
 #pragma mark - Calling
 
@@ -73,11 +77,6 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 
 - (BOOL)doCallsHideIPAddress;
 - (void)setDoCallsHideIPAddress:(BOOL)flag;
-
-#pragma mark - Block on Identity Change
-
-- (BOOL)shouldBlockOnIdentityChange;
-- (void)setShouldBlockOnIdentityChange:(BOOL)value;
 
 #pragma mark - Push Tokens
 

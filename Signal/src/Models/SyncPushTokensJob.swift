@@ -1,58 +1,79 @@
-//  Created by Michael Kirk on 10/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import PromiseKit
 
 @objc(OWSSyncPushTokensJob)
-class SyncPushTokensJob : NSObject {
+class SyncPushTokensJob: NSObject {
     let TAG = "[SyncPushTokensJob]"
     let pushManager: PushManager
     let accountManager: AccountManager
     let preferences: PropertyListPreferences
+    let showAlerts: Bool
     var uploadOnlyIfStale = true
 
-    required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
+    required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences, showAlerts: Bool) {
         self.pushManager = pushManager
         self.accountManager = accountManager
         self.preferences = preferences
+        self.showAlerts = showAlerts
     }
 
-    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> AnyPromise {
-        let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
-        return AnyPromise(job.run())
+    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences, showAlerts: Bool = false) {
+        let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences, showAlerts:showAlerts)
+        job.run()
     }
 
-    @objc func run() -> AnyPromise {
-        return AnyPromise(run())
-    }
-
-    func run() -> Promise<Void> {
+    func run() {
         Logger.debug("\(TAG) Starting.")
 
         // Required to potentially prompt user for notifications settings
         // before `requestPushTokens` will return.
         self.pushManager.validateUserNotificationSettings()
 
-        return self.requestPushTokens().then { (pushToken: String, voipToken: String) in
+        let runPromise: Promise<Void> = self.requestPushTokens().then { (pushToken: String, voipToken: String) in
+            var shouldUploadTokens = false
 
-            if self.preferences.getPushToken() == pushToken && self.preferences.getVoipToken() == voipToken {
-                Logger.debug("\(self.TAG) push tokens are already up to date.")
-                if (self.uploadOnlyIfStale) {
-                    return Promise { fulfill, reject in  fulfill(); }
-                } else {
-                    Logger.debug("\(self.TAG) proceeding with upload even though tokens aren't stale")
-                }
-            } else {
-                Logger.debug("\(self.TAG) push tokens changed.")
+            if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
+                Logger.debug("\(self.TAG) Push tokens changed.")
+                shouldUploadTokens = true
+            } else if !self.uploadOnlyIfStale {
+                Logger.debug("\(self.TAG) Uploading even though tokens didn't change.")
+                shouldUploadTokens = true
             }
 
-            Logger.debug("\(self.TAG) Sending new tokens to account servers.")
+            Logger.warn("\(self.TAG) lastAppVersion: \(AppVersion.instance().lastAppVersion), currentAppVersion: \(AppVersion.instance().currentAppVersion)")
+            if AppVersion.instance().lastAppVersion != AppVersion.instance().currentAppVersion {
+                Logger.debug("\(self.TAG) Fresh install or app upgrade.")
+                shouldUploadTokens = true
+            }
+
+            guard shouldUploadTokens else {
+                Logger.warn("\(self.TAG) Skipping push token upload. pushToken: \(pushToken), voipToken: \(voipToken)")
+                return Promise(value: ())
+            }
+
+            Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
+
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
-                Logger.info("\(self.TAG) Recording tokens locally.")
-                return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken);
+                return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
+            }.then {
+                Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
+                if self.showAlerts {
+                    OWSAlerts.showAlert(withTitle:NSLocalizedString("PUSH_REGISTER_SUCCESS", comment: "Title of alert shown when push tokens sync job succeeds."))
+                }
+                return Promise(value: ())
+            }.catch { error in
+                Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
+                if self.showAlerts {
+                    OWSAlerts.showAlert(withTitle:NSLocalizedString("REGISTRATION_BODY", comment: "Title of alert shown when push tokens sync job fails."))
+                }
             }
         }
+
+        runPromise.retainUntilComplete()
     }
 
     private func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
@@ -62,24 +83,23 @@ class SyncPushTokensJob : NSObject {
                     fulfill((pushToken:pushToken, voipToken:voipToken))
                 },
                 failure: reject
-            );
+            )
         }
     }
 
     private func recordNewPushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        Logger.info("\(TAG) Recording new push tokens.")
+        Logger.warn("\(TAG) Recording new push tokens. pushToken: \(pushToken), voipToken: \(voipToken)")
 
         if (pushToken != self.preferences.getPushToken()) {
             Logger.info("\(TAG) Recording new plain push token")
-            self.preferences.setPushToken(pushToken);
+            self.preferences.setPushToken(pushToken)
         }
 
         if (voipToken != self.preferences.getVoipToken()) {
             Logger.info("\(TAG) Recording new voip token")
-            self.preferences.setVoipToken(voipToken);
+            self.preferences.setVoipToken(voipToken)
         }
 
-        // TODO code cleanup: convert to `return Promise(value: nil)` and test.
-        return Promise { fulfill, reject in  fulfill(); }
+        return Promise(value: ())
     }
 }

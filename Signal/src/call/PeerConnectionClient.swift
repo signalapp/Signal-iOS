@@ -166,8 +166,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private func createSignalingDataChannel() {
         AssertIsOnMainThread()
 
+        let configuration = RTCDataChannelConfiguration()
+        // Insist upon an "ordered" TCP data channel for delivery reliability.
+        configuration.isOrdered = true
         let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
-                                                     configuration: RTCDataChannelConfiguration())
+                                                     configuration: configuration)
         dataChannel.delegate = self
 
         assert(self.dataChannel == nil)
@@ -502,27 +505,29 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data) {
+    public func sendDataChannelMessage(data: Data, description: String) {
         AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
-                Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
+                Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client: \(description)")
                 return
             }
 
             guard let dataChannel = self.dataChannel else {
-                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel")
+                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
                 return
             }
+
+            Logger.debug("\(self.TAG) sendDataChannelMessage trying: \(description)")
 
             let buffer = RTCDataBuffer(data: data, isBinary: false)
             let result = dataChannel.sendData(buffer)
 
             if result {
-                Logger.debug("\(self.TAG) sendDataChannelMessage succeeded")
+                Logger.debug("\(self.TAG) sendDataChannelMessage succeeded: \(description)")
             } else {
-                Logger.warn("\(self.TAG) sendDataChannelMessage failed")
+                Logger.warn("\(self.TAG) sendDataChannelMessage failed: \(description)")
             }
         }
     }
@@ -577,7 +582,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
         let remoteVideoTrack = stream.videoTracks[0]
         Logger.debug("\(self.TAG) didAdd stream:\(stream) video tracks: \(stream.videoTracks.count) audio tracks: \(stream.audioTracks.count)")
-        
+
         // See the comments on the remoteVideoTrack property.
         //
         // We only set the remoteVideoTrack property if peerConnection is non-nil.
@@ -596,7 +601,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
-                    
+
                     // See the comments on the remoteVideoTrack property.
                     //
                     // We only access the remoteVideoTrack property if peerConnection is non-nil.

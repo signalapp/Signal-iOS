@@ -1,13 +1,21 @@
-//  Created by Michael Kirk on 9/29/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "JSQMessagesCollectionViewCell+OWS.h"
 #import "OWSExpirableMessageView.h"
+#import "OWSMessageCollectionViewCell.h"
+#import "OWSMessageMediaAdapter.h"
 #import <JSQMessagesViewController/JSQMessagesCollectionViewCellIncoming.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSIncomingMessageCollectionViewCell : JSQMessagesCollectionViewCellIncoming <OWSExpirableMessageView>
+@class JSQMediaItem;
+
+@interface OWSIncomingMessageCollectionViewCell
+    : JSQMessagesCollectionViewCellIncoming <OWSExpirableMessageView, OWSMessageCollectionViewCell>
+
+@property (nonatomic, nullable) id<OWSMessageMediaAdapter> mediaAdapter;
 
 @end
 

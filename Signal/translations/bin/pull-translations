@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+
 set -x
+set -e
+
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $BIN_DIR/..
@@ -30,6 +33,14 @@ done
 
 # Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
-../../../iStringsCheck/target/debug/iStringsCheck en.lproj/Localizable.strings .
+LINT_CMD=../../../l10n_lint/target/debug/l10n_lint
+
+if [ -e $LINT_CMD ]
+then
+  $LINT_CMD en.lproj/Localizable.strings .
+else
+  echo "Missing string linter. See: https://github.com:WhisperSystems/l10n_lint"
+  exit 1
+fi
 
 echo "Make sure you register any new localizations in XCode! (Go to Project > Signal > Localizations > Add Localizations)"

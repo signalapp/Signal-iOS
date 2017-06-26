@@ -1,25 +1,22 @@
-//  Originally based on EPContacts
 //
-//  Created by Prabaharan Elangovan on 13/10/15.
-//  Copyright © 2015 Prabaharan Elangovan. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
-//  Modified for Signal by Michael Kirk on 11/25/2016
-//  Parts Copyright © 2016 Open Whisper Systems. All rights reserved.
 
 import UIKit
+import Contacts
 
 @available(iOS 9.0, *)
 class ContactCell: UITableViewCell {
 
     static let nib = UINib(nibName:"ContactCell", bundle: nil)
-    
+
     @IBOutlet weak var contactTextLabel: UILabel!
     @IBOutlet weak var contactDetailTextLabel: UILabel!
     @IBOutlet weak var contactImageView: UIImageView!
     @IBOutlet weak var contactContainerView: UIView!
-    
+
     var contact: Contact?
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
@@ -28,7 +25,7 @@ class ContactCell: UITableViewCell {
 
         contactContainerView.layer.masksToBounds = true
         contactContainerView.layer.cornerRadius = contactContainerView.frame.size.width/2
-    
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
 
@@ -52,7 +49,7 @@ class ContactCell: UITableViewCell {
         if contactTextLabel != nil {
             contactTextLabel.attributedText = contact.cnContact?.formattedFullName(font:contactTextLabel.font)
         }
-        
+
         updateSubtitleBasedonType(subtitleType, contact: contact)
 
         if contact.image == nil {
@@ -63,18 +60,20 @@ class ContactCell: UITableViewCell {
                 contactIdForDeterminingBackgroundColor = contact.fullName
             }
 
+            let kAvatarWidth: UInt = 40
             let avatarBuilder = OWSContactAvatarBuilder(contactId:contactIdForDeterminingBackgroundColor,
                                                         name:contact.fullName,
-                                                        contactsManager:contactsManager)
-            self.contactImageView?.image = avatarBuilder.buildDefaultImage();
+                                                        contactsManager:contactsManager,
+                                                        diameter: kAvatarWidth)
+            self.contactImageView?.image = avatarBuilder.buildDefaultImage()
         } else {
             self.contactImageView?.image = contact.image
         }
     }
-    
-    func updateSubtitleBasedonType(_ subtitleType: SubtitleCellValue , contact: Contact) {
+
+    func updateSubtitleBasedonType(_ subtitleType: SubtitleCellValue, contact: Contact) {
         switch subtitleType {
-            
+
         case SubtitleCellValue.phoneNumber:
             if contact.userTextPhoneNumbers.count > 0 {
                 self.contactDetailTextLabel.text = "\(contact.userTextPhoneNumbers[0])"
@@ -106,7 +105,7 @@ fileprivate extension CNContact {
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
-            highlightedName.enumerateAttributes(in: NSMakeRange(0, highlightedName.length), options: [], using: { (attrs, range, stop) in
+            highlightedName.enumerateAttributes(in: NSMakeRange(0, highlightedName.length), options: [], using: { (attrs, range, _) in
                 if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }

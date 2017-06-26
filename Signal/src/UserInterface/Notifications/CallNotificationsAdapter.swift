@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 12/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
@@ -21,7 +22,7 @@ class CallNotificationsAdapter: NSObject {
 //        if #available(iOS 10.0, *) {
 //            adaptee = UserNotificationsAdaptee()
 //        } else {
-            adaptee = NotificationsManager()
+            adaptee = Environment.getCurrent().notificationsManager
 //        }
     }
 
@@ -34,4 +35,13 @@ class CallNotificationsAdapter: NSObject {
         Logger.debug("\(TAG) in \(#function)")
         adaptee.presentMissedCall(call, callerName: callerName)
     }
+
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+        adaptee.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: callerName)
+    }
+
+    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+       adaptee.presentMissedCallBecauseOfNewIdentity(call: call, callerName: callerName)
+    }
+
 }

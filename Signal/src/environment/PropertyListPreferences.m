@@ -4,7 +4,6 @@
 
 #import "PropertyListPreferences.h"
 #import "TSStorageHeaders.h"
-#import <SignalServiceKit/TSPrivacyPreferences.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +16,6 @@ NSString *const PropertyListPreferencesKeyEnableDebugLog = @"Debugging Log Enabl
 NSString *const PropertyListPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const PropertyListPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const PropertyListPreferencesKeyHasArchivedAMessage = @"User archived a message";
-NSString *const PropertyListPreferencesKeyLastRunSignalVersion = @"SignalUpdateVersionKey";
 NSString *const PropertyListPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
 NSString *const PropertyListPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const PropertyListPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
@@ -25,8 +23,22 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
 NSString *const PropertyListPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const PropertyListPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
+NSString *const PropertyListPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
+NSString *const PropertyListPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 
 @implementation PropertyListPreferences
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    return self;
+}
 
 #pragma mark - Helpers
 
@@ -51,11 +63,6 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [TSStorageManager.sharedManager setObject:value
                                        forKey:key
                                  inCollection:PropertyListPreferencesSignalDatabaseCollection];
-}
-
-- (TSPrivacyPreferences *)tsPrivacyPreferences
-{
-    return [TSPrivacyPreferences sharedInstance];
 }
 
 #pragma mark - Specific Preferences
@@ -151,19 +158,27 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
     [self setValueForKey:PropertyListPreferencesKeyHasArchivedAMessage toValue:@(enabled)];
 }
 
-+ (nullable NSString *)lastRanVersion
+
+- (BOOL)hasDeclinedNoContactsView
 {
-    return [NSUserDefaults.standardUserDefaults objectForKey:PropertyListPreferencesKeyLastRunSignalVersion];
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView];
+    // Default to NO.
+    return preference ? [preference boolValue] : NO;
 }
 
-+ (NSString *)setAndGetCurrentVersion
+- (void)setHasDeclinedNoContactsView:(BOOL)value
 {
-    NSString *currentVersion =
-        [NSString stringWithFormat:@"%@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
-    [NSUserDefaults.standardUserDefaults setObject:currentVersion
-                                            forKey:PropertyListPreferencesKeyLastRunSignalVersion];
-    [NSUserDefaults.standardUserDefaults synchronize];
-    return currentVersion;
+    [self setValueForKey:PropertyListPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
+}
+
+- (void)setIOSUpgradeNagVersion:(NSString *)value
+{
+    [self setValueForKey:PropertyListPreferencesKeyIOSUpgradeNagVersion toValue:value];
+}
+
+- (nullable NSString *)iOSUpgradeNagVersion
+{
+    return [self tryGetValueForKey:PropertyListPreferencesKeyIOSUpgradeNagVersion];
 }
 
 #pragma mark - Calling
@@ -265,19 +280,6 @@ NSString *const PropertyListPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddr
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
-}
-
-#pragma mark - Block on Identity Change
-
-- (BOOL)shouldBlockOnIdentityChange
-{
-    return self.tsPrivacyPreferences.shouldBlockOnIdentityChange;
-}
-
-- (void)setShouldBlockOnIdentityChange:(BOOL)value
-{
-    self.tsPrivacyPreferences.shouldBlockOnIdentityChange = value;
-    [self.tsPrivacyPreferences save];
 }
 
 #pragma mark - Push Tokens

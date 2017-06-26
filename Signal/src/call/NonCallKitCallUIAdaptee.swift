@@ -29,8 +29,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
         self.callService.handleOutgoingCall(call).then {
             Logger.debug("\(self.TAG) handleOutgoingCall succeeded")
-            }.catch { error in
-                Logger.error("\(self.TAG) handleOutgoingCall failed with error: \(error)")
+        }.catch { error in
+            Logger.error("\(self.TAG) handleOutgoingCall failed with error: \(error)")
         }
 
         return call
@@ -41,9 +41,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
         Logger.debug("\(TAG) \(#function)")
 
-        // present Call View controller
-        let callNotificationName = CallService.callServiceActiveCallNotificationName()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: callNotificationName), object: call)
+        self.showCall(call)
 
         // present lock screen notification
         if UIApplication.shared.applicationState == .active {

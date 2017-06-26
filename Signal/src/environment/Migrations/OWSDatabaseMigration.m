@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/28/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDatabaseMigration.h"
 #import <SignalServiceKit/TSStorageManager.h>
@@ -61,19 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogInfo(@"Completed migration %@", self.uniqueId);
             [self save];
         }];
-}
-
-/**
- * Try to avoid using this.
- */
-- (void)runUpWithBlockingMigration
-{
-    [self.storageManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self runUpWithTransaction:transaction];
-        }];
-    DDLogInfo(@"Completed migration %@", self.uniqueId);
-    [self save];
 }
 
 @end

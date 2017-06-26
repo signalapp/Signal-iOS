@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isAttachmentReady;
 
+@property (nonatomic) CGFloat lastProgress;
+
 @end
 
 #pragma mark -
@@ -47,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
         [superview.layer addSublayer:_maskLayer];
 
         const CGFloat progressWidth = round(superview.frame.size.width * 0.45f);
-        const CGFloat progressHeight = round(progressWidth * 0.11f);
+        const CGFloat progressHeight = round(MIN(superview.frame.size.height * 0.5f,
+                                                 progressWidth * 0.09f));
         CGRect progressFrame = CGRectMake(round((superview.frame.size.width - progressWidth) * 0.5f),
             round((superview.frame.size.height - progressHeight) * 0.5f),
             progressWidth,
@@ -78,6 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
+    [_maskLayer removeFromSuperlayer];
+    [_progressView removeFromSuperview];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -96,10 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setLastProgress:(CGFloat)lastProgress
+{
+    _lastProgress = lastProgress;
+
+    [self ensureViewState];
+}
+
 - (void)ensureViewState
 {
-    _maskLayer.hidden = self.isAttachmentReady;
-    _progressView.hidden = self.isAttachmentReady;
+    _maskLayer.hidden = self.isAttachmentReady || self.lastProgress == 0;
+    _progressView.hidden = self.isAttachmentReady || self.lastProgress == 0;
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
@@ -110,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self.attachment.uniqueId isEqual:attachmentID]) {
         if (!isnan(progress)) {
             [_progressView setProgress:progress];
+            self.lastProgress = progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
             OWSAssert(0);

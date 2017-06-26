@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "UIUtil.h"
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
@@ -29,9 +33,11 @@
 {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
+    [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
-    NSDictionary *navbarTitleTextAttributes = @{ NSForegroundColorAttributeName : [UIColor blackColor] };
-    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           NSForegroundColorAttributeName : [UIColor blackColor],
+                                                           }];
 }
 
 + (void)applySignalAppearence
@@ -46,14 +52,10 @@
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
 
-    NSShadow *shadow = [NSShadow new];
-    [shadow setShadowColor:[UIColor clearColor]];
-
-    NSDictionary *navbarTitleTextAttributes = @{
-        NSForegroundColorAttributeName : [UIColor whiteColor],
-        NSShadowAttributeName : shadow,
-    };
-    [[UINavigationBar appearance] setTitleTextAttributes:navbarTitleTextAttributes];
+    // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           NSForegroundColorAttributeName : [UIColor whiteColor],
+                                                           }];
 }
 
 @end

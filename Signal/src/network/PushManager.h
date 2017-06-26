@@ -1,9 +1,5 @@
 //
-//  PushManager.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/07/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <CollapsingFutures.h>
@@ -14,38 +10,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class UILocalNotification;
 
-#define Signal_Thread_UserInfo_Key @"Signal_Thread_Id"
-#define Signal_Message_UserInfo_Key @"Signal_Message_Id"
+extern NSString *const Signal_Thread_UserInfo_Key;
+extern NSString *const Signal_Message_UserInfo_Key;
 
-#define Signal_Full_New_Message_Category @"Signal_Full_New_Message"
+extern NSString *const Signal_Full_New_Message_Category;
+extern NSString *const Signal_Full_New_Message_Category_No_Longer_Verified;
 
-#define Signal_Message_Reply_Identifier @"Signal_New_Message_Reply"
-#define Signal_Message_MarkAsRead_Identifier @"Signal_Message_MarkAsRead"
-
-#pragma mark Redphone Calls (deprecated)
-
-#define Signal_Call_UserInfo_Key @"Signal_Call_Id"
-
-#define Signal_Call_Accept_Identifier @"Signal_Call_Accept"
-#define Signal_Call_Decline_Identifier @"Signal_Call_Decline"
-
-#define Signal_CallBack_Identifier @"Signal_CallBack"
-
-#define Signal_Call_Category @"Signal_IncomingCall"
-
-#define Signal_CallBack_Category @"Signal_CallBack"
+extern NSString *const Signal_Message_Reply_Identifier;
+extern NSString *const Signal_Message_MarkAsRead_Identifier;
 
 #pragma mark Signal Calls constants
 
-FOUNDATION_EXPORT NSString *const PushManagerCategoriesIncomingCall;
-FOUNDATION_EXPORT NSString *const PushManagerCategoriesMissedCall;
+extern NSString *const PushManagerCategoriesIncomingCall;
+extern NSString *const PushManagerCategoriesMissedCall;
+extern NSString *const PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity;
 
-FOUNDATION_EXPORT NSString *const PushManagerActionsAcceptCall;
-FOUNDATION_EXPORT NSString *const PushManagerActionsDeclineCall;
-FOUNDATION_EXPORT NSString *const PushManagerActionsCallBack;
+extern NSString *const PushManagerActionsAcceptCall;
+extern NSString *const PushManagerActionsDeclineCall;
+extern NSString *const PushManagerActionsCallBack;
+extern NSString *const PushManagerActionsShowThread;
 
-FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
-FOUNDATION_EXPORT NSString *const PushManagerUserInfoKeysLocalCallId;
+extern NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId;
+extern NSString *const PushManagerUserInfoKeysLocalCallId;
 
 typedef void (^failedPushRegistrationBlock)(NSError *error);
 typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken);
@@ -55,6 +41,8 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
  */
 
 @interface PushManager : NSObject <PKPushRegistryDelegate>
+
+- (instancetype)init NS_UNAVAILABLE;
 
 + (PushManager *)sharedManager;
 
@@ -81,8 +69,10 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 
 - (TOCFuture *)registerPushKitNotificationFuture;
 - (BOOL)supportsVOIPPush;
-- (UILocalNotification *)closeVOIPBackgroundTask;
-- (void)presentNotification:(UILocalNotification *)notification;
+// If checkForCancel is set, the notification will be delayed for
+// a moment.  If a relevant cancel notification is received in that window,
+// the notification will not be displayed.
+- (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel;
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId;
 
 #pragma mark Push Notifications Delegate Methods

@@ -220,7 +220,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
         // since they are no longer valid.
-        callService.handleFailedCall(error: .providerReset)
+        callService.handleFailedCurrentCall(error: .providerReset)
 
         // Remove all calls from the app's list of calls.
         callManager.removeAllCalls()
@@ -239,7 +239,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        _ = self.callService.handleOutgoingCall(call)
+        let callPromise = self.callService.handleOutgoingCall(call)
+        callPromise.retainUntilComplete()
+
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 

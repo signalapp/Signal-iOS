@@ -14,14 +14,19 @@
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/Threading.h>
 
 @interface NotificationsManager ()
 
-@property SystemSoundID newMessageSound;
+@property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
+@property (nonatomic, readonly) NSMutableArray<NSDate *> *notificationHistory;
+
 @end
+
+#pragma mark -
 
 @implementation NotificationsManager
 
@@ -37,47 +42,11 @@
     NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
 
+    _notificationHistory = [NSMutableArray new];
+
+    OWSSingletonAssert();
+
     return self;
-}
-
-
-#pragma mark - Redphone Calls
-
-/**
- * Notify user for Redphone Call
- */
-- (void)notifyUserForCall:(TSCall *)call inThread:(TSThread *)thread {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        // Remove previous notification of call and show missed notification.
-        UILocalNotification *notif = [[PushManager sharedManager] closeVOIPBackgroundTask];
-        TSContactThread *cThread   = (TSContactThread *)thread;
-
-        if (call.callType == RPRecentCallTypeMissed) {
-            if (notif) {
-                [[UIApplication sharedApplication] cancelLocalNotification:notif];
-            }
-
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.soundName            = @"NewMessage.aifc";
-            switch (self.notificationPreviewType) {
-                case NotificationNoNameNoPreview: {
-                    notification.alertBody = [CallStrings missedCallNotificationBody];
-                    break;
-                }
-                case NotificationNamePreview:
-                case NotificationNameNoPreview: {
-                    notification.userInfo = @{ Signal_Call_UserInfo_Key : cThread.contactIdentifier };
-                    notification.category = Signal_CallBack_Category;
-                    notification.alertBody = ([[Environment getCurrent].preferences isCallKitPrivacyEnabled]
-                                              ? [CallStrings missedCallNotificationBodyWithoutCallerName]
-                                              : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], [thread name]]);
-                    break;
-                }
-            }
-
-            [[PushManager sharedManager] presentNotification:notification];
-        }
-    }
 }
 
 #pragma mark - Signal Calls
@@ -131,14 +100,90 @@
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
         case NotificationNoNameNoPreview: {
-            alertMessage = [CallStrings missedCallNotificationBody];
+            alertMessage = [CallStrings missedCallNotificationBodyWithoutCallerName];
             break;
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage = ([[Environment getCurrent].preferences isCallKitPrivacyEnabled]
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                             [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
                             ? [CallStrings missedCallNotificationBodyWithoutCallerName]
                             : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
+            break;
+        }
+    }
+    notification.alertBody = [NSString stringWithFormat:@"☎️ %@", alertMessage];
+
+    [self presentNotification:notification identifier:localCallId];
+}
+
+
+- (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
+{
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    OWSAssert(thread != nil);
+
+    UILocalNotification *notification = [UILocalNotification new];
+    // Use category which allows call back
+    notification.category = PushManagerCategoriesMissedCall;
+    NSString *localCallId = call.localId.UUIDString;
+    notification.userInfo = @{
+        PushManagerUserInfoKeysLocalCallId : localCallId,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        Signal_Thread_UserInfo_Key : thread.uniqueId
+    };
+
+    NSString *alertMessage;
+    switch (self.notificationPreviewType) {
+        case NotificationNoNameNoPreview: {
+            alertMessage = [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName];
+            break;
+        }
+        case NotificationNameNoPreview:
+        case NotificationNamePreview: {
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
+                    : [NSString
+                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
+                          callerName]);
+            break;
+        }
+    }
+    notification.alertBody = [NSString stringWithFormat:@"☎️ %@", alertMessage];
+
+    [self presentNotification:notification identifier:localCallId];
+}
+
+- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
+{
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    OWSAssert(thread != nil);
+
+    UILocalNotification *notification = [UILocalNotification new];
+    // Use category which does not allow call back
+    notification.category = PushManagerCategoriesMissedCallFromNoLongerVerifiedIdentity;
+    NSString *localCallId = call.localId.UUIDString;
+    notification.userInfo = @{
+        PushManagerUserInfoKeysLocalCallId : localCallId,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        Signal_Thread_UserInfo_Key : thread.uniqueId
+    };
+
+    NSString *alertMessage;
+    switch (self.notificationPreviewType) {
+        case NotificationNoNameNoPreview: {
+            alertMessage = [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName];
+            break;
+        }
+        case NotificationNameNoPreview:
+        case NotificationNamePreview: {
+            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
+                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
+                    : [NSString
+                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
+                          callerName]);
             break;
         }
     }
@@ -150,12 +195,23 @@
 #pragma mark - Signal Messages
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
+    OWSAssert(message);
+    OWSAssert(thread);
+
+    if (thread.isMuted) {
+        return;
+    }
+
+    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+
     NSString *messageDescription = message.description;
 
     if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         notification.userInfo             = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
-        notification.soundName            = @"NewMessage.aifc";
+        if (shouldPlaySound) {
+            notification.soundName = @"NewMessage.aifc";
+        }
 
         NSString *alertBodyString = @"";
 
@@ -171,51 +227,81 @@
         }
         notification.alertBody = alertBodyString;
 
-        [[PushManager sharedManager] presentNotification:notification];
+        [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
     } else {
-        if ([Environment.preferences soundInForeground]) {
+        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
         }
     }
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)message
-                                from:(NSString *)name
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
+    OWSAssert(message);
+    OWSAssert(thread);
+    OWSAssert(contactsManager);
+
+    if (thread.isMuted) {
+        return;
+    }
+
+    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+
     NSString *messageDescription = message.description;
+    NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
+    NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (groupName.length < 1) {
+        groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    }
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.soundName            = @"NewMessage.aifc";
+        if (shouldPlaySound) {
+            notification.soundName = @"NewMessage.aifc";
+        }
 
         switch (self.notificationPreviewType) {
-            case NotificationNamePreview:
-                notification.category = Signal_Full_New_Message_Category;
+            case NotificationNamePreview: {
+
+                // Don't reply from lockscreen if anyone in this conversation is
+                // "no longer verified".
+                BOOL isNoLongerVerified = NO;
+                for (NSString *recipientId in thread.recipientIdentifiers) {
+                    if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
+                        == OWSVerificationStateNoLongerVerified) {
+                        isNoLongerVerified = YES;
+                        break;
+                    }
+                }
+
+                notification.category = (isNoLongerVerified ? Signal_Full_New_Message_Category_No_Longer_Verified
+                                                            : Signal_Full_New_Message_Category);
                 notification.userInfo =
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
 
                 if ([thread isGroupThread]) {
-                    NSString *sender = [contactsManager displayNameForPhoneIdentifier:message.authorId];
-                    NSString *threadName = [NSString stringWithFormat:@"\"%@\"", name];
+                    NSString *threadName = [NSString stringWithFormat:@"\"%@\"", groupName];
+                    // TODO: Format parameters might change order in l10n.  We should use named parameters.
                     notification.alertBody =
                         [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
-                                                   sender,
-                                                   threadName,
-                                                   messageDescription];
+                                  senderName,
+                                  threadName,
+                                  messageDescription];
                 } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
                 }
                 break;
+            }
             case NotificationNameNoPreview: {
                 notification.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
                 if ([thread isGroupThread]) {
-                    notification.alertBody =
-                        [NSString stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), name];
+                    notification.alertBody = [NSString
+                        stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), groupName];
                 } else {
                     notification.alertBody =
-                        [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                        [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), senderName];
                 }
                 break;
             }
@@ -228,10 +314,46 @@
                 break;
         }
 
-        [[PushManager sharedManager] presentNotification:notification];
+        [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
     } else {
-        if ([Environment.preferences soundInForeground]) {
+        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
             AudioServicesPlayAlertSound(_newMessageSound);
+        }
+    }
+}
+
+- (BOOL)shouldPlaySoundForNotification
+{
+    @synchronized(self)
+    {
+        // Play no more than 2 notification sounds in a given
+        // five-second window.
+        const CGFloat kNotificationWindowSeconds = 5.f;
+        const NSUInteger kMaxNotificationRate = 2;
+
+        // Cull obsolete notification timestamps from the thread's notification history.
+        while (self.notificationHistory.count > 0) {
+            NSDate *notificationTimestamp = self.notificationHistory[0];
+            CGFloat notificationAgeSeconds = fabs(notificationTimestamp.timeIntervalSinceNow);
+            if (notificationAgeSeconds > kNotificationWindowSeconds) {
+                [self.notificationHistory removeObjectAtIndex:0];
+            } else {
+                break;
+            }
+        }
+
+        // Ignore notifications if necessary.
+        BOOL shouldPlaySound = self.notificationHistory.count < kMaxNotificationRate;
+
+        if (shouldPlaySound) {
+            // Add new notification timestamp to the thread's notification history.
+            NSDate *newNotificationTimestamp = [NSDate new];
+            [self.notificationHistory addObject:newNotificationTimestamp];
+
+            return YES;
+        } else {
+            DDLogDebug(@"Skipping sound for notification");
+            return NO;
         }
     }
 }
@@ -246,31 +368,33 @@
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
-    AssertIsOnMainThread();
+    DispatchMainThreadSafe(^{
+        // Replace any existing notification
+        // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
+        if (self.currentNotifications[identifier]) {
+            [self cancelNotificationWithIdentifier:identifier];
+        }
 
-    // Replace any existing notification
-    // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
-    if (self.currentNotifications[identifier]) {
-        [self cancelNotificationWithIdentifier:identifier];
-    }
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        DDLogDebug(@"%@ presenting notification with identifier: %@", self.tag, identifier);
 
-    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-    DDLogDebug(@"%@ presenting notification with identifier: %@", self.tag, identifier);
-
-    self.currentNotifications[identifier] = notification;
+        self.currentNotifications[identifier] = notification;
+    });
 }
 
 - (void)cancelNotificationWithIdentifier:(NSString *)identifier
 {
-    AssertIsOnMainThread();
-    UILocalNotification *notification = self.currentNotifications[identifier];
-    if (!notification) {
-        DDLogWarn(@"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
-        return;
-    }
-    [self.currentNotifications removeObjectForKey:identifier];
+    DispatchMainThreadSafe(^{
+        UILocalNotification *notification = self.currentNotifications[identifier];
+        if (!notification) {
+            DDLogWarn(
+                @"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
+            return;
+        }
+        [self.currentNotifications removeObjectForKey:identifier];
 
-    [[UIApplication sharedApplication] cancelLocalNotification:notification];
+        [[UIApplication sharedApplication] cancelLocalNotification:notification];
+    });
 }
 
 #pragma mark - Logging
