@@ -22,6 +22,7 @@
 
 static NSString *const ext_key__classVersion       = @"classVersion";
 static NSString *const ext_key__versionTag         = @"versionTag";
+static NSString *const ext_key__ftsVersion         = @"ftsVersion";
 static NSString *const ext_key__version_deprecated = @"version";
 
 
@@ -69,15 +70,22 @@ static NSString *const ext_key__version_deprecated = @"version";
 		
 		NSString *versionTag = parentConnection->parent->versionTag;
 		[self setStringValue:versionTag forExtensionKey:ext_key__versionTag persistent:YES];
+        
+        NSString *ftsVersion = parentConnection->parent->ftsVersion;
+        [self setStringValue:ftsVersion forExtensionKey:ext_key__ftsVersion persistent:YES];
 	}
 	else
 	{
 		// Check user-supplied config version.
-		// We may need to re-populate the database if the groupingBlock or sortingBlock changed.
+		// We may need to re-populate the database if the groupingBlock, sortingBlock or fts version changed.
 		
 		NSString *versionTag = parentConnection->parent->versionTag;
 		
 		NSString *oldVersionTag = [self stringValueForExtensionKey:ext_key__versionTag persistent:YES];
+        
+        NSString *ftsVersion = parentConnection->parent->ftsVersion;
+        
+        NSString *oldFtsVesrion = [self stringValueForExtensionKey:ext_key__ftsVersion persistent:YES];
 		
 		BOOL hasOldVersion_deprecated = NO;
 		if (oldVersionTag == nil)
@@ -93,7 +101,7 @@ static NSString *const ext_key__version_deprecated = @"version";
 			}
 		}
 		
-		if (![oldVersionTag isEqualToString:versionTag])
+		if (![oldVersionTag isEqualToString:versionTag] || ![oldFtsVesrion isEqualToString:ftsVersion])
 		{
 			if (![self dropTable]) return NO;
 			if (![self createTable]) return NO;
@@ -166,10 +174,12 @@ static NSString *const ext_key__version_deprecated = @"version";
 	
 	YDBLogVerbose(@"Creating FTS table for registeredName(%@): %@", [self registeredName], tableName);
 	
-	// CREATE VIRTUAL TABLE pages USING fts4(column1, column2, column3);
+	// CREATE VIRTUAL TABLE pages USING fts4(column1, column2, column3) or fts5(column1, column2, column3);
+    
+    NSString *ftsVersion = parentConnection->parent->ftsVersion;
 	
 	NSMutableString *createTable = [NSMutableString stringWithCapacity:100];
-	[createTable appendFormat:@"CREATE VIRTUAL TABLE IF NOT EXISTS \"%@\" USING fts4(", tableName];
+	[createTable appendFormat:@"CREATE VIRTUAL TABLE IF NOT EXISTS \"%@\" USING %@(", tableName, ftsVersion];
 	
 	__block NSUInteger i = 0;
 	
@@ -947,6 +957,119 @@ static NSString *const ext_key__version_deprecated = @"version";
 		
 		block(ck.collection, ck.key, object, metadata, stop);
 	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark bm25  Queries
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)enumerateBm25OrderedRowidsMatching:(NSString *)query
+                               withWeights:(nullable NSArray<NSNumber *> *)weights
+                                usingBlock:(void (^)(int64_t rowid, BOOL *stop))block
+{
+    if (![parentConnection->parent.ftsVersion isEqualToString:YapDatabaseFullTextSearchFTS5Version]) {
+        NSString *reason = [NSString stringWithFormat:
+                            @"bm25 ordering used on non fts5 extension %@", parentConnection->parent.registeredName];
+        
+        NSDictionary *userInfo = @{ NSLocalizedRecoverySuggestionErrorKey:
+                                    @"You may want to initialize that extension with YapDatabaseFullTextSearchFTS5Version" };
+        
+        @throw [NSException exceptionWithName:@"YapDatabaseFullTextSearch" reason:reason userInfo:userInfo];
+        return;
+    }
+    
+    if (block == nil) return;
+    if ([query length] == 0) return;
+    
+    sqlite3_stmt *statement = [parentConnection bm25QueryStatementWithWeights:weights];
+    if (statement == NULL) return;
+    
+    BOOL stop = NO;
+    YapMutationStackItem_Bool *mutation = [parentConnection->mutationStack push]; // mutation during enum protection
+    
+    // SELECT "rowid" FROM "tableName" WHERE "tableName" MATCH ? bm25("tableName", weights[0], weights[1], ...);
+    
+    int const column_idx_rowid = SQLITE_COLUMN_START;
+    int const bind_idx_query   = SQLITE_BIND_START;
+    
+    YapDatabaseString _query; MakeYapDatabaseString(&_query, query);
+    sqlite3_bind_text(statement, bind_idx_query, _query.str, _query.length, SQLITE_STATIC);
+    
+    int status;
+    while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+    {
+        int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+        
+        block(rowid, &stop);
+        
+        if (stop || mutation.isMutated) break;
+    }
+    
+    if ((status != SQLITE_DONE) && !stop && !mutation.isMutated)
+    {
+        YDBLogError(@"%@ - sqlite_step error: %d %s", THIS_METHOD,
+                    status, sqlite3_errmsg(databaseTransaction->connection->db));
+    }
+    
+    sqlite3_clear_bindings(statement);
+    sqlite3_reset(statement);
+    FreeYapDatabaseString(&_query);
+    
+    if (!stop && mutation.isMutated)
+    {
+        @throw [databaseTransaction mutationDuringEnumerationException];
+    }
+}
+
+- (void)enumerateBm25OrderedKeysMatching:(NSString *)query
+                             withWeights:(nullable NSArray<NSNumber *> *)weights
+                              usingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block {
+    [self enumerateBm25OrderedRowidsMatching:query withWeights:weights usingBlock:^(int64_t rowid, BOOL *stop) {
+        
+        YapCollectionKey *ck = [databaseTransaction collectionKeyForRowid:rowid];
+        
+        block(ck.collection, ck.key, stop);
+    }];
+}
+
+- (void)enumerateBm25OrderedKeysAndMetadataMatching:(NSString *)query
+                                        withWeights:(nullable NSArray<NSNumber *> *)weights
+                                         usingBlock:(void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block {
+    [self enumerateBm25OrderedRowidsMatching:query withWeights:weights usingBlock:^(int64_t rowid, BOOL *stop) {
+        
+        YapCollectionKey *ck = nil;
+        id metadata = nil;
+        [databaseTransaction getCollectionKey:&ck metadata:&metadata forRowid:rowid];
+        
+        block(ck.collection, ck.key, metadata, stop);
+    }];
+}
+
+- (void)enumerateBm25OrderedKeysAndObjectsMatching:(NSString *)query
+                                       withWeights:(nullable NSArray<NSNumber *> *)weights
+                                        usingBlock:(void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block {
+    [self enumerateBm25OrderedRowidsMatching:query withWeights:weights usingBlock:^(int64_t rowid, BOOL *stop) {
+        
+        YapCollectionKey *ck = nil;
+        id object = nil;
+        [databaseTransaction getCollectionKey:&ck object:&object forRowid:rowid];
+        
+        block(ck.collection, ck.key, object, stop);
+    }];
+}
+
+- (void)enumerateBm25OrderedRowsMatching:(NSString *)query
+                             withWeights:(nullable NSArray<NSNumber *> *)weights
+                              usingBlock:(void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block {
+    [self enumerateBm25OrderedRowidsMatching:query withWeights:weights usingBlock:^(int64_t rowid, BOOL *stop) {
+        
+        YapCollectionKey *ck = nil;
+        id object = nil;
+        id metadata = nil;
+        [databaseTransaction getCollectionKey:&ck object:&object metadata:&metadata forRowid:rowid];
+        
+        block(ck.collection, ck.key, object, metadata, stop);
+    }];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

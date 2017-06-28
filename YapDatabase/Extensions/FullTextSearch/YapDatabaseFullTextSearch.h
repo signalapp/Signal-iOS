@@ -18,6 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
  * YapDatabaseFullTextSearch is an extension for performing text based search.
  * Internally it uses sqlite's FTS module which was contributed by Google.
 **/
+
+
+extern NSString *const YapDatabaseFullTextSearchFTS5Version;
+extern NSString *const YapDatabaseFullTextSearchFTS4Version;
+extern NSString *const YapDatabaseFullTextSearchFTS3Version;
+
+
 @interface YapDatabaseFullTextSearch : YapDatabaseExtension
 
 - (id)initWithColumnNames:(NSArray<NSString *> *)columnNames
@@ -30,6 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithColumnNames:(NSArray<NSString *> *)columnNames
                   options:(nullable NSDictionary *)options
                   handler:(YapDatabaseFullTextSearchHandler *)handler
+               versionTag:(nullable NSString *)versionTag;
+
+- (id)initWithColumnNames:(NSArray<NSString *> *)columnNames
+                  options:(nullable NSDictionary *)options
+                  handler:(YapDatabaseFullTextSearchHandler *)handler
+               ftsVersion:(nullable NSString *)ftsVersion
                versionTag:(nullable NSString *)versionTag;
 
 
@@ -49,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
  * and the FTS extension will automatically update itself.
 **/
 @property (nonatomic, copy, readonly, nullable) NSString *versionTag;
+@property (nonatomic, copy, readonly, nullable) NSString *ftsVersion;
 
 @end
 
