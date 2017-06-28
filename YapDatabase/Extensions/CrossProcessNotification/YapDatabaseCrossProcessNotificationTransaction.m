@@ -26,7 +26,6 @@
 
 @property (nonatomic, strong) YapDatabaseCrossProcessNotificationConnection* parentConnection;
 @property (nonatomic, strong) YapDatabaseReadTransaction* databaseTransaction;
-@property (nonatomic, assign) BOOL anyChange;
 
 @end
 
@@ -37,7 +36,6 @@
 {
 	if ((self = [super init]))
 	{
-        self.anyChange = NO;
 		self.parentConnection = inParentConnection;
         self.databaseTransaction = inDatabaseTransaction;
 	}
@@ -104,14 +102,6 @@
 **/
 - (void)didCommitTransaction
 {
-	if (self.anyChange)
-	{
-		YapDatabaseCrossProcessNotification *ext =
-		  (YapDatabaseCrossProcessNotification *)self.parentConnection.extension;
-		
-		[ext notifyChanged];
-	}
-    
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
@@ -126,7 +116,6 @@
 **/
 - (void)didRollbackTransaction
 {
-    self.anyChange = NO;
 	// An extensionTransaction is only valid within the scope of its encompassing databaseTransaction.
 	// I imagine this may occasionally be misunderstood, and developers may attempt to store the extension in an ivar,
 	// and then use it outside the context of the database transaction block.
@@ -149,7 +138,7 @@
            withMetadata:(id)metadata
                   rowid:(int64_t)rowid
 {
-	self.anyChange = YES;
+
 }
 
 /**
@@ -161,7 +150,7 @@
            withMetadata:(id)metadata
                   rowid:(int64_t)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -170,7 +159,7 @@
 **/
 - (void)didReplaceObject:(id)object forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -179,7 +168,7 @@
 **/
 - (void)didReplaceMetadata:(id)metadata forCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -188,7 +177,7 @@
 **/
 - (void)didTouchObjectForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -197,7 +186,7 @@
 **/
 - (void)didTouchMetadataForCollectionKey:(YapCollectionKey __unused *)collectionKey withRowid:(int64_t __unused)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -206,7 +195,7 @@
 **/
 - (void)didTouchRowForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-    self.anyChange = YES;
+
 }
 
 /**
@@ -215,7 +204,7 @@
 **/
 - (void)didRemoveObjectForCollectionKey:(YapCollectionKey *)collectionKey withRowid:(int64_t)rowid
 {
-	self.anyChange = YES;
+
 }
 
 /**
@@ -224,7 +213,7 @@
 **/
 - (void)didRemoveObjectsForKeys:(NSArray __unused *)keys inCollection:(NSString *)collection withRowids:(NSArray *)rowids
 {
-	self.anyChange = YES;
+
 }
 
 /**
@@ -233,7 +222,7 @@
 **/
 - (void)didRemoveAllObjectsInAllCollections
 {
-	self.anyChange = YES;
+
 }
 
 @end
