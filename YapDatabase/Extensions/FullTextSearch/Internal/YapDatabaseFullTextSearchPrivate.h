@@ -43,6 +43,7 @@
 	
 	NSOrderedSet *columnNames;
 	NSDictionary *options;
+	NSString *ftsVersion;
 	NSString *versionTag;
 	
 	id columnNamesSharedKeySet;
@@ -77,6 +78,8 @@
 - (sqlite3_stmt *)removeRowidStatement;
 - (sqlite3_stmt *)removeAllStatement;
 - (sqlite3_stmt *)queryStatement;
+- (sqlite3_stmt *)bm25QueryStatement;
+- (sqlite3_stmt *)bm25QueryStatementWithWeights:(NSArray<NSNumber *> *)weights;
 - (sqlite3_stmt *)querySnippetStatement;
 - (sqlite3_stmt *)rowidQueryStatement;
 - (sqlite3_stmt *)rowidQuerySnippetStatement;

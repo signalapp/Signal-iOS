@@ -44,6 +44,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateRowsMatching:(NSString *)query
                    usingBlock:(void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
 
+// FTS5 bm25 ordering
+
+- (void)enumerateBm25OrderedKeysMatching:(NSString *)query
+                             withWeights:(nullable NSArray<NSNumber *> *)weights
+                              usingBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block;
+
+- (void)enumerateBm25OrderedKeysAndMetadataMatching:(NSString *)query
+                                        withWeights:(nullable NSArray<NSNumber *> *)weights
+                                         usingBlock:(void (^)(NSString *collection, NSString *key, id metadata, BOOL *stop))block;
+
+- (void)enumerateBm25OrderedKeysAndObjectsMatching:(NSString *)query
+                                       withWeights:(nullable NSArray<NSNumber *> *)weights
+                                        usingBlock:(void (^)(NSString *collection, NSString *key, id object, BOOL *stop))block;
+
+- (void)enumerateBm25OrderedRowsMatching:(NSString *)query
+                             withWeights:(nullable NSArray<NSNumber *> *)weights
+                              usingBlock:(void (^)(NSString *collection, NSString *key, id object, id metadata, BOOL *stop))block;
+
 // Query matching + Snippets
 
 - (void)enumerateKeysMatching:(NSString *)query
