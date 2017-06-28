@@ -62,6 +62,7 @@ static pid_t currentPid() {
     self = [super init];
     if (self) {
         self.identifier = identifier;
+        notifyToken = NOTIFY_TOKEN_INVALID;
     }
     return self;
 }
@@ -80,6 +81,7 @@ static pid_t currentPid() {
     __weak YapDatabaseCrossProcessNotification* wSelf = self;
     
     notify_register_dispatch(name, &notifyToken, dispatch_get_main_queue(), ^(int token) {
+        
         uint64_t fromPid;
         notify_get_state(token, &fromPid);
         BOOL isExternal = fromPid != currentPid();
@@ -96,7 +98,7 @@ static pid_t currentPid() {
     if (notify_is_valid_token(notifyToken))
     {
         notify_cancel(notifyToken);
-        notifyToken = 0;
+        notifyToken = NOTIFY_TOKEN_INVALID;
     }
 }
 
@@ -110,10 +112,24 @@ static pid_t currentPid() {
  *   This method is invoked within the writeQueue.
  *   So either don't do anything expensive/time-consuming in this method, or dispatch_async to do it in another queue.
 **/
-- (void)didRegisterExtension
+- (void)didRegisterExtension {
+    // only start dispatching notifications once the extension is registered to a database
+    [self start];
+}
+
+- (void)noteCommittedChangeset:(NSDictionary *)changeset registeredName:(NSString *)extName
 {
-	// only start dispatching notifications once the extension is registered to a database
-	[self start];
+    NSDictionary *ext_changeset = [[changeset objectForKey:YapDatabaseExtensionsKey] objectForKey:extName];
+    if (ext_changeset)
+    {
+        [self processChangeset:ext_changeset];
+    }
+    
+    NSNotification *notification = changeset[YapDatabaseNotificationKey];
+    if ([notification.name isEqualToString:YapDatabaseModifiedNotification])
+    {
+        [self notifyChanged];
+    }
 }
 
 - (YapDatabaseExtensionConnection *)newConnection:(YapDatabaseConnection *)databaseConnection
@@ -122,6 +138,9 @@ static pid_t currentPid() {
 }
 
 - (void)notifyChanged {
+    if (!notify_is_valid_token(notifyToken)) {
+        [self start];
+    }
     
     const char* name = [[self channel] cStringUsingEncoding:NSUTF8StringEncoding];
     
