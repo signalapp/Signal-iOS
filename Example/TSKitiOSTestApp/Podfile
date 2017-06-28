@@ -21,7 +21,7 @@ post_install do |installer|
           existing_definitions = "$(inheritied)"
         end
 
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{existing_definitions} SSK_NO_ENFORCE_SINGLETONS=1"
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{existing_definitions} SSK_BUILDING_FOR_TESTS=1"
       end
     end
   end

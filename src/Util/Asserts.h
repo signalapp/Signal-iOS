@@ -71,7 +71,7 @@
 // 1. Use OWSSingletonAssertFlag() outside the class definition.
 // 2. Use OWSSingletonAssertInit() in each initializer.
 
-#ifndef SSK_NO_ENFORCE_SINGLETONS
+#ifndef SSK_BUILDING_FOR_TESTS
 #ifdef DEBUG
 
 #define ENFORCE_SINGLETONS
