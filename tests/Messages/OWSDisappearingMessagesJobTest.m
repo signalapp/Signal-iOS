@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -12,6 +13,14 @@
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSDisappearingMessagesJob (Testing)
+
+- (void)run;
+- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
+                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager;
+
+@end
 
 @interface OWSDisappearingMessagesJobTest : XCTestCase
 
@@ -61,12 +70,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                         expireStartedAt:0];
     [unExpiringMessage save];
 
-    OWSDisappearingMessagesJob *job =
-        [[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]];
+    
+    OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
 
     // Sanity Check.
     XCTAssertEqual(4, [TSMessage numberOfKeysInCollection]);
     [job run];
+    
+    //FIXME remove sleep hack in favor of expiringMessage completion handler
+    sleep(4);
     XCTAssertEqual(2, [TSMessage numberOfKeysInCollection]);
 }
 
@@ -75,9 +87,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [[TSThread alloc] initWithUniqueId:@"fake-thread-id"];
     [thread save];
 
-    OWSDisappearingMessagesJob *job =
-        [[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]];
-
+    OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
+    
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
     [configuration remove];
@@ -89,7 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expiresInSeconds:20
                                                       expireStartedAt:0];
     [expiringMessage save];
-
 
     [job becomeConsistentWithConfigurationForMessage:expiringMessage contactsManager:[OWSFakeContactsManager new]];
     configuration = [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -104,13 +114,9 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [[TSThread alloc] initWithUniqueId:@"fake-thread-id"];
     [thread save];
 
-    OWSDisappearingMessagesJob *job =
-        [[OWSDisappearingMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]];
-
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
     [configuration remove];
-
 
     TSMessage *unExpiringMessage = [[TSMessage alloc] initWithTimestamp:1
                                                                inThread:thread
@@ -119,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        expiresInSeconds:0
                                                         expireStartedAt:0];
     [unExpiringMessage save];
-    [job becomeConsistentWithConfigurationForMessage:unExpiringMessage contactsManager:[OWSFakeContactsManager new]];
+    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:unExpiringMessage contactsManager:[OWSFakeContactsManager new]];
     XCTAssertNil([OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId]);
 }
 

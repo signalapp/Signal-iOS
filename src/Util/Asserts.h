@@ -70,7 +70,16 @@
 //
 // 1. Use OWSSingletonAssertFlag() outside the class definition.
 // 2. Use OWSSingletonAssertInit() in each initializer.
+
+#ifndef SSK_BUILDING_FOR_TESTS
 #ifdef DEBUG
+
+#define ENFORCE_SINGLETONS
+
+#endif
+#endif
+
+#ifdef ENFORCE_SINGLETONS
 
 #define OWSSingletonAssertFlag() static BOOL _isSingletonCreated = NO;
 

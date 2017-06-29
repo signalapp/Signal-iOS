@@ -17,7 +17,9 @@
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
+#import "OWSIdentityManager.h"
 #import "TSStorageManager.h"
+#import "OWSUnitTestEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
                     callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                       identityManager:(OWSIdentityManager *)identityManager
                          messageSender:(OWSMessageSender *)messageSender;
 
 // private method we are testing
@@ -54,7 +57,15 @@ NS_ASSUME_NONNULL_BEGIN
                                           callMessageHandler:[OWSFakeCallMessageHandler new]
                                              contactsManager:[OWSFakeContactsManager new]
                                              contactsUpdater:[OWSFakeContactsUpdater new]
+                                             identityManager:[OWSIdentityManager sharedManager]
                                                messageSender:messageSender];
+}
+
+- (void)setUp
+{
+    [super setUp];
+    
+    [OWSUnitTestEnvironment ensureSetup];
 }
 
 - (void)testIncomingSyncContactMessage

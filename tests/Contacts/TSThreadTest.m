@@ -21,7 +21,7 @@
     [super setUp];
 
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabase];
+    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
 }
 
 - (void)tearDown
@@ -66,7 +66,8 @@
     XCTAssertEqual(0, [thread numberOfInteractions]);
 
     NSError *error;
-    TSAttachmentStream *incomingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *incomingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
+                                                                              sourceFilename:nil];
     [incomingAttachment writeData:[NSData new] error:&error];
     [incomingAttachment save];
 
@@ -83,7 +84,8 @@
                                                                      expiresInSeconds:0];
     [incomingMessage save];
 
-    TSAttachmentStream *outgoingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *outgoingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
+                                                                              sourceFilename:nil];
     [outgoingAttachment writeData:[NSData new] error:&error];
     [outgoingAttachment save];
 
@@ -94,7 +96,7 @@
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:10000
                                                                              inThread:thread
                                                                           messageBody:@"outgoing message body"
-                                                                        attachmentIds:@[ outgoingAttachment.uniqueId ]];
+                                                                        attachmentIds:[@[ outgoingAttachment.uniqueId ] mutableCopy]];
     [outgoingMessage save];
 
     // Sanity check

@@ -20,7 +20,7 @@
 {
     [super setUp];
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabase];
+    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
 
     // Set up initial conditions & Sanity check
     [TSAttachmentStream deleteAttachments];
@@ -76,8 +76,11 @@
 
 - (void)testFilesWithoutInteractionsAreDeleted
 {
+    // sanity check
+    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     [attachmentStream save];
     NSString *orphanedFilePath = [attachmentStream filePath];
@@ -97,7 +100,7 @@
     [savedThread save];
 
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     [attachmentStream save];
 
@@ -125,10 +128,9 @@
 - (void)testFilesWithoutAttachmentStreamsAreDeleted
 {
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"];
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
-
 
     NSString *orphanedFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];

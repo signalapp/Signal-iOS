@@ -294,10 +294,28 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)deleteAttachments
 {
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self attachmentsFolder] error:&error];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    NSURL *fileURL = [NSURL fileURLWithPath:self.attachmentsFolder];
+    NSArray<NSURL *> *contents =
+        [fileManager contentsOfDirectoryAtURL:fileURL includingPropertiesForKeys:nil options:0 error:&error];
+
     if (error) {
-        DDLogError(@"Failed to delete attachment folder with error: %@", error.debugDescription);
+        OWSFail(@"failed to get contents of attachments folder: %@ with error: %@", self.attachmentsFolder, error);
+        return;
     }
+
+    for (NSURL *url in contents) {
+        NSError *deletionError;
+        [fileManager removeItemAtURL:url error:&deletionError];
+        if (deletionError) {
+            OWSFail(@"failed to remove item at path: %@ with error: %@", filePath, deletionError);
+            // continue to try to delete remaining items.
+        }
+    }
+
+    return;
 }
 
 - (CGSize)calculateImageSize
