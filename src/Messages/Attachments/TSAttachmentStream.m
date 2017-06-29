@@ -310,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deletionError;
         [fileManager removeItemAtURL:url error:&deletionError];
         if (deletionError) {
-            OWSFail(@"failed to remove item at path: %@ with error: %@", filePath, deletionError);
+            OWSFail(@"failed to remove item at path: %@ with error: %@", url, deletionError);
             // continue to try to delete remaining items.
         }
     }
