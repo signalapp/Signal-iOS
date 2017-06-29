@@ -14,6 +14,8 @@ default: test
 
 test: pod_install retest
 
+scan_test: pod_install scan
+
 pod_install:
 	cd $(WORKING_DIR) && \
 		bundle exec pod install
@@ -27,6 +29,9 @@ retest: optional_early_start_simulator
 		$(XCODE_BUILD) \
 			-destination '${BUILD_DESTINATION}' \
 			test | xcpretty
+
+scan:
+	bundle exec fastlane scan
 
 clean:
 	cd $(WORKING_DIR) && \

@@ -13,5 +13,5 @@ before_install:
 after_failure:
     - sleep 10 # This prevents the occasional output truncation that happens when piping to xcpretty.
 
-script: make
+script: make scan_test
 
