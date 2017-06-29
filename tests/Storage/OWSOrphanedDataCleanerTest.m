@@ -76,6 +76,9 @@
 
 - (void)testFilesWithoutInteractionsAreDeleted
 {
+    // sanity check
+    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+
     NSError *error;
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
@@ -128,7 +131,6 @@
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
-
 
     NSString *orphanedFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];

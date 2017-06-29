@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSDisappearingMessagesFinder.h"
