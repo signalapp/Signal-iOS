@@ -7,8 +7,8 @@ env:
 
 before_install:
   - brew update
-  - gem install cocoapods xcpretty --no-ri --no-rdoc
-  - pod repo update --silent
+  - bundle
+  - bundle exec pod repo update --silent
 
 after_failure:
     - sleep 10 # This prevents the occasional output truncation that happens when piping to xcpretty.

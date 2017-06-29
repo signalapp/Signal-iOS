@@ -16,7 +16,7 @@ test: pod_install retest
 
 pod_install:
 	cd $(WORKING_DIR) && \
-		pod install
+		bundle exec pod install
 
 build: pod_install
 	cd $(WORKING_DIR) && \
