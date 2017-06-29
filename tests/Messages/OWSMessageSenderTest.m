@@ -243,6 +243,8 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageStartedExpiration = [self expectationWithDescription:@"messageStartedExpiration"];
     [messageSender sendMessage:self.expiringMessage
         success:^() {
+            //FIXME remove sleep hack in favor of expiringMessage completion handler
+            sleep(2);
             if (self.expiringMessage.expiresAt > 0) {
                 [messageStartedExpiration fulfill];
             } else {

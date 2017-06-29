@@ -20,7 +20,7 @@
 {
     [super setUp];
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabase];
+    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
 
     // Set up initial conditions & Sanity check
     [TSAttachmentStream deleteAttachments];

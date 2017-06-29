@@ -12,16 +12,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesFinder (Testing)
 
-- (NSArray<TSMessage *> *)fetchExpiredMessages;
-- (NSArray<TSMessage *> *)fetchUnstartedExpiringMessagesInThread:(TSThread *)thread;
+- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSMessage *> *)fetchUnstartedExpiringMessagesInThread:(TSThread *)thread
+                                                     transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
 
 @interface OWSDisappearingMessageFinderTest : XCTestCase
 
-@property TSStorageManager *storageManager;
+@property YapDatabaseConnection *dbConnection;
 @property OWSDisappearingMessagesFinder *finder;
+@property TSStorageManager *storageManager;
 @property TSThread *thread;
 @property uint64_t now;
 
@@ -35,13 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
     [TSMessage removeAllObjectsInCollection];
 
     self.storageManager = [TSStorageManager sharedManager];
+    self.dbConnection = self.storageManager.newDatabaseConnection;
     self.thread = [TSThread new];
     [self.thread save];
     self.now = [NSDate ows_millisecondTimeStamp];
 
     // Test subject
-    self.finder = [[OWSDisappearingMessagesFinder alloc] initWithStorageManager:self.storageManager];
-    [self.finder blockingRegisterDatabaseExtensions];
+    self.finder = [OWSDisappearingMessagesFinder new];
+    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.storageManager];
 }
 
 - (void)testExpiredMessages
@@ -90,7 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
         [[TSMessage alloc] initWithTimestamp:1 inThread:self.thread messageBody:@"unexpiringMessage2"];
     [unExpiringMessage2 save];
 
-    NSArray<TSMessage *> *actualMessages = [self.finder fetchExpiredMessages];
+    __block NSArray<TSMessage *> *actualMessages;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        actualMessages = [self.finder fetchExpiredMessagesWithTransaction:transaction];
+    }];
+    
     NSArray<TSMessage *> *expectedMessages = @[ expiredMessage1, expiredMessage2 ];
     XCTAssertEqualObjects(expectedMessages, actualMessages);
 }
@@ -133,15 +140,33 @@ NS_ASSUME_NONNULL_BEGIN
         [[TSMessage alloc] initWithTimestamp:1 inThread:self.thread messageBody:@"unexpiringMessage2"];
     [unExpiringMessage2 save];
 
-    NSArray<TSMessage *> *actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread];
+    __block NSArray<TSMessage *> *actualMessages;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread
+                                                                 transaction:transaction];
+    }];
+    
     NSArray<TSMessage *> *expectedMessages = @[ unreadExpiringMessage ];
     XCTAssertEqualObjects(expectedMessages, actualMessages);
+}
+
+- (NSNumber *)nextExpirationTimestamp
+{
+    __block NSNumber *nextExpirationTimestamp;
+    
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        XCTAssertNotNil(self.finder);
+        nextExpirationTimestamp = [self.finder nextExpirationTimestampWithTransaction:transaction];
+    }];
+        
+    return nextExpirationTimestamp;
 }
 
 - (void)testNextExpirationTimestampNilWhenNoExpiringMessages
 {
     // Sanity check.
-    XCTAssertNil(self.finder.nextExpirationTimestamp);
+
+    XCTAssertNil(self.nextExpirationTimestamp);
 
     TSMessage *unExpiringMessage = [[TSMessage alloc] initWithTimestamp:1
                                                                inThread:self.thread
@@ -150,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        expiresInSeconds:0
                                                         expireStartedAt:0];
     [unExpiringMessage save];
-    XCTAssertNil(self.finder.nextExpirationTimestamp);
+    XCTAssertNil(self.nextExpirationTimestamp);
 }
 
 - (void)testNextExpirationTimestampNotNilWithUpcomingExpiringMessages
@@ -163,8 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                           expireStartedAt:self.now - 9000];
     [soonToExpireMessage save];
 
-    XCTAssertNotNil(self.finder.nextExpirationTimestamp);
-    XCTAssertEqual(self.now + 1000, [self.finder.nextExpirationTimestamp unsignedLongLongValue]);
+    XCTAssertNotNil(self.nextExpirationTimestamp);
+    XCTAssertEqual(self.now + 1000, [self.nextExpirationTimestamp unsignedLongLongValue]);
 
     // expired message should take precedence
     TSMessage *expiredMessage = [[TSMessage alloc] initWithTimestamp:1
@@ -175,8 +200,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expireStartedAt:self.now - 11000];
     [expiredMessage save];
 
-    XCTAssertNotNil(self.finder.nextExpirationTimestamp);
-    XCTAssertEqual(self.now - 1000, [self.finder.nextExpirationTimestamp unsignedLongLongValue]);
+    //FIXME remove sleep hack in favor of expiringMessage completion handler
+//    sleep(2);
+    XCTAssertNotNil(self.nextExpirationTimestamp);
+    XCTAssertEqual(self.now - 1000, [self.nextExpirationTimestamp unsignedLongLongValue]);
 }
 
 @end

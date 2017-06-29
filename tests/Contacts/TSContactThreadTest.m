@@ -3,7 +3,7 @@
 //
 
 #import "TSContactThread.h"
-#import "TSStorageManager+identityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "OWSUnitTestEnvironment.h"
 #import <XCTest/XCTest.h>
 
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [OWSUnitTestEnvironment ensureSetup];
     self.contactThread = [TSContactThread getOrCreateThreadWithContactId:@"fake-contact-id"];
-    [self.contactThread.storageManager removeIdentityKeyForRecipient:self.contactThread.contactIdentifier];
+    [OWSRecipientIdentity removeAllObjectsInCollection];
 }
 
 - (void)testHasSafetyNumbersWithoutRemoteIdentity
@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testHasSafetyNumbersWithRemoteIdentity
 {
-    [self.contactThread.storageManager saveRemoteIdentity:[NSData new]
-                                              recipientId:self.contactThread.contactIdentifier];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:[NSData new]
+                                               recipientId:self.contactThread.contactIdentifier];
     XCTAssert(self.contactThread.hasSafetyNumbers);
 }
 

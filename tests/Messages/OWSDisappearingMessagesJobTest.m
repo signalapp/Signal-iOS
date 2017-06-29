@@ -76,6 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Sanity Check.
     XCTAssertEqual(4, [TSMessage numberOfKeysInCollection]);
     [job run];
+    
+    //FIXME remove sleep hack in favor of expiringMessage completion handler
+    sleep(4);
     XCTAssertEqual(2, [TSMessage numberOfKeysInCollection]);
 }
 

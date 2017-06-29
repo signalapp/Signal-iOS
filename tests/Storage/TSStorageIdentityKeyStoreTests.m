@@ -7,7 +7,7 @@
 
 #import "OWSUnitTestEnvironment.h"
 #import "SecurityUtils.h"
-#import "TSStorageManager+IdentityKeyStore.h"
+#import "OWSIdentityManager.h"
 #import "OWSRecipientIdentity.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
@@ -34,18 +34,18 @@
     NSData *newKey = [SecurityUtils generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
 - (void)testAlreadyRegisteredKey {
     NSData *newKey = [SecurityUtils generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
     
-    [[TSStorageManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:recipientId];
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:newKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
 
@@ -54,22 +54,22 @@
     NSData *originalKey = [SecurityUtils generateRandomBytes:32];
     NSString *recipientId = @"test@protonmail.com";
 
-    [[TSStorageManager sharedManager] saveRemoteIdentity:originalKey recipientId:recipientId];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:originalKey recipientId:recipientId];
     
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:originalKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
     
     NSData *otherKey = [SecurityUtils generateRandomBytes:32];
     
-    XCTAssertFalse([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
-    XCTAssert([[TSStorageManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
+    XCTAssertFalse([[OWSIdentityManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionOutgoing]);
+    XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:otherKey recipientId:recipientId direction:TSMessageDirectionIncoming]);
 }
 
 
 - (void)testIdentityKey {
-    [[TSStorageManager sharedManager] generateNewIdentityKey];
+    [[OWSIdentityManager sharedManager] generateNewIdentityKey];
     
-    XCTAssert([[[TSStorageManager sharedManager] identityKeyPair].publicKey length] == 32);
+    XCTAssert([[[OWSIdentityManager sharedManager] identityKeyPair].publicKey length] == 32);
 }
 
 @end

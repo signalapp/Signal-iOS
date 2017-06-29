@@ -21,7 +21,7 @@
     [super setUp];
 
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabase];
+    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
 }
 
 - (void)tearDown
