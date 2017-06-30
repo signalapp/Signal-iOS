@@ -115,7 +115,22 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    [self startObserving];
+
     return self;
+}
+
+- (void)startObserving
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
+}
+
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+    [self updateApplicationBadgeCount];
 }
 
 #pragma mark - Debugging
@@ -1066,6 +1081,12 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return numberOfItems;
+}
+
+- (void)updateApplicationBadgeCount
+{
+    NSUInteger numberOfItems = [self unreadMessagesCount];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:numberOfItems];
 }
 
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread {
