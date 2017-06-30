@@ -603,7 +603,6 @@
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
     [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber.integerValue];
 
     return badgeNumber;
 }
