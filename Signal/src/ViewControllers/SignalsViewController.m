@@ -185,9 +185,6 @@
     self.missingContactsPermissionView.tapAction = ^{
         [[UIApplication sharedApplication] openSystemSettings];
     };
-    // Should only have to do this once per load (e.g. vs did appear) since app restarts when permissions change.
-    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
-
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -291,8 +288,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([TSThread numberOfKeysInCollection] > 0) {
-        [self.contactsManager requestSystemContactsOnce];
+        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+            });
+        }];
     }
+
     [self updateInboxCountLabel];
 
     self.isViewVisible = YES;
