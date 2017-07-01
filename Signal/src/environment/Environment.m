@@ -242,6 +242,8 @@ static Environment *environment = nil;
 
     [[TSStorageManager sharedManager] resetSignalStorage];
     [Environment.preferences clear];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
 }
