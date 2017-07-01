@@ -96,6 +96,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber
     };
 
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = @"NewMessage.aifc";
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
@@ -132,6 +135,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = @"NewMessage.aifc";
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
@@ -169,6 +175,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = @"NewMessage.aifc";
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
