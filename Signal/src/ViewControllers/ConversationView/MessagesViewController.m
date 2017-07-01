@@ -1835,6 +1835,11 @@ typedef enum : NSUInteger {
         id<OWSMessageData> previousMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section]];
 
+        if ([previousMessage.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+            // Always show timestamp between unread indicator and the following interaction
+            return YES;
+        }
+
         OWSAssert(currentMessage.date);
         OWSAssert(previousMessage.date);
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
