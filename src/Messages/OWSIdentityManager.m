@@ -5,6 +5,7 @@
 #import "OWSIdentityManager.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
+#import "OWSError.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
 #import "OWSRecipientIdentity.h"
@@ -537,6 +538,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         }
         failure:^(NSError *_Nonnull error) {
             DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
+            if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                DDLogInfo(@"%@ Removing retries for syncing verification state, since user is no longer registered: %@",
+                    self.tag,
+                    message.verificationForRecipientId);
+                // Otherwise this will fail forever.
+                [self clearSyncMessageForRecipientId:message.verificationForRecipientId];
+            }
         }];
 }
 
