@@ -20,6 +20,8 @@ NSString *const Signal_Thread_UserInfo_Key = @"Signal_Thread_Id";
 NSString *const Signal_Message_UserInfo_Key = @"Signal_Message_Id";
 
 NSString *const Signal_Full_New_Message_Category = @"Signal_Full_New_Message";
+NSString *const Signal_Full_New_Message_Category_No_Longer_Verified =
+    @"Signal_Full_New_Message_Category_No_Longer_Verified";
 
 NSString *const Signal_Message_Reply_Identifier = @"Signal_New_Message_Reply";
 NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRead";
@@ -315,12 +317,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 }
 
 - (UIUserNotificationCategory *)fullNewMessageNotificationCategory {
-    UIMutableUserNotificationAction *action_markRead = [UIMutableUserNotificationAction new];
-    action_markRead.identifier                       = Signal_Message_MarkAsRead_Identifier;
-    action_markRead.title                            = NSLocalizedString(@"PUSH_MANAGER_MARKREAD", nil);
-    action_markRead.destructive                      = NO;
-    action_markRead.authenticationRequired           = NO;
-    action_markRead.activationMode                   = UIUserNotificationActivationModeBackground;
+    UIMutableUserNotificationAction *action_markRead = [self markAsReadAction];
 
     UIMutableUserNotificationAction *action_reply = [UIMutableUserNotificationAction new];
     action_reply.identifier                       = Signal_Message_Reply_Identifier;
@@ -340,6 +337,29 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     [messageCategory setActions:@[ action_markRead, action_reply ] forContext:UIUserNotificationActionContextDefault];
 
     return messageCategory;
+}
+
+- (UIUserNotificationCategory *)fullNewMessageNoLongerVerifiedNotificationCategory
+{
+    UIMutableUserNotificationAction *action_markRead = [self markAsReadAction];
+
+    UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
+    messageCategory.identifier = Signal_Full_New_Message_Category_No_Longer_Verified;
+    [messageCategory setActions:@[ action_markRead ] forContext:UIUserNotificationActionContextMinimal];
+    [messageCategory setActions:@[ action_markRead ] forContext:UIUserNotificationActionContextDefault];
+
+    return messageCategory;
+}
+
+- (UIMutableUserNotificationAction *)markAsReadAction
+{
+    UIMutableUserNotificationAction *action = [UIMutableUserNotificationAction new];
+    action.identifier = Signal_Message_MarkAsRead_Identifier;
+    action.title = NSLocalizedString(@"PUSH_MANAGER_MARKREAD", nil);
+    action.destructive = NO;
+    action.authenticationRequired = NO;
+    action.activationMode = UIUserNotificationActivationModeBackground;
+    return action;
 }
 
 #pragma mark - Signal Calls
@@ -437,6 +457,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     UIUserNotificationSettings *settings = [UIUserNotificationSettings
         settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
               categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
+                                [self fullNewMessageNoLongerVerifiedNotificationCategory],
                                 [self signalIncomingCallCategory],
                                 [self signalMissedCallCategory],
                                 [self signalMissedCallWithNoLongerVerifiedIdentityChangeCategory],

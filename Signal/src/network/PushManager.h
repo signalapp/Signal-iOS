@@ -14,6 +14,7 @@ extern NSString *const Signal_Thread_UserInfo_Key;
 extern NSString *const Signal_Message_UserInfo_Key;
 
 extern NSString *const Signal_Full_New_Message_Category;
+extern NSString *const Signal_Full_New_Message_Category_No_Longer_Verified;
 
 extern NSString *const Signal_Message_Reply_Identifier;
 extern NSString *const Signal_Message_MarkAsRead_Identifier;
