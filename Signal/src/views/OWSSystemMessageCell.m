@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
+
+// override from JSQMessagesCollectionViewCell
 @property (nonatomic) UILabel *cellTopLabel;
 
 @end

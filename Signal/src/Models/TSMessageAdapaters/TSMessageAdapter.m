@@ -261,6 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.outgoingMessageStatus = ((TSOutgoingMessage *)interaction).messageState;
     }
 
+    OWSAssert(adapter.date);
     return adapter;
 }
 

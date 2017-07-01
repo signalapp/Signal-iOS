@@ -77,6 +77,14 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
                                        }],
+                       [OWSTableItem itemWithTitle:@"Create 1 fake unread messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages createFakeUnreadMessages:1 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Create 10 fake unread messages"
+                                       actionBlock:^{
+                                           [DebugUIMessages createFakeUnreadMessages:10 thread:thread];
+                                       }],
                        [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                                        actionBlock:^{
                                            [DebugUIMessages sendOversizeTextMessage:thread];
@@ -778,6 +786,21 @@ NS_ASSUME_NONNULL_BEGIN
     ];
     NSString *randomText = randomTexts[(NSUInteger)arc4random_uniform((uint32_t)randomTexts.count)];
     return randomText;
+}
+
++ (void)createFakeUnreadMessages:(int)counter thread:(TSThread *)thread
+{
+    [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (int i = 0; i < counter; i++) {
+            NSString *randomText = [self randomText];
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:randomText];
+            [message saveWithTransaction:transaction];
+        }
+    }];
 }
 
 + (void)sendFakeMessages:(int)counter thread:(TSThread *)thread
