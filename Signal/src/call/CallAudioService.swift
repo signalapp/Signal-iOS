@@ -253,13 +253,13 @@ import AVFoundation
     private func play(sound: Sound) {
         guard let newPlayer = sound.player else {
             Logger.error("\(self.TAG) unable to build player")
+            assertionFailure()
             return
         }
         Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
 
-        newPlayer.play()
         self.currentPlayer?.stop()
-
+        newPlayer.play()
         self.currentPlayer = newPlayer
     }
 
