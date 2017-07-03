@@ -143,7 +143,7 @@
             cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
             cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
             cell.textLabel.textColor = [UIColor blackColor];
-
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             UILabel *accessoryLabel = [UILabel new];
             accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
             switch ([TSSocketManager sharedManager].state) {
