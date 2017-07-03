@@ -578,7 +578,7 @@ protocol CallServiceObserver: class {
                 : "\(self.TAG) obsolete incoming call connected: \(newCall.identifiersForLogs).")
         }.catch { error in
             guard self.call == newCall else {
-                Logger.debug("\(self.TAG) error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
+                Logger.debug("\(self.TAG) ignoring error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
                 return
             }
             if let callError = error as? CallError {
@@ -856,6 +856,8 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
+
+        // TODO make call record.
 
         // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
         handleLocalHungupCall(call)

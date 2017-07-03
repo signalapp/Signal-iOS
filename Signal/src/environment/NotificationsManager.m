@@ -63,7 +63,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
     // Rather than using notification sounds, we control the ringtone and repeat vibrations with the CallAudioManager.
-    // notification.soundName = @"r.caf";
+    notification.soundName = @"r.caf";
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{ PushManagerUserInfoKeysLocalCallId : localCallId };
 
