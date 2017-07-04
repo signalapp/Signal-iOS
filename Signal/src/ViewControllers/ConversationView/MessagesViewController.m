@@ -649,6 +649,8 @@ typedef enum : NSUInteger {
     } else {
         [self scrollToBottomAnimated:NO];
     }
+
+    [self ensureScrollDownButton];
 }
 
 - (void)scrollToUnreadIndicatorAnimated
@@ -670,6 +672,8 @@ typedef enum : NSUInteger {
                                                 animated:YES];
         }
     }
+    
+    [self ensureScrollDownButton];
 }
 
 - (void)resetContentAndLayout
