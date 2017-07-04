@@ -27,7 +27,7 @@ class SyncPushTokensJob: NSObject {
     }
 
     func run() {
-        Logger.debug("\(TAG) Starting.")
+        Logger.info("\(TAG) Starting.")
 
         // Required to potentially prompt user for notifications settings
         // before `requestPushTokens` will return.
