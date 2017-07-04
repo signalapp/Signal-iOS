@@ -1,10 +1,13 @@
-// Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 @interface OWSOrphanedDataCleaner : NSObject
 
-/**
- * Remove any inaccessible data left behind due to application bugs.
- */
-- (void)removeOrphanedData;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (void)auditAsync;
+
++ (void)auditAndCleanupAsync;
 
 @end
