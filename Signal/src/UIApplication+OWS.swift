@@ -9,8 +9,20 @@ extension UIApplication {
     var frontmostViewController: UIViewController? {
         let window = UIApplication.shared.keyWindow
         var viewController = window!.rootViewController
-        while viewController?.presentedViewController != nil {
-            viewController = viewController?.presentedViewController
+        
+        while true {
+            if let nextViewController = viewController?.presentedViewController {
+                viewController = nextViewController
+            } else if viewController is UINavigationController {
+                let navigationController = viewController as? UINavigationController
+                if let nextViewController = navigationController?.topViewController {
+                    viewController = nextViewController
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
         }
 
         return viewController

@@ -3,6 +3,8 @@
 //
 
 #import "AppUpdateNag.h"
+#import "RegistrationViewController.h"
+#import "Signal-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
@@ -55,6 +57,17 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
 - (void)showAppUpgradeNagIfNecessary
 {
+    // Only show nag if we are "at rest" in the home view or registration view without any
+    // alerts or dialogs showing.
+    UIViewController *frontmostViewController =
+    [UIApplication sharedApplication].frontmostViewController;
+    OWSAssert(frontmostViewController);
+    BOOL canPresent = ([frontmostViewController isKindOfClass:[SignalsViewController class]] ||
+                       [frontmostViewController isKindOfClass:[RegistrationViewController class]]);
+    if (!canPresent) {
+        return;
+    }
+    
     NSDate *lastNagDate = [[TSStorageManager sharedManager] dateForKey:TSStorageManagerAppUpgradeNagDate
                                                           inCollection:TSStorageManagerAppUpgradeNagCollection];
     const NSTimeInterval kMinute = 60.f;
