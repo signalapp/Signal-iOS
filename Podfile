@@ -5,6 +5,7 @@ target 'Signal' do
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
     pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
+    pod 'ATAppUpdater'
     pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
     #pod 'SignalServiceKit',           path: '../SignalServiceKit'
     pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/retain-keyboard-view'
