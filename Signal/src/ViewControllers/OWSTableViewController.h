@@ -74,6 +74,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text;
 
++ (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText;
+
 - (nullable UITableViewCell *)customCell;
 - (NSNumber *)customRowHeight;
 

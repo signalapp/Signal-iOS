@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DebugUITableViewController : OWSTableViewController
 
++ (void)presentDebugUIFromViewController:(UIViewController *)fromViewController;
+
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController;
 
 @end

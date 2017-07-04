@@ -7,8 +7,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSTableSection;
+@class TSThread;
 
-@interface DebugUIContacts : DebugUIPage
+@interface DebugUIPage : NSObject
+
+- (NSString *)name;
+
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread;
 
 @end
 

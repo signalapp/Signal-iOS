@@ -2,15 +2,13 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSTableViewController.h"
+#import "DebugUIPage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSContactThread;
 
-@interface DebugUIVerification : NSObject
-
-+ (OWSTableSection *)sectionForThread:(TSContactThread *)thread;
+@interface DebugUIVerification : DebugUIPage
 
 @end
 

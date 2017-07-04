@@ -4,6 +4,7 @@
 
 #import "DebugUIMessages.h"
 #import "Environment.h"
+#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
@@ -34,12 +35,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Factory Methods
 
-+ (OWSTableSection *)sectionForThread:(TSThread *)thread
+- (NSString *)name
+{
+    return @"Messages";
+}
+
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     OWSAssert(thread);
 
     return [OWSTableSection
-        sectionWithTitle:@"Messages"
+        sectionWithTitle:self.name
                    items:@[
                        [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
                                        actionBlock:^{

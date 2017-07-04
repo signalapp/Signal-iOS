@@ -6,9 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSTableSection;
-
-@interface DebugUIContacts : DebugUIPage
+@interface DebugUIDiskUsage : DebugUIPage
 
 @end
 
