@@ -301,6 +301,17 @@ NS_ASSUME_NONNULL_BEGIN
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
 {
+    [self presentContactViewControllerForRecipientId:recipientId
+                                  fromViewController:fromViewController
+                                     editImmediately:shouldEditImmediately
+                              addToExistingCnContact:nil];
+}
+
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately
+                            addToExistingCnContact:(CNContact *_Nullable)addToExistingCnContact
+{
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
 
     if (!self.contactsManager.supportsContactEditing) {
@@ -340,20 +351,48 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CNContactViewController *_Nullable contactViewController;
-    if (signalAccount) {
-        CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
-        if (cnContact) {
-            if (shouldEditImmediately) {
-                // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
-                // saving our users a tap in some cases when we already know they want to edit.
-                contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
-
-                // Default title is "New Contact". We could give a more descriptive title, but anything
-                // seems redundant - the context is sufficiently clear.
-                contactViewController.title = @"";
-            } else {
-                contactViewController = [CNContactViewController viewControllerForContact:cnContact];
+    CNContact *_Nullable cnContact = nil;
+    if (addToExistingCnContact) {
+        CNMutableContact *updatedContact = [addToExistingCnContact mutableCopy];
+        NSMutableArray<CNLabeledValue *> *phoneNumbers
+            = (updatedContact.phoneNumbers ? [updatedContact.phoneNumbers mutableCopy] : [NSMutableArray new]);
+        // Only add recipientId as a phone number for the existing contact
+        // if its not already present.
+        BOOL hasPhoneNumber = NO;
+        for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
+            CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
+            if ([phoneNumber.stringValue isEqualToString:recipientId]) {
+                hasPhoneNumber = YES;
+                break;
             }
+        }
+        if (!hasPhoneNumber) {
+            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
+            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+            [phoneNumbers addObject:labeledPhoneNumber];
+            updatedContact.phoneNumbers = phoneNumbers;
+
+            // When adding a phone number to an existing contact, immediately enter
+            // "edit" mode.
+            shouldEditImmediately = YES;
+        }
+        cnContact = updatedContact;
+    }
+    if (signalAccount && !cnContact) {
+        cnContact = signalAccount.contact.cnContact;
+    }
+    if (cnContact) {
+        if (shouldEditImmediately) {
+            // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
+            // saving our users a tap in some cases when we already know they want to edit.
+            contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
+
+            // Default title is "New Contact". We could give a more descriptive title, but anything
+            // seems redundant - the context is sufficiently clear.
+            contactViewController.title = @"";
+        } else {
+            contactViewController = [CNContactViewController viewControllerForContact:cnContact];
         }
     }
 

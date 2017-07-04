@@ -7,6 +7,7 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
+#import "OWSAddToContactViewController.h"
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
@@ -149,7 +150,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.thread);
 
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing) {
+    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
+        && self.hasExistingContact) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
                                              style:UIBarButtonItemStylePlain
@@ -158,10 +160,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)hasExistingContact
+{
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    NSString *recipientId = contactThread.contactIdentifier;
+    SignalAccount *signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
+    return signalAccount.contact;
+}
+
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
 {
+    [self updateTableContents];
+
     DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -171,6 +185,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
+    [self updateTableContents];
+
     if (contact) {
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
@@ -232,27 +248,53 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak OWSConversationSettingsTableViewController *weakSelf = self;
 
-    // First section.
+    // Main section.
 
-    OWSTableSection *firstSection = [OWSTableSection new];
+    OWSTableSection *mainSection = [OWSTableSection new];
 
-    firstSection.customHeaderView = [self firstSectionHeader];
-    firstSection.customHeaderHeight = @(100.f);
+    mainSection.customHeaderView = [self mainSectionHeader];
+    mainSection.customHeaderHeight = @(100.f);
+
+    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
+        && !self.hasExistingContact) {
+        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return
+                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
+                                                     @"Label for 'new contact' button in conversation settings view.")
+                                        iconName:@"table_ic_new_contact"];
+        }
+                                 actionBlock:^{
+                                     [weakSelf presentContactViewController];
+                                 }]];
+        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return
+                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                                                     @"Label for 'new contact' button in conversation settings view.")
+                                        iconName:@"table_ic_add_to_existing_contact"];
+        }
+                                 actionBlock:^{
+                                     TSContactThread *contactThread = (TSContactThread *)self.thread;
+                                     NSString *recipientId = contactThread.contactIdentifier;
+                                     OWSAddToContactViewController *view = [OWSAddToContactViewController new];
+                                     [view configureWithRecipientId:recipientId];
+                                     [weakSelf.navigationController pushViewController:view animated:YES];
+                                 }]];
+    }
 
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [firstSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 disclosureCellWithName:
                     NSLocalizedString(@"VERIFY_PRIVACY",
                         @"Label for button or row which allows users to verify the safety number of another user.")
                               iconName:@"table_ic_not_verified"];
         }
-                                  actionBlock:^{
-                                      [weakSelf showVerificationView];
-                                  }]];
+                                 actionBlock:^{
+                                     [weakSelf showVerificationView];
+                                 }]];
     }
 
-    [firstSection
+    [mainSection
         addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -305,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           actionBlock:nil]];
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
-        [firstSection
+        [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             UITableViewCell *cell = [UITableViewCell new];
@@ -351,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     actionBlock:nil]];
     }
 
-    [contents addSection:firstSection];
+    [contents addSection:mainSection];
 
     // Group settings section.
 
@@ -513,11 +555,11 @@ NS_ASSUME_NONNULL_BEGIN
     return cell;
 }
 
-- (UIView *)firstSectionHeader
+- (UIView *)mainSectionHeader
 {
-    UIView *firstSectionHeader = [UIView new];
+    UIView *mainSectionHeader = [UIView new];
     UIView *threadInfoView = [UIView new];
-    [firstSectionHeader addSubview:threadInfoView];
+    [mainSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
@@ -596,12 +638,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    [firstSectionHeader
+    [mainSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(conversationNameTouched:)]];
-    firstSectionHeader.userInteractionEnabled = YES;
+    mainSectionHeader.userInteractionEnabled = YES;
 
-    return firstSectionHeader;
+    return mainSectionHeader;
 }
 
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
@@ -645,6 +687,8 @@ NS_ASSUME_NONNULL_BEGIN
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
+
+    [self updateTableContents];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

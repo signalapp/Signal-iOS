@@ -292,6 +292,9 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";
 
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
 
@@ -327,6 +330,9 @@
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "New Contact";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";

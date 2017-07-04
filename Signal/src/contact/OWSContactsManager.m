@@ -215,14 +215,10 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 {
     OWSAssert([NSThread isMainThread]);
 
-    // Preserve any existing values, so that contacts that have been removed
-    // from system contacts still show up properly in the app.
-    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap
-        = (self.cachedAccountNameMap ? [self.cachedAccountNameMap mutableCopy] : [NSMutableDictionary new]);
-    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap
-        = (self.cachedFirstNameMap ? [self.cachedFirstNameMap mutableCopy] : [NSMutableDictionary new]);
-    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap
-        = (self.cachedLastNameMap ? [self.cachedLastNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
+
     for (SignalAccount *signalAccount in self.signalAccounts) {
         NSString *baseName
             = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
