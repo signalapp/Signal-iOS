@@ -209,11 +209,11 @@ static Environment *environment = nil;
     Environment *env          = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
 
-    [[TSStorageManager sharedManager]
-            .dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-      TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
-      [vc presentThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
+            [vc presentThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+        }];
 }
 
 + (void)callUserWithIdentifier:(NSString *)identifier
@@ -221,7 +221,7 @@ static Environment *environment = nil;
     Environment *env = [self getCurrent];
     SignalsViewController *vc = env.signalsViewController;
 
-    [[TSStorageManager sharedManager].dbConnection
+    [[TSStorageManager sharedManager].dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
             [vc presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:YES];

@@ -27,7 +27,8 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 // Overriding runUp instead of runUpWithTransaction in order to implement a blocking migration.
 - (void)runUp
 {
-    [[OWSRecipientIdentity dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [[OWSRecipientIdentity dbReadWriteConnection] readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableDictionary<NSString *, NSData *> *identityKeys = [NSMutableDictionary new];
 
         [transaction

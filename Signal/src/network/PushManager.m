@@ -227,7 +227,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-    [[TSStorageManager sharedManager].dbConnection
+    [[TSStorageManager sharedManager].dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             // TODO: I suspect we only want to mark the message in
             // question as read.
