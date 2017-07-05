@@ -3628,6 +3628,18 @@ typedef enum : NSUInteger {
     self.voiceMessageUUID = nil;
 }
 
+- (void)setAudioRecorder:(AVAudioRecorder *)audioRecorder
+{
+    // Prevent device from sleeping while recording a voice message.
+    if (audioRecorder) {
+        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:audioRecorder];
+    } else if (_audioRecorder) {
+        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:_audioRecorder];
+    }
+
+    _audioRecorder = audioRecorder;
+}
+
 #pragma mark Accessory View
 
 - (void)didPressAccessoryButton:(UIButton *)sender
