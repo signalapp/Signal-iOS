@@ -80,17 +80,24 @@
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    // We use TSStorageManager's dbReadWriteConnection (not its dbReadConnection)
-    // for consistency, since we tend to [TSYapDatabaseObject save] and want to
-    // write to the same connection we read from.  To get true consistency, we'd
-    // want to update entities by reading & writing from within the same
-    // transaction, but that'll be a big refactor.
-    return [self storageManager].dbReadWriteConnection;
+    // We use TSYapDatabaseObject's dbReadWriteConnection (not TSStorageManager's
+    // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
+    // save] and want to write to the same connection we read from.  To get true
+    // consistency, we'd want to update entities by reading & writing from within
+    // the same transaction, but that'll be a big refactor.
+
+    return self.dbReadWriteConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return [self storageManager].dbReadWriteConnection;
+    // Use a dedicated connection for model reads & writes.
+    static YapDatabaseConnection *dbReadWriteConnection = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dbReadWriteConnection = [self storageManager].newDatabaseConnection;
+    });
+    return dbReadWriteConnection;
 }
 
 + (TSStorageManager *)storageManager
