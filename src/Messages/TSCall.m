@@ -79,9 +79,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingDeclined:
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
                 @"info message recorded in conversation history when local user declined a call");
-        default:
-            OWSFail(@"Should specify all call strings");
-            return @"Call";
     }
 }
 
