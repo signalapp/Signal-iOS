@@ -436,23 +436,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (getenv("runningTests_dontStartApp")) {
         return;
     }
-
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               // We're double checking that the app is active, to be sure since we
-                                               // can't verify in production env due to code
-                                               // signing.
-                                               [TSSocketManager requestSocketOpen];
-
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   [[Environment getCurrent]
-                                                           .contactsManager fetchSystemContactsIfAlreadyAuthorized];
-                                               });
-
-                                               // This will fetch new messages, if we're using domain
-                                               // fronting.
-                                               [[PushManager sharedManager] applicationDidBecomeActive];
-                                           }];
     
     [self removeScreenProtection];
 
@@ -499,6 +482,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 runAsync:^{
                     dispatch_async(dispatch_get_main_queue(), ^{
                         DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
+                        
                         [TSSocketManager requestSocketOpen];
 
                         UITapGestureRecognizer *gesture =
@@ -510,6 +494,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     RTCInitializeSSL();
                 }];
     });
+
+    [[TSAccountManager sharedInstance]
+        ifRegistered:YES
+            runAsync:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
+                });
+
+                // This will fetch new messages, if we're using domain
+                // fronting.
+                [[PushManager sharedManager] applicationDidBecomeActive];
+            }];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
 }
