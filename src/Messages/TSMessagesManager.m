@@ -525,7 +525,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *recipientId = incomingEnvelope.source;
 
             __block TSThread *thread;
-            [[TSStorageManager sharedManager].dbConnection
+            [[TSStorageManager sharedManager].dbReadWriteConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
                 }];

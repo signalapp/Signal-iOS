@@ -122,11 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *recipientIds = [NSMutableSet set];
-    [[TSStorageManager sharedManager]
-            .dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-      NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
-      [recipientIds addObjectsFromArray:allRecipientKeys];
-    }];
+    [[TSStorageManager sharedManager].dbReadConnection
+        readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
+            [recipientIds addObjectsFromArray:allRecipientKeys];
+        }];
 
     NSMutableSet<NSString *> *allContacts = [[abPhoneNumbers setByAddingObjectsFromSet:recipientIds] mutableCopy];
 
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  [recipientIds minusSet:matchedIds];
 
                                  // Cleaning up unregistered identifiers
-                                 [[TSStorageManager sharedManager].dbConnection
+                                 [[TSStorageManager sharedManager].dbReadWriteConnection
                                      readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                          for (NSString *identifier in recipientIds) {
                                              SignalRecipient *recipient =
@@ -185,23 +185,22 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             // Insert or update contact attributes
-            [[TSStorageManager sharedManager]
-                    .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-              for (NSString *identifier in attributesForIdentifier) {
-                  SignalRecipient *recipient =
-                      [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
-                  if (!recipient) {
-                      recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier
-                                                                                  relay:nil];
-                  }
+            [[TSStorageManager sharedManager].dbReadWriteConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    for (NSString *identifier in attributesForIdentifier) {
+                        SignalRecipient *recipient =
+                            [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
+                        if (!recipient) {
+                            recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil];
+                        }
 
-                  NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
+                        NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
 
-                  recipient.relay = attributes[@"relay"];
+                        recipient.relay = attributes[@"relay"];
 
-                  [recipient saveWithTransaction:transaction];
-              }
-            }];
+                        [recipient saveWithTransaction:transaction];
+                    }
+                }];
 
             success([NSSet setWithArray:attributesForIdentifier.allKeys]);
           }

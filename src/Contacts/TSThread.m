@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
                                             TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)numberOfInteractions
 {
     __block NSUInteger count;
-    [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
         count = [interactionsByThread numberOfItemsInGroup:self.uniqueId];
     }];
@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSInteraction *) lastInteraction {
     __block TSInteraction *last;
-    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
+    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
     return last;
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSInteraction *)lastInteractionForInbox
 {
     __block TSInteraction *last = nil;
-    [TSStorageManager.sharedManager.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:self.uniqueId
                      withOptions:NSEnumerationReverse
@@ -397,7 +397,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestThread:transaction
                                             changeBlock:^(TSThread *thread) {
                                                 [thread setMutedUntilDate:mutedUntilDate];

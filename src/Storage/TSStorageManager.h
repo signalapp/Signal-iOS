@@ -61,7 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)purgeCollection:(NSString *)collection;
 
-@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
 @end
 
