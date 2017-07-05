@@ -169,6 +169,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         ifRegistered:NO
             runAsync:^{
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    // Unregistered user should have no unread messages. e.g. if you delete your account.
+                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+
                     DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
                     [TSSocketManager requestSocketOpen];
 
