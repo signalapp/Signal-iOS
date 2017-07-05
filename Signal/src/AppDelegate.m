@@ -455,8 +455,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                         self.tag,
                         [TSAccountManager localNumber]);
 
-                    [TSSocketManager requestSocketOpen];
-
                     RTCInitializeSSL();
 
                     [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
@@ -484,7 +482,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                         DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
                         
                         [TSSocketManager requestSocketOpen];
-
+                        
                         UITapGestureRecognizer *gesture =
                             [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
                                                                     action:@selector(submitLogs)];
@@ -498,6 +496,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[TSAccountManager sharedInstance]
         ifRegistered:YES
             runAsync:^{
+                [TSSocketManager requestSocketOpen];
+
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
                 });
