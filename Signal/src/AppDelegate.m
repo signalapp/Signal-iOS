@@ -136,50 +136,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    // At this point, potentially lengthy DB locking migrations could be running.
-    // Avoid blocking app launch by putting all further possible DB access in async thread.
-    [[TSAccountManager sharedInstance]
-        ifRegistered:YES
-            runAsync:^{
-                DDLogInfo(
-                    @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
-
-                [TSSocketManager requestSocketOpen];
-
-                RTCInitializeSSL();
-
-                [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                          accountManager:[Environment getCurrent].accountManager
-                                             preferences:[Environment preferences]
-                                              showAlerts:NO];
-
-                // Clean up any messages that expired since last launch immediately
-                // and continue cleaning in the background.
-                [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-
-                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-                // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                
-                [AppStoreRating setupRatingLibrary];
-            }];
-
-    [[TSAccountManager sharedInstance]
-        ifRegistered:NO
-            runAsync:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
-                    [TSSocketManager requestSocketOpen];
-
-                    UITapGestureRecognizer *gesture =
-                        [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
-                    gesture.numberOfTapsRequired = 8;
-                    [self.window addGestureRecognizer:gesture];
-                });
-                RTCInitializeSSL();
-            }];
-
     self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
                                                                identityManager:[OWSIdentityManager sharedManager]
                                                                  messageSender:[Environment getCurrent].messageSender];
@@ -504,6 +460,56 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // At this point, potentially lengthy DB locking migrations could be running.
+        // Avoid blocking app launch by putting all further possible DB access in async thread.
+        [[TSAccountManager sharedInstance]
+            ifRegistered:YES
+                runAsync:^{
+                    DDLogInfo(@"%@ running post launch block for registered user: %@",
+                        self.tag,
+                        [TSAccountManager localNumber]);
+
+                    [TSSocketManager requestSocketOpen];
+
+                    RTCInitializeSSL();
+
+                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                              accountManager:[Environment getCurrent].accountManager
+                                                 preferences:[Environment preferences]
+                                                  showAlerts:NO];
+
+                    // Clean up any messages that expired since last launch immediately
+                    // and continue cleaning in the background.
+                    [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+
+                    // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+                    // sent before the app exited should be marked as failures.
+                    [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                    [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]]
+                        run];
+
+                    [AppStoreRating setupRatingLibrary];
+                }];
+
+        [[TSAccountManager sharedInstance]
+            ifRegistered:NO
+                runAsync:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
+                        [TSSocketManager requestSocketOpen];
+
+                        UITapGestureRecognizer *gesture =
+                            [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
+                                                                    action:@selector(submitLogs)];
+                        gesture.numberOfTapsRequired = 8;
+                        [self.window addGestureRecognizer:gesture];
+                    });
+                    RTCInitializeSSL();
+                }];
+    });
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
 }
