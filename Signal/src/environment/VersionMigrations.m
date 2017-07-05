@@ -200,10 +200,10 @@
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             DDLogInfo(@"Successfully removed bloom filter cache.");
-            [[TSStorageManager sharedManager]
-             .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                 [transaction removeAllObjectsInCollection:@"TSRecipient"];
-             }];
+            [[TSStorageManager sharedManager].dbReadWriteConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
+                }];
             DDLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
         } else {
             DDLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);

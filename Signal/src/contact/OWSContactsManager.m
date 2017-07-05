@@ -172,7 +172,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         // in order to avoid database deadlock.
         NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
             [NSMutableDictionary new];
-        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;

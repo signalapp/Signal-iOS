@@ -575,7 +575,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
 
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
@@ -716,11 +717,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (TSInteraction *message in messages) {
-            [message saveWithTransaction:transaction];
-        }
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (TSInteraction *message in messages) {
+                [message saveWithTransaction:transaction];
+            }
+        }];
 }
 
 + (void)createSystemMessageInThread:(TSThread *)thread
@@ -729,9 +731,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     TSInteraction *message = messages[(NSUInteger)arc4random_uniform((uint32_t)messages.count)];
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [message saveWithTransaction:transaction];
+        }];
 }
 
 + (void)sendTextAndSystemMessages:(int)counter thread:(TSThread *)thread
@@ -790,7 +793,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)createFakeUnreadMessages:(int)counter thread:(TSThread *)thread
 {
-    [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         for (int i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -805,7 +809,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendFakeMessages:(int)counter thread:(TSThread *)thread
 {
-    [TSStorageManager.sharedManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         for (int i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             switch (arc4random_uniform(4)) {
