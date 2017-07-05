@@ -63,6 +63,7 @@ extension CallUIAdaptee {
 
         guard self.callService.call == nil else {
             Logger.info("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
+            //TODO terminate existing call.
             return
         }
 

@@ -78,24 +78,27 @@ import AVFoundation
     internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
         AssertIsOnMainThread()
 
-        ensureIsEnabled(call: call)
+        ensureProperAudioSession(call: call)
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        ensureIsEnabled(call: call)
+        ensureProperAudioSession(call: call)
     }
 
-    private func ensureIsEnabled(call: SignalCall?) {
+    private func ensureProperAudioSession(call: SignalCall?) {
         guard let call = call else {
             setAudioSession(category: AVAudioSessionCategoryPlayback,
                             mode: AVAudioSessionModeDefault)
             return
         }
 
-        // Auto-enable speakerphone when local video is enabled.
-        if call.hasLocalVideo {
+        if call.state == .localRinging {
+            // SoloAmbient plays through speaker, but respects silent switch
+            setAudioSession(category: AVAudioSessionCategorySoloAmbient)
+        } else if call.hasLocalVideo {
+            // Auto-enable speakerphone when local video is enabled.
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
                             options: .defaultToSpeaker)
@@ -114,7 +117,7 @@ import AVFoundation
     public func didUpdateVideoTracks(call: SignalCall?) {
         Logger.verbose("\(TAG) in \(#function)")
 
-        self.ensureIsEnabled(call: call)
+        self.ensureProperAudioSession(call: call)
     }
 
     public func handleState(call: SignalCall) {
@@ -142,68 +145,73 @@ import AVFoundation
 
     private func handleDialing(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
 
-        if call.isSpeakerphoneEnabled {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: [.defaultToSpeaker, .mixWithOthers])
-        } else {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: .mixWithOthers)
-        }
+        ensureProperAudioSession(call: call)
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: Sound.dialing, call: call)
+            self.play(sound: Sound.dialing)
         }
     }
 
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
-        self.ensureIsEnabled(call: call)
+        self.ensureProperAudioSession(call: call)
     }
 
     private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
 
         // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
-        self.play(sound: Sound.outgoingRing, call: call)
+        self.play(sound: Sound.outgoingRing)
     }
 
     private func handleLocalRinging(call: SignalCall) {
         Logger.debug("\(TAG) in \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
+        stopPlayingAnySounds()
+        ensureProperAudioSession(call: call)
         startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
 
         // start recording to transmit call audio.
-        ensureIsEnabled(call: call)
+        ensureProperAudioSession(call: call)
     }
 
     private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
 
-        play(sound: Sound.failure, call: call)
+        play(sound: Sound.failure)
     }
 
     private func handleLocalHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
 
         handleCallEnded(call: call)
     }
 
     private func handleRemoteHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
 
         vibrate()
 
@@ -212,9 +220,11 @@ import AVFoundation
 
     private func handleBusy(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
 
-        play(sound: Sound.busy, call: call)
+        play(sound: Sound.busy)
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
             self.handleCallEnded(call: call)
@@ -223,6 +233,8 @@ import AVFoundation
 
     private func handleCallEnded(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
+
         stopPlayingAnySounds()
 
         // Stop solo audio, revert to default.
@@ -238,16 +250,19 @@ import AVFoundation
         stopAnyRingingVibration()
     }
 
-    private func play(sound: Sound, call: SignalCall) {
+    private func play(sound: Sound) {
         guard let newPlayer = sound.player else {
             Logger.error("\(self.TAG) unable to build player")
+            assertionFailure()
             return
         }
         Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
 
-        newPlayer.play()
+        // It's important to stop the current player **before** starting the new player. In the case that 
+        // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
+        // stop the sound we just started.
         self.currentPlayer?.stop()
-
+        newPlayer.play()
         self.currentPlayer = newPlayer
     }
 
@@ -259,14 +274,11 @@ import AVFoundation
             return
         }
 
-        // SoloAmbient plays through speaker, but respects silent switch
-        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
-
         vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] _ in
             self?.ringVibration()
         }
         vibrateTimer?.fire()
-        play(sound: Sound.incomingRing, call: call)
+        play(sound: Sound.incomingRing)
     }
 
     private func stopAnyRingingVibration() {
@@ -299,12 +311,22 @@ import AVFoundation
     private func setAudioSession(category: String,
                                  mode: String? = nil,
                                  options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
+
+        let session = AVAudioSession.sharedInstance()
         do {
             if #available(iOS 10.0, *), let mode = mode {
-                try AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
+                if session.category == category, session.mode == mode, session.categoryOptions == options {
+                    Logger.debug("\(self.TAG) in \(#function) ignoring no-op")
+                    return
+                }
+                try session.setCategory(category, mode: mode, options: options)
                 Logger.debug("\(self.TAG) set category: \(category) mode: \(mode) options: \(options)")
             } else {
-                try AVAudioSession.sharedInstance().setCategory(category, with: options)
+                if session.category == category, session.categoryOptions == options {
+                    Logger.debug("\(self.TAG) in \(#function) ignoring no-op")
+                    return
+                }
+                try session.setCategory(category, with: options)
                 Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
             }
         } catch {
