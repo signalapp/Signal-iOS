@@ -16,6 +16,8 @@
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 
+NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
+
 @interface NotificationsManager ()
 
 @property (nonatomic) SystemSoundID newMessageSound;
@@ -96,6 +98,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber
     };
 
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
@@ -132,6 +137,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
@@ -169,6 +177,9 @@
         PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
+    if ([self shouldPlaySoundForNotification]) {
+        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+    }
 
     NSString *alertMessage;
     switch (self.notificationPreviewType) {
@@ -210,7 +221,7 @@
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         notification.userInfo             = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
         if (shouldPlaySound) {
-            notification.soundName = @"NewMessage.aifc";
+            notification.soundName = kNotificationsManagerNewMesssageSoundName;
         }
 
         NSString *alertBodyString = @"";
@@ -259,7 +270,7 @@
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
         UILocalNotification *notification = [[UILocalNotification alloc] init];
         if (shouldPlaySound) {
-            notification.soundName = @"NewMessage.aifc";
+            notification.soundName = kNotificationsManagerNewMesssageSoundName;
         }
 
         switch (self.notificationPreviewType) {
