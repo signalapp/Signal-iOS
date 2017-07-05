@@ -258,6 +258,9 @@ import AVFoundation
         }
         Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
 
+        // It's important to stop the current player **before** starting the new player. In the case that 
+        // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
+        // stop the sound we just started.
         self.currentPlayer?.stop()
         newPlayer.play()
         self.currentPlayer = newPlayer
