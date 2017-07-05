@@ -643,6 +643,9 @@
 /* notification body */
 "INCOMING_CALL_FROM" = "Incoming call from %@";
 
+/* info message recorded in conversation history when local user declined a call */
+"INCOMING_DECLINED_CALL" = "You declined a call";
+
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
 

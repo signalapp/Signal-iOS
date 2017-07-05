@@ -733,7 +733,7 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     * User chose to answer call referred to by call `localId`. Used by the Callee only.
      *
      * Used by notification actions which can't serialize a call object.
      */
@@ -758,7 +758,7 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     * User chose to answer call referred to by call `localId`. Used by the Callee only.
      */
     public func handleAnswerCall(_ call: SignalCall) {
         AssertIsOnMainThread()
@@ -857,7 +857,14 @@ protocol CallServiceObserver: class {
 
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
-        // TODO make call record.
+        if let callRecord = call.callRecord {
+            assertionFailure("Not expecting callrecord to already be set")
+            callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
+        } else {
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
+            callRecord.save()
+            call.callRecord = callRecord
+        }
 
         // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
         handleLocalHungupCall(call)
