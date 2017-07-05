@@ -373,8 +373,8 @@
         }];
         [self ensureNotificationsUpToDate];
 
-        // Clean up any messages that expired since last launch immediately
-        // and continue cleaning in the background.
+        // Start running the disappearing messages job in case the newly registered user
+        // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
     } else {
         [self displayAnyUnseenUpgradeExperience];
