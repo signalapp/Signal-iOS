@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contactId.length > 0);
 
     __block TSContactThread *thread;
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
     }];
 

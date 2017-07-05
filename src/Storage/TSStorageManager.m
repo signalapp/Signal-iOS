@@ -156,7 +156,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     if (!_database) {
         return NO;
     }
-    _dbConnection = self.newDatabaseConnection;
+    _dbReadConnection = self.newDatabaseConnection;
+    _dbReadWriteConnection = self.newDatabaseConnection;
 
     return YES;
 }
@@ -388,19 +389,19 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 #pragma mark - convenience methods
 
 - (void)purgeCollection:(NSString *)collection {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [transaction removeAllObjectsInCollection:collection];
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:collection];
     }];
 }
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [transaction setObject:object forKey:key inCollection:collection];
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:object forKey:key inCollection:collection];
     }];
 }
 
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeObjectForKey:string inCollection:collection];
     }];
 }
@@ -408,8 +409,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (id)objectForKey:(NSString *)key inCollection:(NSString *)collection {
     __block NSString *object;
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      object = [transaction objectForKey:key inCollection:collection];
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        object = [transaction objectForKey:key inCollection:collection];
     }];
 
     return object;
@@ -419,8 +420,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 {
     __block NSDictionary *object;
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      object = [transaction objectForKey:key inCollection:collection];
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        object = [transaction objectForKey:key inCollection:collection];
     }];
 
     return object;
@@ -479,7 +480,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection
 {
     __block int value = 0;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         value = [[transaction objectForKey:key inCollection:collection] intValue];
         value++;
         [transaction setObject:@(value) forKey:key inCollection:collection];
@@ -503,11 +504,11 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 }
 
 - (void)deleteThreadsAndMessages {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [transaction removeAllObjectsInCollection:[TSThread collection]];
-      [transaction removeAllObjectsInCollection:[SignalRecipient collection]];
-      [transaction removeAllObjectsInCollection:[TSInteraction collection]];
-      [transaction removeAllObjectsInCollection:[TSAttachment collection]];
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:[TSThread collection]];
+        [transaction removeAllObjectsInCollection:[SignalRecipient collection]];
+        [transaction removeAllObjectsInCollection:[TSInteraction collection]];
+        [transaction removeAllObjectsInCollection:[TSAttachment collection]];
     }];
     [TSAttachmentStream deleteAttachments];
 }
@@ -529,7 +530,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (void)resetSignalStorage
 {
     self.database = nil;
-    _dbConnection = nil;
+    _dbReadConnection = nil;
+    _dbReadWriteConnection = nil;
 
     [self deletePasswordFromKeychain];
 

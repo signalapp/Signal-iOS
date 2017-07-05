@@ -148,7 +148,7 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
     NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDate];
     NSUInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCount];
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         __block int i = 0;
 
         DDLogInfo(@"%@ SignedPreKeys Report:", tag);

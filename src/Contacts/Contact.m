@@ -244,13 +244,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)textSecureIdentifiers {
     __block NSMutableArray *identifiers = [NSMutableArray array];
 
-    [[TSStorageManager sharedManager]
-            .dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      for (PhoneNumber *number in self.parsedPhoneNumbers) {
-          if ([SignalRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
-              [identifiers addObject:number.toE164];
-          }
-      }
+    [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (PhoneNumber *number in self.parsedPhoneNumbers) {
+            if ([SignalRecipient recipientWithTextSecureIdentifier:number.toE164 withTransaction:transaction]) {
+                [identifiers addObject:number.toE164];
+            }
+        }
     }];
     return [identifiers copy];
 }

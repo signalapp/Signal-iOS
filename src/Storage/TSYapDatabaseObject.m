@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 16/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSYapDatabaseObject.h"
 #import "TSStorageManager.h"
@@ -31,7 +32,7 @@
 
 - (void)save
 {
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self saveWithTransaction:transaction];
     }];
 }
@@ -43,7 +44,7 @@
 
 - (void)touch
 {
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self touchWithTransaction:transaction];
     }];
 }
@@ -55,14 +56,19 @@
 
 - (void)remove
 {
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self removeWithTransaction:transaction];
     }];
 }
 
-- (YapDatabaseConnection *)dbConnection
+- (YapDatabaseConnection *)dbReadConnection
 {
-    return [[self class] dbConnection];
+    return [[self class] dbReadConnection];
+}
+
+- (YapDatabaseConnection *)dbReadWriteConnection
+{
+    return [[self class] dbReadWriteConnection];
 }
 
 - (TSStorageManager *)storageManager
@@ -72,9 +78,19 @@
 
 #pragma mark Class Methods
 
-+ (YapDatabaseConnection *)dbConnection
++ (YapDatabaseConnection *)dbReadConnection
 {
-    return [self storageManager].dbConnection;
+    // We use TSStorageManager's dbReadWriteConnection (not its dbReadConnection)
+    // for consistency, since we tend to [TSYapDatabaseObject save] and want to
+    // write to the same connection we read from.  To get true consistency, we'd
+    // want to update entities by reading & writing from within the same
+    // transaction, but that'll be a big refactor.
+    return [self storageManager].dbReadWriteConnection;
+}
+
++ (YapDatabaseConnection *)dbReadWriteConnection
+{
+    return [self storageManager].dbReadWriteConnection;
 }
 
 + (TSStorageManager *)storageManager
@@ -90,7 +106,7 @@
 + (NSUInteger)numberOfKeysInCollection
 {
     __block NSUInteger count;
-    [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         count = [self numberOfKeysInCollectionWithTransaction:transaction];
     }];
     return count;
@@ -112,7 +128,7 @@
 
 + (void)enumerateCollectionObjectsUsingBlock:(void (^)(id object, BOOL *stop))block
 {
-    [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
     }];
 }
@@ -131,7 +147,7 @@
 
 + (void)removeAllObjectsInCollection
 {
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:[self collection]];
     }];
 }
@@ -144,7 +160,7 @@
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
 {
     __block id object;
-    [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:uniqueID inCollection:[self collection]];
     }];
     return object;

@@ -1,4 +1,6 @@
-// Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSOrphanedDataCleaner.h"
 #import "TSAttachmentStream.h"
@@ -32,7 +34,7 @@
 - (NSArray<NSString *> *)orphanedInteractionIds
 {
     NSMutableArray *interactionIds = [NSMutableArray new];
-    [[TSInteraction dbConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [[TSInteraction dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         [TSInteraction enumerateCollectionObjectsWithTransaction:transaction
                                                       usingBlock:^(TSInteraction *interaction, BOOL *stop) {
                                                           TSThread *thread = [TSThread

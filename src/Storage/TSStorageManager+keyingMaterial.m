@@ -53,7 +53,7 @@
 
 - (void)storePhoneNumber:(NSString *)phoneNumber
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:phoneNumber
                         forKey:TSStorageRegisteredNumberKey
                   inCollection:TSStorageUserAccountCollection];
@@ -61,13 +61,12 @@
 }
 
 + (void)storeServerToken:(NSString *)authToken signalingKey:(NSString *)signalingKey {
-    YapDatabaseConnection *dbConn = [[self sharedManager] dbConnection];
-
-    [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [transaction setObject:authToken forKey:TSStorageServerAuthToken inCollection:TSStorageUserAccountCollection];
-      [transaction setObject:signalingKey
-                      forKey:TSStorageServerSignalingKey
-                inCollection:TSStorageUserAccountCollection];
+    TSStorageManager *sharedManager = self.sharedManager;
+    [sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:authToken forKey:TSStorageServerAuthToken inCollection:TSStorageUserAccountCollection];
+        [transaction setObject:signalingKey
+                        forKey:TSStorageServerSignalingKey
+                  inCollection:TSStorageUserAccountCollection];
 
     }];
 }

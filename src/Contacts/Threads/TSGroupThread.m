@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(groupModel.groupId.length > 0);
 
     __block TSGroupThread *thread;
-    [[self dbConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     return thread;
