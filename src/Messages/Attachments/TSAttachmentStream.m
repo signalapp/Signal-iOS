@@ -387,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (transaction) {
         updateDataStore(transaction);
     } else {
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             updateDataStore(transaction);
         }];
     }
@@ -458,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (transaction) {
         updateDataStore(transaction);
     } else {
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             updateDataStore(transaction);
         }];
     }

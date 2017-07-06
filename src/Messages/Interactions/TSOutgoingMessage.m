@@ -245,7 +245,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     OWSAssert(error);
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                             changeBlock:^(TSOutgoingMessage *message) {
                                                 [message setMessageState:TSOutgoingMessageStateUnsent];
@@ -256,7 +256,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithMessageState:messageState transaction:transaction];
     }];
 }
@@ -274,7 +274,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                             changeBlock:^(TSOutgoingMessage *message) {
                                                 [message setHasSyncedTranscript:hasSyncedTranscript];
@@ -295,7 +295,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithCustomMessage:(NSString *)customMessage
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithCustomMessage:customMessage transaction:transaction];
     }];
 }
@@ -312,14 +312,14 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithWasDelivered
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithWasDeliveredWithTransaction:transaction];
     }];
 }
 
 - (void)updateWithWasSentAndDelivered
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                             changeBlock:^(TSOutgoingMessage *message) {
                                                 [message setMessageState:TSOutgoingMessageStateSentToService];
@@ -397,7 +397,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)updateWithSentRecipient:(NSString *)contactId
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithSentRecipient:contactId transaction:transaction];
     }];
 }

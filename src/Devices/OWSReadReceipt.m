@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSReadReceipt.h"
 #import <YapDatabase/YapDatabase.h>
@@ -104,7 +106,7 @@ NSString *const OWSReadReceiptColumnSenderId = @"senderId";
         stringWithFormat:@"WHERE %@ = ? AND %@ = ?", OWSReadReceiptColumnSenderId, OWSReadReceiptColumnTimestamp];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:queryFormat, senderId, @(timestamp)];
 
-    [[self dbConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         [[transaction ext:OWSReadReceiptIndexOnSenderIdAndTimestamp]
             enumerateKeysAndObjectsMatchingQuery:query
                                       usingBlock:^(NSString *collection, NSString *key, id object, BOOL *stop) {

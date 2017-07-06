@@ -424,7 +424,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
     }
 
-    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (TSMessage *message in messages) {
             [message saveWithTransaction:transaction];
         }
@@ -453,7 +453,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         @synchronized(self)
         {
             NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
-            [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(
+                YapDatabaseReadWriteTransaction *transaction) {
                 [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
                                                       usingBlock:^(NSString *_Nonnull recipientId,
                                                                    id _Nonnull object,
@@ -739,7 +740,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                      isLocalChange:isLocalChange]];
     }
 
-    [self.storageManager.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (TSMessage *message in messages) {
             [message saveWithTransaction:transaction];
         }

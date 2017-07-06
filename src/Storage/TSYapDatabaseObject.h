@@ -58,10 +58,12 @@
                                        usingBlock:(void (^)(id object, BOOL *stop))block;
 
 /**
- * @return A shared database connection.
+ * @return Shared database connections for reading and writing.
  */
-- (YapDatabaseConnection *)dbConnection;
-+ (YapDatabaseConnection *)dbConnection;
+- (YapDatabaseConnection *)dbReadConnection;
++ (YapDatabaseConnection *)dbReadConnection;
+- (YapDatabaseConnection *)dbReadWriteConnection;
++ (YapDatabaseConnection *)dbReadWriteConnection;
 
 - (TSStorageManager *)storageManager;
 + (TSStorageManager *)storageManager;

@@ -78,7 +78,7 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp
 {
     __block TSIncomingMessage *foundMessage;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
         // be *very* few (millisecond) timestamps with multiple authors.
         [TSDatabaseSecondaryIndexes

@@ -119,7 +119,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callType = callType;
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self saveWithTransaction:transaction];
 
         // redraw any thread-related unread count UI.
