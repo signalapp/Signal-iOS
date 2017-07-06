@@ -444,7 +444,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbConnection
+    [[TSStorageManager sharedManager].dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];
