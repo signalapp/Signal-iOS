@@ -155,27 +155,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     UIViewController *viewController =
         [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
-    BOOL shouldShowUpgradeLabel = NO;
+    NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
+    // We added a number of database views in v2.13.0.
     NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
-    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered]
+    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
-                                    atLeast:@"2.0.0"
-                                andLessThan:kLastVersionWithDatabaseViewChange]));
-    BOOL hasCompletedUpgrade = (lastCompletedLaunchAppVersion &&
-        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:kLastVersionWithDatabaseViewChange]);
-
-    // We added a number of database views in v2.13.0.
-    if (mayNeedUpgrade && !hasCompletedUpgrade) {
-        shouldShowUpgradeLabel = YES;
-    }
-    DDLogInfo(@"%@ shouldShowUpgradeLabel: %d, %d -> %d",
-        self.tag,
-        mayNeedUpgrade,
-        hasCompletedUpgrade,
-        shouldShowUpgradeLabel);
-    if (shouldShowUpgradeLabel) {
+                                   lessThan:kLastVersionWithDatabaseViewChange]));
+    DDLogInfo(@"%@ mayNeedUpgrade: %d", self.tag, mayNeedUpgrade);
+    if (mayNeedUpgrade) {
         UIView *rootView = viewController.view;
         UIImageView *iconView = nil;
         for (UIView *subview in viewController.view.subviews) {

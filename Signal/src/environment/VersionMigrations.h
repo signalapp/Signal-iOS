@@ -18,4 +18,6 @@
 
 + (BOOL)isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString;
 
++ (BOOL)isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString;
+
 @end
