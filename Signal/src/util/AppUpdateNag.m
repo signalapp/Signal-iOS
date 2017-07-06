@@ -79,8 +79,6 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
         return;
     }
 
-    // NOTE: The iTunes app store API exposes "short" version numbers, so
-    // it isn't possible to nag about hotfix releases.
     ATAppUpdater *updater = [ATAppUpdater sharedUpdater];
     [updater setAlertTitle:NSLocalizedString(
                                @"APP_UPDATE_NAG_ALERT_TITLE", @"Title for the 'new app version available' alert.")];

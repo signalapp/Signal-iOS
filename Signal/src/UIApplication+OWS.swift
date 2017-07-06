@@ -13,9 +13,8 @@ extension UIApplication {
         while true {
             if let nextViewController = viewController?.presentedViewController {
                 viewController = nextViewController
-            } else if viewController is UINavigationController {
-                let navigationController = viewController as? UINavigationController
-                if let nextViewController = navigationController?.topViewController {
+            } else if let navigationController = viewController as? UINavigationController {
+                if let nextViewController = navigationController.topViewController {
                     viewController = nextViewController
                 } else {
                     break
