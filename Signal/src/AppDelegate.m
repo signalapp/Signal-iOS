@@ -110,6 +110,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
+    // Prevent the device from sleeping during database view async registration
+    // (e.g. long database upgrades).
+    //
+    // This block will be cleared in databaseViewRegistrationComplete.
+    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+
     [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
@@ -782,6 +788,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)databaseViewRegistrationComplete
 {
     DDLogInfo(@"databaseViewRegistrationComplete");
+
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
     [AppVersion.instance appLaunchDidComplete];
 
