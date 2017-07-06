@@ -158,10 +158,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     BOOL shouldShowUpgradeLabel = NO;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
     NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
-    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastCompletedLaunchAppVersion &&
-        [VersionMigrations isVersion:lastCompletedLaunchAppVersion
-                             atLeast:@"2.0.0"
-                         andLessThan:kLastVersionWithDatabaseViewChange]);
+    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered]
+        && (!lastCompletedLaunchAppVersion ||
+               [VersionMigrations isVersion:lastCompletedLaunchAppVersion
+                                    atLeast:@"2.0.0"
+                                andLessThan:kLastVersionWithDatabaseViewChange]));
     BOOL hasCompletedUpgrade = (lastCompletedLaunchAppVersion &&
         [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:kLastVersionWithDatabaseViewChange]);
 
