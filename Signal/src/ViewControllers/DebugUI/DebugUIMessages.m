@@ -53,6 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [DebugUIMessages sendTextMessages:1000 thread:thread];
                                        }],
+                       [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendTextMessages:3000 thread:thread];
+                                       }],
                        [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
                                        actionBlock:^{
                                            [DebugUIMessages sendTinyAttachments:10 thread:thread];
@@ -64,6 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
                        [OWSTableItem itemWithTitle:@"Send 1,000 tiny attachments"
                                        actionBlock:^{
                                            [DebugUIMessages sendTinyAttachments:1000 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Send 3,000 tiny attachments"
+                                       actionBlock:^{
+                                           [DebugUIMessages sendTinyAttachments:3000 thread:thread];
                                        }],
                        [OWSTableItem itemWithTitle:@"Create 10 fake messages"
                                        actionBlock:^{
