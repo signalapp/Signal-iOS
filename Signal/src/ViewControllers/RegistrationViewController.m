@@ -18,8 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-NSString *const kNSUserDefaultsKey_LastRegisteredCountryCode = @"kNSUserDefaultsKey_LastRegisteredCountryCode";
-NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaultsKey_LastRegisteredPhoneNumber";
+NSString *const kKeychainService_LastRegistered = @"kKeychainService_LastRegistered";
+NSString *const kKeychainKey_LastRegisteredCountryCode = @"kKeychainKey_LastRegisteredCountryCode";
+NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegisteredPhoneNumber";
 
 #endif
 
@@ -440,7 +441,12 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     OWSCAssert([NSThread isMainThread]);
     OWSCAssert(key.length > 0);
 
-    return [[NSUserDefaults standardUserDefaults] stringForKey:key];
+    NSError *error;
+    NSString *value = [SAMKeychain passwordForService:kKeychainService_LastRegistered account:key error:&error];
+    if (value && !error) {
+        return value;
+    }
+    return nil;
 }
 
 - (void)setDebugValue:(NSString *)value forKey:(NSString *)key
@@ -449,30 +455,46 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     OWSCAssert(key.length > 0);
     OWSCAssert(value.length > 0);
 
-    [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
+    NSError *error;
+    [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
+    if (error) {
+        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.tag, error);
+    }
 }
 
 - (NSString *_Nullable)lastRegisteredCountryCode
 {
-    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
+    return [self debugValueForKey:kKeychainKey_LastRegisteredCountryCode];
 }
 
 - (void)setLastRegisteredCountryCode:(NSString *)value
 {
-    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
+    [self setDebugValue:value forKey:kKeychainKey_LastRegisteredCountryCode];
 }
 
 - (NSString *_Nullable)lastRegisteredPhoneNumber
 {
-    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
+    return [self debugValueForKey:kKeychainKey_LastRegisteredPhoneNumber];
 }
 
 - (void)setLastRegisteredPhoneNumber:(NSString *)value
 {
-    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
+    [self setDebugValue:value forKey:kKeychainKey_LastRegisteredPhoneNumber];
 }
 
 #endif
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
 
 @end
 
