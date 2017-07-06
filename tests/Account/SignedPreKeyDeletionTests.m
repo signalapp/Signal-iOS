@@ -30,9 +30,10 @@
 }
 
 - (void)testSignedPreKeyDeletion {
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
+        }];
 
     int days = 20;
     int lastPreKeyId = days;
@@ -69,9 +70,10 @@
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
 {
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
+        }];
 
     int lastPreKeyId = 10;
     for (int i = 0; i <= 10; i++) {
@@ -113,10 +115,11 @@
 }
 
 - (void)testOlderRecordsNotDeletedIfNoReplacement {
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
-    }];
-    
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeAllObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection];
+        }];
+
     int days = 3;
     int lastPreKeyId = days;
 

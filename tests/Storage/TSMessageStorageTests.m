@@ -27,13 +27,14 @@
 - (void)setUp
 {
     [super setUp];
-    
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
-        
-        [self.thread saveWithTransaction:transaction];
-    }];
-    
+
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
+
+            [self.thread saveWithTransaction:transaction];
+        }];
+
     TSStorageManager *manager = [TSStorageManager sharedManager];
     [manager purgeCollection:[TSMessage collection]];
 }
@@ -154,7 +155,8 @@
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[TSStorageManager sharedManager].dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
                                                                                               image:nil
