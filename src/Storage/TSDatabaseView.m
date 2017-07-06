@@ -231,7 +231,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
 
     YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
-    options.isPersistent            = NO;
+    options.isPersistent = YES;
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
