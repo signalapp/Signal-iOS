@@ -7,7 +7,7 @@ import Foundation
 // This entity has responsibility for blocking the device from sleeping if
 // certain behaviors (e.g. recording or playing voice messages) are in progress.
 // 
-// Sleep blocking is keyed using "block objects" whose lifetime correponds to
+// Sleep blocking is keyed using "block objects" whose lifetime corresponds to
 // the duration of the block.  For example, sleep blocking during audio playback
 // can be keyed to the audio player.  This provides a measure of robustness.
 // On the one hand, we can use weak references to track block objects and stop
