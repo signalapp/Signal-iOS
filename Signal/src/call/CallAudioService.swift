@@ -96,19 +96,21 @@ import AVFoundation
 
         if call.state == .localRinging {
             // SoloAmbient plays through speaker, but respects silent switch
-            setAudioSession(category: AVAudioSessionCategorySoloAmbient)
+            setAudioSession(category: AVAudioSessionCategorySoloAmbient,
+                            mode: AVAudioSessionModeDefault)
         } else if call.hasLocalVideo {
             // Auto-enable speakerphone when local video is enabled.
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
-                            options: .defaultToSpeaker)
+                            options: [.defaultToSpeaker, .allowBluetooth])
         } else if call.isSpeakerphoneEnabled {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: .defaultToSpeaker)
+                            options: [.defaultToSpeaker, .allowBluetooth])
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat)
+                            mode: AVAudioSessionModeVoiceChat,
+                            options: [.allowBluetooth])
         }
     }
 
@@ -315,19 +317,46 @@ import AVFoundation
         let session = AVAudioSession.sharedInstance()
         do {
             if #available(iOS 10.0, *), let mode = mode {
-                if session.category == category, session.mode == mode, session.categoryOptions == options {
-                    Logger.debug("\(self.TAG) in \(#function) ignoring no-op")
+                let oldCategory = session.category
+                let oldMode = session.mode
+                let oldOptions = session.categoryOptions
+
+                if oldCategory == category, oldMode == mode, oldOptions == options {
+                    Logger.debug("\(self.TAG) in \(#function) doing nothing, since audio session is unchanged.")
                     return
                 }
+
+                if oldCategory != category {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldCategory) -> \(category) ")
+                }
+                if oldMode != mode {
+                    Logger.debug("\(self.TAG) audio session changed mode: \(oldMode) -> \(mode) ")
+                }
+                if oldOptions != options {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldOptions) -> \(options) ")
+                }
+
+                Logger.debug("\(self.TAG) setting new category: \(category) mode: \(mode) options: \(options)")
                 try session.setCategory(category, mode: mode, options: options)
-                Logger.debug("\(self.TAG) set category: \(category) mode: \(mode) options: \(options)")
+
             } else {
+                let oldCategory = session.category
+                let oldOptions = session.categoryOptions
                 if session.category == category, session.categoryOptions == options {
-                    Logger.debug("\(self.TAG) in \(#function) ignoring no-op")
+                    Logger.debug("\(self.TAG) in \(#function) doing nothing, since audio session is unchanged.")
                     return
                 }
+
+                if oldCategory != category {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldCategory) -> \(category) ")
+                }
+                if oldOptions != options {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldOptions) -> \(options) ")
+                }
+
+                Logger.debug("\(self.TAG) setting new category: \(category) options: \(options)")
                 try session.setCategory(category, with: options)
-                Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
+
             }
         } catch {
             let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
