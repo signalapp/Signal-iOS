@@ -31,6 +31,11 @@
 // * Orphan attachments (with no message).
 // * Orphan attachment files (with no attachment).
 // * Missing attachment files (cannot be cleaned up).
+//   These are attachments which have no file on disk.  They should be extremely rare -
+//   the only cases I have seen are probably due to debugging.
+//   They can't be cleaned up - we don't want to delete the TSAttachmentStream or
+//   its corresponding message.  Better that the broken message shows up in the
+//   conversation view.
 + (void)auditAndCleanup:(BOOL)shouldCleanup
 {
     NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
@@ -152,59 +157,61 @@
     // being created/written, so we don't clean up anything recent.
     const NSTimeInterval kMinimumOrphanAge = 15 * 60.f;
 
-    if (shouldCleanup) {
-        [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            for (NSString *interactionId in orphanInteractionIds) {
-                TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId];
-                if (!interaction) {
-                    // This could just be a race condition, but it should be very unlikely.
-                    OWSFail(@"Could not load interaction: %@", interactionId);
-                    continue;
-                }
-                DDLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
-                [interaction removeWithTransaction:transaction];
-            }
-            for (NSString *attachmentId in orphanAttachmentIds) {
-                TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
-                if (!attachment) {
-                    // This could just be a race condition, but it should be very unlikely.
-                    OWSFail(@"Could not load attachment: %@", attachmentId);
-                    continue;
-                }
-                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    continue;
-                }
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                // Don't delete attachments which were created in the last N minutes.
-                if (fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]) < kMinimumOrphanAge) {
-                    DDLogInfo(@"Skipping orphan attachment due to age: %f",
-                        fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]));
-                    continue;
-                }
-                DDLogInfo(@"Removing orphan attachment: %@", attachmentStream.uniqueId);
-                [attachmentStream removeWithTransaction:transaction];
-            }
-        }];
+    if (!shouldCleanup) {
+        return;
+    }
 
-        for (NSString *filePath in orphanDiskFilePaths) {
-            NSError *error;
-            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
-            if (!attributes || error) {
-                OWSFail(@"Could not get attributes of file at: %@", filePath);
+    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        for (NSString *interactionId in orphanInteractionIds) {
+            TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId];
+            if (!interaction) {
+                // This could just be a race condition, but it should be very unlikely.
+                OWSFail(@"Could not load interaction: %@", interactionId);
                 continue;
             }
-            // Don't delete files which were created in the last N minutes.
-            if (fabs([attributes.fileModificationDate timeIntervalSinceNow]) < kMinimumOrphanAge) {
-                DDLogInfo(@"Skipping orphan attachment file due to age: %f",
-                    fabs([attributes.fileModificationDate timeIntervalSinceNow]));
+            DDLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
+            [interaction removeWithTransaction:transaction];
+        }
+        for (NSString *attachmentId in orphanAttachmentIds) {
+            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+            if (!attachment) {
+                // This could just be a race condition, but it should be very unlikely.
+                OWSFail(@"Could not load attachment: %@", attachmentId);
                 continue;
             }
-
-            DDLogInfo(@"Removing orphan attachment file: %@", filePath);
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-            if (error) {
-                OWSFail(@"Could not remove orphan file at: %@", filePath);
+            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                continue;
             }
+            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+            // Don't delete attachments which were created in the last N minutes.
+            if (fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]) < kMinimumOrphanAge) {
+                DDLogInfo(@"Skipping orphan attachment due to age: %f",
+                    fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]));
+                continue;
+            }
+            DDLogInfo(@"Removing orphan attachment: %@", attachmentStream.uniqueId);
+            [attachmentStream removeWithTransaction:transaction];
+        }
+    }];
+
+    for (NSString *filePath in orphanDiskFilePaths) {
+        NSError *error;
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+        if (!attributes || error) {
+            OWSFail(@"Could not get attributes of file at: %@", filePath);
+            continue;
+        }
+        // Don't delete files which were created in the last N minutes.
+        if (fabs([attributes.fileModificationDate timeIntervalSinceNow]) < kMinimumOrphanAge) {
+            DDLogInfo(@"Skipping orphan attachment file due to age: %f",
+                fabs([attributes.fileModificationDate timeIntervalSinceNow]));
+            continue;
+        }
+
+        DDLogInfo(@"Removing orphan attachment file: %@", filePath);
+        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+        if (error) {
+            OWSFail(@"Could not remove orphan file at: %@", filePath);
         }
     }
 }
