@@ -34,6 +34,7 @@
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
+		348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		3497DBEC1ECE257500DB2605 /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */; };
 		3497DBEF1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEE1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m */; };
 		34B3F8711E8DF1700035BE1A /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8351E8DF1700035BE1A /* AboutTableViewController.m */; };
@@ -414,6 +415,7 @@
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		3472229D1EB22FFE00E53955 /* AddToGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToGroupViewController.h; sourceTree = "<group>"; };
 		3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToGroupViewController.m; sourceTree = "<group>"; };
+		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3497DBEA1ECE257500DB2605 /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
 		3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCountryMetadata.m; sourceTree = "<group>"; };
 		3497DBED1ECE2E4700DB2605 /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
@@ -1326,6 +1328,7 @@
 				76EB04CF18170B33006006FC /* collections */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
+				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
@@ -2126,6 +2129,7 @@
 				34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */,
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
+				348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				34E8BF3B1EEB208E00F5F4CA /* DebugUIVerification.m in Sources */,
 				76EB058A18170B33006006FC /* Release.m in Sources */,

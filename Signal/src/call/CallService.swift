@@ -138,7 +138,16 @@ protocol CallServiceObserver: class {
             call?.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
-            updateLockTimerEnabling()
+
+            // Prevent device from sleeping while we have an active call.
+            if oldValue != call {
+                if let oldValue = oldValue {
+                    DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
+                }
+                if let call = call {
+                    DeviceSleepManager.sharedInstance.addBlock(blockObject: call)
+                }
+            }
 
             Logger.debug("\(self.TAG) .call setter: \(oldValue?.identifiersForLogs as Optional) -> \(call?.identifiersForLogs as Optional)")
 
@@ -1350,16 +1359,6 @@ protocol CallServiceObserver: class {
                                                  localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
-    }
-
-    private func updateLockTimerEnabling() {
-        AssertIsOnMainThread()
-
-        // Prevent screen from dimming during call.
-        //
-        // Note that this state has no effect if app is in the background.
-        let hasCall = call != nil
-        UIApplication.shared.isIdleTimerDisabled = hasCall
     }
 }
 

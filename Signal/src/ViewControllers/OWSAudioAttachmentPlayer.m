@@ -82,6 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+
     [self stop];
 }
 
@@ -133,6 +135,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 selector:@selector(audioPlayerUpdated:)
                                                                 userInfo:nil
                                                                  repeats:YES];
+
+    // Prevent device from sleeping while playing audio.
+    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 }
 
 - (void)pause
@@ -145,6 +150,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
     [self.delegate setAudioIconToPlay];
+
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
 - (void)stop
@@ -157,6 +164,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate setAudioIconToPlay];
     self.delegate.isAudioPlaying = NO;
     self.delegate.isPaused = NO;
+
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
 - (void)togglePlayState

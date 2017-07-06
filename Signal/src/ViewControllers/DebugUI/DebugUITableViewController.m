@@ -28,6 +28,24 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.tag;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    // Block device from sleeping while in the Debug UI.
+    //
+    // This is useful if you're using long-running actions in the
+    // Debug UI, like "send 1k messages", etc.
+    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+}
+
 #pragma mark - Factory Methods
 
 - (void)pushPageWithSection:(OWSTableSection *)section
