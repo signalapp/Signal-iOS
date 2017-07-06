@@ -156,12 +156,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
     BOOL shouldShowUpgradeLabel = NO;
-    NSString *lastAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
-    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] &&
-        [VersionMigrations isVersion:lastAppVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]);
+    NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
+    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastCompletedLaunchAppVersion &&
+        [VersionMigrations isVersion:lastCompletedLaunchAppVersion
+                             atLeast:@"2.0.0"
+                         andLessThan:kLastVersionWithDatabaseViewChange]);
     BOOL hasCompletedUpgrade = (lastCompletedLaunchAppVersion &&
-        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:@"2.13.0"]);
+        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:kLastVersionWithDatabaseViewChange]);
 
     // We added a number of database views in v2.13.0.
     if (mayNeedUpgrade && !hasCompletedUpgrade) {
