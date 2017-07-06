@@ -93,12 +93,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     OWSSingletonAssert();
 
-    // We want to observe these notifications lazily to avoid accessing
-    // the data store in [application: didFinishLaunchingWithOptions:].
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self tryToSyncQueuedVerificationStates];
-        [self observeNotifications];
-    });
+    [self observeNotifications];
+
     return self;
 }
 
@@ -443,12 +439,23 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                               inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
         }
 
-        [self tryToSyncQueuedVerificationStates];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self tryToSyncQueuedVerificationStates];
+        });
     });
 }
 
 - (void)tryToSyncQueuedVerificationStates
 {
+    OWSAssert([NSThread isMainThread]);
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        // Only try to sync if the app is active to avoid interfering with startup.
+        //
+        // applicationDidBecomeActive: will try to sync again when the app becomes active.
+        return;
+    }
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
@@ -753,7 +760,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self tryToSyncQueuedVerificationStates];
+    // We want to defer this so that we never call this method until
+    // [UIApplicationDelegate applicationDidBecomeActive:] is complete.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self tryToSyncQueuedVerificationStates];
+    });
 }
 
 #pragma mark - Logging
