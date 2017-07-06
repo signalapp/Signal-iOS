@@ -4,6 +4,7 @@
 
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
+#import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "Environment.h"
@@ -52,6 +53,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
+
+#pragma mark -
 
 @implementation AppDelegate
 
@@ -805,6 +808,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         navigationController.navigationBarHidden = YES;
         self.window.rootViewController = navigationController;
     }
+
+    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }
 
 #pragma mark - Logging

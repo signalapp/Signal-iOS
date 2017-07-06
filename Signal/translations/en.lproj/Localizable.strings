@@ -55,6 +55,15 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ in group %@: %@";
 
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is available in the App Store.";
+
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "New Version";
+
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
