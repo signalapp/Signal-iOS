@@ -189,19 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
     return attachmentsFolder;
 }
 
-+ (NSUInteger)numberOfItemsInAttachmentsFolder
-{
-    NSError *error;
-    NSUInteger count =
-        [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self attachmentsFolder] error:&error] count];
-
-    if (error) {
-        DDLogError(@"Unable to count attachments in attachments folder. Error: %@", error);
-    }
-
-    return count;
-}
-
 - (nullable NSString *)filePath
 {
     if (!self.localRelativeFilePath) {
