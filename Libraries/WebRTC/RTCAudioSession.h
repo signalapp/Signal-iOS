@@ -52,12 +52,12 @@ RTC_EXPORT
 /** Called on a system notification thread when AVAudioSession media server
  *  terminates.
  */
-- (void)audioSessionMediaServicesWereLost:(RTCAudioSession *)session;
+- (void)audioSessionMediaServerTerminated:(RTCAudioSession *)session;
 
 /** Called on a system notification thread when AVAudioSession media server
  *  restarts.
  */
-- (void)audioSessionMediaServicesWereReset:(RTCAudioSession *)session;
+- (void)audioSessionMediaServerReset:(RTCAudioSession *)session;
 
 // TODO(tkchin): Maybe handle SilenceSecondaryAudioHintNotification.
 
