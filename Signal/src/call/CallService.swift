@@ -620,7 +620,9 @@ protocol CallServiceObserver: class {
                 self.peerConnectionClient = peerConnectionClient
             }
 
-            peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+            let iceCandidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid)
+            Logger.info("\(self.TAG) peerConnectionClient added candidate with url: \(String(describing: iceCandidate.serverUrl))")
+            peerConnectionClient.addIceCandidate(iceCandidate)
         }.retainUntilComplete()
     }
 
@@ -1096,6 +1098,7 @@ protocol CallServiceObserver: class {
             return
         }
 
+        Logger.info("\(TAG) peerConnectionClient added candidate with url: \(String(describing: iceCandidate.serverUrl))")
         self.handleLocalAddedIceCandidate(iceCandidate)
     }
 
