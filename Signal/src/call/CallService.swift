@@ -130,6 +130,8 @@ protocol CallServiceObserver: class {
         }
     }
 
+    var incomingPeerConnectionClientPromise: Promise<PeerConnectionClient>?
+
     var call: SignalCall? {
         didSet {
             AssertIsOnMainThread()
@@ -156,17 +158,6 @@ protocol CallServiceObserver: class {
             }
         }
     }
-
-    /**
-     * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
-     * Because this happens via Signal Service it's possible the callee user has not accepted any change in the caller's 
-     * identity. In which case *each* ICE update would cause an "identity change" warning on the callee's device. Since
-     * this could be several messages, the caller stores all ICE updates until receiving positive confirmation that the 
-     * callee has received a message from us. This positive confirmation comes in the form of the callees `CallAnswer` 
-     * message.
-     */
-    var sendIceUpdatesImmediately = true
-    var pendingIceUpdateMessages = [OWSCallIceUpdateMessage]()
 
     // Used to coordinate promises across delegate methods
     var fulfillCallConnectedPromise: (() -> Void)?
@@ -269,9 +260,6 @@ protocol CallServiceObserver: class {
 
         self.call = call
 
-        sendIceUpdatesImmediately = false
-        pendingIceUpdateMessages = []
-
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
@@ -358,19 +346,6 @@ protocol CallServiceObserver: class {
         guard call.signalingId == callId else {
             Logger.warn("\(self.TAG) ignoring obsolete call: \(callId) in \(#function)")
             return
-        }
-
-        // Now that we know the recipient trusts our identity, we no longer need to enqueue ICE updates.
-        self.sendIceUpdatesImmediately = true
-
-        if pendingIceUpdateMessages.count > 0 {
-            Logger.error("\(self.TAG) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
-
-            let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
-                Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
-            }
-            sendPromise.retainUntilComplete()
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -495,59 +470,57 @@ protocol CallServiceObserver: class {
             return
         }
 
-        guard self.call == nil else {
-            // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
+        // BEWARE there are some unmerged changes around this that will likely cause a merge conflict.
+        // see: https://github.com/WhisperSystems/Signal-iOS/pull/2261/files
+        if let existingCall = self.call {
+            guard existingCall.remotePhoneNumber == thread.contactIdentifier(), existingCall.signalingId == callId else {
 
-            handleLocalBusyCall(newCall, thread: thread)
+                // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
+                Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
-            if self.call?.remotePhoneNumber == newCall.remotePhoneNumber {
-                // If we're receiving a new call offer from the user we think we have a call with, terminate
-                // our current call to get back to a known good state.  If they call back, we'll be ready.
-                // 
-                // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
-                // b) ever connected.  There will be a bit of complexity around making sure that two
-                // parties that call each other at the same time end up connected.
-                terminateCall()
+                handleLocalBusyCall(newCall, thread: thread)
+
+                if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
+                    // If we're receiving a new call offer from the user we think we have a call with, terminate
+                    // our current call to get back to a known good state.  If they call back, we'll be ready.
+                    //
+                    // TODO: Auto-accept this incoming call if our current call was either a) outgoing or
+                    // b) ever connected.  There will be a bit of complexity around making sure that two
+                    // parties that call each other at the same time end up connected.
+                    terminateCall()
+                }
+
+                return
             }
-
-            return
         }
 
-        Logger.info("\(TAG) starting new call: \(newCall.identifiersForLogs)")
+        let incomingCall = self.call ?? newCall
+        Logger.info("\(TAG) starting new call: \(incomingCall.identifiersForLogs)")
 
-        self.call = newCall
+        self.call = incomingCall
 
         let backgroundTask = UIApplication.shared.beginBackgroundTask {
             let timeout = CallError.timeout(description: "background task time ran out before call connected.")
             DispatchQueue.main.async {
-                guard self.call == newCall else {
+                guard self.call == incomingCall else {
                     Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
                     return
                 }
-                self.handleFailedCall(failedCall: newCall, error: timeout)
+                self.handleFailedCall(failedCall: incomingCall, error: timeout)
             }
         }
 
         let incomingCallPromise = firstly {
-            return getIceServers()
-        }.then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
-            // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
-            // even though, from the users perspective, no incoming call is yet visible.
-            guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
+            return getPeerConnectionClientForIncomingCall(incomingCall)
+        }.then { (peerConnectionClient: PeerConnectionClient) -> Promise<HardenedRTCSessionDescription> in
+            guard self.call == incomingCall else {
+                throw CallError.obsoleteCall(description: "getPeerConnectionClientForIncomingCall() response for obsolete call")
             }
-            assert(self.peerConnectionClient == nil, "Unexpected PeerConnectionClient instance")
 
-            // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
-            // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let unknownCaller = self.contactsManager.signalAccount(forRecipientId: thread.contactIdentifier()) == nil
-
-            let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
-
-            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
-            let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
-            self.peerConnectionClient = peerConnectionClient
+            // peerConnectionClient may have already been set by `handleRemoteAddedIceCandidate`
+            if self.peerConnectionClient != peerConnectionClient {
+                self.peerConnectionClient = peerConnectionClient
+            }
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -555,20 +528,20 @@ protocol CallServiceObserver: class {
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return peerConnectionClient.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
-            guard self.call == newCall else {
+            guard self.call == incomingCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
+            Logger.debug("\(self.TAG) set the remote description for: \(incomingCall.identifiersForLogs)")
 
-            let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
+            let answerMessage = OWSCallAnswerMessage(callId: incomingCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
             return self.messageSender.sendCallMessage(callAnswerMessage)
         }.then {
-            guard self.call == newCall else {
+            guard self.call == incomingCall else {
                 throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
+            Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(incomingCall.identifiersForLogs)")
 
             let (promise, fulfill, _) = Promise<Void>.pending()
 
@@ -582,19 +555,19 @@ protocol CallServiceObserver: class {
 
             return race(promise, timeout)
         }.then {
-            Logger.info(self.call == newCall
-                ? "\(self.TAG) incoming call connected: \(newCall.identifiersForLogs)."
-                : "\(self.TAG) obsolete incoming call connected: \(newCall.identifiersForLogs).")
+            Logger.info(self.call == incomingCall
+                ? "\(self.TAG) incoming call connected: \(incomingCall.identifiersForLogs)."
+                : "\(self.TAG) obsolete incoming call connected: \(incomingCall.identifiersForLogs).")
         }.catch { error in
-            guard self.call == newCall else {
-                Logger.debug("\(self.TAG) ignoring error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
+            guard self.call == incomingCall else {
+                Logger.debug("\(self.TAG) ignoring error: \(error)  for obsolete call: \(incomingCall.identifiersForLogs).")
                 return
             }
             if let callError = error as? CallError {
-                self.handleFailedCall(failedCall: newCall, error: callError)
+                self.handleFailedCall(failedCall: incomingCall, error: callError)
             } else {
                 let externalError = CallError.externalError(underlyingError: error)
-                self.handleFailedCall(failedCall: newCall, error: externalError)
+                self.handleFailedCall(failedCall: incomingCall, error: externalError)
             }
         }.always {
             Logger.debug("\(self.TAG) ending background task awaiting inbound call connection")
@@ -610,27 +583,45 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
         Logger.info("\(TAG) called \(#function)")
 
+        if let existingCall = self.call {
+            guard existingCall.remotePhoneNumber == thread.contactIdentifier(), existingCall.signalingId == callId else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) callId: \(callId) due to mismatch: \(existingCall.identifiersForLogs). Call already ended?")
+                return
+            }
+        } else {
+            // For incoming calls it's possible to receive ICE updates before receiving the corresponding call offer.
+            // So we check for an existing call, and if none exists, we create one here.
+            self.call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
+        }
+
         guard let call = self.call else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
+            handleFailedCurrentCall(error: .assertionError(description: "should have set current call if none existed."))
             return
         }
 
-        guard call.signalingId == callId else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to callId mismatch. Call already ended?")
-            return
-        }
+        getPeerConnectionClientForIncomingCall(call).then { peerConnectionClient -> Void in
+            guard let call = self.call else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
+                return
+            }
 
-        guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to thread mismatch. Call already ended?")
-            return
-        }
+            guard call.signalingId == callId else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to callId mismatch. Call already ended?")
+                return
+            }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current peerConnectionClient. Call already ended?")
-            return
-        }
+            guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to thread mismatch. Call already ended?")
+                return
+            }
 
-        peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+            // peerConnectionClient may have already been set by `handleReceivedOffer`
+            if self.peerConnectionClient != peerConnectionClient {
+                self.peerConnectionClient = peerConnectionClient
+            }
+
+            peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+        }.retainUntilComplete()
     }
 
     /**
@@ -656,19 +647,9 @@ protocol CallServiceObserver: class {
 
         let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
-        if self.sendIceUpdatesImmediately {
-            Logger.info("\(TAG) in \(#function). Sending immediately.")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendCallMessage(callMessage)
-            sendPromise.retainUntilComplete()
-        } else {
-            // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
-            // e.g. if the client has blocked our message due to an identity change, we'd otherwise
-            // bombard them with a bunch *more* undecipherable messages.
-            Logger.info("\(TAG) in \(#function). Enqueing for later.")
-            self.pendingIceUpdateMessages.append(iceUpdateMessage)
-            return
-        }
+        let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
+        let sendPromise = self.messageSender.sendCallMessage(callMessage)
+        sendPromise.retainUntilComplete()
     }
 
     /**
@@ -978,7 +959,7 @@ protocol CallServiceObserver: class {
             break
         }
 
-        // We don't need to worry about the user granting or remoting this permission
+        // We don't need to worry about the user granting or removing this permission
         // during a call while the app is in the background, because changing this
         // permission kills the app.
         if authStatus != .authorized {
@@ -1156,6 +1137,39 @@ protocol CallServiceObserver: class {
 
     // MARK: Helpers
 
+    private func getPeerConnectionClientForIncomingCall(_ call: SignalCall) -> Promise<PeerConnectionClient> {
+        AssertIsOnMainThread()
+
+        guard call.direction == .incoming else {
+            return Promise(error: CallError.assertionError(description: "\(#function) is only for incoming calls."))
+        }
+
+        guard self.incomingPeerConnectionClientPromise == nil else {
+            return self.incomingPeerConnectionClientPromise!
+        }
+
+        Logger.debug("\(TAG) building new peerConnectionClient for incoming call: \(call.identifiersForLogs)")
+        let incomingPeerConnectionClientPromise = firstly {
+            getIceServers()
+        }.then { (iceServers: [RTCIceServer]) -> PeerConnectionClient in
+            guard self.call == call else {
+                throw CallError.obsoleteCall(description: "getIceServers() response for obsolete call")
+            }
+
+            // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
+            // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
+            let unknownCaller = self.contactsManager.signalAccount(forRecipientId: call.thread.contactIdentifier()) == nil
+
+            let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
+
+            Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(call.identifiersForLogs)")
+            return PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
+        }
+        self.incomingPeerConnectionClientPromise = incomingPeerConnectionClientPromise
+
+        return incomingPeerConnectionClientPromise
+    }
+
     /**
      * RTCIceServers are used when attempting to establish an optimal connection to the other party. SignalService supplies
      * a list of servers, plus we have fallback servers hardcoded in the app.
@@ -1245,9 +1259,7 @@ protocol CallServiceObserver: class {
 
         call?.removeAllObservers()
         call = nil
-        sendIceUpdatesImmediately = true
-        Logger.info("\(TAG) clearing pendingIceUpdateMessages")
-        pendingIceUpdateMessages = []
+        incomingPeerConnectionClientPromise = nil
         fulfillCallConnectedPromise = nil
     }
 
