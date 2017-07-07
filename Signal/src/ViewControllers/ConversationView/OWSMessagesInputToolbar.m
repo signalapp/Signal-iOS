@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessagesInputToolbar () <OWSSendMessageGestureDelegate>
 
-@property (nonatomic) UIView *voiceMemoUI;
+@property (nonatomic, nullable) UIView *voiceMemoUI;
 
 @property (nonatomic) UIView *voiceMemoContentView;
 
 @property (nonatomic) NSDate *voiceMemoStartTime;
 
-@property (nonatomic) NSTimer *voiceMemoUpdateTimer;
+@property (nonatomic, nullable) NSTimer *voiceMemoUpdateTimer;
 
 @property (nonatomic) UILabel *recordingLabel;
 

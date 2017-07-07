@@ -57,7 +57,7 @@ static OWSWebRTCProtosConnected* defaultOWSWebRTCProtosConnectedInstance = nil;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
   if (self.hasId) {
-    [output writeUInt64:1 value:self.id];
+    [output writeUInt64:1 value:(SInt64)self.id];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -69,7 +69,7 @@ static OWSWebRTCProtosConnected* defaultOWSWebRTCProtosConnectedInstance = nil;
 
   size_ = 0;
   if (self.hasId) {
-    size_ += computeUInt64Size(1, self.id);
+    size_ += computeUInt64Size(1, (SInt64)self.id);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -107,13 +107,13 @@ static OWSWebRTCProtosConnected* defaultOWSWebRTCProtosConnectedInstance = nil;
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithUnsignedLongLong:self.id]];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
   if (self.hasId) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+    [dictionary setObject:[NSNumber numberWithUnsignedLongLong:self.id] forKey: @"id"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -133,7 +133,7 @@ static OWSWebRTCProtosConnected* defaultOWSWebRTCProtosConnectedInstance = nil;
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
   if (self.hasId) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+    hashCode = hashCode * 31 + [[NSNumber numberWithUnsignedLongLong:self.id] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -203,7 +203,7 @@ static OWSWebRTCProtosConnected* defaultOWSWebRTCProtosConnectedInstance = nil;
         break;
       }
       case 8: {
-        [self setId:[input readUInt64]];
+        [self setId:(UInt64)[input readUInt64]];
         break;
       }
     }
@@ -263,7 +263,7 @@ static OWSWebRTCProtosHangup* defaultOWSWebRTCProtosHangupInstance = nil;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
   if (self.hasId) {
-    [output writeUInt64:1 value:self.id];
+    [output writeUInt64:1 value:(SInt64)self.id];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -275,7 +275,7 @@ static OWSWebRTCProtosHangup* defaultOWSWebRTCProtosHangupInstance = nil;
 
   size_ = 0;
   if (self.hasId) {
-    size_ += computeUInt64Size(1, self.id);
+    size_ += computeUInt64Size(1, (SInt64)self.id);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -313,13 +313,13 @@ static OWSWebRTCProtosHangup* defaultOWSWebRTCProtosHangupInstance = nil;
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithUnsignedLongLong:self.id]];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
   if (self.hasId) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+    [dictionary setObject: [NSNumber numberWithUnsignedLongLong:self.id] forKey: @"id"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -339,7 +339,7 @@ static OWSWebRTCProtosHangup* defaultOWSWebRTCProtosHangupInstance = nil;
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
   if (self.hasId) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+    hashCode = hashCode * 31 + [[NSNumber numberWithUnsignedLongLong:self.id] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -409,7 +409,7 @@ static OWSWebRTCProtosHangup* defaultOWSWebRTCProtosHangupInstance = nil;
         break;
       }
       case 8: {
-        [self setId:[input readUInt64]];
+        [self setId:(UInt64)[input readUInt64]];
         break;
       }
     }
@@ -483,7 +483,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
   if (self.hasId) {
-    [output writeUInt64:1 value:self.id];
+    [output writeUInt64:1 value:(SInt64)self.id];
   }
   if (self.hasEnabled) {
     [output writeBool:2 value:self.enabled];
@@ -498,7 +498,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
 
   size_ = 0;
   if (self.hasId) {
-    size_ += computeUInt64Size(1, self.id);
+    size_ += computeInt64Size(1, (SInt64)self.id);
   }
   if (self.hasEnabled) {
     size_ += computeBoolSize(2, self.enabled);
@@ -539,7 +539,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithUnsignedLongLong:self.id]];
   }
   if (self.hasEnabled) {
     [output appendFormat:@"%@%@: %@\n", indent, @"enabled", [NSNumber numberWithBool:self.enabled]];
@@ -548,7 +548,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
   if (self.hasId) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+    [dictionary setObject: [NSNumber numberWithUnsignedLongLong:self.id] forKey: @"id"];
   }
   if (self.hasEnabled) {
     [dictionary setObject: [NSNumber numberWithBool:self.enabled] forKey: @"enabled"];
@@ -573,7 +573,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
   if (self.hasId) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+    hashCode = hashCode * 31 + [[NSNumber numberWithUnsignedLongLong:self.id] hash];
   }
   if (self.hasEnabled) {
     hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.enabled] hash];
@@ -649,7 +649,7 @@ static OWSWebRTCProtosVideoStreamingStatus* defaultOWSWebRTCProtosVideoStreaming
         break;
       }
       case 8: {
-        [self setId:[input readUInt64]];
+        [self setId:(UInt64)[input readUInt64]];
         break;
       }
       case 16: {
