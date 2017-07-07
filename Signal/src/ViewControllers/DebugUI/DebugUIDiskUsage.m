@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Audit & Clean Up"
                                                            actionBlock:^{
-                                                               [OWSOrphanedDataCleaner auditAndCleanupAsync];
+                                                               [OWSOrphanedDataCleaner auditAndCleanupAsync:nil];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Save All Attachments"
                                                            actionBlock:^{

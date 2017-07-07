@@ -88,7 +88,7 @@
     // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
     //       of disk access.  We might want to only run it "once per version"
     //       or something like that in production.
-    [OWSOrphanedDataCleaner auditAndCleanupAsync];
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:nil];
 #endif
 
     [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];

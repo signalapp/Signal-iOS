@@ -103,7 +103,6 @@
 {
     TSAttachmentStream *videoAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"video/mp4" sourceFilename:nil];
-
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
