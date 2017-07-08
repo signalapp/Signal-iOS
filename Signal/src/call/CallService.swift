@@ -227,15 +227,11 @@ protocol CallServiceObserver: class {
 
     func didEnterBackground() {
         AssertIsOnMainThread()
-        Logger.info("\(self.TAG) \(#function)")
-
         self.updateIsVideoEnabled()
     }
 
     func didBecomeActive() {
         AssertIsOnMainThread()
-        Logger.info("\(self.TAG) \(#function)")
-
         self.updateIsVideoEnabled()
     }
 
@@ -555,10 +551,11 @@ protocol CallServiceObserver: class {
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return peerConnectionClient.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
+
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
@@ -630,7 +627,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+        peerConnectionClient.addRemoteIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
     }
 
     /**
@@ -713,7 +710,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This may happen if we hang up slightly before they hang up.
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: .obsoleteCall(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
@@ -1204,6 +1201,10 @@ protocol CallServiceObserver: class {
     // * IFF that call is the current call, we want to terminate it.
     public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
         AssertIsOnMainThread()
+
+        if case .assertionError(let description) = error {
+            assertionFailure(description)
+        }
 
         if let failedCall = failedCall {
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call

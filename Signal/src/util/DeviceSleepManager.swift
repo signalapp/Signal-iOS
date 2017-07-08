@@ -49,20 +49,26 @@ import Foundation
     }
 
     public func addBlock(blockObject: NSObject) {
+        AssertIsOnMainThread()
+
         blocks.append(SleepBlock(blockObject: blockObject))
 
         ensureSleepBlocking()
     }
 
     public func removeBlock(blockObject: NSObject) {
+        AssertIsOnMainThread()
+
         blocks = blocks.filter {
-         $0.blockObject != nil && $0.blockObject != blockObject
+            $0.blockObject != nil && $0.blockObject != blockObject
         }
 
         ensureSleepBlocking()
     }
 
     private func ensureSleepBlocking() {
+        AssertIsOnMainThread()
+
         // Cull expired blocks.
         blocks = blocks.filter {
             $0.blockObject != nil
@@ -71,7 +77,11 @@ import Foundation
 
         if UIApplication.shared.isIdleTimerDisabled != shouldBlock {
             if shouldBlock {
-                Logger.info("\(self.TAG) \(#function): Blocking sleep")
+                var logString = "\(self.TAG) \(#function): Blocking sleep because of: \(String(describing: blocks.first?.blockObject))"
+                if blocks.count > 1 {
+                    logString += " and \(blocks.count - 1) others."
+                }
+                Logger.info(logString)
             } else {
                 Logger.info("\(self.TAG) \(#function): Unblocking sleep")
             }

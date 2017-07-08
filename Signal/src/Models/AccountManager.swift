@@ -80,21 +80,20 @@ class AccountManager: NSObject {
     func getTurnServerInfo() -> Promise<TurnServerInfo> {
         return Promise { fulfill, reject in
             self.networkManager.makeRequest(TurnServerInfoRequest(),
-                                            success: { (task: URLSessionDataTask, responseObject: Any?) in
+                                            success: { (_: URLSessionDataTask, responseObject: Any?) in
                                                 guard responseObject != nil else {
                                                     return reject(OWSErrorMakeUnableToProcessServerResponseError())
                                                 }
 
                                                 if let responseDictionary = responseObject as? [String: AnyObject] {
                                                     if let turnServerInfo = TurnServerInfo(attributes:responseDictionary) {
-                                                        Logger.debug("\(self.TAG) got valid turnserver info")
                                                         return fulfill(turnServerInfo)
                                                     }
                                                     Logger.error("\(self.TAG) unexpected server response:\(responseDictionary)")
                                                 }
                                                 return reject(OWSErrorMakeUnableToProcessServerResponseError())
             },
-                                            failure: { (task: URLSessionDataTask, error: Error) in
+                                            failure: { (_: URLSessionDataTask, error: Error) in
                                                     return reject(error)
             })
         }

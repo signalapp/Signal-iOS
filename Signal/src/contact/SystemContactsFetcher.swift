@@ -471,8 +471,6 @@ class SystemContactsFetcher: NSObject {
                     return
                 }
 
-                Logger.debug("\(self.TAG) Notifying delegate that system contacts did change. hash:\(contactsHash)")
-
                 self.lastDelegateNotificationDate = Date()
                 self.lastContactUpdateHash = contactsHash
 

@@ -175,7 +175,6 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 
 - (void)stopTimer
 {
-    DDLogVerbose(@"%@ Stopping Timer.", self.logTag);
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:OWSMessagesViewControllerDidAppearNotification
                                                   object:nil];
