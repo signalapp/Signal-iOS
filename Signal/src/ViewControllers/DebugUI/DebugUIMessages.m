@@ -781,15 +781,15 @@ NS_ASSUME_NONNULL_BEGIN
          @"one that comes after it."),
         @"War against a foreign country only happens when the moneyed classes think they are going to profit from it.",
         @"People have only as much liberty as they have the intelligence to want and the courage to take.",
-        @"You cannot buy the revolution. You cannot make the revolution. You can only be the revolution. It is in your "
-        @"spirit, or it is nowhere.",
-        @"That is what I have always understood to be the essence of anarchism: the conviction that the burden of "
-        @"proof has to be placed on authority, and that it should be dismantled if that burden cannot be met.",
-        @"Ask for work. If they don't give you work, ask for bread. If they do not give you work or bread, then take "
-        @"bread.",
+        (@"You cannot buy the revolution. You cannot make the revolution. You can only be the revolution. It is in your "
+        @"spirit, or it is nowhere."),
+        (@"That is what I have always understood to be the essence of anarchism: the conviction that the burden of "
+        @"proof has to be placed on authority, and that it should be dismantled if that burden cannot be met."),
+        (@"Ask for work. If they don't give you work, ask for bread. If they do not give you work or bread, then take "
+        @"bread."),
         @"Every society has the criminals it deserves.",
-        @"Anarchism is founded on the observation that since few men are wise enough to rule themselves, even fewer "
-        @"are wise enough to rule others.",
+        (@"Anarchism is founded on the observation that since few men are wise enough to rule themselves, even fewer "
+        @"are wise enough to rule others."),
         @"If you would know who controls you see who you may not criticise.",
         @"At one time in the world there were woods that no one owned."
     ];
