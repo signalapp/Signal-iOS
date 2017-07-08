@@ -7,6 +7,8 @@
 //
 
 import XCTest
+import Contacts
+
 @testable import Signal
 
 final class ContactsPickerTest: XCTestCase {

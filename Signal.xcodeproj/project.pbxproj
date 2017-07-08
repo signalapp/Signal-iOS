@@ -269,7 +269,6 @@
 		B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
 		B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
 		B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */; };
-		B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F69C1C29868000687D6E /* PushManagerTest.m */; };
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
 		B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A71C29868000687D6E /* CryptoToolsTest.m */; };
 		B660F6DA1C29868000687D6E /* ExceptionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AB1C29868000687D6E /* ExceptionsTest.m */; };
@@ -342,6 +341,11 @@
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
 		E32B0699162419B7046BC643 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */; };
+		E69CA0151F10BACA00C82323 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
+		E69CA0161F10BB0E00C82323 /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
+		E69CA0171F10BD5900C82323 /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
+		E69CA0181F10BD6D00C82323 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
+		E69CA0191F10BD7900C82323 /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -722,7 +726,6 @@
 		B646D1151AA5467E004133BA /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = translations/it_IT.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B660F6761C29867F00687D6E /* OWSContactsManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManagerTest.m; sourceTree = "<group>"; };
-		B660F69C1C29868000687D6E /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManagerTest.m; sourceTree = "<group>"; };
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B660F6A01C29868000687D6E /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
@@ -1501,7 +1504,6 @@
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
 				458E38381D6699110094BD24 /* Models */,
-				B660F69B1C29868000687D6E /* push */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
 				B660F6A01C29868000687D6E /* TestUtil.h */,
@@ -1527,14 +1529,6 @@
 				954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */,
 			);
 			path = contact;
-			sourceTree = "<group>";
-		};
-		B660F69B1C29868000687D6E /* push */ = {
-			isa = PBXGroup;
-			children = (
-				B660F69C1C29868000687D6E /* PushManagerTest.m */,
-			);
-			path = push;
 			sourceTree = "<group>";
 		};
 		B660F69D1C29868000687D6E /* Supporting Files */ = {
@@ -2273,9 +2267,11 @@
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
 				452C46901E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
 				451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */,
+				E69CA0151F10BACA00C82323 /* DeviceSleepManager.swift in Sources */,
 				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
+				E69CA0161F10BB0E00C82323 /* OWSAlerts.swift in Sources */,
 				B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */,
 				B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */,
 				B660F7201C29988E00687D6E /* Release.m in Sources */,
@@ -2293,6 +2289,7 @@
 				45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */,
 				34B3F8991E8DF1B90035BE1A /* TSMessageAdapterTest.m in Sources */,
 				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
+				E69CA0181F10BD6D00C82323 /* Strings.swift in Sources */,
 				45843D201D2236B30013E85A /* OWSContactsSearcher.m in Sources */,
 				45AE48521E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				450873C41D9D5149006B54F2 /* OWSExpirationTimerView.m in Sources */,
@@ -2332,12 +2329,13 @@
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
+				E69CA0191F10BD7900C82323 /* CallViewController.swift in Sources */,
 				45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */,
 				B660F6DD1C29868000687D6E /* ObservableTest.m in Sources */,
-				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
+				E69CA0171F10BD5900C82323 /* SafetyNumberConfirmationAlert.swift in Sources */,
 				45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				4505C2C01E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				450873C81D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
