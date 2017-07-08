@@ -41,8 +41,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
 class AccountManagerTest: XCTestCase {
-
-    let tsAccountManager = FailingTSAccountManager()
+    let tsAccountManager = FailingTSAccountManager.sharedInstance()
 
     func testRegisterWhenEmptyCode() {
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
@@ -86,7 +85,7 @@ class AccountManagerTest: XCTestCase {
     }
 
     func testSuccessfulRegistration() {
-        let tsAccountManager = TokenObtainingTSAccountManager()
+        let tsAccountManager = TokenObtainingTSAccountManager.sharedInstance()
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
 
         let expectation = self.expectation(description: "should succeed")
