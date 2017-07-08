@@ -62,7 +62,9 @@ class MessageFetcherJob: NSObject {
     // Do not use in production.
     func startRunLoop(timeInterval: Double) {
         Logger.error("\(TAG) Starting message fetch polling. This should not be used in production.")
-        timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(runAsync), userInfo: nil, repeats: true)
+        timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) {[weak self] _ in
+            self?.runAsync()
+        }
     }
 
     func stopRunLoop() {

@@ -698,11 +698,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         if callState == .connected {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
-                callDurationTimer = Timer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
+                callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
                                                          target:self,
-                                                         selector:#selector(updateCallDuration),
                                                          userInfo:nil,
-                                                         repeats:true)
+                                                         repeats:true) {[weak self] _ in
+                                                            self?.updateCallDuration()
+                }
             }
         } else {
             callDurationTimer?.invalidate()
@@ -710,7 +711,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
     }
 
-    func updateCallDuration(timer: Timer?) {
+    func updateCallDuration() {
         updateCallStatusLabel(callState: call.state)
     }
 
