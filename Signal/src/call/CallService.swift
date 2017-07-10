@@ -497,14 +497,26 @@ protocol CallServiceObserver: class {
 
             handleLocalBusyCall(newCall, thread: thread)
 
-            if self.call?.remotePhoneNumber == newCall.remotePhoneNumber {
-                // If we're receiving a new call offer from the user we think we have a call with, terminate
-                // our current call to get back to a known good state.  If they call back, we'll be ready.
+            if self.call!.remotePhoneNumber == newCall.remotePhoneNumber {
+                Logger.info("\(TAG) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
+
+                // If we're receiving a new call offer from the user we already think we have a call with,
+                // terminate our current call to get back to a known good state.  If they call back, we'll 
+                // be ready.
                 // 
                 // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
-                // b) ever connected.  There will be a bit of complexity around making sure that two
+                // b) never connected.  There will be a bit of complexity around making sure that two
                 // parties that call each other at the same time end up connected.
-                terminateCall()
+                switch self.call!.state {
+                case .idle, .dialing, .remoteRinging:
+                    // If both users are trying to call each other at the same time,
+                    // both should see busy.
+                    handleRemoteBusy(thread:self.call!.thread)
+                case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+                    // If one user calls another while the other has a "vestigial" call with
+                    // that same user, fail the old call.
+                    terminateCall()
+                }
             }
 
             return
