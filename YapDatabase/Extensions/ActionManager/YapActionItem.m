@@ -88,7 +88,7 @@
 	// if (date <= atDate) -> date is in past   -> ready
 	// if (date  > atDate) -> date is in future -> not ready
 	//
-	return [date isBeforeOrEqual:atDate];
+	return [date ydb_isBeforeOrEqual:atDate];
 }
 
 /**
@@ -116,7 +116,7 @@
 		// if (nextRetry <= atDate) -> nextRetry is in past   -> ready
 		// if (nextRetry  > atDate) -> nextRetry is in future -> not ready
 		//
-		return [nextRetry isBeforeOrEqual:atDate];
+		return [nextRetry ydb_isBeforeOrEqual:atDate];
 	}
 }
 
