@@ -719,9 +719,9 @@
 	__block NSMutableArray *collectionKeysToRemove = nil;
 	__block NSDate *nextTimerFireDate = nil;
 	
-	[actionItemsDict enumerateKeysAndObjectsUsingBlock:^(YapCollectionKey *ck, NSArray *actionItems, BOOL *stop) {
+	[actionItemsDict enumerateKeysAndObjectsUsingBlock:^(YapCollectionKey *ck, NSArray *actionItems, BOOL *dictStop) {
 		
-		[actionItems enumerateObjectsUsingBlock:^(YapActionItem *actionItem, NSUInteger idx, BOOL *stop) {
+		[actionItems enumerateObjectsUsingBlock:^(YapActionItem *actionItem, NSUInteger idx, BOOL *itemsStop) {
 			
 			BOOL needsRun = NO;
 			NSDate *actionDate = nil;
