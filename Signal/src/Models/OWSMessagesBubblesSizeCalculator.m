@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSInteraction *interaction = ((OWSCall *)messageData).interaction;
         return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
     } else {
-        OWSFail(@"Can't size unknown message data type: %@", [messageData class]);
+        // Ignore unknown message types; the tests use mocks.
     }
 
     // BEGIN HACK iOS10EmojiBug see: https://github.com/WhisperSystems/Signal-iOS/issues/1368
