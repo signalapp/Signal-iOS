@@ -54,24 +54,26 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 - (void)configureProgrammatically
 {
+    self.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
+
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
-    _nameLabel.contentMode = UIViewContentModeLeft;
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     [self.contentView addSubview:_nameLabel];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    [_avatarView.leadingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.leadingAnchor].active = YES;
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
-    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [_nameLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:_avatarView withOffset:12.f];
+    [_nameLabel.leadingAnchor constraintEqualToAnchor:_avatarView.trailingAnchor constant:12.f].active = YES;
+    [_nameLabel.trailingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.trailingAnchor].active = YES;
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
