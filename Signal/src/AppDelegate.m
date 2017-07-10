@@ -815,7 +815,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         SignalsNavigationController *navigationController =
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;
-        //        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
