@@ -160,7 +160,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
         return self.reflectorHTTPSessionManager;
     } else {
-        DDLogDebug(@"%@ using default HTTPSessionManager", self.tag);
         return self.defaultHTTPSessionManager;
     }
 }

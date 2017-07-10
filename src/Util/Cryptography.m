@@ -153,8 +153,6 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogWarn(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@", self.tag, digest, ourDigest);
             return nil;
         }
-    } else {
-        DDLogVerbose(@"%@ %s no digest to verify", self.tag, __PRETTY_FUNCTION__);
     }
 
     // decrypt

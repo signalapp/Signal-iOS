@@ -192,7 +192,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
         [message updateWithMessageState:TSOutgoingMessageStateSentToService];
 
-        DDLogDebug(@"%@ succeeded.", strongSelf.tag);
         aSuccessHandler();
 
         [strongSelf markAsComplete];
@@ -281,12 +280,10 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (void)tryWithRemainingRetries:(NSUInteger)remainingRetries
 {
-    DDLogDebug(@"%@ remainingRetries: %lu", self.tag, (unsigned long)remainingRetries);
-
     // Use this flag to ensure a given operation only succeeds or fails once.
     __block BOOL onceFlag = NO;
     RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
-        DDLogInfo(@"%@ Sending failed.", self.tag);
+        DDLogInfo(@"%@ Sending failed. Remaining retries: %lu", self.tag, (unsigned long)remainingRetries);
 
         OWSAssert(!onceFlag);
         onceFlag = YES;
@@ -450,8 +447,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      success:(void (^)())successHandler
                      failure:(RetryableFailureHandler)failureHandler
 {
-    DDLogDebug(@"%@ sending message: %@", self.tag, message.debugDescription);
-
     [self ensureAnyAttachmentsUploaded:message
         success:^() {
             [self deliverMessage:message
@@ -472,7 +467,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              failure:(RetryableFailureHandler)failureHandler
 {
     if (!message.hasAttachments) {
-        DDLogDebug(@"%@ No attachments for message: %@", self.tag, message);
         return successHandler();
     }
 
@@ -1169,7 +1163,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     
     NSData *plainText = [message buildPlainTextData];
-    DDLogDebug(@"%@ message: %@ plainTextData.length: %lu", self.tag, [message class], plainText.length);
+    DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], plainText.length);
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
