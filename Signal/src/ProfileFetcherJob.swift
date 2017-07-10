@@ -62,8 +62,7 @@ class ProfileFetcherJob: NSObject {
             request,
             success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                 guard let profileResponse = SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject) else {
-                    Logger.error("\(self.TAG) response object had unexpected content")
-                    assertionFailure("\(self.TAG) response object had unexpected content")
+                    owsFail("\(self.TAG) response object had unexpected content")
                     return
                 }
 
@@ -71,8 +70,7 @@ class ProfileFetcherJob: NSObject {
         },
             failure: { (_: URLSessionDataTask?, error: Error?) in
                 guard let error = error else {
-                    Logger.error("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
-                    assertionFailure("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
+                    owsFail("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
                     return
                 }
 

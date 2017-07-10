@@ -290,7 +290,7 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
             guard let peerConnectionClient = self.peerConnectionClient else {
-                assertionFailure("Missing peerConnectionClient in \(#function)")
+                owsFail("Missing peerConnectionClient in \(#function)")
                 throw CallError.obsoleteCall(description:"Missing peerConnectionClient in \(#function)")
             }
 
@@ -449,8 +449,7 @@ protocol CallServiceObserver: class {
 
             switch untrustedIdentity!.verificationState {
             case .verified:
-                Logger.error("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
-                assertionFailure("shouldn't have missed a call due to untrusted identity if the identity is verified")
+                owsFail("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
                 self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
             case .default:
                 self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
@@ -733,14 +732,14 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
@@ -823,14 +822,14 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
@@ -849,7 +848,7 @@ protocol CallServiceObserver: class {
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         if let callRecord = call.callRecord {
-            assertionFailure("Not expecting callrecord to already be set")
+            owsFail("Not expecting callrecord to already be set")
             callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
         } else {
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
@@ -919,7 +918,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
@@ -973,7 +972,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
@@ -1011,7 +1010,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) received data message, but there is no current call. Ignoring.")
+            owsFail("\(TAG) received data message, but there is no current call. Ignoring.")
             handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
             return
         }
@@ -1023,7 +1022,7 @@ protocol CallServiceObserver: class {
 
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                assertionFailure("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
+                owsFail("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
                 handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
             }
@@ -1038,7 +1037,7 @@ protocol CallServiceObserver: class {
 
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                assertionFailure("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
+                owsFail("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
                 handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
             }
@@ -1231,7 +1230,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         if case .assertionError(let description) = error {
-            assertionFailure(description)
+            owsFail(description)
         }
 
         if let failedCall = failedCall {

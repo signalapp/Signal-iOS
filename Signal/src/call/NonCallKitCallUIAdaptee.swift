@@ -61,12 +61,12 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard let call = self.callService.call else {
-            assertionFailure("\(self.TAG) in \(#function) No current call.")
+            owsFail("\(self.TAG) in \(#function) No current call.")
             return
         }
 
         guard call.localId == localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -77,7 +77,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -89,12 +89,12 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard let call = self.callService.call else {
-            assertionFailure("\(self.TAG) in \(#function) No current call.")
+            owsFail("\(self.TAG) in \(#function) No current call.")
             return
         }
 
         guard call.localId == localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -105,7 +105,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -124,7 +124,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         // If both parties hang up at the same moment,
         // call might already be nil.
         guard self.callService.call == nil || call.localId == self.callService.call?.localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -153,7 +153,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 
@@ -164,7 +164,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            assertionFailure("\(self.TAG) in \(#function) localId does not match current call")
+            owsFail("\(self.TAG) in \(#function) localId does not match current call")
             return
         }
 

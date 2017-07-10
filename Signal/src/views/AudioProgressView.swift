@@ -52,7 +52,7 @@ import UIKit
 
         super.init(coder: aDecoder)
 
-        assertionFailure()
+        owsFail("\(self.tag) Invalid constructor")
     }
 
     public required init() {

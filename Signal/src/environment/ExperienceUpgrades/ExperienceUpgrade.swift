@@ -26,7 +26,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         self.image = nil
         super.init(uniqueId: uniqueId)
     }
-    
+
     required init!(coder: NSCoder!) {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
@@ -36,7 +36,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         self.image = nil
         super.init(coder: coder)
     }
-    
+
     required init(dictionary dictionaryValue: [AnyHashable : Any]!) throws {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
@@ -57,7 +57,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
             return super.storageBehaviorForProperty(withKey: propertyKey)
         } else {
             // Being conservative here in case we rename a property.
-            assertionFailure("unknown property \(propertyKey)")
+            owsFail("unknown property \(propertyKey)")
             return super.storageBehaviorForProperty(withKey: propertyKey)
         }
     }

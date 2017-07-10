@@ -42,9 +42,8 @@ import AVFoundation
                     newPlayer?.numberOfLoops = -1
                 }
             } catch {
-                Logger.error("\(self.TAG) faild to build audio player with error: \(error)")
+                owsFail("\(self.TAG) failed to build audio player with error: \(error)")
                 newPlayer = nil
-                assertionFailure()
             }
             return newPlayer
         }()
@@ -254,8 +253,7 @@ import AVFoundation
 
     private func play(sound: Sound) {
         guard let newPlayer = sound.player else {
-            Logger.error("\(self.TAG) unable to build player")
-            assertionFailure()
+            owsFail("\(self.TAG) unable to build player")
             return
         }
         Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
@@ -355,8 +353,7 @@ import AVFoundation
             }
         } catch {
             let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
-            assertionFailure(message)
-            Logger.error(message)
+            owsFail(message)
         }
     }
 }

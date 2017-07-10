@@ -41,7 +41,7 @@ class AttachmentPointerView: UIView {
 
     @available(*, unavailable)
     override init(frame: CGRect) {
-        assertionFailure()
+        owsFail("invalid constructor")
         // This initializer should never be called, but we assign some bogus values to keep the compiler happy.
         self.filename = genericFilename
         self.isIncoming = false
@@ -53,7 +53,8 @@ class AttachmentPointerView: UIView {
 
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        assertionFailure()
+        owsFail("Invalid constructor")
+
         // This initializer should never be called, but we assign some bogus values to keep the compiler happy.
         self.filename = genericFilename
         self.isIncoming = false

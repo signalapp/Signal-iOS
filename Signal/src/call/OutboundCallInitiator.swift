@@ -41,8 +41,7 @@ import Foundation
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings
         guard let callUIAdapter = Environment.getCurrent().callUIAdapter else {
-            assertionFailure()
-            Logger.error("\(TAG) can't initiate call because callUIAdapter is nil")
+            owsFail("\(TAG) can't initiate call because callUIAdapter is nil")
             return false
         }
 
