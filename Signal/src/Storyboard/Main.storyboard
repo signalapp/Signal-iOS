@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="tuk-0x-yCb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -12,95 +12,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Conversations-->
-        <scene sceneID="82U-Xj-21R">
-            <objects>
-                <viewController storyboardIdentifier="SignalsViewController" id="MY2-bB-USa" customClass="SignalsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="lZK-q4-iwt"/>
-                        <viewControllerLayoutGuide type="bottom" id="7uh-gm-z8v"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="EFA-Fu-XJm">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lKc-rv-FH5" userLabel="empty state view">
-                                <rect key="frame" x="16" y="233.5" width="343" height="200.5"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Messages :( Tap Compose to send a message or invite a friend to Signal" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Srx-i1-WhD">
-                                        <rect key="frame" x="0.0" y="0.0" width="343" height="200.5"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="200" id="GEd-dY-d8r"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="Srx-i1-WhD" secondAttribute="trailing" id="2nM-ny-Yf0"/>
-                                    <constraint firstAttribute="bottom" secondItem="Srx-i1-WhD" secondAttribute="bottom" id="JxH-61-Mbg"/>
-                                    <constraint firstItem="Srx-i1-WhD" firstAttribute="top" secondItem="lKc-rv-FH5" secondAttribute="top" id="RXl-15-3Bf"/>
-                                    <constraint firstItem="Srx-i1-WhD" firstAttribute="leading" secondItem="lKc-rv-FH5" secondAttribute="leading" id="sPV-PU-NeI"/>
-                                </constraints>
-                            </view>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PaA-ol-uQT">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <sections/>
-                                <connections>
-                                    <outlet property="dataSource" destination="MY2-bB-USa" id="kop-Y6-6DR"/>
-                                    <outlet property="delegate" destination="MY2-bB-USa" id="vmj-PA-2Od"/>
-                                </connections>
-                            </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7iZ-hQ-Iik" userLabel="Missing Contacts Permission" customClass="ReminderView" customModule="Signal" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="64" width="375" height="0.0"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" id="b7U-Ma-c6S"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="PaA-ol-uQT" firstAttribute="leading" secondItem="EFA-Fu-XJm" secondAttribute="leadingMargin" constant="-16" id="0gf-ME-9L1"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="lKc-rv-FH5" secondAttribute="trailing" id="2vI-V9-xoy"/>
-                            <constraint firstAttribute="trailing" secondItem="7iZ-hQ-Iik" secondAttribute="trailing" id="4BJ-Md-OUO"/>
-                            <constraint firstItem="7iZ-hQ-Iik" firstAttribute="leading" secondItem="EFA-Fu-XJm" secondAttribute="leading" id="C4Q-v3-nmH"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="PaA-ol-uQT" secondAttribute="trailing" constant="-16" id="Clg-qg-Ldn"/>
-                            <constraint firstItem="PaA-ol-uQT" firstAttribute="top" secondItem="7iZ-hQ-Iik" secondAttribute="bottom" id="IZB-M9-K0p"/>
-                            <constraint firstItem="lKc-rv-FH5" firstAttribute="centerY" secondItem="EFA-Fu-XJm" secondAttribute="centerY" id="ToE-Bp-7ze"/>
-                            <constraint firstItem="PaA-ol-uQT" firstAttribute="bottom" secondItem="7uh-gm-z8v" secondAttribute="top" id="jLN-Fv-npv"/>
-                            <constraint firstItem="7iZ-hQ-Iik" firstAttribute="top" secondItem="lZK-q4-iwt" secondAttribute="bottom" id="nfM-45-ZER"/>
-                            <constraint firstItem="lKc-rv-FH5" firstAttribute="leading" secondItem="EFA-Fu-XJm" secondAttribute="leadingMargin" id="yed-vX-e9v"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" title="Conversations" id="Um0-0y-8lr">
-                        <barButtonItem key="backBarButtonItem" title=" " id="a19-h1-1ZS"/>
-                        <barButtonItem key="leftBarButtonItem" image="settings" width="100" id="PYj-7F-J24">
-                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            <color key="tintColor" red="0.99987119436264038" green="0.99998223781585693" blue="0.99984109401702881" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="Oft-fU-tf5">
-                            <inset key="imageInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
-                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <connections>
-                                <action selector="composeNew" destination="MY2-bB-USa" id="les-Zd-k35"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="emptyBoxLabel" destination="Srx-i1-WhD" id="wap-un-Cz5"/>
-                        <outlet property="hideMissingContactsPermissionViewConstraint" destination="b7U-Ma-c6S" id="bcT-sh-weS"/>
-                        <outlet property="missingContactsPermissionView" destination="7iZ-hQ-Iik" id="aWf-NH-kn6"/>
-                        <outlet property="tableView" destination="PaA-ol-uQT" id="nQU-tR-wbL"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dE8-zB-mtF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-2853" y="-1538"/>
-        </scene>
         <!--MessagesVC-->
         <scene sceneID="QqV-z2-xRW">
             <objects>
@@ -148,25 +59,6 @@
                 </view>
             </objects>
             <point key="canvasLocation" x="-2287" y="-1516"/>
-        </scene>
-        <!--Signals Navigation Controller-->
-        <scene sceneID="miN-Ma-3eR">
-            <objects>
-                <navigationController storyboardIdentifier="UserInitialViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tuk-0x-yCb" customClass="SignalsNavigationController" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="VNq-cN-pk9">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.082137122750282288" green="0.46843802928924561" blue="0.91112053394317627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="MY2-bB-USa" kind="relationship" relationship="rootViewController" id="3Fm-tH-SUz"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6tU-Dy-HQe" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-3434" y="-1541"/>
         </scene>
         <!--Linked Devices-->
         <scene sceneID="R59-ey-Ucx">
@@ -372,7 +264,6 @@
     <resources>
         <image name="contact-options-action" width="44" height="44"/>
         <image name="ic_devices_ios" width="180" height="119"/>
-        <image name="settings" width="44" height="44"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

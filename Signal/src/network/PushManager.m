@@ -155,7 +155,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
                 success:^{
                     // TODO do we really want to mark them all as read?
                     [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
-                    [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
                 }
                 failure:^(NSError *error) {
                     // TODO Surface the specific error in the notification?

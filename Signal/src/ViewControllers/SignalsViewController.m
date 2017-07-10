@@ -29,9 +29,11 @@
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
 #define CELL_HEIGHT 72.0f
-#define HEADER_HEIGHT 44.0f
 
-@interface SignalsViewController ()
+@interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) UILabel *emptyBoxLabel;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -57,8 +59,10 @@
 
 // Views
 
-@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (weak, nonatomic) ReminderView *missingContactsPermissionView;
+@property (weak, nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+
+@property (nonatomic) TSThread *lastThread;
 
 @end
 
@@ -82,6 +86,8 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
+    OWSFail(@"Do not load this from the storyboard.");
+
     self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
@@ -146,10 +152,56 @@
 
 #pragma mark - View Life Cycle
 
-- (void)awakeFromNib
+- (void)loadView
 {
-    [super awakeFromNib];
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    // TODO: Remove this.
     [[Environment getCurrent] setSignalsViewController:self];
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                      target:self
+                                                      action:@selector(composeNew)];
+
+    ReminderView *missingContactsPermissionView = [ReminderView new];
+    self.missingContactsPermissionView = missingContactsPermissionView;
+    [self.view addSubview:missingContactsPermissionView];
+    [missingContactsPermissionView autoPinWidthToSuperview];
+    [missingContactsPermissionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.hideMissingContactsPermissionViewConstraint =
+        [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
+
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView autoPinWidthToSuperview];
+    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+
+    UILabel *emptyBoxLabel = [UILabel new];
+    self.emptyBoxLabel = emptyBoxLabel;
+    [self.view addSubview:emptyBoxLabel];
+    [emptyBoxLabel autoPinWidthToSuperview];
+    [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
+    [self updateReminderView];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    DDLogError(@"self.tableView: %@", NSStringFromCGRect(self.tableView.frame));
+}
+
+- (void)updateReminderView
+{
+    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
 }
 
 - (void)viewDidLoad {
@@ -241,6 +293,7 @@
 
         MessagesViewController *vc = [MessagesViewController new];
         TSThread *thread           = [self threadForIndexPath:indexPath];
+        self.lastThread = thread;
         [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
         [vc peekSetup];
 
@@ -258,7 +311,7 @@
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (IBAction)composeNew
+- (void)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
 
@@ -290,7 +343,7 @@
     if ([TSThread numberOfKeysInCollection] > 0) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+                [self updateReminderView];
             });
         }];
     }
@@ -299,6 +352,27 @@
 
     self.isViewVisible = YES;
     [self checkIfEmptyView];
+
+    if (self.lastThread) {
+        NSIndexPath *indexPathOfLastThread = nil;
+        NSUInteger numberOfSections = [self.threadMappings numberOfSections];
+        for (NSUInteger section = 0; !indexPathOfLastThread && section < numberOfSections; section++) {
+            NSUInteger numberOfItems = [self.threadMappings numberOfItemsInSection:section];
+            for (NSUInteger row = 0; !indexPathOfLastThread && row < numberOfItems; row++) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)row inSection:(NSInteger)section];
+                TSThread *thread = [self threadForIndexPath:indexPath];
+                if ([thread.uniqueId isEqualToString:self.lastThread.uniqueId]) {
+                    indexPathOfLastThread = indexPath;
+                }
+            }
+        }
+
+        if (indexPathOfLastThread) {
+            [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
+                                  atScrollPosition:UITableViewScrollPositionNone
+                                          animated:NO];
+        }
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -367,6 +441,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
     if (self.newlyRegisteredUser) {
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
@@ -625,6 +700,7 @@
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];
+        self.lastThread = thread;
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -695,14 +771,16 @@
     }
 }
 
-#pragma mark - IBAction
+#pragma mark - Groupings
 
-- (IBAction)selectedInbox:(id)sender {
+- (void)selectedInbox:(id)sender
+{
     self.viewingThreadsIn = kInboxState;
     [self changeToGrouping:TSInboxGroup];
 }
 
-- (IBAction)selectedArchive:(id)sender {
+- (void)selectedArchive:(id)sender
+{
     self.viewingThreadsIn = kArchiveState;
     [self changeToGrouping:TSArchiveGroup];
 }
@@ -808,12 +886,6 @@
 
     [self.tableView endUpdates];
     [self checkIfEmptyView];
-}
-
-- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
-}
-
-- (IBAction)unwindMessagesView:(UIStoryboardSegue *)segue {
 }
 
 - (void)checkIfEmptyView {

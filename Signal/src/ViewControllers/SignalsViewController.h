@@ -7,17 +7,17 @@
 #import "Contact.h"
 #import "TSGroupModel.h"
 
-@interface SignalsViewController
-    : UIViewController <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+@interface SignalsViewController : UIViewController
 
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) IBOutlet UILabel *emptyBoxLabel;
+// TODO: Remove this property.
 @property (nonatomic) BOOL newlyRegisteredUser;
 
 - (void)presentThread:(TSThread *)thread
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;
+
 - (NSNumber *)updateInboxCountLabel;
+
 - (IBAction)composeNew;
 
 - (void)presentTopLevelModalViewController:(UIViewController *)viewController
