@@ -366,6 +366,9 @@
     self.isViewVisible = YES;
     [self checkIfEmptyView];
 
+    // When returning to home view, try to ensure that the "last" thread is still
+    // visible.  The threads often change ordering while in conversation view due
+    // to incoming & outgoing messages.
     if (self.lastThread) {
         NSIndexPath *indexPathOfLastThread = nil;
         NSUInteger numberOfSections = [self.threadMappings numberOfSections];
