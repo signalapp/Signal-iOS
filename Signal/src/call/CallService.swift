@@ -505,9 +505,8 @@ protocol CallServiceObserver: class {
                 // be ready.
                 // 
                 // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
-                // b) ever connected.  There will be a bit of complexity around making sure that two
-                // parties that call each other at
-
+                // b) never connected.  There will be a bit of complexity around making sure that two
+                // parties that call each other at the same time end up connected.
                 switch self.call!.state {
                 case .idle, .dialing, .remoteRinging:
                     // If both users are trying to call each other at the same time,
