@@ -83,26 +83,5 @@ If you have any other issues, please ask on the [community forum](https://whispe
 ### Building WebRTC
 
 A prebuilt version of WebRTC.framework resides in our Carthage submodule (see above).
-However, if you'd like to build it from souce, this is how it's done.
-
-These instructions are derived from the WebRTC documentation:
-
-https://webrtc.org/native-code/ios/
-
-    # 1. Install depot tools
-    cd <somewhere>
-    git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    cd depot_tools
-    export PATH=<somewhere>/depot_tools:"$PATH"
-    # 2. Fetch webrtc source
-    cd <somewhere else>
-    mkdir webrtc
-    cd webrtc
-    fetch --nohooks webrtc_ios
-    gclient sync
-    # 3. Build webrtc
-    cd src
-    tools-webrtc/ios/build_ios_libs.sh
-    # 4. Move the WebRTC.framework into Signal-iOS's Carthage directory
-    mv out_ios_libs/WebRTC.framework <Your Signal-iOS repository>/Carthage/Build/iOS/
+However, if you'd like to build it from source, see https://github.com/WhisperSystems/signal-webrtc-ios
 
