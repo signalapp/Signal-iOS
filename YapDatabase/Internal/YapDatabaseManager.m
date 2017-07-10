@@ -1,5 +1,5 @@
 #import "YapDatabaseManager.h"
-#import <libkern/OSAtomic.h>
+#import "YapDatabaseAtomic.h"
 
 /**
  * There should only be one YapDatabase or YapCollectionDatabase per file.
@@ -13,7 +13,7 @@
 @implementation YapDatabaseManager
 
 static NSMutableSet *registeredPaths;
-static OSSpinLock lock;
+static YAPUnfairLock lock;
 
 + (void)initialize
 {
@@ -21,7 +21,7 @@ static OSSpinLock lock;
 	dispatch_once(&onceToken, ^{
 		
 		registeredPaths = [[NSMutableSet alloc] init];
-		lock = OS_SPINLOCK_INIT;
+		lock = YAP_UNFAIR_LOCK_INIT;
 	});
 }
 
@@ -33,13 +33,13 @@ static OSSpinLock lock;
 	
 	BOOL result = NO;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	if (![registeredPaths containsObject:path])
 	{
 		[registeredPaths addObject:path];
 		result = YES;
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 	
 	return result;
 }
@@ -49,9 +49,9 @@ static OSSpinLock lock;
 	NSString *path = [inPath stringByStandardizingPath];
 	if (path == nil) return;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	[registeredPaths removeObject:path];
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 }
 
 @end
