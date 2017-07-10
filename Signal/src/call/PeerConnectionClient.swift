@@ -444,13 +444,13 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
-    public func addIceCandidate(_ candidate: RTCIceCandidate) {
+    public func addRemoteIceCandidate(_ candidate: RTCIceCandidate) {
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) adding candidate")
+            Logger.info("\(self.TAG) adding remote ICE candidate: \(candidate.sdp)")
             self.peerConnection.add(candidate)
         }
     }
@@ -672,7 +672,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) didGenerate IceCandidate:\(candidate.sdp)")
+            Logger.info("\(self.TAG) adding local ICE candidate:\(candidate.sdp)")
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }

@@ -87,8 +87,6 @@ class ProfileFetcherJob: NSObject {
     }
 
     private func processResponse(signalServiceProfile: SignalServiceProfile) {
-        Logger.debug("\(TAG) in \(#function) for \(signalServiceProfile)")
-
         verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
         // Eventually we'll want to do more things with new SignalServiceProfile fields here.
