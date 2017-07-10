@@ -59,8 +59,8 @@
 
 // Views
 
-@property (weak, nonatomic) ReminderView *missingContactsPermissionView;
-@property (weak, nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
 @property (nonatomic) TSThread *lastThread;
 
@@ -166,13 +166,31 @@
                                                       target:self
                                                       action:@selector(composeNew)];
 
+    ReminderView *archiveReminderView = [ReminderView new];
+    archiveReminderView.text = NSLocalizedString(
+        @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
+    __weak SignalsViewController *weakSelf = self;
+    archiveReminderView.tapAction = ^{
+        [weakSelf selectedInbox];
+    };
+    [self.view addSubview:archiveReminderView];
+    [archiveReminderView autoPinWidthToSuperview];
+    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
+
     ReminderView *missingContactsPermissionView = [ReminderView new];
-    self.missingContactsPermissionView = missingContactsPermissionView;
+    missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
+    missingContactsPermissionView.tapAction = ^{
+        [[UIApplication sharedApplication] openSystemSettings];
+    };
     [self.view addSubview:missingContactsPermissionView];
     [missingContactsPermissionView autoPinWidthToSuperview];
-    [missingContactsPermissionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
     self.hideMissingContactsPermissionViewConstraint =
         [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
@@ -189,19 +207,21 @@
     [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
-    [self updateReminderView];
+    [self updateReminderViews];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)updateReminderViews
 {
-    [super viewDidLayoutSubviews];
-
-    DDLogError(@"self.tableView: %@", NSStringFromCGRect(self.tableView.frame));
-}
-
-- (void)updateReminderView
-{
-    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+    BOOL shouldHideArchiveReminderView = self.viewingThreadsIn != kArchiveState;
+    BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
+    if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
+        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
+        return;
+    }
+    self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
+    self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
+    [self.view setNeedsLayout];
+    [self.view layoutSubviews];
 }
 
 - (void)viewDidLoad {
@@ -215,7 +235,7 @@
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self selectedInbox:self];
+    [self selectedInbox];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -230,13 +250,6 @@
     [self.segmentedControl setSelectedSegmentIndex:0];
     navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
-
-
-    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
-    self.missingContactsPermissionView.tapAction = ^{
-        [[UIApplication sharedApplication] openSystemSettings];
-    };
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -332,9 +345,9 @@
 
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self selectedInbox:nil];
+        [self selectedInbox];
     } else {
-        [self selectedArchive:nil];
+        [self selectedArchive];
     }
 }
 
@@ -343,7 +356,7 @@
     if ([TSThread numberOfKeysInCollection] > 0) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderView];
+                [self updateReminderViews];
             });
         }];
     }
@@ -773,14 +786,16 @@
 
 #pragma mark - Groupings
 
-- (void)selectedInbox:(id)sender
+- (void)selectedInbox
 {
+    self.segmentedControl.selectedSegmentIndex = 0;
     self.viewingThreadsIn = kInboxState;
     [self changeToGrouping:TSInboxGroup];
 }
 
-- (void)selectedArchive:(id)sender
+- (void)selectedArchive
 {
+    self.segmentedControl.selectedSegmentIndex = 1;
     self.viewingThreadsIn = kArchiveState;
     [self changeToGrouping:TSArchiveGroup];
 }
@@ -797,6 +812,7 @@
     [self updateShouldObserveDBModifications];
 
     [self checkIfEmptyView];
+    [self updateReminderViews];
 }
 
 #pragma mark Database delegates
