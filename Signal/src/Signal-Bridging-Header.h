@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "TSMessageAdapter.h"
 #import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
