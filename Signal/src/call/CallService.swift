@@ -177,6 +177,12 @@ protocol CallServiceObserver: class {
     private var rejectPeerConnectionClientPromise: ((Error) -> Void)?
     private var peerConnectionClientPromise: Promise<Void>?
 
+    // Used by waituntilReadyToSendIceUpdates to make sure CallOffer was 
+    // sent before sending any ICE updates.
+    private var fulfillReadyToSendIceUpdatesPromise: (() -> Void)?
+    private var rejectReadyToSendIceUpdatesPromise: ((Error) -> Void)?
+    private var readyToSendIceUpdatesPromise: Promise<Void>?
+
     weak var localVideoTrack: RTCVideoTrack? {
         didSet {
             AssertIsOnMainThread()
@@ -318,6 +324,10 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
+            // For outgoing calls, wait until call offer is sent before we send any ICE updates, to ensure message ordering for
+            // clients that don't support receiving ICE updates before receiving the call offer.
+            self.readyToSendIceUpdates(call: call)
+
             let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
             self.fulfillCallConnectedPromise = fulfill
 
@@ -344,6 +354,26 @@ protocol CallServiceObserver: class {
         }
         promise.retainUntilComplete()
         return promise
+    }
+
+    func readyToSendIceUpdates(call: SignalCall) {
+        AssertIsOnMainThread()
+
+        guard self.call == call else {
+            self.handleFailedCall(failedCall: call, error: .obsoleteCall(description:"obsolete call in \(#function)"))
+            return
+        }
+
+        if self.fulfillReadyToSendIceUpdatesPromise == nil {
+            createReadyToSendIceUpdatesPromise()
+        }
+
+        guard let fulfillReadyToSendIceUpdatesPromise = self.fulfillReadyToSendIceUpdatesPromise else {
+            self.handleFailedCall(failedCall: call, error: .assertionError(description: "failed to create fulfillReadyToSendIceUpdatesPromise"))
+            return
+        }
+
+        fulfillReadyToSendIceUpdatesPromise()
     }
 
     /**
@@ -586,6 +616,10 @@ protocol CallServiceObserver: class {
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
+            // There's nothing technically forbidding receiving ICE updates before receiving the CallAnswer, but this
+            // a more intuitive ordering.
+            self.readyToSendIceUpdates(call: newCall)
+
             let (promise, fulfill, _) = Promise<Void>.pending()
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
@@ -648,7 +682,7 @@ protocol CallServiceObserver: class {
 
             peerConnectionClient.addRemoteIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
         }.catch { error in
-            Logger.error("\(self.TAG) in \(#function) failed with error: \(error)")
+            owsFail("\(self.TAG) in \(#function) waitForPeerConnectionClient failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -660,34 +694,43 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            // This will only be called for the current peerConnectionClient, so
-            // fail the current call.
-            handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since there is no current call."))
+            self.handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since there is no current call."))
             return
         }
 
-        guard call.state != .idle else {
-            // This will only be called for the current peerConnectionClient, so
-            // fail the current call.
-            handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since call is now idle."))
-            return
-        }
+        // Wait until we've sent the CallOffer before sending any ice updates for the call to ensure
+        // intuitive message ordering for other clients.
+        waitUntilReadyToSendIceUpdates().then { () -> Void in
+            guard call == self.call else {
+                self.handleFailedCurrentCall(error: .obsoleteCall(description: "current call changed since we became ready to send ice updates"))
+                return
+            }
 
-        let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+            guard call.state != .idle else {
+                // This will only be called for the current peerConnectionClient, so
+                // fail the current call.
+                self.handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since call is now idle."))
+                return
+            }
 
-        if self.sendIceUpdatesImmediately {
-            Logger.info("\(TAG) in \(#function). Sending immediately.")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendCallMessage(callMessage)
-            sendPromise.retainUntilComplete()
-        } else {
-            // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
-            // e.g. if the client has blocked our message due to an identity change, we'd otherwise
-            // bombard them with a bunch *more* undecipherable messages.
-            Logger.info("\(TAG) in \(#function). Enqueing for later.")
-            self.pendingIceUpdateMessages.append(iceUpdateMessage)
-            return
-        }
+            let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+
+            if self.sendIceUpdatesImmediately {
+                Logger.info("\(self.TAG) in \(#function). Sending immediately.")
+                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
+                let sendPromise = self.messageSender.sendCallMessage(callMessage)
+                sendPromise.retainUntilComplete()
+            } else {
+                // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
+                // e.g. if the client has blocked our message due to an identity change, we'd otherwise
+                // bombard them with a bunch *more* undecipherable messages.
+                Logger.info("\(self.TAG) in \(#function). Enqueing for later.")
+                self.pendingIceUpdateMessages.append(iceUpdateMessage)
+                return
+            }
+        }.catch { error in
+            owsFail("\(self.TAG) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
+        }.retainUntilComplete()
     }
 
     /**
@@ -1175,6 +1218,44 @@ protocol CallServiceObserver: class {
 
     // MARK: Helpers
 
+    private func waitUntilReadyToSendIceUpdates() -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        if self.readyToSendIceUpdatesPromise == nil {
+            createReadyToSendIceUpdatesPromise()
+        }
+
+        guard let readyToSendIceUpdatesPromise = self.readyToSendIceUpdatesPromise else {
+            return Promise(error: CallError.assertionError(description: "failed to create readyToSendIceUpdatesPromise"))
+        }
+
+        return readyToSendIceUpdatesPromise
+    }
+
+    private func createReadyToSendIceUpdatesPromise() {
+        AssertIsOnMainThread()
+
+        guard self.readyToSendIceUpdatesPromise == nil else {
+            Logger.error("expected readyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        guard self.fulfillReadyToSendIceUpdatesPromise == nil else {
+            Logger.error("expected fulfillReadyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        guard self.rejectReadyToSendIceUpdatesPromise == nil else {
+            Logger.error("expected rejectReadyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        self.fulfillReadyToSendIceUpdatesPromise = fulfill
+        self.rejectReadyToSendIceUpdatesPromise = reject
+        self.readyToSendIceUpdatesPromise = promise
+    }
+
     private func waitForPeerConnectionClient() -> Promise<Void> {
         AssertIsOnMainThread()
 
@@ -1324,6 +1405,15 @@ protocol CallServiceObserver: class {
         self.rejectPeerConnectionClientPromise = nil
         self.fulfillPeerConnectionClientPromise = nil
         self.peerConnectionClientPromise = nil
+
+        // In case we're still waiting on this promise somewhere, we need to reject it to avoid a memory leak.
+        // There is no harm in rejecting a previously fulfilled promise.
+        if let rejectReadyToSendIceUpdatesPromise = self.rejectReadyToSendIceUpdatesPromise {
+            rejectReadyToSendIceUpdatesPromise(CallError.obsoleteCall(description: "Terminating call"))
+        }
+        self.fulfillReadyToSendIceUpdatesPromise = nil
+        self.rejectReadyToSendIceUpdatesPromise = nil
+        self.readyToSendIceUpdatesPromise = nil
     }
 
     // MARK: - CallObserver
