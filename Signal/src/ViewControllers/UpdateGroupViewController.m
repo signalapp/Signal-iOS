@@ -239,21 +239,15 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
 
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"EDIT_GROUP_MEMBERS_ADD_MEMBER", @"Label for the cell that lets you add a new member to a group.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-                         customRowHeight:[ContactTableViewCell rowHeight]
-                         actionBlock:^{
-                             AddToGroupViewController *viewController = [AddToGroupViewController new];
-                             viewController.addToGroupDelegate = weakSelf;
-                             [weakSelf.navigationController pushViewController:viewController animated:YES];
-                         }]];
+    [section addItem:[OWSTableItem
+                         disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
+                                                    @"Label for the cell that lets you add a new member to a group.")
+                                customRowHeight:[ContactTableViewCell rowHeight]
+                                    actionBlock:^{
+                                        AddToGroupViewController *viewController = [AddToGroupViewController new];
+                                        viewController.addToGroupDelegate = weakSelf;
+                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                    }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[contactsViewHelper localNumber]];

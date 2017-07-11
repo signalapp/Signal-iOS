@@ -364,16 +364,10 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                             }]];
         }
     } else {
-        [signalAccountSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(
-                @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            return cell;
-        }
-                                                                actionBlock:nil]];
+        [signalAccountSection
+            addItem:[OWSTableItem
+                        softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                        @"A label that indicates the user has no Signal contacts.")]];
     }
     [contents addSection:signalAccountSection];
 
@@ -383,22 +377,16 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (OWSTableItem *)createAddNonContactItem
 {
     __weak NewGroupViewController *weakSelf = self;
-    return [OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
-            @"A label for the cell that lets you add a new non-contact member to a group.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-        customRowHeight:[ContactTableViewCell rowHeight]
-        actionBlock:^{
-            AddToGroupViewController *viewController = [AddToGroupViewController new];
-            viewController.addToGroupDelegate = weakSelf;
-            viewController.hideContacts = YES;
-            [weakSelf.navigationController pushViewController:viewController animated:YES];
-        }];
+    return [OWSTableItem
+        disclosureItemWithText:NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
+                                   @"A label for the cell that lets you add a new non-contact member to a group.")
+               customRowHeight:[ContactTableViewCell rowHeight]
+                   actionBlock:^{
+                       AddToGroupViewController *viewController = [AddToGroupViewController new];
+                       viewController.addToGroupDelegate = weakSelf;
+                       viewController.hideContacts = YES;
+                       [weakSelf.navigationController pushViewController:viewController animated:YES];
+                   }];
 }
 
 - (void)removeRecipientId:(NSString *)recipientId

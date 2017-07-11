@@ -68,21 +68,16 @@ NS_ASSUME_NONNULL_BEGIN
     addSection.footerTitle = NSLocalizedString(
         @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
-    [addSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"SETTINGS_BLOCK_LIST_ADD_BUTTON", @"A label for the 'add phone number' button in the block list table.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-                            actionBlock:^{
-                                AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-                                NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-                                NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
-                                [weakSelf.navigationController pushViewController:vc animated:YES];
-                            }]];
+    [addSection
+        addItem:[OWSTableItem
+                    disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
+                                               @"A label for the 'add phone number' button in the block list table.")
+                               actionBlock:^{
+                                   AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+                                   NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
+                                   NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
+                                   [weakSelf.navigationController pushViewController:vc animated:YES];
+                               }]];
     [contents addSection:addSection];
 
     // Blocklist section

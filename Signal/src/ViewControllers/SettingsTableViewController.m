@@ -97,6 +97,8 @@
     __weak SettingsTableViewController *weakSelf = self;
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         UILabel *titleLabel = [UILabel new];
         titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
@@ -112,7 +114,7 @@
         subtitleLabel.textAlignment = NSTextAlignmentCenter;
 
         UIView *stack = [UIView new];
-        [cell addSubview:stack];
+        [cell.contentView addSubview:stack];
         [stack autoCenterInSuperview];
 
         [stack addSubview:titleLabel];
@@ -214,8 +216,7 @@
         [cell.contentView addSubview:button];
         [button autoSetDimension:ALDimensionHeight toSize:50.f];
         [button autoVCenterInSuperview];
-        [button autoPinLeadingToSuperView];
-        [button autoPinTrailingToSuperView];
+        [button autoPinLeadingAndTrailingToSuperview];
         [button addTarget:self action:@selector(unregisterUser) forControlEvents:UIControlEventTouchUpInside];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;

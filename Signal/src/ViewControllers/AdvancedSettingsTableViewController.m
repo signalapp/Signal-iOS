@@ -179,25 +179,18 @@ NS_ASSUME_NONNULL_BEGIN
                                         selector:@selector(didToggleEnableCensorshipCircumventionSwitch:)]];
 
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated) {
-        [censorshipSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            OWSCountryMetadata *manualCensorshipCircumventionCountry =
-                [weakSelf ensureManualCensorshipCircumventionCountry];
-            OWSAssert(manualCensorshipCircumventionCountry);
-
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = [NSString
-                stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
-                                     @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
-                                     @"censorship circumvention country}}."),
-                manualCensorshipCircumventionCountry.localizedCountryName];
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            return cell;
-        }
-                                       actionBlock:^{
-                                           [weakSelf showDomainFrontingCountryView];
-                                       }]];
+        OWSCountryMetadata *manualCensorshipCircumventionCountry =
+            [weakSelf ensureManualCensorshipCircumventionCountry];
+        OWSAssert(manualCensorshipCircumventionCountry);
+        NSString *text = [NSString
+            stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
+                                 @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
+                                 @"censorship circumvention country}}."),
+            manualCensorshipCircumventionCountry.localizedCountryName];
+        [censorshipSection addItem:[OWSTableItem disclosureItemWithText:text
+                                                            actionBlock:^{
+                                                                [weakSelf showDomainFrontingCountryView];
+                                                            }]];
     }
     [contents addSection:censorshipSection];
 

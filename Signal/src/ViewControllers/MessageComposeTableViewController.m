@@ -287,38 +287,27 @@ NS_ASSUME_NONNULL_BEGIN
             [ContactTableViewCell rowHeight]);
 
     // Find Non-Contacts by Phone Number
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER", @"A label the cell that lets you add a new member to a group.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-                         customRowHeight:kActionCellHeight
-                         actionBlock:^{
-                             NewNonContactConversationViewController *viewController =
-                                 [NewNonContactConversationViewController new];
-                             viewController.nonContactConversationDelegate = weakSelf;
-                             [weakSelf.navigationController pushViewController:viewController animated:YES];
-                         }]];
+    [section addItem:[OWSTableItem
+                         disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                                    @"A label the cell that lets you add a new member to a group.")
+                                customRowHeight:kActionCellHeight
+                                    actionBlock:^{
+                                        NewNonContactConversationViewController *viewController =
+                                            [NewNonContactConversationViewController new];
+                                        viewController.nonContactConversationDelegate = weakSelf;
+                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                    }]];
 
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
         // Invite Contacts
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                @"Label for the cell that presents the 'invite contacts' workflow.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            return cell;
-        }
-                             customRowHeight:kActionCellHeight
-                             actionBlock:^{
-                                 [weakSelf presentInviteFlow];
-                             }]];
+        [section
+            addItem:[OWSTableItem
+                        disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                                                   @"Label for the cell that presents the 'invite contacts' workflow.")
+                               customRowHeight:kActionCellHeight
+                                   actionBlock:^{
+                                       [weakSelf presentInviteFlow];
+                                   }]];
     }
 
     // If the search string looks like a phone number, show either "new conversation..." cells and/or
@@ -350,22 +339,15 @@ NS_ASSUME_NONNULL_BEGIN
                                      [weakSelf newConversationWith:phoneNumber];
                                  }]];
         } else {
-            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text =
-                    [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
-                                                   @"Text for button to send a Signal invite via SMS. %@ is "
-                                                   @"placeholder for the receipient's phone number."),
-                              phoneNumber];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
-            }
-                                 customRowHeight:kActionCellHeight
-                                 actionBlock:^{
-                                     [weakSelf sendTextToPhoneNumber:phoneNumber];
-                                 }]];
+            NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                            @"Text for button to send a Signal invite via SMS. %@ is "
+                                                            @"placeholder for the receipient's phone number."),
+                                       phoneNumber];
+            [section addItem:[OWSTableItem disclosureItemWithText:text
+                                                  customRowHeight:kActionCellHeight
+                                                      actionBlock:^{
+                                                          [weakSelf sendTextToPhoneNumber:phoneNumber];
+                                                      }]];
         }
     }
 
@@ -411,22 +393,15 @@ NS_ASSUME_NONNULL_BEGIN
                 displayName = phoneNumber.toE164;
             }
 
-            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text =
-                    [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
-                                                   @"Text for button to send a Signal invite via SMS. %@ is "
-                                                   @"placeholder for the receipient's phone number."),
-                              displayName];
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-                cell.textLabel.textColor = [UIColor blackColor];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                return cell;
-            }
-                                 customRowHeight:kActionCellHeight
-                                 actionBlock:^{
-                                     [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
-                                 }]];
+            NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                            @"Text for button to send a Signal invite via SMS. %@ is "
+                                                            @"placeholder for the receipient's phone number."),
+                                       displayName];
+            [section addItem:[OWSTableItem disclosureItemWithText:text
+                                                  customRowHeight:kActionCellHeight
+                                                      actionBlock:^{
+                                                          [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
+                                                      }]];
         }
     }
 
@@ -435,36 +410,22 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
             && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text = NSLocalizedString(
-                    @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-                cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-                cell.textLabel.textAlignment = NSTextAlignmentCenter;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                return cell;
-            }
-                                                   customRowHeight:kActionCellHeight
-                                                       actionBlock:nil]];
+
+            [section
+                addItem:[OWSTableItem
+                            softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                            @"A label that indicates the user has no Signal contacts.")
+                                        customRowHeight:kActionCellHeight]];
         }
     }
 
     if (hasSearchText && !hasSearchResults) {
         // No Search Results
 
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
-                @"A label that indicates the user's search has no matching results.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            return cell;
-        }
-                                               customRowHeight:kActionCellHeight
-                                                   actionBlock:nil]];
+        [section addItem:[OWSTableItem softCenterLabelItemWithText:
+                                           NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
+                                               @"A label that indicates the user's search has no matching results.")
+                                                   customRowHeight:kActionCellHeight]];
     }
 
     [contents addSection:section];

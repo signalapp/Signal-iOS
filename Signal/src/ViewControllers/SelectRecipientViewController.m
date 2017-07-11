@@ -522,17 +522,10 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         if (signalAccounts.count == 0) {
             // No Contacts
 
-            [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text = NSLocalizedString(
-                    @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-                cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-                cell.textLabel.textAlignment = NSTextAlignmentCenter;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                return cell;
-            }
-                                                               actionBlock:nil]];
+            [contactsSection
+                addItem:[OWSTableItem softCenterLabelItemWithText:
+                                          NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                              @"A label that indicates the user has no Signal contacts.")]];
         } else {
             // Contacts
 
