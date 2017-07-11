@@ -14,19 +14,24 @@ default: test
 
 ci: dependencies test
 
+ci_scan: dependencies scan
+
 update_dependencies:
-	pod update
+	bundle exec pod update
 	carthage update --platform iOS
 
 dependencies:
 	cd $(WORKING_DIR) && \
 		git submodule update --init
-		pod install
+		bundle exec pod install
 		carthage build --platform iOS
 
 build: dependencies
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) build | xcpretty
+
+scan:
+	bundle exec fastlane scan
 
 test: optional_early_start_simulator
 	cd $(WORKING_DIR) && \
