@@ -224,73 +224,81 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return (self.isRTL ? -value : value);
 }
 
-- (void)autoPinLeadingToSuperView
+- (NSLayoutConstraint *)autoPinLeadingToSuperView
 {
-    [self autoPinLeadingToSuperViewWithMargin:0];
+    return [self autoPinLeadingToSuperViewWithMargin:0];
 }
 
-- (void)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
 {
-    [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
-                                       constant:[self rtlSafeConstant:margin]]
-        .active
-        = YES;
+    NSLayoutConstraint *constraint =
+        [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
 }
 
-- (void)autoPinTrailingToSuperView
+- (NSLayoutConstraint *)autoPinTrailingToSuperView
 {
-    [self autoPinTrailingToSuperViewWithMargin:0];
+    return [self autoPinTrailingToSuperViewWithMargin:0];
 }
 
-- (void)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
 {
-    [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
-                                        constant:[self rtlSafeConstant:margin]]
-        .active
-        = YES;
+    NSLayoutConstraint *constraint =
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
+                                            constant:[self rtlSafeConstant:margin]];
+    constraint.active = YES;
+    return constraint;
 }
 
-- (void)autoPinLeadingToTrailingOfView:(UIView *)view
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
 {
     OWSAssert(view);
 
-    [self autoPinLeadingToTrailingOfView:view margin:0];
+    NSLayoutConstraint *constraint = [self autoPinLeadingToTrailingOfView:view margin:0];
 }
 
-- (void)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
 
-    [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin].active = YES;
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
 }
 
-- (void)autoPinLeadingToView:(UIView *)view
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view
 {
     OWSAssert(view);
 
-    [self autoPinLeadingToView:view margin:0];
+    return [self autoPinLeadingToView:view margin:0];
 }
 
-- (void)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
 
-    [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:[self rtlSafeConstant:margin]].active = YES;
+    NSLayoutConstraint *constraint =
+        [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:[self rtlSafeConstant:margin]];
+    constraint.active = YES;
+    return constraint;
 }
 
-- (void)autoPinTrailingToView:(UIView *)view
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view
 {
     OWSAssert(view);
 
-    [self autoPinTrailingToView:view margin:0];
+    return [self autoPinTrailingToView:view margin:0];
 }
 
-- (void)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
 
-    [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:[self rtlSafeConstant:margin]].active
-        = YES;
+    NSLayoutConstraint *constraint =
+        [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:[self rtlSafeConstant:margin]];
+    constraint.active = YES;
+    return constraint;
 }
 
 - (NSTextAlignment)textAlignmentUnnatural

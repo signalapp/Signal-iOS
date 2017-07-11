@@ -210,9 +210,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
+        self.view.setHLayoutMargins(0)
+
         // Create the video views first, as they are under the other views.
         createVideoViews()
-
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
@@ -510,7 +511,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             hasConstraints = true
 
             let topMargin = CGFloat(40)
-            let contactHMargin = CGFloat(30)
+            let contactHMargin = CGFloat(0)
             let contactVSpacing = CGFloat(3)
             let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
             let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
@@ -529,18 +530,18 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
 
-            localVideoView.autoPinEdge(toSuperviewEdge:.right, withInset:videoPreviewHMargin)
+            localVideoView.autoPinTrailingToSuperView(withMargin: videoPreviewHMargin)
             localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
             localVideoView.autoSetDimension(.width, toSize:localVideoSize)
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
-            contactNameLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
+            contactNameLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
 
             callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
-            callStatusLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
+            callStatusLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
 
             contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
@@ -631,13 +632,13 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         var constraints: [NSLayoutConstraint] = []
 
         if localVideoView.isHidden {
-            let contactHMargin = CGFloat(30)
-            constraints.append(contactNameLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
-            constraints.append(callStatusLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
+            let contactHMargin = CGFloat(0)
+            constraints.append(contactNameLabel.autoPinTrailingToSuperView())
+            constraints.append(callStatusLabel.autoPinTrailingToSuperView())
         } else {
             let spacing = CGFloat(10)
-            constraints.append(contactNameLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
-            constraints.append(callStatusLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
+            constraints.append(localVideoView.autoPinLeading(toTrailingOf: contactNameLabel, margin: spacing))
+            constraints.append(localVideoView.autoPinLeading(toTrailingOf: callStatusLabel, margin: spacing))
         }
 
         self.localVideoConstraints = constraints

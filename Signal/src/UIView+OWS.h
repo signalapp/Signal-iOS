@@ -67,17 +67,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 //
 // NOTE: the margin values are inverted in RTL layouts.
 - (BOOL)isRTL;
-- (void)autoPinLeadingAndTrailingToSuperview;
-- (void)autoPinLeadingToSuperView;
-- (void)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin;
-- (void)autoPinTrailingToSuperView;
-- (void)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin;
-- (void)autoPinLeadingToTrailingOfView:(UIView *)view;
-- (void)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
-- (void)autoPinLeadingToView:(UIView *)view;
-- (void)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin;
-- (void)autoPinTrailingToView:(UIView *)view;
-- (void)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingAndTrailingToSuperview;
+- (NSLayoutConstraint *)autoPinLeadingToSuperView;
+- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToSuperView;
+- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
 // Return Right on LTR and Right on RTL.
 - (NSTextAlignment)textAlignmentUnnatural;
 // Leading and trailing anchors honor layout margins.
