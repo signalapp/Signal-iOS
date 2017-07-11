@@ -158,7 +158,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (!_phoneNumberTextField) {
         _phoneNumberTextField = [UITextField new];
         _phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-        _phoneNumberTextField.textAlignment = NSTextAlignmentRight;
+        _phoneNumberTextField.textAlignment = _phoneNumberTextField.textAlignmentUnnatural;
         _phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];
         _phoneNumberTextField.placeholder = NSLocalizedString(
             @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
@@ -200,13 +200,14 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UIView *row = [UIView new];
     [superview addSubview:row];
-    [row autoPinWidthToSuperview];
+    [row autoPinLeadingAndTrailingToSuperview];
     if (previousRow) {
         [row autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousRow withOffset:0];
     } else {
         [row autoPinEdgeToSuperviewEdge:ALEdgeTop];
     }
     [row autoSetDimension:ALDimensionHeight toSize:height];
+    row.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
     return row;
 }
 
@@ -455,6 +456,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         OWSAssert(strongSelf);
 
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         // Country Row
         UIView *countryRow = [self createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
@@ -463,11 +466,11 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
         UILabel *countryCodeLabel = self.countryCodeLabel;
         [countryRow addSubview:countryCodeLabel];
-        [countryCodeLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
+        [countryCodeLabel autoPinLeadingToSuperView];
         [countryCodeLabel autoVCenterInSuperview];
 
         [countryRow addSubview:self.countryCodeButton];
-        [self.countryCodeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+        [self.countryCodeButton autoPinTrailingToSuperView];
         [self.countryCodeButton autoVCenterInSuperview];
 
         // Phone Number Row
@@ -479,12 +482,12 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
         UILabel *phoneNumberLabel = self.phoneNumberLabel;
         [phoneNumberRow addSubview:phoneNumberLabel];
-        [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
+        [phoneNumberLabel autoPinLeadingToSuperView];
         [phoneNumberLabel autoVCenterInSuperview];
 
         [phoneNumberRow addSubview:self.phoneNumberTextField];
-        [self.phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
-        [self.phoneNumberTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:phoneNumberLabel withOffset:0];
+        [self.phoneNumberTextField autoPinLeadingToTrailingOfView:phoneNumberLabel margin:10.f];
+        [self.phoneNumberTextField autoPinTrailingToSuperView];
         [self.phoneNumberTextField autoVCenterInSuperview];
 
         // Example row.
@@ -493,14 +496,14 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                                         superview:cell.contentView];
         [examplePhoneNumberRow addSubview:self.examplePhoneNumberLabel];
         [self.examplePhoneNumberLabel autoVCenterInSuperview];
-        [self.examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+        [self.examplePhoneNumberLabel autoPinTrailingToSuperView];
 
         // Phone Number Button Row
         UIView *buttonRow =
             [self createRowWithHeight:kButtonRowHeight previousRow:examplePhoneNumberRow superview:cell.contentView];
         [buttonRow addSubview:self.phoneNumberButton];
         [self.phoneNumberButton autoVCenterInSuperview];
-        [self.phoneNumberButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+        [self.phoneNumberButton autoPinTrailingToSuperView];
 
         [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 

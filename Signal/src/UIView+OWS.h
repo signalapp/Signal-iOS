@@ -60,6 +60,27 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (void)centerOnSuperview;
 
+#pragma mark - RTL
+
+// For correct right-to-left layout behavior, use "leading" and "trailing",
+// not "left" and "right".
+//
+// NOTE: the margin values are inverted in RTL layouts.
+- (BOOL)isRTL;
+- (void)autoPinLeadingAndTrailingToSuperview;
+- (void)autoPinLeadingToSuperView;
+- (void)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin;
+- (void)autoPinTrailingToSuperView;
+- (void)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin;
+- (void)autoPinLeadingToTrailingOfView:(UIView *)view;
+- (void)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
+- (void)autoPinLeadingToView:(UIView *)view;
+- (void)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin;
+- (void)autoPinTrailingToView:(UIView *)view;
+- (void)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
+// Return Right on LTR and Right on RTL.
+- (NSTextAlignment)textAlignmentUnnatural;
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color;

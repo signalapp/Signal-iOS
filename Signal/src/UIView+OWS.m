@@ -35,12 +35,19 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.superview withOffset:+margin];
     [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.superview withOffset:-margin];
+    // TODO:
 }
 
 - (void)autoPinWidthToSuperview
 {
     [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.superview];
     [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.superview];
+}
+
+- (void)autoPinLeadingAndTrailingToSuperview
+{
+    [self autoPinLeadingToSuperView];
+    [self autoPinTrailingToSuperView];
 }
 
 - (void)autoPinHeightToSuperviewWithMargin:(CGFloat)margin
@@ -202,6 +209,93 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         round((self.superview.height - self.height) * 0.5f),
         self.width,
         self.height);
+}
+
+#pragma mark - RTL
+
+- (BOOL)isRTL
+{
+    return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
+        == UIUserInterfaceLayoutDirectionRightToLeft);
+}
+
+- (CGFloat)rtlSafeConstant:(CGFloat)value
+{
+    return (self.isRTL ? -value : value);
+}
+
+- (void)autoPinLeadingToSuperView
+{
+    [self autoPinLeadingToSuperViewWithMargin:0];
+}
+
+- (void)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
+{
+    [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
+                                       constant:[self rtlSafeConstant:margin]]
+        .active
+        = YES;
+}
+
+- (void)autoPinTrailingToSuperView
+{
+    [self autoPinTrailingToSuperViewWithMargin:0];
+}
+
+- (void)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
+{
+    [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
+                                        constant:[self rtlSafeConstant:margin]]
+        .active
+        = YES;
+}
+
+- (void)autoPinLeadingToTrailingOfView:(UIView *)view
+{
+    OWSAssert(view);
+
+    [self autoPinLeadingToTrailingOfView:view margin:0];
+}
+
+- (void)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin].active = YES;
+}
+
+- (void)autoPinLeadingToView:(UIView *)view
+{
+    OWSAssert(view);
+
+    [self autoPinLeadingToView:view margin:0];
+}
+
+- (void)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:[self rtlSafeConstant:margin]].active = YES;
+}
+
+- (void)autoPinTrailingToView:(UIView *)view
+{
+    OWSAssert(view);
+
+    [self autoPinTrailingToView:view margin:0];
+}
+
+- (void)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:[self rtlSafeConstant:margin]].active
+        = YES;
+}
+
+- (NSTextAlignment)textAlignmentUnnatural
+{
+    return (self.isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
 }
 
 #pragma mark - Debugging
