@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (self.isRecordingVoiceMemo) {
                 // Check for "slide to cancel" gesture.
                 CGPoint location = [sender locationInView:self];
-                CGFloat offset = MAX(0, self.voiceMemoGestureStartLocation.x - location.x);
+                CGFloat offset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
                 // The lower this value, the easier it is to cancel by accident.
                 // The higher this value, the harder it is to cancel.
                 const CGFloat kCancelOffsetPoints = 100.f;

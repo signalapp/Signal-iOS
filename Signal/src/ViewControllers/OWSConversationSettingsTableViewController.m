@@ -598,8 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [threadNameView addSubview:threadTitleLabel];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [threadTitleLabel autoPinWidthToSuperview];
 
     __block UIView *lastTitleView = threadTitleLabel;
 

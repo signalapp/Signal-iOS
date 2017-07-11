@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                           forState:UIControlStateNormal];
     backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [header addSubview:backButton];
-    [backButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [backButton autoPinLeadingToSuperViewWithMargin:10.f];
     [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
     [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     

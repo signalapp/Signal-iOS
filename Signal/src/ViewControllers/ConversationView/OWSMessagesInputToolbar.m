@@ -81,9 +81,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
     const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
+    NSString *arrowHead = (self.isRTL ? @"\uf105" : @"\uf104");
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:@"\uf104  "
+                                   initWithString:arrowHead
+                                       attributes:@{
+                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSBaselineOffsetAttributeName : @(-1.f),
+                                       }]];
+    [cancelString
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
                                            NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
@@ -99,7 +108,15 @@ NS_ASSUME_NONNULL_BEGIN
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:@"  \uf104"
+                                   initWithString:@"  "
+                                       attributes:@{
+                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSBaselineOffsetAttributeName : @(-1.f),
+                                       }]];
+    [cancelString
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
                                            NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
@@ -126,9 +143,9 @@ NS_ASSUME_NONNULL_BEGIN
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [imageView autoPinLeadingToSuperViewWithMargin:10.f];
     [self.recordingLabel autoVCenterInSuperview];
-    [self.recordingLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:imageView withOffset:5.f];
+    [self.recordingLabel autoPinLeadingToTrailingOfView:imageView margin:5.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
     [self.voiceMemoUI setNeedsLayout];
@@ -137,7 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Slide in the "slide to cancel" label.
     CGRect cancelLabelStartFrame = cancelLabel.frame;
     CGRect cancelLabelEndFrame = cancelLabel.frame;
-    cancelLabelStartFrame.origin.x = self.voiceMemoUI.bounds.size.width;
+    cancelLabelStartFrame.origin.x
+        = (self.isRTL ? -self.voiceMemoUI.bounds.size.width : self.voiceMemoUI.bounds.size.width);
     cancelLabel.frame = cancelLabelStartFrame;
     [UIView animateWithDuration:0.35f
                           delay:0.f
