@@ -682,7 +682,7 @@ protocol CallServiceObserver: class {
 
             peerConnectionClient.addRemoteIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
         }.catch { error in
-            owsFail("\(self.TAG) in \(#function) waitForPeerConnectionClient failed with error: \(error)")
+            Logger.error("\(self.TAG) in \(#function) waitForPeerConnectionClient failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -729,7 +729,7 @@ protocol CallServiceObserver: class {
                 return
             }
         }.catch { error in
-            owsFail("\(self.TAG) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
+            Logger.error("\(self.TAG) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -1236,17 +1236,17 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard self.readyToSendIceUpdatesPromise == nil else {
-            Logger.error("expected readyToSendIceUpdatesPromise to be nil")
+            owsFail("expected readyToSendIceUpdatesPromise to be nil")
             return
         }
 
         guard self.fulfillReadyToSendIceUpdatesPromise == nil else {
-            Logger.error("expected fulfillReadyToSendIceUpdatesPromise to be nil")
+            owsFail("expected fulfillReadyToSendIceUpdatesPromise to be nil")
             return
         }
 
         guard self.rejectReadyToSendIceUpdatesPromise == nil else {
-            Logger.error("expected rejectReadyToSendIceUpdatesPromise to be nil")
+            owsFail("expected rejectReadyToSendIceUpdatesPromise to be nil")
             return
         }
 
@@ -1279,17 +1279,17 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard self.peerConnectionClientPromise == nil else {
-            Logger.error("expected peerConnectionClientPromise to be nil")
+            owsFail("expected peerConnectionClientPromise to be nil")
             return
         }
 
         guard self.fulfillPeerConnectionClientPromise == nil else {
-            Logger.error("expected fulfillPeerConnectionClientPromise to be nil")
+            owsFail("expected fulfillPeerConnectionClientPromise to be nil")
             return
         }
 
         guard self.rejectPeerConnectionClientPromise == nil else {
-            Logger.error("expected rejectPeerConnectionClientPromise to be nil")
+            owsFail("expected rejectPeerConnectionClientPromise to be nil")
             return
         }
 
