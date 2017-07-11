@@ -5,5 +5,5 @@
 func owsFail(_ message: String) {
     Logger.error(message)
     Logger.flush()
-    owsFail(message)
+    assertionFailure(message)
 }
