@@ -22,7 +22,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NBPhoneNumber *number = [phoneUtil parse:text defaultRegion:regionCode error:&parseError];
 
     if (parseError) {
-        DDLogDebug(@"Issue while parsing number: %@", [parseError description]);
         return nil;
     }
 

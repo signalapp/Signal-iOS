@@ -156,7 +156,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (self.websocket) {
         switch ([self.websocket readyState]) {
             case SR_OPEN:
-                DDLogVerbose(@"WebSocket already open on connection request");
                 self.state = SocketManagerStateOpen;
                 return;
             case SR_CONNECTING:

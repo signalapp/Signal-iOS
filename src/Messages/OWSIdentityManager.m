@@ -207,7 +207,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return YES;
         }
 
-        DDLogDebug(@"%@ no changes for identity saved for recipient: %@", self.tag, recipientId);
         return NO;
     }
 }
@@ -365,7 +364,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     @synchronized(self)
     {
         if (recipientIdentity == nil) {
-            DDLogDebug(@"%@ Trusting previously unknown recipient: %@", self.tag, recipientIdentity.recipientId);
             return YES;
         }
 
@@ -376,7 +374,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         }
 
         if ([recipientIdentity isFirstKnownKey]) {
-            DDLogDebug(@"%@ trusting first known key for recipient: %@", self.tag, recipientIdentity.recipientId);
             return YES;
         }
 
@@ -388,12 +385,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     DDLogWarn(@"%@ not trusting new identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                     return NO;
                 } else {
-                    DDLogWarn(@"%@ trusting existing identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                     return YES;
                 }
             }
             case OWSVerificationStateVerified:
-                DDLogWarn(@"%@ trusting verified identity for recipient: %@", self.tag, recipientIdentity.recipientId);
                 return YES;
             case OWSVerificationStateNoLongerVerified:
                 DDLogWarn(@"%@ not trusting no longer verified identity for recipient: %@", self.tag, recipientIdentity.recipientId);
