@@ -165,8 +165,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
 
     override func viewDidLoad() {
         guard let firstViewController = allViewControllers.first else {
-            Logger.error("\(TAG) no pages to show.")
-            assertionFailure()
+            owsFail("\(TAG) no pages to show.")
             dismiss(animated: true)
             return
         }
@@ -246,8 +245,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(TAG) in \(#function)")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            assertionFailure()
-            Logger.error("\(TAG) unknown view controller: \(viewController)")
+            owsFail("\(TAG) unknown view controller: \(viewController)")
             return nil
         }
 
@@ -262,8 +260,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(TAG) in \(#function)")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            assertionFailure()
-            Logger.error("\(TAG) unknown view controller: \(viewController)")
+            owsFail("\(TAG) unknown view controller: \(viewController)")
             return nil
         }
 
@@ -296,8 +293,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
 
     public func addViewController(experienceUpgrade: ExperienceUpgrade) {
         guard let identifier = ExperienceUpgradeId(rawValue: experienceUpgrade.uniqueId) else {
-            Logger.error("\(TAG) unknown experience upgrade. skipping")
-            assertionFailure()
+            owsFail("\(TAG) unknown experience upgrade. skipping")
             return
         }
 

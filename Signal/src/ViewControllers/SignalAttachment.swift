@@ -130,8 +130,7 @@ class SignalAttachment: NSObject {
             do {
                 try data.write(to: fileUrl)
             } catch {
-                Logger.error("\(SignalAttachment.TAG) Could not write data to disk: \(dataUTI)")
-                assertionFailure()
+                owsFail("\(SignalAttachment.TAG) Could not write data to disk: \(dataUTI)")
                 return nil
             }
             temporaryDataUrl = fileUrl
@@ -146,7 +145,7 @@ class SignalAttachment: NSObject {
     var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            assertionFailure()
+            owsFail("Missing error")
             return nil
         }
 
@@ -156,7 +155,7 @@ class SignalAttachment: NSObject {
     var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            assertionFailure()
+            owsFail("Missing error")
             return nil
         }
 
@@ -366,8 +365,7 @@ class SignalAttachment: NSObject {
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-                    assertionFailure()
+                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 return imageAttachment(data : data, dataUTI : dataUTI, filename: nil)
@@ -376,8 +374,7 @@ class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-                    assertionFailure()
+                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 return videoAttachment(data : data, dataUTI : dataUTI, filename: nil)
@@ -386,8 +383,7 @@ class SignalAttachment: NSObject {
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-                    Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-                    assertionFailure()
+                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 return audioAttachment(data : data, dataUTI : dataUTI, filename: nil)
@@ -396,8 +392,7 @@ class SignalAttachment: NSObject {
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
         guard let data = dataForFirstPasteboardItem(dataUTI:dataUTI) else {
-            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-            assertionFailure()
+            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         return genericAttachment(data : data, dataUTI : dataUTI, filename: nil)
@@ -408,18 +403,15 @@ class SignalAttachment: NSObject {
     private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
         let itemSet = IndexSet(integer:0)
         guard let datas = UIPasteboard.general.data(forPasteboardType:dataUTI, inItemSet:itemSet) else {
-            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-            assertionFailure()
+            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard datas.count > 0 else {
-            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-            assertionFailure()
+            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard let data = datas[0] as? Data else {
-            Logger.error("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
-            assertionFailure()
+            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         return data

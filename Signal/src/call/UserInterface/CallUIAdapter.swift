@@ -41,8 +41,7 @@ extension CallUIAdaptee {
         callViewController.modalTransitionStyle = .crossDissolve
 
         guard let presentingViewController = Environment.getCurrent().signalsViewController else {
-            Logger.error("in \(#function) view controller unexpectedly nil")
-            assertionFailure("in \(#function) view controller unexpectedly nil")
+            owsFail("in \(#function) view controller unexpectedly nil")
             return
         }
 

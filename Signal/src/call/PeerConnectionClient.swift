@@ -227,8 +227,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard let videoCaptureSession = self.videoCaptureSession else {
-                Logger.error("\(self.TAG) videoCaptureSession was unexpectedly nil")
-                assertionFailure()
+                owsFail("\(self.TAG) videoCaptureSession was unexpectedly nil")
                 return
             }
 
