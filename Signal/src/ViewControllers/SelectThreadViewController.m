@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "InboxTableViewCell.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"

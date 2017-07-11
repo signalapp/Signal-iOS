@@ -3,9 +3,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "InboxTableViewCell.h"
-#import "Contact.h"
-#import "TSGroupModel.h"
+
+@class TSThread;
 
 @interface SignalsViewController : UIViewController
 
