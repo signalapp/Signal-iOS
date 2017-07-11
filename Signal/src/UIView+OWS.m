@@ -257,7 +257,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint = [self autoPinLeadingToTrailingOfView:view margin:0];
+    return [self autoPinLeadingToTrailingOfView:view margin:0];
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
@@ -323,6 +323,19 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     layoutMargins.left = value;
     layoutMargins.right = value;
     self.layoutMargins = layoutMargins;
+}
+
+#pragma mark - Formatting
+
++ (NSString *)formatInt:(int)value
+{
+    static NSNumberFormatter *formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSNumberFormatter new];
+        formatter.numberStyle = NSNumberFormatterNoStyle;
+    });
+    return [formatter stringFromNumber:@(value)];
 }
 
 #pragma mark - Debugging

@@ -85,6 +85,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 + (UIView *)containerView;
 - (void)setHLayoutMargins:(CGFloat)value;
 
+#pragma mark - Formatting
+
++ (NSString *)formatInt:(int)value;
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color;

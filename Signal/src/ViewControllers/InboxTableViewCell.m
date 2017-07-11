@@ -3,18 +3,13 @@
 //
 
 #import "InboxTableViewCell.h"
-#import "Environment.h"
 #import "OWSAvatarBuilder.h"
-#import "OWSContactAvatarBuilder.h"
-#import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
-#import "TSMessagesManager.h"
 #import "Util.h"
-#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
-#import <JSQMessagesViewController/UIImage+JSQMessages.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSMessagesManager.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,13 +19,18 @@ NS_ASSUME_NONNULL_BEGIN
 #define DATE_LABEL_SIZE 13
 #define SWIPE_ARCHIVE_OFFSET -50
 
-const NSUInteger kContactPictureViewDiameter = 52;
+const NSUInteger kavatarViewDiameter = 52;
 
 @interface InboxTableViewCell ()
 
-@property (nonatomic) NSUInteger unreadMessages;
-@property (nonatomic) UIView *messagesBadge;
+@property (nonatomic) AvatarImageView *avatarView;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *snippetLabel;
+@property (nonatomic) UILabel *timeLabel;
+@property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
+
+@property (nonatomic) NSString *threadId;
 
 @end
 
@@ -38,12 +38,94 @@ const NSUInteger kContactPictureViewDiameter = 52;
 
 @implementation InboxTableViewCell
 
-+ (instancetype)inboxTableViewCell {
-    InboxTableViewCell *cell =
-        [NSBundle.mainBundle loadNibNamed:NSStringFromClass(self.class) owner:self options:nil][0];
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        [self commontInit];
+    }
+    return self;
+}
 
-    [cell initializeLayout];
-    return cell;
+// `[UIView init]` invokes `[self initWithFrame:...]`.
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        [self commontInit];
+    }
+
+    return self;
+}
+
+- (void)commontInit
+{
+    OWSAssert(!self.avatarView);
+
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
+
+    self.backgroundColor = [UIColor whiteColor];
+
+    self.avatarView = [[AvatarImageView alloc] init];
+    [self.contentView addSubview:self.avatarView];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:52.f];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:52.f];
+    [self.avatarView autoPinLeadingToSuperView];
+    [self.avatarView autoVCenterInSuperview];
+
+    self.nameLabel = [UILabel new];
+    self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.contentView addSubview:self.nameLabel];
+    [self.nameLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
+    [self.nameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView];
+    [self.nameLabel setContentHuggingHorizontalLow];
+
+    self.snippetLabel = [UILabel new];
+    self.snippetLabel.font = [UIFont ows_regularFontWithSize:14.f];
+    self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.snippetLabel.textColor = [UIColor colorWithWhite:2 / 3.f alpha:1.f];
+    self.snippetLabel.numberOfLines = 2;
+    self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.contentView addSubview:self.snippetLabel];
+    [self.snippetLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
+    [self.snippetLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.nameLabel withOffset:5.f];
+    [self.snippetLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:self.nameLabel];
+    [self.snippetLabel setContentHuggingHorizontalLow];
+
+    self.timeLabel = [UILabel new];
+    self.timeLabel.font = [UIFont ows_lightFontWithSize:14.f];
+    [self.contentView addSubview:self.timeLabel];
+    [self.timeLabel autoPinTrailingToSuperView];
+    [self.timeLabel autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
+    [self.timeLabel autoPinLeadingToTrailingOfView:self.nameLabel margin:10.f];
+    [self.timeLabel setContentHuggingHorizontalHigh];
+    [self.timeLabel setCompressionResistanceHigh];
+
+    const int kunreadBadgeSize = 24;
+    self.unreadBadge = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kunreadBadgeSize, kunreadBadgeSize)];
+    self.unreadBadge.layer.cornerRadius = kunreadBadgeSize / 2;
+    self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    [self.contentView addSubview:self.unreadBadge];
+    [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:kunreadBadgeSize];
+    [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:kunreadBadgeSize];
+    [self.unreadBadge autoPinTrailingToSuperView];
+    [self.unreadBadge autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView];
+    [self.unreadBadge setContentHuggingHorizontalHigh];
+    [self.unreadBadge setCompressionResistanceHigh];
+
+    self.unreadLabel = [UILabel new];
+    self.unreadLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.unreadLabel.textColor = [UIColor whiteColor];
+    self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.unreadLabel.textAlignment = NSTextAlignmentCenter;
+    [self.unreadBadge addSubview:self.unreadLabel];
+    [self.unreadLabel autoVCenterInSuperview];
+    [self.unreadLabel autoPinWidthToSuperview];
+}
+
++ (NSString *)cellReuseIdentifier
+{
+    return NSStringFromClass([self class]);
 }
 
 + (CGFloat)rowHeight
@@ -121,30 +203,35 @@ const NSUInteger kContactPictureViewDiameter = 52;
     self.nameLabel.text = name;
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
-    self.contactPictureView.image = nil;
+    self.avatarView.image = nil;
 
-    self.separatorInset = UIEdgeInsetsMake(0, _contactPictureView.frame.size.width * 1.5f, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0, _avatarView.frame.size.width * 1.5f, 0, 0);
 
     if (thread.hasUnreadMessages) {
         [self updateCellForUnreadMessage];
     } else {
         [self updateCellForReadMessage];
     }
-    [self setUnreadMsgCount:unreadCount];
+    if (unreadCount > 0) {
+        self.unreadBadge.hidden = NO;
+        self.unreadLabel.hidden = NO;
+        self.unreadLabel.text = [UIView formatInt:MIN(99, (int)unreadCount)];
+    } else {
+        self.unreadBadge.hidden = YES;
+        self.unreadLabel.hidden = YES;
+    }
 
     NSString *threadIdCopy = thread.uniqueId;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *avatar = [OWSAvatarBuilder buildImageForThread:thread
-                                                contactsManager:contactsManager
-                                                       diameter:kContactPictureViewDiameter];
+        UIImage *avatar =
+            [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager diameter:kavatarViewDiameter];
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([_threadId isEqualToString:threadIdCopy]) {
-                self.contactPictureView.image = avatar;
+                self.avatarView.image = avatar;
             }
         });
     });
 }
-
 
 - (void)updateCellForUnreadMessage {
     _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
@@ -184,67 +271,10 @@ const NSUInteger kContactPictureViewDiameter = 52;
     return attributedString;
 }
 
-- (void)setUnreadMsgCount:(NSUInteger)unreadMessages {
-    if (_unreadMessages != unreadMessages) {
-        _unreadMessages = unreadMessages;
-
-        if (_unreadMessages > 0) {
-            if (_messagesBadge == nil) {
-                static UIImage *backgroundImage = nil;
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                  UIGraphicsBeginImageContextWithOptions(CGSizeMake(25.0f, 25.0f), false, 0.0f);
-                  CGContextRef context = UIGraphicsGetCurrentContext();
-                  CGContextSetFillColorWithColor(context, [UIColor ows_materialBlueColor].CGColor);
-                  CGContextFillEllipseInRect(context, CGRectMake(0.0f, 0.0f, 25.0f, 25.0f));
-                  backgroundImage =
-                      [UIGraphicsGetImageFromCurrentImageContext() stretchableImageWithLeftCapWidth:8 topCapHeight:8];
-                  UIGraphicsEndImageContext();
-                });
-
-                _messagesBadge = [[UIImageView alloc]
-                    initWithFrame:CGRectMake(
-                                      0.0f, 0.0f, _messageCounter.frame.size.height, _messageCounter.frame.size.width)];
-                _messagesBadge.userInteractionEnabled = NO;
-                _messagesBadge.layer.zPosition        = 2000;
-
-                UIImageView *unreadBackground = [[UIImageView alloc] initWithImage:backgroundImage];
-                [_messageCounter addSubview:unreadBackground];
-
-                _unreadLabel                 = [[UILabel alloc] init];
-                _unreadLabel.backgroundColor = [UIColor clearColor];
-                _unreadLabel.textColor       = [UIColor whiteColor];
-                _unreadLabel.font            = [UIFont systemFontOfSize:12];
-                [_messageCounter addSubview:_unreadLabel];
-            }
-
-            // Max out the unread count at 99+.
-            const NSUInteger kMaxUnreadCount = 99;
-            _unreadLabel.text = [@(MIN(kMaxUnreadCount, unreadMessages)) stringValue];
-            [_unreadLabel sizeToFit];
-
-            CGPoint offset = CGPointMake(0.0f, 5.0f);
-            _unreadLabel.frame
-                = CGRectMake(offset.x + (CGFloat)floor((2.0f * (25.0f - _unreadLabel.frame.size.width) / 2.0f) / 2.0f),
-                    offset.y,
-                    _unreadLabel.frame.size.width,
-                    _unreadLabel.frame.size.height);
-            _messageCounter.hidden = NO;
-        } else {
-            _messageCounter.hidden = YES;
-        }
-    }
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
 }
-
-#pragma mark - Animation
-
-- (void)animateDisappear {
-    [UIView animateWithDuration:1.0f
-                     animations:^() {
-                       self.alpha = 0;
-                     }];
-}
-
 
 @end
 

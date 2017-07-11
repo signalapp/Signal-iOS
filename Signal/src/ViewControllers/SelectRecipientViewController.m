@@ -223,8 +223,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         callingCode = [localNumber getCountryCode];
         OWSAssert(callingCode);
         if (callingCode) {
-            countryCode = [[PhoneNumberUtil sharedUtil]
-                probableCountryCodeForCallingCode:[@"+" stringByAppendingString:[callingCode description]]];
+            NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
+            countryCode = [[PhoneNumberUtil sharedUtil] probableCountryCodeForCallingCode:prefix];
         }
     }
 
