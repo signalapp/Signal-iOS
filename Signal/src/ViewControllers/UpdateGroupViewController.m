@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
@@ -205,8 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
                  forControlEvents:UIControlEventEditingChanged];
     [threadInfoView addSubview:groupNameTextField];
     [groupNameTextField autoVCenterInSuperview];
-    [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
-    [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
+    [groupNameTextField autoPinTrailingToSuperView];
+    [groupNameTextField autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];

@@ -141,7 +141,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kNewGroupViewControllerAvatarWidth];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
     [self updateAvatarView];
@@ -158,8 +158,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                  forControlEvents:UIControlEventEditingChanged];
     [threadInfoView addSubview:groupNameTextField];
     [groupNameTextField autoVCenterInSuperview];
-    [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
-    [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
+    [groupNameTextField autoPinTrailingToSuperView];
+    [groupNameTextField autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];

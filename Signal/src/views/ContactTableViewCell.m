@@ -194,10 +194,11 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
         OWSAssert(self.nameLabel.superview == self.contentView);
         const CGFloat kSubtitleVMargin
             = ((self.contentView.height - self.nameLabel.font.lineHeight) * 0.5f - self.subtitle.height) * 0.5f;
-        self.subtitle.frame = CGRectMake(self.nameLabel.left,
-            round((self.contentView.height - self.subtitle.height) - kSubtitleVMargin),
-            self.subtitle.width,
-            self.subtitle.height);
+        self.subtitle.frame
+            = CGRectMake((self.isRTL ? round(self.nameLabel.right - self.subtitle.width) : self.nameLabel.left),
+                round((self.contentView.height - self.subtitle.height) - kSubtitleVMargin),
+                self.subtitle.width,
+                self.subtitle.height);
     }
 }
 

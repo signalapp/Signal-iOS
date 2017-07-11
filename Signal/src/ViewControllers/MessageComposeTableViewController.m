@@ -76,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
                                                       action:@selector(dismissPressed)];
+    // TODO:
     UIImage *newGroupImage = [UIImage imageNamed:@"btnGroup--white"];
     OWSAssert(newGroupImage);
     UIBarButtonItem *newGroupButton = [[UIBarButtonItem alloc] initWithImage:newGroupImage
