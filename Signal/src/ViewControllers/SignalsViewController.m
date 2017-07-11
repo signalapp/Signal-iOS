@@ -29,9 +29,11 @@
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
 #define CELL_HEIGHT 72.0f
-#define HEADER_HEIGHT 44.0f
 
-@interface SignalsViewController ()
+@interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) UILabel *emptyBoxLabel;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -57,8 +59,10 @@
 
 // Views
 
-@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+
+@property (nonatomic) TSThread *lastThread;
 
 @end
 
@@ -82,6 +86,8 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
+    OWSFail(@"Do not load this from the storyboard.");
+
     self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
@@ -146,10 +152,76 @@
 
 #pragma mark - View Life Cycle
 
-- (void)awakeFromNib
+- (void)loadView
 {
-    [super awakeFromNib];
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    // TODO: Remove this.
     [[Environment getCurrent] setSignalsViewController:self];
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                      target:self
+                                                      action:@selector(composeNew)];
+
+    ReminderView *archiveReminderView = [ReminderView new];
+    archiveReminderView.text = NSLocalizedString(
+        @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
+    __weak SignalsViewController *weakSelf = self;
+    archiveReminderView.tapAction = ^{
+        [weakSelf selectedInbox];
+    };
+    [self.view addSubview:archiveReminderView];
+    [archiveReminderView autoPinWidthToSuperview];
+    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
+
+    ReminderView *missingContactsPermissionView = [ReminderView new];
+    missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
+    missingContactsPermissionView.tapAction = ^{
+        [[UIApplication sharedApplication] openSystemSettings];
+    };
+    [self.view addSubview:missingContactsPermissionView];
+    [missingContactsPermissionView autoPinWidthToSuperview];
+    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
+    self.hideMissingContactsPermissionViewConstraint =
+        [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
+
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView autoPinWidthToSuperview];
+    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+
+    UILabel *emptyBoxLabel = [UILabel new];
+    self.emptyBoxLabel = emptyBoxLabel;
+    [self.view addSubview:emptyBoxLabel];
+    [emptyBoxLabel autoPinWidthToSuperview];
+    [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
+    [self updateReminderViews];
+}
+
+- (void)updateReminderViews
+{
+    BOOL shouldHideArchiveReminderView = self.viewingThreadsIn != kArchiveState;
+    BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
+    if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
+        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
+        return;
+    }
+    self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
+    self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
+    [self.view setNeedsLayout];
+    [self.view layoutSubviews];
 }
 
 - (void)viewDidLoad {
@@ -163,7 +235,7 @@
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self selectedInbox:self];
+    [self selectedInbox];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -178,13 +250,6 @@
     [self.segmentedControl setSelectedSegmentIndex:0];
     navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
-
-
-    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
-    self.missingContactsPermissionView.tapAction = ^{
-        [[UIApplication sharedApplication] openSystemSettings];
-    };
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -241,6 +306,7 @@
 
         MessagesViewController *vc = [MessagesViewController new];
         TSThread *thread           = [self threadForIndexPath:indexPath];
+        self.lastThread = thread;
         [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
         [vc peekSetup];
 
@@ -258,7 +324,7 @@
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (IBAction)composeNew
+- (void)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
 
@@ -279,9 +345,9 @@
 
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self selectedInbox:nil];
+        [self selectedInbox];
     } else {
-        [self selectedArchive:nil];
+        [self selectedArchive];
     }
 }
 
@@ -290,7 +356,7 @@
     if ([TSThread numberOfKeysInCollection] > 0) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
+                [self updateReminderViews];
             });
         }];
     }
@@ -299,6 +365,25 @@
 
     self.isViewVisible = YES;
     [self checkIfEmptyView];
+
+    // When returning to home view, try to ensure that the "last" thread is still
+    // visible.  The threads often change ordering while in conversation view due
+    // to incoming & outgoing messages.
+    if (self.lastThread) {
+        __block NSIndexPath *indexPathOfLastThread = nil;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            indexPathOfLastThread =
+                [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
+                                                                              inCollection:[TSThread collection]
+                                                                              withMappings:self.threadMappings];
+        }];
+
+        if (indexPathOfLastThread) {
+            [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
+                                  atScrollPosition:UITableViewScrollPositionNone
+                                          animated:NO];
+        }
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -367,6 +452,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
     if (self.newlyRegisteredUser) {
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
@@ -625,6 +711,7 @@
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];
+        self.lastThread = thread;
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -695,14 +782,18 @@
     }
 }
 
-#pragma mark - IBAction
+#pragma mark - Groupings
 
-- (IBAction)selectedInbox:(id)sender {
+- (void)selectedInbox
+{
+    self.segmentedControl.selectedSegmentIndex = 0;
     self.viewingThreadsIn = kInboxState;
     [self changeToGrouping:TSInboxGroup];
 }
 
-- (IBAction)selectedArchive:(id)sender {
+- (void)selectedArchive
+{
+    self.segmentedControl.selectedSegmentIndex = 1;
     self.viewingThreadsIn = kArchiveState;
     [self changeToGrouping:TSArchiveGroup];
 }
@@ -719,6 +810,7 @@
     [self updateShouldObserveDBModifications];
 
     [self checkIfEmptyView];
+    [self updateReminderViews];
 }
 
 #pragma mark Database delegates
@@ -808,12 +900,6 @@
 
     [self.tableView endUpdates];
     [self checkIfEmptyView];
-}
-
-- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
-}
-
-- (IBAction)unwindMessagesView:(UIStoryboardSegue *)segue {
 }
 
 - (void)checkIfEmptyView {

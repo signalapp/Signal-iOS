@@ -265,18 +265,13 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
 
-                UIStoryboard *storyboard = [UIStoryboard main];
-                UIViewController *viewController = [storyboard instantiateInitialViewController];
-                OWSAssert([viewController isKindOfClass:[SignalsNavigationController class]]);
-                SignalsNavigationController *navigationController = (SignalsNavigationController *)viewController;
+                SignalsViewController *homeView = [SignalsViewController new];
+                homeView.newlyRegisteredUser = YES;
+                SignalsNavigationController *navigationController =
+                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
                 AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
                 appDelegate.window.rootViewController = navigationController;
                 OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
-
-                DDLogDebug(@"%@ notifying signals view controller of new user.", self.tag);
-                SignalsViewController *signalsViewController
-                    = (SignalsViewController *)navigationController.topViewController;
-                signalsViewController.newlyRegisteredUser = YES;
             });
         })
         .catch(^(NSError *_Nonnull error) {

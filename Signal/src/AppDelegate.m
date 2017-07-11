@@ -19,6 +19,7 @@
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
+#import "SignalsNavigationController.h"
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
@@ -57,6 +58,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 #pragma mark -
 
 @implementation AppDelegate
+
+@synthesize window = _window;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
@@ -808,7 +811,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"Presenting initial root view controller");
 
     if ([TSAccountManager isRegistered]) {
-        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
+        SignalsViewController *homeView = [SignalsViewController new];
+        SignalsNavigationController *navigationController =
+            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+        self.window.rootViewController = navigationController;
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
