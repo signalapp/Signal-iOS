@@ -370,18 +370,13 @@
     // visible.  The threads often change ordering while in conversation view due
     // to incoming & outgoing messages.
     if (self.lastThread) {
-        NSIndexPath *indexPathOfLastThread = nil;
-        NSUInteger numberOfSections = [self.threadMappings numberOfSections];
-        for (NSUInteger section = 0; !indexPathOfLastThread && section < numberOfSections; section++) {
-            NSUInteger numberOfItems = [self.threadMappings numberOfItemsInSection:section];
-            for (NSUInteger row = 0; !indexPathOfLastThread && row < numberOfItems; row++) {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)row inSection:(NSInteger)section];
-                TSThread *thread = [self threadForIndexPath:indexPath];
-                if ([thread.uniqueId isEqualToString:self.lastThread.uniqueId]) {
-                    indexPathOfLastThread = indexPath;
-                }
-            }
-        }
+        __block NSIndexPath *indexPathOfLastThread = nil;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            indexPathOfLastThread =
+                [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
+                                                                              inCollection:[TSThread collection]
+                                                                              withMappings:self.threadMappings];
+        }];
 
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
