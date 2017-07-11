@@ -581,15 +581,15 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarView = avatarView;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
-    UIView *threadNameView = [UIView new];
+    UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];
     [threadNameView autoVCenterInSuperview];
-    [threadNameView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
-    [threadNameView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
+    [threadNameView autoPinTrailingToSuperView];
+    [threadNameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     UILabel *threadTitleLabel = [UILabel new];
     threadTitleLabel.text = self.threadName;
@@ -613,7 +613,7 @@ NS_ASSUME_NONNULL_BEGIN
             subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [threadNameView addSubview:subtitleLabel];
             [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+            [subtitleLabel autoPinLeadingToSuperView];
             lastTitleView = subtitleLabel;
         };
 
