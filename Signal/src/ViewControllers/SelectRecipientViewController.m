@@ -198,7 +198,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     previousRow:(nullable UIView *)previousRow
                       superview:(nullable UIView *)superview
 {
-    UIView *row = [UIView new];
+    UIView *row = [UIView containerView];
     [superview addSubview:row];
     [row autoPinLeadingAndTrailingToSuperview];
     if (previousRow) {
@@ -207,7 +207,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [row autoPinEdgeToSuperviewEdge:ALEdgeTop];
     }
     [row autoSetDimension:ALDimensionHeight toSize:height];
-    row.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
     return row;
 }
 

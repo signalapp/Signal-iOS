@@ -126,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     _phoneNumberLabel.font = [UIFont ows_regularFontWithSize:20.f];
     _phoneNumberLabel.numberOfLines = 2;
     _phoneNumberLabel.adjustsFontSizeToFitWidth = YES;
+    _phoneNumberLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneNumberLabel];
     [_phoneNumberLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(32)];
     [_phoneNumberLabel autoPinEdge:ALEdgeTop

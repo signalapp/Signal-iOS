@@ -90,25 +90,25 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
         [logoView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:headerLabel withOffset:-14.f];
     }
 
-    UIView *contentView = [UIView new];
+    const CGFloat kRowHeight = 60.f;
+    const CGFloat kRowHMargin = 20.f;
+    const CGFloat kSeparatorHeight = 1.f;
+    const CGFloat kExamplePhoneNumberVSpacing = 8.f;
+    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
+
+    UIView *contentView = [UIView containerView];
+    [contentView setHLayoutMargins:kRowHMargin];
     contentView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:contentView];
     [contentView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [contentView autoPinWidthToSuperview];
     [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
 
-    const CGFloat kRowHeight = 60.f;
-    const CGFloat kRowLeftMargin = 20.f;
-    const CGFloat kRowRightMargin = 16.f;
-    const CGFloat kSeparatorHeight = 1.f;
-    const CGFloat kButtonHMargin = 30.f;
-    const CGFloat kExamplePhoneNumberVSpacing = 8.f;
-    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
-
     // Country
-    UIView *countryRow = [UIView new];
+    UIView *countryRow = [UIView containerView];
+    countryRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:countryRow];
-    [countryRow autoPinWidthToSuperview];
+    [countryRow autoPinLeadingAndTrailingToSuperview];
     [countryRow autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [countryRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
     [countryRow
@@ -122,7 +122,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryNameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [countryRow addSubview:countryNameLabel];
     [countryNameLabel autoVCenterInSuperview];
-    [countryNameLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
+    [countryNameLabel autoPinLeadingToSuperView];
 
     UILabel *countryCodeLabel = [UILabel new];
     self.countryCodeLabel = countryCodeLabel;
@@ -130,7 +130,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2.f];
     [countryRow addSubview:countryCodeLabel];
     [countryCodeLabel autoVCenterInSuperview];
-    [countryCodeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [countryCodeLabel autoPinTrailingToSuperView];
 
     UIView *separatorView1 = [UIView new];
     separatorView1.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.f];
@@ -140,9 +140,10 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [separatorView1 autoSetDimension:ALDimensionHeight toSize:kSeparatorHeight];
 
     // Phone Number
-    UIView *phoneNumberRow = [UIView new];
+    UIView *phoneNumberRow = [UIView containerView];
+    phoneNumberRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:phoneNumberRow];
-    [phoneNumberRow autoPinWidthToSuperview];
+    [phoneNumberRow autoPinLeadingAndTrailingToSuperview];
     [phoneNumberRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView1];
     [phoneNumberRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
 
@@ -153,7 +154,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoVCenterInSuperview];
-    [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
+    [phoneNumberLabel autoPinLeadingToSuperView];
 
     UITextField *phoneNumberTextField = [UITextField new];
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;
@@ -166,14 +167,14 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
-    [phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [phoneNumberTextField autoPinTrailingToSuperView];
 
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
     examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
     examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
     [contentView addSubview:examplePhoneNumberLabel];
-    [examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [examplePhoneNumberLabel autoPinTrailingToSuperView];
     [examplePhoneNumberLabel autoPinEdge:ALEdgeTop
                                   toEdge:ALEdgeBottom
                                   ofView:phoneNumberTextField
@@ -199,8 +200,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [activateButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [activateButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:activateButton];
-    [activateButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kButtonHMargin];
-    [activateButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kButtonHMargin];
+    [activateButton autoPinLeadingAndTrailingToSuperview];
     [activateButton autoPinEdge:ALEdgeTop
                          toEdge:ALEdgeBottom
                          ofView:separatorView2
@@ -227,8 +227,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [existingAccountButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [existingAccountButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:existingAccountButton];
-    [existingAccountButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kButtonHMargin];
-    [existingAccountButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kButtonHMargin];
+    [existingAccountButton autoPinLeadingAndTrailingToSuperview];
     [existingAccountButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:activateButton withOffset:9.f];
     [existingAccountButton autoSetDimension:ALDimensionHeight toSize:36.f];
     [existingAccountButton addTarget:self

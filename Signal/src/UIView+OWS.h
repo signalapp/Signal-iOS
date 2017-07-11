@@ -80,6 +80,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
 // Return Right on LTR and Right on RTL.
 - (NSTextAlignment)textAlignmentUnnatural;
+// Leading and trailing anchors honor layout margins.
+// When using a UIView as a "div" to structure layout, we don't want it to have margins.
++ (UIView *)containerView;
+- (void)setHLayoutMargins:(CGFloat)value;
 
 #pragma mark - Debugging
 

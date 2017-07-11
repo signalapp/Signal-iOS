@@ -298,6 +298,23 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return (self.isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
 }
 
++ (UIView *)containerView
+{
+    UIView *view = [UIView new];
+    // Leading and trailing anchors honor layout margins.
+    // When using a UIView as a "div" to structure layout, we don't want it to have margins.
+    view.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+    return view;
+}
+
+- (void)setHLayoutMargins:(CGFloat)value
+{
+    UIEdgeInsets layoutMargins = self.layoutMargins;
+    layoutMargins.left = value;
+    layoutMargins.right = value;
+    self.layoutMargins = layoutMargins;
+}
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color
