@@ -203,6 +203,8 @@
 
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor ows_destructiveRedColor];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -212,10 +214,8 @@
         [cell.contentView addSubview:button];
         [button autoSetDimension:ALDimensionHeight toSize:50.f];
         [button autoVCenterInSuperview];
-        [button autoPinEdgeToSuperviewEdge:ALEdgeLeft
-                                 withInset:cell.layoutMargins.left + cell.contentView.layoutMargins.left];
-        [button autoPinEdgeToSuperviewEdge:ALEdgeRight
-                                 withInset:cell.layoutMargins.right + cell.contentView.layoutMargins.right];
+        [button autoPinLeadingToSuperView];
+        [button autoPinTrailingToSuperView];
         [button addTarget:self action:@selector(unregisterUser) forControlEvents:UIControlEventTouchUpInside];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;

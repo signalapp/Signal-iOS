@@ -215,7 +215,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoVCenterInSuperview];
     [spinnerView autoSetDimension:ALDimensionWidth toSize:20.f];
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
-    [spinnerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
+    [spinnerView autoPinTrailingToSuperViewWithMargin:20.f];
     [spinnerView stopAnimating];
 
     // Existing Account Button
