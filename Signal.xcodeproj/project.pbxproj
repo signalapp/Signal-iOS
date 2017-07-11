@@ -108,6 +108,11 @@
 		4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
 		451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
 		451A13B21E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
+		451DA3C71F148986008E2423 /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
+		451DA3C81F14898E008E2423 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
+		451DA3C91F1489BE008E2423 /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
+		451DA3CA1F148A9F008E2423 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
+		451DA3CB1F148AAD008E2423 /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		451DE9F81DC18C9500810E42 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
 		451DE9FD1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
 		451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
@@ -2265,9 +2270,11 @@
 			files = (
 				4505C2C31E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				456F6E241E24133E00FD2210 /* CallKitCallUIAdaptee.swift in Sources */,
+				451DA3C81F14898E008E2423 /* Strings.swift in Sources */,
 				456F6E251E24216100FD2210 /* DataChannelMessage.swift in Sources */,
 				452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,
+				451DA3C71F148986008E2423 /* SafetyNumberConfirmationAlert.swift in Sources */,
 				45C0DC1C1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,
 				45F170BC1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
@@ -2278,6 +2285,7 @@
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
 				B660F71C1C29988E00687D6E /* DebugLogger.m in Sources */,
 				B660F71F1C29988E00687D6E /* PropertyListPreferences.m in Sources */,
+				451DA3CA1F148A9F008E2423 /* DeviceSleepManager.swift in Sources */,
 				B660F7201C29988E00687D6E /* Release.m in Sources */,
 				45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */,
@@ -2302,6 +2310,7 @@
 				451A13B21E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
 				45C681B81D305A580050903A /* OWSCall.m in Sources */,
 				4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */,
+				451DA3C91F1489BE008E2423 /* OWSAlerts.swift in Sources */,
 				45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
 				45DF5DF31DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				456AC8341E3A775E00A3C7FC /* Weak.swift in Sources */,
@@ -2331,6 +2340,7 @@
 				45C9DEB91DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
+				451DA3CB1F148AAD008E2423 /* CallViewController.swift in Sources */,
 				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
 				45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */,
 				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
