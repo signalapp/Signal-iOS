@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContactsManager;
 @class OWSBlockingManager;
+@class CNContact;
 
 @interface ContactsViewHelper : NSObject
 
@@ -69,6 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately;
+
+// This method can be used to edit existing contacts.
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately
+                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
 
 @end
 
