@@ -10,17 +10,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)formatLogMessage:(DDLogMessage *)logMessage
 {
-    NSString *string = [super formatLogMessage:logMessage];
+    NSString *logString = [super formatLogMessage:logMessage];
     NSRegularExpression *phoneRegex =
         [NSRegularExpression regularExpressionWithPattern:@"\\+\\d{7,12}(\\d{3})"
                                                   options:NSRegularExpressionCaseInsensitive
                                                     error:nil];
-    NSString *filteredString = [phoneRegex stringByReplacingMatchesInString:string
-                                                                    options:0
-                                                                      range:NSMakeRange(0, [string length])
-                                                               withTemplate:@"[ REDACTED_PHONE_NUMBER:xxx$1 ]"];
 
-    return filteredString;
+    logString = [phoneRegex stringByReplacingMatchesInString:logString
+                                                     options:0
+                                                       range:NSMakeRange(0, [logString length])
+                                                withTemplate:@"[ REDACTED_PHONE_NUMBER:xxx$1 ]"];
+
+
+    // We capture only the first two characters of the hex string for logging.
+    NSRegularExpression *dataRegex =
+        [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{6}( [\\da-f]{8})*>"
+                                                  options:NSRegularExpressionCaseInsensitive
+                                                    error:nil];
+
+    logString = [dataRegex stringByReplacingMatchesInString:logString
+                                                    options:0
+                                                      range:NSMakeRange(0, [logString length])
+                                               withTemplate:@"[ REDACTED_DATA:$1... ]"];
+
+    return logString;
 }
 
 @end

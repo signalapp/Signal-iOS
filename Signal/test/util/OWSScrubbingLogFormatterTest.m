@@ -27,6 +27,29 @@ NS_ASSUME_NONNULL_BEGIN
                                        timestamp:[NSDate new]];
 }
 
+- (void)testDataScrubbed
+{
+    NSArray<NSString *> *dataStrings = @[
+        @"<01234567 89a23def 23234567 89ab1234>",
+        @"<01234567 89a23def 23234567 89ab1223> ",
+        @"<01234567 89a23def 23234567 89ab1223> bar <01234567 89abcdef 22234567 89ab1234>"
+    ];
+
+    for (NSString *dataString in dataStrings) {
+        OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+        NSString *messageText = [NSString stringWithFormat:@"My data is %@", dataString];
+        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
+        NSRange redactedRange = [actual rangeOfString:@"[ REDACTED_DATA:01... ]"];
+        XCTAssertNotEqual(
+            NSNotFound, redactedRange.location, "Failed to redact data string: %@ actual: %@", dataString, actual);
+
+        // ensure no more than the redacted portion of the data id is left in the log string
+        NSRange dataRange = [actual rangeOfString:@"23"];
+        XCTAssertEqual(
+            NSNotFound, dataRange.location, "Failed to redact data string: %@, actual %@", dataString, actual);
+    }
+}
+
 - (void)testPhoneNumbersScrubbed
 {
     NSArray<NSString *> *phoneStrings = @[
