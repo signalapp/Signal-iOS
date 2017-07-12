@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
     // We capture only the first two characters of the hex string for logging.
+    // example log line: "Called someFunction with nsData: <01234567 89abcdef>"
+    //  scrubbed output: "Called someFunction with nsData: [ REDACTED_DATA:01 ]"
     NSRegularExpression *dataRegex =
         [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{6}( [\\da-f]{8})*>"
                                                   options:NSRegularExpressionCaseInsensitive

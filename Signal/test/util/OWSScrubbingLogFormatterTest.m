@@ -29,24 +29,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testDataScrubbed
 {
-    NSArray<NSString *> *dataStrings = @[
-        @"<01234567 89a23def 23234567 89ab1234>",
-        @"<01234567 89a23def 23234567 89ab1223> ",
-        @"<01234567 89a23def 23234567 89ab1223> bar <01234567 89abcdef 22234567 89ab1234>"
-    ];
+    NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"<01234567 89a23def 23234567 89ab1234>" : @"[ REDACTED_DATA:01... ]",
+        @"My data is: <01234567 89a23def 23234567 89ab1223>" : @"My data is: [ REDACTED_DATA:01... ]",
+        @"My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>" :
+            @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
+    };
 
-    for (NSString *dataString in dataStrings) {
-        OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-        NSString *messageText = [NSString stringWithFormat:@"My data is %@", dataString];
-        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
-        NSRange redactedRange = [actual rangeOfString:@"[ REDACTED_DATA:01... ]"];
-        XCTAssertNotEqual(
-            NSNotFound, redactedRange.location, "Failed to redact data string: %@ actual: %@", dataString, actual);
+    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
 
-        // ensure no more than the redacted portion of the data id is left in the log string
-        NSRange dataRange = [actual rangeOfString:@"23"];
-        XCTAssertEqual(
-            NSNotFound, dataRange.location, "Failed to redact data string: %@, actual %@", dataString, actual);
+    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
+    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
+
+    for (NSString *input in expectedOutputs) {
+
+        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:input]];
+
+        // strip out dynamic date portion of log line
+        NSString *actual =
+            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
+
+        NSString *expected = expectedOutputs[input];
+
+        XCTAssertEqualObjects(expected, actual);
     }
 }
 
