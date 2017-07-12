@@ -5,7 +5,6 @@
 import XCTest
 import Contacts
 @testable import Signal
-import Contacts
 
 final class ContactsPickerTest: XCTestCase {
     private var prevLang: Any?
