@@ -12,21 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NamedContact : NSObject
-
-@property (nonatomic) Contact *contact;
-@property (nonatomic) NSString *displayName;
-
-@end
-
-#pragma mark -
-
-@implementation NamedContact
-
-@end
-
-#pragma mark -
-
 @interface OWSAddToContactViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) NSString *recipientId;
@@ -175,7 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
 
-    NSMutableArray<NamedContact *> *namedContacts = [NSMutableArray new];
     for (Contact *contact in self.contactsViewHelper.contactsManager.allContacts) {
         OWSAssert(contact.cnContact);
 
@@ -184,21 +168,9 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
-        NamedContact *namedContact = [NamedContact new];
-        namedContact.contact = contact;
-        namedContact.displayName = displayName;
-        [namedContacts addObject:namedContact];
-    }
-
-    [namedContacts sortUsingComparator:^NSComparisonResult(NamedContact *_Nonnull left, NamedContact *_Nonnull right) {
-        return [left.displayName caseInsensitiveCompare:right.displayName];
-    }];
-
-    for (NamedContact *namedContact in namedContacts) {
-        [section addItem:[OWSTableItem disclosureItemWithText:namedContact.displayName
+        [section addItem:[OWSTableItem disclosureItemWithText:displayName
                                                   actionBlock:^{
-                                                      [weakSelf
-                                                          presentContactViewControllerForContact:namedContact.contact];
+                                                      [weakSelf presentContactViewControllerForContact:contact];
                                                   }]];
     }
     [contents addSection:section];

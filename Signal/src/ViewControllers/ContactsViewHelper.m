@@ -362,6 +362,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
             CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
             if ([phoneNumber.stringValue isEqualToString:recipientId]) {
+                OWSFail(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
+                        @"correspond to an existing user.");
                 hasPhoneNumber = YES;
                 break;
             }

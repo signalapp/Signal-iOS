@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *recipientId = contactThread.contactIdentifier;
     SignalAccount *signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
-    return signalAccount.contact;
+    return signalAccount.contact != nil;
 }
 
 #pragma mark - ContactEditingDelegate

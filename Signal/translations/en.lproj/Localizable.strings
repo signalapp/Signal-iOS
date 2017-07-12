@@ -332,7 +332,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";

@@ -157,6 +157,8 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             [self intersectContacts];
 
             [self updateSignalAccounts];
+
+            [self updateCachedDisplayNames];
         });
     });
 }
@@ -203,10 +205,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             self.signalAccounts = [signalAccounts copy];
 
             [self updateCachedDisplayNames];
-
-            [[NSNotificationCenter defaultCenter]
-                postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
-                              object:nil];
         });
     });
 }
@@ -238,6 +236,20 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         }
     }
 
+    // As a fallback, make sure we can also display names for not-yet-registered
+    // and no-longer-registered users.
+    for (Contact *contact in self.allContacts) {
+        NSString *displayName = contact.fullName;
+        if (displayName.length > 0) {
+            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+                NSString *e164 = phoneNumber.toE164;
+                if (!cachedAccountNameMap[e164]) {
+                    cachedAccountNameMap[e164] = displayName;
+                }
+            }
+        }
+    }
+
     self.cachedAccountNameMap = [cachedAccountNameMap copy];
     self.cachedFirstNameMap = [cachedFirstNameMap copy];
     self.cachedLastNameMap = [cachedLastNameMap copy];
@@ -262,6 +274,9 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             }
         }];
     });
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
+                                                        object:nil];
 }
 
 - (void)loadCachedDisplayNames
