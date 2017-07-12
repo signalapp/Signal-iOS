@@ -7,6 +7,11 @@ import Foundation
 /**
  * Strings re-used in multiple places should be added here.
  */
+
+@objc class CommonStrings: NSObject {
+    static let dismissActionText = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
+}
+
 @objc class CallStrings: NSObject {
 
     static let callStatusFormat = NSLocalizedString("CALL_STATUS_FORMAT", comment: "embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call'")

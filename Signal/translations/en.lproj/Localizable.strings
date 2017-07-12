@@ -139,6 +139,9 @@
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
 
+/* action sheet button title to enable built in speaker during a call */
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Built in Speaker";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
@@ -376,7 +379,8 @@
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
-/* Generic short text for button to dismiss a dialog */
+/* Generic short text for button to dismiss a dialog
+   Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 
 /* Section title for the 'domain fronting country' view. */

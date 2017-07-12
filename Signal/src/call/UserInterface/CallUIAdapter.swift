@@ -80,7 +80,7 @@ extension CallUIAdaptee {
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
-    private let audioService: CallAudioService
+    internal let audioService: CallAudioService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         AssertIsOnMainThread()
