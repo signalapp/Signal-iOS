@@ -325,19 +325,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     self.layoutMargins = layoutMargins;
 }
 
-#pragma mark - Formatting
-
-+ (NSString *)formatInt:(int)value
-{
-    static NSNumberFormatter *formatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSNumberFormatter new];
-        formatter.numberStyle = NSNumberFormatterNoStyle;
-    });
-    return [formatter stringFromNumber:@(value)];
-}
-
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color

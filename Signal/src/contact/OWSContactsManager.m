@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "Signal-Swift.h"
 #import "Util.h"
+#import "ViewControllerUtils.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -371,12 +372,13 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
             [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+        NSString *indexText = [ViewControllerUtils formatInt:(int)index + 1];
         phoneNumberLabel =
-            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
+            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "
                                            @"(e.g. 'home')}} and {{index, e.g. 2}}."),
                       phoneNumberLabel,
-                      (int)index];
+                      indexText];
     }
 
     return phoneNumberLabel;

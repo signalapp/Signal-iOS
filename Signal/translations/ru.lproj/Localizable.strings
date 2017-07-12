@@ -356,7 +356,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Обновление базы данных";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u дн.";
+"TIME_AMOUNT_DAYS" = "%u дн.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последняя активность: %@";
@@ -635,7 +635,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Заблокированные";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u час.";
+"TIME_AMOUNT_HOURS" = "%u час.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Соединение...";
@@ -803,7 +803,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Есть больше непрочитанных сообщений. Нажмите \"%@\" для того, чтобы просмотреть их.";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u мин.";
+"TIME_AMOUNT_MINUTES" = "%u мин.";
 
 /* notification title */
 "MISSED_CALL" = "Пропущенный звонок";
@@ -1175,7 +1175,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Поиск по имени или номеру";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u сек.";
+"TIME_AMOUNT_SECONDS" = "%u сек.";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Безопасный сеанс связи был сброшен.";
@@ -1352,16 +1352,16 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Показать переписку";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u дн.";
+"TIME_AMOUNT_SINGLE_DAY" = "%u дн.";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u час";
+"TIME_AMOUNT_SINGLE_HOUR" = "%u час";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u минута";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%u минута";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u неделя";
+"TIME_AMOUNT_SINGLE_WEEK" = "%u неделя";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Предлагаю установить Signal! Вот ссылка:";
@@ -1499,7 +1499,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Продолжите настройку в Signal Desktop.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u нед.";
+"TIME_AMOUNT_WEEKS" = "%u нед.";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Входящие";

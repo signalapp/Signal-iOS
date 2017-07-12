@@ -356,7 +356,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Päivitetään tietokantaa";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u päivää";
+"TIME_AMOUNT_DAYS" = "%u päivää";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi käytetty: %@";
@@ -635,7 +635,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Estetyt";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u tuntia";
+"TIME_AMOUNT_HOURS" = "%u tuntia";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Yhdistetään...";
@@ -803,7 +803,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Ylempänä on lisää lukemattomia viestejä.  Napsauta \"%@\" nähdäksesi ne.";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u minuuttia";
+"TIME_AMOUNT_MINUTES" = "%u minuuttia";
 
 /* notification title */
 "MISSED_CALL" = "Vastaamatta jäänyt puhelu";
@@ -1175,7 +1175,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Etsi nimellä tai numerolla";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u sekuntia";
+"TIME_AMOUNT_SECONDS" = "%u sekuntia";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Suojattu istunto alustettu.";
@@ -1352,16 +1352,16 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Näytä keskustelu";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u päivä";
+"TIME_AMOUNT_SINGLE_DAY" = "%u päivä";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u tunti";
+"TIME_AMOUNT_SINGLE_HOUR" = "%u tunti";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u minuutti";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%u minuutti";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u viikko";
+"TIME_AMOUNT_SINGLE_WEEK" = "%u viikko";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Kutsun sinut käyttämään Signalia! Tässä linkki:";
@@ -1499,7 +1499,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Saata yhdistäminen loppuun Signal Desktopissa.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u viikkoa";
+"TIME_AMOUNT_WEEKS" = "%u viikkoa";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Postilaatikko";

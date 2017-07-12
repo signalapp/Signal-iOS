@@ -19,6 +19,7 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -700,21 +701,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self checkIfEmptyView];
 }
 
-- (NSNumber *)updateInboxCountLabel {
+- (void)updateInboxCountLabel
+{
     NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
-    NSNumber *badgeNumber    = [NSNumber numberWithUnsignedInteger:numberOfItems];
     NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
-    if (![badgeNumber isEqualToNumber:@0]) {
-        NSString *badgeValue = [badgeNumber stringValue];
-        unreadString         = [unreadString stringByAppendingFormat:@" (%@)", badgeValue];
+    if (numberOfItems > 0) {
+        unreadString =
+            [unreadString stringByAppendingFormat:@" (%@)", [ViewControllerUtils formatInt:(int)numberOfItems]];
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
     [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
-
-    return badgeNumber;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

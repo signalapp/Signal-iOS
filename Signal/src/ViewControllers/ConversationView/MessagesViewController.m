@@ -755,7 +755,7 @@ typedef enum : NSUInteger {
                 [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
                                                @"Indicates that some members of this group has been blocked. Embeds "
                                                @"{{the number of blocked users in this group}}."),
-                          blockedGroupMemberCount];
+                          [ViewControllerUtils formatInt:blockedGroupMemberCount]];
         }
     }
 
