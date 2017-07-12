@@ -102,8 +102,8 @@
 - (void)testCanPerformEditingActionWithVideoMessage
 {
     TSAttachmentStream *videoAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"video/mp4" sourceFilename:nil];
-
+    [[TSAttachmentStream alloc] initWithContentType:@"video/mp4" sourceFilename:nil];
+    [videoAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -118,6 +118,7 @@
 {
     TSAttachmentStream *audioAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:nil];
+    [audioAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     XCTAssertTrue([self.messageAdapter canPerformEditingAction:@selector(delete:)]);
@@ -253,6 +254,7 @@
     TSAttachmentStream *videoAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"video/mp4" sourceFilename:nil];
     [videoAttachment writeData:self.fakeVideoData error:&error];
+    [videoAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:videoAttachment incoming:YES];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -270,6 +272,7 @@
     TSAttachmentStream *audioAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:nil];
     [audioAttachment writeData:self.fakeAudioData error:&error];
+    [audioAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -285,6 +288,7 @@
     TSAttachmentStream *audioAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"audio/x-m4a" sourceFilename:nil];
     [audioAttachment writeData:self.fakeAudioData error:&error];
+    [audioAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];
@@ -300,6 +304,7 @@
     TSAttachmentStream *audioAttachment =
         [[TSAttachmentStream alloc] initWithContentType:@"audio/wav" sourceFilename:nil];
     [audioAttachment writeData:self.fakeAudioData error:&error];
+    [audioAttachment save];
     self.messageAdapter.mediaItem = [[TSVideoAttachmentAdapter alloc] initWithAttachment:audioAttachment incoming:NO];
 
     [self.messageAdapter performEditingAction:@selector(copy:)];

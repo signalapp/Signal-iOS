@@ -42,7 +42,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 
 class AccountManagerTest: XCTestCase {
 
-    let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.sharedManager() as! TSNetworkManager, storageManager: TSStorageManager.shared())
+    let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
 
     func testRegisterWhenEmptyCode() {
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
@@ -86,7 +86,7 @@ class AccountManagerTest: XCTestCase {
     }
 
     func testSuccessfulRegistration() {
-        let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.sharedManager() as! TSNetworkManager, storageManager: TSStorageManager.shared())
+        let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
 
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager)
 
