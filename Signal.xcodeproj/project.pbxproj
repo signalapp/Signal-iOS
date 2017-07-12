@@ -26,11 +26,6 @@
 		3448BFCF1EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */; };
 		3448BFD01EDF0EA7005B2D69 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */; };
 		3448BFD11EDF0EA7005B2D69 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */; };
-		344D9BDB1F0FD2CB00A2C1F9 /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
-		344D9BDC1F0FD2D200A2C1F9 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E2E91F1E153B3D00457AA0 /* Strings.swift */; };
-		344D9BDD1F0FD30100A2C1F9 /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
-		344D9BDE1F0FD32000A2C1F9 /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
-		344D9BDF1F0FD34500A2C1F9 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
@@ -2282,11 +2277,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				344D9BDF1F0FD34500A2C1F9 /* DeviceSleepManager.swift in Sources */,
-				344D9BDE1F0FD32000A2C1F9 /* CallViewController.swift in Sources */,
-				344D9BDD1F0FD30100A2C1F9 /* SafetyNumberConfirmationAlert.swift in Sources */,
-				344D9BDC1F0FD2D200A2C1F9 /* Strings.swift in Sources */,
-				344D9BDB1F0FD2CB00A2C1F9 /* OWSAlerts.swift in Sources */,
 				4505C2C31E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				456F6E241E24133E00FD2210 /* CallKitCallUIAdaptee.swift in Sources */,
 				451DA3C81F14898E008E2423 /* Strings.swift in Sources */,
