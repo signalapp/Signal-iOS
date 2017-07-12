@@ -159,6 +159,7 @@ protocol CallServiceObserver: class {
 
     // Used to coordinate promises across delegate methods
     private var fulfillCallConnectedPromise: (() -> Void)?
+    private var rejectCallConnectedPromise: ((Error) -> Void)?
 
     /**
      * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
@@ -328,8 +329,9 @@ protocol CallServiceObserver: class {
             // clients that don't support receiving ICE updates before receiving the call offer.
             self.readyToSendIceUpdates(call: call)
 
-            let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
+            let (callConnectedPromise, fulfill, reject) = Promise<Void>.pending()
             self.fulfillCallConnectedPromise = fulfill
+            self.rejectCallConnectedPromise = reject
 
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
@@ -620,7 +622,7 @@ protocol CallServiceObserver: class {
             // a more intuitive ordering.
             self.readyToSendIceUpdates(call: newCall)
 
-            let (promise, fulfill, _) = Promise<Void>.pending()
+            let (promise, fulfill, reject) = Promise<Void>.pending()
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
@@ -629,6 +631,7 @@ protocol CallServiceObserver: class {
 
             // This will be fulfilled (potentially) by the RTCDataChannel delegate method
             self.fulfillCallConnectedPromise = fulfill
+            self.rejectCallConnectedPromise = reject
 
             return race(promise, timeout)
         }.then {
@@ -1396,6 +1399,10 @@ protocol CallServiceObserver: class {
         Logger.info("\(TAG) clearing pendingIceUpdateMessages")
         self.pendingIceUpdateMessages = []
         self.fulfillCallConnectedPromise = nil
+        if let rejectCallConnectedPromise = self.rejectCallConnectedPromise {
+            rejectCallConnectedPromise(CallError.obsoleteCall(description: "Terminating call"))
+        }
+        self.rejectCallConnectedPromise = nil
 
         // In case we're still waiting on the peer connection setup somewhere, we need to reject it to avoid a memory leak.
         // There is no harm in rejecting a previously fulfilled promise.

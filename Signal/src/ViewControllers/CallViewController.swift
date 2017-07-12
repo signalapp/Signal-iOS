@@ -147,9 +147,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
         updateAvatarImage()
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { _ in
-            Logger.info("\(self.TAG) updating avatar image")
-            self.updateAvatarImage()
+        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
+            guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.TAG) updating avatar image")
+            strongSelf.updateAvatarImage()
         }
 
         assert(call != nil)
