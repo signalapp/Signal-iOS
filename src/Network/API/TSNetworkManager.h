@@ -30,7 +30,7 @@ extern NSString *const TSNetworkManagerDomain;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (id)sharedManager;
++ (instancetype)sharedManager;
 
 - (void)makeRequest:(TSRequest *)request
             success:(void (^)(NSURLSessionDataTask *task, id responseObject))success

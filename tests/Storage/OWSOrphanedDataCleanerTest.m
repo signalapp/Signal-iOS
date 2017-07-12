@@ -14,6 +14,8 @@
 
 @end
 
+#pragma mark -
+
 @implementation OWSOrphanedDataCleanerTest
 
 - (void)setUp
@@ -24,7 +26,7 @@
 
     // Set up initial conditions & Sanity check
     [TSAttachmentStream deleteAttachments];
-    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
     [TSAttachmentStream removeAllObjectsInCollection];
     XCTAssertEqual(0, [TSAttachmentStream numberOfKeysInCollection]);
     [TSIncomingMessage removeAllObjectsInCollection];
@@ -36,6 +38,11 @@
 - (void)tearDown
 {
     [super tearDown];
+}
+
+- (NSUInteger)numberOfItemsInAttachmentsFolder
+{
+    return [OWSOrphanedDataCleaner filePathsInAttachmentsFolder].count;
 }
 
 - (void)testInteractionsWithoutThreadAreDeleted
@@ -53,7 +60,17 @@
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
-    [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0
+                                 handler:^(NSError *error) {
+                                     if (error) {
+                                         XCTFail(@"Expectation Failed with error: %@", error);
+                                     }
+                                 }];
+
     XCTAssertEqual(0, [TSIncomingMessage numberOfKeysInCollection]);
 }
 
@@ -70,14 +87,24 @@
     [incomingMessage save];
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
-    [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0
+                                 handler:^(NSError *error) {
+                                     if (error) {
+                                         XCTFail(@"Expectation Failed with error: %@", error);
+                                     }
+                                 }];
+
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 }
 
 - (void)testFilesWithoutInteractionsAreDeleted
 {
     // sanity check
-    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
 
     NSError *error;
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
@@ -86,12 +113,25 @@
     NSString *orphanedFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
-    XCTAssertEqual(1, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
-    [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    // Do multiple cleanup passes.
+    for (int i = 0; i < 2; i++) {
+        XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
+        [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
+            [expectation fulfill];
+        }];
+        [self waitForExpectationsWithTimeout:5.0
+                                     handler:^(NSError *error) {
+                                         if (error) {
+                                             XCTFail(@"Expectation Failed with error: %@", error);
+                                         }
+                                     }];
+    }
+
     fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssertFalse(fileExists);
-    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
 }
 
 - (void)testFilesWithInteractionsAreNotDeleted
@@ -116,13 +156,22 @@
     NSString *attachmentFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFilePath];
     XCTAssert(fileExists);
-    XCTAssertEqual(1, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
-    [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0
+                                 handler:^(NSError *error) {
+                                     if (error) {
+                                         XCTFail(@"Expectation Failed with error: %@", error);
+                                     }
+                                 }];
 
     fileExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFilePath];
     XCTAssert(fileExists);
-    XCTAssertEqual(1, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 }
 
 - (void)testFilesWithoutAttachmentStreamsAreDeleted
@@ -135,12 +184,22 @@
     NSString *orphanedFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
-    XCTAssertEqual(1, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
-    [[OWSOrphanedDataCleaner new] removeOrphanedData];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5.0
+                                 handler:^(NSError *error) {
+                                     if (error) {
+                                         XCTFail(@"Expectation Failed with error: %@", error);
+                                     }
+                                 }];
+
     fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssertFalse(fileExists);
-    XCTAssertEqual(0, [TSAttachmentStream numberOfItemsInAttachmentsFolder]);
+    XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
 }
 
 @end

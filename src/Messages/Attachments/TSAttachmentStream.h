@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
-+ (NSUInteger)numberOfItemsInAttachmentsFolder;
 
 - (CGSize)imageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (CGSize)imageSizeWithoutTransaction;

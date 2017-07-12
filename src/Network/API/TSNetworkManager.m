@@ -22,7 +22,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 #pragma mark Singleton implementation
 
-+ (id)sharedManager {
++ (instancetype)sharedManager
+{
     static TSNetworkManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

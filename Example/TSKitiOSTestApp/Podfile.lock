@@ -111,7 +111,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :path: "../../SignalServiceKit.podspec"
+    :path: ../../SignalServiceKit.podspec
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -140,6 +140,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 124c05542083fefccb75f4b7afbdd839e27ff5ab
+PODFILE CHECKSUM: a0f4507b6b4e6f9da3250901b06187a67236e083
 
 COCOAPODS: 1.2.1
