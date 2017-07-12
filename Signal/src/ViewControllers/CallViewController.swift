@@ -742,17 +742,17 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
     }
 
-    func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
+    func didPressSpeakerphone(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
-        speakerphoneButton.isSelected = !speakerphoneButton.isSelected
+        button.isSelected = !button.isSelected
         if let call = self.call {
-            callUIAdapter.setIsSpeakerphoneEnabled(call: call, isEnabled: speakerphoneButton.isSelected)
+            callUIAdapter.setIsSpeakerphoneEnabled(call: call, isEnabled: button.isSelected)
         } else {
             Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
         }
     }
 
-    func didPressTextMessage(sender speakerphoneButton: UIButton) {
+    func didPressTextMessage(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         dismissIfPossible(shouldDelay:false)
