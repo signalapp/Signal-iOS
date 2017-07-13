@@ -9,16 +9,10 @@ public let CallAudioServiceSessionChanged = Notification.Name("CallAudioServiceS
 
 struct AudioSource: Hashable {
 
-//    let name: String
     let image: UIImage
     let localizedName: String
     let portDescription: AVAudioSessionPortDescription?
     let isBuiltInSpeaker: Bool
-
-//    init(name: String, image: UIImage, isCurrentRoute: Bool) {
-//        
-//    }
-//    
 
     init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
         self.localizedName = localizedName
@@ -385,68 +379,23 @@ struct AudioSource: Hashable {
     // MARK - AudioSession MGMT
     // TODO move this to CallAudioSession?
 
-    var hasAlternateAudioRoutes: Bool {
-//        let session = AVAudioSession.sharedInstance()
-
-        // PROBLEM: doesn't list bluetooth when speakerphone is enabled.
-//        guard let availableInputs = session.availableInputs else {
-//            // I'm not sure when this would happen.
-//            owsFail("No available inputs or inputs not ready")
-//            return false
-//        }
-
-        //
-//        let availableInputs = session.currentRoute.inputs
-
-        Logger.info("\(TAG) in \(#function) availableInputs: \(availableInputs)")
-        for input in self.availableInputs {
-            if input.portDescription?.portType == AVAudioSessionPortBluetoothHFP {
-                return true
-            }
-        }
-
-        return false
-    }
-
     // Note this method is sensitive to the current audio session configuration.
     // Specifically if you call it while speakerphone is enabled you won't see 
     // any connected bluetooth routes.
     var availableInputs: [AudioSource] {
         let session = AVAudioSession.sharedInstance()
-        // guard let availableOutputs = session.outputDataSources else {
 
-        // Maybe... shows the bluetooth AND the receiver (but not speaker)
-        // PROBLEM: doesn't list bluetooth when speakerphone is enabled.
         guard let availableInputs = session.availableInputs else {
             // I'm not sure when this would happen.
             owsFail("No available inputs or inputs not ready")
             return [AudioSource.builtInSpeaker]
         }
 
-        // PROBLEM: doesn't list iphone internal
-        // PROBLEM: doesn't list bluetooth until toggling speakerphone on/off
-//        let availableInputs = session.currentRoute.inputs
-//        let availableInputs = session.currentRoute.outputs
-
-        // NOPE. only shows the single active one. (e.g. blue tooth XOR receive)
-//        let availableOutputs = session.currentRoute.outputs
-
         Logger.info("\(TAG) in \(#function) availableInputs: \(availableInputs)")
         return [AudioSource.builtInSpeaker] + availableInputs.map { portDescription in
-            // TODO get proper image
-            // TODO set isCurrentRoute correctly
-//            return AudioSource(name: output.dataSourceName, image:#imageLiteral(resourceName: "button_phone_white"), isCurrentRoute: false)
-//            return AudioSource(name: output.portName, image:#imageLiteral(resourceName: "button_phone_white"), isCurrentRoute: false)
-
             return AudioSource(portDescription: portDescription)
         }
     }
-
-//    var builtInMicrophoneSource: AudioSource? {
-//        availableInputs.first { source -> Bool in
-//            if source.uid =
-//        }
-//    }
 
     func currentAudioSource(call: SignalCall) -> AudioSource? {
         if call.isSpeakerphoneEnabled {
