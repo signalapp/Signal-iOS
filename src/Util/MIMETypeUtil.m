@@ -420,6 +420,12 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
 + (nullable NSString *)fileExtensionForUTIType:(NSString *)utiType
 {
+    // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
+    // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
+    // properly. Doesn't affect file contents.
+    if ([utiType isEqualToString:@"public.aac-audio"]) {
+        return @"m4a";
+    }
     CFStringRef fileExtension
         = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)utiType, kUTTagClassFilenameExtension);
     return (__bridge_transfer NSString *)fileExtension;
