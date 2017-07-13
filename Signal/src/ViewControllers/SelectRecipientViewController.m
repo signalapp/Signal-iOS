@@ -376,11 +376,17 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     }
     NSString *possiblePhoneNumber =
         [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
-    PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:possiblePhoneNumber];
+    NSArray<PhoneNumber *> *parsePhoneNumbers =
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:possiblePhoneNumber
+                                              clientPhoneNumber:[TSAccountManager localNumber]];
+    if (parsePhoneNumbers.count < 1) {
+        return NO;
+    }
+    PhoneNumber *parsedPhoneNumber = parsePhoneNumbers[0];
     // It'd be nice to use [PhoneNumber isValid] but it always returns false for some countries
     // (like afghanistan) and there doesn't seem to be a good way to determine beforehand
     // which countries it can validate for without forking libPhoneNumber.
-    return parsedPhoneNumber && parsedPhoneNumber.toE164.length > 1;
+    return parsedPhoneNumber.toE164.length > 1;
 }
 
 - (void)updatePhoneNumberButtonEnabling

@@ -26,7 +26,7 @@ import Foundation
     public func initiateCall(handle: String) -> Bool {
         Logger.info("\(TAG) in \(#function) with handle: \(handle)")
 
-        guard let recipientId = PhoneNumber(fromUserSpecifiedText: handle)?.toE164() else {
+        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
             Logger.warn("\(TAG) unable to parse signalId from phone number: \(handle)")
             return false
         }
