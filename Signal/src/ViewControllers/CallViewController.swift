@@ -371,7 +371,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
         setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
         setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
-//        setButtonSelectedImage(button: audioRouteButton, imageName: "audio-call-speaker-active")
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
             [audioModeMuteButton, audioRouteButton, audioModeVideoButton ],
@@ -392,7 +391,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        let dismissAction = UIAlertAction(title:  CommonStrings.dismissActionText, style: .cancel, handler: nil)
+        let dismissAction = UIAlertAction(title:  CommonStrings.dismissButton, style: .cancel, handler: nil)
         actionSheetController.addAction(dismissAction)
 
         let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)

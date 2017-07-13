@@ -9,7 +9,7 @@ import Foundation
  */
 
 @objc class CommonStrings: NSObject {
-    static let dismissActionText = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
+    static let dismissButton = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
 }
 
 @objc class CallStrings: NSObject {

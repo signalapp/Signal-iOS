@@ -379,8 +379,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)presentInvalidCountryCodeError {
     [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
                           message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
-                      buttonTitle:NSLocalizedString(
-                                      @"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog")];
+                      buttonTitle:CommonStrings.dismissButton];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate

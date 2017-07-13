@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
         [alert addAction:openSettingsAction];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
                                                               handler:^(UIAlertAction *action) {
                                                                   failureCallback();

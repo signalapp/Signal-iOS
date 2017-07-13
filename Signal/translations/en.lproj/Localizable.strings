@@ -379,8 +379,7 @@
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
-/* Generic short text for button to dismiss a dialog
-   Short text to dismiss current modal / actionsheet / screen */
+/* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 
 /* Section title for the 'domain fronting country' view. */

@@ -194,7 +194,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
-        dismissButton.setTitle(NSLocalizedString("DISMISS_BUTTON_TEXT", comment: ""), for: .normal)
+        dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
         dismissButton.setTitleColor(UIColor.white, for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action:#selector(didTapDismissButton), for: .touchUpInside)
