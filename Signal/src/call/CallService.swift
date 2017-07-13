@@ -304,6 +304,8 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for call: \(call.identifiersForLogs)")
             self.peerConnectionClient = peerConnectionClient
             self.fulfillPeerConnectionClientPromise?()
+            self.fulfillPeerConnectionClientPromise = nil
+            self.rejectPeerConnectionClientPromise = nil
 
             return peerConnectionClient.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
@@ -376,6 +378,8 @@ protocol CallServiceObserver: class {
         }
 
         fulfillReadyToSendIceUpdatesPromise()
+        self.fulfillReadyToSendIceUpdatesPromise = nil
+        self.rejectReadyToSendIceUpdatesPromise = nil
     }
 
     /**
@@ -595,6 +599,8 @@ protocol CallServiceObserver: class {
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
             self.peerConnectionClient = peerConnectionClient
             self.fulfillPeerConnectionClientPromise?()
+            self.fulfillPeerConnectionClientPromise = nil
+            self.rejectPeerConnectionClientPromise = nil
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -886,6 +892,8 @@ protocol CallServiceObserver: class {
         assert(self.fulfillCallConnectedPromise != nil)
         // cancel connection timeout
         self.fulfillCallConnectedPromise?()
+        self.fulfillCallConnectedPromise = nil
+        self.rejectCallConnectedPromise = nil
 
         call.state = .connected
 
