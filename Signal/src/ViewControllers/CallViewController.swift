@@ -404,11 +404,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                 self.audioSource = audioSource
             }
 
-            // HACK private API to create checkmark for active audio source.
+            // HACK: private API to create checkmark for active audio source.
             routeAudioAction.setValue(currentAudioSource == audioSource, forKey: "checked")
 
-            // HACK private API to add image to actionsheet
-            routeAudioAction.setValue(audioSource.image, forKey: "image")
+            // TODO: pick some icons. Leaving out for MVP
+            // HACK: private API to add image to actionsheet
+            // routeAudioAction.setValue(audioSource.image, forKey: "image")
 
             actionSheetController.addAction(routeAudioAction)
         }
