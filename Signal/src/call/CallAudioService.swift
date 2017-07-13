@@ -139,10 +139,19 @@ struct AudioSource: Hashable {
         Logger.verbose("\(TAG) in \(#function) is no-op")
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
+
+        // It's importent to set preferred input *after* ensuring properAudioSession
+        // because some sources are only valid for certain categories.
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setPreferredInput(audioSource?.portDescription)
+        } catch {
+            owsFail("\(TAG) setPreferredInput in \(#function) failed with error: \(error)")
+        }
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {

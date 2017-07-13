@@ -119,26 +119,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
     }
 
-    var audioSource: AudioSource? {
-        didSet {
-            if audioSource != oldValue {
-                if let audioSource = audioSource {
-                    if audioSource.isBuiltInSpeaker {
-                        // TODO seems like CVC knows too much about AudioSource.
-                        // Maybe these conditionals belong in the callUIAdapter? Or audioService?
-                        //                    self.callUIAdapter.audioService.setPreferredInput(audioSource: audioSource)
-
-                        self.callUIAdapter.setIsSpeakerphoneEnabled(call: self.call, isEnabled: true)
-                        return
-                    }
-                }
-
-                self.callUIAdapter.setIsSpeakerphoneEnabled(call: self.call, isEnabled: false)
-                self.callUIAdapter.audioService.setPreferredInput(call: self.call, audioSource: audioSource)
-            }
-        }
-    }
-
     // MARK: Initializers
 
     required init?(coder aDecoder: NSCoder) {
@@ -390,11 +370,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
         for audioSource in self.appropriateAudioSources {
-            // TODO add image
             let routeAudioAction = UIAlertAction(title: audioSource.localizedName, style: .default) { _ in
-                // Disable any speakerphone
-                // TODO will this update the UI appropriately?
-                self.audioSource = audioSource
+                self.callUIAdapter.setAudioSource(call: self.call, audioSource: audioSource)
             }
 
             // HACK: private API to create checkmark for active audio source.
@@ -879,7 +856,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         Logger.info("\(TAG) called \(#function)")
         button.isSelected = !button.isSelected
         if let call = self.call {
-            callUIAdapter.setIsSpeakerphoneEnabled(call: call, isEnabled: button.isSelected)
+            if button.isSelected {
+                callUIAdapter.setAudioSource(call: call, audioSource: AudioSource.builtInSpeaker)
+            } else {
+                // use default audio source
+                callUIAdapter.setAudioSource(call: call, audioSource: nil)
+            }
         } else {
             Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
         }
@@ -993,7 +975,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.updateCallUI(callState: call.state)
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }

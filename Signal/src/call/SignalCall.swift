@@ -26,7 +26,7 @@ protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
-    func speakerphoneDidChange(call: SignalCall, isEnabled: Bool)
+    func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
 }
 
 /**
@@ -104,16 +104,23 @@ protocol CallObserver: class {
         }
     }
 
-    var isSpeakerphoneEnabled = false {
+    var audioSource: AudioSource? = nil {
         didSet {
             AssertIsOnMainThread()
-
-            Logger.debug("\(TAG) isSpeakerphoneEnabled changed: \(oldValue) -> \(self.isSpeakerphoneEnabled)")
+            Logger.debug("\(TAG) audioSource changed: \(String(describing:oldValue)) -> \(String(describing: audioSource))")
 
             for observer in observers {
-                observer.value?.speakerphoneDidChange(call: self, isEnabled: isSpeakerphoneEnabled)
+                observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
             }
         }
+    }
+
+    var isSpeakerphoneEnabled: Bool {
+        guard let audioSource = self.audioSource else {
+            return false
+        }
+
+        return audioSource.isBuiltInSpeaker
     }
 
     var isOnHold = false
