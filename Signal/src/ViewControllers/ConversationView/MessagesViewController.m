@@ -872,13 +872,11 @@ typedef enum : NSUInteger {
                     }];
         [actionSheetController addAction:verifyAction];
 
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
-                                               @"Generic short text for button to dismiss a dialog")
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [weakSelf resetVerificationStateToDefault];
-                                   }];
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:^(UIAlertAction *_Nonnull action) {
+                                                                  [weakSelf resetVerificationStateToDefault];
+                                                              }];
         [actionSheetController addAction:dismissAction];
 
         [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -2950,9 +2948,8 @@ typedef enum : NSUInteger {
                                      @"Alert body when picking a document fails because user picked a directory/bundle")
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:nil];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
         [alertController addAction:dismissAction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2978,9 +2975,8 @@ typedef enum : NSUInteger {
                              message:nil
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:nil];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
         [alertController addAction:dismissAction];
 
         dispatch_async(dispatch_get_main_queue(), ^{

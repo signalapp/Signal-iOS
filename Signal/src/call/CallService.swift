@@ -1442,7 +1442,7 @@ protocol CallServiceObserver: class {
         // Do nothing
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         // Do nothing
     }

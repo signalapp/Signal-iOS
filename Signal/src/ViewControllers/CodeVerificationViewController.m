@@ -301,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               message:error.localizedDescription
                                                        preferredStyle:UIAlertControllerStyleAlert];
     }
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *action) {
                                                               [_challengeTextField becomeFirstResponder];

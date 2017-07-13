@@ -5,6 +5,7 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
+#import "Signal-Swift.h"
 #import "UIViewController+CameraPermissions.h"
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -166,10 +167,9 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                                     }];
                 [alertController addAction:retryAction];
 
-                NSString *dismissTitle
-                    = NSLocalizedString(@"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog");
-                UIAlertAction *dismissAction =
-                    [UIAlertAction actionWithTitle:dismissTitle style:UIAlertActionStyleCancel handler:nil];
+                UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                                                        style:UIAlertActionStyleCancel
+                                                                      handler:nil];
                 [alertController addAction:dismissAction];
 
                 dispatch_async(dispatch_get_main_queue(), ^{

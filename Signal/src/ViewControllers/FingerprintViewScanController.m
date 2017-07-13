@@ -189,7 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ Successfully verified safety numbers.", tag);
 
     NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
-    NSString *dismissText = NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil);
     NSString *descriptionFormat = NSLocalizedString(
         @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
     NSString *successDescription = [NSString stringWithFormat:descriptionFormat, contactName];
@@ -209,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   [viewController dismissViewControllerAnimated:true completion:nil];
                               }]];
     UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:dismissText
+        [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
                                    [viewController dismissViewControllerAnimated:true completion:nil];
