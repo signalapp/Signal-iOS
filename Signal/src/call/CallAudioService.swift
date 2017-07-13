@@ -407,16 +407,20 @@ struct AudioSource: Hashable {
     }
 
     func currentAudioSource(call: SignalCall) -> AudioSource? {
-        if call.isSpeakerphoneEnabled {
-            return AudioSource.builtInSpeaker
-        } else {
-            let session = AVAudioSession.sharedInstance()
-            guard let portDescription = session.currentRoute.inputs.first else {
-                return nil
-            }
-
-            return AudioSource(portDescription: portDescription)
+        if let audioSource = call.audioSource {
+            return audioSource
         }
+
+        // Before the user has specified an audio source on the call, we rely on the existing
+        // system state to determine the current audio source.
+        // If a bluetooth is connected, this will be bluetooth, otherwise
+        // this will be the receiver.
+        let session = AVAudioSession.sharedInstance()
+        guard let portDescription = session.currentRoute.inputs.first else {
+            return nil
+        }
+
+        return AudioSource(portDescription: portDescription)
     }
 
     public func setPreferredInput(call: SignalCall, audioSource: AudioSource?) {
