@@ -30,6 +30,8 @@
 
 #define CELL_HEIGHT 72.0f
 
+typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
+
 @interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic) UITableView *tableView;
@@ -175,7 +177,7 @@
         @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
     __weak SignalsViewController *weakSelf = self;
     archiveReminderView.tapAction = ^{
-        [weakSelf selectedInbox];
+        [weakSelf showInboxGrouping];
     };
     [self.view addSubview:archiveReminderView];
     [archiveReminderView autoPinWidthToSuperview];
@@ -239,7 +241,7 @@
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self selectedInbox];
+    [self showInboxGrouping];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -349,9 +351,9 @@
 
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self selectedInbox];
+        [self showInboxGrouping];
     } else {
-        [self selectedArchive];
+        [self showArchiveGrouping];
     }
 }
 
@@ -422,6 +424,11 @@
     if (_shouldObserveDBModifications == shouldObserveDBModifications) {
         return;
     }
+
+    DDLogDebug(@"%@ shouldObserveDBModifications: %d -> %d",
+        self.tag,
+        _shouldObserveDBModifications,
+        shouldObserveDBModifications);
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
@@ -793,18 +800,27 @@
 
 #pragma mark - Groupings
 
-- (void)selectedInbox
+- (void)showInboxGrouping
 {
-    self.segmentedControl.selectedSegmentIndex = 0;
     self.viewingThreadsIn = kInboxState;
-    [self changeToGrouping:TSInboxGroup];
 }
 
-- (void)selectedArchive
+- (void)showArchiveGrouping
 {
-    self.segmentedControl.selectedSegmentIndex = 1;
     self.viewingThreadsIn = kArchiveState;
-    [self changeToGrouping:TSArchiveGroup];
+}
+
+- (void)setViewingThreadsIn:(CellState)viewingThreadsIn
+{
+    BOOL didChange = _viewingThreadsIn != viewingThreadsIn;
+    _viewingThreadsIn = viewingThreadsIn;
+    self.segmentedControl.selectedSegmentIndex = (viewingThreadsIn == kInboxState ? 0 : 1);
+    if (didChange || !self.threadMappings) {
+        [self changeToGrouping:(viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup)];
+    } else {
+        [self checkIfEmptyView];
+        [self updateReminderViews];
+    }
 }
 
 - (void)changeToGrouping:(NSString *)grouping {
@@ -916,13 +932,6 @@
     }
 
     [self.tableView endUpdates];
-    [self checkIfEmptyView];
-}
-
-- (void)setViewingThreadsIn:(CellState)viewingThreadsIn
-{
-    _viewingThreadsIn = viewingThreadsIn;
-
     [self checkIfEmptyView];
 }
 
