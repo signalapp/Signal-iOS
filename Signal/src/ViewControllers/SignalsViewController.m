@@ -873,12 +873,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
     [self updateInboxCountLabel];
+    [self checkIfEmptyView];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.threadMappings updateWithTransaction:transaction];
-        }];
-        [self checkIfEmptyView];
         return;
     }
 
@@ -932,7 +929,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self.tableView endUpdates];
-    [self checkIfEmptyView];
 }
 
 - (void)checkIfEmptyView {
