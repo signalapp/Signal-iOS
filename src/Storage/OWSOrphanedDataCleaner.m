@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         for (NSString *interactionId in orphanInteractionIds) {
-            TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId];
+            TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
             if (!interaction) {
                 // This could just be a race condition, but it should be very unlikely.
                 OWSFail(@"Could not load interaction: %@", interactionId);
@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
             [interaction removeWithTransaction:transaction];
         }
         for (NSString *attachmentId in orphanAttachmentIds) {
-            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
             if (!attachment) {
                 // This could just be a race condition, but it should be very unlikely.
                 OWSFail(@"Could not load attachment: %@", attachmentId);
