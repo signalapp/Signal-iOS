@@ -12,27 +12,34 @@ struct AudioSource: Hashable {
     let image: UIImage
     let localizedName: String
     let portDescription: AVAudioSessionPortDescription?
+
+    // The built in loud speaker / aka speakerphone
     let isBuiltInSpeaker: Bool
 
-    init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
+    // The build in quiet speaker, aka the normal phone handset receiver earpiece
+    let isBuiltInEarPiece: Bool
+
+    init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
         self.localizedName = localizedName
         self.image = image
         self.isBuiltInSpeaker = isBuiltInSpeaker
+        self.isBuiltInEarPiece = isBuiltInEarPiece
         self.portDescription = portDescription
     }
 
     init(portDescription: AVAudioSessionPortDescription) {
 
+        let isBuiltInEarPiece = portDescription.portType == AVAudioSessionPortBuiltInMic
+
         // portDescription.portName works well for BT linked devices, but if we are using
         // the built in mic, we have "iPhone Microphone" which is a little awkward.
         // In that case, instead we prefer just the model name e.g. "iPhone" or "iPad"
-        let localizedName = portDescription.portType == AVAudioSessionPortBuiltInMic ?
-            UIDevice.current.localizedModel :
-            portDescription.portName
+        let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
         self.init(localizedName: localizedName,
                   image:#imageLiteral(resourceName: "button_phone_white"), // TODO
                   isBuiltInSpeaker: false,
+                  isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
     }
 
@@ -40,7 +47,8 @@ struct AudioSource: Hashable {
     static var builtInSpeaker: AudioSource {
         return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
                          image: #imageLiteral(resourceName: "button_phone_white"), //TODO
-                         isBuiltInSpeaker: true)
+                         isBuiltInSpeaker: true,
+                         isBuiltInEarPiece: false)
     }
 
     // MARK: Hashable
@@ -168,6 +176,13 @@ struct AudioSource: Hashable {
             return
         }
 
+        // Disallow bluetooth when user has explicitly chosen the built in receiver.
+        // I'm actually not sure why this is required - it seems like we should just be able
+        // to setPreferredInput to call.audioSource.portDescription in this case,
+        // but in practice I'm seeing the call revert to the bluetooth headset.
+        // Presumably something else (in WebRTC?) is touching our shared AudioSession.
+        let options: AVAudioSessionCategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
+
         if call.state == .localRinging {
             // SoloAmbient plays through speaker, but respects silent switch
             setAudioSession(category: AVAudioSessionCategorySoloAmbient,
@@ -179,7 +194,7 @@ struct AudioSource: Hashable {
             // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
-                            options: [.allowBluetooth])
+                            options: options)
         } else {
             // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
@@ -187,7 +202,7 @@ struct AudioSource: Hashable {
             // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: [.allowBluetooth])
+                            options: options)
         }
 
         let session = AVAudioSession.sharedInstance()
