@@ -50,6 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
+                             messageSender:(OWSMessageSender *)messageSender
+                                   success:(void (^)())successHandler
+                                   failure:(void (^)(NSError *error))failureHandler;
+
++ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
+                                  inThread:(TSThread *)thread
                              messageSender:(OWSMessageSender *)messageSender;
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
