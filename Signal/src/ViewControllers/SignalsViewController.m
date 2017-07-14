@@ -125,6 +125,10 @@
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -415,43 +419,39 @@
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
 {
+    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
+        return;
+    }
+
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    [self ensureObserveDBModifications];
-}
-
-- (void)ensureObserveDBModifications
-{
-    if (self.shouldObserveDBModifications) {
-        if (self.threadMappings != nil) {
-            // Before we begin observing database modifications, make sure
-            // our mapping and table state is up-to-date.
-            //
-            // We need to `beginLongLivedReadTransaction` before we update our
-            // mapping in order to jump to the most recent commit.
-            [self.uiDatabaseConnection beginLongLivedReadTransaction];
-            [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                [self.threadMappings updateWithTransaction:transaction];
-            }];
-        }
-
-        [[self tableView] reloadData];
+    if (!self.shouldObserveDBModifications) {
+        return;
     }
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
-    if (self.shouldObserveDBModifications) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
+    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
+    // reset all state updated by yapDatabaseModified:.
+    if (self.threadMappings != nil) {
+        // Before we begin observing database modifications, make sure
+        // our mapping and table state is up-to-date.
+        //
+        // We need to `beginLongLivedReadTransaction` before we update our
+        // mapping in order to jump to the most recent commit.
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.threadMappings updateWithTransaction:transaction];
+        }];
     }
 
+    [[self tableView] reloadData];
     [self checkIfEmptyView];
+    [self updateInboxCountLabel];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     self.isAppInBackground = NO;
+    [self checkIfEmptyView];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -845,6 +845,10 @@
         [self.contactsManager requestSystemContactsOnce];
     }
 
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
@@ -855,6 +859,9 @@
     [self updateInboxCountLabel];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.threadMappings updateWithTransaction:transaction];
+        }];
         [self checkIfEmptyView];
         return;
     }
