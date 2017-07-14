@@ -238,13 +238,10 @@ struct AudioSource: Hashable {
 
         Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
 
+        // Stop playing sounds while switching audio session so we don't 
+        // get any blips across a temporary unintended route.
+        stopPlayingAnySounds()
         self.ensureProperAudioSession(call: call)
-
-        let session = AVAudioSession.sharedInstance()
-        Logger.verbose("\(TAG) in \(#function) session.category: \(session.category)")
-        Logger.verbose("\(TAG) in \(#function) session.categoryOptions: \(session.categoryOptions)")
-        Logger.verbose("\(TAG) in \(#function) session.preferredInput: \(session.preferredInput)")
-        Logger.verbose("\(TAG) in \(#function) session.availableInputs: \(session.availableInputs)")
 
         switch call.state {
         case .idle: handleIdle(call: call)
@@ -278,15 +275,11 @@ struct AudioSource: Hashable {
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
     }
 
     private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
         self.play(sound: Sound.outgoingRing)
@@ -296,22 +289,17 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) in \(#function)")
         AssertIsOnMainThread()
 
-        stopPlayingAnySounds()
         startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
     }
 
     private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         play(sound: Sound.failure)
     }
@@ -336,9 +324,8 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
 
-        stopPlayingAnySounds()
-
         play(sound: Sound.busy)
+
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
             self.handleCallEnded(call: call)
@@ -348,8 +335,6 @@ struct AudioSource: Hashable {
     private func handleCallEnded(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         // Stop solo audio, revert to default.
         setAudioSession(category: AVAudioSessionCategoryAmbient)
