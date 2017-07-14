@@ -8,6 +8,7 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
+#import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -147,16 +148,16 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
         if (threadId) {
             TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-            TSOutgoingMessage *message =
-                [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                    inThread:thread
-                                                 messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]];
-            [self.messageSender sendMessage:message
+            NSString *replyText = responseInfo[UIUserNotificationActionResponseTypedTextKey];
+
+            [ThreadUtil sendMessageWithText:replyText
+                inThread:thread
+                messageSender:self.messageSender
                 success:^{
                     // TODO do we really want to mark them all as read?
                     [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
                 }
-                failure:^(NSError *error) {
+                failure:^(NSError *_Nonnull error) {
                     // TODO Surface the specific error in the notification?
                     DDLogError(@"Message send failed with error: %@", error);
 
