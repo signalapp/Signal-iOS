@@ -55,23 +55,10 @@
 
     OWSTableSection *inAppSection = [OWSTableSection new];
     inAppSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil);
-    [inAppSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-
-        BOOL soundEnabled = [prefs soundInForeground];
-
-        [[cell textLabel] setText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)];
-        UISwitch *soundSwitch = [UISwitch new];
-        soundSwitch.on = soundEnabled;
-        [soundSwitch addTarget:self
-                        action:@selector(didToggleSoundNotificationsSwitch:)
-              forControlEvents:UIControlEventValueChanged];
-
-        cell.accessoryView = soundSwitch;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
-    }
-                                                    actionBlock:nil]];
+    [inAppSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)
+                                                      isOn:[prefs soundInForeground]
+                                                    target:weakSelf
+                                                  selector:@selector(didToggleSoundNotificationsSwitch:)]];
     [contents addSection:inAppSection];
 
     self.contents = contents;

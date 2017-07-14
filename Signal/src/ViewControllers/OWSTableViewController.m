@@ -240,6 +240,41 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector
+{
+    return [self switchItemWithText:text isOn:isOn isEnabled:YES target:target selector:selector];
+}
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+                                isOn:(BOOL)isOn
+                           isEnabled:(BOOL)isEnabled
+                              target:(id)target
+                            selector:(SEL)selector
+{
+    OWSAssert(text.length > 0);
+    OWSAssert(selector);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+
+        UISwitch *cellSwitch = [UISwitch new];
+        cell.accessoryView = cellSwitch;
+        [cellSwitch setOn:isOn];
+        [cellSwitch addTarget:target action:selector forControlEvents:UIControlEventValueChanged];
+        cellSwitch.enabled = isEnabled;
+
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+        return cell;
+    };
+    return item;
+}
+
 - (nullable UITableViewCell *)customCell
 {
     if (_customCell) {
