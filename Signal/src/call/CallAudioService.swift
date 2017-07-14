@@ -22,7 +22,15 @@ struct AudioSource: Hashable {
     }
 
     init(portDescription: AVAudioSessionPortDescription) {
-        self.init(localizedName: portDescription.portName,
+
+        // portDescription.portName works well for BT linked devices, but if we are using
+        // the built in mic, we have "iPhone Microphone" which is a little awkward.
+        // In that case, instead we prefer just the model name e.g. "iPhone" or "iPad"
+        let localizedName = portDescription.portType == AVAudioSessionPortBuiltInMic ?
+            UIDevice.current.localizedModel :
+            portDescription.portName
+
+        self.init(localizedName: localizedName,
                   image:#imageLiteral(resourceName: "button_phone_white"), // TODO
                   isBuiltInSpeaker: false,
                   portDescription: portDescription)
