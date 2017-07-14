@@ -145,7 +145,7 @@ struct AudioSource: Hashable {
         ensureProperAudioSession(call: call)
 
         // It's importent to set preferred input *after* ensuring properAudioSession
-        // because some sources are only valid for certain categories.
+        // because some sources are only valid for certain category/option combinations.
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setPreferredInput(audioSource?.portDescription)
@@ -161,6 +161,8 @@ struct AudioSource: Hashable {
     }
 
     private func ensureProperAudioSession(call: SignalCall?) {
+        AssertIsOnMainThread()
+
         guard let call = call else {
             setAudioSession(category: AVAudioSessionCategoryPlayback,
                             mode: AVAudioSessionModeDefault)
@@ -178,15 +180,21 @@ struct AudioSource: Hashable {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
                             options: options)
-        } else if call.isSpeakerphoneEnabled {
-            // Ensure no bluetooth if user has specified speakerphone
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: [.defaultToSpeaker])
         } else {
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
                             options: [.allowBluetooth])
+        }
+
+        let session = AVAudioSession.sharedInstance()
+        do {
+            if call.isSpeakerphoneEnabled {
+                try session.overrideOutputAudioPort(.speaker)
+            } else {
+                try session.overrideOutputAudioPort(.none)
+            }
+        } catch {
+            owsFail("\(TAG) failed overrideing output audio. isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
     }
 
