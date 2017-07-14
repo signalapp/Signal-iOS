@@ -182,13 +182,18 @@ struct AudioSource: Hashable {
             setAudioSession(category: AVAudioSessionCategorySoloAmbient,
                             mode: AVAudioSessionModeDefault)
         } else if call.hasLocalVideo {
-            // Don't allow bluetooth for local video if speakerphone has been explicitly chosen by the user.
-            let options: AVAudioSessionCategoryOptions = call.isSpeakerphoneEnabled ? [.defaultToSpeaker] : [.defaultToSpeaker, .allowBluetooth]
-
+            // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
-                            options: options)
+                            options: [.allowBluetooth])
         } else {
+            // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
                             options: [.allowBluetooth])
