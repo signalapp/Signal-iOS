@@ -143,8 +143,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                                                name:NSNotification.Name.UIApplicationDidBecomeActive,
                                                object:nil)
 
-        NotificationCenter.default.addObserver(forName: CallAudioServiceSessionChanged, object: nil, queue: nil) { _ in
-            self.didChangeAudioSession()
+        NotificationCenter.default.addObserver(forName: CallAudioServiceSessionChanged, object: nil, queue: nil) { [weak self] _ in
+            self?.didChangeAudioSession()
         }
 
     }
