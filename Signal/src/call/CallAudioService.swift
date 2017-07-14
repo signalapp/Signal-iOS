@@ -151,15 +151,6 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
-
-        // It's importent to set preferred input *after* ensuring properAudioSession
-        // because some sources are only valid for certain category/option combinations.
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setPreferredInput(audioSource?.portDescription)
-        } catch {
-            owsFail("\(TAG) setPreferredInput in \(#function) failed with error: \(error)")
-        }
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
@@ -201,13 +192,21 @@ struct AudioSource: Hashable {
 
         let session = AVAudioSession.sharedInstance()
         do {
+            // It's importent to set preferred input *after* ensuring properAudioSession
+            // because some sources are only valid for certain category/option combinations.
+            let existingPreferredInput = session.preferredInput
+            if  existingPreferredInput != call.audioSource?.portDescription {
+                Logger.info("\(TAG) changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
+                try session.setPreferredInput(call.audioSource?.portDescription)
+            }
+
             if call.isSpeakerphoneEnabled {
                 try session.overrideOutputAudioPort(.speaker)
             } else {
                 try session.overrideOutputAudioPort(.none)
             }
         } catch {
-            owsFail("\(TAG) failed overrideing output audio. isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
+            owsFail("\(TAG) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
     }
 
@@ -223,6 +222,14 @@ struct AudioSource: Hashable {
         assert(Thread.isMainThread)
 
         Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
+
+        self.ensureProperAudioSession(call: call)
+
+        let session = AVAudioSession.sharedInstance()
+        Logger.verbose("\(TAG) in \(#function) session.category: \(session.category)")
+        Logger.verbose("\(TAG) in \(#function) session.categoryOptions: \(session.categoryOptions)")
+        Logger.verbose("\(TAG) in \(#function) session.preferredInput: \(session.preferredInput)")
+        Logger.verbose("\(TAG) in \(#function) session.availableInputs: \(session.availableInputs)")
 
         switch call.state {
         case .idle: handleIdle(call: call)
@@ -246,8 +253,6 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
 
-        ensureProperAudioSession(call: call)
-
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
@@ -260,7 +265,6 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         stopPlayingAnySounds()
-        self.ensureProperAudioSession(call: call)
     }
 
     private func handleRemoteRinging(call: SignalCall) {
@@ -278,7 +282,6 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         stopPlayingAnySounds()
-        ensureProperAudioSession(call: call)
         startRinging(call: call)
     }
 
@@ -287,9 +290,6 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         stopPlayingAnySounds()
-
-        // start recording to transmit call audio.
-        ensureProperAudioSession(call: call)
     }
 
     private func handleLocalFailure(call: SignalCall) {
@@ -442,17 +442,6 @@ struct AudioSource: Hashable {
         }
 
         return AudioSource(portDescription: portDescription)
-    }
-
-    public func setPreferredInput(call: SignalCall, audioSource: AudioSource?) {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            Logger.debug("\(TAG) in \(#function) audioSource: \(String(describing: audioSource))")
-            try session.setPreferredInput(audioSource?.portDescription)
-        } catch {
-            owsFail("\(TAG) failed with error: \(error)")
-        }
-        self.ensureProperAudioSession(call: call)
     }
 
     private func setAudioSession(category: String,
