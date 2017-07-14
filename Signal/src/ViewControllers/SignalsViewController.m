@@ -415,29 +415,35 @@
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
 {
-    if (!_shouldObserveDBModifications && shouldObserveDBModifications && self.threadMappings != nil) {
-        // Before we begin observing database modifications, make sure
-        // our mapping and table state is up-to-date.
-        //
-        // We need to `beginLongLivedReadTransaction` before we update our
-        // mapping in order to jump to the most recent commit.
-        [self.uiDatabaseConnection beginLongLivedReadTransaction];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.threadMappings updateWithTransaction:transaction];
-        }];
+    _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    [self ensureObserveDBModifications];
+}
+
+- (void)ensureObserveDBModifications
+{
+    if (self.shouldObserveDBModifications) {
+        if (self.threadMappings != nil) {
+            // Before we begin observing database modifications, make sure
+            // our mapping and table state is up-to-date.
+            //
+            // We need to `beginLongLivedReadTransaction` before we update our
+            // mapping in order to jump to the most recent commit.
+            [self.uiDatabaseConnection beginLongLivedReadTransaction];
+            [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [self.threadMappings updateWithTransaction:transaction];
+            }];
+        }
 
         [[self tableView] reloadData];
     }
 
-    _shouldObserveDBModifications = shouldObserveDBModifications;
-
-    if (shouldObserveDBModifications) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
+    if (self.shouldObserveDBModifications) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
                                                    object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
     }
 
     [self checkIfEmptyView];
