@@ -55,6 +55,15 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ no grupo %@: %@";
 
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -129,6 +138,9 @@
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mensagem de voz";
+
+/* action sheet button title to enable built in speaker during a call */
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Built in Speaker";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Utilizadores bloqueados não lhe poderão telefonar ou enviar mensagens.";
@@ -248,10 +260,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Tem a certeza que deseja apagar a sua conta?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Não irá poder receber ou enviar mensagens neste grupo.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Não poderá receber ou enviar mensagens neste grupo.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Deseja realmente sair do grupo?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Deseja sair do grupo?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associar Novo Dispositivo";
@@ -283,6 +295,9 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Definições da Conversa";
 
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear este utilizador";
 
@@ -290,7 +305,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informação do Contacto";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informação do Grupo";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupo";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -318,6 +333,9 @@
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "até %@";
+
+/* Label for 'new contact' button in conversation settings view. */
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Remover do Silêncio";
@@ -361,7 +379,7 @@
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Definições de destruição de mensagens";
 
-/* Generic short text for button to dismiss a dialog */
+/* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
 /* Section title for the 'domain fronting country' view. */
@@ -634,6 +652,9 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Chamada Terminada.";
 
+/* Label reminding the user that they are in archive mode. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Para ver os nomes dos seus contactos, actualize as suas definições para permitir o acesso aos contactos.";
 
@@ -642,6 +663,9 @@
 
 /* notification body */
 "INCOMING_CALL_FROM" = "Chamada de %@";
+
+/* info message recorded in conversation history when local user declined a call */
+"INCOMING_DECLINED_CALL" = "You declined a call";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Chamada incompleta";
@@ -823,7 +847,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Atingiu o número máximo de dispositivos permitidos por conta. Por favor remova um dispositivo e tente emparelhar mais tarde. ";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Não irá receber notificações de conversas silenciadas.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Não receberá notificações de conversas silenciadas.";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Verifique que está online e tente novamente por favor.";
@@ -926,7 +950,7 @@
 "OUTGOING_CALL" = "Chamada efectuada";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Chamada incompleta";
+"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Toque Para Mais]";
@@ -1244,7 +1268,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Passar chamadas pelo Signal";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Todas as suas chamadas passarão pelo servidor Signal para evitar a revelação do seu endereço IP ao seu contacto. A activação desta opção irá reduzir a qualidade da chamada.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Todas as suas chamadas passarão pelo servidor Signal para evitar revelar o seu endereço IP ao seu contacto. Quando activada a chamada terá pior qualidade.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Apagar Histórico de Chamadas";
@@ -1295,7 +1319,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Activar Segurança de Ecrã";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Previnir previsualizações do Signal de aparecer no app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevenir pré-visualizações do Signal no app switcher.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "A integração de chamadas iOS mostra as chamadas Signal no seu lock screen e no seu histórico de chamadas. Se o iCloud estiver activado, o histórico de chamadas será partilhado com a Apple.";
