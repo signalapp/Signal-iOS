@@ -30,6 +30,8 @@
 
 #define CELL_HEIGHT 72.0f
 
+typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
+
 @interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic) UITableView *tableView;
@@ -125,6 +127,10 @@
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -171,7 +177,7 @@
         @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
     __weak SignalsViewController *weakSelf = self;
     archiveReminderView.tapAction = ^{
-        [weakSelf selectedInbox];
+        [weakSelf showInboxGrouping];
     };
     [self.view addSubview:archiveReminderView];
     [archiveReminderView autoPinWidthToSuperview];
@@ -235,7 +241,7 @@
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self selectedInbox];
+    [self showInboxGrouping];
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -345,9 +351,9 @@
 
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self selectedInbox];
+        [self showInboxGrouping];
     } else {
-        [self selectedArchive];
+        [self showArchiveGrouping];
     }
 }
 
@@ -364,7 +370,6 @@
     [self updateInboxCountLabel];
 
     self.isViewVisible = YES;
-    [self checkIfEmptyView];
 
     // When returning to home view, try to ensure that the "last" thread is still
     // visible.  The threads often change ordering while in conversation view due
@@ -384,6 +389,8 @@
                                           animated:NO];
         }
     }
+
+    [self checkIfEmptyView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -414,7 +421,24 @@
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
 {
-    if (!_shouldObserveDBModifications && shouldObserveDBModifications && self.threadMappings != nil) {
+    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
+        return;
+    }
+
+    DDLogDebug(@"%@ shouldObserveDBModifications: %d -> %d",
+        self.tag,
+        _shouldObserveDBModifications,
+        shouldObserveDBModifications);
+
+    _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
+    // reset all state updated by yapDatabaseModified:.
+    if (self.threadMappings != nil) {
         // Before we begin observing database modifications, make sure
         // our mapping and table state is up-to-date.
         //
@@ -424,25 +448,17 @@
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
         }];
-
-        [[self tableView] reloadData];
     }
 
-    _shouldObserveDBModifications = shouldObserveDBModifications;
-
-    if (shouldObserveDBModifications) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
-    }
+    [[self tableView] reloadData];
+    [self checkIfEmptyView];
+    [self updateInboxCountLabel];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     self.isAppInBackground = NO;
+    [self checkIfEmptyView];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -784,18 +800,27 @@
 
 #pragma mark - Groupings
 
-- (void)selectedInbox
+- (void)showInboxGrouping
 {
-    self.segmentedControl.selectedSegmentIndex = 0;
     self.viewingThreadsIn = kInboxState;
-    [self changeToGrouping:TSInboxGroup];
 }
 
-- (void)selectedArchive
+- (void)showArchiveGrouping
 {
-    self.segmentedControl.selectedSegmentIndex = 1;
     self.viewingThreadsIn = kArchiveState;
-    [self changeToGrouping:TSArchiveGroup];
+}
+
+- (void)setViewingThreadsIn:(CellState)viewingThreadsIn
+{
+    BOOL didChange = _viewingThreadsIn != viewingThreadsIn;
+    _viewingThreadsIn = viewingThreadsIn;
+    self.segmentedControl.selectedSegmentIndex = (viewingThreadsIn == kInboxState ? 0 : 1);
+    if (didChange || !self.threadMappings) {
+        [self changeToGrouping:(viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup)];
+    } else {
+        [self checkIfEmptyView];
+        [self updateReminderViews];
+    }
 }
 
 - (void)changeToGrouping:(NSString *)grouping {
@@ -836,6 +861,10 @@
         [self.contactsManager requestSystemContactsOnce];
     }
 
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
@@ -844,6 +873,7 @@
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
     [self updateInboxCountLabel];
+    [self checkIfEmptyView];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         return;
@@ -899,7 +929,6 @@
     }
 
     [self.tableView endUpdates];
-    [self checkIfEmptyView];
 }
 
 - (void)checkIfEmptyView {

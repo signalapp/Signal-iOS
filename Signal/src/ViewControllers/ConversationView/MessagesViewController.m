@@ -3319,10 +3319,6 @@ typedef enum : NSUInteger {
         // may need to extend the mapping's contents to reflect the current
         // range.
         [self updateMessageMappingRangeOptions];
-
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.messageMappings updateWithTransaction:transaction];
-        }];
         [self resetContentAndLayout];
 
         return;

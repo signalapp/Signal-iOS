@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 @class AvatarImageView;
 
-typedef enum : NSUInteger { kArchiveState = 0, kInboxState = 1 } CellState;
-
 @interface InboxTableViewCell : UITableViewCell <UIScrollViewDelegate>
 
 @property (nonatomic) IBOutlet UILabel *nameLabel;
