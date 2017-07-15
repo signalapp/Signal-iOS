@@ -13,10 +13,10 @@ struct AudioSource: Hashable {
     let localizedName: String
     let portDescription: AVAudioSessionPortDescription?
 
-    // The built in loud speaker / aka speakerphone
+    // The built-in loud speaker / aka speakerphone
     let isBuiltInSpeaker: Bool
 
-    // The build in quiet speaker, aka the normal phone handset receiver earpiece
+    // The built-in quiet speaker, aka the normal phone handset receiver earpiece
     let isBuiltInEarPiece: Bool
 
     init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
@@ -176,11 +176,12 @@ struct AudioSource: Hashable {
             return
         }
 
-        // Disallow bluetooth when user has explicitly chosen the built in receiver.
-        // I'm actually not sure why this is required - it seems like we should just be able
+        // Disallow bluetooth while (and only while) the user has explicitly chosen the built in receiver.
+        //
+        // NOTE: I'm actually not sure why this is required - it seems like we should just be able
         // to setPreferredInput to call.audioSource.portDescription in this case,
         // but in practice I'm seeing the call revert to the bluetooth headset.
-        // Presumably something else (in WebRTC?) is touching our shared AudioSession.
+        // Presumably something else (in WebRTC?) is touching our shared AudioSession. - mjk
         let options: AVAudioSessionCategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
 
         if call.state == .localRinging {
@@ -207,7 +208,7 @@ struct AudioSource: Hashable {
 
         let session = AVAudioSession.sharedInstance()
         do {
-            // It's importent to set preferred input *after* ensuring properAudioSession
+            // It's important to set preferred input *after* ensuring properAudioSession
             // because some sources are only valid for certain category/option combinations.
             let existingPreferredInput = session.preferredInput
             if  existingPreferredInput != call.audioSource?.portDescription {
