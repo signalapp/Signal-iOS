@@ -12,19 +12,34 @@ struct AudioSource: Hashable {
     let image: UIImage
     let localizedName: String
     let portDescription: AVAudioSessionPortDescription?
+
+    // The built-in loud speaker / aka speakerphone
     let isBuiltInSpeaker: Bool
 
-    init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
+    // The built-in quiet speaker, aka the normal phone handset receiver earpiece
+    let isBuiltInEarPiece: Bool
+
+    init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
         self.localizedName = localizedName
         self.image = image
         self.isBuiltInSpeaker = isBuiltInSpeaker
+        self.isBuiltInEarPiece = isBuiltInEarPiece
         self.portDescription = portDescription
     }
 
     init(portDescription: AVAudioSessionPortDescription) {
-        self.init(localizedName: portDescription.portName,
+
+        let isBuiltInEarPiece = portDescription.portType == AVAudioSessionPortBuiltInMic
+
+        // portDescription.portName works well for BT linked devices, but if we are using
+        // the built in mic, we have "iPhone Microphone" which is a little awkward.
+        // In that case, instead we prefer just the model name e.g. "iPhone" or "iPad"
+        let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
+
+        self.init(localizedName: localizedName,
                   image:#imageLiteral(resourceName: "button_phone_white"), // TODO
                   isBuiltInSpeaker: false,
+                  isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
     }
 
@@ -32,7 +47,8 @@ struct AudioSource: Hashable {
     static var builtInSpeaker: AudioSource {
         return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
                          image: #imageLiteral(resourceName: "button_phone_white"), //TODO
-                         isBuiltInSpeaker: true)
+                         isBuiltInSpeaker: true,
+                         isBuiltInEarPiece: false)
     }
 
     // MARK: Hashable
@@ -143,15 +159,6 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
-
-        // It's importent to set preferred input *after* ensuring properAudioSession
-        // because some sources are only valid for certain category/option combinations.
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setPreferredInput(audioSource?.portDescription)
-        } catch {
-            owsFail("\(TAG) setPreferredInput in \(#function) failed with error: \(error)")
-        }
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
@@ -169,32 +176,53 @@ struct AudioSource: Hashable {
             return
         }
 
+        // Disallow bluetooth while (and only while) the user has explicitly chosen the built in receiver.
+        //
+        // NOTE: I'm actually not sure why this is required - it seems like we should just be able
+        // to setPreferredInput to call.audioSource.portDescription in this case,
+        // but in practice I'm seeing the call revert to the bluetooth headset.
+        // Presumably something else (in WebRTC?) is touching our shared AudioSession. - mjk
+        let options: AVAudioSessionCategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
+
         if call.state == .localRinging {
             // SoloAmbient plays through speaker, but respects silent switch
             setAudioSession(category: AVAudioSessionCategorySoloAmbient,
                             mode: AVAudioSessionModeDefault)
         } else if call.hasLocalVideo {
-            // Don't allow bluetooth for local video if speakerphone has been explicitly chosen by the user.
-            let options: AVAudioSessionCategoryOptions = call.isSpeakerphoneEnabled ? [.defaultToSpeaker] : [.defaultToSpeaker, .allowBluetooth]
-
+            // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
                             options: options)
         } else {
+            // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: [.allowBluetooth])
+                            options: options)
         }
 
         let session = AVAudioSession.sharedInstance()
         do {
+            // It's important to set preferred input *after* ensuring properAudioSession
+            // because some sources are only valid for certain category/option combinations.
+            let existingPreferredInput = session.preferredInput
+            if  existingPreferredInput != call.audioSource?.portDescription {
+                Logger.info("\(TAG) changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
+                try session.setPreferredInput(call.audioSource?.portDescription)
+            }
+
             if call.isSpeakerphoneEnabled {
                 try session.overrideOutputAudioPort(.speaker)
             } else {
                 try session.overrideOutputAudioPort(.none)
             }
         } catch {
-            owsFail("\(TAG) failed overrideing output audio. isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
+            owsFail("\(TAG) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
     }
 
@@ -210,6 +238,11 @@ struct AudioSource: Hashable {
         assert(Thread.isMainThread)
 
         Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
+
+        // Stop playing sounds while switching audio session so we don't 
+        // get any blips across a temporary unintended route.
+        stopPlayingAnySounds()
+        self.ensureProperAudioSession(call: call)
 
         switch call.state {
         case .idle: handleIdle(call: call)
@@ -233,8 +266,6 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
 
-        ensureProperAudioSession(call: call)
-
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
@@ -245,16 +276,11 @@ struct AudioSource: Hashable {
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
-        self.ensureProperAudioSession(call: call)
     }
 
     private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
         self.play(sound: Sound.outgoingRing)
@@ -264,26 +290,17 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) in \(#function)")
         AssertIsOnMainThread()
 
-        stopPlayingAnySounds()
-        ensureProperAudioSession(call: call)
         startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
-
-        // start recording to transmit call audio.
-        ensureProperAudioSession(call: call)
     }
 
     private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         play(sound: Sound.failure)
     }
@@ -308,9 +325,8 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
 
-        stopPlayingAnySounds()
-
         play(sound: Sound.busy)
+
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
             self.handleCallEnded(call: call)
@@ -320,8 +336,6 @@ struct AudioSource: Hashable {
     private func handleCallEnded(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
-
-        stopPlayingAnySounds()
 
         // Stop solo audio, revert to default.
         setAudioSession(category: AVAudioSessionCategoryAmbient)
@@ -429,17 +443,6 @@ struct AudioSource: Hashable {
         }
 
         return AudioSource(portDescription: portDescription)
-    }
-
-    public func setPreferredInput(call: SignalCall, audioSource: AudioSource?) {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            Logger.debug("\(TAG) in \(#function) audioSource: \(String(describing: audioSource))")
-            try session.setPreferredInput(audioSource?.portDescription)
-        } catch {
-            owsFail("\(TAG) failed with error: \(error)")
-        }
-        self.ensureProperAudioSession(call: call)
     }
 
     private func setAudioSession(category: String,

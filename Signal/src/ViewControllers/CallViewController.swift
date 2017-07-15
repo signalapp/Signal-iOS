@@ -89,7 +89,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     // MARK: Audio Source
 
     var hasAlternateAudioSources: Bool {
-        Logger.info("\(TAG) available audio routes count: \(allAudioSources.count)")
+        Logger.info("\(TAG) available audio sources: \(allAudioSources)")
         // internal mic and speakerphone will be the first two, any more than one indicates e.g. an attached bluetooth device.
 
         // TODO is this sufficient? Are their devices w/ bluetooth but no external speaker? e.g. ipod?
