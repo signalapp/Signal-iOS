@@ -144,10 +144,12 @@ NSString *const YDBCloudCoreOperationIsReadyToStartNotification = @"YDBCloudCore
 
 - (void)setDependencies:(NSSet<NSUUID *> *)newDependencies
 {
+#if !defined(NS_BLOCK_ASSERTIONS)
 	for (id obj in newDependencies)
 	{
 		NSAssert([obj isKindOfClass:[NSUUID class]], @"Bad dependecy object !");
 	}
+#endif
 	
 	NSString *const propKey = NSStringFromSelector(@selector(dependencies));
 	
