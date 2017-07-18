@@ -2074,7 +2074,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 **/
 - (int64_t)edgeCountWithDestinationFileURL:(NSURL *)dstFileURL
                                       name:(NSString *)name
-                           excludingSource:(int64_t)srcRowid
+                           excludingSource:(int64_t)exclSrcRowid
 {
 	NSAssert(dstFileURL != nil, @"Internal logic error");
 	NSAssert(name != nil, @"Internal logic error");
@@ -2099,7 +2099,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
 	int const bind_idx_src = SQLITE_BIND_START + 0;
 	int const bind_idx_name = SQLITE_BIND_START + 1;
 	
-	sqlite3_bind_int64(statement, bind_idx_src, srcRowid);
+	sqlite3_bind_int64(statement, bind_idx_src, exclSrcRowid);
 	
 	YapDatabaseString _name; MakeYapDatabaseString(&_name, name);
 	sqlite3_bind_text(statement, bind_idx_name, _name.str, _name.length, SQLITE_STATIC);

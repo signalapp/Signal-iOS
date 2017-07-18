@@ -660,10 +660,10 @@ static NSString *const ext_key_query           = @"query";
 			int64_t prevRowid = 0;
 			[parentViewTransaction getRowid:&prevRowid atIndex:prevIndex inGroup:group];
 			
-			YapDatabaseViewLocator *locator = [self locatorForRowid:prevRowid];
-			if (locator)
+			YapDatabaseViewLocator *prevLocator = [self locatorForRowid:prevRowid];
+			if (prevLocator)
 			{
-				index = locator.index + 1;
+				index = prevLocator.index + 1;
 				break;
 			}
 		}
@@ -675,10 +675,10 @@ static NSString *const ext_key_query           = @"query";
 			int64_t nextRowid = 0;
 			[parentViewTransaction getRowid:&nextRowid atIndex:nextIndex inGroup:group];
 			
-			YapDatabaseViewLocator *locator = [self locatorForRowid:nextRowid];
-			if (locator)
+			YapDatabaseViewLocator *nextLocator = [self locatorForRowid:nextRowid];
+			if (nextLocator)
 			{
-				index = locator.index;
+				index = nextLocator.index;
 				break;
 			}
 		}
