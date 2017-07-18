@@ -1,11 +1,9 @@
 language: objective-c
 osx_image: xcode8.3
 
-before_install:
-  - gem update cocoapods
 before_script:
   - export LANG=en_US.UTF-8
 script:
   - cd ./Testing/Xcode-desktop
-  - pod update
-  - xctool -workspace YapDatabaseTesting.xcworkspace -scheme YapDatabaseTesting -sdk macosx -arch x86_64 run-tests
+  - xcodebuild -workspace YapDatabaseTesting.xcworkspace -scheme YapDatabaseTesting clean
+  - xcodebuild -workspace YapDatabaseTesting.xcworkspace -scheme YapDatabaseTesting -configuration release test
