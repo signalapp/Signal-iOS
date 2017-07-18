@@ -3,10 +3,10 @@
 
 @interface NSDate (YapDatabase)
 
-- (BOOL)isBefore:(NSDate *)date;
-- (BOOL)isAfter:(NSDate *)date;
+- (BOOL)ydb_isBefore:(NSDate *)date;
+- (BOOL)ydb_isAfter:(NSDate *)date;
 
-- (BOOL)isBeforeOrEqual:(NSDate *)date;
-- (BOOL)isAfterOrEqual:(NSDate *)date;
+- (BOOL)ydb_isBeforeOrEqual:(NSDate *)date;
+- (BOOL)ydb_isAfterOrEqual:(NSDate *)date;
 
 @end

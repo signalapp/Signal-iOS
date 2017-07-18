@@ -3,17 +3,17 @@
 
 @implementation NSDate (YapDatabase)
 
-- (BOOL)isBefore:(NSDate *)date
+- (BOOL)ydb_isBefore:(NSDate *)date
 {
 	return ([self compare:date] == NSOrderedAscending);
 }
 
-- (BOOL)isAfter:(NSDate *)date
+- (BOOL)ydb_isAfter:(NSDate *)date
 {
 	return ([self compare:date] == NSOrderedDescending);
 }
 
-- (BOOL)isBeforeOrEqual:(NSDate *)date
+- (BOOL)ydb_isBeforeOrEqual:(NSDate *)date
 {
 	// [dateA compare:dateB]
 	//
@@ -26,7 +26,7 @@
 	        result == NSOrderedSame);
 }
 
-- (BOOL)isAfterOrEqual:(NSDate *)date
+- (BOOL)ydb_isAfterOrEqual:(NSDate *)date
 {
 	// [dateA compare:dateB]
 	//
