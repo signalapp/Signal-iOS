@@ -207,7 +207,7 @@ static int connectionBusyHandler(void *ptr, int count)
 		
 		enableMultiProcessSupport = options.enableMultiProcessSupport;
 		
-		YapDatabaseConnectionDefaults *defaults = [database connectionDefaults];
+		YapDatabaseConnectionConfig *defaults = [database connectionDefaults];
 		
 		objectCacheLimit = defaults.objectCacheLimit;
 		metadataCacheLimit = defaults.metadataCacheLimit;
@@ -884,6 +884,50 @@ static int connectionBusyHandler(void *ptr, int count)
 	}
 	
 	return keyCacheLimit;
+}
+
+- (YapDatabaseConnectionConfig *)copyConfig
+{
+	YapDatabaseConnectionConfig *config = [[YapDatabaseConnectionConfig alloc] init];
+	
+	dispatch_block_t block = ^{
+		
+		config.objectCacheEnabled = (objectCache != nil);
+		config.objectCacheLimit = objectCacheLimit;
+		
+		config.metadataCacheEnabled = (metadataCache != nil);
+		config.metadataCacheLimit = metadataCacheLimit;
+		
+		config.objectPolicy = objectPolicy;
+		config.metadataPolicy = metadataPolicy;
+		
+	#if TARGET_OS_IOS || TARGET_OS_TV
+		config.autoFlushMemoryFlags = self.autoFlushMemoryFlags;
+	#endif
+	};
+	
+	if (dispatch_get_specific(IsOnConnectionQueueKey))
+		block();
+	else
+		dispatch_sync(connectionQueue, block);
+	
+	return config;
+}
+
+- (void)applyConfig:(YapDatabaseConnectionConfig *)config
+{
+	self.objectCacheEnabled = config.objectCacheEnabled;
+	self.objectCacheLimit = config.objectCacheLimit;
+	
+	self.metadataCacheEnabled = config.metadataCacheEnabled;
+	self.metadataCacheLimit = config.metadataCacheLimit;
+	
+	self.objectPolicy = config.objectPolicy;
+	self.metadataPolicy = config.metadataPolicy;
+	
+#if TARGET_OS_IOS || TARGET_OS_TV
+	self.autoFlushMemoryFlags = config.autoFlushMemoryFlags;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

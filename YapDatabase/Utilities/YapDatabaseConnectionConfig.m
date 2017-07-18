@@ -1,10 +1,10 @@
-#import "YapDatabaseConnectionDefaults.h"
+#import "YapDatabaseConnectionConfig.h"
 
 static NSUInteger const DEFAULT_OBJECT_CACHE_LIMIT   = 250;
 static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 
 
-@implementation YapDatabaseConnectionDefaults
+@implementation YapDatabaseConnectionConfig
 
 @synthesize objectCacheEnabled = objectCacheEnabled;
 @synthesize objectCacheLimit = objectCacheLimit;
@@ -41,7 +41,7 @@ static NSUInteger const DEFAULT_METADATA_CACHE_LIMIT = 250;
 
 - (id)copyWithZone:(NSZone __unused *)zone
 {
-	YapDatabaseConnectionDefaults *copy = [[[self class] alloc] init];
+	YapDatabaseConnectionConfig *copy = [[[self class] alloc] init];
 	
 	copy->objectCacheEnabled = objectCacheEnabled;
 	copy->objectCacheLimit = objectCacheLimit;

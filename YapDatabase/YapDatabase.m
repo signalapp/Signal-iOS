@@ -115,7 +115,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	dispatch_queue_t internalQueue;
 	dispatch_queue_t checkpointQueue;
 	
-	YapDatabaseConnectionDefaults *connectionDefaults;
+	YapDatabaseConnectionConfig *connectionDefaults;
 	
 	NSDictionary *registeredExtensions;
 	NSDictionary *registeredMemoryTables;
@@ -558,7 +558,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 		changesets = [[NSMutableArray alloc] init];
 		connectionStates = [[NSMutableArray alloc] init];
 		
-		connectionDefaults = [[YapDatabaseConnectionDefaults alloc] init];
+		connectionDefaults = [[YapDatabaseConnectionConfig alloc] init];
 		
 		registeredExtensions = [[NSDictionary alloc] init];
 		registeredMemoryTables = [[NSDictionary alloc] init];
@@ -1501,9 +1501,9 @@ static int connectionBusyHandler(void *ptr, int count) {
 #pragma mark Defaults
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (YapDatabaseConnectionDefaults *)connectionDefaults
+- (YapDatabaseConnectionConfig *)connectionDefaults
 {
-	__block YapDatabaseConnectionDefaults *result = nil;
+	__block YapDatabaseConnectionConfig *result = nil;
 	
 	dispatch_sync(internalQueue, ^{
 		
@@ -1774,7 +1774,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-	return [self registerExtension:extension withName:extensionName connection:nil];
+	return [self registerExtension:extension withName:extensionName config:nil];
 }
 
 /**
@@ -1794,23 +1794,22 @@ static int connectionBusyHandler(void *ptr, int count) {
  *     Once registered, you will generally access the extension instance via this name.
  *     For example: [[transaction ext:@"myView"] numberOfGroups];
  * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     This allows you to control things such as the cache size of the connection that performs
- *     the extension registration code (sometimes important for performance tuning.)
- *     If you pass nil, an internal databaseConnection will automatically be used.
+ * @param config (optional)
+ *     You may optionally pass a config for the internal databaseConnection used to perform
+ *     the extension registration process. This allows you to control things such as the
+ *     cache size, which is sometimes important for performance tuning.
  * 
  * @see asyncRegisterExtension:withName:completionBlock:
  * @see asyncRegisterExtension:withName:completionQueue:completionBlock:
 **/
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension
                  withName:(NSString *)extensionName
-               connection:(YapDatabaseConnection *)connection
+                   config:(YapDatabaseConnectionConfig *)config
 {
 	__block BOOL ready = NO;
 	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
-		ready = [self _registerExtension:extension withName:extensionName connection:connection];
+		ready = [self _registerExtension:extension withName:extensionName config:config];
 	}});
 	
 	return ready;
@@ -1844,7 +1843,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 {
 	[self asyncRegisterExtension:extension
 	                    withName:extensionName
-	                  connection:nil
+	                      config:nil
 	             completionQueue:NULL
 	             completionBlock:completionBlock];
 }
@@ -1881,7 +1880,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 {
 	[self asyncRegisterExtension:extension
 	                    withName:extensionName
-	                  connection:nil
+	                      config:nil
 	             completionQueue:completionQueue
 	             completionBlock:completionBlock];
 }
@@ -1903,11 +1902,10 @@ static int connectionBusyHandler(void *ptr, int count) {
  *     Once registered, you will generally access the extension instance via this name.
  *     For example: [[transaction ext:@"myView"] numberOfGroups];
  * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     This allows you to control things such as the cache size of the connection that performs
- *     the extension registration code (sometimes important for performance tuning.)
- *     If you pass nil, an internal databaseConnection will automatically be used.
+ * @param config (optional)
+ *     You may optionally pass a config for the internal databaseConnection used to perform
+ *     the extension registration process. This allows you to control things such as the
+ *     cache size, which is sometimes important for performance tuning.
  *
  * @param completionBlock (optional)
  *     An optional completion block may be used.
@@ -1916,12 +1914,12 @@ static int connectionBusyHandler(void *ptr, int count) {
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-                    connection:(nullable YapDatabaseConnection *)connection
-               completionBlock:(nullable void(^)(BOOL ready))completionBlock
+                        config:(YapDatabaseConnectionConfig *)config
+               completionBlock:(void(^)(BOOL ready))completionBlock
 {
 	[self asyncRegisterExtension:extension
 	                    withName:extensionName
-	                  connection:connection
+	                      config:config
 	             completionQueue:NULL
 	             completionBlock:completionBlock];
 }
@@ -1943,11 +1941,10 @@ static int connectionBusyHandler(void *ptr, int count) {
  *     Once registered, you will generally access the extension instance via this name.
  *     For example: [[transaction ext:@"myView"] numberOfGroups];
  * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     This allows you to control things such as the cache size of the connection that performs
- *     the extension registration code (sometimes important for performance tuning.)
- *     If you pass nil, an internal databaseConnection will automatically be used.
+ * @param config (optional)
+ *     You may optionally pass a config for the internal databaseConnection used to perform
+ *     the extension registration process. This allows you to control things such as the
+ *     cache size, which is sometimes important for performance tuning.
  *
  * @param completionQueue (optional)
  *     The dispatch_queue to invoke the completion block may optionally be specified.
@@ -1959,16 +1956,19 @@ static int connectionBusyHandler(void *ptr, int count) {
 **/
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-                    connection:(YapDatabaseConnection *)connection
+                        config:(YapDatabaseConnectionConfig *)config
                completionQueue:(dispatch_queue_t)completionQueue
                completionBlock:(void(^)(BOOL ready))completionBlock
 {
 	if (completionQueue == NULL && completionBlock != NULL)
 		completionQueue = dispatch_get_main_queue();
 	
+	if (config)
+		config = [config copy];
+	
 	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
-		BOOL ready = [self _registerExtension:extension withName:extensionName connection:connection];
+		BOOL ready = [self _registerExtension:extension withName:extensionName config:config];
 		
 		if (completionBlock)
 		{
@@ -2013,29 +2013,9 @@ static int connectionBusyHandler(void *ptr, int count) {
 **/
 - (void)unregisterExtensionWithName:(NSString *)extensionName
 {
-	[self unregisterExtensionWithName:extensionName connection:nil];
-}
-
-/**
- * This method unregisters an extension with the given name.
- * The associated underlying tables will be dropped from the database.
- *
- * The unregistration process is equivalent to a (synchronous) readwrite transaction.
- * It involves deleting various information about the extension from the database,
- * as well as possibly dropping related tables the extension may have been using.
- *
- * @param extensionName (required)
- *     This is the arbitrary string you assigned to the extension when you registered it.
- * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     If you pass nil, an internal databaseConnection will automatically be used.
-**/
-- (void)unregisterExtensionWithName:(NSString *)extensionName connection:(YapDatabaseConnection *)connection
-{
 	dispatch_sync(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtensionWithName:extensionName connection:connection];
+		[self _unregisterExtensionWithName:extensionName];
 	}});
 }
 
@@ -2057,7 +2037,6 @@ static int connectionBusyHandler(void *ptr, int count) {
                          completionBlock:(dispatch_block_t)completionBlock
 {
 	[self asyncUnregisterExtensionWithName:extensionName
-	                            connection:nil
 	                       completionQueue:NULL
 	                       completionBlock:completionBlock];
 }
@@ -2080,66 +2059,6 @@ static int connectionBusyHandler(void *ptr, int count) {
  *     An optional completion block may be used.
 **/
 - (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                         completionQueue:(dispatch_queue_t)completionQueue
-                         completionBlock:(dispatch_block_t)completionBlock
-{
-	[self asyncUnregisterExtensionWithName:extensionName
-	                            connection:nil
-	                       completionQueue:completionQueue
-	                       completionBlock:completionBlock];
-}
-
-/**
- * Asynchronoulsy starts the extension unregistration process.
- *
- * The unregistration process is equivalent to an asyncReadwrite transaction.
- * It involves deleting various information about the extension from the database,
- * as well as possibly dropping related tables the extension may have been using.
- *
- * @param extensionName (required)
- *     This is the arbitrary string you assigned to the extension when you registered it.
- * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     If you pass nil, an internal databaseConnection will automatically be used.
- *
- * @param completionBlock (optional)
- *     An optional completion block may be used.
- *     The completionBlock will be invoked on the main thread (dispatch_get_main_queue()).
-**/
-- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                              connection:(nullable YapDatabaseConnection *)connection
-                         completionBlock:(nullable dispatch_block_t)completionBlock
-{
-	[self asyncUnregisterExtensionWithName:extensionName
-	                            connection:connection
-	                       completionQueue:NULL
-	                       completionBlock:completionBlock];
-}
-
-/**
- * Asynchronoulsy starts the extension unregistration process.
- *
- * The unregistration process is equivalent to an asyncReadwrite transaction.
- * It involves deleting various information about the extension from the database,
- * as well as possibly dropping related tables the extension may have been using.
- *
- * @param extensionName (required)
- *     This is the arbitrary string you assigned to the extension when you registered it.
- * 
- * @param connection (optional)
- *     You may optionally pass your own databaseConnection for this method to use.
- *     If you pass nil, an internal databaseConnection will automatically be used.
- *
- * @param completionQueue (optional)
- *     The dispatch_queue to invoke the completion block may optionally be specified.
- *     If NULL, dispatch_get_main_queue() is automatically used.
- *
- * @param completionBlock (optional)
- *     An optional completion block may be used.
-**/
-- (void)asyncUnregisterExtensionWithName:(NSString *)extensionName
-                              connection:(YapDatabaseConnection *)connection
                          completionQueue:(dispatch_queue_t)completionQueue
                          completionBlock:(dispatch_block_t)completionBlock
 {
@@ -2148,7 +2067,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	dispatch_async(writeQueue, ^{ @autoreleasepool {
 		
-		[self _unregisterExtensionWithName:extensionName connection:connection];
+		[self _unregisterExtensionWithName:extensionName];
 		
 		if (completionBlock)
 		{
@@ -2191,7 +2110,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 **/
 - (BOOL)_registerExtension:(YapDatabaseExtension *)extension
                   withName:(NSString *)extensionName
-                connection:(YapDatabaseConnection *)connection
+                    config:(YapDatabaseConnectionConfig *)config
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -2236,10 +2155,21 @@ static int connectionBusyHandler(void *ptr, int count) {
 	}
 	else
 	{
-		if (connection == nil)
-			connection = [self registrationConnection];
+		YapDatabaseConnection *connection = [self registrationConnection];
+		
+		YapDatabaseConnectionConfig *originalConfig = nil;
+		if (config)
+		{
+			originalConfig = [connection copyConfig];
+			[connection applyConfig:config];
+		}
 		
 		result = [connection registerExtension:extension withName:extensionName];
+		
+		if (config)
+		{
+			[connection applyConfig:originalConfig];
+		}
 	}
 	
 	if (result)
@@ -2260,7 +2190,7 @@ static int connectionBusyHandler(void *ptr, int count) {
  * Internal method that handles extension unregistration.
  * This method must be invoked on the writeQueue.
 **/
-- (void)_unregisterExtensionWithName:(NSString *)extensionName connection:(YapDatabaseConnection *)connection
+- (void)_unregisterExtensionWithName:(NSString *)extensionName
 {
 	NSAssert(dispatch_get_specific(IsOnWriteQueueKey), @"Must go through writeQueue.");
 	
@@ -2274,8 +2204,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	// Perform unregistration
 	
-	if (connection == nil)
-		connection = [self registrationConnection];
+	YapDatabaseConnection *connection = [self registrationConnection];
 	
 	[connection unregisterExtensionWithName:extensionName];
 }

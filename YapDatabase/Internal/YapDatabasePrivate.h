@@ -2,7 +2,7 @@
 
 #import "YapDatabase.h"
 #import "YapDatabaseConnection.h"
-#import "YapDatabaseConnectionDefaults.h"
+#import "YapDatabaseConnectionConfig.h"
 #import "YapDatabaseTransaction.h"
 #import "YapDatabaseExtension.h"
 
@@ -114,7 +114,7 @@ static NSString *const ext_key_class = @"class";
 /**
  * New connections inherit their default values from this structure.
 **/
-- (YapDatabaseConnectionDefaults *)connectionDefaults;
+- (YapDatabaseConnectionConfig *)connectionDefaults;
 
 /**
  * Called from YapDatabaseConnection's dealloc method to remove connection's state from connectionStates array.
@@ -285,6 +285,9 @@ static NSString *const ext_key_class = @"class";
 - (sqlite3_stmt *)enumerateRowsInAllCollectionsStatement:(BOOL *)needsFinalizePtr;
 
 - (void)prepare;
+
+- (YapDatabaseConnectionConfig *)copyConfig;
+- (void)applyConfig:(YapDatabaseConnectionConfig *)config;
 
 - (NSDictionary *)extensions;
 
