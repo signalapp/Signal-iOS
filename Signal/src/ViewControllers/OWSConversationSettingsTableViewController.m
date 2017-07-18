@@ -275,9 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  actionBlock:^{
                                      TSContactThread *contactThread = (TSContactThread *)self.thread;
                                      NSString *recipientId = contactThread.contactIdentifier;
-                                     OWSAddToContactViewController *view = [OWSAddToContactViewController new];
-                                     [view configureWithRecipientId:recipientId];
-                                     [weakSelf.navigationController pushViewController:view animated:YES];
+                                     [weakSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
 
@@ -761,6 +759,26 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
                                                      fromViewController:self
                                                         editImmediately:YES];
+}
+
+- (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        // Should not expose UI that lets the user get here.
+        OWSFail(@"%@ Contact editing not supported.", self.tag);
+        return;
+    }
+
+    if (!self.contactsManager.isSystemContactsAuthorized) {
+        [self presentViewController:self.contactsViewHelper.missingContactAccessAlertController
+                           animated:YES
+                         completion:nil];
+        return;
+    }
+
+    OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
+    [viewController configureWithRecipientId:recipientId];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (void)didTapEditButton
