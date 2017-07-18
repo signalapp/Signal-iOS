@@ -4470,10 +4470,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param sourceKey (optional)
+ * @param srcKey (optional)
  *   The edge.sourceKey to match.
  *
- * @param sourceCollection (optional)
+ * @param srcCollection (optional)
  *   The edge.sourceCollection to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
@@ -4787,10 +4787,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationKey (optional)
+ * @param dstKey (optional)
  *   The edge.destinationKey to match.
  *
- * @param destinationCollection (optional)
+ * @param dstCollection (optional)
  *   The edge.destinationCollection to match.
  *
  * If you pass a non-nil destinationKey, and destinationCollection is nil,
@@ -5066,7 +5066,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFileURL (optional)
+ * @param dstFileURL (optional)
  *   The edge.destinationFileURL to match.
  * 
  * IMPORTANT:
@@ -5354,16 +5354,16 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param sourceKey (optional)
+ * @param srcKey (optional)
  *   The edge.sourceKey to match.
  *
- * @param sourceCollection (optional)
+ * @param srcCollection (optional)
  *   The edge.sourceCollection to match.
  *
- * @param destinationKey (optional)
+ * @param dstKey (optional)
  *   The edge.destinationKey to match.
  *
- * @param destinationCollection (optional)
+ * @param dstCollection (optional)
  *   The edge.destinationCollection to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
@@ -5660,13 +5660,13 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param sourceKey (optional)
+ * @param srcKey (optional)
  *   The edge.sourceKey to match.
  *
- * @param sourceCollection (optional)
+ * @param srcCollection (optional)
  *   The edge.sourceCollection to match.
  * 
- * @param destinationFileURL (optional)
+ * @param dstFileURL (optional)
  *   The edge.destinationFileURL to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
@@ -6246,10 +6246,10 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param sourceKey (optional)
+ * @param srcKey (optional)
  *   The edge.sourceKey to match.
  *
- * @param sourceCollection (optional)
+ * @param srcCollection (optional)
  *   The edge.sourceCollection to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,
@@ -6456,7 +6456,7 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param destinationFileURL (optional)
+ * @param dstFileURL (optional)
  *   The edge.destinationFileURL to match.
 **/
 - (NSUInteger)edgeCountWithName:(NSString *)name
@@ -6491,16 +6491,16 @@ NS_INLINE BOOL URLMatchesURL(NSURL *url1, NSURL *url2)
  * @param name (optional)
  *   The name of the edge (case sensitive).
  *
- * @param sourceKey (optional)
+ * @param srcKey (optional)
  *   The edge.sourceKey to match.
  *
- * @param sourceCollection (optional)
+ * @param srcCollection (optional)
  *   The edge.sourceCollection to match.
  *
- * @param destinationKey (optional)
+ * @param dstKey (optional)
  *   The edge.destinationKey to match.
  *
- * @param destinationCollection (optional)
+ * @param dstCollection (optional)
  *   The edge.destinationCollection to match.
  *
  * If you pass a non-nil sourceKey, and sourceCollection is nil,

@@ -59,17 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
  * After creation, you'll need to register the extension with the database system.
  *
  * @param setup
- * 
  *   A YapDatabaseSecondaryIndexSetup instance allows you to specify the column names and type.
  *   The column names can be whatever you want, with a few exceptions for reserved names such as "rowid".
  *   The types can reflect numbers or text.
  * 
  * @param handler
- * 
  *   The block (and blockType) that handles extracting secondary index information from a row in the database.
  * 
- * @param version
- * 
+ * @param versionTag
  *   If, after creating the secondary index(es), you need to change the setup or block,
  *   then simply increment the version parameter. If you pass a version that is different from the last
  *   initialization of the extension, then it will automatically re-create itself.
@@ -97,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 
  *   The block (and blockType) that handles extracting secondary index information from a row in the database.
  * 
- * @param version
+ * @param versionTag
  * 
  *   If, after creating the secondary index(es), you need to change the setup or block,
  *   then simply increment the version parameter. If you pass a version that is different from the last

@@ -10,22 +10,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseFilteredView : YapDatabaseView
 
+- (id)initWithParentViewName:(NSString *)viewName
+                   filtering:(YapDatabaseViewFiltering *)filtering;
+
+- (id)initWithParentViewName:(NSString *)viewName
+                   filtering:(YapDatabaseViewFiltering *)filtering
+                  versionTag:(nullable NSString *)versionTag;
+
 /**
- * @param parentViewName
- *
+ * @param viewName
  *   The parentViewName must be the registered name of a YapDatabaseView or
  *   YapDatabaseFilteredView extension.
  *   That is, you must first register the parentView, and then use that registered name here.
  *
  * @param filtering
- *
  *   The filteringBlock allows you to filter items from this view that exist in the parent view.
  *   There are multiple filteringBlock types that are supported.
  *
  *   @see YapDatabaseFilteredViewTypes.h for block type definitions.
  *
  * @param versionTag
- *
  *   The filteringBlock may be changed after the filteredView is created (see YapDatabaseFilteredViewTransaction).
  *   This is often in association with user events.
  *   The versionTag helps to identify the filteringBlock being used.
@@ -34,17 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
  *   flush its tables, and re-populate itself.
  *
  * @param options
- *
  *   The options allow you to specify things like creating an IN-MEMORY-ONLY VIEW (non persistent).
 **/
-
-- (id)initWithParentViewName:(NSString *)viewName
-                   filtering:(YapDatabaseViewFiltering *)filtering;
-
-- (id)initWithParentViewName:(NSString *)viewName
-                   filtering:(YapDatabaseViewFiltering *)filtering
-                  versionTag:(nullable NSString *)versionTag;
-
 - (id)initWithParentViewName:(NSString *)viewName
                    filtering:(YapDatabaseViewFiltering *)filtering
                   versionTag:(nullable NSString *)versionTag

@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, YDB_NotifyReason) {
  * Important: This method will not be invoked unless the object implements the protocol.
  * That is, the object's class declaration must have YapDatabaseRelationshipNode in its listed protocols.
  *
- * @interface MyObject : NSObject <YapDatabaseRelationshipNode> // <-- Must be in protocol list
+ * ... MyObject : NSObject <YapDatabaseRelationshipNode> // <-- Must be in protocol list
  *
  * @see YapDatabaseRelationshipEdge
 **/

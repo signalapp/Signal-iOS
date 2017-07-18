@@ -170,7 +170,7 @@
  *   The FULL changeset dictionary, including the core changeset info,
  *   as well as the changeset info for every registered extension.
  *
- * @param registeredName
+ * @param extName
  *   The registeredName of the extension.
  *   This is the same as self.registeredName, and is simply passed as a convenience.
 **/
