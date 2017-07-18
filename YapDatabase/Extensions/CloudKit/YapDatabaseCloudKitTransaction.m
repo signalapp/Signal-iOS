@@ -1027,7 +1027,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	uint8_t bufferStack[maxStackSize];
 	void *buffer = NULL;
 	
-	if (maxLen <= maxStackSize)
+	if (maxLen <= (NSUInteger)maxStackSize)
 		buffer = bufferStack;
 	else
 		buffer = malloc((size_t)maxLen);
@@ -1086,7 +1086,7 @@ static BOOL ClassVersionsAreCompatible(int oldClassVersion, int newClassVersion)
 	NSData *hashData = [NSData dataWithBytesNoCopy:(void *)hashBytes length:CC_SHA1_DIGEST_LENGTH freeWhenDone:NO];
 	NSString *hashStr = [hashData base64EncodedStringWithOptions:0];
 	
-	if (maxLen > maxStackSize) {
+	if (maxLen > (NSUInteger)maxStackSize) {
 		free(buffer);
 	}
 	return hashStr;

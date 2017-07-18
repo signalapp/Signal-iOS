@@ -872,10 +872,10 @@
 		if (startOffset < 0.0)
 			startOffset = 0.0;
 		
-		dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, (startOffset * NSEC_PER_SEC));
+		dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, (uint64_t)(startOffset * NSEC_PER_SEC));
 		
 		uint64_t interval = DISPATCH_TIME_FOREVER;
-		uint64_t leeway = (0.1 * NSEC_PER_SEC);
+		uint64_t leeway = (uint64_t)(0.1 * NSEC_PER_SEC);
 		
 		dispatch_source_set_timer(timer, start, interval, leeway);
 		

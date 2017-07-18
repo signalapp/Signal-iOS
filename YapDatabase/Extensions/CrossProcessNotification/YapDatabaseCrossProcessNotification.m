@@ -84,7 +84,7 @@ static pid_t currentPid() {
         
         uint64_t fromPid;
         notify_get_state(token, &fromPid);
-        BOOL isExternal = fromPid != currentPid();
+        BOOL isExternal = fromPid != (uint64_t)currentPid();
         if (isExternal)
         {
             NSLog(@"received external modification from %llu", fromPid);
