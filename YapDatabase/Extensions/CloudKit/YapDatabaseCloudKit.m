@@ -1,8 +1,7 @@
 #import "YapDatabaseCloudKitPrivate.h"
+#import "YapDatabaseAtomic.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseLogging.h"
-
-#import <libkern/OSAtomic.h>
 
 /**
  * Define log level for this file: OFF, ERROR, WARN, INFO, VERBOSE
@@ -21,7 +20,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 @implementation YapDatabaseCloudKit
 {
 	NSUInteger suspendCount;
-	OSSpinLock suspendCountLock;
+	YAPUnfairLock suspendCountLock;
 	
 	NSOperationQueue *masterOperationQueue;
 	
@@ -168,7 +167,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		masterOperationQueue = [[NSOperationQueue alloc] init];
 		masterOperationQueue.maxConcurrentOperationCount = 1;
 		
-		suspendCountLock = OS_SPINLOCK_INIT;
+		suspendCountLock = YAP_UNFAIR_LOCK_INIT;
 	}
 	return self;
 }
@@ -191,11 +190,11 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 {
 	NSUInteger currentSuspendCount = 0;
 	
-	OSSpinLockLock(&suspendCountLock);
+	YAPUnfairLockLock(&suspendCountLock);
 	{
 		currentSuspendCount = suspendCount;
 	}
-	OSSpinLockUnlock(&suspendCountLock);
+	YAPUnfairLockUnlock(&suspendCountLock);
 	
 	return currentSuspendCount;
 }
@@ -264,7 +263,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	BOOL overflow = NO;
 	NSUInteger newSuspendCount = 0;
 	
-	OSSpinLockLock(&suspendCountLock);
+	YAPUnfairLockLock(&suspendCountLock);
 	{
 		if (suspendCount <= (NSUIntegerMax - suspendCountIncrement))
 			suspendCount += suspendCountIncrement;
@@ -275,7 +274,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		
 		newSuspendCount = suspendCount;
 	}
-	OSSpinLockUnlock(&suspendCountLock);
+	YAPUnfairLockUnlock(&suspendCountLock);
 	
 	if (overflow)
 	{
@@ -296,7 +295,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 	BOOL underflow = 0;
 	NSUInteger newSuspendCount = 0;
 	
-	OSSpinLockLock(&suspendCountLock);
+	YAPUnfairLockLock(&suspendCountLock);
 	{
 		if (suspendCount > 0)
 			suspendCount--;
@@ -305,7 +304,7 @@ NSString *const YapDatabaseCloudKitInFlightChangeSetChangedNotification = @"YDBC
 		
 		newSuspendCount = suspendCount;
 	}
-	OSSpinLockUnlock(&suspendCountLock);
+	YAPUnfairLockUnlock(&suspendCountLock);
 	
 	if (underflow)
 	{

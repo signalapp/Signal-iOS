@@ -1,4 +1,5 @@
 #import "YapDatabase.h"
+#import "YapDatabaseAtomic.h"
 #import "YapDatabasePrivate.h"
 #import "YapDatabaseExtensionPrivate.h"
 #import "YapCollectionKey.h"
@@ -10,7 +11,6 @@
 #import "sqlite3.h"
 
 #import <mach/mach_time.h>
-#import <libkern/OSAtomic.h>
 #import <stdatomic.h>
 
 #if ! __has_feature(objc_arc)
@@ -3184,7 +3184,7 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	dispatch_group_t group = dispatch_group_create();
 	
-	__block OSSpinLock spinLock = OS_SPINLOCK_INIT;
+	__block YAPUnfairLock spinLock = YAP_UNFAIR_LOCK_INIT;
 	__block atomic_bool hasWriteQueue = true;
 	
 	dispatch_sync(snapshotQueue, ^{ @autoreleasepool {
@@ -3198,14 +3198,14 @@ static int connectionBusyHandler(void *ptr, int count) {
 				{
 					dispatch_group_async(group, connection->connectionQueue, ^{
 						
-						OSSpinLockLock(&spinLock);
+						YAPUnfairLockLock(&spinLock);
 						{
 							if (atomic_load(&hasWriteQueue))
 							{
 								[connection resetLongLivedReadTransaction];
 							}
 						}
-						OSSpinLockUnlock(&spinLock);
+						YAPUnfairLockUnlock(&spinLock);
 					});
 				}
 			}
@@ -3216,11 +3216,11 @@ static int connectionBusyHandler(void *ptr, int count) {
 	
 	if (ready != 0)
 	{
-		OSSpinLockLock(&spinLock);
+		YAPUnfairLockLock(&spinLock);
 		{
 			atomic_store(&hasWriteQueue, false);
 		}
-		OSSpinLockUnlock(&spinLock);
+		YAPUnfairLockUnlock(&spinLock);
 		
 		return NO;
 	}

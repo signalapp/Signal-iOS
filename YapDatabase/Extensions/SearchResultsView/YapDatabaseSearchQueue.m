@@ -1,7 +1,6 @@
 #import "YapDatabaseSearchQueue.h"
 #import "YapDatabaseSearchQueuePrivate.h"
-
-#import <libkern/OSAtomic.h>
+#import "YapDatabaseAtomic.h"
 
 @interface YapDatabaseSearchQueueControl : NSObject
 
@@ -38,7 +37,7 @@
 @implementation YapDatabaseSearchQueue
 {
 	NSMutableArray *queue;
-	OSSpinLock lock;
+	YAPUnfairLock lock;
 	
 	BOOL queueHasAbort;
 	BOOL queueHasRollback;
@@ -49,7 +48,7 @@
 	if ((self = [super init]))
 	{
 		queue = [[NSMutableArray alloc] init];
-		lock = OS_SPINLOCK_INIT;
+		lock = YAP_UNFAIR_LOCK_INIT;
 	}
 	return self;
 }
@@ -62,16 +61,16 @@
 {
 	if (query == nil) return;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		[queue addObject:[query copy]];
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 }
 
 - (void)abortSearchInProgressAndRollback:(BOOL)shouldRollback
 {
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		YapDatabaseSearchQueueControl *control =
 		  [[YapDatabaseSearchQueueControl alloc] initWithRollback:shouldRollback];
@@ -81,14 +80,14 @@
 		queueHasAbort = YES;
 		queueHasRollback = queueHasRollback || shouldRollback;
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 }
 
 - (NSArray *)enqueuedQueries
 {
 	NSMutableArray *queries = nil;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		queries = [NSMutableArray arrayWithCapacity:[queue count]];
 		
@@ -100,7 +99,7 @@
 			}
 		}
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 	
 	return queries;
 }
@@ -109,7 +108,7 @@
 {
 	NSUInteger count = 0;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		for (id obj in queue)
 		{
@@ -119,7 +118,7 @@
 			}
 		}
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 	
 	return count;
 }
@@ -132,7 +131,7 @@
 {
 	NSString *lastQuery = nil;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		id lastObject = [queue lastObject];
 		[queue removeAllObjects];
@@ -145,7 +144,7 @@
 			lastQuery = (NSString *)lastObject;
 		}
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 	
 	return lastQuery;
 }
@@ -155,12 +154,12 @@
 	BOOL shouldAbort = NO;
 	BOOL shouldRollback = NO;
 	
-	OSSpinLockLock(&lock);
+	YAPUnfairLockLock(&lock);
 	{
 		shouldAbort = queueHasAbort;
 		shouldRollback = queueHasRollback;
 	}
-	OSSpinLockUnlock(&lock);
+	YAPUnfairLockUnlock(&lock);
 	
 	if (shouldRollbackPtr) *shouldRollbackPtr = shouldRollback;
 	return shouldAbort;
