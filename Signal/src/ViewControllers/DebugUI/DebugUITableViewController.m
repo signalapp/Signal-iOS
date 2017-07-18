@@ -7,7 +7,6 @@
 #import "DebugUIDiskUsage.h"
 #import "DebugUIMessages.h"
 #import "DebugUISessionState.h"
-#import "DebugUIVerification.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -92,8 +91,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ([thread isKindOfClass:[TSContactThread class]]) {
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
-        [subsectionItems
-            addObject:[self itemForSubsection:[DebugUIVerification new] viewController:viewController thread:thread]];
     }
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
