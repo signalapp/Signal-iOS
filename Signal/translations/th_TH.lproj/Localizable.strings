@@ -32,7 +32,7 @@
 "ALERT_SAVE" = "บันทึก";
 
 /* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "กำลังตรวจสอบว่านี่คือบัญชี Signal ที่ถูกต้อง";
 
 /* A title for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_TITLE" = "Validating";
@@ -62,7 +62,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัปเดต";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ข้อความเสียง";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกปิดกั้นจะไม่สามารถโทรหาคุณหรือส่งข้อความถึงคุณ";
@@ -173,7 +173,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "คุณไม่สามารถปิดกั้นตัวเอง";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ข้อผิดพลาด";
@@ -272,7 +272,7 @@
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "ตัวเลขความปลอดภัยกับ %@ มีการเปลี่ยนแปลง";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "ยืนยัน";
@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "ตั้งค่าการสนทนา";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "เพิ่มไปยังรายชื่อที่มีอยู่เดิม";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ปิดกั้นผู้ใช้นี้";
@@ -317,28 +317,28 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ปิดเสียงหนึ่งวัน";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ปิดเสียงหนึ่งชั่วโมง";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ปิดเสียงหนึ่งนาที";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ปิดเสียงหนึ่งสัปดาห์";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ปิดเสียงหนึ่งปี";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "สร้างรายชื่อใหม่";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "เปิดเสียง";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตวาระของคุณจะอนุญาตให้คุณรับข้อความในอนาคตจาก %@ แต่จะไม่กู้คืนข้อความใด ๆ ที่เสียหายไปแล้ว";
@@ -665,7 +665,7 @@
 "INCOMING_CALL_FROM" = "สายโทรเข้าจาก %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "คุณได้ปฏิเสธสาย";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "สายโทรเข้าไม่สมบูรณ์จาก";
@@ -758,7 +758,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
+"MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว แตะสำหรับข้อมูล";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";
@@ -791,7 +791,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "แตะที่นี่สำหรับการตั้งค่า";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "ข้อความที่ยังไม่ได้อ่าน";
@@ -847,7 +847,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้มาถึงขีดจำกัดจำนวนอุปกรณ์สูงสุดที่คุณสามารถจับคู่กับบัญชีของคุณได้ในขณะนี้ โปรดเอาอุปกรณ์ออกหรือลองอีกครั้งเพื่อจับคู่ในภายหลัง";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับการแจ้งเตือนสำหรับการสนทนาที่ปิดเสียง";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "โปรดตรวจสอบว่าคุณกำลังออนไลน์และลองอีกครั้ง";
@@ -1187,7 +1187,7 @@
 "SEND_BUTTON_TITLE" = "ส่ง";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Select a Recipient for:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "เลือกผู้รับสำหรับ:";
 
 /* Title for the 'send external file' view. */
 "SEND_EXTERNAL_FILE_VIEW_TITLE" = "ส่งไฟล์";
@@ -1199,7 +1199,7 @@
 "SEND_INVITE_SUCCESS" = "คุณได้เชิญเพื่อนของคุณให้มาใช้ Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "เชิญผ่าน SMS: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "เชิญเพื่อนผ่านทาง SMS ที่ไม่ปลอดภัย?";

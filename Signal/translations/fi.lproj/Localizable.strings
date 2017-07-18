@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Ääniviesti";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Kaiutin";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Estetyt käyttäjät eivät pysty soittamaan sinulle tai lähettämään sinulle viestejä.";

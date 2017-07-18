@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Balso žinutė";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Garsiakalbis";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Užblokuoti naudotojai negalės jums skambinti ar siųsti žinutes.";
@@ -653,7 +653,7 @@
 "IN_CALL_TERMINATED" = "Skambutis pasibaigė.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Jūs peržiūrite savo archyvuotas žinutes. Bakstelėkite, norėdami grįžti į gautas žinutes.";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti savo kontaktų vardus, atnaujinkite savo sistemos nustatymus, kad leistumėte kontaktų prieigą.";
@@ -950,7 +950,7 @@
 "OUTGOING_CALL" = "Išsiunčiamasis skambutis";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Neatsilieptas skambutis kitam asmeniui";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Bakstelėkite, norėdami pamatyti daugiau]";

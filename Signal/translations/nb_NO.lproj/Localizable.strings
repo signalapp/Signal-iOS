@@ -56,13 +56,13 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versjon %@ er nå tilgjengelig i App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "En ny versjon av Signal er tilgjengelig";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Oppdater";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Talemelding";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Høyttaler";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokkerte brukere vil ikke kunne ringe deg eller sende deg meldinger.";
@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "Samtaleinnstillinger";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Legg til eksisterende kontakt";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokker denne brukeren";
@@ -335,7 +335,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fram til %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Opprett ny kontakt";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Slå på varsling igjen";
@@ -653,7 +653,7 @@
 "IN_CALL_TERMINATED" = "Samtalen er over.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Du ser nå på arkiverte meldinger. Trykk for å gå tilbake til innboksen.";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "For å se navnene på kontaktene dine, oppdater systeminnstillingene for å tillate kontakttilgang.";
@@ -665,7 +665,7 @@
 "INCOMING_CALL_FROM" = "Innkommende anrop fra %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "Du avviste en oppringning";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Ufullstendig innkommende anrop fra";
@@ -950,7 +950,7 @@
 "OUTGOING_CALL" = "Utgående anrop";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Ubesvart utgående samtale";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [Trykk for mer]";

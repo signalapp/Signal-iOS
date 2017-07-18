@@ -56,13 +56,13 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ en el grup %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Ja és disponible la versió %@ a l'App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "És disponible una versió nova del Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Actualitza";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Missatge de veu";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altaveu";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Els usuaris blocats no podran telefonar-vos ni enviar-vos missatges.";
@@ -281,7 +281,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Blocat";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "No verificat";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Número sense registrar";
@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "Configuració del xat";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Afegeix a un contacte existent";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloca aquest usuari";
@@ -335,7 +335,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fins al %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Crea un contacte nou";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "No silenciïs";
@@ -350,7 +350,7 @@
 "CREATE_NEW_GROUP" = "Crea un grup";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Això pot trigar uns minuts.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "S'està actualitzant la base de dades";
@@ -557,7 +557,7 @@
 "FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar els números.";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marca com a verificat";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reinicia la sessió.";
@@ -599,16 +599,16 @@
 "GROUP_MEMBERS_CALL" = "Truca";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification For All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Esborra totes les verificacions";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Això esborrarà la verificació de tots els membres del grup el número dels quals hagin canviat des que els vau verificar.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membres";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Marcats com a no verificats";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Envia-li un missatge";
@@ -653,7 +653,7 @@
 "IN_CALL_TERMINATED" = "Ha finalitzat.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Esteu veient els missatges arxivats. Toqueu per tornar a la safata.";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Per a veure els noms dels vostres contactes, doneu al Signal accés als contactes.";
@@ -665,7 +665,7 @@
 "INCOMING_CALL_FROM" = "Telefonada rubuda de %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "Heu rebutjat una trucada";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Telefonada incompleta de";
@@ -767,13 +767,13 @@
 "MESSAGE_STATUS_UPLOADING" = "S'està pujant...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no és marcat com a verificat. Toqueu per a més opcions.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Heu blocat aquest usuari";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no és marcat com a verificat. Toqueu per a més opcions.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Ha fallat la baixada.";
@@ -788,7 +788,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Heu blocat %d membres d'aquest grup";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no és marcat com a verificat. Toqueu per a més opcions.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toqueu aquí per anar a la configuració";
@@ -950,7 +950,7 @@
 "OUTGOING_CALL" = "Telefonada feta";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Trucada feta no contestada";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Mostra'n més]";
@@ -998,7 +998,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax de la feina";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "No heu marcat %@ com a verificat.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificat";
@@ -1013,7 +1013,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Toqueu per a escanejar";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
+"PRIVACY_UNVERIFY_BUTTON" = "Esborra la verificació";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %@. Esteu verificant el contacte correcte?";
@@ -1367,10 +1367,10 @@
 "SMS_INVITE_BODY" = "Et convide a instal·lar el Signal! Ací tens l'enllaç:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "El número de seguretat amb %@ coincideix. Podeu marcar el contacte com a verificat.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Els números de seguretat coincideixen!";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Cancel·la";
@@ -1481,7 +1481,7 @@
 "VERIFY_PRIVACY" = "Mostra el número de seguretat";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "Revisa els números de seguretat";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";

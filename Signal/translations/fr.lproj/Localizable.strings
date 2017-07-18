@@ -56,13 +56,13 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ dans le groupe %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La Version%@est maintenant disponible dans l'App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est disponible";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mise à jour";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message Vocal";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-Parleurs";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront pas vous appeler ou vous envoyer des messages.";
@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "Paramètres de cette conversation";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Ajouter au contact existant";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquer cet utilisateur";
@@ -335,7 +335,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "jusqu'à %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Créer un nouveau contact";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Rendre la parole";
@@ -653,7 +653,7 @@
 "IN_CALL_TERMINATED" = "Appel terminé.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Vous consultez vos messages archivés. Appuyez pour revenir à votre Boîte de réception.";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Pour voir les noms de vos contacts, mettez à jour les paramètres de votre système pour permettre l'accès aux contacts.";
@@ -665,7 +665,7 @@
 "INCOMING_CALL_FROM" = "Appel entrant de %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "Vous avez refusé un appel";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Appel entrant incomplet de";
@@ -950,7 +950,7 @@
 "OUTGOING_CALL" = "Appel sortant";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Appel sortant sans réponse";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ... [Tapez pour plus d'informations]";
