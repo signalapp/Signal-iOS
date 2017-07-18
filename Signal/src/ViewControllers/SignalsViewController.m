@@ -234,14 +234,17 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    [self tableViewSetUp];
-
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
 
     // Create the database connection.
     [self uiDatabaseConnection];
 
     [self showInboxGrouping];
+
+    // because this uses the table data source, `tableViewSetup` must happen
+    // after mappings have been set up in `showInboxGrouping`
+    [self tableViewSetUp];
+
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -799,6 +802,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 #pragma mark - Groupings
+
+- (YapDatabaseViewMappings *)threadMappings
+{
+    OWSAssert(_threadMappings != nil);
+    return _threadMappings;
+}
 
 - (void)showInboxGrouping
 {
