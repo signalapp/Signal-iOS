@@ -9,8 +9,8 @@ target 'Signal' do
     #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
     pod 'PureLayout'
     pod 'Reachability'
-    pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/SignalServiceKit.git'
-    #pod 'SignalServiceKit',           path: '../SignalServiceKit'
+    #pod 'SignalServiceKit',           git: 'https://github.com/WhisperSystems/Signal-iOS.git'
+    pod 'SignalServiceKit',           path: '.'
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
     target 'SignalTests' do
       inherit! :search_paths
