@@ -1,0 +1,18 @@
+package textsecure;
+
+option java_package = "org.whispersystems.libsignal.fingerprint";
+option java_outer_classname = "FingerprintProtos";
+
+import "objectivec-descriptor.proto";
+option (google.protobuf.objectivec_file_options).class_prefix = "OWSFingerprintProtos";
+
+message LogicalFingerprint {
+  optional bytes identityData = 1;
+//  optional bytes identifier = 2;
+}
+
+message LogicalFingerprints {
+  optional uint32             version           = 1;
+  optional LogicalFingerprint localFingerprint  = 2;
+  optional LogicalFingerprint remoteFingerprint = 3;
+}
