@@ -783,6 +783,21 @@ NS_ASSUME_NONNULL_BEGIN
 **/
 - (void)removeAllObjectsInAllCollections;
 
+#pragma mark Completion
+
+/**
+ * It's often useful to compose code into various reusable functions which take a
+ * YapDatabaseReadWriteTransaction as a parameter. However, the ability to compose code
+ * in this manner is often prevented by the need to perform a task after the commit has finished.
+ * 
+ * The end result is that programmers either end up copy-pasting code,
+ * or hack together a solution that involves functions returning completion blocks.
+ *
+ * This method solves the dilemma by allowing encapsulated code to register its own commit completionBlock.
+**/
+- (void)addCompletionQueue:(nullable dispatch_queue_t)completionQueue
+           completionBlock:(dispatch_block_t)completionBlock;
+
 @end
 
 NS_ASSUME_NONNULL_END

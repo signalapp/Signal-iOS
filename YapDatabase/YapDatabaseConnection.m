@@ -1963,6 +1963,18 @@ static int connectionBusyHandler(void *ptr, int count)
 			block(transaction);
 			[self postReadWriteTransaction:transaction];
 			
+			if (transaction->completionBlockStack)
+			{
+				NSUInteger count = transaction->completionBlockStack.count;
+				for (NSUInteger i = 0; i < count; i++)
+				{
+					dispatch_queue_t stackItemQueue = transaction->completionQueueStack[i];
+					dispatch_block_t stackItemBlock = transaction->completionBlockStack[i];
+					
+					dispatch_async(stackItemQueue, stackItemBlock);
+				}
+			}
+			
 		}}); // End dispatch_sync(database->writeQueue)
 		
 	}); // End dispatch_sync(connectionQueue)
@@ -2143,6 +2155,18 @@ static int connectionBusyHandler(void *ptr, int count)
 			[self preReadWriteTransaction:transaction];
 			block(transaction);
 			[self postReadWriteTransaction:transaction];
+			
+			if (transaction->completionBlockStack)
+			{
+				NSUInteger count = transaction->completionBlockStack.count;
+				for (NSUInteger i = 0; i < count; i++)
+				{
+					dispatch_queue_t stackItemQueue = transaction->completionQueueStack[i];
+					dispatch_block_t stackItemBlock = transaction->completionBlockStack[i];
+					
+					dispatch_async(stackItemQueue, stackItemBlock);
+				}
+			}
 			
 			if (completionBlock)
 				dispatch_async(completionQueue, completionBlock);
