@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    // TODO: Apply switchItemWithText.
     [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
                                                                isOn:[Environment.preferences screenSecurityIsEnabled]
                                                              target:weakSelf
