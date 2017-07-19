@@ -163,11 +163,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasExistingContact
 {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
-
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *recipientId = contactThread.contactIdentifier;
-    SignalAccount *signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
-    return signalAccount.contact != nil;
+    return self.contactsManager.allContactsMap[recipientId] != nil;
 }
 
 #pragma mark - ContactEditingDelegate
