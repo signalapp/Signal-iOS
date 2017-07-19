@@ -297,7 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Editing
 
-- (UIAlertController *)missingContactAccessAlertController
+- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
     UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
@@ -323,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           [[UIApplication sharedApplication] openSystemSettings];
                                                       }]];
 
-    return alertController;
+    [viewController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        [fromViewController presentViewController:self.missingContactAccessAlertController animated:YES completion:nil];
+        [self presentMissingContactAccessAlertControllerFromViewController:fromViewController];
         return;
     }
 

@@ -46,9 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 
-// Suitable to display when the user tries to perform an action which is not possible due to the user having
+// Suitable when the user tries to perform an action which is not possible due to the user having
 // previously denied contact access.
-@property (nonatomic, readonly) UIAlertController *missingContactAccessAlertController;
+- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
 - (instancetype)init NS_UNAVAILABLE;
 

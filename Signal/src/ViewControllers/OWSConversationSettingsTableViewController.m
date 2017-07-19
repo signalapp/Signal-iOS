@@ -770,9 +770,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        [self presentViewController:self.contactsViewHelper.missingContactAccessAlertController
-                           animated:YES
-                         completion:nil];
+        [self.contactsViewHelper presentMissingContactAccessAlertControllerFromViewController:self];
         return;
     }
 
