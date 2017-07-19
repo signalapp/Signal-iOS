@@ -1,0 +1,17 @@
+language: objective-c
+
+osx_image: xcode8.3
+
+env:
+  -EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
+
+before_install:
+  - brew update
+  - bundle
+  - bundle exec pod repo update --silent
+
+after_failure:
+    - sleep 10 # This prevents the occasional output truncation that happens when piping to xcpretty.
+
+script: make scan_test
+

@@ -15,7 +15,6 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - ATAppUpdater (2.0)
   - AxolotlKit (0.8.1):
     - 25519 (~> 2.0.1)
     - CocoaLumberjack
@@ -30,16 +29,11 @@ PODS:
   - CocoaLumberjack/Extensions (2.4.0):
     - CocoaLumberjack/Default
   - HKDFKit (0.0.3)
-  - JSQMessagesViewController (7.3.4):
-    - JSQSystemSoundPlayer (~> 2.0.1)
-  - JSQSystemSoundPlayer (2.0.1)
   - libPhoneNumber-iOS (0.9.10)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
   - ProtocolBuffers (1.9.11)
-  - PureLayout (3.0.2)
-  - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SignalServiceKit (0.9.0):
     - '25519'
@@ -109,22 +103,15 @@ PODS:
     - YapDatabase/SQLCipher/Core
 
 DEPENDENCIES:
-  - ATAppUpdater
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
-  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `signal-master`)
-  - PureLayout
-  - Reachability
-  - SignalServiceKit (from `.`)
+  - SignalServiceKit (from `../../SignalServiceKit.podspec`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
-  JSQMessagesViewController:
-    :branch: signal-master
-    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :path: "."
+    :path: ../../SignalServiceKit.podspec
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -132,9 +119,6 @@ CHECKOUT OPTIONS:
   AxolotlKit:
     :commit: 28afe5c1dbcfdea73d147e464c53d191d1e3ea50
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
-  JSQMessagesViewController:
-    :commit: 5d7a5f99f982d397cb10e852bceef5d055b80a3c
-    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
@@ -142,25 +126,20 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
   AxolotlKit: a9530d6835baae0f204b1f6b9dd79b7901176f0d
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
-  JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
-  JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
-  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
-  SignalServiceKit: 0fa1aa668c13b51bca399ce970bc1f1d9297184b
+  SignalServiceKit: 2ad8d86da055e24ac3ea0354ec1d4b13251af28f
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 354c63d01f78442b541ac178dff04045b94eee8d
+PODFILE CHECKSUM: a0f4507b6b4e6f9da3250901b06187a67236e083
 
 COCOAPODS: 1.2.1
