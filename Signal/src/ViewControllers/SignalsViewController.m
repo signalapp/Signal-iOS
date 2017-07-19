@@ -843,6 +843,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     [self updateShouldObserveDBModifications];
 
+    [[self tableView] reloadData];
     [self checkIfEmptyView];
     [self updateReminderViews];
 }
