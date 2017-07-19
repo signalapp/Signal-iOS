@@ -114,7 +114,7 @@ DEPENDENCIES:
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `signal-master`)
   - PureLayout
   - Reachability
-  - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
+  - SignalServiceKit (from `.`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
 
 EXTERNAL SOURCES:
@@ -124,7 +124,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
+    :path: "."
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -135,9 +135,6 @@ CHECKOUT OPTIONS:
   JSQMessagesViewController:
     :commit: 5d7a5f99f982d397cb10e852bceef5d055b80a3c
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  SignalServiceKit:
-    :commit: e20d63240bc6352736192a108e262eba1d493fe9
-    :git: https://github.com/WhisperSystems/SignalServiceKit.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
     :git: https://github.com/facebook/SocketRocket.git
@@ -157,13 +154,13 @@ SPEC CHECKSUMS:
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
-  SignalServiceKit: 2ad8d86da055e24ac3ea0354ec1d4b13251af28f
+  SignalServiceKit: 0fa1aa668c13b51bca399ce970bc1f1d9297184b
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 17bcacfbce26a1e16900895aa1385168a1e842b7
+PODFILE CHECKSUM: 354c63d01f78442b541ac178dff04045b94eee8d
 
 COCOAPODS: 1.2.1
