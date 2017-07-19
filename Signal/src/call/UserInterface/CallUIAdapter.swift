@@ -34,10 +34,7 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callViewController = CallViewController()
-        let thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
-        callViewController.call = call
-        callViewController.thread = thread
+        let callViewController = CallViewController(call:call)
         callViewController.modalTransitionStyle = .crossDissolve
 
         guard let presentingViewController = Environment.getCurrent().signalsViewController else {
