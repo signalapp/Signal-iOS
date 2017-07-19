@@ -501,7 +501,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.isGroupThread) {
         BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
 
-        OWSTableItem *item = [OWSTableItem itemWithCustomCellBlock:^{
+        OWSTableSection *section = [OWSTableSection new];
+        section.footerTitle = NSLocalizedString(
+            @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell =
                 [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
                                                      @"table cell label in conversation settings")
@@ -516,13 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
             cell.accessoryView = blockUserSwitch;
             return cell;
         }
-                                                       actionBlock:nil];
-        OWSTableSection *section = [OWSTableSection sectionWithTitle:nil
-                                                               items:@[
-                                                                   item,
-                                                               ]];
-        section.footerTitle = NSLocalizedString(
-            @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+                                                   actionBlock:nil]];
         [contents addSection:section];
     }
 
