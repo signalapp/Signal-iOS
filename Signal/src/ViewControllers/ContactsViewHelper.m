@@ -297,6 +297,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Editing
 
+- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
+{
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+                                                   : @"Alert title for when the user has just tried to edit a "
+                                                     @"contacts after declining to give Signal contacts "
+                                                     @"permissions")
+                         message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+                                                   : @"Alert body for when the user has just tried to edit a "
+                                                     @"contacts after declining to give Signal contacts "
+                                                     @"permissions")
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                     @"Button text to dismiss missing contacts permission alert")
+                                           style:UIAlertActionStyleCancel
+                                         handler:nil]];
+
+    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
+                                                                  @"Button text which opens the settings app")
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [[UIApplication sharedApplication] openSystemSettings];
+                                                      }]];
+
+    [viewController presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
@@ -322,31 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
-                                                       : @"Alert title for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                             message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
-                                                       : @"Alert body for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                      preferredStyle:UIAlertControllerStyleAlert];
-
-        [alertController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                         @"Button text to dismiss missing contacts permission alert")
-                                               style:UIAlertActionStyleCancel
-                                             handler:nil]];
-
-        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
-                                                                      @"Button text which opens the settings app")
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [[UIApplication sharedApplication] openSystemSettings];
-                                                          }]];
-
-        [fromViewController presentViewController:alertController animated:YES completion:nil];
+        [self presentMissingContactAccessAlertControllerFromViewController:fromViewController];
         return;
     }
 
