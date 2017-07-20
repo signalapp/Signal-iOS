@@ -135,6 +135,8 @@
 		4542F0961EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
+		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */; };
 		45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */; };
 		45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */; };
@@ -567,6 +569,8 @@
 		4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataChannelMessage.swift; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		455A16DB1F1FEA0000F86704 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAvatarBuilder.h; sourceTree = "<group>"; };
 		45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAvatarBuilder.m; sourceTree = "<group>"; };
 		45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupAvatarBuilder.h; sourceTree = "<group>"; };
@@ -843,6 +847,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
+				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
 				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
 				456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */,
@@ -1628,6 +1634,8 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				455A16DB1F1FEA0000F86704 /* Metal.framework */,
+				455A16DC1F1FEA0000F86704 /* MetalKit.framework */,
 				45847E861E4283C30080EAB3 /* Intents.framework */,
 				45BD60811DE9547E00A8F436 /* Contacts.framework */,
 				4509E7991DD653700025A59F /* WebRTC.framework */,
