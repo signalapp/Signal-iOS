@@ -5,7 +5,7 @@ target 'Signal' do
     pod 'ATAppUpdater'
     pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
-    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master'
+    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/use-signal-localizations'
     #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
     pod 'PureLayout'
     pod 'Reachability'

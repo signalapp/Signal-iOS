@@ -2,6 +2,10 @@
 
 set -e
 
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT=$BIN_DIR/../../..
+cd $REPO_ROOT
+
 SSK_DIR="../SignalServiceKit/src"
 
 pushd $SSK_DIR
@@ -21,10 +25,6 @@ popd
 TARGETS="Signal/src ${SSK_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
-
-BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT=$BIN_DIR/../../..
-cd $REPO_ROOT
 
 for TARGET_DIR in $TARGETS
 do
@@ -58,3 +58,21 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
 		if($2 ~ /"$/){$2 = $2";"}; \
 		print}' - <(echo "$NEWUTF8") > $STRINGFILE
+
+# Copy in strings from JSQMessagesViewController
+#
+# We have a wider array of translators than JSQ, and it's easier for our
+# translators to translate for us directly rather than to direct them to the
+# now defunct JSQMessagesView project.
+
+echo "Copying strings from JSQMessagesViewController"
+JSQ_STRINGS_PATH="../JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
+if [ ! -f $JSQ_STRINGS_PATH ]; then
+  echo "[!] Error. Expected to find strings for JSQMessagesViewController at ${JSQ_STRINGS_PATH}"
+  exit 1
+fi
+
+echo "
+// Strings Copied in from JSQMessagesViewController" >> $STRINGFILE
+cat $JSQ_STRINGS_PATH  | grep -v "^//" >> $STRINGFILE
+
