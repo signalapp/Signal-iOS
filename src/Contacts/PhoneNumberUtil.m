@@ -85,6 +85,9 @@
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
     NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
     NSString *country                  = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier value:identifier];
+    if (country.length < 1) {
+        country = [NSLocale.systemLocale displayNameForKey:NSLocaleIdentifier value:identifier];
+    }
     return country;
 }
 
