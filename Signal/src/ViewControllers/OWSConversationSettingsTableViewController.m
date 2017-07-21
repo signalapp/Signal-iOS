@@ -435,7 +435,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableSection *muteSection = [OWSTableSection new];
     [muteSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -482,14 +482,7 @@ NS_ASSUME_NONNULL_BEGIN
                           [dateFormatter stringFromDate:mutedUntilDate]];
         }
 
-        UILabel *statusLabel = [UILabel new];
-        statusLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-        statusLabel.font = [UIFont ows_regularFontWithSize:17.f];
-        statusLabel.text = muteStatus;
-        [cell.contentView addSubview:statusLabel];
-        [statusLabel autoVCenterInSuperview];
-        //        [statusLabel autoPinLeadingToTrailingOfView:rowLabel margin:weakSelf.iconSpacing];
-        [statusLabel autoPinTrailingToSuperView];
+        cell.detailTextLabel.text = muteStatus;
         return cell;
     }
                              customRowHeight:45.f
@@ -567,7 +560,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)mainSectionHeader
 {
     UIView *mainSectionHeader = [UIView new];
-    UIView *threadInfoView = [UIView new];
+    UIView *threadInfoView = [UIView containerView];
     [mainSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];

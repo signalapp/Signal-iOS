@@ -29,8 +29,6 @@
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
-#define CELL_HEIGHT 72.0f
-
 typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 @interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
@@ -590,7 +588,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return CELL_HEIGHT;
+    return InboxTableViewCell.rowHeight;
 }
 
 #pragma mark Table Swipe to Delete

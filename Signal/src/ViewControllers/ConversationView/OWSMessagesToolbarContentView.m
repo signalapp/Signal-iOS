@@ -142,6 +142,9 @@ NS_ASSUME_NONNULL_BEGIN
             if (self.isRecordingVoiceMemo) {
                 // Check for "slide to cancel" gesture.
                 CGPoint location = [sender locationInView:self];
+                // For LTR/RTL, swiping in either direction will cancel.
+                // This is okay because there's only space on screen to perform the
+                // gesture in one direction.
                 CGFloat offset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
                 // The lower this value, the easier it is to cancel by accident.
                 // The higher this value, the harder it is to cancel.

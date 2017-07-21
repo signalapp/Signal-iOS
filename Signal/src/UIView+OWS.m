@@ -221,11 +221,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         == UIUserInterfaceLayoutDirectionRightToLeft);
 }
 
-- (CGFloat)rtlSafeConstant:(CGFloat)value
-{
-    return (self.isRTL ? -value : value);
-}
-
 - (NSLayoutConstraint *)autoPinLeadingToSuperView
 {
     return [self autoPinLeadingToSuperViewWithMargin:0];
@@ -247,8 +242,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
 {
     NSLayoutConstraint *constraint =
-        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
-                                            constant:[self rtlSafeConstant:margin]];
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor constant:-margin];
     constraint.active = YES;
     return constraint;
 }
@@ -280,8 +274,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint =
-        [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:[self rtlSafeConstant:margin]];
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
     constraint.active = YES;
     return constraint;
 }
@@ -297,8 +290,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint =
-        [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:[self rtlSafeConstant:margin]];
+    NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
     constraint.active = YES;
     return constraint;
 }

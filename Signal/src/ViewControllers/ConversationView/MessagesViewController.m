@@ -1079,7 +1079,10 @@ typedef enum : NSUInteger {
     // This method gets called multiple times, so it's important we re-layout the unread badge
     // with respect to the new backItem.
     [backItem.customView addSubview:_backButtonUnreadCountView];
-    // TODO:
+    // TODO: The back button assets are assymetrical.  There are strong reasons
+    // to use spacing in the assets to manipulate the size and positioning of
+    // bar button items, but it means we'll probably need separate RTL and LTR
+    // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
     [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
     [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];

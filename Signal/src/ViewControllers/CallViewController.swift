@@ -511,7 +511,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             hasConstraints = true
 
             let topMargin = CGFloat(40)
-            let contactHMargin = CGFloat(0)
+            let contactHMargin = CGFloat(5)
             let contactVSpacing = CGFloat(3)
             let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
             let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
@@ -632,9 +632,9 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         var constraints: [NSLayoutConstraint] = []
 
         if localVideoView.isHidden {
-            let contactHMargin = CGFloat(0)
-            constraints.append(contactNameLabel.autoPinTrailingToSuperView())
-            constraints.append(callStatusLabel.autoPinTrailingToSuperView())
+            let contactHMargin = CGFloat(5)
+            constraints.append(contactNameLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
+            constraints.append(callStatusLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
         } else {
             let spacing = CGFloat(10)
             constraints.append(localVideoView.autoPinLeading(toTrailingOf: contactNameLabel, margin: spacing))

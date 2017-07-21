@@ -65,6 +65,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // For correct right-to-left layout behavior, use "leading" and "trailing",
 // not "left" and "right".
 //
+// These methods use layoutMarginsGuide anchors, which behave differently than
+// the PureLayout alternatives you indicated. Honoring layoutMargins is
+// particularly important in cell layouts, where it lets us align with the
+// complicated built-in behavior of table and collection view cells' default
+// contents.
+//
 // NOTE: the margin values are inverted in RTL layouts.
 - (BOOL)isRTL;
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview;

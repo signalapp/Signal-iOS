@@ -69,8 +69,8 @@ const NSUInteger kavatarViewDiameter = 52;
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
-    [self.avatarView autoSetDimension:ALDimensionWidth toSize:52.f];
-    [self.avatarView autoSetDimension:ALDimensionHeight toSize:52.f];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
     [self.avatarView autoPinLeadingToSuperView];
     [self.avatarView autoVCenterInSuperview];
 
@@ -132,6 +132,11 @@ const NSUInteger kavatarViewDiameter = 52;
 + (CGFloat)rowHeight
 {
     return 72.f;
+}
+
+- (CGFloat)avatarSize
+{
+    return 52.f;
 }
 
 - (void)initializeLayout {
@@ -206,7 +211,7 @@ const NSUInteger kavatarViewDiameter = 52;
     self.timeLabel.attributedText = attributedDate;
     self.avatarView.image = nil;
 
-    self.separatorInset = UIEdgeInsetsMake(0, _avatarView.frame.size.width * 1.5f, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
 
     if (thread.hasUnreadMessages) {
         [self updateCellForUnreadMessage];
