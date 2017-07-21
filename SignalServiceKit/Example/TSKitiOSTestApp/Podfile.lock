@@ -34,6 +34,7 @@ PODS:
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
   - ProtocolBuffers (1.9.11)
+  - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SignalServiceKit (0.9.0):
     - '25519'
@@ -42,6 +43,7 @@ PODS:
     - CocoaLumberjack
     - libPhoneNumber-iOS
     - Mantle
+    - Reachability
     - SAMKeychain
     - SocketRocket
     - TwistedOakCollapsingFutures
@@ -111,7 +113,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   SignalServiceKit:
-    :path: "../../../SignalServiceKit.podspec"
+    :path: ../../../SignalServiceKit.podspec
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
@@ -132,8 +134,9 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
-  SignalServiceKit: 0fa1aa668c13b51bca399ce970bc1f1d9297184b
+  SignalServiceKit: db63e60f9a9f851e9ae48214bee230be92bb7e57
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
