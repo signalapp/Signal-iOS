@@ -3,6 +3,7 @@
 //
 
 #import "OWSOrphanedDataCleaner.h"
+#import "NSDate+OWS.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "TSMessage.h"
@@ -134,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 #ifdef SSK_BUILDING_FOR_TESTS
     const NSTimeInterval kMinimumOrphanAge = 0.f;
 #else
-    const NSTimeInterval kMinimumOrphanAge = 15 * 60.f;
+    const NSTimeInterval kMinimumOrphanAge = 15 * kMinuteInterval;
 #endif
 
     if (!shouldCleanup) {

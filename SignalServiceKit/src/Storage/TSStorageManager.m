@@ -117,14 +117,14 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
 
-        OWSAnalyticsCritical(@"Could not load database");
+        OWSProdError(@"storage_error_could_not_load_database");
 
         // Try to reset app by deleting database.
         // Disabled resetting storage until we have better data on why this happens.
         // [self resetSignalStorage];
 
         if (![self tryToLoadDatabase]) {
-            OWSAnalyticsCritical(@"Could not load database (second attempt)");
+            OWSProdError(@"storage_error_could_not_load_database_second_attempt");
 
             [NSException raise:TSStorageManagerExceptionNameNoDatabase format:@"Failed to initialize database."];
         }
@@ -353,8 +353,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
         BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
         if (shouldHavePassword) {
-            OWSAnalyticsCriticalWithParameters(@"Could not retrieve database password from keychain",
-                @{ @"ErrorCode" : @(keyFetchError.code) });
+            OWSProdErrorWNSError(@"storage_error_could_not_load_database_second_attempt", keyFetchError);
         }
 
         // Try to reset app by deleting database.

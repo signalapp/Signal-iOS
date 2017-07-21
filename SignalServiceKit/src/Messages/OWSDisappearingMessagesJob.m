@@ -4,6 +4,7 @@
 
 #import "OWSDisappearingMessagesJob.h"
 #import "ContactsManagerProtocol.h"
+#import "NSDate+OWS.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NSTimer+OWS.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
@@ -300,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSTimeInterval)maxDelaySeconds
 {
     // Don't run less often than once per N minutes.
-    return 5 * 60.f;
+    return 5 * kMinuteInterval;
 }
 
 // Waits the maximum amount of time to run again.
