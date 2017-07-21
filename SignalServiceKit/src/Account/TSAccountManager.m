@@ -234,6 +234,11 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                                                                                forNumber:phoneNumber
                                                                             signalingKey:signalingKey
                                                                                  authKey:authToken];
+    void (^completedRegistrationBlock)() = ^{
+        [self didRegister];
+        [TSSocketManager requestSocketOpen];
+        successBlock();
+    };
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -244,10 +249,8 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                 case 200:
                 case 204: {
                     [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
-                    [self didRegister];
-                    [TSSocketManager requestSocketOpen];
                     [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
-                                                     success:successBlock
+                                                     success:completedRegistrationBlock
                                                      failure:failureBlock];
                     break;
                 }
