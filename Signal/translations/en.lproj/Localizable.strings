@@ -647,9 +647,6 @@
 "IN_CALL_SECURING" = "Answered. Securing…";
 
 /* Call setup status label */
-"IN_CALL_TALKING" = "Secured. Active.";
-
-/* Call setup status label */
 "IN_CALL_TERMINATED" = "Call Ended.";
 
 /* Label reminding the user that they are in archive mode. */
@@ -1509,3 +1506,20 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+
+// Strings Copied in from JSQMessagesViewController
+
+
+"load_earlier_messages" = "Load Earlier Messages";
+
+"send" = "Send";
+
+"new_message" = "New Message";
+
+"text_message_accessibility_label" = "%@: %@";
+
+"media_message_accessibility_label" = "%@: media message";
+
+"accessory_button_accessibility_label" = "Share media";
+
+"new_message_received_accessibility_announcement" = "New message received";
