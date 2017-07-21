@@ -111,7 +111,7 @@ PODS:
 DEPENDENCIES:
   - ATAppUpdater
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
-  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `signal-master`)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `mkirk/use-signal-localizations`)
   - PureLayout
   - Reachability
   - SignalServiceKit (from `https://github.com/WhisperSystems/SignalServiceKit.git`)
@@ -121,7 +121,7 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
-    :branch: signal-master
+    :branch: mkirk/use-signal-localizations
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
     :git: https://github.com/WhisperSystems/SignalServiceKit.git
@@ -133,7 +133,7 @@ CHECKOUT OPTIONS:
     :commit: 28afe5c1dbcfdea73d147e464c53d191d1e3ea50
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
-    :commit: 5d7a5f99f982d397cb10e852bceef5d055b80a3c
+    :commit: ef3bf46e9fb3a0e42485a60531cac49367aec82e
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
     :commit: d98c07ecffabc4b9ff3e328d241787abb0b5a48c
@@ -164,6 +164,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 17bcacfbce26a1e16900895aa1385168a1e842b7
+PODFILE CHECKSUM: 4801b8668d8319e0758a3bf8c6b96b7a318c89d8
 
 COCOAPODS: 1.2.1
