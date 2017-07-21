@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                           forState:UIControlStateNormal];
     backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [header addSubview:backButton];
-    [backButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [backButton autoPinLeadingToSuperViewWithMargin:10.f];
     [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
     [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -126,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     _phoneNumberLabel.font = [UIFont ows_regularFontWithSize:20.f];
     _phoneNumberLabel.numberOfLines = 2;
     _phoneNumberLabel.adjustsFontSizeToFitWidth = YES;
+    _phoneNumberLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneNumberLabel];
     [_phoneNumberLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(32)];
     [_phoneNumberLabel autoPinEdge:ALEdgeTop
@@ -180,8 +181,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_submitCodeSpinner autoVCenterInSuperview];
-    [_submitCodeSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
-    
+    [_submitCodeSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
+
     _sendCodeViaSMSAgainButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaSMSAgainButton.backgroundColor = [UIColor whiteColor];
     [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"button text during registration to request another SMS code be sent")
@@ -203,8 +204,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoVCenterInSuperview];
-    [_requestCodeAgainSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
-    
+    [_requestCodeAgainSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
+
     _sendCodeViaVoiceButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaVoiceButton.backgroundColor = [UIColor whiteColor];
     [_sendCodeViaVoiceButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIA_VOICE",
@@ -226,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCallSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCallSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCallSpinner autoVCenterInSuperview];
-    [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
+    [_requestCallSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
 }
 
 - (NSString *)phoneNumberText

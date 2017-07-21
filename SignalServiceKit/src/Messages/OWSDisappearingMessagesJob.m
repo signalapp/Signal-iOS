@@ -327,6 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSDateFormatter *dateFormatter = [NSDateFormatter new];
         dateFormatter.dateStyle = NSDateFormatterNoStyle;
         dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+        dateFormatter.locale = [NSLocale systemLocale];
 
         // Don't run more often than once per second.
         const NSTimeInterval kMinDelaySeconds = ignoreMinDelay ? 0.f : 1.f;

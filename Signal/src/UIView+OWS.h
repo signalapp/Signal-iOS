@@ -60,6 +60,37 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (void)centerOnSuperview;
 
+#pragma mark - RTL
+
+// For correct right-to-left layout behavior, use "leading" and "trailing",
+// not "left" and "right".
+//
+// These methods use layoutMarginsGuide anchors, which behave differently than
+// the PureLayout alternatives you indicated. Honoring layoutMargins is
+// particularly important in cell layouts, where it lets us align with the
+// complicated built-in behavior of table and collection view cells' default
+// contents.
+//
+// NOTE: the margin values are inverted in RTL layouts.
+- (BOOL)isRTL;
+- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview;
+- (NSLayoutConstraint *)autoPinLeadingToSuperView;
+- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToSuperView;
+- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
+// Return Right on LTR and Left on RTL.
+- (NSTextAlignment)textAlignmentUnnatural;
+// Leading and trailing anchors honor layout margins.
+// When using a UIView as a "div" to structure layout, we don't want it to have margins.
++ (UIView *)containerView;
+- (void)setHLayoutMargins:(CGFloat)value;
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color;

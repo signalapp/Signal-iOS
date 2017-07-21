@@ -356,7 +356,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "データベースを更新しています";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u日";
+"TIME_AMOUNT_DAYS" = "%u日";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終活動：%@";
@@ -635,7 +635,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "拒否中";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u時間";
+"TIME_AMOUNT_HOURS" = "%u時間";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "接続中";
@@ -803,7 +803,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "未読メッセージが上にまだあります。%@をタップして見て下さい。";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u分";
+"TIME_AMOUNT_MINUTES" = "%u分";
 
 /* notification title */
 "MISSED_CALL" = "不在着信";
@@ -1175,7 +1175,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "名前や電話番号で検索";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u秒";
+"TIME_AMOUNT_SECONDS" = "%u秒";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全なセッションがリセットされました。";
@@ -1352,16 +1352,16 @@
 "SHOW_THREAD_BUTTON_TITLE" = "会話を表示する";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u日";
+"TIME_AMOUNT_SINGLE_DAY" = "%u日";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u時間";
+"TIME_AMOUNT_SINGLE_HOUR" = "%u時間";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u分";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%u分";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u週間";
+"TIME_AMOUNT_SINGLE_WEEK" = "%u週間";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします。このリンクから入手してください：";
@@ -1499,7 +1499,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktopが設定を行っています";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u週間";
+"TIME_AMOUNT_WEEKS" = "%u週間";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "受信箱";

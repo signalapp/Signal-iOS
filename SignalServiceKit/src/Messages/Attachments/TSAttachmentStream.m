@@ -409,10 +409,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Ignore "invalid audio file" errors.
         return 0.f;
     }
-    OWSAssert(!error);
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
+        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
         return 0;
     }
 }

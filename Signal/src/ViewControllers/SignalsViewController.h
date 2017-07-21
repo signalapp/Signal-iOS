@@ -3,9 +3,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "InboxTableViewCell.h"
-#import "Contact.h"
-#import "TSGroupModel.h"
+
+@class TSThread;
 
 @interface SignalsViewController : UIViewController
 
@@ -16,9 +15,9 @@
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;
 
-- (NSNumber *)updateInboxCountLabel;
+- (void)updateInboxCountLabel;
 
-- (IBAction)composeNew;
+- (void)composeNew;
 
 - (void)presentTopLevelModalViewController:(UIViewController *)viewController
                           animateDismissal:(BOOL)animateDismissal

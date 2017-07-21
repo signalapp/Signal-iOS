@@ -54,24 +54,25 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 - (void)configureProgrammatically
 {
+    self.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
+
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
     _nameLabel = [UILabel new];
-    _nameLabel.contentMode = UIViewContentModeLeft;
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     [self.contentView addSubview:_nameLabel];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    [_avatarView autoPinLeadingToSuperView];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
-    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeRight];
-    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [_nameLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:_avatarView withOffset:12.f];
+    [_nameLabel autoVCenterInSuperview];
+    [_nameLabel autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
+    [_nameLabel autoPinTrailingToSuperView];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -166,37 +167,9 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     self.subtitle.attributedText = text;
     [self.subtitle sizeToFit];
     [self.contentView addSubview:self.subtitle];
-
-    [self setNeedsLayout];
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    [super setFrame:frame];
-
-    [self layoutSubviews];
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    [super setBounds:bounds];
-
-    [self layoutSubviews];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    if (self.subtitle) {
-        OWSAssert(self.nameLabel.superview == self.contentView);
-        const CGFloat kSubtitleVMargin
-            = ((self.contentView.height - self.nameLabel.font.lineHeight) * 0.5f - self.subtitle.height) * 0.5f;
-        self.subtitle.frame = CGRectMake(self.nameLabel.left,
-            round((self.contentView.height - self.subtitle.height) - kSubtitleVMargin),
-            self.subtitle.width,
-            self.subtitle.height);
-    }
+    [self.subtitle autoPinLeadingToView:self.nameLabel];
+    [self.subtitle autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.nameLabel];
+    [self.subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 - (void)prepareForReuse

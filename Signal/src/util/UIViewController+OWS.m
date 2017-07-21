@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,13 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(target);
     OWSAssert(selector);
 
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    BOOL isRTL = [backButton isRTL];
+
     // Nudge closer to the left edge to match default back button item.
-    const CGFloat kExtraLeftPadding = -8;
+    const CGFloat kExtraLeftPadding = isRTL ? +0 : -8;
 
     // Give some extra hit area to the back button. This is a little smaller
     // than the default back button, but makes sense for our left aligned title
     // view in the MessagesViewController
-    const CGFloat kExtraRightPadding = 10;
+    const CGFloat kExtraRightPadding = isRTL ? -0 : +10;
 
     // Extra hit area above/below
     const CGFloat kExtraHeightPadding = 4;
@@ -33,10 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
     // We can't just adjust the imageEdgeInsets on a UIBarButtonItem directly,
     // so we adjust the imageEdgeInsets on a UIButton, then wrap that
     // in a UIBarButtonItem.
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [backButton addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *backImage = [UIImage imageNamed:@"NavBarBack"];
+    UIImage *backImage = [UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")];
     OWSAssert(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
 

@@ -43,6 +43,15 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.superview];
 }
 
+- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview
+{
+    NSArray<NSLayoutConstraint *> *result = @[
+        [self autoPinLeadingToSuperView],
+        [self autoPinTrailingToSuperView],
+    ];
+    return result;
+}
+
 - (void)autoPinHeightToSuperviewWithMargin:(CGFloat)margin
 {
     [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview withOffset:+margin];
@@ -202,6 +211,110 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         round((self.superview.height - self.height) * 0.5f),
         self.width,
         self.height);
+}
+
+#pragma mark - RTL
+
+- (BOOL)isRTL
+{
+    return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
+        == UIUserInterfaceLayoutDirectionRightToLeft);
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToSuperView
+{
+    return [self autoPinLeadingToSuperViewWithMargin:0];
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
+{
+    NSLayoutConstraint *constraint =
+        [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToSuperView
+{
+    return [self autoPinTrailingToSuperViewWithMargin:0];
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
+{
+    NSLayoutConstraint *constraint =
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor constant:-margin];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
+{
+    OWSAssert(view);
+
+    return [self autoPinLeadingToTrailingOfView:view margin:0];
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view
+{
+    OWSAssert(view);
+
+    return [self autoPinLeadingToView:view margin:0];
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view
+{
+    OWSAssert(view);
+
+    return [self autoPinTrailingToView:view margin:0];
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+
+    NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSTextAlignment)textAlignmentUnnatural
+{
+    return (self.isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
+}
+
++ (UIView *)containerView
+{
+    UIView *view = [UIView new];
+    // Leading and trailing anchors honor layout margins.
+    // When using a UIView as a "div" to structure layout, we don't want it to have margins.
+    view.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+    return view;
+}
+
+- (void)setHLayoutMargins:(CGFloat)value
+{
+    UIEdgeInsets layoutMargins = self.layoutMargins;
+    layoutMargins.left = value;
+    layoutMargins.right = value;
+    self.layoutMargins = layoutMargins;
 }
 
 #pragma mark - Debugging

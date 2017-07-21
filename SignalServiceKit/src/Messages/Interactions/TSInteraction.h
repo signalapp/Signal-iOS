@@ -26,9 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Utility Method
 
-+ (NSString *)stringFromTimeStamp:(uint64_t)timestamp;
-+ (uint64_t)timeStampFromString:(NSString *)string;
-
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

@@ -356,7 +356,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u يوم";
+"TIME_AMOUNT_DAYS" = "%u يوم";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "آخر ظهور: %@";
@@ -635,7 +635,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "محظور";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u ساعات";
+"TIME_AMOUNT_HOURS" = "%u ساعات";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
@@ -803,7 +803,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u دقيقة";
+"TIME_AMOUNT_MINUTES" = "%u دقيقة";
 
 /* notification title */
 "MISSED_CALL" = "مكالمة فائتة";
@@ -1175,7 +1175,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "بحث باستخدام الاسم أو الرقم";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u ثانية";
+"TIME_AMOUNT_SECONDS" = "%u ثانية";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "لقد تم إعادة تعيين دورة الاتصال الآمنة";
@@ -1352,16 +1352,16 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u يوم";
+"TIME_AMOUNT_SINGLE_DAY" = "%u يوم";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u ساعة";
+"TIME_AMOUNT_SINGLE_HOUR" = "%u ساعة";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u دقيقة";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%u دقيقة";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u أسبوع";
+"TIME_AMOUNT_SINGLE_WEEK" = "%u أسبوع";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "أنا ادعُك لتثبيت تطبيق Signal، ها هو الرابط:";
@@ -1499,7 +1499,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u أسابيع";
+"TIME_AMOUNT_WEEKS" = "%u أسابيع";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "البريد الوارد";

@@ -755,7 +755,7 @@ typedef enum : NSUInteger {
                 [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
                                                @"Indicates that some members of this group has been blocked. Embeds "
                                                @"{{the number of blocked users in this group}}."),
-                          blockedGroupMemberCount];
+                          [ViewControllerUtils formatInt:blockedGroupMemberCount]];
         }
     }
 
@@ -771,7 +771,7 @@ typedef enum : NSUInteger {
     OWSAssert(title.length > 0);
     OWSAssert(bannerColor);
 
-    UIView *bannerView = [UIView new];
+    UIView *bannerView = [UIView containerView];
     bannerView.backgroundColor = bannerColor;
     bannerView.layer.cornerRadius = 2.5f;
 
@@ -794,7 +794,7 @@ typedef enum : NSUInteger {
     [bannerView addSubview:closeButton];
     const CGFloat kBannerCloseButtonPadding = 8.f;
     [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
-    [closeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kBannerCloseButtonPadding];
+    [closeButton autoPinTrailingToSuperViewWithMargin:kBannerCloseButtonPadding];
     [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
     [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
 
@@ -802,9 +802,9 @@ typedef enum : NSUInteger {
     [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
     [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
     const CGFloat kBannerHPadding = 15.f;
-    [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kBannerHPadding];
+    [label autoPinLeadingToSuperViewWithMargin:kBannerHPadding];
     const CGFloat kBannerHSpacing = 10.f;
-    [label autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:closeButton withOffset:-kBannerHSpacing];
+    [closeButton autoPinLeadingToTrailingOfView:label margin:kBannerHSpacing];
 
     [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
 
@@ -1079,8 +1079,12 @@ typedef enum : NSUInteger {
     // This method gets called multiple times, so it's important we re-layout the unread badge
     // with respect to the new backItem.
     [backItem.customView addSubview:_backButtonUnreadCountView];
+    // TODO: The back button assets are assymetrical.  There are strong reasons
+    // to use spacing in the assets to manipulate the size and positioning of
+    // bar button items, but it means we'll probably need separate RTL and LTR
+    // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:1];
+    [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
     [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];
     // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
     [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
@@ -1097,7 +1101,7 @@ typedef enum : NSUInteger {
 
     const CGFloat kTitleVSpacing = 0.f;
     if (!self.navigationBarTitleView) {
-        self.navigationBarTitleView = [UIView new];
+        self.navigationBarTitleView = [UIView containerView];
         [self.navigationBarTitleView
             addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                          action:@selector(navigationTitleTapped:)]];
@@ -1161,7 +1165,9 @@ typedef enum : NSUInteger {
             + kTitleVSpacing);
     self.navigationBarTitleLabel.frame
         = CGRectMake(0, 0, titleViewWidth, self.navigationBarTitleLabel.frame.size.height);
-    self.navigationBarSubtitleLabel.frame = CGRectMake(0,
+    self.navigationBarSubtitleLabel.frame = CGRectMake((self.view.isRTL ? self.navigationBarTitleView.frame.size.width
+                                                                   - self.navigationBarSubtitleLabel.frame.size.width
+                                                                        : 0),
         self.navigationBarTitleView.frame.size.height - self.navigationBarSubtitleLabel.frame.size.height,
         titleViewWidth,
         self.navigationBarSubtitleLabel.frame.size.height);
@@ -3900,7 +3906,7 @@ typedef enum : NSUInteger {
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [@(MIN(kMaxUnreadCount, unreadCount)) stringValue];
+    _backButtonUnreadCountLabel.text = [ViewControllerUtils formatInt:(int) MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions

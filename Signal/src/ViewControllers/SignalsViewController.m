@@ -19,6 +19,7 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -27,8 +28,6 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-
-#define CELL_HEIGHT 72.0f
 
 typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
@@ -201,6 +200,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    [self.tableView registerClass:[InboxTableViewCell class]
+           forCellReuseIdentifier:InboxTableViewCell.cellReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
@@ -270,34 +271,37 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateBarButtonItems {
     const CGFloat kBarButtonSize = 44;
-    if (YES) {
-        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-        // The contents of the navigation bar are cramped in this view.
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-        [button setImage:image
-                forState:UIControlStateNormal];
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // left inset tighten up the layout.
-        imageEdgeInsets.right = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        button.imageEdgeInsets = imageEdgeInsets;
-        button.accessibilityLabel = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
-        [button addTarget:self
-                   action:@selector(settingsButtonPressed:)
-             forControlEvents:UIControlEventTouchUpInside];
-        button.frame = CGRectMake(0, 0,
-                                  round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-                                  round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+    // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+    // The contents of the navigation bar are cramped in this view.
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+    [button setImage:image forState:UIControlStateNormal];
+    UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+    // We normally would want to use left and right insets that ensure the button
+    // is square and the icon is centered.  However UINavigationBar doesn't offer us
+    // control over the margins and spacing of its content, and the buttons end up
+    // too far apart and too far from the edge of the screen. So we use a smaller
+    // leading inset tighten up the layout.
+    CGFloat hInset = round((kBarButtonSize - image.size.width) * 0.5f);
+    if (self.view.isRTL) {
+        imageEdgeInsets.right = hInset;
+        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
+    } else {
+        imageEdgeInsets.left = hInset;
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
     }
+    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+    button.imageEdgeInsets = imageEdgeInsets;
+    button.accessibilityLabel
+        = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+    [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    button.frame = CGRectMake(0,
+        0,
+        round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+        round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
 - (void)settingsButtonPressed:(id)sender {
@@ -559,12 +563,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     InboxTableViewCell *cell =
-        [self.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([InboxTableViewCell class])];
-    TSThread *thread = [self threadForIndexPath:indexPath];
+        [self.tableView dequeueReusableCellWithIdentifier:InboxTableViewCell.cellReuseIdentifier];
+    OWSAssert(cell);
 
-    if (!cell) {
-        cell = [InboxTableViewCell inboxTableViewCell];
-    }
+    TSThread *thread = [self threadForIndexPath:indexPath];
 
     [cell configureWithThread:thread contactsManager:self.contactsManager blockedPhoneNumberSet:_blockedPhoneNumberSet];
 
@@ -586,7 +588,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return CELL_HEIGHT;
+    return InboxTableViewCell.rowHeight;
 }
 
 #pragma mark Table Swipe to Delete
@@ -697,21 +699,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self checkIfEmptyView];
 }
 
-- (NSNumber *)updateInboxCountLabel {
+- (void)updateInboxCountLabel
+{
     NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
-    NSNumber *badgeNumber    = [NSNumber numberWithUnsignedInteger:numberOfItems];
     NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
-    if (![badgeNumber isEqualToNumber:@0]) {
-        NSString *badgeValue = [badgeNumber stringValue];
-        unreadString         = [unreadString stringByAppendingFormat:@" (%@)", badgeValue];
+    if (numberOfItems > 0) {
+        unreadString =
+            [unreadString stringByAppendingFormat:@" (%@)", [ViewControllerUtils formatInt:(int)numberOfItems]];
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
     [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
-
-    return badgeNumber;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

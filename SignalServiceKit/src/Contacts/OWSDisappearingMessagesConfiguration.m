@@ -70,60 +70,61 @@ const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = 6
     uint32_t secondsPerWeek = secondsPerDay * 7;
 
     if (durationSeconds < secondsPerMinute) { // XX Seconds
-        amountFormat = NSLocalizedString(@"SECONDS_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_SECONDS",
             @"{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings");
         duration = durationSeconds;
     } else if (durationSeconds < secondsPerMinute * 1.5) { // 1 Minute
-        amountFormat = NSLocalizedString(@"SINGLE_MINUTE_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_MINUTE",
             @"{{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings");
         duration = durationSeconds / secondsPerMinute;
     } else if (durationSeconds < secondsPerHour) { // Multiple Minutes
-        amountFormat = NSLocalizedString(@"MINUTES_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_MINUTES",
             @"{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerMinute;
     } else if (durationSeconds < secondsPerHour * 1.5) { // 1 Hour
-        amountFormat = NSLocalizedString(@"SINGLE_HOUR_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_HOUR",
             @"{{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerHour;
     } else if (durationSeconds < secondsPerDay) { // Multiple Hours
-        amountFormat = NSLocalizedString(@"HOURS_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_HOURS",
             @"{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerHour;
     } else if (durationSeconds < secondsPerDay * 1.5) { // 1 Day
-        amountFormat = NSLocalizedString(@"SINGLE_DAY_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_DAY",
             @"{{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{1 day}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerDay;
     } else if (durationSeconds < secondsPerWeek) { // Multiple Days
-        amountFormat = NSLocalizedString(@"DAYS_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_DAYS",
             @"{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{5 days}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerDay;
     } else if (durationSeconds < secondsPerWeek * 1.5) { // 1 Week
-        amountFormat = NSLocalizedString(@"SINGLE_WEEK_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_WEEK",
             @"{{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{1 week}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerWeek;
     } else { // Multiple weeks
-        amountFormat = NSLocalizedString(@"WEEKS_TIME_AMOUNT",
+        amountFormat = NSLocalizedString(@"TIME_AMOUNT_WEEKS",
             @"{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages "
             @"expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings");
 
         duration = durationSeconds / secondsPerWeek;
     }
 
-    return [NSString stringWithFormat:amountFormat, duration];
+    return [NSString stringWithFormat:amountFormat, [NSNumberFormatter localizedStringFromNumber:@(duration)
+                                                                                     numberStyle:NSNumberFormatterNoStyle]];
 }
 
 + (NSArray<NSNumber *> *)validDurationsSeconds

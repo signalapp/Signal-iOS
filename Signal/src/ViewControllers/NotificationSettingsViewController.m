@@ -39,9 +39,8 @@
 
         NotificationType notifType = [prefs notificationPreviewType];
         NSString *detailString     = [prefs nameForNotificationPreviewType:notifType];
-
-        [[cell textLabel] setText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)];
-        [[cell detailTextLabel] setText:detailString];
+        cell.textLabel.text = NSLocalizedString(@"NOTIFICATIONS_SHOW", nil);
+        cell.detailTextLabel.text = detailString;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
 
         return cell;

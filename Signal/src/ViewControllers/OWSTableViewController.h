@@ -72,6 +72,10 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text;
+
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight;
+
 + (OWSTableItem *)labelItemWithText:(NSString *)text;
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText;

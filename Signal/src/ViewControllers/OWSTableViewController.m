@@ -127,13 +127,9 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                           customRowHeight:(CGFloat)customRowHeight
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customCellBlock);
     OWSAssert(customRowHeight > 0);
 
-    OWSTableItem *item = [OWSTableItem new];
-    item.itemType = (actionBlock != nil ? OWSTableItemTypeAction : OWSTableItemTypeDefault);
-    item.actionBlock = actionBlock;
-    item.customCellBlock = customCellBlock;
+    OWSTableItem *item = [self itemWithCustomCellBlock:customCellBlock actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
     return item;
 }
@@ -173,6 +169,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    OWSAssert(customRowHeight > 0);
+
     OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
     return item;
@@ -193,6 +191,38 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.textColor = [UIColor blackColor];
         return cell;
     };
+    return item;
+}
+
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text
+{
+    OWSAssert(text.length > 0);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        // These cells look quite different.
+        //
+        // Smaller font.
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
+        // Soft color.
+        cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        // Centered.
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        cell.userInteractionEnabled = NO;
+        return cell;
+    };
+    return item;
+}
+
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight
+{
+    OWSAssert(customRowHeight > 0);
+
+    OWSTableItem *item = [self softCenterLabelItemWithText:text];
+    item.customRowHeight = @(customRowHeight);
     return item;
 }
 

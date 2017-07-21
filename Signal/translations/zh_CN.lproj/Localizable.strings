@@ -356,7 +356,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "更新数据库";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u 天";
+"TIME_AMOUNT_DAYS" = "%u 天";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最新活动设备: %@";
@@ -635,7 +635,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u 小时";
+"TIME_AMOUNT_HOURS" = "%u 小时";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "链接中...";
@@ -803,7 +803,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u 分钟";
+"TIME_AMOUNT_MINUTES" = "%u 分钟";
 
 /* notification title */
 "MISSED_CALL" = "未接来电";
@@ -1175,7 +1175,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜索姓名或号码";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u 秒";
+"TIME_AMOUNT_SECONDS" = "%u 秒";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全会话被重置。";
@@ -1352,16 +1352,16 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u 天";
+"TIME_AMOUNT_SINGLE_DAY" = "%u 天";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u 小时";
+"TIME_AMOUNT_SINGLE_HOUR" = "%u 小时";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u 分钟";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%u 分钟";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u 周";
+"TIME_AMOUNT_SINGLE_WEEK" = "%u 周";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "请你下载Signal加密通讯软件！链接：";
@@ -1499,7 +1499,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal桌面版设置成功。";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u 周";
+"TIME_AMOUNT_WEEKS" = "%u 周";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "收件箱";

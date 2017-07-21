@@ -51,7 +51,6 @@
 		34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */; };
 		34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* FullImageViewController.m */; };
 		34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */; };
-		34B3F87F1E8DF1700035BE1A /* InboxTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F84B1E8DF1700035BE1A /* InboxTableViewCell.xib */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */; };
 		34B3F8821E8DF1700035BE1A /* MessageComposeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* MessageComposeTableViewController.m */; };
@@ -425,6 +424,7 @@
 		3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToGroupViewController.m; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC8F1F1400FF00B478F5 /* OWSAsserts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAsserts.swift; sourceTree = "<group>"; };
+		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3497DBEA1ECE257500DB2605 /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
 		3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCountryMetadata.m; sourceTree = "<group>"; };
 		3497DBED1ECE2E4700DB2605 /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
@@ -450,7 +450,6 @@
 		34B3F8481E8DF1700035BE1A /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
 		34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboxTableViewCell.h; sourceTree = "<group>"; };
 		34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InboxTableViewCell.m; sourceTree = "<group>"; };
-		34B3F84B1E8DF1700035BE1A /* InboxTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InboxTableViewCell.xib; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B3F84D1E8DF1700035BE1A /* LockInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockInteractionController.h; sourceTree = "<group>"; };
 		34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockInteractionController.m; sourceTree = "<group>"; };
@@ -965,7 +964,6 @@
 				34D5CCA81EAE3D30005515DB /* GroupViewHelper.m */,
 				34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */,
 				34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */,
-				34B3F84B1E8DF1700035BE1A /* InboxTableViewCell.xib */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				34B3F84D1E8DF1700035BE1A /* LockInteractionController.h */,
 				34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */,
@@ -1869,6 +1867,7 @@
 				sq,
 				bg,
 				Base,
+				ar,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -1907,7 +1906,6 @@
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
-				34B3F87F1E8DF1700035BE1A /* InboxTableViewCell.xib in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
@@ -2414,6 +2412,7 @@
 				454B35071D08EED80026D658 /* mk */,
 				4597E94E1D8313C100040CDE /* sq */,
 				4597E94F1D8313CB00040CDE /* bg */,
+				3495BC911F1426B800B478F5 /* ar */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
