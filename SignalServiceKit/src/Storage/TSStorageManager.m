@@ -353,7 +353,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
         BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
         if (shouldHavePassword) {
-            OWSProdErrorWNSError(@"storage_error_could_not_load_database_second_attempt", keyFetchError);
+            OWSProdError(@"storage_error_could_not_load_database_second_attempt");
         }
 
         // Try to reset app by deleting database.

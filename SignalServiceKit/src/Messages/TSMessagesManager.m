@@ -57,7 +57,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
 #define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
-    OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromEnvelope(__envelope))
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@",                                                                                    \
+            __PRETTY_FUNCTION__,                                                                                       \
+            __LINE__,                                                                                                  \
+            __analyticsEventName,                                                                                      \
+            [self descriptionForEnvelope:__envelope]);                                                                 \
+        OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromEnvelope(__envelope))                         \
+    }
 
 @interface TSMessagesManager ()
 

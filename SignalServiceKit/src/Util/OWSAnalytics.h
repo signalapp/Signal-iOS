@@ -67,8 +67,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 //
 // parametersBlock is of type OWSProdAssertParametersBlock.
 // The "C" variants (e.g. OWSProdAssert() vs. OWSProdCAssert() should be used in free functions,
-// where there is no self.
-//
+// where there is no self. They can also be used in blocks to avoid capturing a reference to self.
 #define OWSProdAssertWParamsTemplate(__value, __analyticsEventName, __parametersBlock, __assertMacro)                  \
     {                                                                                                                  \
         if (!(BOOL)(__value)) {                                                                                        \
@@ -134,10 +133,16 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
     }
 
 #define OWSProdFailWNSError(__analyticsEventName, __nserror)                                                           \
-    OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, error.debugDescription);      \
+        OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                            \
+    }
 
 #define OWSProdFailWNSException(__analyticsEventName, __exception)                                                     \
-    OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
+        OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))                      \
+    }
 
 #define OWSProdEventWParams(__severityLevel, __analyticsEventName, __parametersBlock)                                  \
     {                                                                                                                  \
@@ -163,9 +168,15 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 #define OWSProdCFail(__analyticsEventName) OWSProdCFailWParams(__analyticsEventName, nil)
 
 #define OWSProdErrorWNSError(__analyticsEventName, __nserror)                                                          \
-    OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, error.debugDescription);      \
+        OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                           \
+    }
 
 #define OWSProdErrorWNSException(__analyticsEventName, __exception)                                                    \
-    OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
+        OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))                     \
+    }
 
 NS_ASSUME_NONNULL_END
