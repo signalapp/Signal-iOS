@@ -134,7 +134,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdFailWNSError(__analyticsEventName, __nserror)                                                           \
     {                                                                                                                  \
-        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, error.debugDescription);      \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                            \
     }
 
@@ -169,7 +169,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdErrorWNSError(__analyticsEventName, __nserror)                                                          \
     {                                                                                                                  \
-        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, error.debugDescription);      \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                           \
     }
 

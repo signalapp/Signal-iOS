@@ -85,7 +85,11 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 - (nullable Class)unarchiver:(NSKeyedUnarchiver *)unarchiver cannotDecodeObjectOfClassName:(NSString *)name originalClasses:(NSArray<NSString *> *)classNames
 {
-    DDLogError(@"[OWSUnarchiverDelegate] Ignoring unknown class name: %@. Was the class definition deleted?", name);
+    OWSProdErrorWParams(@"storage_error_could_not_decode_class", ^{
+        return (@{
+            @"class_name" : name,
+        });
+    });
     return [OWSUnknownObject class];
 }
 
@@ -180,13 +184,14 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            DDLogError(@"%@ Unarchiving key:%@ from collection:%@ and data %@ failed with error: %@",
-                self.tag,
-                key,
-                collection,
-                data,
-                exception.reason);
-            DDLogError(@"%@ Raising exception.", self.tag);
+            OWSProdErrorWParams(@"storage_error_deserialization", ^{
+                return (@{
+                    @"collection" : collection,
+                    kOWSProdAssertParameterNSExceptionName : exception.name,
+                    kOWSProdAssertParameterNSExceptionReason : exception.reason,
+                    kOWSProdAssertParameterNSExceptionClassName : NSStringFromClass([exception class]),
+                });
+            });
             @throw exception;
         }
     };
@@ -255,7 +260,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     BOOL success        = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
-        DDLogError(@"Error while removing files from backup: %@", error.description);
+        OWSProdErrorWNSError(@"storage_error_file_protecion", error);
         return;
     }
 }
@@ -372,14 +377,14 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     NSError *keySetError;
     [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
     if (keySetError) {
-        DDLogError(@"%@ Setting DB password failed with error: %@", self.tag, keySetError);
+        OWSProdErrorWNSError(@"storage_error_could_not_store_database_password", keySetError);
 
         [self deletePasswordFromKeychain];
 
         [NSException raise:TSStorageManagerExceptionNameDatabasePasswordUnwritable
                     format:@"Setting DB password failed with error: %@", keySetError];
     } else {
-        DDLogError(@"Succesfully set new DB password.");
+        DDLogWarn(@"Succesfully set new DB password.");
     }
 
     return newDBPassword;
