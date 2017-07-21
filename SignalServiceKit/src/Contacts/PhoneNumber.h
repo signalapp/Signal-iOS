@@ -3,7 +3,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <libPhoneNumber-iOS/NBPhoneNumberUtil.h>
 
 #define COUNTRY_CODE_PREFIX @"+"
 
@@ -13,15 +12,8 @@
  * Everything that expects a valid phone number should take a PhoneNumber, not a string, to avoid stringly typing.
  *
  */
-@interface PhoneNumber : NSObject {
-   @private
-    NBPhoneNumber *phoneNumber;
-   @private
-    NSString *e164;
-}
+@interface PhoneNumber : NSObject
 
-+ (PhoneNumber *)phoneNumberFromText:(NSString *)text andRegion:(NSString *)regionCode;
-+ (PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text;
 + (PhoneNumber *)phoneNumberFromE164:(NSString *)text;
 
 + (PhoneNumber *)tryParsePhoneNumberFromText:(NSString *)text fromRegion:(NSString *)regionCode;

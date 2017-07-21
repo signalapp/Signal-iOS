@@ -5,9 +5,28 @@
 #import <XCTest/XCTest.h>
 #import "PhoneNumber.h"
 
+@interface NSArray (PhoneNumberTest)
+
+@end
+
+#pragma mark -
+
+@implementation NSArray (PhoneNumberTest)
+
+- (id)test_firstObject
+{
+    return (self.count > 0) ? self[0] : nil;
+}
+
+@end
+
+#pragma mark -
+
 @interface PhoneNumberTest : XCTestCase
 
 @end
+
+#pragma mark -
 
 @implementation PhoneNumberTest
 
@@ -57,6 +76,74 @@
 
     actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1-323-555-1234"];
     XCTAssertEqualObjects(@"+13235551234", [actual toE164]);
+}
+
+- (NSArray<NSString *> *)unpackTryParsePhoneNumbersFromsUserSpecifiedText:(NSString *)text
+                                                        clientPhoneNumber:(NSString *)clientPhoneNumber
+{
+    NSArray<PhoneNumber *> *phoneNumbers =
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:text clientPhoneNumber:clientPhoneNumber];
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (PhoneNumber *phoneNumber in phoneNumbers) {
+        [result addObject:phoneNumber.toE164];
+    }
+    return result;
+}
+
+- (void)testTryParsePhoneNumbersFromsUserSpecifiedText_SimpleUSA
+{
+    NSArray<NSString *> *parsed =
+        [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"323 555 1234" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
+    XCTAssertEqualObjects(parsed.test_firstObject, @"+13235551234");
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"323-555-1234" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
+    XCTAssertEqualObjects(parsed.test_firstObject, @"+13235551234");
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"323.555.1234" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
+    XCTAssertEqualObjects(parsed.test_firstObject, @"+13235551234");
+
+    parsed =
+        [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"1-323-555-1234" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
+    XCTAssertEqualObjects(parsed.test_firstObject, @"+13235551234");
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"+13235551234" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
+    XCTAssertEqualObjects(parsed.test_firstObject, @"+13235551234");
+}
+
+- (void)testTryParsePhoneNumbersFromsUserSpecifiedText_Mexico1
+{
+    NSArray<NSString *> *parsed =
+        [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"528341639157" clientPhoneNumber:@"+528341639144"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+528341639157"]);
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"8341639157" clientPhoneNumber:@"+528341639144"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+528341639157"]);
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"341639157" clientPhoneNumber:@"+528341639144"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    // The parsing logic should try adding Mexico's national prefix for cell numbers "1"
+    // after the country code.
+    XCTAssertTrue([parsed containsObject:@"+521341639157"]);
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"528341639157" clientPhoneNumber:@"+13213214321"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+528341639157"]);
+
+    parsed = [self unpackTryParsePhoneNumbersFromsUserSpecifiedText:@"13235551234" clientPhoneNumber:@"+528341639144"];
+    XCTAssertLessThanOrEqual(1, parsed.count);
+    XCTAssertTrue([parsed containsObject:@"+13235551234"]);
 }
 
 @end
