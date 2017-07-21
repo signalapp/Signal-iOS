@@ -72,17 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.timestamp;
 }
 
-+ (NSString *)stringFromTimeStamp:(uint64_t)timestamp {
-    return [[NSNumber numberWithUnsignedLongLong:timestamp] stringValue];
-}
-
-+ (uint64_t)timeStampFromString:(NSString *)string {
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterNoStyle];
-    NSNumber *myNumber = [f numberFromString:string];
-    return [myNumber unsignedLongLongValue];
-}
-
 - (NSDate *)dateForSorting
 {
     return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForSorting];
