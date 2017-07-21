@@ -48,6 +48,7 @@ PODS:
     - CocoaLumberjack
     - libPhoneNumber-iOS
     - Mantle
+    - Reachability
     - SAMKeychain
     - SocketRocket
     - TwistedOakCollapsingFutures
@@ -154,7 +155,7 @@ SPEC CHECKSUMS:
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 1865333198217411f35327e8da61b43de79b635b
-  SignalServiceKit: 0fa1aa668c13b51bca399ce970bc1f1d9297184b
+  SignalServiceKit: db63e60f9a9f851e9ae48214bee230be92bb7e57
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c

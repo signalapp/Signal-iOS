@@ -67,6 +67,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
@@ -100,7 +101,7 @@ static const int JSQ_TOOLBAR_ICON_HEIGHT = 22;
 static const int JSQ_TOOLBAR_ICON_WIDTH = 22;
 static const int JSQ_IMAGE_INSET = 5;
 
-static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * kMinuteInterval;
 
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 

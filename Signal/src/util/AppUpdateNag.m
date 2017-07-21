@@ -6,6 +6,7 @@
 #import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
 NSString *const TSStorageManagerAppUpgradeNagCollection = @"TSStorageManagerAppUpgradeNagCollection";
@@ -70,10 +71,7 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
     
     NSDate *lastNagDate = [[TSStorageManager sharedManager] dateForKey:TSStorageManagerAppUpgradeNagDate
                                                           inCollection:TSStorageManagerAppUpgradeNagCollection];
-    const NSTimeInterval kMinute = 60.f;
-    const NSTimeInterval kHour = 60 * kMinute;
-    const NSTimeInterval kDay = 24 * kHour;
-    const NSTimeInterval kNagFrequency = kDay * 14;
+    const NSTimeInterval kNagFrequency = kDayInterval * 14;
     BOOL canNag = (!lastNagDate || fabs(lastNagDate.timeIntervalSinceNow) > kNagFrequency);
     if (!canNag) {
         return;

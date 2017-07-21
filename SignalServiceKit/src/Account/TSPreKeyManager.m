@@ -3,6 +3,7 @@
 //
 
 #import "TSPreKeyManager.h"
+#import "NSDate+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
 #import "TSNetworkManager.h"
@@ -13,17 +14,17 @@
 // Time before deletion of signed prekeys (measured in seconds)
 //
 // Currently we retain signed prekeys for at least 7 days.
-static const CGFloat kSignedPreKeysDeletionTime = 7 * 24 * 60 * 60;
+static const NSTimeInterval kSignedPreKeysDeletionTime = 7 * kDayInterval;
 
 // Time before rotation of signed prekeys (measured in seconds)
 //
 // Currently we rotate signed prekeys every 2 days (48 hours).
-static const CGFloat kSignedPreKeyRotationTime = 2 * 24 * 60 * 60;
+static const NSTimeInterval kSignedPreKeyRotationTime = 2 * kDayInterval;
 
 // How often we check prekey state on app activation.
 //
 // Currently we check prekey state every 12 hours.
-static const CGFloat kPreKeyCheckFrequencySeconds = 12 * 60 * 60;
+static const NSTimeInterval kPreKeyCheckFrequencySeconds = 12 * kHourInterval;
 
 // We generate 100 one-time prekeys at a time.  We should replenish
 // whenever ~2/3 of them have been consumed.
@@ -40,7 +41,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 // before the message sending is disabled.
 //
 // Current value is 10 days (240 hours).
-static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60 * 60;
+static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * kDayInterval;
 
 #pragma mark -
 
@@ -180,7 +181,11 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                 [TSPreKeyManager clearPreKeyUpdateFailureCount];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                OWSAnalyticsError(@"Prekey update failed (%@): %@", description, error);
+                if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
+                    OWSProdErrorWNSError(@"error_prekeys_update_failed_signed_and_onetime", error);
+                } else {
+                    OWSProdErrorWNSError(@"error_prekeys_update_failed_just_signed", error);
+                }
 
                 // Mark the prekeys as _NOT_ checked on failure.
                 [self markPreKeysAsNotChecked];
@@ -388,10 +393,12 @@ static const CGFloat kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 24 * 60
                 }
             }
 
-            OWSAnalyticsInfo(@"%@ Deleting old signed prekey: %@, wasAcceptedByService: %d",
-                self.tag,
-                [dateFormatter stringFromDate:signedPrekey.generatedAt],
-                signedPrekey.wasAcceptedByService);
+            OWSProdInfoWParams(@"prekeys_deleted_old_signed_prekey", ^{
+                return (@{
+                    @"generated" : [dateFormatter stringFromDate:signedPrekey.generatedAt],
+                    @"accepted" : @(signedPrekey.wasAcceptedByService),
+                });
+            });
 
             oldSignedPreKeyCount--;
             [storageManager removeSignedPreKey:signedPrekey.Id];

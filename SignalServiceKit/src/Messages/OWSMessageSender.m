@@ -836,7 +836,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     AssertIsOnSendingQueue();
 
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
-        OWSAnalyticsError(@"Message send failed due to prekey update failures");
+        OWSProdError(@"message_send_error_failed_due_to_prekey_update_failures");
 
         // Retry prekey update every time user tries to send a message while app
         // is disabled due to prekey update failures.
@@ -878,7 +878,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
-            OWSAnalyticsInfo(@"Message send failed due to untrusted key.");
+            OWSProdInfo(@"message_send_error_failed_due_to_untrusted_key");
 
             NSString *localizedErrorDescriptionFormat
                 = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",

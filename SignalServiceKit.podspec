@@ -42,4 +42,5 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'SAMKeychain'
   s.dependency 'TwistedOakCollapsingFutures'
+  s.dependency 'Reachability'
 end

@@ -1,11 +1,14 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDisappearingMessagesConfiguration.h"
+#import "NSDate+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = 60 * 60 * 24; // 1 day.
+// 1 day.
+const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = kDayInterval;
 
 @interface OWSDisappearingMessagesConfiguration ()
 
