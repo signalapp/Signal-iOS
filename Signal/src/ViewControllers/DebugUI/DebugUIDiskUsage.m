@@ -5,6 +5,7 @@
 #import "DebugUIDiskUsage.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSOrphanedDataCleaner.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSInteraction.h>
@@ -85,11 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteOldMessages_3Months
 {
-    NSTimeInterval kMinute = 60.f;
-    NSTimeInterval kHour = 60 * kMinute;
-    NSTimeInterval kDay = 24 * kHour;
-    NSTimeInterval kMonth = 30 * kDay;
-    [self deleteOldMessages:kMonth * 3];
+    [self deleteOldMessages:kMonthInterval * 3];
 }
 
 + (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds

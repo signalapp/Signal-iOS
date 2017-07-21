@@ -4,6 +4,7 @@
 
 #import "DebugLogger.h"
 #import "OWSScrubbingLogFormatter.h"
+#import <SignalServiceKit/NSDate+OWS.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 
@@ -29,7 +30,7 @@
     // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
     self.fileLogger = [DDFileLogger new];
     // 24 hour rolling.
-    self.fileLogger.rollingFrequency = 60 * 60 * 24;
+    self.fileLogger.rollingFrequency = kDayInterval;
     // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
     self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;
     // Raise the max file size per log file to 3 MB.

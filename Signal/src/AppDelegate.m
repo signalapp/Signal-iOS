@@ -159,6 +159,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
+    [OWSAnalytics appLaunchDidBegin];
+
     return YES;
 }
 
@@ -794,6 +796,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
+    [OWSAnalytics appLaunchDidComplete];
     [AppVersion.instance appLaunchDidComplete];
 
     [self ensureRootViewController];
