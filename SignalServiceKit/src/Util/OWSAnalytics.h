@@ -56,6 +56,9 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 #define kOWSProdAssertParameterNSErrorDomain @"nserror_domain"
 #define kOWSProdAssertParameterNSErrorCode @"nserror_code"
 #define kOWSProdAssertParameterNSErrorDescription @"nserror_description"
+#define kOWSProdAssertParameterNSExceptionName @"nsexception_name"
+#define kOWSProdAssertParameterNSExceptionReason @"nsexception_reason"
+#define kOWSProdAssertParameterNSExceptionClassName @"nsexception_classname"
 
 // These methods should be used to assert errors for which we want to fire analytics events.
 //
@@ -121,8 +124,20 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
         });                                                                                                            \
     }
 
+#define AnalyticsParametersFromNSException(__exception)                                                                \
+    ^{                                                                                                                 \
+        return (@{                                                                                                     \
+            kOWSProdAssertParameterNSExceptionName : __exception.name,                                                 \
+            kOWSProdAssertParameterNSExceptionReason : __exception.reason,                                             \
+            kOWSProdAssertParameterNSExceptionClassName : NSStringFromClass([__exception class]),                      \
+        });                                                                                                            \
+    }
+
 #define OWSProdFailWNSError(__analyticsEventName, __nserror)                                                           \
     OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))
+
+#define OWSProdFailWNSException(__analyticsEventName, __exception)                                                     \
+    OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))
 
 #define OWSProdEventWParams(__severityLevel, __analyticsEventName, __parametersBlock)                                  \
     {                                                                                                                  \
@@ -149,5 +164,8 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdErrorWNSError(__analyticsEventName, __nserror)                                                          \
     OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))
+
+#define OWSProdErrorWNSException(__analyticsEventName, __exception)                                                    \
+    OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))
 
 NS_ASSUME_NONNULL_END

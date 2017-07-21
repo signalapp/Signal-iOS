@@ -42,6 +42,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define kOWSProdAssertParameterEnvelopeIsLegacy @"envelope_is_legacy"
+#define kOWSProdAssertParameterEnvelopeDescription @"envelope_description"
+#define kOWSProdAssertParameterEnvelopeEncryptedLength @"encrypted_length"
+
+#define AnalyticsParametersFromEnvelope(__envelope)                                                                    \
+    ^{                                                                                                                 \
+        NSData *__encryptedData = __envelope.hasContent ? __envelope.content : __envelope.legacyMessage;               \
+        return (@{                                                                                                     \
+            kOWSProdAssertParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                  \
+            kOWSProdAssertParameterEnvelopeDescription : [self descriptionForEnvelopeType:__envelope],                 \
+            kOWSProdAssertParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                \
+        });                                                                                                            \
+    }
+
+#define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
+    OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromEnvelope(__envelope))
+
 @interface TSMessagesManager ()
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
@@ -135,39 +152,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Debugging
 
+- (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope
+{
+    OWSAssert(envelope != nil);
+    switch (envelope.type) {
+        case OWSSignalServiceProtosEnvelopeTypeReceipt:
+            return @"DeliveryReceipt";
+        case OWSSignalServiceProtosEnvelopeTypeUnknown:
+            // Shouldn't happen
+            OWSProdFail(@"message_manager_error_envelope_type_unknown");
+            return @"Unknown";
+        case OWSSignalServiceProtosEnvelopeTypeCiphertext:
+            return @"SignalEncryptedMessage";
+        case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
+            // Unsupported
+            OWSProdFail(@"message_manager_error_envelope_type_key_exchange");
+            return @"KeyExchange";
+        case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
+            return @"PreKeyEncryptedMessage";
+        default:
+            // Shouldn't happen
+            OWSProdFail(@"message_manager_error_envelope_type_other");
+            return @"Other";
+    }
+}
+
 - (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
-    NSString *envelopeType;
-    switch (envelope.type) {
-        case OWSSignalServiceProtosEnvelopeTypeReceipt:
-            envelopeType = @"DeliveryReceipt";
-            break;
-        case OWSSignalServiceProtosEnvelopeTypeUnknown:
-            // Shouldn't happen
-            OWSAssert(NO);
-            envelopeType = @"Unknown";
-            break;
-        case OWSSignalServiceProtosEnvelopeTypeCiphertext:
-            envelopeType = @"SignalEncryptedMessage";
-            break;
-        case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
-            // Unsupported
-            OWSAssert(NO);
-            envelopeType = @"KeyExchange";
-            break;
-        case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
-            envelopeType = @"PreKeyEncryptedMessage";
-            break;
-        default:
-            // Shouldn't happen
-            OWSAssert(NO);
-            envelopeType = @"Other";
-            break;
-    }
 
     return [NSString stringWithFormat:@"<Envelope type: %@, source: %@.%d, timestamp: %llu content.length: %lu />",
-                     envelopeType,
+                     [self descriptionForEnvelopeType:envelope],
                      envelope.source,
                      (unsigned int)envelope.sourceDevice,
                      envelope.timestamp,
@@ -189,7 +204,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (content.hasNullMessage) {
         return [NSString stringWithFormat:@"<NullMessage: %@ />", content.nullMessage];
     } else {
-        OWSAssert(NO);
+        // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
+        // analytics traffic.
+        OWSFail(@"Unknown content type.");
         return @"UnknownContent";
     }
 }
@@ -233,9 +250,11 @@ NS_ASSUME_NONNULL_BEGIN
             [description appendString:@"ContactRequest"];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             [description appendString:@"GroupRequest"];
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
+            [description appendString:@"BlockedRequest"];
         } else {
             // Shouldn't happen
-            OWSAssert(NO);
+            OWSFail(@"Unknown sync message request type");
             [description appendString:@"UnknownRequest"];
         }
     } else if (syncMessage.hasBlocked) {
@@ -248,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
         [description appendString:verifiedString];
     } else {
         // Shouldn't happen
-        OWSAssert(NO);
+        OWSFail(@"Unknown sync message type");
         [description appendString:@"Unknown"];
     }
 
@@ -295,6 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 envelope.source,
                                                 (unsigned int)envelope.sourceDevice,
                                                 error);
+                                            OWSProdError(@"message_manager_error_could_not_handle_secure_message");
                                         }
                                         completion();
                                     }];
@@ -312,6 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                envelope.source,
                                                (unsigned int)envelope.sourceDevice,
                                                error);
+                                           OWSProdError(@"message_manager_error_could_not_handle_prekey_bundle");
                                        }
                                        completion();
                                    }];
@@ -336,6 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } @catch (NSException *exception) {
         DDLogError(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
+        OWSProdFailWNSException(@"message_manager_error_invalid_protocol_message", exception);
     }
 
     completion();
@@ -367,15 +389,18 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *encryptedData
                 = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
             if (!encryptedData) {
-                DDLogError(@"Skipping message envelope which had no encrypted data.");
+                OWSProdFail(@"message_manager_error_message_envelope_has_no_content");
                 completion(nil);
                 return;
             }
 
             NSUInteger kMaxEncryptedDataLength = 250 * 1024;
             if (encryptedData.length > kMaxEncryptedDataLength) {
-                DDLogError(@"Skipping message envelope with oversize encrypted data: %lu.",
-                    (unsigned long)encryptedData.length);
+                OWSProdErrorWParams(@"message_manager_error_oversize_message", ^{
+                    return (@{
+                        @"message_size" : @(encryptedData.length),
+                    });
+                });
                 completion(nil);
                 return;
             }
@@ -424,7 +449,7 @@ NS_ASSUME_NONNULL_BEGIN
         // DEPRECATED - Remove after all clients have been upgraded.
         NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
         if (!encryptedData) {
-            DDLogError(@"Skipping message envelope which had no encrypted data");
+            OWSProdFail(@"message_manager_error_prekey_bundle_envelope_has_no_content");
             completion(nil);
             return;
         }
@@ -816,7 +841,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
     if (!groupId) {
-        OWSAssert(groupId);
+        OWSFail(@"Group info request is missing group id.");
         return;
     }
 
@@ -1009,24 +1034,30 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSErrorMessage *errorMessage;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if ([exception.name isEqualToString:NoSessionException]) {
+          OWSProdErrorWEnvelope(@"message_manager_error_no_session", envelope);
           errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyException]) {
+          OWSProdErrorWEnvelope(@"message_manager_error_invalid_key", envelope);
           errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
+          OWSProdErrorWEnvelope(@"message_manager_error_invalid_key_id", envelope);
           errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:DuplicateMessageException]) {
           // Duplicate messages are dismissed
           return;
       } else if ([exception.name isEqualToString:InvalidVersionException]) {
+          OWSProdErrorWEnvelope(@"message_manager_error_invalid_message_version", envelope);
           errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
           // Should no longer get here, since we now record the new identity for incoming messages.
+          OWSProdErrorWEnvelope(@"message_manager_error_untrusted_identity_key_exception", envelope);
           OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
               self.tag,
               envelope.source,
               envelope.sourceDevice);
           return;
       } else {
+          OWSProdErrorWEnvelope(@"message_manager_error_corrupt_message", envelope);
           errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
       }
 
