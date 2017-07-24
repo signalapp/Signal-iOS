@@ -4,7 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TSMessageAdapter.h"
 #import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
@@ -15,6 +14,7 @@
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "OWSDatabaseMigration.h"
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
 #import "OWSProgressView.h"
@@ -24,6 +24,7 @@
 #import "PushManager.h"
 #import "SettingsTableViewController.h"
 #import "SignalsViewController.h"
+#import "TSMessageAdapter.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
@@ -77,6 +78,7 @@
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>

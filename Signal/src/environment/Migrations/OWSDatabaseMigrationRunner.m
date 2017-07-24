@@ -8,6 +8,7 @@
 #import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
 #import "OWS105AttachmentFilePaths.h"
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
         // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
-        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager]
+        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager],
+        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:self.storageManager]
     ];
 }
 
