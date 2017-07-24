@@ -9,6 +9,8 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
     let TAG = "[OWS106EnsureProfileComplete]"
 
+    private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
+
     // increment a similar constant for each migration.
     class func migrationId() -> String {
         return "106"
@@ -17,10 +19,19 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
     override func runUp() {
-        CompleteRegistrationFixerJob(completionHandler: {
+        guard type(of: self).sharedCompleteRegistrationFixerJob == nil else {
+            owsFail("\(self.TAG) should only be called once.")
+            return
+        }
+
+        let job = CompleteRegistrationFixerJob(completionHandler: {
             Logger.info("\(self.TAG) Completed. Saving.")
             self.save()
-        }).start()
+        })
+
+        type(of: self).sharedCompleteRegistrationFixerJob = job
+
+        job.start()
     }
 
     /**
@@ -38,14 +49,14 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         var timer: Timer?
         let completionHandler: () -> Void
 
-        init (completionHandler: @escaping () -> Void) {
+        init(completionHandler: @escaping () -> Void) {
             self.completionHandler = completionHandler
         }
 
         func start() {
             assert(self.timer == nil)
 
-            let timer = WeakTimer.scheduledTimer(timeInterval: CompleteRegistrationFixerJob.kRetryInterval, target: self, userInfo: nil, repeats: true) { [weak self] timer in
+            let timer = WeakTimer.scheduledTimer(timeInterval: CompleteRegistrationFixerJob.kRetryInterval, target: self, userInfo: nil, repeats: true) { [weak self] aTimer in
                 guard let strongSelf = self else {
                     return
                 }
@@ -58,7 +69,7 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     }
                     Logger.info("\(strongSelf.TAG) complete. Canceling timer and saving.")
                     isCompleted = true
-                    timer.invalidate()
+                    aTimer.invalidate()
                     strongSelf.completionHandler()
                 }.catch { error in
                     Logger.error("\(strongSelf.TAG) failed with \(error). We'll try again in \(CompleteRegistrationFixerJob.kRetryInterval) seconds.")
