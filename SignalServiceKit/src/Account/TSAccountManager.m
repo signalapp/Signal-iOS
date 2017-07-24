@@ -159,6 +159,9 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                                                         failure:failureHandler
                                                remainingRetries:remainingRetries - 1];
             } else {
+                if (!IsNSErrorNetworkFailure(error)) {
+                    OWSProdErrorWNSError(@"accounts_error_register_push_tokens_failed", error);
+                }
                 failureHandler(error);
             }
         }];
@@ -180,7 +183,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
     // we make our verification code request.
     TSAccountManager *manager = [self sharedInstance];
     manager.phoneNumberAwaitingVerification = phoneNumber;
-    
+
     [[TSNetworkManager sharedManager]
         makeRequest:[[TSRequestVerificationCodeRequest alloc]
                         initWithPhoneNumber:phoneNumber
@@ -193,6 +196,9 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
             successBlock();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"accounts_error_verification_code_request_failed", error);
+            }
             DDLogError(@"%@ Failed to request verification code request with error:%@", self.tag, error);
             failureBlock(error);
         }];
@@ -263,6 +269,9 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"accounts_error_verify_account_request_failed", error);
+            }
             DDLogWarn(@"%@ Error verifying code: %@", self.tag, error.debugDescription);
             switch (error.code) {
                 case 403: {
@@ -316,6 +325,9 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                                                               userInfo:nil];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"accounts_error_unregister_account_request_failed", error);
+            }
             DDLogError(@"%@ Failed to unregister with error: %@", self.tag, error);
             failureBlock(error);
         }];

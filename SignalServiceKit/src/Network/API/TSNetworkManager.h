@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSNetworkManagerDomain;
 
+BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
+
 @interface TSNetworkManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -166,45 +166,49 @@ NS_ASSUME_NONNULL_BEGIN
       TSRequest *request = [[TSContactsIntersectionRequest alloc] initWithHashesArray:hashes];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *tsTask, id responseDict) {
-            NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
-            NSArray *contactsArray                       = [(NSDictionary *)responseDict objectForKey:@"contacts"];
+              NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
+              NSArray *contactsArray = [(NSDictionary *)responseDict objectForKey:@"contacts"];
 
-            // Map attributes to phone numbers
-            if (contactsArray) {
-                for (NSDictionary *dict in contactsArray) {
-                    NSString *hash       = [dict objectForKey:@"token"];
-                    NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
+              // Map attributes to phone numbers
+              if (contactsArray) {
+                  for (NSDictionary *dict in contactsArray) {
+                      NSString *hash = [dict objectForKey:@"token"];
+                      NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
 
-                    if (!identifier) {
-                        DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.tag);
-                        break;
-                    }
+                      if (!identifier) {
+                          DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.tag);
+                          break;
+                      }
 
-                    [attributesForIdentifier setObject:dict forKey:identifier];
-                }
-            }
+                      [attributesForIdentifier setObject:dict forKey:identifier];
+                  }
+              }
 
-            // Insert or update contact attributes
-            [[TSStorageManager sharedManager].dbReadWriteConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    for (NSString *identifier in attributesForIdentifier) {
-                        SignalRecipient *recipient =
-                            [SignalRecipient recipientWithTextSecureIdentifier:identifier withTransaction:transaction];
-                        if (!recipient) {
-                            recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil];
-                        }
+              // Insert or update contact attributes
+              [[TSStorageManager sharedManager].dbReadWriteConnection
+                  readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                      for (NSString *identifier in attributesForIdentifier) {
+                          SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier
+                                                                                          withTransaction:transaction];
+                          if (!recipient) {
+                              recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil];
+                          }
 
-                        NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
+                          NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
 
-                        recipient.relay = attributes[@"relay"];
+                          recipient.relay = attributes[@"relay"];
 
-                        [recipient saveWithTransaction:transaction];
-                    }
-                }];
+                          [recipient saveWithTransaction:transaction];
+                      }
+                  }];
 
-            success([NSSet setWithArray:attributesForIdentifier.allKeys]);
+              success([NSSet setWithArray:attributesForIdentifier.allKeys]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
+              if (!IsNSErrorNetworkFailure(error)) {
+                  OWSProdErrorWNSError(@"contacts_error_contacts_intersection_failed", error);
+              }
+
               NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
               if (response.statusCode == 413) {
                   failure(OWSErrorWithCodeDescription(

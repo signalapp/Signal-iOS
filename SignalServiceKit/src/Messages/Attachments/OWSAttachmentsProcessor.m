@@ -143,67 +143,68 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:attachment.serverId relay:attachment.relay];
 
     [self.networkManager makeRequest:attachmentRequest
-                             success:^(NSURLSessionDataTask *task, id responseObject) {
-                                 if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                                     DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.",
-                                         self.tag);
-                                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                                     return markAndHandleFailure(error);
-                                 }
-                                 NSString *location = [(NSDictionary *)responseObject objectForKey:@"location"];
-                                 if (!location) {
-                                     DDLogError(
-                                         @"%@ Failed retrieval of attachment. Response had no location.", self.tag);
-                                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                                     return markAndHandleFailure(error);
-                                 }
+        success:^(NSURLSessionDataTask *task, id responseObject) {
+            if (![responseObject isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
+                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                return markAndHandleFailure(error);
+            }
+            NSString *location = [(NSDictionary *)responseObject objectForKey:@"location"];
+            if (!location) {
+                DDLogError(@"%@ Failed retrieval of attachment. Response had no location.", self.tag);
+                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                return markAndHandleFailure(error);
+            }
 
-                                 dispatch_async([OWSDispatch attachmentsQueue], ^{
-                                     [self downloadFromLocation:location
-                                         pointer:attachment
-                                         success:^(NSData *_Nonnull encryptedData) {
-                                             [self decryptAttachmentData:encryptedData
-                                                                 pointer:attachment
-                                                                 success:markAndHandleSuccess
-                                                                 failure:markAndHandleFailure];
-                                         }
-                                         failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
-                                             if (attachment.serverId < 100) {
-                                                 // This looks like the symptom of the "frequent 404
-                                                 // downloading attachments with low server ids".
-                                                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                                                 NSInteger statusCode = [httpResponse statusCode];
-                                                 DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
-                                                     self.tag,
-                                                     (int)statusCode,
-                                                     (unsigned long long)attachment.serverId,
-                                                     error);
-                                                 [DDLog flushLog];
-                                                 OWSAssert(0);
-                                             }
-                                             if (markAndHandleFailure) {
-                                                 markAndHandleFailure(error);
-                                             }
-                                         }];
-                                 });
-                             }
-                             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                 DDLogError(@"Failed retrieval of attachment with error: %@", error);
-                                 if (attachment.serverId < 100) {
-                                     // This _shouldn't_ be the symptom of the "frequent 404
-                                     // downloading attachments with low server ids".
-                                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                                     NSInteger statusCode = [httpResponse statusCode];
-                                     DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
-                                         self.tag,
-                                         (int)statusCode,
-                                         (unsigned long long)attachment.serverId,
-                                         error);
-                                     [DDLog flushLog];
-                                     OWSAssert(0);
-                                 }
-                                 return markAndHandleFailure(error);
-                             }];
+            dispatch_async([OWSDispatch attachmentsQueue], ^{
+                [self downloadFromLocation:location
+                    pointer:attachment
+                    success:^(NSData *_Nonnull encryptedData) {
+                        [self decryptAttachmentData:encryptedData
+                                            pointer:attachment
+                                            success:markAndHandleSuccess
+                                            failure:markAndHandleFailure];
+                    }
+                    failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+                        if (attachment.serverId < 100) {
+                            // This looks like the symptom of the "frequent 404
+                            // downloading attachments with low server ids".
+                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                            NSInteger statusCode = [httpResponse statusCode];
+                            DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                                self.tag,
+                                (int)statusCode,
+                                (unsigned long long)attachment.serverId,
+                                error);
+                            [DDLog flushLog];
+                            OWSAssert(0);
+                        }
+                        if (markAndHandleFailure) {
+                            markAndHandleFailure(error);
+                        }
+                    }];
+            });
+        }
+        failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_attachment_request_failed", error);
+            }
+            DDLogError(@"Failed retrieval of attachment with error: %@", error);
+            if (attachment.serverId < 100) {
+                // This _shouldn't_ be the symptom of the "frequent 404
+                // downloading attachments with low server ids".
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                NSInteger statusCode = [httpResponse statusCode];
+                DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                    self.tag,
+                    (int)statusCode,
+                    (unsigned long long)attachment.serverId,
+                    error);
+                [DDLog flushLog];
+                OWSAssert(0);
+            }
+            return markAndHandleFailure(error);
+        }];
 }
 
 - (void)decryptAttachmentData:(NSData *)cipherText
