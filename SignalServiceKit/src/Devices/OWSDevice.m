@@ -88,8 +88,8 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
                     }
                 }
                 *success = NO;
-                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson,
-                    [NSString stringWithFormat:@"unable to decode date from %@", value]);
+                DDLogError(@"%@ unable to decode date from %@", self.tag, value);
+                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from %@");
                 return nil;
             }
                 reverseBlock:^id(id value, BOOL *success, NSError **error) {
@@ -101,8 +101,8 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
                             return result;
                         }
                     }
-                    *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson,
-                        [NSString stringWithFormat:@"unable to encode date from %@", value]);
+                    DDLogError(@"%@ unable to encode date from %@", self.tag, value);
+                    *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date");
                     *success = NO;
                     return nil;
                 }];
@@ -176,6 +176,18 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
 - (BOOL)isEqualToDevice:(OWSDevice *)device
 {
     return self.deviceId == device.deviceId;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

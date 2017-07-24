@@ -124,15 +124,15 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
 - (void)tryToSyncEvents
 {
-    // Don't try to sync if:
-    //
-    // * There's no network available.
-    // * There's already a sync request in flight.
-    if (!self.reachability.isReachable || self.hasRequestInFlight) {
-        return;
-    }
-
     dispatch_async(self.serialQueue, ^{
+        // Don't try to sync if:
+        //
+        // * There's no network available.
+        // * There's already a sync request in flight.
+        if (!self.reachability.isReachable || self.hasRequestInFlight) {
+            return;
+        }
+
         __block NSString *firstEventKey = nil;
         __block NSDictionary *firstEventDictionary = nil;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -157,6 +157,14 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
         DDLogDebug(@"%@ trying to deliver event: %@", self.tag, firstEventKey);
         self.hasRequestInFlight = YES;
+
+        __block UIBackgroundTaskIdentifier task;
+        task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            self.hasRequestInFlight = NO;
+
+            [UIApplication.sharedApplication endBackgroundTask:task];
+        }];
+
         // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
         dispatch_async(dispatch_get_main_queue(), ^{
             self.hasRequestInFlight = NO;
@@ -168,6 +176,8 @@ const int kOWSAnalytics_DiscardFrequency = 0;
                     [transaction removeObjectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
                 }];
             }
+
+            [UIApplication.sharedApplication endBackgroundTask:task];
 
             // Wait a second between network requests / retries.
             dispatch_after(
@@ -223,7 +233,7 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     return (long)round(pow(10, floor(log10(value))));
 }
 
-- (void)addEvent:(NSString *)eventName properties:(NSDictionary *)properties
+- (void)addEvent:(NSString *)eventName async:(BOOL)async properties:(NSDictionary *)properties
 {
     OWSAssert(eventName.length > 0);
 
@@ -234,7 +244,7 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     }
 
 #ifndef NO_SIGNAL_ANALYTICS
-    dispatch_async(self.serialQueue, ^{
+    void (^writeEvent)() = ^{
         // Add super properties.
         NSMutableDictionary *eventProperties = (properties ? [properties mutableCopy] : [NSMutableDictionary new]);
         [eventProperties addEntriesFromDictionary:self.eventSuperProperties];
@@ -250,12 +260,18 @@ const int kOWSAnalytics_DiscardFrequency = 0;
                 DDLogError(@"%@ Event queue overflow.", self.tag);
                 return;
             }
-
+            
             [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
         }];
 
         [self tryToSyncEvents];
-    });
+    };
+
+    if (async) {
+        dispatch_async(self.serialQueue, writeEvent);
+    } else {
+        dispatch_sync(self.serialQueue, writeEvent);
+    }
 #endif
 }
 
@@ -277,18 +293,11 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     DDLogFlag logFlag;
     BOOL async = YES;
     switch (severity) {
-        case OWSAnalyticsSeverityDebug:
-            logFlag = DDLogFlagDebug;
-            break;
         case OWSAnalyticsSeverityInfo:
             logFlag = DDLogFlagInfo;
             break;
-        case OWSAnalyticsSeverityWarn:
-            logFlag = DDLogFlagWarning;
-            break;
         case OWSAnalyticsSeverityError:
             logFlag = DDLogFlagError;
-            async = NO;
             break;
         case OWSAnalyticsSeverityCritical:
             logFlag = DDLogFlagError;
@@ -313,7 +322,7 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
     NSMutableDictionary *eventProperties = (parameters ? [parameters mutableCopy] : [NSMutableDictionary new]);
     eventProperties[@"event_location"] = [NSString stringWithFormat:@"%s:%d", location, line];
-    [self addEvent:eventName properties:eventProperties];
+    [self addEvent:eventName async:async properties:eventProperties];
 }
 
 #pragma mark - Logging

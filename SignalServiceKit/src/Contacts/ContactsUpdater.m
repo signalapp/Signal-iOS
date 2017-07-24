@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
               NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
               if (response.statusCode == 413) {
                   failure(OWSErrorWithCodeDescription(
-                      OWSErrorCodeContactsUpdaterRateLimit, OWSSignalServiceKitErrorDomain));
+                      OWSErrorCodeContactsUpdaterRateLimit, @"Contacts Intersection Rate Limit"));
               } else {
                   failure(error);
               }

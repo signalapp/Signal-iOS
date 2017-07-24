@@ -6,23 +6,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 // TODO: We probably don't need all of these levels.
 typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
-    OWSAnalyticsSeverityDebug = 0,
+    // Info events are routine.
+    //
+    // It's safe to discard a large fraction of these events.
     OWSAnalyticsSeverityInfo = 1,
-    OWSAnalyticsSeverityWarn = 2,
+    // Error events should never be discarded.
     OWSAnalyticsSeverityError = 3,
-    // I suspect we'll stage the development of our analytics,
-    // initially building only a minimal solution: an endpoint which
-    // ignores most requests, and sends only the highest-severity
-    // events as email to developers.
+    // Critical events should never be discarded.
     //
-    // This "critical" level of severity is intended for that purpose (for now).
-    //
-    // We might want to have an additional level of severity for
-    // critical (crashing) bugs that occur during app startup. These
-    // events should be sent to the service immediately and the app
-    // should block until that request completes.
-    OWSAnalyticsSeverityCritical = 4,
-    OWSAnalyticsSeverityOff = 5
+    // Additionally, to avoid losing critical events they should
+    // be persisted synchronously.
+    OWSAnalyticsSeverityCritical = 4
 };
 
 // This is a placeholder. We don't yet serialize or transmit analytics events.
@@ -54,13 +48,32 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 
 typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)();
 
-#define kOWSProdAssertParameterDescription @"description"
-#define kOWSProdAssertParameterNSErrorDomain @"nserror_domain"
-#define kOWSProdAssertParameterNSErrorCode @"nserror_code"
-#define kOWSProdAssertParameterNSErrorDescription @"nserror_description"
-#define kOWSProdAssertParameterNSExceptionName @"nsexception_name"
-#define kOWSProdAssertParameterNSExceptionReason @"nsexception_reason"
-#define kOWSProdAssertParameterNSExceptionClassName @"nsexception_classname"
+#define kOWSAnalyticsParameterDescription @"description"
+#define kOWSAnalyticsParameterNSErrorDomain @"nserror_domain"
+#define kOWSAnalyticsParameterNSErrorCode @"nserror_code"
+#define kOWSAnalyticsParameterNSErrorDescription @"nserror_description"
+#define kOWSAnalyticsParameterNSExceptionName @"nsexception_name"
+#define kOWSAnalyticsParameterNSExceptionReason @"nsexception_reason"
+#define kOWSAnalyticsParameterNSExceptionClassName @"nsexception_classname"
+
+// We don't include the error description because it may have PII.
+#define AnalyticsParametersFromNSError(__nserror)                                                                      \
+    ^{                                                                                                                 \
+        return (@{                                                                                                     \
+            kOWSAnalyticsParameterNSErrorDomain : (__nserror.domain ?: @"unknown"),                                    \
+            kOWSAnalyticsParameterNSErrorCode : @(__nserror.code),                                                     \
+        });                                                                                                            \
+    }
+
+#define AnalyticsParametersFromNSException(__exception)                                                                \
+    ^{                                                                                                                 \
+        return (@{                                                                                                     \
+            kOWSAnalyticsParameterNSExceptionName : (__exception.name ?: @"unknown"),                                  \
+            kOWSAnalyticsParameterNSExceptionReason : (__exception.reason ?: @"unknown"),                              \
+            kOWSAnalyticsParameterNSExceptionClassName :                                                               \
+                (__exception ? NSStringFromClass([__exception class]) : @"unknown"),                                   \
+        });                                                                                                            \
+    }
 
 // These methods should be used to assert errors for which we want to fire analytics events.
 //
@@ -116,70 +129,95 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdCFail(__analyticsEventName) OWSProdCFailWParams(__analyticsEventName, nil)
 
-#define AnalyticsParametersFromNSError(__nserror)                                                                      \
-    ^{                                                                                                                 \
-        return (@{                                                                                                     \
-            kOWSProdAssertParameterNSErrorDomain : (__nserror.domain ?: @"unknown"),                                   \
-            kOWSProdAssertParameterNSErrorCode : @(__nserror.code),                                                    \
-            kOWSProdAssertParameterNSErrorDescription : (__nserror.description ?: @"unknown"),                         \
-        });                                                                                                            \
-    }
-
-#define AnalyticsParametersFromNSException(__exception)                                                                \
-    ^{                                                                                                                 \
-        return (@{                                                                                                     \
-            kOWSProdAssertParameterNSExceptionName : (__exception.name ?: @"unknown"),                                 \
-            kOWSProdAssertParameterNSExceptionReason : (__exception.reason ?: @"unknown"),                             \
-            kOWSProdAssertParameterNSExceptionClassName :                                                              \
-                (__exception ? NSStringFromClass([__exception class]) : @"unknown"),                                   \
-        });                                                                                                            \
-    }
-
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `debugDescription` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdFailWNSError(__analyticsEventName, __nserror)                                                           \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                            \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdFailWNSException(__analyticsEventName, __exception)                                                     \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
         OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))                      \
     }
 
+#define OWSProdCFail(__analyticsEventName) OWSProdCFailWParams(__analyticsEventName, nil)
+
 #define OWSProdEventWParams(__severityLevel, __analyticsEventName, __parametersBlock)                                  \
     {                                                                                                                  \
         NSDictionary<NSString *, id> *__eventParameters                                                                \
             = (__parametersBlock ? ((OWSProdAssertParametersBlock)__parametersBlock)() : nil);                         \
         [OWSAnalytics logEvent:__analyticsEventName                                                                    \
-                      severity:OWSAnalyticsSeverityCritical                                                            \
+                      severity:__severityLevel                                                                         \
                     parameters:__eventParameters                                                                       \
                       location:__PRETTY_FUNCTION__                                                                     \
                           line:__LINE__];                                                                              \
     }
 
-#define OWSProdErrorWParams(__analyticsEventName, __parametersBlock)                                                   \
-    OWSProdEventWParams(OWSAnalyticsSeverityCritical, __analyticsEventName, __parametersBlock)
-
-#define OWSProdError(__analyticsEventName) OWSProdEventWParams(OWSAnalyticsSeverityCritical, __analyticsEventName, nil)
+#pragma mark - Info Events
 
 #define OWSProdInfoWParams(__analyticsEventName, __parametersBlock)                                                    \
     OWSProdEventWParams(OWSAnalyticsSeverityInfo, __analyticsEventName, __parametersBlock)
 
 #define OWSProdInfo(__analyticsEventName) OWSProdEventWParams(OWSAnalyticsSeverityInfo, __analyticsEventName, nil)
 
-#define OWSProdCFail(__analyticsEventName) OWSProdCFailWParams(__analyticsEventName, nil)
+#pragma mark - Error Events
 
+#define OWSProdErrorWParams(__analyticsEventName, __parametersBlock)                                                   \
+    OWSProdEventWParams(OWSAnalyticsSeverityError, __analyticsEventName, __parametersBlock)
+
+#define OWSProdError(__analyticsEventName) OWSProdEventWParams(OWSAnalyticsSeverityError, __analyticsEventName, nil)
+
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `debugDescription` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdErrorWNSError(__analyticsEventName, __nserror)                                                          \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                           \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdErrorWNSException(__analyticsEventName, __exception)                                                    \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
         OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))                     \
+    }
+
+#pragma mark - Critical Events
+
+#define OWSProdCriticalWParams(__analyticsEventName, __parametersBlock)                                                \
+    OWSProdEventWParams(OWSAnalyticsSeverityCritical, __analyticsEventName, __parametersBlock)
+
+#define OWSProdCritical(__analyticsEventName)                                                                          \
+    OWSProdEventWParams(OWSAnalyticsSeverityCritical, __analyticsEventName, nil)
+
+#define OWSProdCriticalWNSError(__analyticsEventName, __nserror)                                                       \
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
+        OWSProdCriticalWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                        \
+    }
+
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
+#define OWSProdCriticalWNSException(__analyticsEventName, __exception)                                                 \
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
+        OWSProdCriticalWParams(__analyticsEventName, AnalyticsParametersFromNSException(__exception))                  \
     }
 
 NS_ASSUME_NONNULL_END
