@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define kOWSAnalyticsParameterEnvelopeIsLegacy @"envelope_is_legacy"
 #define kOWSAnalyticsParameterEnvelopeHasContent @"has_content"
-#define kOWSAnalyticsParameterEnvelopeDescription @"envelope_description"
+#define kOWSAnalyticsParameterEnvelopeType @"envelope_type"
 #define kOWSAnalyticsParameterEnvelopeEncryptedLength @"encrypted_length"
 
 #define AnalyticsParametersFromEnvelope(__envelope)                                                                    \
@@ -53,11 +53,15 @@ NS_ASSUME_NONNULL_BEGIN
         return (@{                                                                                                     \
             kOWSAnalyticsParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                   \
             kOWSAnalyticsParameterEnvelopeHasContent : @(__envelope.hasContent),                                       \
-            kOWSAnalyticsParameterEnvelopeDescription : [self descriptionForEnvelopeType:__envelope],                  \
+            kOWSAnalyticsParameterEnvelopeType : [self descriptionForEnvelopeType:__envelope],                         \
             kOWSAnalyticsParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                 \
         });                                                                                                            \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `descriptionForEnvelope` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@",                                                                                    \

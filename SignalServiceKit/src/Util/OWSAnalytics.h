@@ -129,12 +129,20 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdCFail(__analyticsEventName) OWSProdCFailWParams(__analyticsEventName, nil)
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `debugDescription` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdFailWNSError(__analyticsEventName, __nserror)                                                           \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdFailWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                            \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdFailWNSException(__analyticsEventName, __exception)                                                     \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
@@ -168,12 +176,20 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdError(__analyticsEventName) OWSProdEventWParams(OWSAnalyticsSeverityError, __analyticsEventName, nil)
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `debugDescription` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdErrorWNSError(__analyticsEventName, __nserror)                                                          \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __nserror.debugDescription);  \
         OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                           \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdErrorWNSException(__analyticsEventName, __exception)                                                    \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
@@ -194,6 +210,10 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
         OWSProdCriticalWParams(__analyticsEventName, AnalyticsParametersFromNSError(__nserror))                        \
     }
 
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `exception` is valuable enough to
+// log but too dangerous to include in the analytics event.
 #define OWSProdCriticalWNSException(__analyticsEventName, __exception)                                                 \
     {                                                                                                                  \
         DDLogError(@"%s:%d %@: %@", __PRETTY_FUNCTION__, __LINE__, __analyticsEventName, __exception);                 \
