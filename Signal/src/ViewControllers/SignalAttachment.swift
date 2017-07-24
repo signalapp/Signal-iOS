@@ -338,6 +338,7 @@ class SignalAttachment: NSObject {
             }
         }
         if pasteboardUTISet.contains(kUTTypeURL as String) {
+            // Treat URL as a textual UTI type.
             hasTextUTIType = true
         }
         if hasNonTextUTIType {
