@@ -78,6 +78,15 @@
 
 #pragma mark Class Methods
 
++ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
+{
+    if ([propertyKey isEqualToString:@"TAG"]) {
+        return MTLPropertyStorageNone;
+    } else {
+        return [super storageBehaviorForPropertyWithKey:propertyKey];
+    }
+}
+
 + (YapDatabaseConnection *)dbReadConnection
 {
     // We use TSYapDatabaseObject's dbReadWriteConnection (not TSStorageManager's
