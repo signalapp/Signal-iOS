@@ -408,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (encryptedData.length > kMaxEncryptedDataLength) {
                 OWSProdErrorWParams(@"message_manager_error_oversize_message", ^{
                     return (@{
-                        @"message_size" : @(encryptedData.length),
+                        @"message_size" : @([OWSAnalytics orderOfMagnitudeOf:(long)encryptedData.length]),
                     });
                 });
                 completion(nil);

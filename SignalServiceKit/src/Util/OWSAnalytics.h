@@ -48,6 +48,8 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 
 + (void)appLaunchDidComplete;
 
++ (long)orderOfMagnitudeOf:(long)value;
+
 @end
 
 typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)();

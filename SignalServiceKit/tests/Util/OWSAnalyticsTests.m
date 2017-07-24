@@ -12,11 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface OWSAnalytics (Test)
-
-+ (long)orderOfMagnitudeOf:(long)value;
-
-@end
+#pragma mark -
 
 @implementation OWSAnalyticsTests
 
