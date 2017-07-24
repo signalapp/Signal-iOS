@@ -82,14 +82,14 @@ enum CallError: Error {
 fileprivate let connectingTimeoutSeconds = 120
 
 // Example: OWSProdError("blah", #file, #function, #line)
-func OWSProdError(_ __eventName: String, file __file: String, function __function: String, line __line: Int32) {
-    let location = "\((__file as NSString).lastPathComponent):\(__function)"
+func OWSProdError(_ __eventName: String, file: String, function: String, line: Int32) {
+    let location = "\((file as NSString).lastPathComponent):\(function)"
     OWSAnalytics
-        .logEvent(__eventName, severity: .error, parameters: nil, location: (location as NSString).utf8String!, line:__line)
+        .logEvent(__eventName, severity: .error, parameters: nil, location: (location as NSString).utf8String!, line:line)
 }
 
-func OWSProdCallAssertionError(description: String) -> CallError {
-    OWSProdError(description, file:#file, function:#function, line:#line)
+func OWSProdCallAssertionError(description: String, file: String, function: String, line: Int32) -> CallError {
+    OWSProdError(description, file:file, function:function, line:line)
     return .assertionError(description: description)
 }
 
@@ -285,7 +285,7 @@ protocol CallServiceObserver: class {
             let errorDescription = "\(TAG) call was unexpectedly already set."
             Logger.error(errorDescription)
             call.state = .localFailure
-            return Promise(error: OWSProdCallAssertionError(description: errorDescription))
+            return Promise(error: OWSProdCallAssertionError(description: errorDescription, file:#file, function:#function, line:#line))
         }
 
         self.call = call
@@ -307,7 +307,7 @@ protocol CallServiceObserver: class {
             guard self.peerConnectionClient == nil else {
                 let errorDescription = "\(self.TAG) peerconnection was unexpectedly already set."
                 Logger.error(errorDescription)
-                throw OWSProdCallAssertionError(description: errorDescription)
+                throw OWSProdCallAssertionError(description: errorDescription, file:#file, function:#function, line:#line)
             }
 
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
@@ -383,7 +383,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let fulfillReadyToSendIceUpdatesPromise = self.fulfillReadyToSendIceUpdatesPromise else {
-            self.handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description: "failed to create fulfillReadyToSendIceUpdatesPromise"))
+            self.handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description: "failed to create fulfillReadyToSendIceUpdatesPromise", file:#file, function:#function, line:#line))
             return
         }
 
@@ -421,7 +421,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -709,7 +709,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            self.handleFailedCurrentCall(error: OWSProdCallAssertionError(description: "ignoring local ice candidate, since there is no current call."))
+            self.handleFailedCurrentCall(error: OWSProdCallAssertionError(description: "ignoring local ice candidate, since there is no current call.", file:#file, function:#function, line:#line))
             return
         }
 
@@ -724,7 +724,7 @@ protocol CallServiceObserver: class {
             guard call.state != .idle else {
                 // This will only be called for the current peerConnectionClient, so
                 // fail the current call.
-                self.handleFailedCurrentCall(error: OWSProdCallAssertionError(description: "ignoring local ice candidate, since call is now idle."))
+                self.handleFailedCurrentCall(error: OWSProdCallAssertionError(description: "ignoring local ice candidate, since call is now idle.", file:#file, function:#function, line:#line))
                 return
             }
 
@@ -760,7 +760,7 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call."))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call.", file:#file, function:#function, line:#line))
             return
         }
 
@@ -829,14 +829,14 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call was unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -852,7 +852,7 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) in \(#function)")
 
         guard let currentCall = self.call else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call", file:#file, function:#function, line:#line))
             return
         }
 
@@ -864,7 +864,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) missing peerconnection client in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -889,7 +889,7 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -919,14 +919,14 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call was unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -965,17 +965,17 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let currentCall = self.call else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) since there is no current call", file:#file, function:#function, line:#line))
             return
         }
 
         guard call == currentCall else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) ignoring \(#function) for call other than current call", file:#file, function:#function, line:#line))
             return
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            handleFailedCall(failedCall: call, error: OWSProdCallAssertionError(description:"\(TAG) missing peerconnection client in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -1015,7 +1015,7 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -1069,7 +1069,7 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) call unexpectedly nil in \(#function)", file:#file, function:#function, line:#line))
             return
         }
 
@@ -1107,7 +1107,7 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This should never happen; return to a known good state.
             owsFail("\(TAG) received data message, but there is no current call. Ignoring.")
-            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
+            handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received data message, but there is no current call. Ignoring.", file:#file, function:#function, line:#line))
             return
         }
 
@@ -1119,7 +1119,7 @@ protocol CallServiceObserver: class {
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
                 owsFail("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
-                handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)", file:#file, function:#function, line:#line))
                 return
             }
 
@@ -1134,7 +1134,7 @@ protocol CallServiceObserver: class {
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
                 owsFail("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
-                handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: OWSProdCallAssertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)", file:#file, function:#function, line:#line))
                 return
             }
 
@@ -1241,7 +1241,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let readyToSendIceUpdatesPromise = self.readyToSendIceUpdatesPromise else {
-            return Promise(error: OWSProdCallAssertionError(description: "failed to create readyToSendIceUpdatesPromise"))
+            return Promise(error: OWSProdCallAssertionError(description: "failed to create readyToSendIceUpdatesPromise", file:#file, function:#function, line:#line))
         }
 
         return readyToSendIceUpdatesPromise
@@ -1284,7 +1284,7 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClientPromise = self.peerConnectionClientPromise else {
-            return Promise(error: OWSProdCallAssertionError(description: "failed to create peerConnectionClientPromise"))
+            return Promise(error: OWSProdCallAssertionError(description: "failed to create peerConnectionClientPromise", file:#file, function:#function, line:#line))
         }
 
         return peerConnectionClientPromise
