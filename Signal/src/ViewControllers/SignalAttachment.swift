@@ -314,10 +314,6 @@ class SignalAttachment: NSObject {
         }
         let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
 
-        if pasteboardUTISet.contains(kUTTypeURL as String) {
-            return true
-        }
-
         // The pasteboard can be populated with multiple UTI types
         // with different payloads.  iMessage for example will copy
         // an animated GIF to the pasteboard with the following UTI
@@ -340,6 +336,9 @@ class SignalAttachment: NSObject {
             } else if mediaUTISet.contains(utiType) {
                 hasNonTextUTIType = true
             }
+        }
+        if pasteboardUTISet.contains(kUTTypeURL as String) {
+            hasTextUTIType = true
         }
         if hasNonTextUTIType {
             return false
