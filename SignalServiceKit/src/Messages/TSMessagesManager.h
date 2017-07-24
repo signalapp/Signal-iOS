@@ -28,15 +28,8 @@ typedef void (^MessageManagerCompletionBlock)();
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                    completion:(nullable MessageManagerCompletionBlock)completion;
-
-/**
- * @returns
- *   Group or Contact thread for message, creating a new one if necessary.
- */
-- (TSThread *)threadForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
+- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+             completion:(nullable MessageManagerCompletionBlock)completion;
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;

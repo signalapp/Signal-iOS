@@ -290,8 +290,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                    completion:(nullable MessageManagerCompletionBlock)completionHandler
+- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+             completion:(nullable MessageManagerCompletionBlock)completionHandler
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -1098,6 +1098,10 @@ NS_ASSUME_NONNULL_BEGIN
         && dataMessage.group.hasAvatar;
 }
 
+/**
+ * @returns
+ *   Group or Contact thread for message, creating a new one if necessary.
+ */
 - (TSThread *)threadForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                     dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {

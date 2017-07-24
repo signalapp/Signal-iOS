@@ -125,7 +125,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SignalServiceKit:
-    :path: .
+    :path: "."
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 
