@@ -5,17 +5,27 @@
 #import "NSData+Base64.h"
 #import "PreKeyBundle+jsonDict.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation PreKeyBundle (jsonDict)
 
-+ (PreKeyBundle *)preKeyBundleFromDictionary:(NSDictionary *)dictionary forDeviceNumber:(NSNumber *)number {
++ (nullable PreKeyBundle *)preKeyBundleFromDictionary:(NSDictionary *)dictionary forDeviceNumber:(NSNumber *)number
+{
     PreKeyBundle *bundle        = nil;
-    NSString *identityKeyString = [dictionary objectForKey:@"identityKey"];
-    NSArray *devicesArray       = [dictionary objectForKey:@"devices"];
 
-    if (!(identityKeyString && [devicesArray isKindOfClass:[NSArray class]])) {
-        DDLogError(@"Failed to get identity key or messages array from server request");
+    id identityKeyObject = [dictionary objectForKey:@"identityKey"];
+    if (![identityKeyObject isKindOfClass:[NSString class]]) {
+        OWSFail(@"Unexpected identityKeyObject: %@", identityKeyObject);
         return nil;
     }
+    NSString *identityKeyString = (NSString *)identityKeyObject;
+
+    id devicesObject = [dictionary objectForKey:@"devices"];
+    if (![devicesObject isKindOfClass:[NSArray class]]) {
+        OWSFail(@"Unexpected devicesObject: %@", devicesObject);
+        return nil;
+    }
+    NSArray *devicesArray = (NSArray *)devicesObject;
 
     NSData *identityKey = [NSData dataFromBase64StringNoPadding:identityKeyString];
 
@@ -108,3 +118,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
