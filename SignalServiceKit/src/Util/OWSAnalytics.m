@@ -160,6 +160,8 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
         __block UIBackgroundTaskIdentifier task;
         task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            self.hasRequestInFlight = NO;
+
             [UIApplication.sharedApplication endBackgroundTask:task];
         }];
 
