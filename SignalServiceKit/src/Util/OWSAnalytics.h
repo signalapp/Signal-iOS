@@ -56,12 +56,12 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 #define kOWSAnalyticsParameterNSExceptionReason @"nsexception_reason"
 #define kOWSAnalyticsParameterNSExceptionClassName @"nsexception_classname"
 
+// We don't include the error description because it may have PII.
 #define AnalyticsParametersFromNSError(__nserror)                                                                      \
     ^{                                                                                                                 \
         return (@{                                                                                                     \
             kOWSAnalyticsParameterNSErrorDomain : (__nserror.domain ?: @"unknown"),                                    \
             kOWSAnalyticsParameterNSErrorCode : @(__nserror.code),                                                     \
-            kOWSAnalyticsParameterNSErrorDescription : (__nserror.description ?: @"unknown"),                          \
         });                                                                                                            \
     }
 
