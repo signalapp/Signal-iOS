@@ -1,15 +1,15 @@
 //
-//  PreKeyBundle+jsonDict.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 26/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "PreKeyBundle.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface PreKeyBundle (jsonDict)
 
-+ (PreKeyBundle *)preKeyBundleFromDictionary:(NSDictionary *)dictionary forDeviceNumber:(NSNumber *)number;
++ (nullable PreKeyBundle *)preKeyBundleFromDictionary:(NSDictionary *)dictionary forDeviceNumber:(NSNumber *)number;
 
 @end
+
+NS_ASSUME_NONNULL_END

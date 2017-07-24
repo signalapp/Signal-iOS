@@ -134,6 +134,7 @@
 		4542F0961EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
+		4563ADF11F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */; };
 		45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */; };
 		45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */; };
 		45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */; };
@@ -566,6 +567,7 @@
 		4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataChannelMessage.swift; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS106EnsureProfileComplete.swift; sourceTree = "<group>"; };
 		45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAvatarBuilder.h; sourceTree = "<group>"; };
 		45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAvatarBuilder.m; sourceTree = "<group>"; };
 		45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupAvatarBuilder.h; sourceTree = "<group>"; };
@@ -1130,6 +1132,7 @@
 				45666F7A1D9C0533008FE134 /* OWSDatabaseMigration.m */,
 				45666F7C1D9C0814008FE134 /* OWSDatabaseMigrationRunner.h */,
 				45666F7D1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m */,
+				4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */,
 			);
 			name = Migrations;
 			sourceTree = "<group>";
@@ -2144,6 +2147,7 @@
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				76EB058A18170B33006006FC /* Release.m in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
+				4563ADF11F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift in Sources */,
 				450873C71D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m in Sources */,
 				76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */,
 				76EB064218170B33006006FC /* StringUtil.m in Sources */,
