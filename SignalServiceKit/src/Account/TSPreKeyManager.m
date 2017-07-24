@@ -181,10 +181,12 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                 [TSPreKeyManager clearPreKeyUpdateFailureCount];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-                    OWSProdErrorWNSError(@"error_prekeys_update_failed_signed_and_onetime", error);
-                } else {
-                    OWSProdErrorWNSError(@"error_prekeys_update_failed_just_signed", error);
+                if (!IsNSErrorNetworkFailure(error)) {
+                    if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
+                        OWSProdErrorWNSError(@"error_prekeys_update_failed_signed_and_onetime", error);
+                    } else {
+                        OWSProdErrorWNSError(@"error_prekeys_update_failed_just_signed", error);
+                    }
                 }
 
                 // Mark the prekeys as _NOT_ checked on failure.
@@ -302,6 +304,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                         }
                     }
                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                        if (!IsNSErrorNetworkFailure(error)) {
+                            OWSProdErrorWNSError(@"error_prekeys_current_signed_prekey_request_failed", error);
+                        }
                         DDLogWarn(@"%@ Could not retrieve current signed key from the service.", self.tag);
 
                         // Mark the prekeys as _NOT_ checked on failure.
@@ -310,6 +315,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_prekeys_available_prekeys_request_failed", error);
+            }
             DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.tag);
 
             // Mark the prekeys as _NOT_ checked on failure.

@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDevicesService.h"
 #import "OWSDeleteDeviceRequest.h"
@@ -30,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_get_devices_failed", error);
+            }
             DDLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);
         }];
@@ -47,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
             successCallback();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_unlink_device_failed", error);
+            }
             DDLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);
         }];

@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceProvisioningService.h"
 #import "OWSDeviceProvisioningRequest.h"
@@ -45,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
             successCallback();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_provisioning_request_failed", error);
+            }
             DDLogVerbose(@"Provisioning request failed with error: %@", error);
             failureCallback(error);
         }];

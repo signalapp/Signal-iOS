@@ -115,23 +115,7 @@
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
 }
 
-#pragma mark Upgrading to 2.1 - Needs to register VOIP token + Removing video cache folder
-
-+ (void)nonBlockingPushRegistration {
-    void (^failedBlock)(NSError *) = ^(NSError *error) {
-        DDLogError(@"Failed to register VOIP push token: %@", error.debugDescription);
-    };
-    [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-        [[TSAccountManager sharedInstance]
-            registerForPushNotificationsWithPushToken:pushToken
-                                            voipToken:voipToken
-                                              success:^{
-                                                  DDLogWarn(@"Registered for VOIP Push.");
-                                              }
-                                              failure:failedBlock];
-    }
-                                                     failure:failedBlock];
-}
+#pragma mark Upgrading to 2.1 - Removing video cache folder
 
 + (void)clearVideoCache {
     NSArray *paths     = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -162,13 +146,16 @@
       TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
-            success = YES;
-            dispatch_semaphore_signal(sema);
+              success = YES;
+              dispatch_semaphore_signal(sema);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
-            success = NO;
-            DDLogError(@"Updating attributess failed with error: %@", error.description);
-            dispatch_semaphore_signal(sema);
+              if (!IsNSErrorNetworkFailure(error)) {
+                  OWSProdErrorWNSError(@"error_update_attributes_request_failed", error);
+              }
+              success = NO;
+              DDLogError(@"Updating attributess failed with error: %@", error.description);
+              dispatch_semaphore_signal(sema);
           }];
 
 

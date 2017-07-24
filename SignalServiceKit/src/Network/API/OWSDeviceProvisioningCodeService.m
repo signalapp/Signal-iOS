@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceProvisioningCodeService.h"
 #import "OWSDeviceProvisioningCodeRequest.h"
@@ -48,6 +50,9 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdErrorWNSError(@"error_provisioning_code_request_failed", error);
+            }
             DDLogVerbose(@"ProvisioningCode request failed with error: %@", error);
             failureCallback(error);
         }];

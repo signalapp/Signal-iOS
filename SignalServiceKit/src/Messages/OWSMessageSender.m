@@ -1216,6 +1216,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 dispatch_semaphore_signal(sema);
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
+                if (!IsNSErrorNetworkFailure(error)) {
+                    OWSProdErrorWNSError(@"message_sender_error_recipient_prekey_request_failed", error);
+                }
                 DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 if (response.statusCode == 404) {

@@ -12,6 +12,11 @@
 
 NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkManager";
 
+BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
+{
+    return ([error.domain isEqualToString:TSNetworkManagerDomain] && error.code == 0);
+}
+
 @interface TSNetworkManager ()
 
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
