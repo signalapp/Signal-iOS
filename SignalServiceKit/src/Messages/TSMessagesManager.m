@@ -43,6 +43,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #define kOWSProdAssertParameterEnvelopeIsLegacy @"envelope_is_legacy"
+#define kOWSProdAssertParameterEnvelopeHasContent @"has_content"
 #define kOWSProdAssertParameterEnvelopeDescription @"envelope_description"
 #define kOWSProdAssertParameterEnvelopeEncryptedLength @"encrypted_length"
 
@@ -51,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *__encryptedData = __envelope.hasContent ? __envelope.content : __envelope.legacyMessage;               \
         return (@{                                                                                                     \
             kOWSProdAssertParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                  \
+            kOWSProdAssertParameterEnvelopeHasContent : @(__envelope.hasContent),                                      \
             kOWSProdAssertParameterEnvelopeDescription : [self descriptionForEnvelopeType:__envelope],                 \
             kOWSProdAssertParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                \
         });                                                                                                            \
@@ -162,6 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
+
     switch (envelope.type) {
         case OWSSignalServiceProtosEnvelopeTypeReceipt:
             return @"DeliveryReceipt";

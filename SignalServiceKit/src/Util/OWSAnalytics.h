@@ -117,18 +117,19 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 #define AnalyticsParametersFromNSError(__nserror)                                                                      \
     ^{                                                                                                                 \
         return (@{                                                                                                     \
-            kOWSProdAssertParameterNSErrorDomain : __nserror.domain,                                                   \
+            kOWSProdAssertParameterNSErrorDomain : (__nserror.domain ?: @"unknown"),                                   \
             kOWSProdAssertParameterNSErrorCode : @(__nserror.code),                                                    \
-            kOWSProdAssertParameterNSErrorDescription : __nserror.description,                                         \
+            kOWSProdAssertParameterNSErrorDescription : (__nserror.description ?: @"unknown"),                         \
         });                                                                                                            \
     }
 
 #define AnalyticsParametersFromNSException(__exception)                                                                \
     ^{                                                                                                                 \
         return (@{                                                                                                     \
-            kOWSProdAssertParameterNSExceptionName : __exception.name,                                                 \
-            kOWSProdAssertParameterNSExceptionReason : __exception.reason,                                             \
-            kOWSProdAssertParameterNSExceptionClassName : NSStringFromClass([__exception class]),                      \
+            kOWSProdAssertParameterNSExceptionName : (__exception.name ?: @"unknown"),                                 \
+            kOWSProdAssertParameterNSExceptionReason : (__exception.reason ?: @"unknown"),                             \
+            kOWSProdAssertParameterNSExceptionClassName :                                                              \
+                (__exception ? NSStringFromClass([__exception class]) : @"unknown"),                                   \
         });                                                                                                            \
     }
 

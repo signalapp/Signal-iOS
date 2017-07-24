@@ -263,7 +263,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    DDLogError(@"%@ Failed to register for remote notifications with error %@", self.tag, error);
+    OWSProdErrorWNSError(@"app_delegate_error_failed_to_register_for_remote_notifications", error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
@@ -334,25 +334,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSError *typeError;
         [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
         if (typeError) {
-            DDLogError(
-                       @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
-            OWSAssert(NO);
+            OWSFail(
+                @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
+            return NO;
         }
         if (!utiType) {
-            DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
-            OWSAssert(NO);
+            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
             utiType = (__bridge NSString *)kUTTypeData;
+            return NO;
         }
         
         NSNumber *isDirectory;
         NSError *isDirectoryError;
         [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
         if (isDirectoryError) {
-            DDLogError(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-                       self.tag,
-                       url,
-                       isDirectoryError);
-            OWSAssert(NO);
+            OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+                self.tag,
+                url,
+                isDirectoryError);
             return NO;
         } else if ([isDirectory boolValue]) {
             DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
