@@ -124,15 +124,15 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
 - (void)tryToSyncEvents
 {
-    // Don't try to sync if:
-    //
-    // * There's no network available.
-    // * There's already a sync request in flight.
-    if (!self.reachability.isReachable || self.hasRequestInFlight) {
-        return;
-    }
-
     dispatch_async(self.serialQueue, ^{
+        // Don't try to sync if:
+        //
+        // * There's no network available.
+        // * There's already a sync request in flight.
+        if (!self.reachability.isReachable || self.hasRequestInFlight) {
+            return;
+        }
+
         __block NSString *firstEventKey = nil;
         __block NSDictionary *firstEventDictionary = nil;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -157,6 +157,12 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
         DDLogDebug(@"%@ trying to deliver event: %@", self.tag, firstEventKey);
         self.hasRequestInFlight = YES;
+
+        __block UIBackgroundTaskIdentifier task;
+        task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            [UIApplication.sharedApplication endBackgroundTask:task];
+        }];
+
         // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
         dispatch_async(dispatch_get_main_queue(), ^{
             self.hasRequestInFlight = NO;
@@ -168,6 +174,8 @@ const int kOWSAnalytics_DiscardFrequency = 0;
                     [transaction removeObjectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
                 }];
             }
+
+            [UIApplication.sharedApplication endBackgroundTask:task];
 
             // Wait a second between network requests / retries.
             dispatch_after(
