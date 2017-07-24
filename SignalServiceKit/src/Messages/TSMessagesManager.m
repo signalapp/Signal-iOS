@@ -42,19 +42,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kOWSProdAssertParameterEnvelopeIsLegacy @"envelope_is_legacy"
-#define kOWSProdAssertParameterEnvelopeHasContent @"has_content"
-#define kOWSProdAssertParameterEnvelopeDescription @"envelope_description"
-#define kOWSProdAssertParameterEnvelopeEncryptedLength @"encrypted_length"
+#define kOWSAnalyticsParameterEnvelopeIsLegacy @"envelope_is_legacy"
+#define kOWSAnalyticsParameterEnvelopeHasContent @"has_content"
+#define kOWSAnalyticsParameterEnvelopeDescription @"envelope_description"
+#define kOWSAnalyticsParameterEnvelopeEncryptedLength @"encrypted_length"
 
 #define AnalyticsParametersFromEnvelope(__envelope)                                                                    \
     ^{                                                                                                                 \
         NSData *__encryptedData = __envelope.hasContent ? __envelope.content : __envelope.legacyMessage;               \
         return (@{                                                                                                     \
-            kOWSProdAssertParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                  \
-            kOWSProdAssertParameterEnvelopeHasContent : @(__envelope.hasContent),                                      \
-            kOWSProdAssertParameterEnvelopeDescription : [self descriptionForEnvelopeType:__envelope],                 \
-            kOWSProdAssertParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                \
+            kOWSAnalyticsParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                   \
+            kOWSAnalyticsParameterEnvelopeHasContent : @(__envelope.hasContent),                                       \
+            kOWSAnalyticsParameterEnvelopeDescription : [self descriptionForEnvelopeType:__envelope],                  \
+            kOWSAnalyticsParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                 \
         });                                                                                                            \
     }
 

@@ -121,14 +121,16 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
 
-        OWSProdError(@"storage_error_could_not_load_database");
+        // NOTE: This analytics event will never be delivered, since the database isn't working.
+        OWSProdCritical(@"storage_error_could_not_load_database");
 
         // Try to reset app by deleting database.
         // Disabled resetting storage until we have better data on why this happens.
         // [self resetSignalStorage];
 
         if (![self tryToLoadDatabase]) {
-            OWSProdError(@"storage_error_could_not_load_database_second_attempt");
+            // NOTE: This analytics event will never be delivered, since the database isn't working.
+            OWSProdCritical(@"storage_error_could_not_load_database_second_attempt");
 
             [NSException raise:TSStorageManagerExceptionNameNoDatabase format:@"Failed to initialize database."];
         }
@@ -187,9 +189,9 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
             OWSProdErrorWParams(@"storage_error_deserialization", ^{
                 return (@{
                     @"collection" : collection,
-                    kOWSProdAssertParameterNSExceptionName : exception.name,
-                    kOWSProdAssertParameterNSExceptionReason : exception.reason,
-                    kOWSProdAssertParameterNSExceptionClassName : NSStringFromClass([exception class]),
+                    kOWSAnalyticsParameterNSExceptionName : exception.name,
+                    kOWSAnalyticsParameterNSExceptionReason : exception.reason,
+                    kOWSAnalyticsParameterNSExceptionClassName : NSStringFromClass([exception class]),
                 });
             });
             @throw exception;
@@ -260,7 +262,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     BOOL success        = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
-        OWSProdErrorWNSError(@"storage_error_file_protecion", error);
+        // NOTE: This analytics event will never be delivered, since the database isn't working.
+        OWSProdCriticalWNSError(@"storage_error_file_protection", error);
         return;
     }
 }
@@ -358,7 +361,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
         BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
         if (shouldHavePassword) {
-            OWSProdError(@"storage_error_could_not_load_database_second_attempt");
+            // NOTE: This analytics event will never be delivered, since the database isn't working.
+            OWSProdCritical(@"storage_error_could_not_load_database_second_attempt");
         }
 
         // Try to reset app by deleting database.
@@ -377,7 +381,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     NSError *keySetError;
     [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
     if (keySetError) {
-        OWSProdErrorWNSError(@"storage_error_could_not_store_database_password", keySetError);
+        // NOTE: This analytics event will never be delivered, since the database isn't working.
+        OWSProdCriticalWNSError(@"storage_error_could_not_store_database_password", keySetError);
 
         [self deletePasswordFromKeychain];
 
