@@ -18,6 +18,7 @@
 #import "TSThread.h"
 #import <25519/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -206,6 +207,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerThreadInteractionsDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
 
     // Run the blocking migrations.
     //

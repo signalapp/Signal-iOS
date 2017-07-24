@@ -10,10 +10,10 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -54,14 +54,14 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     return [self initWithNetworkManager:[Environment getCurrent].networkManager
                          storageManager:[TSStorageManager sharedManager]
                           callUIAdapter:[Environment getCurrent].callService.callUIAdapter
-                        messagesManager:[TSMessagesManager sharedManager]
+                        messageReceiver:[OWSMessageReceiver sharedInstance]
                           messageSender:[Environment getCurrent].messageSender];
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
                          callUIAdapter:(CallUIAdapter *)callUIAdapter
-                       messagesManager:(TSMessagesManager *)messagesManager
+                       messageReceiver:(OWSMessageReceiver *)messageReceiver
                          messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
@@ -73,7 +73,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     _messageSender = messageSender;
 
     OWSSignalService *signalService = [OWSSignalService sharedInstance];
-    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessagesManager:messagesManager
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:messageReceiver
                                                                 networkManager:networkManager
                                                                  signalService:signalService];
 

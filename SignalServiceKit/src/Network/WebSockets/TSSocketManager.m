@@ -5,6 +5,7 @@
 #import "TSSocketManager.h"
 #import "Cryptography.h"
 #import "NSTimer+OWS.h"
+#import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "SubProtocol.pb.h"
@@ -31,6 +32,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 @interface TSSocketManager ()
 
 @property (nonatomic, readonly) OWSSignalService *signalService;
+@property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 
 // This class has a few "tiers" of state.
 //
@@ -94,6 +96,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert([NSThread isMainThread]);
 
     _signalService = [OWSSignalService sharedInstance];
+    _messageReceiver = [OWSMessageReceiver sharedInstance];
     _state = SocketManagerStateClosed;
     _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
 
@@ -387,12 +390,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
         OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
-        [[TSMessagesManager sharedManager] handleReceivedEnvelope:envelope
-                                                       completion:^{
-                                                           // Don't acknowledge delivery until the envelope has been
-                                                           // processed.
-                                                           [self sendWebSocketMessageAcknowledgement:message];
-                                                       }];
+        [self.messageReceiver handleReceivedEnvelope:envelope];
+        [self sendWebSocketMessageAcknowledgement:message];
+
     } else {
         DDLogWarn(@"Unsupported WebSocket Request");
 

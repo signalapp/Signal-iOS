@@ -13,13 +13,13 @@ class MessageFetcherJob: NSObject {
 
     // MARK: injected dependencies
     let networkManager: TSNetworkManager
-    let messagesManager: TSMessagesManager
+    let messageReceiver: OWSMessageReceiver
     let signalService: OWSSignalService
 
     var runPromises = [Double: Promise<Void>]()
 
-    init(messagesManager: TSMessagesManager, networkManager: TSNetworkManager, signalService: OWSSignalService) {
-        self.messagesManager = messagesManager
+    init(messageReceiver: OWSMessageReceiver, networkManager: TSNetworkManager, signalService: OWSSignalService) {
+        self.messageReceiver = messageReceiver
         self.networkManager = networkManager
         self.signalService = signalService
     }
@@ -39,10 +39,8 @@ class MessageFetcherJob: NSObject {
         let runPromise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> Void in
             for envelope in envelopes {
                 Logger.info("\(self.TAG) received envelope.")
-                self.messagesManager.handleReceivedEnvelope(envelope, completion: {
-                    // Don't acknowledge delivery until the envelope has been processed. 
-                    self.acknowledgeDelivery(envelope: envelope)
-                })
+                self.messageReceiver.handleReceivedEnvelope(envelope)
+                self.acknowledgeDelivery(envelope: envelope)
             }
             if more {
                 Logger.info("\(self.TAG) more messages, so recursing.")
