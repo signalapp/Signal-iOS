@@ -227,6 +227,9 @@ typedef enum : NSUInteger {
 
 - (void)dealloc
 {
+    // Surface memory leaks by logging the deallocation of view controllers.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

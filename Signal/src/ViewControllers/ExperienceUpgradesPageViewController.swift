@@ -46,7 +46,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
     }
 }
 
-private class ExperienceUpgradeViewController: UIViewController {
+private class ExperienceUpgradeViewController: OWSViewController {
     let TAG = "[ExperienceUpgradeViewController]"
 
     let header: String
@@ -128,7 +128,7 @@ func setPageControlAppearance() {
     }
 }
 
-class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControllerDataSource {
+class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControllerDataSource {
 
     let TAG = "[ExperienceUpgradeViewController]"
 

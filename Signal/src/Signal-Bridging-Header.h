@@ -18,6 +18,7 @@
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
 #import "OWSProgressView.h"
+#import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"

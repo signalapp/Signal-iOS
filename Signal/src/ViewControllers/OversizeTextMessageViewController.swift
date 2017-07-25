@@ -6,7 +6,7 @@ import Foundation
 import WebRTC
 import PromiseKit
 
-class OversizeTextMessageViewController: UIViewController {
+class OversizeTextMessageViewController: OWSViewController {
 
     let TAG = "[OversizeTextMessageViewController]"
 
