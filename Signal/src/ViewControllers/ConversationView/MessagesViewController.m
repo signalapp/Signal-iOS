@@ -3263,8 +3263,13 @@ typedef enum : NSUInteger {
          forNotifications:notifications
              withMappings:self.messageMappings];
 
-
     if ([sectionChanges count] == 0 && [messageRowChanges count] == 0) {
+        // YapDatabase will ignore insertions within the message mapping's
+        // range that are not within the current mapping's contents.  We
+        // may need to extend the mapping's contents to reflect the current
+        // range.
+        [self updateMessageMappingRangeOptions];
+        [self resetContentAndLayout];
         return;
     }
 
