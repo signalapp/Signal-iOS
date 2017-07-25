@@ -34,9 +34,20 @@ NSString *const kOWSAnalytics_KeyLaunchCompleteCount = @"kOWSAnalytics_KeyLaunch
 // Percentage of analytics events to discard. 0 <= x <= 100.
 const int kOWSAnalytics_DiscardFrequency = 0;
 
+NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
+{
+    switch (severity) {
+        case OWSAnalyticsSeverityInfo:
+            return @"Info";
+        case OWSAnalyticsSeverityError:
+            return @"Error";
+        case OWSAnalyticsSeverityCritical:
+            return @"Critical";
+    }
+}
+
 @interface OWSAnalytics ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) Reachability *reachability;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -56,20 +67,27 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     static OWSAnalytics *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [self new];
         instance = [[self alloc] initDefault];
     });
     return instance;
 }
 
-- (instancetype)initDefault
+// We lazy-create the analytics DB connection, so that we can handle
+// errors that occur while initializing TSStorageManager.
++ (YapDatabaseConnection *)dbConnection
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-
-    return [self initWithStorageManager:storageManager];
+    static YapDatabaseConnection *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        TSStorageManager *storageManager = [TSStorageManager sharedManager];
+        OWSAssert(storageManager);
+        // Use a newDatabaseConnection so as not to block reads in the launch path.
+        instance = storageManager.newDatabaseConnection;
+    });
+    return instance;
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initDefault
 {
     self = [super init];
 
@@ -77,11 +95,6 @@ const int kOWSAnalytics_DiscardFrequency = 0;
         return self;
     }
 
-    OWSAssert(storageManager);
-
-    _storageManager = storageManager;
-    // Use a newDatabaseConnection so as not to block other reads in the launch path.
-    _dbConnection = storageManager.newDatabaseConnection;
     _reachability = [Reachability reachabilityForInternetConnection];
 
     [self observeNotifications];
@@ -129,7 +142,11 @@ const int kOWSAnalytics_DiscardFrequency = 0;
         //
         // * There's no network available.
         // * There's already a sync request in flight.
-        if (!self.reachability.isReachable || self.hasRequestInFlight) {
+        if (!self.reachability.isReachable) {
+            DDLogVerbose(@"%@ Not reachable", self.tag);
+            return;
+        }
+        if (self.hasRequestInFlight) {
             return;
         }
 
@@ -145,46 +162,103 @@ const int kOWSAnalytics_DiscardFrequency = 0;
             if (!firstEventKey) {
                 return;
             }
-
+            
             firstEventDictionary = [transaction objectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
             OWSAssert(firstEventDictionary);
             OWSAssert([firstEventDictionary isKindOfClass:[NSDictionary class]]);
         }];
 
-        if (!firstEventDictionary) {
-            return;
+        if (firstEventDictionary) {
+            [self sendEvent:firstEventDictionary eventKey:firstEventKey isCritical:NO];
+        }
+    });
+}
+
+- (void)sendEvent:(NSDictionary *)eventDictionary eventKey:(NSString *)eventKey isCritical:(BOOL)isCritical
+{
+    OWSAssert(eventDictionary);
+    OWSAssert(eventKey);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OWSAssert(dispatch_get_current_queue() == self.serialQueue);
+#pragma clang diagnostic pop
+
+    if (isCritical) {
+        [self submitEvent:eventDictionary
+            eventKey:eventKey
+            success:^{
+                DDLogDebug(@"%@ sendEvent[critical] succeeded: %@", self.tag, eventKey);
+            }
+            failure:^{
+                DDLogError(@"%@ sendEvent[critical] failed: %@", self.tag, eventKey);
+            }];
+    } else {
+        self.hasRequestInFlight = YES;
+        [self submitEvent:eventDictionary
+            eventKey:eventKey
+            success:^{
+                DDLogDebug(@"%@ sendEvent succeeded: %@", self.tag, eventKey);
+                dispatch_async(self.serialQueue, ^{
+                    self.hasRequestInFlight = NO;
+
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        // Remove from queue.
+                        [transaction removeObjectForKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
+                    }];
+
+                    // Wait a second between network requests / retries.
+                    dispatch_after(
+                        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [self tryToSyncEvents];
+                        });
+                });
+            }
+            failure:^{
+                DDLogError(@"%@ sendEvent failed: %@", self.tag, eventKey);
+                dispatch_async(self.serialQueue, ^{
+                    self.hasRequestInFlight = NO;
+
+                    // Wait a second between network requests / retries.
+                    dispatch_after(
+                        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [self tryToSyncEvents];
+                        });
+                });
+            }];
+    }
+}
+
+- (void)submitEvent:(NSDictionary *)eventDictionary
+           eventKey:(NSString *)eventKey
+            success:(void (^_Nonnull)())successBlock
+            failure:(void (^_Nonnull)())failureBlock
+{
+    OWSAssert(eventDictionary);
+    OWSAssert(eventKey);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OWSAssert(dispatch_get_current_queue() == self.serialQueue);
+#pragma clang diagnostic pop
+
+    DDLogDebug(@"%@ submitting: %@", self.tag, eventKey);
+
+    __block UIBackgroundTaskIdentifier task;
+    task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+        failureBlock();
+
+        [UIApplication.sharedApplication endBackgroundTask:task];
+    }];
+
+    // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
+    dispatch_async(self.serialQueue, ^{
+        BOOL success = YES;
+        if (success) {
+            successBlock();
+        } else {
+            failureBlock();
         }
 
-        DDLogDebug(@"%@ trying to deliver event: %@", self.tag, firstEventKey);
-        self.hasRequestInFlight = YES;
-
-        __block UIBackgroundTaskIdentifier task;
-        task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
-            self.hasRequestInFlight = NO;
-
-            [UIApplication.sharedApplication endBackgroundTask:task];
-        }];
-
-        // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.hasRequestInFlight = NO;
-
-            BOOL success = YES;
-            if (success) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    // Remove from queue.
-                    [transaction removeObjectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
-                }];
-            }
-
-            [UIApplication.sharedApplication endBackgroundTask:task];
-
-            // Wait a second between network requests / retries.
-            dispatch_after(
-                dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self tryToSyncEvents];
-                });
-        });
+        [UIApplication.sharedApplication endBackgroundTask:task];
     });
 }
 
@@ -233,18 +307,21 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     return (long)round(pow(10, floor(log10(value))));
 }
 
-- (void)addEvent:(NSString *)eventName async:(BOOL)async properties:(NSDictionary *)properties
+- (void)addEvent:(NSString *)eventName severity:(OWSAnalyticsSeverity)severity properties:(NSDictionary *)properties
 {
     OWSAssert(eventName.length > 0);
 
+    BOOL isError = severity == OWSAnalyticsSeverityError;
+    BOOL isCritical = severity == OWSAnalyticsSeverityCritical;
+
     uint32_t discardValue = arc4random_uniform(101);
-    if (discardValue < kOWSAnalytics_DiscardFrequency) {
+    if (!isError && !isCritical && discardValue < kOWSAnalytics_DiscardFrequency) {
         DDLogVerbose(@"Discarding event: %@", eventName);
         return;
     }
 
 #ifndef NO_SIGNAL_ANALYTICS
-    void (^writeEvent)() = ^{
+    void (^addEvent)() = ^{
         // Add super properties.
         NSMutableDictionary *eventProperties = (properties ? [properties mutableCopy] : [NSMutableDictionary new]);
         [eventProperties addEntriesFromDictionary:self.eventSuperProperties];
@@ -254,23 +331,29 @@ const int kOWSAnalytics_DiscardFrequency = 0;
         NSString *eventKey = [NSUUID UUID].UUIDString;
         DDLogDebug(@"%@ enqueuing event: %@", self.tag, eventKey);
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            const int kMaxQueuedEvents = 5000;
-            if ([transaction numberOfKeysInCollection:kOWSAnalytics_EventsCollection] > kMaxQueuedEvents) {
-                DDLogError(@"%@ Event queue overflow.", self.tag);
-                return;
-            }
-            
-            [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
-        }];
+        if (isCritical) {
+            // Critical events should not be serialized or enqueued - they should be submitted immediately.
+            [self sendEvent:eventDictionary eventKey:eventKey isCritical:YES];
+        } else {
+            // Add to queue.
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                const int kMaxQueuedEvents = 5000;
+                if ([transaction numberOfKeysInCollection:kOWSAnalytics_EventsCollection] > kMaxQueuedEvents) {
+                    DDLogError(@"%@ Event queue overflow.", self.tag);
+                    return;
+                }
 
-        [self tryToSyncEvents];
+                [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
+            }];
+
+            [self tryToSyncEvents];
+        }
     };
 
-    if (async) {
-        dispatch_async(self.serialQueue, writeEvent);
+    if ([self isSeverityAsync:severity]) {
+        dispatch_async(self.serialQueue, addEvent);
     } else {
-        dispatch_sync(self.serialQueue, writeEvent);
+        dispatch_sync(self.serialQueue, addEvent);
     }
 #endif
 }
@@ -291,7 +374,6 @@ const int kOWSAnalytics_DiscardFrequency = 0;
             line:(int)line
 {
     DDLogFlag logFlag;
-    BOOL async = YES;
     switch (severity) {
         case OWSAnalyticsSeverityInfo:
             logFlag = DDLogFlagInfo;
@@ -301,7 +383,6 @@ const int kOWSAnalytics_DiscardFrequency = 0;
             break;
         case OWSAnalyticsSeverityCritical:
             logFlag = DDLogFlagError;
-            async = NO;
             break;
         default:
             OWSAssert(0);
@@ -312,17 +393,23 @@ const int kOWSAnalytics_DiscardFrequency = 0;
     // Log the event.
     NSString *logString = [NSString stringWithFormat:@"%s:%d %@", location, line, eventName];
     if (!parameters) {
-        LOG_MAYBE(async, LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@", logString);
+        LOG_MAYBE([self isSeverityAsync:severity], LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@", logString);
     } else {
-        LOG_MAYBE(async, LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@ %@", logString, parameters);
+        LOG_MAYBE(
+            [self isSeverityAsync:severity], LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@ %@", logString, parameters);
     }
-    if (!async) {
+    if (![self isSeverityAsync:severity]) {
         [DDLog flushLog];
     }
 
     NSMutableDictionary *eventProperties = (parameters ? [parameters mutableCopy] : [NSMutableDictionary new]);
     eventProperties[@"event_location"] = [NSString stringWithFormat:@"%s:%d", location, line];
-    [self addEvent:eventName async:async properties:eventProperties];
+    [self addEvent:eventName severity:severity properties:eventProperties];
+}
+
+- (BOOL)isSeverityAsync:(OWSAnalyticsSeverity)severity
+{
+    return severity == OWSAnalyticsSeverityCritical;
 }
 
 #pragma mark - Logging
@@ -346,7 +433,7 @@ const int kOWSAnalytics_DiscardFrequency = 0;
             [transaction objectForKey:kOWSAnalytics_KeyLaunchCompleteCount inCollection:kOWSAnalytics_Collection];
         self.launchCompleteCount = @(oldLaunchCompleteCount.longValue);
     }];
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [self.dbConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction setObject:self.launchCount
                             forKey:kOWSAnalytics_KeyLaunchCount
@@ -365,7 +452,7 @@ const int kOWSAnalytics_DiscardFrequency = 0;
 
     self.launchCompleteCount = @(self.launchCompleteCount.longValue + 1);
 
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [self.dbConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction setObject:self.launchCompleteCount
                             forKey:kOWSAnalytics_KeyLaunchCompleteCount

@@ -12,10 +12,8 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
     OWSAnalyticsSeverityInfo = 1,
     // Error events should never be discarded.
     OWSAnalyticsSeverityError = 3,
-    // Critical events should never be discarded.
-    //
-    // Additionally, to avoid losing critical events they should
-    // be persisted synchronously.
+    // Critical events are special.  They are submitted immediately
+    // and not persisted, since the database may not be working.
     OWSAnalyticsSeverityCritical = 4
 };
 

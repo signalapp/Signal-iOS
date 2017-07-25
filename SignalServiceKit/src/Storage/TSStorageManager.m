@@ -120,8 +120,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         //
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
-
-        // NOTE: This analytics event will never be delivered, since the database isn't working.
         OWSProdCritical(@"storage_error_could_not_load_database");
 
         // Try to reset app by deleting database.
@@ -129,8 +127,10 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         // [self resetSignalStorage];
 
         if (![self tryToLoadDatabase]) {
-            // NOTE: This analytics event will never be delivered, since the database isn't working.
             OWSProdCritical(@"storage_error_could_not_load_database_second_attempt");
+
+            // Sleep to give analytics events time to be delivered.
+            [NSThread sleepForTimeInterval:15.0f];
 
             [NSException raise:TSStorageManagerExceptionNameNoDatabase format:@"Failed to initialize database."];
         }
@@ -262,9 +262,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     BOOL success        = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
-        // NOTE: This analytics event will never be delivered, since the database isn't working.
         OWSProdCriticalWNSError(@"storage_error_file_protection", error);
-        return;
     }
 }
 
@@ -327,6 +325,9 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 {
     OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
 
+    // Sleep to give analytics events time to be delivered.
+    [NSThread sleepForTimeInterval:5.0f];
+
     // Presumably this happened in response to a push notification. It's possible that the keychain is corrupted
     // but it could also just be that the user hasn't yet unlocked their device since our password is
     // kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
@@ -361,7 +362,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
         BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
         if (shouldHavePassword) {
-            // NOTE: This analytics event will never be delivered, since the database isn't working.
             OWSProdCritical(@"storage_error_could_not_load_database_second_attempt");
         }
 
@@ -381,10 +381,12 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     NSError *keySetError;
     [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
     if (keySetError) {
-        // NOTE: This analytics event will never be delivered, since the database isn't working.
         OWSProdCriticalWNSError(@"storage_error_could_not_store_database_password", keySetError);
 
         [self deletePasswordFromKeychain];
+
+        // Sleep to give analytics events time to be delivered.
+        [NSThread sleepForTimeInterval:15.0f];
 
         [NSException raise:TSStorageManagerExceptionNameDatabasePasswordUnwritable
                     format:@"Setting DB password failed with error: %@", keySetError];
