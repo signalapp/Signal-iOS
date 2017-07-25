@@ -282,10 +282,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                             selector:(SEL)selector
 {
     OWSAssert(text.length > 0);
+    OWSAssert(target);
     OWSAssert(selector);
 
     OWSTableItem *item = [OWSTableItem new];
     item.itemType = OWSTableItemTypeAction;
+    __weak id weakTarget = target;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = text;
@@ -295,7 +297,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;
         [cellSwitch setOn:isOn];
-        [cellSwitch addTarget:target action:selector forControlEvents:UIControlEventValueChanged];
+        [cellSwitch addTarget:weakTarget action:selector forControlEvents:UIControlEventValueChanged];
         cellSwitch.enabled = isEnabled;
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;

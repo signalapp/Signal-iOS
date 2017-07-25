@@ -96,7 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }]];
     [contents addSection:historyLogsSection];
 
-
     self.contents = contents;
 }
 

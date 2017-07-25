@@ -74,8 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                @"A label for the 'add phone number' button in the block list table.")
                                actionBlock:^{
                                    AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-                                   NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-                                   NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
                                    [weakSelf.navigationController pushViewController:vc animated:YES];
                                }]];
     [contents addSection:addSection];

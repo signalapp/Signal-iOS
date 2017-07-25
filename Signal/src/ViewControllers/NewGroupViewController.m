@@ -216,7 +216,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [nonContactsSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
-                    OWSAssert(strongSelf);
+                    OWSCAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
                     SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
@@ -309,7 +309,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [signalAccountSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
-                    OWSAssert(strongSelf);
+                    OWSCAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
 

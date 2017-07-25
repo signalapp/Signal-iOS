@@ -271,9 +271,11 @@ NS_ASSUME_NONNULL_BEGIN
                                         iconName:@"table_ic_add_to_existing_contact"];
         }
                                  actionBlock:^{
-                                     TSContactThread *contactThread = (TSContactThread *)self.thread;
+                                     OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                                     OWSCAssert(strongSelf);
+                                     TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
                                      NSString *recipientId = contactThread.contactIdentifier;
-                                     [weakSelf presentAddToContactViewControllerWithRecipientId:recipientId];
+                                     [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
 
@@ -293,6 +295,8 @@ NS_ASSUME_NONNULL_BEGIN
     [mainSection
         addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
+            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+            OWSCAssert(strongSelf);
             cell.preservesSuperviewLayoutMargins = YES;
             cell.contentView.preservesSuperviewLayoutMargins = YES;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -303,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass"];
+            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinLeadingToSuperView];
@@ -318,8 +322,8 @@ NS_ASSUME_NONNULL_BEGIN
             [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
 
             UISwitch *switchView = [UISwitch new];
-            switchView.on = self.disappearingMessagesConfiguration.isEnabled;
-            [switchView addTarget:self
+            switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
+            [switchView addTarget:strongSelf
                            action:@selector(disappearingMessagesSwitchValueDidChange:)
                  forControlEvents:UIControlEventValueChanged];
             [topView addSubview:switchView];
@@ -350,6 +354,8 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             UITableViewCell *cell = [UITableViewCell new];
+                            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                            OWSCAssert(strongSelf);
                             cell.preservesSuperviewLayoutMargins = YES;
                             cell.contentView.preservesSuperviewLayoutMargins = YES;
                             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -360,13 +366,13 @@ NS_ASSUME_NONNULL_BEGIN
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                            UIImageView *iconView = [self viewForIconWithName:@"table_ic_hourglass"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
                             [iconView autoPinLeadingToSuperView];
 
-                            UILabel *rowLabel = self.disappearingMessagesDurationLabel;
-                            [self updateDisappearingMessagesDurationLabel];
+                            UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
+                            [strongSelf updateDisappearingMessagesDurationLabel];
                             rowLabel.textColor = [UIColor blackColor];
                             rowLabel.font = [UIFont ows_footnoteFont];
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -375,11 +381,11 @@ NS_ASSUME_NONNULL_BEGIN
                             [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
 
                             UISlider *slider = [UISlider new];
-                            slider.maximumValue = (float)(self.disappearingMessagesDurations.count - 1);
+                            slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
                             slider.minimumValue = 0;
                             slider.continuous = YES; // NO fires change event only once you let go
-                            slider.value = self.disappearingMessagesConfiguration.durationIndex;
-                            [slider addTarget:self
+                            slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
+                            [slider addTarget:strongSelf
                                           action:@selector(durationSliderDidChange:)
                                 forControlEvents:UIControlEventValueChanged];
                             [cell.contentView addSubview:slider];
@@ -436,11 +442,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *muteSection = [OWSTableSection new];
     [muteSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+        OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+        OWSCAssert(strongSelf);
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        UIImageView *iconView = [self viewForIconWithName:@"table_ic_mute_thread"];
+        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
         [cell.contentView addSubview:iconView];
         [iconView autoVCenterInSuperview];
         [iconView autoPinLeadingToSuperView];
@@ -457,7 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSString *muteStatus = NSLocalizedString(
             @"CONVERSATION_SETTINGS_MUTE_NOT_MUTED", @"Indicates that the current thread is not muted.");
-        NSDate *mutedUntilDate = self.thread.mutedUntilDate;
+        NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
         NSDate *now = [NSDate date];
         if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
             NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -506,11 +514,13 @@ NS_ASSUME_NONNULL_BEGIN
                 [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
                                                      @"table cell label in conversation settings")
                                         iconName:@"table_ic_block"];
+            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+            OWSCAssert(strongSelf);
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             UISwitch *blockUserSwitch = [UISwitch new];
             blockUserSwitch.on = isBlocked;
-            [blockUserSwitch addTarget:self
+            [blockUserSwitch addTarget:strongSelf
                                 action:@selector(blockUserSwitchDidChange:)
                       forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = blockUserSwitch;
@@ -521,7 +531,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.contents = contents;
-    [self.tableView reloadData];
 }
 
 - (CGFloat)iconSpacing
@@ -892,7 +901,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.disappearingMessagesConfiguration.enabled = flag;
 
-    [self.tableView reloadData];
+    [self updateTableContents];
 }
 
 - (void)durationSliderDidChange:(UISlider *)slider
@@ -1045,7 +1054,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
     [self.thread updateWithMutedUntilDate:value];
-    [self.tableView reloadData];
+    [self updateTableContents];
 }
 
 #pragma mark - Notifications
