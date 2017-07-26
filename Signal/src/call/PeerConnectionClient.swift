@@ -720,11 +720,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
      * We synchronize access to state in this class using this queue.
      */
     private func assertOnSignalingQueue() {
-        if #available(iOS 10.0, *) {
-            dispatchPrecondition(condition: .onQueue(type(of: self).signalingQueue))
-        } else {
-            // Skipping check on <iOS10, since syntax is different and it's just a development convenience.
-        }
+        assertOnQueue(type(of: self).signalingQueue)
     }
 
     // MARK: Test-only accessors
