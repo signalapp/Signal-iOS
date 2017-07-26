@@ -130,6 +130,9 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (UIView *)firstSectionHeader
 {
     UIView *firstSectionHeader = [UIView new];
+    firstSectionHeader.userInteractionEnabled = YES;
+    [firstSectionHeader
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
     firstSectionHeader.backgroundColor = [UIColor whiteColor];
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
@@ -166,6 +169,13 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
+}
+
+- (void)headerWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.groupNameTextField becomeFirstResponder];
+    }
 }
 
 - (void)avatarTouched:(UIGestureRecognizer *)sender

@@ -173,6 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.thread.groupModel);
 
     UIView *firstSectionHeader = [UIView new];
+    firstSectionHeader.userInteractionEnabled = YES;
+    [firstSectionHeader
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
     firstSectionHeader.backgroundColor = [UIColor whiteColor];
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
@@ -213,6 +216,13 @@ NS_ASSUME_NONNULL_BEGIN
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
+}
+
+- (void)headerWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.groupNameTextField becomeFirstResponder];
+    }
 }
 
 - (void)avatarTouched:(UIGestureRecognizer *)sender
