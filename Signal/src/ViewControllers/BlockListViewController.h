@@ -2,8 +2,12 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSViewController.h"
 
-@interface BlockListViewController : UIViewController
+NS_ASSUME_NONNULL_BEGIN
+
+@interface BlockListViewController : OWSViewController
 
 @end
+
+NS_ASSUME_NONNULL_END

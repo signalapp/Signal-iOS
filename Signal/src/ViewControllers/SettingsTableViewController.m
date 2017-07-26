@@ -239,8 +239,6 @@
 - (void)showPrivacy
 {
     PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -260,16 +258,12 @@
 - (void)showAdvanced
 {
     AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showAbout
 {
     AboutTableViewController *vc = [[AboutTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"About View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 

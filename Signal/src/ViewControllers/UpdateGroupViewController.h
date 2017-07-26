@@ -3,6 +3,7 @@
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
+#import "OWSViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,7 +15,7 @@ typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
     UpdateGroupMode_EditGroupAvatar,
 };
 
-@interface UpdateGroupViewController : UIViewController
+@interface UpdateGroupViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 

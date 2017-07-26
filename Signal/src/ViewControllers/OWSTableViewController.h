@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -103,7 +103,7 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 #pragma mark -
 
-@interface OWSTableViewController : UIViewController
+@interface OWSTableViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSTableViewControllerDelegate> delegate;
 

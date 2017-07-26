@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContactsViewHelper;
 
-@interface SelectRecipientViewController : UIViewController
+@interface SelectRecipientViewController : OWSViewController
 
 @property (nonatomic, weak) id<SelectRecipientViewControllerDelegate> delegate;
 

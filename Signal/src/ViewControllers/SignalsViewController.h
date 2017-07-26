@@ -2,11 +2,12 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewController.h"
 #import <UIKit/UIKit.h>
 
 @class TSThread;
 
-@interface SignalsViewController : UIViewController
+@interface SignalsViewController : OWSViewController
 
 // TODO: Remove this property.
 @property (nonatomic) BOOL newlyRegisteredUser;

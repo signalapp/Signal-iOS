@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (TSThread *thread in [self filteredThreadsWithSearchText]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
-            OWSAssert(strongSelf);
+            OWSCAssert(strongSelf);
 
             // To be consistent with the threads (above), we use ContactTableViewCell
             // instead of InboxTableViewCell to present contacts and threads.
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
-            OWSAssert(strongSelf);
+            OWSCAssert(strongSelf);
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];

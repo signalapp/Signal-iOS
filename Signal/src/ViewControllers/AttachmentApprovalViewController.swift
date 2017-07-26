@@ -5,7 +5,7 @@
 import Foundation
 import MediaPlayer
 
-class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlayerDelegate {
+class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPlayerDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
 
