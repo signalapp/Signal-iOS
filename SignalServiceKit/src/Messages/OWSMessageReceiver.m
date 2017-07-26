@@ -19,11 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageProcessingJob : TSYapDatabaseObject
 
-@property (nonatomic, readonly) OWSSignalServiceProtosEnvelope *envelopeProto;
 @property (nonatomic, readonly) NSDate *createdAt;
 
 - (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (OWSSignalServiceProtosEnvelope *)envelopeProto;
 
 @end
 
@@ -33,11 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-// TODO rename?
 @implementation OWSMessageProcessingJob
 
 - (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
+    OWSAssert(envelope);
+
     self = [super initWithUniqueId:[NSUUID new].UUIDString];
     if (!self) {
         return self;
@@ -119,7 +120,6 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 + (YapDatabaseView *)databaseExension
 {
-
     YapDatabaseViewSorting *sorting =
         [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
             NSString *group,
@@ -131,12 +131,14 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
             id object2) {
 
             if (![object1 isKindOfClass:[OWSMessageProcessingJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", object1, collection1) return NSOrderedSame;
+                OWSFail(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
+                return NSOrderedSame;
             }
             OWSMessageProcessingJob *job1 = (OWSMessageProcessingJob *)object1;
 
             if (![object2 isKindOfClass:[OWSMessageProcessingJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", object2, collection2) return NSOrderedSame;
+                OWSFail(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
+                return NSOrderedSame;
             }
             OWSMessageProcessingJob *job2 = (OWSMessageProcessingJob *)object2;
 
@@ -149,7 +151,8 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
             NSString *_Nonnull key,
             id _Nonnull object) {
             if (![object isKindOfClass:[OWSMessageProcessingJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", object, collection) return nil;
+                OWSFail(@"Unexpected object: %@ in collection: %@", object, collection);
+                return nil;
             }
 
             // Arbitrary string - all in the same group. We're only using the view for sorting.
@@ -168,6 +171,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 {
     YapDatabaseView *existingView = [database registeredExtension:OWSMessageProcessingJobFinderExtensionName];
     if (existingView) {
+        OWSFail(@"%@ was already initailized.", OWSMessageProcessingJobFinderExtensionName);
         // already initialized
         return;
     }
