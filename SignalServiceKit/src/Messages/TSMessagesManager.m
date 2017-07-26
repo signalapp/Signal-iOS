@@ -392,13 +392,6 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
 
-            NSUInteger kMaxEncryptedDataLength = 250 * 1024;
-            if (encryptedData.length > kMaxEncryptedDataLength) {
-                OWSProdError(@"message_manager_error_oversize_message");
-                completion(nil);
-                return;
-            }
-
             NSData *plaintextData;
 
             @try {
