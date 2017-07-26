@@ -192,7 +192,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             }];
     } else {
         self.hasRequestInFlight = YES;
-        __block isComplete = NO;
+        __block BOOL isComplete = NO;
         [self submitEvent:eventDictionary
             eventKey:eventKey
             success:^{
