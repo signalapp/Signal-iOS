@@ -5,6 +5,7 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageReceiver.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
@@ -17,6 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// TODO we can eventually deprecate this, since incoming messages are now always decrypted.
 @interface TSInvalidIdentityKeyReceivingErrorMessage ()
 
 @property (nonatomic, readonly, copy) NSString *authorId;
@@ -65,7 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     return _envelope;
 }
 
-
 - (void)acceptNewIdentityKey
 {
     if (self.errorType != TSErrorMessageWrongTrustedIdentityKey) {
@@ -89,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.thread receivedMessagesForInvalidKey:newKey];
 
             for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-                [[TSMessagesManager sharedManager] handleReceivedEnvelope:errorMessage.envelope completion:nil];
+                [[OWSMessageReceiver sharedInstance] handleReceivedEnvelope:errorMessage.envelope];
 
                 // Here we remove the existing error message because handleReceivedEnvelope will either
                 //  1.) succeed and create a new successful message in the thread or...
