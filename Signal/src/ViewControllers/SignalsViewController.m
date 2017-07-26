@@ -434,10 +434,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (!self.shouldObserveDBModifications) {
-        return;
+    if (self.shouldObserveDBModifications) {
+        [self resetMappings];
     }
+}
 
+- (void)resetMappings
+{
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
     // reset all state updated by yapDatabaseModified:.
     if (self.threadMappings != nil) {
@@ -455,6 +458,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [[self tableView] reloadData];
     [self checkIfEmptyView];
     [self updateInboxCountLabel];
+
+    // If the user hasn't already granted contact access
+    // we don't want to request until they receive a message.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -836,13 +845,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     OWSAssert([NSThread isMainThread]);
 
-    self.shouldObserveDBModifications = NO;
-
     self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
                                                                      view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
-    [self updateShouldObserveDBModifications];
+    [self resetMappings];
 
     [[self tableView] reloadData];
     [self checkIfEmptyView];

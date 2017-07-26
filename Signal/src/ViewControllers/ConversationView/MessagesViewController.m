@@ -367,6 +367,8 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     self.messageMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
+    // We need to impose the range restrictions on the mappings immediately to avoid
+    // doing a great deal of unnecessary work and causing a perf hotspot.
     [self updateMessageMappingRangeOptions];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
@@ -2237,9 +2239,7 @@ typedef enum : NSUInteger {
 
     self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
 
-    self.shouldObserveDBModifications = NO;
-
-    [self updateShouldObserveDBModifications];
+    [self resetMappings];
 
     [self.collectionView layoutSubviews];
 
@@ -4176,10 +4176,13 @@ typedef enum : NSUInteger {
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (!self.shouldObserveDBModifications) {
-        return;
+    if (self.shouldObserveDBModifications) {
+        [self resetMappings];
     }
+}
 
+- (void)resetMappings
+{
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
     // reset all state updated by yapDatabaseModified:.
     if (self.messageMappings != nil) {
