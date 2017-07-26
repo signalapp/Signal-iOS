@@ -52,6 +52,12 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    OWSProdInfo(@"registration_began");
+}
+
 - (void)createViews
 {
     self.view.backgroundColor = [UIColor ows_signalBrandBlueColor];
@@ -335,6 +341,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     __weak RegistrationViewController *weakSelf = self;
     [TSAccountManager registerWithPhoneNumber:parsedPhoneNumber
         success:^{
+            OWSProdInfo(@"registration_registered_phone_number");
+
             [weakSelf.spinnerView stopAnimating];
 
             CodeVerificationViewController *vc = [CodeVerificationViewController new];

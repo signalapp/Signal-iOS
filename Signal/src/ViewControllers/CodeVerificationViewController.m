@@ -260,8 +260,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)verifyChallengeAction:(nullable id)sender
 {
     [self startActivityIndicator];
+    OWSProdInfo(@"registration_registering_code");
     [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
         .then(^{
+            OWSProdInfo(@"registration_registered_complete");
+
             DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
