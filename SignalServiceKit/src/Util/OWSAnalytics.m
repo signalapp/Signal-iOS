@@ -7,7 +7,6 @@
 #import "TSStorageManager.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
-#include <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -275,32 +274,12 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     return result;
 }
 
-- (NSString *)deviceHardwareModel
-{
-    static NSString *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        size_t size;
-        char *kHwModel = "hw.model";
-        sysctlbyname(kHwModel, NULL, &size, NULL, 0);
-
-        char *answer = malloc(size);
-        sysctlbyname(kHwModel, answer, &size, NULL, 0);
-
-        result = [NSString stringWithCString:answer encoding:NSUTF8StringEncoding];
-
-        free(answer);
-    });
-    return result;
-}
-
 - (NSDictionary<NSString *, id> *)eventSuperProperties
 {
     NSMutableDictionary<NSString *, id> *result = [NSMutableDictionary new];
     result[@"app_version"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     result[@"platform"] = @"ios";
     result[@"ios_version"] = self.operatingSystemVersionString;
-    result[@"device_model"] = self.deviceHardwareModel;
     return result;
 }
 
