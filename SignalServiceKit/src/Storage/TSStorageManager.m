@@ -86,11 +86,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
 - (nullable Class)unarchiver:(NSKeyedUnarchiver *)unarchiver cannotDecodeObjectOfClassName:(NSString *)name originalClasses:(NSArray<NSString *> *)classNames
 {
-    OWSProdErrorWParams(@"storage_error_could_not_decode_class", ^{
-        return (@{
-            @"class_name" : name,
-        });
-    });
+    OWSProdError(@"storage_error_could_not_decode_class");
     return [OWSUnknownObject class];
 }
 
@@ -187,14 +183,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSProdErrorWParams(@"storage_error_deserialization", ^{
-                return (@{
-                    @"collection" : collection,
-                    kOWSAnalyticsParameterNSExceptionName : exception.name,
-                    kOWSAnalyticsParameterNSExceptionReason : exception.reason,
-                    kOWSAnalyticsParameterNSExceptionClassName : NSStringFromClass([exception class]),
-                });
-            });
+            OWSProdError(@"storage_error_deserialization");
             @throw exception;
         }
     };
@@ -264,7 +253,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     BOOL success        = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
-        OWSProdCriticalWNSError(@"storage_error_file_protection", error);
+        OWSProdCritical(@"storage_error_file_protection");
     }
 }
 
@@ -383,7 +372,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     NSError *keySetError;
     [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
     if (keySetError) {
-        OWSProdCriticalWNSError(@"storage_error_could_not_store_database_password", keySetError);
+        OWSProdCritical(@"storage_error_could_not_store_database_password");
 
         [self deletePasswordFromKeychain];
 

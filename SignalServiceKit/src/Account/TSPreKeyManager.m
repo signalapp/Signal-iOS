@@ -183,9 +183,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 if (!IsNSErrorNetworkFailure(error)) {
                     if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-                        OWSProdErrorWNSError(@"error_prekeys_update_failed_signed_and_onetime", error);
+                        OWSProdError(@"error_prekeys_update_failed_signed_and_onetime");
                     } else {
-                        OWSProdErrorWNSError(@"error_prekeys_update_failed_just_signed", error);
+                        OWSProdError(@"error_prekeys_update_failed_just_signed");
                     }
                 }
 
@@ -305,7 +305,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                     }
                     failure:^(NSURLSessionDataTask *task, NSError *error) {
                         if (!IsNSErrorNetworkFailure(error)) {
-                            OWSProdErrorWNSError(@"error_prekeys_current_signed_prekey_request_failed", error);
+                            OWSProdError(@"error_prekeys_current_signed_prekey_request_failed");
                         }
                         DDLogWarn(@"%@ Could not retrieve current signed key from the service.", self.tag);
 
@@ -316,7 +316,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdErrorWNSError(@"error_prekeys_available_prekeys_request_failed", error);
+                OWSProdError(@"error_prekeys_available_prekeys_request_failed");
             }
             DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.tag);
 
@@ -401,12 +401,11 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                 }
             }
 
-            OWSProdInfoWParams(@"prekeys_deleted_old_signed_prekey", ^{
-                return (@{
-                    @"generated" : [dateFormatter stringFromDate:signedPrekey.generatedAt],
-                    @"accepted" : @(signedPrekey.wasAcceptedByService),
-                });
-            });
+            if (signedPrekey.wasAcceptedByService) {
+                OWSProdInfo(@"prekeys_deleted_old_accepted_signed_prekey");
+            } else {
+                OWSProdInfo(@"prekeys_deleted_old_unaccepted_signed_prekey");
+            }
 
             oldSignedPreKeyCount--;
             [storageManager removeSignedPreKey:signedPrekey.Id];
