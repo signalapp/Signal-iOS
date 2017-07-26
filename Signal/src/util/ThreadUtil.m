@@ -287,7 +287,14 @@ NS_ASSUME_NONNULL_BEGIN
                     if (!isMissing) {
                         continue;
                     }
-                    [missingUnseenSafetyNumberChanges addObject:safetyNumberChange.newIdentityKey];
+
+                    NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
+                    if (newIdentityKey == nil) {
+                        OWSFail(@"Safety number change was missing it's new identity key.");
+                        continue;
+                    }
+
+                    [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
                 }
 
                 // Count the de-duplicated "blocking" safety number changes and all

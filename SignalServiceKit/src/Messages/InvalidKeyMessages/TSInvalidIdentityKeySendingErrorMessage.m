@@ -50,12 +50,18 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
     OWSFail(@"accepting new identity key is deprecated.");
 
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
+    NSData *_Nullable newIdentityKey = self.newIdentityKey;
+    if (!newIdentityKey) {
+        OWSFail(@"newIdentityKey is unexpectedly nil. Bad Prekey bundle?: %@", self.preKeyBundle);
+        return;
+    }
+
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[OWSIdentityManager sharedManager] saveRemoteIdentity:self.newIdentityKey recipientId:self.recipientId];
+        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
     });
 }
 
-- (NSData *)newIdentityKey
+- (nullable NSData *)newIdentityKey
 {
     return [self.preKeyBundle.identityKey removeKeyType];
 }
