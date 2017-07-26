@@ -81,13 +81,6 @@ enum CallError: Error {
 // Should be roughly synced with Android client for consistency
 fileprivate let connectingTimeoutSeconds = 120
 
-// Example: OWSProdError("blah", #file, #function, #line)
-func OWSProdError(_ __eventName: String, file: String, function: String, line: Int32) {
-    let location = "\((file as NSString).lastPathComponent):\(function)"
-    OWSAnalytics
-        .logEvent(__eventName, severity: .error, parameters: nil, location: (location as NSString).utf8String!, line:line)
-}
-
 func OWSProdCallAssertionError(description: String, file: String, function: String, line: Int32) -> CallError {
     OWSProdError(description, file:file, function:function, line:line)
     return .assertionError(description: description)

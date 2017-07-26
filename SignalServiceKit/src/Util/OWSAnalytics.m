@@ -4,6 +4,7 @@
 
 #import "OWSAnalytics.h"
 #import "AppVersion.h"
+#import "OWSQueues.h"
 #import "TSStorageManager.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
@@ -178,10 +179,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 {
     OWSAssert(eventDictionary);
     OWSAssert(eventKey);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OWSAssert(dispatch_get_current_queue() == self.serialQueue);
-#pragma clang diagnostic pop
+    AssertOnDispatchQueue(self.serialQueue);
 
     if (isCritical) {
         [self submitEvent:eventDictionary
@@ -194,9 +192,14 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             }];
     } else {
         self.hasRequestInFlight = YES;
+        __block isComplete = NO;
         [self submitEvent:eventDictionary
             eventKey:eventKey
             success:^{
+                if (isComplete) {
+                    return;
+                }
+                isComplete = YES;
                 DDLogDebug(@"%@ sendEvent succeeded: %@", self.tag, eventKey);
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
@@ -214,6 +217,10 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                 });
             }
             failure:^{
+                if (isComplete) {
+                    return;
+                }
+                isComplete = YES;
                 DDLogError(@"%@ sendEvent failed: %@", self.tag, eventKey);
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
@@ -235,10 +242,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 {
     OWSAssert(eventDictionary);
     OWSAssert(eventKey);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OWSAssert(dispatch_get_current_queue() == self.serialQueue);
-#pragma clang diagnostic pop
+    AssertOnDispatchQueue(self.serialQueue);
 
     DDLogDebug(@"%@ submitting: %@", self.tag, eventKey);
 
