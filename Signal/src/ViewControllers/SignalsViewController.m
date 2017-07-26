@@ -432,17 +432,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         return;
     }
 
-    DDLogDebug(@"%@ shouldObserveDBModifications: %d -> %d",
-        self.tag,
-        _shouldObserveDBModifications,
-        shouldObserveDBModifications);
-
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (!self.shouldObserveDBModifications) {
-        return;
+    if (self.shouldObserveDBModifications) {
+        [self resetMappings];
     }
+}
 
+- (void)resetMappings
+{
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
     // reset all state updated by yapDatabaseModified:.
     if (self.threadMappings != nil) {
@@ -460,6 +458,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [[self tableView] reloadData];
     [self checkIfEmptyView];
     [self updateInboxCountLabel];
+
+    // If the user hasn't already granted contact access
+    // we don't want to request until they receive a message.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
+    }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -825,23 +829,27 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _viewingThreadsIn = viewingThreadsIn;
     self.segmentedControl.selectedSegmentIndex = (viewingThreadsIn == kInboxState ? 0 : 1);
     if (didChange || !self.threadMappings) {
-        [self changeToGrouping:(viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup)];
+        [self updateMappings];
     } else {
         [self checkIfEmptyView];
         [self updateReminderViews];
     }
 }
 
-- (void)changeToGrouping:(NSString *)grouping {
+- (NSString *)currentGrouping
+{
+    return self.viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup;
+}
+
+- (void)updateMappings
+{
     OWSAssert([NSThread isMainThread]);
 
-    self.shouldObserveDBModifications = NO;
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
+                                                                     view:TSThreadDatabaseViewExtensionName];
+    [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
-    self.threadMappings =
-        [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
-    [self.threadMappings setIsReversed:YES forGroup:grouping];
-
-    [self updateShouldObserveDBModifications];
+    [self resetMappings];
 
     [[self tableView] reloadData];
     [self checkIfEmptyView];
@@ -861,9 +869,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    NSArray *sectionChanges = nil;
-    NSArray *rowChanges     = nil;
+
+    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
+                                                                               inNotifications:notifications]) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.self.threadMappings updateWithTransaction:transaction];
+        }];
+        return;
+    }
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
@@ -871,10 +889,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         [self.contactsManager requestSystemContactsOnce];
     }
 
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
+    NSArray *sectionChanges = nil;
+    NSArray *rowChanges = nil;
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
