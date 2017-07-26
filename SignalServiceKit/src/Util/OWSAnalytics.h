@@ -38,8 +38,6 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 
 + (void)appLaunchDidBegin;
 
-+ (void)appLaunchDidComplete;
-
 + (long)orderOfMagnitudeOf:(long)value;
 
 @end

@@ -795,7 +795,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
-    [OWSAnalytics appLaunchDidComplete];
     [AppVersion.instance appLaunchDidComplete];
 
     [self ensureRootViewController];
