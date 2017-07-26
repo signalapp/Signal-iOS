@@ -299,7 +299,9 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 - (void)addEvent:(NSString *)eventName severity:(OWSAnalyticsSeverity)severity properties:(NSDictionary *)properties
 {
     OWSAssert(eventName.length > 0);
+    OWSAssert(properties);
 
+#ifndef NO_SIGNAL_ANALYTICS
     BOOL isError = severity == OWSAnalyticsSeverityError;
     BOOL isCritical = severity == OWSAnalyticsSeverityCritical;
 
@@ -309,7 +311,6 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         return;
     }
 
-#ifndef NO_SIGNAL_ANALYTICS
     void (^addEvent)() = ^{
         // Add super properties.
         NSMutableDictionary *eventProperties = (properties ? [properties mutableCopy] : [NSMutableDictionary new]);

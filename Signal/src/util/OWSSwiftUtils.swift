@@ -3,10 +3,6 @@
 //
 
 import Foundation
-//import PromiseKit
-//import WebRTC
-
-// MARK: Helpers
 
 /**
  * We synchronize access to state in this class using this queue.
@@ -23,11 +19,4 @@ func owsFail(_ message: String) {
     Logger.error(message)
     Logger.flush()
     assertionFailure(message)
-}
-
-// Example: OWSProdError("blah", #file, #function, #line)
-func OWSProdError(_ eventName: String, file: String, function: String, line: Int32) {
-    let location = "\((file as NSString).lastPathComponent):\(function)"
-    OWSAnalytics
-        .logEvent(eventName, severity: .error, parameters: nil, location: (location as NSString).utf8String!, line:line)
 }
