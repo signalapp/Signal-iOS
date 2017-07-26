@@ -74,9 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSData *newKey = [self newIdentityKey];
+    NSData *_Nullable newKey = [self newIdentityKey];
     if (!newKey) {
-        DDLogError(@"Couldn't extract identity key to accept");
+        OWSFail(@"Couldn't extract identity key to accept");
         return;
     }
 
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (NSData *)newIdentityKey
+- (nullable NSData *)newIdentityKey
 {
     if (!self.envelope) {
         DDLogError(@"Error message had no envelope data to extract key from");

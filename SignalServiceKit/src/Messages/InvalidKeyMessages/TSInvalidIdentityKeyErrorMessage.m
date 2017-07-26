@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
 }
 
-- (NSString *)newIdentityKey
+- (nullable NSData *)newIdentityKey
 {
     NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
     return nil;
