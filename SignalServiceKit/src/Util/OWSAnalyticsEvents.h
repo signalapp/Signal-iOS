@@ -40,6 +40,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)callServiceCouldNotCreateReadyToSendIceUpdatesPromise;
 
++ (NSString *)callServiceErrorHandleLocalAddedIceCandidate;
+
++ (NSString *)callServiceErrorHandleLocalHungupCall;
+
++ (NSString *)callServiceErrorHandleReceivedErrorExternal;
+
++ (NSString *)callServiceErrorHandleReceivedErrorInternal;
+
++ (NSString *)callServiceErrorHandleRemoteAddedIceCandidate;
+
++ (NSString *)callServiceErrorIncomingConnectionFailedExternal;
+
++ (NSString *)callServiceErrorIncomingConnectionFailedInternal;
+
++ (NSString *)callServiceErrorOutgoingConnectionFailedExternal;
+
++ (NSString *)callServiceErrorOutgoingConnectionFailedInternal;
+
++ (NSString *)callServiceErrorTimeoutWhileConnectingIncoming;
+
++ (NSString *)callServiceErrorTimeoutWhileConnectingOutgoing;
+
 + (NSString *)callServiceMissingFulfillReadyToSendIceUpdatesPromise;
 
 + (NSString *)callServicePeerConnectionAlreadySet;

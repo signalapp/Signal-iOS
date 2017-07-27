@@ -82,6 +82,61 @@ NS_ASSUME_NONNULL_BEGIN
     return @"call_service_could_not_create_ready_to_send_ice_updates_promise";
 }
 
++ (NSString *)callServiceErrorHandleLocalAddedIceCandidate
+{
+    return @"call_service_error_handle_local_added_ice_candidate";
+}
+
++ (NSString *)callServiceErrorHandleLocalHungupCall
+{
+    return @"call_service_error_handle_local_hungup_call";
+}
+
++ (NSString *)callServiceErrorHandleReceivedErrorExternal
+{
+    return @"call_service_error_handle_received_error_external";
+}
+
++ (NSString *)callServiceErrorHandleReceivedErrorInternal
+{
+    return @"call_service_error_handle_received_error_internal";
+}
+
++ (NSString *)callServiceErrorHandleRemoteAddedIceCandidate
+{
+    return @"call_service_error_handle_remote_added_ice_candidate";
+}
+
++ (NSString *)callServiceErrorIncomingConnectionFailedExternal
+{
+    return @"call_service_error_incoming_connection_failed_external";
+}
+
++ (NSString *)callServiceErrorIncomingConnectionFailedInternal
+{
+    return @"call_service_error_incoming_connection_failed_internal";
+}
+
++ (NSString *)callServiceErrorOutgoingConnectionFailedExternal
+{
+    return @"call_service_error_outgoing_connection_failed_external";
+}
+
++ (NSString *)callServiceErrorOutgoingConnectionFailedInternal
+{
+    return @"call_service_error_outgoing_connection_failed_internal";
+}
+
++ (NSString *)callServiceErrorTimeoutWhileConnectingIncoming
+{
+    return @"call_service_error_timeout_while_connecting_incoming";
+}
+
++ (NSString *)callServiceErrorTimeoutWhileConnectingOutgoing
+{
+    return @"call_service_error_timeout_while_connecting_outgoing";
+}
+
 + (NSString *)callServiceMissingFulfillReadyToSendIceUpdatesPromise
 {
     return @"call_service_missing_fulfill_ready_to_send_ice_updates_promise";
