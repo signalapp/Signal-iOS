@@ -27,9 +27,10 @@ def splitall(path):
             path = parts[0]
             allparts.insert(0, parts[1])
     return allparts
+
+event_names = []
     
-    
-def process(filepath, macros):
+def process(filepath, c_macros, swift_macros):
 
     short_filepath = filepath[len(git_repo_path):]
     if short_filepath.startswith(os.sep):
@@ -44,22 +45,11 @@ def process(filepath, macros):
     
     is_swift = file_ext in ('.swift')
     
-    if is_swift:
-        macros = macros + ['OWSProdCallAssertionError',]
-        # print 'macros', macros
     
-    if file_ext in ('.swift'):
-        # env_copy = os.environ.copy()
-        # env_copy["SCRIPT_INPUT_FILE_COUNT"] = "1"
-        # env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
-        # lint_output = subprocess.check_output(['swiftlint', 'autocorrect', '--use-script-input-files'], env=env_copy)
-        # print lint_output
-        # try:
-        #     lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
-        # except subprocess.CalledProcessError, e:
-        #     lint_output = e.output
-        # print lint_output
-        pass
+    if is_swift:
+        macros = swift_macros
+    else:
+        macros = c_macros
     
     # print short_filepath, is_swift
     
@@ -100,6 +90,7 @@ def process(filepath, macros):
             break
             
         event_name = best_match.group(1).strip()
+        event_names.append(event_name)
         if not has_printed_filename:
             has_printed_filename = True
             print short_filepath
@@ -110,7 +101,7 @@ def process(filepath, macros):
         
         # break
     
-    return
+    return 
     
     with open(filepath, 'rt') as f:
         text = f.read()
@@ -158,7 +149,7 @@ def should_ignore_path(path):
     return False
     
     
-def process_if_appropriate(filepath, macros):
+def process_if_appropriate(filepath, c_macros, swift_macros):
     filename = os.path.basename(filepath)
     if filename.startswith('.'):
         return
@@ -167,10 +158,14 @@ def process_if_appropriate(filepath, macros):
         return
     if should_ignore_path(filepath):
         return
-    process(filepath, macros)
+    process(filepath, c_macros, swift_macros)
 
     
 def extract_macros(filepath):
+
+    filename = os.path.basename(filepath)
+    file_ext = os.path.splitext(filename)[1]
+    is_swift = file_ext in ('.swift')
 
     macros = []
     
@@ -181,7 +176,11 @@ def extract_macros(filepath):
     for line in lines:
         # Match lines of this form: 
         # #define OWSProdCritical(__eventName) ...
-        matcher = re.compile(r'#define (OWSProd[^\(]+)\(.+[,\)]')
+    
+        if is_swift:
+            matcher = re.compile(r'func (OWSProd[^\(]+)\(.+[,\)]')
+        else:
+            matcher = re.compile(r'#define (OWSProd[^\(]+)\(.+[,\)]')
         # matcher = re.compile(r'#define (OWSProd)')
         match = matcher.search(line)
         if match:
@@ -199,10 +198,20 @@ if __name__ == "__main__":
     if not os.path.exists(macros_header_file_path):
         print 'Macros header does not exist:', macros_header_file_path
         sys.exit(1)
-    macros = extract_macros(macros_header_file_path)
-    print 'macros:', macros
-    
+    c_macros = extract_macros(macros_header_file_path)
+    print 'c_macros:', c_macros
+
+    macros_header_file_path = os.path.join(git_repo_path, 'Signal', 'src', 'util', 'OWSAnalytics.swift')
+    if not os.path.exists(macros_header_file_path):
+        print 'Macros header does not exist:', macros_header_file_path
+        sys.exit(1)
+    swift_macros = extract_macros(macros_header_file_path)
+    print 'swift_macros:', swift_macros
+        
     for rootdir, dirnames, filenames in os.walk(git_repo_path):
         for filename in filenames:
             file_path = os.path.abspath(os.path.join(rootdir, filename))
-            process_if_appropriate(file_path, macros)
+            process_if_appropriate(file_path, c_macros, swift_macros)
+
+    print
+    print 'event_names', sorted(set(event_names))
