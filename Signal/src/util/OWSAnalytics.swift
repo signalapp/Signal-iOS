@@ -4,8 +4,18 @@
 
 import Foundation
 
+func FormatAnalyticsLocation(file: String, function: String) -> NSString {
+    return "\((file as NSString).lastPathComponent):\(function)" as NSString
+}
+
 func OWSProdError(_ eventName: String, file: String, function: String, line: Int32) {
-    let location = "\((file as NSString).lastPathComponent):\(function)"
+    let location = FormatAnalyticsLocation(file: file, function: function)
     OWSAnalytics
-        .logEvent(eventName, severity: .error, parameters: nil, location: (location as NSString).utf8String!, line:line)
+        .logEvent(eventName, severity: .error, parameters: nil, location: location.utf8String!, line:line)
+}
+
+func OWSProdInfo(_ eventName: String, file: String, function: String, line: Int32) {
+    let location = FormatAnalyticsLocation(file: file, function: function)
+    OWSAnalytics
+        .logEvent(eventName, severity: .info, parameters: nil, location: location.utf8String!, line:line)
 }
