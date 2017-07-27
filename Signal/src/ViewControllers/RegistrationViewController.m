@@ -54,8 +54,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    OWSProdInfo(@"registration_began");
+
+    OWSProdInfo([OWSAnalyticsEvents registrationBegan]);
 }
 
 - (void)createViews
@@ -341,7 +341,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     __weak RegistrationViewController *weakSelf = self;
     [TSAccountManager registerWithPhoneNumber:parsedPhoneNumber
         success:^{
-            OWSProdInfo(@"registration_registered_phone_number");
+            OWSProdInfo([OWSAnalyticsEvents registrationRegisteredPhoneNumber]);
 
             [weakSelf.spinnerView stopAnimating];
 

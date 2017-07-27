@@ -160,7 +160,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                                                remainingRetries:remainingRetries - 1];
             } else {
                 if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError(@"accounts_error_register_push_tokens_failed");
+                    OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
                 }
                 failureHandler(error);
             }
@@ -197,7 +197,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"accounts_error_verification_code_request_failed");
+                OWSProdError([OWSAnalyticsEvents accountsErrorVerificationCodeRequestFailed]);
             }
             DDLogError(@"%@ Failed to request verification code request with error:%@", self.tag, error);
             failureBlock(error);
@@ -270,7 +270,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"accounts_error_verify_account_request_failed");
+                OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
             }
             DDLogWarn(@"%@ Error verifying code: %@", self.tag, error.debugDescription);
             switch (error.code) {
@@ -326,7 +326,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"accounts_error_unregister_account_request_failed");
+                OWSProdError([OWSAnalyticsEvents accountsErrorUnregisterAccountRequestFailed]);
             }
             DDLogError(@"%@ Failed to unregister with error: %@", self.tag, error);
             failureBlock(error);

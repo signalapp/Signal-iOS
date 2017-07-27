@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               if (!IsNSErrorNetworkFailure(error)) {
-                  OWSProdError(@"contacts_error_contacts_intersection_failed");
+                  OWSProdError([OWSAnalyticsEvents contactsErrorContactsIntersectionFailed]);
               }
 
               NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;

@@ -48,6 +48,7 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSAnalytics.h>
+#import <SignalServiceKit/OWSAnalyticsEvents.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSCallAnswerMessage.h>
 #import <SignalServiceKit/OWSCallBusyMessage.h>

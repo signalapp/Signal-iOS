@@ -336,7 +336,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
     // Drop any too-large messages on the floor. Well behaving clients should never send them.
     NSUInteger kMaxEnvelopeByteCount = 250 * 1024;
     if (envelope.serializedSize > kMaxEnvelopeByteCount) {
-        OWSProdError(@"message_receiver_error_oversize_message");
+        OWSProdError([OWSAnalyticsEvents messageReceiverErrorOversizeMessage]);
         return;
     }
 
@@ -344,7 +344,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
     // This likely indicates a misbehaving sending client.
     NSUInteger kLargeEnvelopeWarningByteCount = 25 * 1024;
     if (envelope.serializedSize > kLargeEnvelopeWarningByteCount) {
-        OWSProdError(@"message_receiver_error_large_message");
+        OWSProdError([OWSAnalyticsEvents messageReceiverErrorLargeMessage]);
     }
 
     [self.processingQueue enqueueEnvelopeForProcessing:envelope];

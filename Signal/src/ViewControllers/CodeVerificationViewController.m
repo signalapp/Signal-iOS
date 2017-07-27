@@ -261,10 +261,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)verifyChallengeAction:(nullable id)sender
 {
     [self startActivityIndicator];
-    OWSProdInfo(@"registration_registering_code");
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
         .then(^{
-            OWSProdInfo(@"registration_registering_submitted_code");
+            OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
             DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         })
         .catch(^(NSError *_Nonnull error) {
-            OWSProdInfo(@"registration_registration_failed");
+            OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
             DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Send codes again
 
 - (void)sendCodeViaSMSAction:(id)sender {
-    OWSProdInfo(@"registration_registering_requested_new_code_by_sms");
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringRequestedNewCodeBySms]);
 
     [self enableServerActions:NO];
 
@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sendCodeViaVoiceAction:(id)sender {
-    OWSProdInfo(@"registration_registering_requested_new_code_by_voice");
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringRequestedNewCodeByVoice]);
 
     [self enableServerActions:NO];
 
@@ -374,7 +374,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)backButtonPressed:(id)sender {
-    OWSProdInfo(@"registration_verification_back");
+    OWSProdInfo([OWSAnalyticsEvents registrationVerificationBack]);
 
     [self.navigationController popViewControllerAnimated:YES];
 }
