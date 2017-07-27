@@ -192,8 +192,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock
 {
     // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerThreadInteractionsDatabaseView];
+    [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
