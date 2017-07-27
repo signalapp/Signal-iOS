@@ -338,6 +338,7 @@ protocol CallServiceObserver: class {
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                OWSProdInfo("call_service_error_timeout_while_connecting_outgoing", file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting to receive call answer")
             }
 
@@ -350,8 +351,10 @@ protocol CallServiceObserver: class {
             Logger.error("\(self.TAG) placing call \(call.identifiersForLogs) failed with error: \(error)")
 
             if let callError = error as? CallError {
+                OWSProdInfo("call_service_error_outgoing_connection_failed_internal", file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: call, error: callError)
             } else {
+                OWSProdInfo("call_service_error_outgoing_connection_failed_external", file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
@@ -422,8 +425,10 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
+                OWSProdInfo("call_service_error_handle_received_error_internal", file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: call, error: callError)
             } else {
+                OWSProdInfo("call_service_error_handle_received_error_external", file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
@@ -630,6 +635,7 @@ protocol CallServiceObserver: class {
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                OWSProdInfo("call_service_error_timeout_while_connecting_incoming", file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting for call to connect")
             }
 
@@ -648,8 +654,10 @@ protocol CallServiceObserver: class {
                 return
             }
             if let callError = error as? CallError {
+                OWSProdInfo("call_service_error_incoming_connection_failed_internal", file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: newCall, error: callError)
             } else {
+                OWSProdInfo("call_service_error_incoming_connection_failed_external", file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: newCall, error: externalError)
             }
@@ -689,6 +697,7 @@ protocol CallServiceObserver: class {
 
             peerConnectionClient.addRemoteIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
         }.catch { error in
+            OWSProdInfo("call_service_error_handle_remote_added_ice_candidate", file:#file, function:#function, line:#line)
             Logger.error("\(self.TAG) in \(#function) waitForPeerConnectionClient failed with error: \(error)")
         }.retainUntilComplete()
     }
@@ -738,6 +747,7 @@ protocol CallServiceObserver: class {
                 return
             }
         }.catch { error in
+            OWSProdInfo("call_service_error_handle_local_added_ice_candidate", file:#file, function:#function, line:#line)
             Logger.error("\(self.TAG) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
         }.retainUntilComplete()
     }
@@ -1002,6 +1012,7 @@ protocol CallServiceObserver: class {
         let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(call.thread.contactIdentifier())")
         }.catch { error in
+            OWSProdInfo("call_service_error_handle_local_hungup_call", file:#file, function:#function, line:#line)
             Logger.error("\(self.TAG) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
         }
         sendPromise.retainUntilComplete()
