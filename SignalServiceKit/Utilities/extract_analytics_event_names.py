@@ -69,6 +69,8 @@ def process(filepath, c_macros, swift_macros):
     with open(filepath, 'rt') as f:
         text = f.read()
     
+    replacement_map = {}
+    
     position = 0
     has_printed_filename = False
     while True:
@@ -123,34 +125,27 @@ def process(filepath, c_macros, swift_macros):
             continue
         event_names.append(event_name)
         print '\t', 'event_name', event_name
+        
+        if is_swift:
+            before = '"%s"' % event_name
+            after = 'OWSAnalyticsEvents.%s()' % objc_name_for_event_name(event_name)
+        else:
+            before = '@"%s"' % event_name
+            after = '[OWSAnalyticsEvents %s]' % objc_name_for_event_name(event_name)
+        replacement_map[before] = after
                 
         # macros.append(macro)
         
         # break
     
-    return 
+    # print 'replacement_map', replacement_map
     
-    with open(filepath, 'rt') as f:
-        text = f.read()
-    original_text = text
-    
-    lines = text.split('\n')
-    while lines and lines[0].startswith('//'):
-        lines = lines[1:]
-    text = '\n'.join(lines)
-    text = text.strip()
+    for before in replacement_map:
+        after = replacement_map[before]
+        text = text.replace(before, after)
 
-    header = '''//
-//  Copyright (c) %s Open Whisper Systems. All rights reserved.
-//
-
-''' % ( 
-    datetime.datetime.now().year,
-    )
-    text = header + text + '\n'
-
-    if original_text == text:
-        return
+    # if original_text == text:
+    #     return
     
     print 'Updating:', short_filepath
     
