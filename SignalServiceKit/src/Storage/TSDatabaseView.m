@@ -225,6 +225,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         TSThread *thread = (TSThread *)object;
 
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+        OWSAssert(viewTransaction);
         NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
         if (threadMessageCount < 1) {
             return nil;
