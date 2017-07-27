@@ -192,7 +192,6 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 - (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock
 {
     // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerThreadInteractionsDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
@@ -210,6 +209,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     //
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterThreadDatabaseView];
     [TSDatabaseView asyncRegisterUnseenDatabaseView];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];

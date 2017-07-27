@@ -172,10 +172,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     BOOL shouldShowUpgradeLabel = NO;
     NSString *lastAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
+    NSString *lastVersionWithDatabaseViewChange = @"2.15.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] &&
-        [VersionMigrations isVersion:lastAppVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]);
+        [VersionMigrations isVersion:lastAppVersion atLeast:@"2.0.0" andLessThan:lastVersionWithDatabaseViewChange]);
     BOOL hasCompletedUpgrade = (lastCompletedLaunchAppVersion &&
-        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:@"2.13.0"]);
+        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:lastVersionWithDatabaseViewChange]);
 
     // We added a number of database views in v2.13.0.
     if (mayNeedUpgrade && !hasCompletedUpgrade) {
