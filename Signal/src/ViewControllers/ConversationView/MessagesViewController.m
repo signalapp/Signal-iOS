@@ -545,6 +545,8 @@ typedef enum : NSUInteger {
     // or on another device.
     [self hideInputIfNeeded];
 
+    [self setNavigationTitle];
+
     self.isViewVisible = YES;
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
