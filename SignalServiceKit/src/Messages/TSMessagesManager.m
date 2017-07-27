@@ -42,22 +42,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kOWSAnalyticsParameterEnvelopeIsLegacy @"envelope_is_legacy"
-#define kOWSAnalyticsParameterEnvelopeHasContent @"has_content"
-#define kOWSAnalyticsParameterEnvelopeType @"envelope_type"
-#define kOWSAnalyticsParameterEnvelopeEncryptedLength @"encrypted_length"
-
-#define AnalyticsParametersFromEnvelope(__envelope)                                                                    \
-    ^{                                                                                                                 \
-        NSData *__encryptedData = __envelope.hasContent ? __envelope.content : __envelope.legacyMessage;               \
-        return (@{                                                                                                     \
-            kOWSAnalyticsParameterEnvelopeIsLegacy : @(__envelope.hasLegacyMessage),                                   \
-            kOWSAnalyticsParameterEnvelopeHasContent : @(__envelope.hasContent),                                       \
-            kOWSAnalyticsParameterEnvelopeType : [self descriptionForEnvelopeType:__envelope],                         \
-            kOWSAnalyticsParameterEnvelopeEncryptedLength : @(__encryptedData.length),                                 \
-        });                                                                                                            \
-    }
-
 // The debug logs can be more verbose than the analytics events.
 //
 // In this case `descriptionForEnvelope` is valuable enough to
@@ -69,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
             __LINE__,                                                                                                  \
             __analyticsEventName,                                                                                      \
             [self descriptionForEnvelope:__envelope]);                                                                 \
-        OWSProdErrorWParams(__analyticsEventName, AnalyticsParametersFromEnvelope(__envelope))                         \
+        OWSProdError(__analyticsEventName)                                                                             \
     }
 
 @interface TSMessagesManager ()
@@ -371,7 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } @catch (NSException *exception) {
         DDLogError(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
-        OWSProdFailWNSException(@"message_manager_error_invalid_protocol_message", exception);
+        OWSProdFail(@"message_manager_error_invalid_protocol_message");
     }
 
     completion();
@@ -410,11 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             NSUInteger kMaxEncryptedDataLength = 250 * 1024;
             if (encryptedData.length > kMaxEncryptedDataLength) {
-                OWSProdErrorWParams(@"message_manager_error_oversize_message", ^{
-                    return (@{
-                        @"message_size" : @([OWSAnalytics orderOfMagnitudeOf:(long)encryptedData.length]),
-                    });
-                });
+                OWSProdError(@"message_manager_error_oversize_message");
                 completion(nil);
                 return;
             }

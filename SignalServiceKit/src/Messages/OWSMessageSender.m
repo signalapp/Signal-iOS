@@ -539,7 +539,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSError *error;
         [attachmentStream writeData:dataCopy error:&error];
         if (error) {
-            OWSProdErrorWNSError(@"message_sender_error_could_not_write_attachment", error);
+            OWSProdError(@"message_sender_error_could_not_write_attachment");
             return failureHandler(error);
         }
 
@@ -652,7 +652,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         [self unregisteredRecipient:recipient message:message thread:thread];
                     }
 
-                    OWSProdErrorWNSError(@"message_sender_error_could_not_find_contacts_3", error);
+                    OWSProdError(@"message_sender_error_could_not_find_contacts_3");
                     // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us
                     // to print redundant error messages.
                     [error setIsRetryable:NO];
@@ -1013,7 +1013,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     NSDictionary *serializedResponse =
                         [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
                     if (error) {
-                        OWSProdErrorWNSError(@"message_sender_error_could_not_parse_mismatched_devices_json", error);
+                        OWSProdError(@"message_sender_error_could_not_parse_mismatched_devices_json");
                         [error setIsRetryable:YES];
                         return failureHandler(error);
                     }
@@ -1217,7 +1217,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdErrorWNSError(@"message_sender_error_recipient_prekey_request_failed", error);
+                    OWSProdError(@"message_sender_error_recipient_prekey_request_failed");
                 }
                 DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -1290,7 +1290,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
 
     if (error) {
-        OWSProdErrorWNSError(@"message_send_error_could_not_serialize_message_json", error);
+        OWSProdError(@"message_send_error_could_not_serialize_message_json");
         return nil;
     }
 

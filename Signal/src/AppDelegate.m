@@ -263,7 +263,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    OWSProdErrorWNSError(@"app_delegate_error_failed_to_register_for_remote_notifications", error);
+    OWSProdError(@"app_delegate_error_failed_to_register_for_remote_notifications");
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
@@ -795,7 +795,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
-    [OWSAnalytics appLaunchDidComplete];
     [AppVersion.instance appLaunchDidComplete];
 
     [self ensureRootViewController];

@@ -3,19 +3,12 @@
 //
 
 #import "OWSAnalytics.h"
-#import "AppVersion.h"
 #import "OWSQueues.h"
 #import "TSStorageManager.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-#if TARGET_IPHONE_SIMULATOR
-
-#define NO_SIGNAL_ANALYTICS
-
-#else
 
 #ifdef DEBUG
 
@@ -24,13 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#endif
-
 NSString *const kOWSAnalytics_EventsCollection = @"kOWSAnalytics_EventsCollection";
-
-NSString *const kOWSAnalytics_Collection = @"kOWSAnalytics_Collection";
-NSString *const kOWSAnalytics_KeyLaunchCount = @"kOWSAnalytics_KeyLaunchCount";
-NSString *const kOWSAnalytics_KeyLaunchCompleteCount = @"kOWSAnalytics_KeyLaunchCompleteCount";
 
 // Percentage of analytics events to discard. 0 <= x <= 100.
 const int kOWSAnalytics_DiscardFrequency = 0;
@@ -53,9 +40,6 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (atomic) BOOL hasRequestInFlight;
-
-@property (atomic) NSNumber *launchCount;
-@property (atomic) NSNumber *launchCompleteCount;
 
 @end
 
@@ -276,25 +260,26 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     return queue;
 }
 
+- (NSString *)operatingSystemVersionString
+{
+    static NSString *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSOperatingSystemVersion operatingSystemVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+        result = [NSString stringWithFormat:@"%zd.%zd.%zd",
+                           operatingSystemVersion.majorVersion,
+                           operatingSystemVersion.minorVersion,
+                           operatingSystemVersion.patchVersion];
+    });
+    return result;
+}
+
 - (NSDictionary<NSString *, id> *)eventSuperProperties
 {
     NSMutableDictionary<NSString *, id> *result = [NSMutableDictionary new];
-    if (AppVersion.instance.firstAppVersion) {
-        result[@"app_version_first"] = AppVersion.instance.firstAppVersion;
-    }
-    if (AppVersion.instance.lastAppVersion) {
-        result[@"app_version_last"] = AppVersion.instance.lastAppVersion;
-    }
-    if (AppVersion.instance.currentAppVersion) {
-        result[@"app_version_current"] = AppVersion.instance.currentAppVersion;
-    }
-    NSNumber *launchCount = self.launchCount;
-    if (launchCount) {
-        result[@"launch_count"] = @([self orderOfMagnitudeOf:launchCount.longValue]);
-    }
-    // TODO: Order of magnitude: thread count.
-    // TODO: Order of magnitude: total message count.
-
+    result[@"app_version"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    result[@"platform"] = @"ios";
+    result[@"ios_version"] = self.operatingSystemVersionString;
     return result;
 }
 
@@ -426,42 +411,6 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 - (void)appLaunchDidBegin
 {
     OWSProdInfo(@"app_launch");
-
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSNumber *oldLaunchCount =
-            [transaction objectForKey:kOWSAnalytics_KeyLaunchCount inCollection:kOWSAnalytics_Collection];
-        NSNumber *newLaunchCount = @(oldLaunchCount.longValue + 1);
-        self.launchCount = newLaunchCount;
-
-        NSNumber *oldLaunchCompleteCount =
-            [transaction objectForKey:kOWSAnalytics_KeyLaunchCompleteCount inCollection:kOWSAnalytics_Collection];
-        self.launchCompleteCount = @(oldLaunchCompleteCount.longValue);
-    }];
-    [self.dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:self.launchCount
-                            forKey:kOWSAnalytics_KeyLaunchCount
-                      inCollection:kOWSAnalytics_Collection];
-        }];
-}
-
-+ (void)appLaunchDidComplete
-{
-    [self.sharedInstance appLaunchDidComplete];
-}
-
-- (void)appLaunchDidComplete
-{
-    OWSProdInfo(@"app_launch_complete");
-
-    self.launchCompleteCount = @(self.launchCompleteCount.longValue + 1);
-
-    [self.dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:self.launchCompleteCount
-                            forKey:kOWSAnalytics_KeyLaunchCompleteCount
-                      inCollection:kOWSAnalytics_Collection];
-        }];
 }
 
 #pragma mark - Logging
