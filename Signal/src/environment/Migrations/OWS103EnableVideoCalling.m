@@ -35,7 +35,8 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
                                                    }
                                                    failure:^(NSURLSessionDataTask *task, NSError *error) {
                                                        if (!IsNSErrorNetworkFailure(error)) {
-                                                           OWSProdError(@"error_enable_video_calling_request_failed");
+                                                           OWSProdError([OWSAnalyticsEvents
+                                                               errorEnableVideoCallingRequestFailed]);
                                                        }
                                                        DDLogError(@"%@ failed with error: %@", self.tag, error);
                                                    }];

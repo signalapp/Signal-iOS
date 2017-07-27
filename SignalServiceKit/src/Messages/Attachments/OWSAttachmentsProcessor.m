@@ -187,7 +187,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_attachment_request_failed");
+                OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
             }
             DDLogError(@"Failed retrieval of attachment with error: %@", error);
             if (attachment.serverId < 100) {

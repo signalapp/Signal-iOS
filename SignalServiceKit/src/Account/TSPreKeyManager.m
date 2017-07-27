@@ -183,9 +183,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 if (!IsNSErrorNetworkFailure(error)) {
                     if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-                        OWSProdError(@"error_prekeys_update_failed_signed_and_onetime");
+                        OWSProdError([OWSAnalyticsEvents errorPrekeysUpdateFailedSignedAndOnetime]);
                     } else {
-                        OWSProdError(@"error_prekeys_update_failed_just_signed");
+                        OWSProdError([OWSAnalyticsEvents errorPrekeysUpdateFailedJustSigned]);
                     }
                 }
 
@@ -305,7 +305,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                     }
                     failure:^(NSURLSessionDataTask *task, NSError *error) {
                         if (!IsNSErrorNetworkFailure(error)) {
-                            OWSProdError(@"error_prekeys_current_signed_prekey_request_failed");
+                            OWSProdError([OWSAnalyticsEvents errorPrekeysCurrentSignedPrekeyRequestFailed]);
                         }
                         DDLogWarn(@"%@ Could not retrieve current signed key from the service.", self.tag);
 
@@ -316,7 +316,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_prekeys_available_prekeys_request_failed");
+                OWSProdError([OWSAnalyticsEvents errorPrekeysAvailablePrekeysRequestFailed]);
             }
             DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.tag);
 
@@ -402,9 +402,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
             }
 
             if (signedPrekey.wasAcceptedByService) {
-                OWSProdInfo(@"prekeys_deleted_old_accepted_signed_prekey");
+                OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
             } else {
-                OWSProdInfo(@"prekeys_deleted_old_unaccepted_signed_prekey");
+                OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldUnacceptedSignedPrekey]);
             }
 
             oldSignedPreKeyCount--;

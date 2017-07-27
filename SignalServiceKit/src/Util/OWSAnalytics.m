@@ -411,7 +411,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)appLaunchDidBegin
 {
-    OWSProdInfo(@"app_launch");
+    OWSProdInfo([OWSAnalyticsEvents appLaunch]);
 }
 
 #pragma mark - Logging

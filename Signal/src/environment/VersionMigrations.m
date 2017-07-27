@@ -151,7 +151,7 @@
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               if (!IsNSErrorNetworkFailure(error)) {
-                  OWSProdError(@"error_update_attributes_request_failed");
+                  OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
               }
               success = NO;
               DDLogError(@"Updating attributess failed with error: %@", error.description);

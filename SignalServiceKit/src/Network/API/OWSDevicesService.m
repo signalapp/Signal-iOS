@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_get_devices_failed");
+                OWSProdError([OWSAnalyticsEvents errorGetDevicesFailed]);
             }
             DDLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_unlink_device_failed");
+                OWSProdError([OWSAnalyticsEvents errorUnlinkDeviceFailed]);
             }
             DDLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);

@@ -22,28 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appLaunch;
 
-+ (NSString *)appLaunchComplete;
-
-+ (NSString *)callServiceCallAlreadySet;
-
-+ (NSString *)callServiceCallIdMismatch;
-
-+ (NSString *)callServiceCallMismatch;
-
-+ (NSString *)callServiceCallMissing;
-
-+ (NSString *)callServiceCallUnexpectedlyIdle;
-
-+ (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise;
-
-+ (NSString *)callServiceCouldNotCreateReadyToSendIceUpdatesPromise;
-
-+ (NSString *)callServiceMissingFulfillReadyToSendIceUpdatesPromise;
-
-+ (NSString *)callServicePeerConnectionAlreadySet;
-
-+ (NSString *)callServicePeerConnectionMissing;
-
 + (NSString *)contactsErrorContactsIntersectionFailed;
 
 + (NSString *)errorAttachmentRequestFailed;
@@ -82,9 +60,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageManagerErrorMessageEnvelopeHasNoContent;
 
-+ (NSString *)messageManagerErrorOversizeMessage;
-
 + (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent;
+
++ (NSString *)messageReceiverErrorLargeMessage;
+
++ (NSString *)messageReceiverErrorOversizeMessage;
 
 + (NSString *)messageSendErrorCouldNotSerializeMessageJson;
 
@@ -118,7 +98,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageSenderErrorUnexpectedKeyBundle;
 
-+ (NSString *)prekeysDeletedOldSignedPrekey;
++ (NSString *)prekeysDeletedOldAcceptedSignedPrekey;
+
++ (NSString *)prekeysDeletedOldUnacceptedSignedPrekey;
+
++ (NSString *)registrationBegan;
+
++ (NSString *)registrationRegisteredPhoneNumber;
+
++ (NSString *)registrationRegisteringCode;
+
++ (NSString *)registrationRegisteringRequestedNewCodeBySms;
+
++ (NSString *)registrationRegisteringRequestedNewCodeByVoice;
+
++ (NSString *)registrationRegisteringSubmittedCode;
+
++ (NSString *)registrationRegistrationFailed;
+
++ (NSString *)registrationVerificationBack;
 
 + (NSString *)storageErrorCouldNotDecodeClass;
 

@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_provisioning_request_failed");
+                OWSProdError([OWSAnalyticsEvents errorProvisioningRequestFailed]);
             }
             DDLogVerbose(@"Provisioning request failed with error: %@", error);
             failureCallback(error);

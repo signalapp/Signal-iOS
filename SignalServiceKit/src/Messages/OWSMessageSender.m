@@ -186,7 +186,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _successHandler = ^{
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
-            OWSProdCFail(@"message_sender_error_send_operation_did_not_complete");
+            OWSProdCFail([OWSAnalyticsEvents messageSenderErrorSendOperationDidNotComplete]);
             return;
         }
 
@@ -200,7 +200,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     _failureHandler = ^(NSError *_Nonnull error) {
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
-            OWSProdCFail(@"message_sender_error_send_operation_did_not_complete");
+            OWSProdCFail([OWSAnalyticsEvents messageSenderErrorSendOperationDidNotComplete]);
             return;
         }
 
@@ -474,7 +474,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
 
     if (!attachmentStream) {
-        OWSProdError(@"message_sender_error_could_not_load_attachment");
+        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         // Not finding local attachment is a terminal failure.
         [error setIsRetryable:NO];
@@ -539,7 +539,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSError *error;
         [attachmentStream writeData:dataCopy error:&error];
         if (error) {
-            OWSProdError(@"message_sender_error_could_not_write_attachment");
+            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
             return failureHandler(error);
         }
 
@@ -575,7 +575,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (recipients.count == 0 && !*error) {
         // error should be set in contactsUpater, but just in case.
-        OWSProdError(@"message_sender_error_could_not_find_contacts_1");
+        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotFindContacts1]);
         *error = OWSErrorMakeFailedToSendOutgoingMessageError();
     }
 
@@ -598,7 +598,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             if (recipients.count == 0) {
                 if (!error) {
-                    OWSProdError(@"message_sender_error_could_not_find_contacts_2");
+                    OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotFindContacts2]);
                     error = OWSErrorMakeFailedToSendOutgoingMessageError();
                 }
                 // If no recipients were found, there's no reason to retry. It will just fail again.
@@ -652,7 +652,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         [self unregisteredRecipient:recipient message:message thread:thread];
                     }
 
-                    OWSProdError(@"message_sender_error_could_not_find_contacts_3");
+                    OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotFindContacts3]);
                     // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us
                     // to print redundant error messages.
                     [error setIsRetryable:NO];
@@ -834,7 +834,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     AssertIsOnSendingQueue();
 
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
-        OWSProdError(@"message_send_error_failed_due_to_prekey_update_failures");
+        OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);
 
         // Retry prekey update every time user tries to send a message while app
         // is disabled due to prekey update failures.
@@ -856,7 +856,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (remainingAttempts <= 0) {
         // We should always fail with a specific error.
-        OWSProdFail(@"message_sender_error_generic_send_failure");
+        OWSProdFail([OWSAnalyticsEvents messageSenderErrorGenericSendFailure]);
 
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
@@ -874,7 +874,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
-            OWSProdInfo(@"message_send_error_failed_due_to_untrusted_key");
+            OWSProdInfo([OWSAnalyticsEvents messageSendErrorFailedDueToUntrustedKey]);
 
             NSString *localizedErrorDescriptionFormat
                 = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
@@ -893,7 +893,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             PreKeyBundle *newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
             if (![newKeyBundle isKindOfClass:[PreKeyBundle class]]) {
-                OWSProdFail(@"message_sender_error_unexpected_key_bundle");
+                OWSProdFail([OWSAnalyticsEvents messageSenderErrorUnexpectedKeyBundle]);
                 failureHandler(error);
                 return;
             }
@@ -901,14 +901,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSData *newIdentityKeyWithVersion = newKeyBundle.identityKey;
 
             if (![newIdentityKeyWithVersion isKindOfClass:[NSData class]]) {
-                OWSProdFail(@"message_sender_error_invalid_identity_key_type");
+                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyType]);
                 failureHandler(error);
                 return;
             }
 
             // TODO migrate to storing the full 33 byte representation of the identity key.
             if (newIdentityKeyWithVersion.length != kIdentityKeyLength) {
-                OWSProdFail(@"message_sender_error_invalid_identity_key_length");
+                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyLength]);
                 failureHandler(error);
                 return;
             }
@@ -1013,7 +1013,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     NSDictionary *serializedResponse =
                         [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
                     if (error) {
-                        OWSProdError(@"message_sender_error_could_not_parse_mismatched_devices_json");
+                        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
                         [error setIsRetryable:YES];
                         return failureHandler(error);
                     }
@@ -1053,7 +1053,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
         if (extraDevices.count < 1 && missingDevices.count < 1) {
-            OWSProdFail(@"message_sender_error_no_missing_or_extra_devices");
+            OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
         }
 
         if (extraDevices && extraDevices.count > 0) {
@@ -1217,7 +1217,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError(@"message_sender_error_recipient_prekey_request_failed");
+                    OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
                 }
                 DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -1290,7 +1290,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
 
     if (error) {
-        OWSProdError(@"message_send_error_could_not_serialize_message_json");
+        OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
         return nil;
     }
 

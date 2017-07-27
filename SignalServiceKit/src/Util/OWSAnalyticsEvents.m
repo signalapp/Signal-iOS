@@ -200,6 +200,16 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_manager_error_prekey_bundle_envelope_has_no_content";
 }
 
++ (NSString *)messageReceiverErrorLargeMessage
+{
+    return @"message_receiver_error_large_message";
+}
+
++ (NSString *)messageReceiverErrorOversizeMessage
+{
+    return @"message_receiver_error_oversize_message";
+}
+
 + (NSString *)messageSendErrorCouldNotSerializeMessageJson
 {
     return @"message_send_error_could_not_serialize_message_json";
@@ -280,9 +290,59 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_sender_error_unexpected_key_bundle";
 }
 
++ (NSString *)prekeysDeletedOldAcceptedSignedPrekey
+{
+    return @"prekeys_deleted_old_accepted_signed_prekey";
+}
+
 + (NSString *)prekeysDeletedOldSignedPrekey
 {
     return @"prekeys_deleted_old_signed_prekey";
+}
+
++ (NSString *)prekeysDeletedOldUnacceptedSignedPrekey
+{
+    return @"prekeys_deleted_old_unaccepted_signed_prekey";
+}
+
++ (NSString *)registrationBegan
+{
+    return @"registration_began";
+}
+
++ (NSString *)registrationRegisteredPhoneNumber
+{
+    return @"registration_registered_phone_number";
+}
+
++ (NSString *)registrationRegisteringCode
+{
+    return @"registration_registering_code";
+}
+
++ (NSString *)registrationRegisteringRequestedNewCodeBySms
+{
+    return @"registration_registering_requested_new_code_by_sms";
+}
+
++ (NSString *)registrationRegisteringRequestedNewCodeByVoice
+{
+    return @"registration_registering_requested_new_code_by_voice";
+}
+
++ (NSString *)registrationRegisteringSubmittedCode
+{
+    return @"registration_registering_submitted_code";
+}
+
++ (NSString *)registrationRegistrationFailed
+{
+    return @"registration_registration_failed";
+}
+
++ (NSString *)registrationVerificationBack
+{
+    return @"registration_verification_back";
 }
 
 + (NSString *)storageErrorCouldNotDecodeClass

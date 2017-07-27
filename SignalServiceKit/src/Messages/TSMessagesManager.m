@@ -158,19 +158,19 @@ NS_ASSUME_NONNULL_BEGIN
             return @"DeliveryReceipt";
         case OWSSignalServiceProtosEnvelopeTypeUnknown:
             // Shouldn't happen
-            OWSProdFail(@"message_manager_error_envelope_type_unknown");
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
             return @"Unknown";
         case OWSSignalServiceProtosEnvelopeTypeCiphertext:
             return @"SignalEncryptedMessage";
         case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
             // Unsupported
-            OWSProdFail(@"message_manager_error_envelope_type_key_exchange");
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeKeyExchange]);
             return @"KeyExchange";
         case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
             return @"PreKeyEncryptedMessage";
         default:
             // Shouldn't happen
-            OWSProdFail(@"message_manager_error_envelope_type_other");
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeOther]);
             return @"Other";
     }
 }
@@ -312,7 +312,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 envelope.source,
                                                 (unsigned int)envelope.sourceDevice,
                                                 error);
-                                            OWSProdError(@"message_manager_error_could_not_handle_secure_message");
+                                            OWSProdError(
+                                                [OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
                                         }
                                         completion();
                                     }];
@@ -330,7 +331,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                envelope.source,
                                                (unsigned int)envelope.sourceDevice,
                                                error);
-                                           OWSProdError(@"message_manager_error_could_not_handle_prekey_bundle");
+                                           OWSProdError(
+                                               [OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
                                        }
                                        completion();
                                    }];
@@ -355,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } @catch (NSException *exception) {
         DDLogError(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
-        OWSProdFail(@"message_manager_error_invalid_protocol_message");
+        OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
     }
 
     completion();
@@ -387,7 +389,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *encryptedData
                 = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
             if (!encryptedData) {
-                OWSProdFail(@"message_manager_error_message_envelope_has_no_content");
+                OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
                 completion(nil);
                 return;
             }
@@ -436,7 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
         // DEPRECATED - Remove after all clients have been upgraded.
         NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
         if (!encryptedData) {
-            OWSProdFail(@"message_manager_error_prekey_bundle_envelope_has_no_content");
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
             completion(nil);
             return;
         }

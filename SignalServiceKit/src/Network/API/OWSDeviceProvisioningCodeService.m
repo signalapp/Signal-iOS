@@ -51,7 +51,7 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError(@"error_provisioning_code_request_failed");
+                OWSProdError([OWSAnalyticsEvents errorProvisioningCodeRequestFailed]);
             }
             DDLogVerbose(@"ProvisioningCode request failed with error: %@", error);
             failureCallback(error);
