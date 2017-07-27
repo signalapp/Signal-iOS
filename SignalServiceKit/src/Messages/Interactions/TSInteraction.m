@@ -114,6 +114,13 @@ NS_ASSUME_NONNULL_BEGIN
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }
 
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super removeWithTransaction:transaction];
+
+    [self touchThreadWithTransaction:transaction];
+}
+
 - (BOOL)isDynamicInteraction
 {
     return NO;

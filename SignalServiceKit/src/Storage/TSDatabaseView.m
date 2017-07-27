@@ -82,6 +82,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
     YapDatabaseView *existingView = [[TSStorageManager sharedManager].database registeredExtension:viewName];
     if (existingView) {
+        OWSFail(@"Registered database view twice: %@", viewName);
         return;
     }
 
@@ -211,24 +212,33 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *threadView =
         [[TSStorageManager sharedManager].database registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
+        OWSFail(@"Registered database view twice: %@", TSThreadDatabaseViewExtensionName);
         return;
     }
 
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping
-        withObjectBlock:^NSString *(
-            YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-          if ([object isKindOfClass:[TSThread class]]) {
-              TSThread *thread = (TSThread *)object;
-              if (thread.archivalDate) {
-                  return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;
-              } else if (thread.archivalDate) {
-                  return TSArchiveGroup;
-              } else {
-                  return TSInboxGroup;
-              }
-          }
-          return nil;
-        }];
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if (![object isKindOfClass:[TSThread class]]) {
+            return nil;
+        }
+
+        TSThread *thread = (TSThread *)object;
+
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+        OWSAssert(viewTransaction);
+        NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
+        if (threadMessageCount < 1) {
+            return nil;
+        }
+
+        if (thread.archivalDate) {
+            return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;
+        } else if (thread.archivalDate) {
+            return TSArchiveGroup;
+        } else {
+            return TSInboxGroup;
+        }
+    }];
 
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
 
@@ -238,7 +248,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
     YapDatabaseView *databaseView =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"2" options:options];
 
     [[TSStorageManager sharedManager].database registerExtension:databaseView
                                                         withName:TSThreadDatabaseViewExtensionName];

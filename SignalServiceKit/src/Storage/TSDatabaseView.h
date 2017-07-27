@@ -25,6 +25,7 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (BOOL)hasPendingViewRegistrations;
 
+// This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
 + (void)registerThreadDatabaseView;
 
 + (void)registerThreadInteractionsDatabaseView;
