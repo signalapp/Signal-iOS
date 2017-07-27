@@ -22,6 +22,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appLaunch;
 
++ (NSString *)appLaunchComplete;
+
++ (NSString *)callServiceCallAlreadySet;
+
++ (NSString *)callServiceCallIdMismatch;
+
++ (NSString *)callServiceCallMismatch;
+
++ (NSString *)callServiceCallMissing;
+
++ (NSString *)callServiceCallUnexpectedlyIdle;
+
++ (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise;
+
++ (NSString *)callServiceCouldNotCreateReadyToSendIceUpdatesPromise;
+
++ (NSString *)callServiceMissingFulfillReadyToSendIceUpdatesPromise;
+
++ (NSString *)callServicePeerConnectionAlreadySet;
+
++ (NSString *)callServicePeerConnectionMissing;
+
 + (NSString *)contactsErrorContactsIntersectionFailed;
 
 + (NSString *)errorAttachmentRequestFailed;
@@ -59,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)messageManagerErrorInvalidProtocolMessage;
 
 + (NSString *)messageManagerErrorMessageEnvelopeHasNoContent;
+
++ (NSString *)messageManagerErrorOversizeMessage;
 
 + (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent;
 
@@ -98,7 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageSenderErrorUnexpectedKeyBundle;
 
++ (NSString *)peerConnectionClientErrorSendDataChannelMessageFailed;
+
 + (NSString *)prekeysDeletedOldAcceptedSignedPrekey;
+
++ (NSString *)prekeysDeletedOldSignedPrekey;
 
 + (NSString *)prekeysDeletedOldUnacceptedSignedPrekey;
 

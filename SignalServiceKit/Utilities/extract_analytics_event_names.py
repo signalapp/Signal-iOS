@@ -218,34 +218,6 @@ def update_event_names(header_file_path, source_file_path):
     # event_names = sorted(set(event_names))
     code_generation_marker = '#pragma mark - Code Generation Marker'
     
-    # Header
-    filepath = header_file_path
-    with open(filepath, 'rt') as f:
-        text = f.read()
-    
-    code_generation_start = text.find(code_generation_marker)
-    code_generation_end = text.rfind(code_generation_marker)
-    if code_generation_start < 0:
-        print 'Could not find marker in file:', file
-        sys.exit(1)
-    if code_generation_end < 0 or code_generation_end == code_generation_start:
-        print 'Could not find marker in file:', file
-        sys.exit(1)
-    
-    generated = code_generation_marker
-    for event_name in sorted(set(event_names)):
-        # Example:
-        # + (NSString *)call_service_call_already_set;
-        objc_name = objc_name_for_event_name(event_name)
-        text_for_event = '+ (NSString *)%s;' % (objc_name,)
-        generated = generated + '\n\n' + text_for_event
-    generated = generated + '\n\n' + code_generation_marker
-    print 'generated', generated
-    new_text = text[:code_generation_start] + generated + text[code_generation_end + len(code_generation_marker):]
-    print 'text', new_text
-    with open(filepath, 'wt') as f:
-        f.write(new_text)
-    
     # Source
     filepath = source_file_path
     with open(filepath, 'rt') as f:
@@ -330,6 +302,36 @@ def update_event_names(header_file_path, source_file_path):
     with open(filepath, 'wt') as f:
         f.write(new_text)
 
+    
+    # Header
+    filepath = header_file_path
+    with open(filepath, 'rt') as f:
+        text = f.read()
+    
+    code_generation_start = text.find(code_generation_marker)
+    code_generation_end = text.rfind(code_generation_marker)
+    if code_generation_start < 0:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+    if code_generation_end < 0 or code_generation_end == code_generation_start:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+    
+    generated = code_generation_marker
+    for event_name in all_event_names:
+        # Example:
+        # + (NSString *)call_service_call_already_set;
+        objc_name = objc_name_for_event_name(event_name)
+        text_for_event = '+ (NSString *)%s;' % (objc_name,)
+        generated = generated + '\n\n' + text_for_event
+    generated = generated + '\n\n' + code_generation_marker
+    print 'generated', generated
+    new_text = text[:code_generation_start] + generated + text[code_generation_end + len(code_generation_marker):]
+    print 'text', new_text
+    with open(filepath, 'wt') as f:
+        f.write(new_text)
+    
+    
     
 if __name__ == "__main__":
     # print 'git_repo_path', git_repo_path

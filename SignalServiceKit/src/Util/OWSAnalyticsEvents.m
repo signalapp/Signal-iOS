@@ -290,6 +290,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_sender_error_unexpected_key_bundle";
 }
 
++ (NSString *)peerConnectionClientErrorSendDataChannelMessageFailed
+{
+    return @"peer_connection_client_error_send_data_channel_message_failed";
+}
+
 + (NSString *)prekeysDeletedOldAcceptedSignedPrekey
 {
     return @"prekeys_deleted_old_accepted_signed_prekey";

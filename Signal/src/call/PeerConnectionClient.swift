@@ -504,7 +504,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data, description: String) {
+    public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool = false) {
         AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.async {
@@ -527,6 +527,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) sendDataChannelMessage succeeded: \(description)")
             } else {
                 Logger.warn("\(self.TAG) sendDataChannelMessage failed: \(description)")
+                if isCritical {
+                    OWSProdError(OWSAnalyticsEvents.peerConnectionClientErrorSendDataChannelMessageFailed(), file:#file, function:#function, line:#line)
+                }
             }
         }
     }

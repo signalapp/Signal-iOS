@@ -874,7 +874,7 @@ protocol CallServiceObserver: class {
         call.callRecord = callRecord
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"connected")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"connected", isCritical:true)
 
         handleConnectedCall(call)
     }
@@ -994,7 +994,7 @@ protocol CallServiceObserver: class {
 
         // If the call is connected, we can send the hangup via the data channel.
         let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
