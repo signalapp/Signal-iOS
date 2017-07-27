@@ -10,6 +10,9 @@ import commands
 import re
 
 
+# This script is used to extract analytics event names from the codebase,
+# and convert them to constants in OWSAnalyticsEvents.
+
 git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
 
 
