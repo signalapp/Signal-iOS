@@ -8,6 +8,7 @@
 #import "SignalsNavigationController.h"
 #import "SignalsViewController.h"
 #import "StringUtil.h"
+#import "UIViewController+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -263,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSProdInfo(@"registration_registering_code");
     [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
         .then(^{
-            OWSProdInfo(@"registration_registered_complete");
+            OWSProdInfo(@"registration_registering_submitted_code");
 
             DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -279,6 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         })
         .catch(^(NSError *_Nonnull error) {
+            OWSProdInfo(@"registration_registration_failed");
             DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
@@ -322,6 +324,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Send codes again
 
 - (void)sendCodeViaSMSAction:(id)sender {
+    OWSProdInfo(@"registration_registering_requested_new_code_by_sms");
+
     [self enableServerActions:NO];
 
     [_requestCodeAgainSpinner startAnimating];
@@ -339,6 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sendCodeViaVoiceAction:(id)sender {
+    OWSProdInfo(@"registration_registering_requested_new_code_by_voice");
+
     [self enableServerActions:NO];
 
     [_requestCallSpinner startAnimating];
@@ -368,6 +374,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)backButtonPressed:(id)sender {
+    OWSProdInfo(@"registration_verification_back");
+
     [self.navigationController popViewControllerAnimated:YES];
 }
 
