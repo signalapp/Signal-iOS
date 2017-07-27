@@ -457,6 +457,7 @@ typedef enum : NSUInteger {
 
     [self initializeToolbars];
     [self createScrollDownButton];
+    [self createHeaderViews];
 }
 
 - (void)registerCustomMessageNibs
@@ -544,8 +545,6 @@ typedef enum : NSUInteger {
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
-
-    [self setNavigationTitle];
 
     self.isViewVisible = YES;
 
@@ -1033,24 +1032,50 @@ typedef enum : NSUInteger {
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 }
 
+- (void)createHeaderViews
+{
+    _backButtonUnreadCountView = [UIView new];
+    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
+    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
+    _backButtonUnreadCountView.hidden = YES;
+    _backButtonUnreadCountView.userInteractionEnabled = NO;
+
+    _backButtonUnreadCountLabel = [UILabel new];
+    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
+    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
+    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
+
+    self.navigationBarTitleView = [UIView containerView];
+    [self.navigationBarTitleView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(navigationTitleTapped:)]];
+#ifdef DEBUG
+    [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
+                                                          initWithTarget:self
+                                                                  action:@selector(navigationTitleLongPressed:)]];
+#endif
+
+    self.navigationBarTitleLabel = [UILabel new];
+    self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
+    self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
+    self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
+
+    self.navigationBarSubtitleLabel = [UILabel new];
+    [self updateNavigationBarSubtitleLabel];
+    [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
+}
+
+- (CGFloat)unreadCountViewDiameter
+{
+    return 16;
+}
+
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
-    const CGFloat unreadCountViewDiameter = 16;
-    if (_backButtonUnreadCountView == nil) {
-        _backButtonUnreadCountView = [UIView new];
-        _backButtonUnreadCountView.layer.cornerRadius = unreadCountViewDiameter / 2;
-        _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-        _backButtonUnreadCountView.hidden = YES;
-        _backButtonUnreadCountView.userInteractionEnabled = NO;
-
-        _backButtonUnreadCountLabel = [UILabel new];
-        _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-        _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-        _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-        _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-    }
     // This method gets called multiple times, so it's important we re-layout the unread badge
     // with respect to the new backItem.
     [backItem.customView addSubview:_backButtonUnreadCountView];
@@ -1060,10 +1085,10 @@ typedef enum : NSUInteger {
     // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
     [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
-    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];
+    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
     // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
     [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
-                                          toSize:unreadCountViewDiameter
+                                          toSize:self.unreadCountViewDiameter
                                         relation:NSLayoutRelationGreaterThanOrEqual];
 
     [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
@@ -1073,30 +1098,7 @@ typedef enum : NSUInteger {
     // Initialize newly created unread count badge to accurately reflect the current unread count.
     [self updateBackButtonUnreadCount];
 
-
     const CGFloat kTitleVSpacing = 0.f;
-    if (!self.navigationBarTitleView) {
-        self.navigationBarTitleView = [UIView containerView];
-        [self.navigationBarTitleView
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                         action:@selector(navigationTitleTapped:)]];
-#ifdef DEBUG
-        [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
-                                                              initWithTarget:self
-                                                                      action:@selector(navigationTitleLongPressed:)]];
-#endif
-
-        self.navigationBarTitleLabel = [UILabel new];
-        self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-        self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
-        self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
-
-        self.navigationBarSubtitleLabel = [UILabel new];
-        [self updateNavigationBarSubtitleLabel];
-        [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
-    }
-
     // We need to manually resize and position the title views;
     // iOS AutoLayout doesn't work inside navigation bar items.
     [self.navigationBarTitleLabel sizeToFit];
