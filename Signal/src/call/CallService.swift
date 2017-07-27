@@ -273,7 +273,7 @@ protocol CallServiceObserver: class {
             let errorDescription = "\(TAG) call was unexpectedly already set."
             Logger.error(errorDescription)
             call.state = .localFailure
-            OWSProdError(OWSAnalyticsEvents.call_service_call_already_set(), file:#file, function:#function, line:#line)
+            OWSProdError("call_service_call_already_set", file:#file, function:#function, line:#line)
             return Promise(error: CallError.assertionError(description:errorDescription))
         }
 

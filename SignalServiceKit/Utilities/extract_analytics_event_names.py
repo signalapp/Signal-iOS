@@ -28,6 +28,19 @@ def splitall(path):
             allparts.insert(0, parts[1])
     return allparts
 
+
+def objc_name_for_event_name(event_name):
+    while True:
+        index = event_name.find('_')
+        if index < 0:
+            break
+        if index >= len(event_name) - 1:
+            break
+        nextChar = event_name[index + 1]
+        event_name = event_name[:index] + nextChar.upper() + event_name[index + 2:]
+    return event_name
+
+
 event_names = []
     
 def process(filepath, c_macros, swift_macros):
@@ -89,13 +102,27 @@ def process(filepath, c_macros, swift_macros):
         if not best_match:
             break
             
-        event_name = best_match.group(1).strip()
-        event_names.append(event_name)
+        position = best_match.end(1)
         if not has_printed_filename:
             has_printed_filename = True
             print short_filepath
+        
+        raw_event_name = best_match.group(1).strip()
+        if is_swift:
+            pattern = r'^"(.+)"$'
+        else:
+            pattern = r'^@"(.+)"$'
+        # print 'pattern:', pattern
+        matcher = re.compile(pattern)
+        # matcher = re.compile(r'#define (OWSProd)')
+        match = matcher.search(raw_event_name)
+        if match:
+            event_name = match.group(1).strip()
+        else:
+            print '\t', 'Ignoring event: _%s_' % raw_event_name
+            continue
+        event_names.append(event_name)
         print '\t', 'event_name', event_name
-        position = best_match.end(1)
                 
         # macros.append(macro)
         
@@ -191,6 +218,124 @@ def extract_macros(filepath):
     return macros
     
     
+def update_event_names(header_file_path, source_file_path):
+    # global event_names
+    # event_names = sorted(set(event_names))
+    code_generation_marker = '#pragma mark - Code Generation Marker'
+    
+    # Header
+    filepath = header_file_path
+    with open(filepath, 'rt') as f:
+        text = f.read()
+    
+    code_generation_start = text.find(code_generation_marker)
+    code_generation_end = text.rfind(code_generation_marker)
+    if code_generation_start < 0:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+    if code_generation_end < 0 or code_generation_end == code_generation_start:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+    
+    generated = code_generation_marker
+    for event_name in sorted(set(event_names)):
+        # Example:
+        # + (NSString *)call_service_call_already_set;
+        objc_name = objc_name_for_event_name(event_name)
+        text_for_event = '+ (NSString *)%s;' % (objc_name,)
+        generated = generated + '\n\n' + text_for_event
+    generated = generated + '\n\n' + code_generation_marker
+    print 'generated', generated
+    new_text = text[:code_generation_start] + generated + text[code_generation_end + len(code_generation_marker):]
+    print 'text', new_text
+    with open(filepath, 'wt') as f:
+        f.write(new_text)
+    
+    # Source
+    filepath = source_file_path
+    with open(filepath, 'rt') as f:
+        text = f.read()
+    
+    code_generation_start = text.find(code_generation_marker)
+    code_generation_end = text.rfind(code_generation_marker)
+    if code_generation_start < 0:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+    if code_generation_end < 0 or code_generation_end == code_generation_start:
+        print 'Could not find marker in file:', file
+        sys.exit(1)
+
+    event_name_map = {}
+
+    print
+    print 'Parsing old generated code'
+    print
+
+    old_generated = text[code_generation_start + len(code_generation_marker):code_generation_end]
+    # print 'old_generated', old_generated
+    for split in old_generated.split('+'):
+        split = split.strip()
+        # print 'split:', split
+        if not split:
+            continue
+        
+        # Example:
+        #(NSString *)call_service_call_already_set
+        #{
+        #    return @"call_service_call_already_set";
+        #}        
+        
+        pattern = r'\(NSString \*\)([^\s\r\n\t]+)[\s\r\n\t]'
+        matcher = re.compile(pattern)
+        match = matcher.search(split)
+        if not match:
+            print 'Could not parse:', split
+            print 'In file:', filepath
+            sys.exit(1)
+
+        method_name = match.group(1).strip()
+        print 'method_name:', method_name
+        
+        pattern = r'return @"(.+)";'
+        matcher = re.compile(pattern)
+        match = matcher.search(split)
+        if not match:
+            print 'Could not parse:', split
+            print 'In file:', filepath
+            sys.exit(1)
+
+        event_name = match.group(1).strip()
+        print 'event_name:', event_name
+        
+        event_name_map[event_name] = method_name
+    
+    print
+    
+    
+    all_event_names = sorted(set(event_name_map.keys() + event_names))
+    print 'all_event_names', all_event_names
+        
+    generated = code_generation_marker
+    for event_name in all_event_names:
+        # Example:
+        # + (NSString *)call_service_call_already_set;
+        if event_name in event_name_map:
+            objc_name = event_name_map[event_name]
+        else:
+            objc_name = objc_name_for_event_name(event_name)
+        text_for_event = '''+ (NSString *)%s
+{
+    return @"%s";
+}''' % (objc_name, event_name)
+        generated = generated + '\n\n' + text_for_event
+    generated = generated + '\n\n' + code_generation_marker
+    print 'generated', generated
+    new_text = text[:code_generation_start] + generated + text[code_generation_end + len(code_generation_marker):]
+    print 'text', new_text
+    with open(filepath, 'wt') as f:
+        f.write(new_text)
+
+    
 if __name__ == "__main__":
     # print 'git_repo_path', git_repo_path
     
@@ -207,6 +352,16 @@ if __name__ == "__main__":
         sys.exit(1)
     swift_macros = extract_macros(macros_header_file_path)
     print 'swift_macros:', swift_macros
+
+    event_names_header_file_path = os.path.join(git_repo_path, 'SignalServiceKit', 'src', 'Util', 'OWSAnalyticsEvents.h')
+    if not os.path.exists(event_names_header_file_path):
+        print 'Macros header does not exist:', event_names_header_file_path
+        sys.exit(1)
+
+    event_names_source_file_path = os.path.join(git_repo_path, 'SignalServiceKit', 'src', 'Util', 'OWSAnalyticsEvents.m')
+    if not os.path.exists(event_names_source_file_path):
+        print 'Macros header does not exist:', event_names_source_file_path
+        sys.exit(1)
         
     for rootdir, dirnames, filenames in os.walk(git_repo_path):
         for filename in filenames:
@@ -215,3 +370,4 @@ if __name__ == "__main__":
 
     print
     print 'event_names', sorted(set(event_names))
+    update_event_names(event_names_header_file_path, event_names_source_file_path)
