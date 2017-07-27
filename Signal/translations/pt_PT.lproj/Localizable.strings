@@ -355,9 +355,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Actualizar a Base de Dados";
 
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%u dias";
-
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Activo pela última vez: %@";
 
@@ -634,9 +631,6 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqueado";
 
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%u horas";
-
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "A ligar...";
 
@@ -645,9 +639,6 @@
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Atendida. Activar a segurança...";
-
-/* Call setup status label */
-"IN_CALL_TALKING" = "Segura. Activa.";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Chamada Terminada.";
@@ -785,7 +776,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Bloqueou 1 Membro deste Grupo";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Bloqueou %d Membros deste Grupo";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = " Bloqueou %@ Membros deste Grupo ";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mais de um membro do grupo não se encontra marcado como verificado. Toque para opções.";
@@ -801,9 +792,6 @@
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Existem mais mensagens não lidas acima. Toque \"%@\" para vê-las.";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%u minutos";
 
 /* notification title */
 "MISSED_CALL" = "Chamada não atendida";
@@ -962,7 +950,7 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemplo: %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Pessoal";
@@ -1174,9 +1162,6 @@
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Procurar por nome ou número";
 
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%u segundos";
-
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Sessão segura foi reiniciada.";
 
@@ -1351,18 +1336,6 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Mostrar Conversa";
 
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%u dia";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%u hora";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%u minuto";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%u semana";
-
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Estou a convidar-te para instalar o Signal! Aqui está o link: ";
 
@@ -1371,6 +1344,33 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Número de segurança é valido!";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ dias";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ horas";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ minutos";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ segundos";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dia";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ hora";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minuto";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ semana";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ semanas";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Cancelar";
@@ -1498,9 +1498,6 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete a instalação no Signal Desktop.";
 
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%u semanas";
-
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Caixa de Entrada";
 
@@ -1509,3 +1506,20 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Definiu o tempo para a destruição de mensagens para %@.";
+
+// Strings Copied in from JSQMessagesViewController
+
+
+"load_earlier_messages" = "Carregar Mensagens Antigas";
+
+"send" = "Enviar";
+
+"new_message" = " Nova Mensagem ";
+
+"text_message_accessibility_label" = "%@:%@";
+
+"media_message_accessibility_label" = "%@ : mensagem de media";
+
+"accessory_button_accessibility_label" = "Partilhar media";
+
+"new_message_received_accessibility_announcement" = "Nova mensagem recebida";

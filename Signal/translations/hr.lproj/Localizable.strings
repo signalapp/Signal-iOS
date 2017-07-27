@@ -56,7 +56,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@verzija je sada dostupna na App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ verzija je sada dostupna na App Storeu.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Dostupna je nova verzija Signala";
@@ -355,9 +355,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ažuriranje podataka";
 
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%u dana";
-
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posljednja aktivnost: %@";
 
@@ -634,9 +631,6 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blokiran";
 
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%u sati";
-
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Povezivanje...";
 
@@ -645,9 +639,6 @@
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Odgovoreno. Osiguravanje...";
-
-/* Call setup status label */
-"IN_CALL_TALKING" = "Osigurano. Aktivno.";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Poziv završen.";
@@ -686,7 +677,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozovite prijatelje na Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Pretraga";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Traži";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Pošalji pozivnicu prijateljima";
@@ -749,7 +740,7 @@
 "MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Dokument";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Foto Galerija";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Fotoalbum";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nova poruka";
@@ -785,7 +776,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Blokirali ste 1 člana ove grupe";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Blokirali ste %d članova ove grupe";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Blokirali ste %@ članova ove grupe.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Nekoliko korisnika u ovoj grupi više nije označeno provjerenim. Dodirni za opcije.";
@@ -801,9 +792,6 @@
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Postoji više nepročitnih poruka iznad. Dodirni \"%@\" za prikaz.";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%u minuta";
 
 /* notification title */
 "MISSED_CALL" = "Propušten poziv";
@@ -962,7 +950,7 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Primjer: %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Dom";
@@ -1172,10 +1160,7 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Skeniraj QR kôd";
 
 /* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Pretraga po imenu ili broju";
-
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%u sekundi";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Traži po imenu ili broju";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Sigurna sesija je resetirana.";
@@ -1351,18 +1336,6 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Prikaži razgovor";
 
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%u dan";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%u sat";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%u minut";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%u tjedan";
-
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Pozivam vas da instalirate Signal! Ovdje je link:";
 
@@ -1371,6 +1344,33 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj se podudara!";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ dana";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ sati";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ minuta";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ sekundi";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dan";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ sat";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minut";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ tjedan";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ tjedna";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Otkaži";
@@ -1498,9 +1498,6 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";
 
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%u tjedna";
-
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "Sandučić";
 
@@ -1509,3 +1506,20 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste vrijeme za nestajuće poruke na %@. ";
+
+// Strings Copied in from JSQMessagesViewController
+
+
+"load_earlier_messages" = "Učitaj ranije poruke";
+
+"send" = "Šalji";
+
+"new_message" = "Nova poruka";
+
+"text_message_accessibility_label" = "%@: %@";
+
+"media_message_accessibility_label" = "%@: medijska poruka";
+
+"accessory_button_accessibility_label" = "Podijeli medij";
+
+"new_message_received_accessibility_announcement" = "Primljena nova poruka";

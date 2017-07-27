@@ -1,8 +1,8 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ليس الأن";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ليس الآن";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "إضافة";
@@ -20,22 +20,22 @@
 "ADD_TO_CONTACTS_OFFER" = "هل ترغب في إضافة هذا المستخدم لجهات الأتصال الخاصه بك؟";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Discard";
+"ALERT_DISCARD_BUTTON" = "تجاهل";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "Don't Save";
+"ALERT_DONT_SAVE" = "عدم الحفظ";
 
 /* Title for a generic error alert. */
-"ALERT_ERROR_TITLE" = "خطأ";
+"ALERT_ERROR_TITLE" = "يوجد خطأ";
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "حفظ";
 
 /* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "جاري التحقق من كون حساب السجنال صحيح.";
 
 /* A title for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_TITLE" = "Validating";
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "جار التحقق";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "لديك حساب في Signal بالفعل؟";
@@ -56,16 +56,16 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ في المجموعة %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "النسخة %@ غير متواجدة بمتجر الآب ستور";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "يوجد نسخة جديدة من تطبيق سجنال";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تحديث";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "سجنال";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "أرشفة";
@@ -95,7 +95,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "لم ينجح تنزيل الملحق. انقر لإعادة المحاولة.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading…";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "جارى التحميل…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "في قائمة التنزيل";
@@ -137,10 +137,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ملف غير مدعم";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "لن يتمكن المستخدم المحظور من الاتصال بك أو بعث الرسائل إليك.";
@@ -197,7 +197,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "حظر %@؟";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls and record voice messages. You can grant this permission in the Settings app.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "من أجل إجراء المكالمات وتسجيل الرسائل الصوتية يحتاج تطبيق سجنال السماح بإستخدام الميكروفون. بإمكانك منح هذا الإذن من خلال تطبيق الإعدادات.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "الإذن لاستخدام الميكرفون مطلوب";
@@ -212,13 +212,13 @@
 "CALL_STATUS_FORMAT" = "Signal  %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Call";
+"CALL_USER_ALERT_CALL_BUTTON" = "اتصل";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "هل تريد الإتصال ب%@؟";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Call?";
+"CALL_USER_ALERT_TITLE" = "إتصال؟";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "يمكنك الرد على المكالمات من شاشة جهازك المقفلة مباشرةً، كما يمكن أن ترى أسم المتصل ورقمه ضمن المكالمات الواردة إِذا قمت بتغيير الإعدادات.\n\nللمزيد من التفاصيل اطلع على إعدادات الخصوصية.";
@@ -233,25 +233,25 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "اظهار إِعدادات الخصوصية";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Call Back";
+"CALLBACK_BUTTON_TITLE" = "إعادة الإتصال";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "مستخدم Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "لا يمكن التحقق من هذا المستخدم حتى يتم تبادل الرسائل معه.";
 
 /* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "يوجد خطأ";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "اختر الدولة";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "المقارنة مع الحافظة";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "لمعرفة أي من جهات الاتصال الخاصة بك هي من مستخدمي تطبيق سجنال، برجاء السماح بالوصول إلى جهات الاتصال من خلال إعدادات النظام.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "هذا الإجراء سوف يعيد تعيين التطبيق بحذف الرسائل وإلغاء تسجيلك في الخادم. سيتم غلق التطبيق بعد حذف البيانات.";
@@ -272,7 +272,7 @@
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "لقد تم تغيير رقم الأمان مع %@";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "تأكيد";
@@ -281,7 +281,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "محظور";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "لم يتم التحقق منه";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "رقم غير مسجّل";
@@ -296,16 +296,16 @@
 "CONVERSATION_SETTINGS" = "إعدادات المحادثة";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "إضافة إلى جهة اتصال موجودة";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "حظر هذا المستخدم";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "معلومات عن جهة الاتصال";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "معلومات المجموعة";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم";
@@ -335,7 +335,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "حتى %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "إنشاء جهة اتصال جديدة";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "رفع الكتم";
@@ -350,13 +350,10 @@
 "CREATE_NEW_GROUP" = "انشاء مجموعة جديدة";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "قد يستغرق ذلك بضع دقائق.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
-
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%u يوم";
+"DATABASE_VIEW_OVERLAY_TITLE" = "جار تحديث قاعدة البيانات";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "آخر ظهور: %@";
@@ -383,40 +380,40 @@
 "DISMISS_BUTTON_TEXT" = "إلغاء";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "مكان التحايل على الرقابة";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "بإمكانك السماح بالوصول من خلال تطبيق الإعدادات.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج تطبيق سجنال السماح بالوصول إلى جهات الإتصال الخاصة بكم من اجل تعديل البينات الخاصة بجهة الإتصال.";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "تعديل المجموعة";
 
 /* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "جهات الاتصال";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
+"EDIT_GROUP_DEFAULT_TITLE" = "تعديل المجموعة";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "إضافة ...";
 
 /* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Members";
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "الأعضاء";
 
 /* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "تم الإضافة";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Update";
+"EDIT_GROUP_UPDATE_BUTTON" = "تحديث";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "You've changed this group. Would you like to save these changes?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "لقد أجريت بعض التغييرات على هذه المجموعة. هل تريد حفظ هذه التغييرات؟";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "تعديلات غير محفوظة";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
@@ -428,7 +425,7 @@
 "EDIT_ITEM_SHARE_ACTION" = "تبادل";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Edit";
+"EDIT_TXT" = "تصحيح";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "مرحبّا,\n\nمؤخرًا أصبحت أستخدم Signal لجعل محادثاتي على الـiPhone سرية. أرغب أن تثبّته أنت كذلك حتى نتأكد أنا وأنت أننا فقط من يمكنه قراءة رسائلنا أو سماع مكالماتنا.\n\nSignal متاح للـiPhone واﻷندرويد. احصل عليه من هنا: %@\n\nيعمل Signal كما تطبيق تراسلك الحالي. يستطيع إرسال الصور والفيديو, إجاراء المكالمات, وبدء محادثة جماعية. وأفضل جزء هو, لا أحد آخر قادرعلى رؤية أي شيء من ذلك, ولا حتى صنّاع Signal!\n\nتستطيع قراءة المزيد عن Open Whisper Systems, صنّاع Signal, هنا: %@";
@@ -494,7 +491,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "خطأ في المخدم، الرجاء تكرار المحاولة لاحقاً.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خطأ غير معروف.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مستخدمي Signal.";
@@ -518,10 +515,10 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "تمّ تغيير رقم اﻷمان.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "تم تغيير رقم الأمان الخاص بك و %@";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "حدث خطأ غير معروف.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "تمّ تغيير رقم اﻷمان. انقر للتحقق منه.";
@@ -551,13 +548,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "الكثير من الأخطاء مع جهة الاتصال هذه. فضلّا حاول مرة أخرى بعد لحظات.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before resending.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "رقم الأمان الخاص بك مع %@ تغير مؤخرًا. ربما قد ترغب في التحقق منه قبل إعادة الإرسال.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "فشل التّحقّق من رقم اﻷمان!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "وضع علامة \"تم التحقق\"";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "إعادة تعيين هذه الجلسة.";
@@ -581,7 +578,7 @@
 "GROUP_CREATING" = "إنشاء مجموعة جديدة";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
+"GROUP_CREATION_FAILED" = "لا يمكن إضافة بعض الأعضاء إلى المجموعة. انقر لإعادة المحاولة.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "إدارة المجموعة";
@@ -593,22 +590,22 @@
 "GROUP_MEMBER_LEFT" = "%@ غادر المجموعة";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "إضافة جهة اتصال";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "اتصال هاتفي";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification For All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "مسح علامة التحقق للجميع";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "الأعضاء";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "لم يعد هناك علامة تحقق";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "بعث الرسالة";
@@ -634,29 +631,23 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "محظور";
 
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%u ساعات";
+/* Call setup status label */
+"IN_CALL_CONNECTING" = "جار الربط…";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connecting…";
+"IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringing…";
-
-/* Call setup status label */
-"IN_CALL_SECURING" = "Answered. Securing…";
-
-/* Call setup status label */
-"IN_CALL_TALKING" = "آمن. فعال.";
+"IN_CALL_SECURING" = "تمت الإجابة. جار التأمين...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "أنت تعرض الرسائل المؤرشفة. انقر للرجوع إلى البريد الوارد.";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "To see the names of your contacts, update your system settings to allow contact access.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "لرؤية أسماء جهات الإتصال الخاصة بك, يمكنك السماح لتطبيق سجنال بالوصول إلى جهات الإتصال من خلال إعدادات النظام.";
 
 /* notification body */
 "INCOMING_CALL" = "مكالمة واردة";
@@ -665,22 +656,22 @@
 "INCOMING_CALL_FROM" = "مكالمة واردة من %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "لقد رفضت مكالمة";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "مكالمة غير كاملة واردة من";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "اتصال لم يرد عليه لأن رقم الأمان  الخاص بهم قد تغير.";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "To invite your contacts, you need to allow Signal access to your contacts in the Settings app.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "لدعوة جهات الاتصال الخاصة بك، تحتاج إلى السماح لتطبيق سجنال بالوصول إلى جهات الاتصال الخاصة بك  من خلال تطبيق الإعدادات.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Allow Contact Access";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "السماح بإستخدام جهات الاتصال";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة اﻷصدقاء لـSignal";
@@ -758,22 +749,22 @@
 "MESSAGE_STATUS_DELIVERED" = "تم الاستلام";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
+"MESSAGE_STATUS_FAILED" = "لقد تعذر الارسال. انقر للحصول على معلومات.";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "تم الارسال";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "جار التحميل ...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "لم تعد هناك دلالة تحقق من %@. انقر للحصول على خيارات.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "حظرت هذا المستخدم ";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "لم تعد هناك دلالة تحقق من %@. انقر للحصول على خيارات";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "لم ينجح التنزيل.";
@@ -785,34 +776,31 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "قمت بحظر 1 عضو من هذه المجموعة";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "حظرت %d أعضاء من هذه المجموعة";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "لقد حظرت %@ من أعضاء هذه المجموعة.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "لم يعد هناك دلالة تحقق لأكثر من عضو في هذه المجموعة. انقر للحصول على خيارات.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "انقر هنا لفتح الإعدادات";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Unread Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "رسائل غير مقروءة";
 
 /* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "There are more unread messages (including safety number changes) above. Tap \"%@\" to see them.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "هناك المزيد من الرسائل الغير مقروءة (بما في ذلك تغييرات في رقم الأمان) أعلاه. انقر \"%@\" لرؤيتها.";
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%u دقيقة";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "هناك المزيد من الرسائل غير المقروءة أعلاه. انقر \"%@\" لرؤيتها.";
 
 /* notification title */
 "MISSED_CALL" = "مكالمة فائتة";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missed call from %@ because their safety number changed.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "اتصال من %@ لم يرد عليه لأن رقم الأمان الخاص بهم قد تغير.";
 
 /* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "اتصال لم يرد عليه لأن رقم الأمان الخاص بالمتصل قد تغير.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -823,7 +811,7 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal للوصول للكاميرا";
 
 /* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
+"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "اتصال لم يرد عليه لأن رقم الأمان الخاص بهم قد تغير.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "مكالمة فائتة من %@";
@@ -853,7 +841,7 @@
 "NETWORK_ERROR_RECOVERY" = "من فضلك تأكد من اتصالك بالانترنت وحاول مرة أخرى.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "التحايل على الرقابة: يعمل";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "متصل";
@@ -868,40 +856,40 @@
 "NETWORK_STATUS_OFFLINE" = "غير متواجد حالياً";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "البحث عن طريق رقم الهاتف";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Add by phone number";
+"NEW_GROUP_ADD_NON_CONTACT" = "إضافة عن طريق رقم الهاتف";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ضع صورة للمجموعة";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Create";
+"NEW_GROUP_CREATE_BUTTON" = "إنشاء";
 
 /* The navbar title for the 'new group' view. */
 "NEW_GROUP_DEFAULT_TITLE" = "مجموعة جديدة";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "عضو";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "تحديد اسم للمجموعة";
 
 /* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "مستخدمين آخرين";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "هل تريد تجاهل هذه التغييرات؟";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "التغييرات غير المحفوظة";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "بحث";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "البحث عن مستخدم";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "العثور على أسماء من يتم الاتصال بهم عن طريق رقم الهاتف";
@@ -934,7 +922,7 @@
 "NOTIFICATIONS_SOUND" = "صوت الإشعارات";
 
 /* No comment provided by engineer. */
-"OK" = "OK";
+"OK" = "على ما يرام";
 
 /* Button text which opens the settings app
    Label for button which opens the settings UI */
@@ -950,7 +938,7 @@
 "OUTGOING_CALL" = "مكالمة صادرة";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "مكالمة صادرة لم يتم الرد عليها";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [انقر لرؤية المزيد]";
@@ -959,61 +947,61 @@
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "رسالة ";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال: %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Home";
+"PHONE_NUMBER_TYPE_HOME" = "المنزل";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Home Fax";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "فاكس المنزل";
 
 /* Label for 'IPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+"PHONE_NUMBER_TYPE_IPHONE" = "آي فون";
 
 /* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "Main";
+"PHONE_NUMBER_TYPE_MAIN" = "الأساسية";
 
 /* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
+"PHONE_NUMBER_TYPE_MOBILE" = "التليفون المحمول";
 
 /* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "Other";
+"PHONE_NUMBER_TYPE_OTHER" = "آخر";
 
 /* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "Other Fax";
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "فاكس آخر";
 
 /* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+"PHONE_NUMBER_TYPE_PAGER" = "بيجر";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "غير معروف";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Work";
+"PHONE_NUMBER_TYPE_WORK" = "عمل";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "فاكس عمل";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "لم تقم بوضع علامة تحقق ل%@";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "متحقق منه";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ متحقق منه";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Learn More";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "أعرف أكثر";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+"PRIVACY_TAP_TO_SCAN" = "انقر من أجل المسح الضوئي";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
+"PRIVACY_UNVERIFY_BUTTON" = "محو علامة التحقق";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم اﻷمان الخاص بك مع %@. هل تتحقق من جهة الاتصال الصحيحة؟";
@@ -1043,13 +1031,13 @@
 "PRIVACY_VERIFICATION_TITLE" = "التّحقّق من رقم اﻷمان";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+"PRIVACY_VERIFY_BUTTON" = "وضع علامة \"تم التحقق\"";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "تقدم";
 
 /* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "وضع علامة \"مقروء\"";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "رُد";
@@ -1127,16 +1115,16 @@
 "REGISTRATION_VERIFY_DEVICE" = "تفعيل هذا الجهاز";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "الرجاء إدخال رقم هاتف صالح للتسجيل.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم الهاتف غير صحيح";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "الرجاء إدخال رقم هاتف للتسجيل.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "لا يوجد رقم هاتف";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -1151,13 +1139,13 @@
 "RETRY_BUTTON_TEXT" = "إعادة المحاولة";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "اضف إلى المجموعة على كل حال";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "أتصل على كل حال";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "أرسل على كل حال";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%@";
@@ -1169,13 +1157,10 @@
 "SCAN_CODE_INSTRUCTIONS" = "امسح رمز الـQR المعروض على جهاز جهة اتصالك.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
+"SCAN_QR_CODE_VIEW_TITLE" = "مسح رمز الاستجابة السريعة";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "بحث باستخدام الاسم أو الرقم";
-
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%u ثانية";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "لقد تم إعادة تعيين دورة الاتصال الآمنة";
@@ -1199,7 +1184,7 @@
 "SEND_INVITE_SUCCESS" = "لقد دعوت صديقك لاستخدام Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "دعوة عبر الرسائل القصيرة: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "إرسال دعوة لصديق عن طريق رسالة نصية غير آمنة؟";
@@ -1220,25 +1205,25 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "حظر";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "التحايل على الرقابة";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "الموقع:%@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "إذا كان مُفعل, الخدمة ستحاول التحايل على الرقابة. لا تُمكن هذه الميزة إلا إذا كنت في موقع يُراقب الخدمة.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تم تنشيط التحايل على الرقابة إستنادًا إلى رقم الهاتف الخاص بحسابك.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل التحايل على الرقابة إلا عند الإتصال بالإنترنت.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "لا يلزمك التحايل على الرقابة; حيث أنك متصل على الخدمة.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "التحايل على الرقابة";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "تفعيل سجل التصحيح";
@@ -1256,7 +1241,7 @@
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "جهات الاتصال الخاصة بك غير موجودة على Signal.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "No Search Results";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا توجد نتائج لبحثك";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "تم الحظر";
@@ -1280,7 +1265,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "حذف حسابك";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكد من حذف جميع سجلك (الرسائل ,المرفقات, سجل المكالمات ...) ؟ هذا الإجراء لايمكن التراجع عنه.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "أنا متأكد";
@@ -1346,31 +1331,46 @@
 "SHARE_ACTION_TWEET" = "تويتر";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان الجديد";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
-
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%u يوم";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%u ساعة";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%u دقيقة";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%u أسبوع";
+"SHOW_THREAD_BUTTON_TITLE" = "عرض المحادثة";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "أنا ادعُك لتثبيت تطبيق Signal، ها هو الرابط:";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم الأمان الخاص بك مع %@ متطابق. يمكنك وضع علامة على جهة الاتصال هذه بأنها مُتحقق منها.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "رقم الأمان متطابق!";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ أيام";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ ساعات";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ دقائق";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ ثوان";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ يوم";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ ساعة";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ دقيقة";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ أسبوع";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ أسابيع";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "إلغاء";
@@ -1415,10 +1415,10 @@
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الخاصية";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "لا يمكنك إزالة أعضاء المجموعة. سيتعين عليهم إما المغادرة أو يمكنك إنشاء مجموعة جديدة بدون هذا العضو.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Allowed";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "غير مسموح";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "بدمج المكالمات عبر نظام تشغيل iOS يصبح من السهل الرد على المكالمات الهاتفية والشاشة مقفلة. نقوم باخفاء هوية المتصل أساساً، لذا فهي خاصة أيضاً. ";
@@ -1436,10 +1436,10 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "أهلاً بالاتصالات الفيديوية الآمنة! ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 9 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "سيتطلب تطبيق سجنال قريبا نظام التشغيل iOS 9 و الإصدارات الأحدث. يرجى ترقية نظام التشغيل في إعدادات التطبيق >> عام >> تحديث البرامج.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "ترقية iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "ترقية Signal ...";
@@ -1463,43 +1463,40 @@
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "ادخال شفرة التحقق التي أرسلناها إلى %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "لقد قمت بوضع علامة \"غير متحقق منه\" ل%@.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "لقد قمت بوضع علامة \"غير متحقق منه\" ل%@ من خلال جهاز آخر.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "لقد قمت بوضع علامة \"متحقق منه\" ل%@.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "لقد قمت بوضع علامة \"متحقق منه\" ل%@ من خلال جهاز آخر.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "تم تغيير حالة التحقق.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Show Safety Number";
+"VERIFY_PRIVACY" = "عرض رقم الأمان";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "مراجعة أرقام الأمان";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مرر للإلغاء";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "رسالة صوتية";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "انقر مع الاستمرار لتسجيل رسالة صوتية.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "رسالة صوتية";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
-
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%u أسابيع";
 
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "البريد الوارد";
@@ -1509,3 +1506,20 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد ضبطت وقت إخفاء الرسالة على %@.";
+
+// Strings Copied in from JSQMessagesViewController
+
+
+"load_earlier_messages" = "تحميل الرسائل السابقة";
+
+"send" = "أرسل";
+
+"new_message" = "رسالة جديدة";
+
+"text_message_accessibility_label" = "%@: %@";
+
+"media_message_accessibility_label" = "%@: رسالة وسائط";
+
+"accessory_button_accessibility_label" = "مشاركة الوسائط";
+
+"new_message_received_accessibility_announcement" = "وصلت رسالة جديدة";

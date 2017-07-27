@@ -56,13 +56,13 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ក្នុងក្រុម %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ជំនាន់ %@ ឥលូវមាននៅលើ App Store។";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "មាន Signal ជំនាន់ថ្មី";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "បច្ចុប្បន្នភាព";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -140,7 +140,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "សារសំឡេង";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "បំពងសំឡេង";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "អ្នកប្រើប្រាស់ដែលបានហាមឃាត់ នឹងមិនអាចហៅ ឬផ្ញើសារមកអ្នកបានទេ។";
@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "ការកំណត់ការសន្ទនា";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "បន្ថែមទៅបញ្ជីទំនាក់ទំនង";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ហាមឃាត់អ្នកប្រើប្រាស់នេះ";
@@ -335,7 +335,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "រហូតដល់ %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "បង្កើតលេខទំនាក់ទំនងថ្មី";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "បើកសំឡេង";
@@ -354,9 +354,6 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "កំពុងធ្វើបច្ចុប្បន្នភាពទិន្នន័យ";
-
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"DAYS_TIME_AMOUNT" = "%u ថ្ងៃ";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "សកម្មភាពចុងក្រោយ៖ %@";
@@ -634,9 +631,6 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "បានហាមឃាត់";
 
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"HOURS_TIME_AMOUNT" = "%u ម៉ោង";
-
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "កំពុងតភ្ជាប់...";
 
@@ -647,13 +641,10 @@
 "IN_CALL_SECURING" = "បានទទួល។ កំពុងពង្រឹងសុវត្ថិភាព...";
 
 /* Call setup status label */
-"IN_CALL_TALKING" = "សុវត្ថិភាព។ សកម្ម។";
-
-/* Call setup status label */
 "IN_CALL_TERMINATED" = "ការហៅបញ្ចប់។";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "អ្នកកំពុងបើកមើលបណ្ណាសារ។ ចុច ដើម្បីត្រឡប់ទៅកាន់ប្រអប់សំបុត្រ។";
 
 /* Multiline label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "ដើម្បីមើលឈ្មោះនៃបញ្ជីទំនាក់ទំនងរបស់អ្នក សូមធ្វើបច្ចុប្បភាពការកំណត់ប្រព័ន្ធរបស់អ្នក ដើម្បីបើកអោយចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
@@ -665,7 +656,7 @@
 "INCOMING_CALL_FROM" = "ការហៅចូលពី %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "អ្នកបានបដិសេធការហៅ។";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "ការហៅចូលមិនត្រឹមត្រូវពី";
@@ -785,7 +776,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "អ្នកបានហាមឃាត់សមាជិក1 ក្នុងក្រុមនេះ";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "អ្នកបានហាមឃាត់សមាជិក%d ក្នុងក្រុមនេះ";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "អ្នកបានហាមឃាត់ សមាជិក%@ នៃក្រុមនេះ";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "សមាជិកលើសពីមួយក្នុងក្រុមនេះ លែងបានផ្ទៀងផ្ទាត់ហើយ។ ចុច សម្រាប់ជម្រើសបន្ថែម។";
@@ -801,9 +792,6 @@
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "មានសារមិនទាន់អានជាច្រើនខាងលើ។ ចុច \"%@\" ដើម្បីពិនិត្យមើល។";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"MINUTES_TIME_AMOUNT" = "%u នាទី";
 
 /* notification title */
 "MISSED_CALL" = "ខកការហៅ";
@@ -950,7 +938,7 @@
 "OUTGOING_CALL" = "ហៅចេញក្រៅ";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "ការហៅចេញមិនបានទទួល";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [ចុច សម្រាប់មើលបន្ថែម]";
@@ -962,7 +950,7 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ឧទាហរណ៍៖ %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT" = "%@ %d";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "ផ្ទះ";
@@ -1174,9 +1162,6 @@
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ស្វែងរកឈ្មោះ ឬលេខទូរស័ព្ទ";
 
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"SECONDS_TIME_AMOUNT" = "%u វិនាទី";
-
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "កាលប្រើប្រាស់សុវត្ថិភាពត្រូវបានកំណត់ឡើងវិញ។";
 
@@ -1351,18 +1336,6 @@
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "បង្ហាញការសន្ទនា";
 
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_DAY_TIME_AMOUNT" = "%u ថ្ងៃ";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_HOUR_TIME_AMOUNT" = "%u ម៉ោង";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_MINUTE_TIME_AMOUNT" = "%u នាទី";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"SINGLE_WEEK_TIME_AMOUNT" = "%u សប្តាហ៍";
-
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "ខ្ញុំអញ្ជើញអ្នក ដំឡើង Signal! នេះជាតំណ៖";
 
@@ -1371,6 +1344,33 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "លេខសុវត្ថិភាព ត្រូវគ្នា!";
+
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ ថ្ងៃ";
+
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ ម៉ោង";
+
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ នាទី";
+
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ វិនាទី";
+
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ ថ្ងៃ";
+
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ ម៉ោង";
+
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ នាទី";
+
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ សប្តាហ៍";
+
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ សប្តាហ៍";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "បោះបង់";
@@ -1498,9 +1498,6 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ Signal Desktop។";
 
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"WEEKS_TIME_AMOUNT" = "%u សប្តាហ៍";
-
 /* No comment provided by engineer. */
 "WHISPER_NAV_BAR_TITLE" = "ប្រអប់សារ";
 
@@ -1509,3 +1506,20 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកកំណត់រយៈពេលសាររលុប %@។";
+
+// Strings Copied in from JSQMessagesViewController
+
+
+"load_earlier_messages" = "ផ្ទុកសារពីមុន";
+
+"send" = "បញ្ជូន";
+
+"new_message" = "សារថ្មី";
+
+"text_message_accessibility_label" = "%@: %@";
+
+"media_message_accessibility_label" = "%@: សារមេឌា";
+
+"accessory_button_accessibility_label" = "ចែករំលែកមេឌា";
+
+"new_message_received_accessibility_announcement" = "បានទទួលសារថ្មី";
