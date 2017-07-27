@@ -207,7 +207,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                         async:YES];
 }
 
-+ (void)asyncRegisterThreadDatabaseView
++ (void)registerThreadDatabaseView
 {
     YapDatabaseView *threadView =
         [[TSStorageManager sharedManager].database registeredExtension:TSThreadDatabaseViewExtensionName];
@@ -249,15 +249,8 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *databaseView =
         [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"2" options:options];
 
-    [[TSStorageManager sharedManager].database
-        asyncRegisterExtension:databaseView
-                      withName:TSThreadDatabaseViewExtensionName
-               completionBlock:^(BOOL ready) {
-                   OWSCAssert(ready);
-
-                   DDLogInfo(
-                       @"%@ asyncRegisterExtension: %@ -> %d", self.tag, TSThreadDatabaseViewExtensionName, ready);
-               }];
+    [[TSStorageManager sharedManager].database registerExtension:databaseView
+                                                        withName:TSThreadDatabaseViewExtensionName];
 }
 
 /**
