@@ -527,9 +527,6 @@ typedef enum : NSUInteger {
     // We need to update the dynamic interactions before we do any layout.
     [self ensureDynamicInteractions];
 
-    // Triggering modified notification renders "call notification" when leaving full screen call view
-    [self.thread touch];
-
     [self ensureBannerState];
 
     [super viewWillAppear:animated];
