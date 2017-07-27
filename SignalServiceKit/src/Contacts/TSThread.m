@@ -51,19 +51,23 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super removeWithTransaction:transaction];
 
-    __block NSMutableArray<NSString *> *interactionIds = [[NSMutableArray alloc] init];
-    [self enumerateInteractionsWithTransaction:transaction
-                                    usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
-                                        [interactionIds addObject:interaction.uniqueId];
-                                    }];
+    // We can't safely delete interactions while enumerating them, so
+    // we collect and delete separately.
+    //
+    // We don't want to instantiate the interactions when collecting them
+    // or when deleting them.
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+    OWSAssert(interactionsByThread);
+    [interactionsByThread
+        enumerateKeysInGroup:self.uniqueId
+                  usingBlock:^(
+                      NSString *_Nonnull collection, NSString *_Nonnull key, NSUInteger index, BOOL *_Nonnull stop) {
+                      [interactionIds addObject:key];
+                  }];
 
     for (NSString *interactionId in interactionIds) {
-        // This might seem redundant since we're fetching the interaction twice, once above to get the uniqueIds
-        // and then again here. The issue is we can't remove them within the enumeration (you can't mutate an
-        // enumeration source), but we also want to avoid instantiating an entire threads worth of Interaction objects
-        // at once. This way we only have a threads worth of interactionId's.
-        TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
-        [interaction removeWithTransaction:transaction];
+        [transaction removeObjectForKey:interactionId inCollection:[[TSInteraction class] collection]];
     }
 }
 
