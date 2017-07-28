@@ -186,6 +186,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageProcessingJobFinder *finder;
+@property (nonatomic) BOOL isDrainingQueue;
 
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
                                  finder:(OWSMessageProcessingJobFinder *)finder NS_DESIGNATED_INITIALIZER;
@@ -207,6 +208,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
     _messagesManager = messagesManager;
     _finder = finder;
+    _isDrainingQueue = NO;
 
     return self;
 }
@@ -220,16 +222,34 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 - (void)drainQueue
 {
-    dispatch_async(self.class.serialGCDQueue, ^{
-        OWSMessageProcessingJob *_Nullable job = [self.finder nextJob];
-        if (job == nil) {
-            DDLogVerbose(@"%@ Queue is drained", self.tag);
-            return;
-        }
+    AssertIsOnMainThread();
 
+    if (self.isDrainingQueue) {
+        return;
+    }
+    self.isDrainingQueue = YES;
+
+    [self drainQueueWorkStep];
+}
+
+- (void)drainQueueWorkStep
+{
+    AssertIsOnMainThread();
+
+    OWSMessageProcessingJob *_Nullable job = [self.finder nextJob];
+    if (job == nil) {
+        self.isDrainingQueue = NO;
+        DDLogVerbose(@"%@ Queue is drained", self.tag);
+        return;
+    }
+
+    dispatch_async(self.class.serialGCDQueue, ^{
         [self processJob:job
               completion:^{
-                  [self drainQueue];
+                  DDLogVerbose(@"%@ completed job. %lu jobs left.",
+                      self.tag,
+                      (unsigned long)[OWSMessageProcessingJob numberOfKeysInCollection]);
+                  [self drainQueueWorkStep];
               }];
     });
 }
