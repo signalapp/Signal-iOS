@@ -92,9 +92,9 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
     }
 
 #define OWSProdFailWParams(__eventName, __parametersBlock)                                                             \
-    OWSProdFailWParamsTemplate(__eventName, __parametersBlock, OWSFail)
+    OWSProdFailWParamsTemplate(__eventName, __parametersBlock, OWSFailNoFormat)
 #define OWSProdCFailWParams(__eventName, __parametersBlock)                                                            \
-    OWSProdFailWParamsTemplate(__eventName, __parametersBlock, OWSCFail)
+    OWSProdFailWParamsTemplate(__eventName, __parametersBlock, OWSCFailNoFormat)
 
 #define OWSProdFail(__eventName) OWSProdFailWParams(__eventName, nil)
 
