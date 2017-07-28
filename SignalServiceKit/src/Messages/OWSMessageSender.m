@@ -1158,7 +1158,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     
     NSData *plainText = [message buildPlainTextData];
-    DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], plainText.length);
+    DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], (unsigned long)plainText.length);
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
