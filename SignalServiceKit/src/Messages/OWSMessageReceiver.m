@@ -186,6 +186,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageProcessingJobFinder *finder;
+@property (nonatomic) BOOL isDrainingQueue;
 
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
                                  finder:(OWSMessageProcessingJobFinder *)finder NS_DESIGNATED_INITIALIZER;
@@ -207,6 +208,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
     _messagesManager = messagesManager;
     _finder = finder;
+    _isDrainingQueue = NO;
 
     return self;
 }
@@ -220,41 +222,43 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 - (void)drainQueue
 {
-    dispatch_async(self.class.serialGCDQueue, ^{
-        OWSMessageProcessingJob *_Nullable job = [self.finder nextJob];
-        if (job == nil) {
-            DDLogVerbose(@"%@ Queue is drained", self.tag);
-            return;
-        }
+    AssertIsOnMainThread();
 
-        [self processJob:job
-              completion:^{
-                  [self drainQueue];
-              }];
-    });
+    if (self.isDrainingQueue) {
+        return;
+    }
+    self.isDrainingQueue = YES;
+
+    [self drainQueueWorkStep];
+}
+
+- (void)drainQueueWorkStep
+{
+    AssertIsOnMainThread();
+
+    OWSMessageProcessingJob *_Nullable job = [self.finder nextJob];
+    if (job == nil) {
+        self.isDrainingQueue = NO;
+        DDLogVerbose(@"%@ Queue is drained", self.tag);
+        return;
+    }
+
+    [self processJob:job
+          completion:^{
+              DDLogVerbose(@"%@ completed job. %lu jobs left.",
+                  self.tag,
+                  (unsigned long)[OWSMessageProcessingJob numberOfKeysInCollection]);
+              [self drainQueueWorkStep];
+          }];
 }
 
 - (void)processJob:(OWSMessageProcessingJob *)job completion:(void (^)())completion
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.messagesManager processEnvelope:job.envelopeProto
-                                   completion:^{
-                                       [self.finder removeJobWithId:job.uniqueId];
-                                       completion();
-                                   }];
-    });
-}
-
-#pragma mark Helpers
-
-+ (dispatch_queue_t)serialGCDQueue
-{
-    static dispatch_once_t onceToken;
-    static dispatch_queue_t queue;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.messageProcessingQueue", NULL);
-    });
-    return queue;
+    [self.messagesManager processEnvelope:job.envelopeProto
+                               completion:^{
+                                   [self.finder removeJobWithId:job.uniqueId];
+                                   completion();
+                               }];
 }
 
 #pragma mark Logging
@@ -330,6 +334,13 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 }
 
 #pragma mark - instance methods
+
+- (void)handleAnyUnprocessedEnvelopesAsync
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.processingQueue drainQueue];
+    });
+}
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {

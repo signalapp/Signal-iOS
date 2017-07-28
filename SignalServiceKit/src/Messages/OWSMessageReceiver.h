@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)syncRegisterDatabaseExtension:(YapDatabase *)database;
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
+- (void)handleAnyUnprocessedEnvelopesAsync;
 
 @end
 
