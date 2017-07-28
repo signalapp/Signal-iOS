@@ -335,7 +335,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 #pragma mark - instance methods
 
-- (void)handleAnyUnprocessedEnvelopes
+- (void)handleAnyUnprocessedEnvelopesAsync
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.processingQueue drainQueue];
