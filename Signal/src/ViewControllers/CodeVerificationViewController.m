@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_challengeButton autoSetDimension:ALDimensionHeight toSize:47.f];
 
     const CGFloat kSpinnerSize = 20;
-    const CGFloat kSpinnerSpacing = 15;
+    const CGFloat kSpinnerSpacing = ScaleFromIPhone5To7Plus(5, 15);
 
     _submitCodeSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [_challengeButton addSubview:_submitCodeSpinner];
