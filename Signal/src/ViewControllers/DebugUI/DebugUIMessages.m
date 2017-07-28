@@ -5,6 +5,7 @@
 #import "DebugUIMessages.h"
 #import "Environment.h"
 #import "OWSTableViewController.h"
+#import "SecurityUtils.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
@@ -185,6 +186,18 @@ NS_ASSUME_NONNULL_BEGIN
                        [OWSTableItem itemWithTitle:@"Send 1,000 text and system messages"
                                        actionBlock:^{
                                            [DebugUIMessages sendTextAndSystemMessages:1000 thread:thread];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Create 10 new groups (1/sec.)"
+                                       actionBlock:^{
+                                           [DebugUIMessages createNewGroups:10];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Create 100 new groups (1/sec.)"
+                                       actionBlock:^{
+                                           [DebugUIMessages createNewGroups:100];
+                                       }],
+                       [OWSTableItem itemWithTitle:@"Create 1,000 new groups (1/sec.)"
+                                       actionBlock:^{
+                                           [DebugUIMessages createNewGroups:1000];
                                        }],
                    ]];
 }
@@ -916,6 +929,48 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTinyAttachments:counter - 1 thread:thread];
     });
+}
+
++ (void)createNewGroups:(int)counter
+{
+    if (counter < 1) {
+        return;
+    }
+
+    NSString *recipientId = @"+12045002827";
+    //    NSString *recipientId = @"+19174054216";
+
+    NSString *groupName = [NSUUID UUID].UUIDString;
+    NSMutableArray<NSString *> *recipientIds = [@[
+        recipientId,
+    ] mutableCopy];
+    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+    TSGroupModel *groupModel =
+        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+
+    __block TSGroupThread *thread;
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+        }];
+    OWSAssert(thread);
+
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                     inThread:thread
+                                                             groupMetaMessage:TSGroupMessageNew];
+    // This will save the message.
+    [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
+
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    void (^completion)() = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [ThreadUtil sendMessageWithText:[@(counter) description] inThread:thread messageSender:messageSender];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self createNewGroups:counter - 1];
+            });
+        });
+    };
+    [messageSender sendMessage:message success:completion failure:completion];
 }
 
 @end
