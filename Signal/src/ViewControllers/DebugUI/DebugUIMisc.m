@@ -44,8 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    OWSAssert(thread);
-
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
     [items addObject:[OWSTableItem itemWithTitle:@"Enable Manual Censorship Circumvention"
                                      actionBlock:^{
