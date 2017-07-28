@@ -5,6 +5,7 @@
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "FLAnimatedImageView.h"
 #import "OWSExpirationTimerView.h"
+#import "UIView+OWS.h"
 #import <JSQMessagesViewController/JSQMediaItem.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super awakeFromNib];
     self.expirationTimerViewWidthConstraint.constant = 0.0;
+
+    // Our text alignment needs to adapt to RTL.
+    self.cellBottomLabel.textAlignment = [self.cellBottomLabel textAlignmentUnnatural];
 }
 
 - (void)prepareForReuse
