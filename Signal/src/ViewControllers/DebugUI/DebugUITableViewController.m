@@ -180,6 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:nil]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
     viewController.contents = contents;
