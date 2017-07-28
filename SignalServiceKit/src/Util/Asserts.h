@@ -46,12 +46,28 @@
         NSCAssert(0, formattedMessage);                                                                                \
     }
 
+#define OWSFailNoFormat(message)                                                                                       \
+    {                                                                                                                  \
+        DDLogError(@"%s %@", __PRETTY_FUNCTION__, message);                                                            \
+        [DDLog flushLog];                                                                                              \
+        NSAssert(0, message);                                                                                          \
+    }
+
+#define OWSCFailNoFormat(message)                                                                                      \
+    {                                                                                                                  \
+        DDLogError(@"%s %@", __PRETTY_FUNCTION__, message);                                                            \
+        [DDLog flushLog];                                                                                              \
+        NSCAssert(0, message);                                                                                         \
+    }
+
 #else
 
 #define OWSAssert(X)
 #define OWSCAssert(X)
 #define OWSFail(message, ...)
 #define OWSCFail(message, ...)
+#define OWSFailNoFormat(X)
+#define OWSCFailNoFormat(X)
 
 #endif
 
