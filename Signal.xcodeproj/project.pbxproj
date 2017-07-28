@@ -14,6 +14,7 @@
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341207271EE19F6A00463194 /* OWSSystemMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 341207261EE19F6A00463194 /* OWSSystemMessageCell.m */; };
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
+		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		342FCE6B1EF9C375002690AD /* OWS105AttachmentFilePaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -135,9 +136,9 @@
 		4542F0961EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
-		4563ADF11F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4563ADF11F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */; };
 		45666EC61D99483D008FE134 /* OWSAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */; };
 		45666EC91D994C0D008FE134 /* OWSGroupAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */; };
 		45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F551D9B2827008FE134 /* OWSScrubbingLogFormatter.m */; };
@@ -391,6 +392,8 @@
 		341207261EE19F6A00463194 /* OWSSystemMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = OWSSystemMessageCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		341BB7471DB727EE001E2975 /* JSQMediaItem+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMediaItem+OWS.h"; sourceTree = "<group>"; };
 		341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMediaItem+OWS.m"; sourceTree = "<group>"; };
+		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
+		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
 		342FCE691EF9C375002690AD /* OWS105AttachmentFilePaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS105AttachmentFilePaths.h; path = Migrations/OWS105AttachmentFilePaths.h; sourceTree = "<group>"; };
 		342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWS105AttachmentFilePaths.m; path = Migrations/OWS105AttachmentFilePaths.m; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
@@ -573,9 +576,9 @@
 		4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataChannelMessage.swift; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS106EnsureProfileComplete.swift; sourceTree = "<group>"; };
 		455A16DB1F1FEA0000F86704 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		4563ADF01F22BD7100DEB8C7 /* OWS106EnsureProfileComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS106EnsureProfileComplete.swift; sourceTree = "<group>"; };
 		45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAvatarBuilder.h; sourceTree = "<group>"; };
 		45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAvatarBuilder.m; sourceTree = "<group>"; };
 		45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupAvatarBuilder.h; sourceTree = "<group>"; };
@@ -1073,6 +1076,8 @@
 				34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */,
 				34D8C0231ED3673300188D7C /* DebugUIMessages.h */,
 				34D8C0241ED3673300188D7C /* DebugUIMessages.m */,
+				341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */,
+				341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */,
 				34E3EF0E1EFC2684007F6822 /* DebugUIPage.h */,
 				34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */,
 				452037CF1EE84975004E4CDF /* DebugUISessionState.h */,
@@ -2119,6 +2124,7 @@
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,
 				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
+				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
