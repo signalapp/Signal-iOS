@@ -517,6 +517,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // This will fetch new messages, if we're using domain
                 // fronting.
                 [[PushManager sharedManager] applicationDidBecomeActive];
+
+                // If there were any messages in our local queue which we hadn't yet processed.
+                [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopes];
             }];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);

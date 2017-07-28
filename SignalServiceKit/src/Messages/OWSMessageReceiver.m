@@ -351,6 +351,11 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 #pragma mark - instance methods
 
+- (void)handleAnyUnprocessedEnvelopes
+{
+    [self.processingQueue drainQueue];
+}
+
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     // Drop any too-large messages on the floor. Well behaving clients should never send them.
