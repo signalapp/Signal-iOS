@@ -262,13 +262,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
+    __weak CodeVerificationViewController *weakSelf = self;
     [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
         .then(^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
-            DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
+            DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self stopActivityIndicator];
+                [weakSelf stopActivityIndicator];
 
                 SignalsViewController *homeView = [SignalsViewController new];
                 homeView.newlyRegisteredUser = YES;
@@ -281,10 +282,11 @@ NS_ASSUME_NONNULL_BEGIN
         })
         .catch(^(NSError *_Nonnull error) {
             OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-            DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
+            DDLogError(@"%@ error verifying challenge: %@", weakSelf.tag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self stopActivityIndicator];
-                [self presentAlertWithVerificationError:error];
+                [weakSelf stopActivityIndicator];
+                [weakSelf presentAlertWithVerificationError:error];
+                [weakSelf.challengeTextField becomeFirstResponder];
             });
         });
 }
@@ -321,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.challengeTextField.text stringByReplacingOccurrencesOfString:@"-" withString:@""];
 }
 
-#pragma mark - Send codes again
+#pragma mark - Actions
 
 - (void)sendCodeViaSMSAction:(id)sender {
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringRequestedNewCodeBySms]);
@@ -329,16 +331,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self enableServerActions:NO];
 
     [_requestCodeAgainSpinner startAnimating];
+    __weak CodeVerificationViewController *weakSelf = self;
     [TSAccountManager rerequestSMSWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested SMS code", self.tag);
-        [self enableServerActions:YES];
-        [_requestCodeAgainSpinner stopAnimating];
+        DDLogInfo(@"%@ Successfully requested SMS code", weakSelf.tag);
+        [weakSelf enableServerActions:YES];
+        [weakSelf.requestCodeAgainSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request SMS code with error: %@", self.tag, error);
-            [self showRegistrationErrorMessage:error];
-            [self enableServerActions:YES];
-            [_requestCodeAgainSpinner stopAnimating];
+            DDLogError(@"%@ Failed to request SMS code with error: %@", weakSelf.tag, error);
+            [weakSelf showRegistrationErrorMessage:error];
+            [weakSelf enableServerActions:YES];
+            [weakSelf.requestCodeAgainSpinner stopAnimating];
+            [weakSelf.challengeTextField becomeFirstResponder];
         }];
 }
 
@@ -348,17 +352,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self enableServerActions:NO];
 
     [_requestCallSpinner startAnimating];
+    __weak CodeVerificationViewController *weakSelf = self;
     [TSAccountManager rerequestVoiceWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested voice code", self.tag);
+        DDLogInfo(@"%@ Successfully requested voice code", weakSelf.tag);
 
-        [self enableServerActions:YES];
-        [_requestCallSpinner stopAnimating];
+        [weakSelf enableServerActions:YES];
+        [weakSelf.requestCallSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request voice code with error: %@", self.tag, error);
-            [self showRegistrationErrorMessage:error];
-            [self enableServerActions:YES];
-            [_requestCallSpinner stopAnimating];
+            DDLogError(@"%@ Failed to request voice code with error: %@", weakSelf.tag, error);
+            [weakSelf showRegistrationErrorMessage:error];
+            [weakSelf enableServerActions:YES];
+            [weakSelf.requestCallSpinner stopAnimating];
+            [weakSelf.challengeTextField becomeFirstResponder];
         }];
 }
 
@@ -385,6 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
     UITapGestureRecognizer *outsideTabRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
     [self.view addGestureRecognizer:outsideTabRecognizer];
+    self.view.userInteractionEnabled = YES;
 }
 
 - (void)dismissKeyboardFromAppropriateSubView {
