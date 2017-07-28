@@ -243,38 +243,22 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
         return;
     }
 
-    dispatch_async(self.class.serialGCDQueue, ^{
-        [self processJob:job
-              completion:^{
-                  DDLogVerbose(@"%@ completed job. %lu jobs left.",
-                      self.tag,
-                      (unsigned long)[OWSMessageProcessingJob numberOfKeysInCollection]);
-                  [self drainQueueWorkStep];
-              }];
-    });
+    [self processJob:job
+          completion:^{
+              DDLogVerbose(@"%@ completed job. %lu jobs left.",
+                  self.tag,
+                  (unsigned long)[OWSMessageProcessingJob numberOfKeysInCollection]);
+              [self drainQueueWorkStep];
+          }];
 }
 
 - (void)processJob:(OWSMessageProcessingJob *)job completion:(void (^)())completion
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.messagesManager processEnvelope:job.envelopeProto
-                                   completion:^{
-                                       [self.finder removeJobWithId:job.uniqueId];
-                                       completion();
-                                   }];
-    });
-}
-
-#pragma mark Helpers
-
-+ (dispatch_queue_t)serialGCDQueue
-{
-    static dispatch_once_t onceToken;
-    static dispatch_queue_t queue;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.messageProcessingQueue", NULL);
-    });
-    return queue;
+    [self.messagesManager processEnvelope:job.envelopeProto
+                               completion:^{
+                                   [self.finder removeJobWithId:job.uniqueId];
+                                   completion();
+                               }];
 }
 
 #pragma mark Logging
@@ -353,7 +337,9 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 - (void)handleAnyUnprocessedEnvelopes
 {
-    [self.processingQueue drainQueue];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.processingQueue drainQueue];
+    });
 }
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
