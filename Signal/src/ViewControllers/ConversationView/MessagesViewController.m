@@ -2285,12 +2285,17 @@ typedef enum : NSUInteger {
 
 - (void)updateMessageMappingRangeOptions
 {
+    // The "page" length may have been increased by loading "prev" pages at the
+    // top of the window.
+    NSUInteger pageLength = kYapDatabasePageSize * (self.page + 1);
+    // The "old" length may have been increased by insertions of new messages
+    // at the bottom of the window.
+    NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    NSUInteger newLength = MAX(pageLength, oldLength);
     YapDatabaseViewRangeOptions *rangeOptions =
-        [YapDatabaseViewRangeOptions flexibleRangeWithLength:kYapDatabasePageSize * (self.page + 1)
-                                                      offset:0
-                                                        from:YapDatabaseViewEnd];
+        [YapDatabaseViewRangeOptions flexibleRangeWithLength:newLength offset:0 from:YapDatabaseViewEnd];
 
-    rangeOptions.maxLength = kYapDatabaseRangeMaxLength;
+    rangeOptions.maxLength = MAX(newLength, kYapDatabaseRangeMaxLength);
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
