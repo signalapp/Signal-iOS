@@ -5,6 +5,7 @@
 #import "DebugUIMessages.h"
 #import "Environment.h"
 #import "OWSTableViewController.h"
+#import "SecurityUtils.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
@@ -44,149 +45,163 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [OWSTableSection
-        sectionWithTitle:self.name
-                   items:@[
-                       [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextMessages:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 messages (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextMessages:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1,000 messages (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextMessages:1000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextMessages:3000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTinyAttachments:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 tiny attachments"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTinyAttachments:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1,000 tiny attachments"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTinyAttachments:1000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 3,000 tiny attachments"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTinyAttachments:3000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create 10 fake messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendFakeMessages:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create 1k fake messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendFakeMessages:1000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create 10k fake messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create 1 fake unread messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages createFakeUnreadMessages:1 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create 10 fake unread messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages createFakeUnreadMessages:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendOversizeTextMessage:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send unknown mimetype"
-                                       actionBlock:^{
-                                           [DebugUIMessages
-                                               sendRandomAttachment:thread
-                                                                uti:SignalAttachment.kUnknownTestAttachmentUTI];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send pdf"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomAttachment:thread uti:(NSString *)kUTTypePDF];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1 Random GIF (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomGifs:1 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 Random GIF (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomGifs:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 Random GIF (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomGifs:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1 Random JPEG (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomJpegs:1 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 Random JPEG (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomJpegs:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 Random JPEG (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomJpegs:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1 Random Mp3 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp3s:1 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 Random Mp3 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp3s:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 Random Mp3 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp3s:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1 Random Mp4 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp4s:1 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 Random Mp4 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp4s:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 Random Mp4 (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendRandomMp4s:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 10 media (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendMediaAttachments:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 media (1/sec.)"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendMediaAttachments:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Create all system messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages createSystemMessagesInThread:thread];
-                                       }],
+    NSMutableArray<OWSTableItem *> *items = [@[
+        [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextMessages:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1,000 messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextMessages:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextMessages:3000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyAttachments:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 tiny attachments"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyAttachments:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1,000 tiny attachments"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyAttachments:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 3,000 tiny attachments"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyAttachments:3000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10 fake messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10k fake messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 1 fake unread messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeUnreadMessages:1 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10 fake unread messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeUnreadMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
+                        actionBlock:^{
+                            [DebugUIMessages sendOversizeTextMessage:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send unknown mimetype"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomAttachment:thread
+                                                              uti:SignalAttachment.kUnknownTestAttachmentUTI];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send pdf"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomAttachment:thread uti:(NSString *)kUTTypePDF];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1 Random GIF (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomGifs:1 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 Random GIF (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomGifs:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 Random GIF (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomGifs:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1 Random JPEG (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomJpegs:1 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 Random JPEG (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomJpegs:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 Random JPEG (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomJpegs:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1 Random Mp3 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp3s:1 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 Random Mp3 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp3s:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 Random Mp3 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp3s:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1 Random Mp4 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp4s:1 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 Random Mp4 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp4s:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 Random Mp4 (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendRandomMp4s:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 media (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendMediaAttachments:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 media (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendMediaAttachments:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create all system messages"
+                        actionBlock:^{
+                            [DebugUIMessages createSystemMessagesInThread:thread];
+                        }],
 
-                       [OWSTableItem itemWithTitle:@"Send 10 text and system messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextAndSystemMessages:10 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 100 text and system messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextAndSystemMessages:100 thread:thread];
-                                       }],
-                       [OWSTableItem itemWithTitle:@"Send 1,000 text and system messages"
-                                       actionBlock:^{
-                                           [DebugUIMessages sendTextAndSystemMessages:1000 thread:thread];
-                                       }],
-                   ]];
+        [OWSTableItem itemWithTitle:@"Send 10 text and system messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextAndSystemMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 text and system messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextAndSystemMessages:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 1,000 text and system messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendTextAndSystemMessages:1000 thread:thread];
+                        }],
+    ] mutableCopy];
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *recipientId = contactThread.contactIdentifier;
+        [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
+                                         actionBlock:^{
+                                             [DebugUIMessages createNewGroups:10 recipientId:recipientId];
+                                         }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Create 100 new groups"
+                                         actionBlock:^{
+                                             [DebugUIMessages createNewGroups:100 recipientId:recipientId];
+                                         }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Create 1,000 new groups"
+                                         actionBlock:^{
+                                             [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
+                                         }]];
+    }
+    return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
@@ -916,6 +931,45 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTinyAttachments:counter - 1 thread:thread];
     });
+}
+
++ (void)createNewGroups:(int)counter recipientId:(NSString *)recipientId
+{
+    if (counter < 1) {
+        return;
+    }
+
+    NSString *groupName = [NSUUID UUID].UUIDString;
+    NSMutableArray<NSString *> *recipientIds = [@[
+        recipientId,
+    ] mutableCopy];
+    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+    TSGroupModel *groupModel =
+        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+
+    __block TSGroupThread *thread;
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+        }];
+    OWSAssert(thread);
+
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                     inThread:thread
+                                                             groupMetaMessage:TSGroupMessageNew];
+    // This will save the message.
+    [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
+
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    void (^completion)() = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [ThreadUtil sendMessageWithText:[@(counter) description] inThread:thread messageSender:messageSender];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self createNewGroups:counter - 1 recipientId:recipientId];
+            });
+        });
+    };
+    [messageSender sendMessage:message success:completion failure:completion];
 }
 
 @end
