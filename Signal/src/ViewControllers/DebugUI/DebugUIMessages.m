@@ -942,6 +942,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *groupName = [NSUUID UUID].UUIDString;
     NSMutableArray<NSString *> *recipientIds = [@[
         recipientId,
+        [TSAccountManager localNumber],
     ] mutableCopy];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
     TSGroupModel *groupModel =
