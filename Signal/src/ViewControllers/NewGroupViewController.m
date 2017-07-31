@@ -11,7 +11,6 @@
 #import "GroupViewHelper.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
-#import "SecurityUtils.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
@@ -20,6 +19,7 @@
 #import "UIViewController+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
