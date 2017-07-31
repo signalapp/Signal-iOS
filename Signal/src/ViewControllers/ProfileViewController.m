@@ -3,28 +3,28 @@
 //
 
 #import "ProfileViewController.h"
+#import "AvatarViewHelper.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import "UIViewController+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ProfileViewController () <UITextFieldDelegate>
-//<
-// OWSTableViewControllerDelegate
-//// , UISearchBarDelegate
-//>
+@interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate>
 
-//@property (nonatomic, readonly) UISearchBar *searchBar;
-//
-//@property (nonatomic) NSArray<NSString *> *countryCodes;
+@property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
 @property (nonatomic) UITextField *nameTextField;
 
 @property (nonatomic) AvatarImageView *avatarView;
 
 @property (nonatomic) UILabel *avatarLabel;
+
+@property (nonatomic, nullable) UIImage *avatar;
+
+@property (nonatomic) BOOL hasUnsavedChanges;
 
 @end
 
@@ -39,13 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
     self.title = NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.");
+    self.navigationItem.leftBarButtonItem =
+        [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
-    //    self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
-
-    //    self.navigationItem.leftBarButtonItem =
-    //        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-    //                                                      target:self
-    //                                                      action:@selector(dismissWasPressed:)];
+    _avatarViewHelper = [AvatarViewHelper new];
+    _avatarViewHelper.delegate = self;
 
     [self createViews];
 }
@@ -54,7 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _nameTextField = [UITextField new];
     _nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-    //        _nameTextField.textAlignment = _nameTextField.textAlignmentUnnatural;
     _nameTextField.textColor = [UIColor ows_materialBlueColor];
     // TODO: Copy.
     _nameTextField.placeholder = NSLocalizedString(
@@ -87,34 +84,26 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *avatarSection = [OWSTableSection new];
     avatarSection.headerTitle = NSLocalizedString(
         @"PROFILE_VIEW_AVATAR_SECTION_HEADER", @"Header title for the profile avatar field of the profile view.");
-    const CGFloat kAvatarHeightPoints = 100.f;
+    const CGFloat kAvatarSizePoints = 100.f;
     const CGFloat kAvatarTopMargin = 10.f;
     const CGFloat kAvatarBottomMargin = 10.f;
     const CGFloat kAvatarVSpacing = 10.f;
-    CGFloat avatarCellHeight = round(
-        kAvatarHeightPoints + kAvatarTopMargin + kAvatarBottomMargin + kAvatarVSpacing + self.avatarLabel.height);
-    //    const CGFloat kCountryRowHeight = 50;
-    //    const CGFloat kPhoneNumberRowHeight = 50;
-    //    const CGFloat examplePhoneNumberRowHeight = self.examplePhoneNumberFont.lineHeight + 3.f;
-    //    const CGFloat kButtonRowHeight = 60;
+    CGFloat avatarCellHeight
+        = round(kAvatarSizePoints + kAvatarTopMargin + kAvatarBottomMargin + kAvatarVSpacing + self.avatarLabel.height);
     [avatarSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        //        SelectRecipientViewController *strongSelf = weakSelf;
-        //        OWSCAssert(strongSelf);
-
         UITableViewCell *cell = [UITableViewCell new];
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         // TODO: Use the current avatar.
-        UIImage *defaultAvatarImage = [UIImage imageNamed:@"profile_avatar_default"];
-        OWSAssert(defaultAvatarImage.size.width == kAvatarHeightPoints);
-        OWSAssert(defaultAvatarImage.size.height == kAvatarHeightPoints);
         AvatarImageView *avatarView = weakSelf.avatarView;
-        avatarView.image = defaultAvatarImage;
+        [weakSelf updateAvatarView];
 
         [cell.contentView addSubview:avatarView];
         [avatarView autoHCenterInSuperview];
         [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarTopMargin];
+        [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
+        [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
 
         UILabel *avatarLabel = weakSelf.avatarLabel;
         [cell.contentView addSubview:avatarLabel];
@@ -136,22 +125,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *nameSection = [OWSTableSection new];
     nameSection.headerTitle = NSLocalizedString(
         @"PROFILE_VIEW_NAME_SECTION_HEADER", @"Label for the profile name field of the profile view.");
-    //    const CGFloat kCountryRowHeight = 50;
-    //    const CGFloat kPhoneNumberRowHeight = 50;
-    //    const CGFloat examplePhoneNumberRowHeight = self.examplePhoneNumberFont.lineHeight + 3.f;
-    //    const CGFloat kButtonRowHeight = 60;
     [nameSection
         addItem:
             [OWSTableItem
                 itemWithCustomCellBlock:^{
-                    //        SelectRecipientViewController *strongSelf = weakSelf;
-                    //        OWSCAssert(strongSelf);
-
                     UITableViewCell *cell = [UITableViewCell new];
                     cell.preservesSuperviewLayoutMargins = YES;
                     cell.contentView.preservesSuperviewLayoutMargins = YES;
 
                     UITextField *nameTextField = weakSelf.nameTextField;
+                    // TODO: Use the current profile name.
                     [cell.contentView addSubview:nameTextField];
                     [nameTextField autoPinLeadingToSuperView];
                     [nameTextField autoPinTrailingToSuperView];
@@ -160,39 +143,80 @@ NS_ASSUME_NONNULL_BEGIN
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     return cell;
                 }
-                            //                                                      customRowHeight:kCountryRowHeight +
-                            //                                                      kPhoneNumberRowHeight
-                            //                                 + examplePhoneNumberRowHeight
-                            //                                 + kButtonRowHeight
                             actionBlock:nil]];
     [contents addSection:nameSection];
 
     self.contents = contents;
 }
 
-//- (void)countryCodeWasSelected:(NSString *)countryCode
-//{
-//    OWSAssert(countryCode.length > 0);
-//
-//    NSString *callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-//    NSString *countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-//    NSString *countryCodeSelected = countryCode;
-//    [self.countryCodeDelegate ProfileViewController:self
-//                                   didSelectCountryCode:countryCodeSelected
-//                                            countryName:countryNameSelected
-//                                            callingCode:callingCodeSelected];
-//    [self.searchBar resignFirstResponder];
-//    [self dismissViewControllerAnimated:YES completion:nil];
-//}
-//
-//- (void)dismissWasPressed:(id)sender {
-//    [self dismissViewControllerAnimated:YES completion:nil];
-//}
+#pragma mark - Event Handling
+
+- (void)backButtonPressed:(id)sender
+{
+    [self.nameTextField resignFirstResponder];
+
+    if (!self.hasUnsavedChanges) {
+        // If user made no changes, return to conversation settings view.
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:
+            NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                @"The alert title if user tries to exit the new group view without saving changes.")
+                         message:
+                             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                                 @"The alert message if user tries to exit the new group view without saving changes.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [controller
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
+                                                     @"The label for the 'discard' button in alerts and action sheets.")
+                                           style:UIAlertActionStyleDestructive
+                                         handler:^(UIAlertAction *action) {
+                                             [self.navigationController popViewControllerAnimated:YES];
+                                         }]];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                                   style:UIAlertActionStyleCancel
+                                                 handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
+}
 
 - (void)avatarTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.avatarViewHelper showChangeAvatarUI];
     }
+}
+
+- (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
+{
+    _hasUnsavedChanges = hasUnsavedChanges;
+
+    if (hasUnsavedChanges) {
+        self.navigationItem.rightBarButtonItem = (self.hasUnsavedChanges
+                ? [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_GROUP_UPDATE_BUTTON",
+                                                             @"The title for the 'update group' button.")
+                                                   style:UIBarButtonItemStylePlain
+                                                  target:self
+                                                  action:@selector(updatePressed)]
+                : nil);
+    }
+}
+
+- (void)updatePressed
+{
+    [self updateProfile];
+}
+
+- (void)updateProfile
+{
+    //    OWSAssert(self.conversationSettingsViewDelegate);
+    //
+    //    [self updateGroup];
+    //
+    //    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+    //    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -228,7 +252,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textFieldDidChange:(id)sender
 {
+    self.hasUnsavedChanges = YES;
     //    [self updatePhoneNumberButtonEnabling];
+}
+
+#pragma mark - Avatar
+
+- (void)setAvatar:(nullable UIImage *)avatar
+{
+    OWSAssert([NSThread isMainThread]);
+
+    _avatar = avatar;
+
+    self.hasUnsavedChanges = YES;
+
+    [self updateAvatarView];
+}
+
+- (void)updateAvatarView
+{
+    self.avatarView.image = (self.avatar ?: [UIImage imageNamed:@"profile_avatar_default"]);
+}
+
+#pragma mark - AvatarViewHelperDelegate
+
+- (void)avatarDidChange:(UIImage *)image
+{
+    OWSAssert(image);
+
+    // TODO: Crop to square and possible resize.
+
+    self.avatar = image;
+}
+
+- (UIViewController *)fromViewController
+{
+    return self;
 }
 
 #pragma mark - Logging
