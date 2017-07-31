@@ -248,6 +248,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];
     [self.staleNotificationObserver startObserving];
+
+    [TSPreKeyManager sharedManager];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -448,9 +450,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self removeScreenProtection];
 
     [self ensureRootViewController];
-
-    // Always check prekeys after app launches, and sometimes check on app activation.
-    [TSPreKeyManager checkPreKeysIfNecessary];
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

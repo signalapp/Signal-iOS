@@ -6,10 +6,13 @@
 #import "NSDate+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
+#import "OWSQueues.h"
 #import "TSNetworkManager.h"
 #import "TSRegisterSignedPrekeyRequest.h"
 #import "TSStorageHeaders.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 // Time before deletion of signed prekeys (measured in seconds)
 //
@@ -24,14 +27,16 @@ static const NSTimeInterval kSignedPreKeyRotationTime = 2 * kDayInterval;
 // How often we check prekey state on app activation.
 //
 // Currently we check prekey state every 12 hours.
-static const NSTimeInterval kPreKeyCheckFrequencySeconds = 12 * kHourInterval;
+static const NSTimeInterval kPreKeyCheckSlowFrequencySeconds = 12 * kHourInterval;
+
+// How often we check prekey state on receiving a PreKeyWhisperMessage.
+//
+// Currently we check prekey state every 2 minutes.
+static const NSTimeInterval kPreKeyCheckFastFrequencySeconds = 2 * kMinuteInterval;
 
 // We generate 100 one-time prekeys at a time.  We should replenish
 // whenever ~2/3 of them have been consumed.
 static const NSUInteger kEphemeralPreKeysMinimumCount = 35;
-
-// This global should only be accessed on prekeyQueue.
-static NSDate *lastPreKeyCheckTimestamp = nil;
 
 // Maximum number of failures while updating signed prekeys
 // before the message sending is disabled.
@@ -45,7 +50,50 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
 #pragma mark -
 
+@interface TSPreKeyManager ()
+
+// This property should only be accessed on serialQueue.
+@property (atomic) NSDate *lastPreKeyCheckTimestamp;
+
+@end
+
+#pragma mark -
+
 @implementation TSPreKeyManager
+
++ (instancetype)sharedManager
+{
+    static TSPreKeyManager *sharedMyManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedMyManager = [[self alloc] initDefault];
+    });
+    return sharedMyManager;
+}
+
+- (instancetype)initDefault
+{
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
 
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures
 {
@@ -78,54 +126,32 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 }
 
 // We should never dispatch sync to this queue.
-+ (dispatch_queue_t)prekeyQueue
++ (dispatch_queue_t)serialQueue
 {
     static dispatch_once_t onceToken;
     static dispatch_queue_t queue;
     dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.prekeyQueue", NULL);
+        queue = dispatch_queue_create("org.whispersystems.signal.serialQueue", NULL);
     });
     return queue;
-}
-
-+ (void)checkPreKeysIfNecessary
-{
-    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
-
-    // Update the prekey check timestamp.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
-            || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
-        if (shouldCheck) {
-            // Optimistically mark the prekeys as checked. This
-            // de-bounces prekey checks.
-            //
-            // If the check or key registration fails, the prekeys
-            // will be marked as _NOT_ checked.
-            //
-            // Note: [TSPreKeyManager checkPreKeys] will also
-            //       optimistically mark them as checked. This
-            //       redundancy is fine and precludes a race
-            //       condition.
-            lastPreKeyCheckTimestamp = [NSDate date];
-
-            [[TSAccountManager sharedInstance] ifRegistered:YES
-                                                   runAsync:^{
-                                                       [TSPreKeyManager checkPreKeys];
-                                                   }];
-        }
-    });
 }
 
 + (void)registerPreKeysWithMode:(RefreshPreKeysMode)mode
                         success:(void (^)())successHandler
                         failure:(void (^)(NSError *error))failureHandler
 {
-    // We use prekeyQueue to serialize this logic and ensure that only
+    [[self sharedManager] registerPreKeysWithMode:mode success:successHandler failure:failureHandler];
+}
+
+- (void)registerPreKeysWithMode:(RefreshPreKeysMode)mode
+                        success:(void (^)())successHandler
+                        failure:(void (^)(NSError *error))failureHandler
+{
+    // We use serialQueue to serialize this logic and ensure that only
     // one thread is "registering" or "clearing" prekeys at a time.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+    dispatch_async(TSPreKeyManager.serialQueue, ^{
         // Mark the prekeys as checked every time we try to register prekeys.
-        lastPreKeyCheckTimestamp = [NSDate date];
+        self.lastPreKeyCheckTimestamp = [NSDate date];
 
         RefreshPreKeysMode modeCopy = mode;
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
@@ -189,9 +215,6 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                     }
                 }
 
-                // Mark the prekeys as _NOT_ checked on failure.
-                [self markPreKeysAsNotChecked];
-
                 failureHandler(error);
 
                 NSInteger statusCode = 0;
@@ -208,16 +231,54 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
     });
 }
 
-+ (void)checkPreKeys
+// This method is called whenever the app activates and is less insistent.
+//
+// Under normal circumstances, we don't need to check that often.
+- (void)checkPreKeysOnActivation
 {
+    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
+
+    [[TSAccountManager sharedInstance] ifRegistered:YES
+                                           runAsync:^{
+                                               dispatch_async(TSPreKeyManager.serialQueue, ^{
+                                                   [self checkPreKeysWithMaxFrequency:kPreKeyCheckSlowFrequencySeconds];
+                                               });
+                                           }];
+}
+
+// This method is called whenever the app receives a PreKeyWhisperMessage and is more insistent.
+//
+// If a user was barraged by PreKeyWhisperMessages, we want to check much more often to avoid
+// one-time prekey exhaustion.  We still want to throttle though, since we might just be
+// receiving PreKeyWhisperMessage all signed with the same one-time prekey.
++ (void)didReceivePreKeyWhisperMessage
+{
+    [[TSAccountManager sharedInstance]
+        ifRegistered:YES
+            runAsync:^{
+                dispatch_async(TSPreKeyManager.serialQueue, ^{
+                    [self.sharedManager checkPreKeysWithMaxFrequency:kPreKeyCheckFastFrequencySeconds];
+                });
+            }];
+}
+
+- (void)checkPreKeysWithMaxFrequency:(NSTimeInterval)maxFrequency
+{
+    AssertOnDispatchQueue(TSPreKeyManager.serialQueue);
+
+    // Update the prekey check timestamp.
+    BOOL shouldCheck = (self.lastPreKeyCheckTimestamp == nil
+        || fabs([self.lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= maxFrequency);
+    if (!shouldCheck) {
+        return;
+    }
+
     // Optimistically mark the prekeys as checked. This
     // de-bounces prekey checks.
     //
     // If the check or key registration fails, the prekeys
     // will be marked as _NOT_ checked.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        lastPreKeyCheckTimestamp = [NSDate date];
-    });
+    self.lastPreKeyCheckTimestamp = [NSDate date];
 
     // We want to update prekeys if either the one-time or signed prekeys need an update, so
     // we check the status of both.
@@ -243,6 +304,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                     }
                     failure:^(NSError *error) {
                         DDLogWarn(@"%@ Failed to update prekeys with the server: %@", self.tag, error);
+
+                        // Mark the prekeys as _NOT_ checked on failure.
+                        [self markPreKeysAsNotChecked];
                     }];
             };
 
@@ -325,20 +389,21 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
         }];
 }
 
-+ (void)markPreKeysAsNotChecked
+- (void)markPreKeysAsNotChecked
 {
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        lastPreKeyCheckTimestamp = nil;
+    dispatch_async(TSPreKeyManager.serialQueue, ^{
+        self.lastPreKeyCheckTimestamp = nil;
     });
 }
 
-+ (void)clearSignedPreKeyRecords {
+- (void)clearSignedPreKeyRecords
+{
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId success:nil];
 }
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)())successHandler
+- (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)())successHandler
 {
     if (!keyId) {
         OWSAssert(NO);
@@ -346,9 +411,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
         return;
     }
 
-    // We use prekeyQueue to serialize this logic and ensure that only
+    // We use serialQueue to serialize this logic and ensure that only
     // one thread is "registering" or "clearing" prekeys at a time.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+    dispatch_async(TSPreKeyManager.serialQueue, ^{
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
@@ -417,7 +482,8 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
     });
 }
 
-+ (NSArray *)removeCurrentRecord:(SignedPreKeyRecord *)currentRecord fromRecords:(NSArray *)allRecords {
+- (NSArray *)removeCurrentRecord:(SignedPreKeyRecord *)currentRecord fromRecords:(NSArray *)allRecords
+{
     NSMutableArray *oldRecords = [NSMutableArray array];
 
     for (SignedPreKeyRecord *record in allRecords) {
@@ -427,6 +493,16 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
     }
 
     return oldRecords;
+}
+
+#pragma mark - Notifications
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // Always check prekeys after app launches, and sometimes check on app activation.
+    [self checkPreKeysOnActivation];
 }
 
 #pragma mark - Logging
@@ -442,3 +518,5 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
