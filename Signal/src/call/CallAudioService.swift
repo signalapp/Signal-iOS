@@ -5,6 +5,87 @@
 import Foundation
 import AVFoundation
 
+public let CallAudioServiceSessionChanged = Notification.Name("CallAudioServiceSessionChanged")
+
+struct AudioSource: Hashable {
+
+    let image: UIImage
+    let localizedName: String
+    let portDescription: AVAudioSessionPortDescription?
+
+    // The built-in loud speaker / aka speakerphone
+    let isBuiltInSpeaker: Bool
+
+    // The built-in quiet speaker, aka the normal phone handset receiver earpiece
+    let isBuiltInEarPiece: Bool
+
+    init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
+        self.localizedName = localizedName
+        self.image = image
+        self.isBuiltInSpeaker = isBuiltInSpeaker
+        self.isBuiltInEarPiece = isBuiltInEarPiece
+        self.portDescription = portDescription
+    }
+
+    init(portDescription: AVAudioSessionPortDescription) {
+
+        let isBuiltInEarPiece = portDescription.portType == AVAudioSessionPortBuiltInMic
+
+        // portDescription.portName works well for BT linked devices, but if we are using
+        // the built in mic, we have "iPhone Microphone" which is a little awkward.
+        // In that case, instead we prefer just the model name e.g. "iPhone" or "iPad"
+        let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
+
+        self.init(localizedName: localizedName,
+                  image:#imageLiteral(resourceName: "button_phone_white"), // TODO
+                  isBuiltInSpeaker: false,
+                  isBuiltInEarPiece: isBuiltInEarPiece,
+                  portDescription: portDescription)
+    }
+
+    // Speakerphone is handled separately from the other audio routes as it doesn't appear as an "input"
+    static var builtInSpeaker: AudioSource {
+        return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
+                         image: #imageLiteral(resourceName: "button_phone_white"), //TODO
+                         isBuiltInSpeaker: true,
+                         isBuiltInEarPiece: false)
+    }
+
+    // MARK: Hashable
+
+    static func ==(lhs: AudioSource, rhs: AudioSource) -> Bool {
+        // Simply comparing the `portDescription` vs the `portDescription.uid`
+        // caused multiple instances of the built in mic to turn up in a set.
+        if lhs.isBuiltInSpeaker && rhs.isBuiltInSpeaker {
+            return true
+        }
+
+        if lhs.isBuiltInSpeaker || rhs.isBuiltInSpeaker {
+            return false
+        }
+
+        guard let lhsPortDescription = lhs.portDescription else {
+            owsFail("only the built in speaker should lack a port description")
+            return false
+        }
+
+        guard let rhsPortDescription = rhs.portDescription else {
+            owsFail("only the built in speaker should lack a port description")
+            return false
+        }
+
+        return lhsPortDescription.uid == rhsPortDescription.uid
+    }
+
+    var hashValue: Int {
+        guard let portDescription = self.portDescription else {
+            assert(self.isBuiltInSpeaker)
+            return "Built In Speaker".hashValue
+        }
+        return portDescription.uid.hash
+    }
+}
+
 @objc class CallAudioService: NSObject, CallObserver {
 
     private let TAG = "[CallAudioService]"
@@ -42,9 +123,8 @@ import AVFoundation
                     newPlayer?.numberOfLoops = -1
                 }
             } catch {
-                Logger.error("\(self.TAG) faild to build audio player with error: \(error)")
+                owsFail("\(self.TAG) failed to build audio player with error: \(error)")
                 newPlayer = nil
-                assertionFailure()
             }
             return newPlayer
         }()
@@ -75,37 +155,74 @@ import AVFoundation
         Logger.verbose("\(TAG) in \(#function) is no-op")
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
 
-        ensureIsEnabled(call: call)
+        ensureProperAudioSession(call: call)
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        ensureIsEnabled(call: call)
+        ensureProperAudioSession(call: call)
     }
 
-    private func ensureIsEnabled(call: SignalCall?) {
+    private func ensureProperAudioSession(call: SignalCall?) {
+        AssertIsOnMainThread()
+
         guard let call = call else {
             setAudioSession(category: AVAudioSessionCategoryPlayback,
                             mode: AVAudioSessionModeDefault)
             return
         }
 
-        // Auto-enable speakerphone when local video is enabled.
-        if call.hasLocalVideo {
+        // Disallow bluetooth while (and only while) the user has explicitly chosen the built in receiver.
+        //
+        // NOTE: I'm actually not sure why this is required - it seems like we should just be able
+        // to setPreferredInput to call.audioSource.portDescription in this case,
+        // but in practice I'm seeing the call revert to the bluetooth headset.
+        // Presumably something else (in WebRTC?) is touching our shared AudioSession. - mjk
+        let options: AVAudioSessionCategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
+
+        if call.state == .localRinging {
+            // SoloAmbient plays through speaker, but respects silent switch
+            setAudioSession(category: AVAudioSessionCategorySoloAmbient,
+                            mode: AVAudioSessionModeDefault)
+        } else if call.hasLocalVideo {
+            // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVideoChat,
-                            options: .defaultToSpeaker)
-        } else if call.isSpeakerphoneEnabled {
+                            options: options)
+        } else {
+            // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
+            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
+            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // does not include my linked bluetooth device
             setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
                             mode: AVAudioSessionModeVoiceChat,
-                            options: .defaultToSpeaker)
-        } else {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat)
+                            options: options)
+        }
+
+        let session = AVAudioSession.sharedInstance()
+        do {
+            // It's important to set preferred input *after* ensuring properAudioSession
+            // because some sources are only valid for certain category/option combinations.
+            let existingPreferredInput = session.preferredInput
+            if  existingPreferredInput != call.audioSource?.portDescription {
+                Logger.info("\(TAG) changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
+                try session.setPreferredInput(call.audioSource?.portDescription)
+            }
+
+            if call.isSpeakerphoneEnabled {
+                try session.overrideOutputAudioPort(.speaker)
+            } else {
+                try session.overrideOutputAudioPort(.none)
+            }
+        } catch {
+            owsFail("\(TAG) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
     }
 
@@ -114,13 +231,18 @@ import AVFoundation
     public func didUpdateVideoTracks(call: SignalCall?) {
         Logger.verbose("\(TAG) in \(#function)")
 
-        self.ensureIsEnabled(call: call)
+        self.ensureProperAudioSession(call: call)
     }
 
     public func handleState(call: SignalCall) {
         assert(Thread.isMainThread)
 
         Logger.verbose("\(TAG) in \(#function) new state: \(call.state)")
+
+        // Stop playing sounds while switching audio session so we don't 
+        // get any blips across a temporary unintended route.
+        stopPlayingAnySounds()
+        self.ensureProperAudioSession(call: call)
 
         switch call.state {
         case .idle: handleIdle(call: call)
@@ -142,68 +264,57 @@ import AVFoundation
 
     private func handleDialing(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-
-        if call.isSpeakerphoneEnabled {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: [.defaultToSpeaker, .mixWithOthers])
-        } else {
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
-                            options: .mixWithOthers)
-        }
+        AssertIsOnMainThread()
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: Sound.dialing, call: call)
+            self.play(sound: Sound.dialing)
         }
     }
 
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
-        self.ensureIsEnabled(call: call)
+        AssertIsOnMainThread()
     }
 
     private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
         // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
-        self.play(sound: Sound.outgoingRing, call: call)
+        self.play(sound: Sound.outgoingRing)
     }
 
     private func handleLocalRinging(call: SignalCall) {
         Logger.debug("\(TAG) in \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
         startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
-
-        // start recording to transmit call audio.
-        ensureIsEnabled(call: call)
+        AssertIsOnMainThread()
     }
 
     private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
-        play(sound: Sound.failure, call: call)
+        play(sound: Sound.failure)
     }
 
     private func handleLocalHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
 
         handleCallEnded(call: call)
     }
 
     private func handleRemoteHangup(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
+        AssertIsOnMainThread()
 
         vibrate()
 
@@ -212,9 +323,10 @@ import AVFoundation
 
     private func handleBusy(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
-        play(sound: Sound.busy, call: call)
+        play(sound: Sound.busy)
+
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
             self.handleCallEnded(call: call)
@@ -223,7 +335,7 @@ import AVFoundation
 
     private func handleCallEnded(call: SignalCall) {
         Logger.debug("\(TAG) \(#function)")
-        stopPlayingAnySounds()
+        AssertIsOnMainThread()
 
         // Stop solo audio, revert to default.
         setAudioSession(category: AVAudioSessionCategoryAmbient)
@@ -238,16 +350,18 @@ import AVFoundation
         stopAnyRingingVibration()
     }
 
-    private func play(sound: Sound, call: SignalCall) {
+    private func play(sound: Sound) {
         guard let newPlayer = sound.player else {
-            Logger.error("\(self.TAG) unable to build player")
+            owsFail("\(self.TAG) unable to build player")
             return
         }
         Logger.info("\(self.TAG) playing sound: \(sound.filePath)")
 
-        newPlayer.play()
+        // It's important to stop the current player **before** starting the new player. In the case that 
+        // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
+        // stop the sound we just started.
         self.currentPlayer?.stop()
-
+        newPlayer.play()
         self.currentPlayer = newPlayer
     }
 
@@ -259,14 +373,11 @@ import AVFoundation
             return
         }
 
-        // SoloAmbient plays through speaker, but respects silent switch
-        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
-
         vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] _ in
             self?.ringVibration()
         }
         vibrateTimer?.fire()
-        play(sound: Sound.incomingRing, call: call)
+        play(sound: Sound.incomingRing)
     }
 
     private func stopAnyRingingVibration() {
@@ -296,21 +407,100 @@ import AVFoundation
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 
+    // MARK - AudioSession MGMT
+    // TODO move this to CallAudioSession?
+
+    // Note this method is sensitive to the current audio session configuration.
+    // Specifically if you call it while speakerphone is enabled you won't see 
+    // any connected bluetooth routes.
+    var availableInputs: [AudioSource] {
+        let session = AVAudioSession.sharedInstance()
+
+        guard let availableInputs = session.availableInputs else {
+            // I'm not sure when this would happen.
+            owsFail("No available inputs or inputs not ready")
+            return [AudioSource.builtInSpeaker]
+        }
+
+        Logger.info("\(TAG) in \(#function) availableInputs: \(availableInputs)")
+        return [AudioSource.builtInSpeaker] + availableInputs.map { portDescription in
+            return AudioSource(portDescription: portDescription)
+        }
+    }
+
+    func currentAudioSource(call: SignalCall) -> AudioSource? {
+        if let audioSource = call.audioSource {
+            return audioSource
+        }
+
+        // Before the user has specified an audio source on the call, we rely on the existing
+        // system state to determine the current audio source.
+        // If a bluetooth is connected, this will be bluetooth, otherwise
+        // this will be the receiver.
+        let session = AVAudioSession.sharedInstance()
+        guard let portDescription = session.currentRoute.inputs.first else {
+            return nil
+        }
+
+        return AudioSource(portDescription: portDescription)
+    }
+
     private func setAudioSession(category: String,
                                  mode: String? = nil,
                                  options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
+
+        let session = AVAudioSession.sharedInstance()
+        var audioSessionChanged = false
         do {
             if #available(iOS 10.0, *), let mode = mode {
-                try AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
-                Logger.debug("\(self.TAG) set category: \(category) mode: \(mode) options: \(options)")
+                let oldCategory = session.category
+                let oldMode = session.mode
+                let oldOptions = session.categoryOptions
+
+                guard oldCategory != category || oldMode != mode || oldOptions != options else {
+                    return
+                }
+
+                audioSessionChanged = true
+
+                if oldCategory != category {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldCategory) -> \(category) ")
+                }
+                if oldMode != mode {
+                    Logger.debug("\(self.TAG) audio session changed mode: \(oldMode) -> \(mode) ")
+                }
+                if oldOptions != options {
+                    Logger.debug("\(self.TAG) audio session changed options: \(oldOptions) -> \(options) ")
+                }
+                try session.setCategory(category, mode: mode, options: options)
+
             } else {
-                try AVAudioSession.sharedInstance().setCategory(category, with: options)
-                Logger.debug("\(self.TAG) set category: \(category) options: \(options)")
+                let oldCategory = session.category
+                let oldOptions = session.categoryOptions
+
+                guard session.category != category || session.categoryOptions != options else {
+                    return
+                }
+
+                audioSessionChanged = true
+
+                if oldCategory != category {
+                    Logger.debug("\(self.TAG) audio session changed category: \(oldCategory) -> \(category) ")
+                }
+                if oldOptions != options {
+                    Logger.debug("\(self.TAG) audio session changed options: \(oldOptions) -> \(options) ")
+                }
+                try session.setCategory(category, with: options)
+
             }
         } catch {
             let message = "\(self.TAG) in \(#function) failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
-            assertionFailure(message)
-            Logger.error(message)
+            owsFail(message)
+        }
+
+        if audioSessionChanged {
+            Logger.info("\(TAG) in \(#function)")
+            NotificationCenter.default.post(name: CallAudioServiceSessionChanged, object: nil)
         }
     }
 }

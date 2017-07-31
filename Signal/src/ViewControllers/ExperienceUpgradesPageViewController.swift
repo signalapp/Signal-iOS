@@ -46,7 +46,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
     }
 }
 
-private class ExperienceUpgradeViewController: UIViewController {
+private class ExperienceUpgradeViewController: OWSViewController {
     let TAG = "[ExperienceUpgradeViewController]"
 
     let header: String
@@ -128,7 +128,7 @@ func setPageControlAppearance() {
     }
 }
 
-class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControllerDataSource {
+class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControllerDataSource {
 
     let TAG = "[ExperienceUpgradeViewController]"
 
@@ -165,8 +165,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
 
     override func viewDidLoad() {
         guard let firstViewController = allViewControllers.first else {
-            Logger.error("\(TAG) no pages to show.")
-            assertionFailure()
+            owsFail("\(TAG) no pages to show.")
             dismiss(animated: true)
             return
         }
@@ -195,7 +194,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
-        dismissButton.setTitle(NSLocalizedString("DISMISS_BUTTON_TEXT", comment: ""), for: .normal)
+        dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
         dismissButton.setTitleColor(UIColor.white, for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action:#selector(didTapDismissButton), for: .touchUpInside)
@@ -246,8 +245,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(TAG) in \(#function)")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            assertionFailure()
-            Logger.error("\(TAG) unknown view controller: \(viewController)")
+            owsFail("\(TAG) unknown view controller: \(viewController)")
             return nil
         }
 
@@ -262,8 +260,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(TAG) in \(#function)")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            assertionFailure()
-            Logger.error("\(TAG) unknown view controller: \(viewController)")
+            owsFail("\(TAG) unknown view controller: \(viewController)")
             return nil
         }
 
@@ -296,8 +293,7 @@ class ExperienceUpgradesPageViewController: UIViewController, UIPageViewControll
 
     public func addViewController(experienceUpgrade: ExperienceUpgrade) {
         guard let identifier = ExperienceUpgradeId(rawValue: experienceUpgrade.uniqueId) else {
-            Logger.error("\(TAG) unknown experience upgrade. skipping")
-            assertionFailure()
+            owsFail("\(TAG) unknown experience upgrade. skipping")
             return
         }
 

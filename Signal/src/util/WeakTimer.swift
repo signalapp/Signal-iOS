@@ -1,5 +1,5 @@
 //
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -33,7 +33,7 @@ final class WeakTimer {
                          action: action).timer!
     }
 
-    @objc fileprivate func fire(timer: Timer) {
+    @objc public func fire(timer: Timer) {
         if target != nil {
             action(timer)
         } else {

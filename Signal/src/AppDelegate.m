@@ -4,6 +4,7 @@
 
 #import "AppDelegate.h"
 #import "AppStoreRating.h"
+#import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "Environment.h"
@@ -18,6 +19,7 @@
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
+#import "SignalsNavigationController.h"
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
@@ -53,7 +55,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @end
 
+#pragma mark -
+
 @implementation AppDelegate
+
+@synthesize window = _window;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
@@ -107,6 +113,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
+    // Prevent the device from sleeping during database view async registration
+    // (e.g. long database upgrades).
+    //
+    // This block will be cleared in databaseViewRegistrationComplete.
+    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+
     [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
@@ -136,50 +148,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    // At this point, potentially lengthy DB locking migrations could be running.
-    // Avoid blocking app launch by putting all further possible DB access in async thread.
-    [[TSAccountManager sharedInstance]
-        ifRegistered:YES
-            runAsync:^{
-                DDLogInfo(
-                    @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
-
-                [TSSocketManager requestSocketOpen];
-
-                RTCInitializeSSL();
-
-                [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                          accountManager:[Environment getCurrent].accountManager
-                                             preferences:[Environment preferences]
-                                              showAlerts:NO];
-
-                // Clean up any messages that expired since last launch immediately
-                // and continue cleaning in the background.
-                [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-
-                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-                // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                
-                [AppStoreRating setupRatingLibrary];
-            }];
-
-    [[TSAccountManager sharedInstance]
-        ifRegistered:NO
-            runAsync:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
-                    [TSSocketManager requestSocketOpen];
-
-                    UITapGestureRecognizer *gesture =
-                        [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
-                    gesture.numberOfTapsRequired = 8;
-                    [self.window addGestureRecognizer:gesture];
-                });
-                RTCInitializeSSL();
-            }];
-
     self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
                                                                identityManager:[OWSIdentityManager sharedManager]
                                                                  messageSender:[Environment getCurrent].messageSender];
@@ -191,6 +159,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
+    [OWSAnalytics appLaunchDidBegin];
+
     return YES;
 }
 
@@ -199,24 +169,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     UIViewController *viewController =
         [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
-    BOOL shouldShowUpgradeLabel = NO;
-    NSString *lastAppVersion = AppVersion.instance.lastAppVersion;
+    NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
-    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] &&
-        [VersionMigrations isVersion:lastAppVersion atLeast:@"2.0.0" andLessThan:@"2.13.0"]);
-    BOOL hasCompletedUpgrade = (lastCompletedLaunchAppVersion &&
-        [VersionMigrations isVersion:lastCompletedLaunchAppVersion atLeast:@"2.13.0"]);
-
+    // Every time we change a database view in such a way that might cause a delay on launch,
+    // we need to bump this constant.
+    //
     // We added a number of database views in v2.13.0.
-    if (mayNeedUpgrade && !hasCompletedUpgrade) {
-        shouldShowUpgradeLabel = YES;
-    }
-    DDLogInfo(@"%@ shouldShowUpgradeLabel: %d, %d -> %d",
-        self.tag,
-        mayNeedUpgrade,
-        hasCompletedUpgrade,
-        shouldShowUpgradeLabel);
-    if (shouldShowUpgradeLabel) {
+    NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
+    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
+        && (!lastCompletedLaunchAppVersion ||
+               [VersionMigrations isVersion:lastCompletedLaunchAppVersion
+                                   lessThan:kLastVersionWithDatabaseViewChange]));
+    DDLogInfo(@"%@ mayNeedUpgrade: %d", self.tag, mayNeedUpgrade);
+    if (mayNeedUpgrade) {
         UIView *rootView = viewController.view;
         UIImageView *iconView = nil;
         for (UIView *subview in viewController.view.subviews) {
@@ -293,7 +258,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    DDLogError(@"%@ Failed to register for remote notifications with error %@", self.tag, error);
+    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
@@ -364,25 +329,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSError *typeError;
         [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
         if (typeError) {
-            DDLogError(
-                       @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
-            OWSAssert(NO);
+            OWSFail(
+                @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
+            return NO;
         }
         if (!utiType) {
-            DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
-            OWSAssert(NO);
+            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
             utiType = (__bridge NSString *)kUTTypeData;
+            return NO;
         }
         
         NSNumber *isDirectory;
         NSError *isDirectoryError;
         [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
         if (isDirectoryError) {
-            DDLogError(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-                       self.tag,
-                       url,
-                       isDirectoryError);
-            OWSAssert(NO);
+            OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+                self.tag,
+                url,
+                isDirectoryError);
             return NO;
         } else if ([isDirectory boolValue]) {
             DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
@@ -480,23 +444,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (getenv("runningTests_dontStartApp")) {
         return;
     }
-
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               // We're double checking that the app is active, to be sure since we
-                                               // can't verify in production env due to code
-                                               // signing.
-                                               [TSSocketManager requestSocketOpen];
-
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   [[Environment getCurrent]
-                                                           .contactsManager fetchSystemContactsIfAlreadyAuthorized];
-                                               });
-
-                                               // This will fetch new messages, if we're using domain
-                                               // fronting.
-                                               [[PushManager sharedManager] applicationDidBecomeActive];
-                                           }];
     
     [self removeScreenProtection];
 
@@ -504,6 +451,73 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+
+        // At this point, potentially lengthy DB locking migrations could be running.
+        // Avoid blocking app launch by putting all further possible DB access in async thread.
+        [[TSAccountManager sharedInstance]
+            ifRegistered:YES
+                runAsync:^{
+                    DDLogInfo(@"%@ running post launch block for registered user: %@",
+                        self.tag,
+                        [TSAccountManager localNumber]);
+
+                    RTCInitializeSSL();
+
+                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                              accountManager:[Environment getCurrent].accountManager
+                                                 preferences:[Environment preferences]
+                                                  showAlerts:NO];
+
+                    // Clean up any messages that expired since last launch immediately
+                    // and continue cleaning in the background.
+                    [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+
+                    // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+                    // sent before the app exited should be marked as failures.
+                    [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                    [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]]
+                        run];
+
+                    [AppStoreRating setupRatingLibrary];
+                }];
+
+        [[TSAccountManager sharedInstance]
+            ifRegistered:NO
+                runAsync:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
+
+                        // Unregistered user should have no unread messages. e.g. if you delete your account.
+                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+
+                        [TSSocketManager requestSocketOpen];
+
+                        UITapGestureRecognizer *gesture =
+                            [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
+                                                                    action:@selector(submitLogs)];
+                        gesture.numberOfTapsRequired = 8;
+                        [self.window addGestureRecognizer:gesture];
+                    });
+                    RTCInitializeSSL();
+                }];
+    });
+
+    [[TSAccountManager sharedInstance]
+        ifRegistered:YES
+            runAsync:^{
+                [TSSocketManager requestSocketOpen];
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
+                });
+
+                // This will fetch new messages, if we're using domain
+                // fronting.
+                [[PushManager sharedManager] applicationDidBecomeActive];
+            }];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
 }
@@ -774,9 +788,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"databaseViewRegistrationComplete");
 
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+
     [AppVersion.instance appLaunchDidComplete];
 
     [self ensureRootViewController];
+
+    // If there were any messages in our local queue which we hadn't yet processed.
+    [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 }
 
 - (void)ensureRootViewController
@@ -791,7 +810,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"Presenting initial root view controller");
 
     if ([TSAccountManager isRegistered]) {
-        self.window.rootViewController = [[UIStoryboard main] instantiateInitialViewController];
+        SignalsViewController *homeView = [SignalsViewController new];
+        SignalsNavigationController *navigationController =
+            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+        self.window.rootViewController = navigationController;
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         UINavigationController *navigationController =
@@ -799,6 +821,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         navigationController.navigationBarHidden = YES;
         self.window.rootViewController = navigationController;
     }
+
+    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }
 
 #pragma mark - Logging

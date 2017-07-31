@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -297,9 +297,49 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Editing
 
+- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
+{
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+                                                   : @"Alert title for when the user has just tried to edit a "
+                                                     @"contacts after declining to give Signal contacts "
+                                                     @"permissions")
+                         message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+                                                   : @"Alert body for when the user has just tried to edit a "
+                                                     @"contacts after declining to give Signal contacts "
+                                                     @"permissions")
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                     @"Button text to dismiss missing contacts permission alert")
+                                           style:UIAlertActionStyleCancel
+                                         handler:nil]];
+
+    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
+                                                                  @"Button text which opens the settings app")
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [[UIApplication sharedApplication] openSystemSettings];
+                                                      }]];
+
+    [viewController presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
+{
+    [self presentContactViewControllerForRecipientId:recipientId
+                                  fromViewController:fromViewController
+                                     editImmediately:shouldEditImmediately
+                              addToExistingCnContact:nil];
+}
+
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately
+                            addToExistingCnContact:(CNContact *_Nullable)addToExistingCnContact
 {
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
 
@@ -311,49 +351,55 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.contactsManager.isSystemContactsAuthorized) {
-        UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
-                                                       : @"Alert title for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                             message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
-                                                       : @"Alert body for when the user has just tried to edit a "
-                                                         @"contacts after declining to give Signal contacts "
-                                                         @"permissions")
-                      preferredStyle:UIAlertControllerStyleAlert];
-
-        [alertController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                         @"Button text to dismiss missing contacts permission alert")
-                                               style:UIAlertActionStyleCancel
-                                             handler:nil]];
-
-        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
-                                                                      @"Button text which opens the settings app")
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              [[UIApplication sharedApplication] openSystemSettings];
-                                                          }]];
-
-        [fromViewController presentViewController:alertController animated:YES completion:nil];
+        [self presentMissingContactAccessAlertControllerFromViewController:fromViewController];
         return;
     }
 
     CNContactViewController *_Nullable contactViewController;
-    if (signalAccount) {
-        CNContact *_Nullable cnContact = signalAccount.contact.cnContact;
-        if (cnContact) {
-            if (shouldEditImmediately) {
-                // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
-                // saving our users a tap in some cases when we already know they want to edit.
-                contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
-
-                // Default title is "New Contact". We could give a more descriptive title, but anything
-                // seems redundant - the context is sufficiently clear.
-                contactViewController.title = @"";
-            } else {
-                contactViewController = [CNContactViewController viewControllerForContact:cnContact];
+    CNContact *_Nullable cnContact = nil;
+    if (addToExistingCnContact) {
+        CNMutableContact *updatedContact = [addToExistingCnContact mutableCopy];
+        NSMutableArray<CNLabeledValue *> *phoneNumbers
+            = (updatedContact.phoneNumbers ? [updatedContact.phoneNumbers mutableCopy] : [NSMutableArray new]);
+        // Only add recipientId as a phone number for the existing contact
+        // if its not already present.
+        BOOL hasPhoneNumber = NO;
+        for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
+            CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
+            if ([phoneNumber.stringValue isEqualToString:recipientId]) {
+                OWSFail(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
+                        @"correspond to an existing user.");
+                hasPhoneNumber = YES;
+                break;
             }
+        }
+        if (!hasPhoneNumber) {
+            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
+            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+            [phoneNumbers addObject:labeledPhoneNumber];
+            updatedContact.phoneNumbers = phoneNumbers;
+
+            // When adding a phone number to an existing contact, immediately enter
+            // "edit" mode.
+            shouldEditImmediately = YES;
+        }
+        cnContact = updatedContact;
+    }
+    if (signalAccount && !cnContact) {
+        cnContact = signalAccount.contact.cnContact;
+    }
+    if (cnContact) {
+        if (shouldEditImmediately) {
+            // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
+            // saving our users a tap in some cases when we already know they want to edit.
+            contactViewController = [CNContactViewController viewControllerForNewContact:cnContact];
+
+            // Default title is "New Contact". We could give a more descriptive title, but anything
+            // seems redundant - the context is sufficiently clear.
+            contactViewController.title = @"";
+        } else {
+            contactViewController = [CNContactViewController viewControllerForContact:cnContact];
         }
     }
 

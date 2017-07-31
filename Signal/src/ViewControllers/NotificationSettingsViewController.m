@@ -7,110 +7,66 @@
 #import "NotificationSettingsOptionsViewController.h"
 #import "PropertyListPreferences.h"
 
-#define kNotificationOptionSection 0
-
-@interface NotificationSettingsViewController ()
-
-@property NSArray *notificationsSections;
-
-@end
-
 @implementation NotificationSettingsViewController
-
-- (instancetype)init {
-    return [super initWithStyle:UITableViewStyleGrouped];
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)];
 
-    self.notificationsSections = @[
-        NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil),
-        NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil)
-    ];
+    [self updateTableContents];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self.tableView reloadData];
+    [self updateTableContents];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table Contents
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [self.notificationsSections objectAtIndex:(NSUInteger)section];
-}
+- (void)updateTableContents
+{
+    OWSTableContents *contents = [OWSTableContents new];
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return (NSInteger)self.notificationsSections.count;
-}
+    __weak NotificationSettingsViewController *weakSelf = self;
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
-}
+    PropertyListPreferences *prefs = [Environment preferences];
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *cellIdentifier = @"SignalTableViewCellIdentifier";
-    UITableViewCell *cell    = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    OWSTableSection *backgroundSection = [OWSTableSection new];
+    backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);
+    [backgroundSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
 
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
-    }
-
-    PropertyListPreferences *prefs = Environment.preferences;
-    if (indexPath.section == kNotificationOptionSection) {
         NotificationType notifType = [prefs notificationPreviewType];
         NSString *detailString     = [prefs nameForNotificationPreviewType:notifType];
-
-        [[cell textLabel] setText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)];
-        [[cell detailTextLabel] setText:detailString];
+        cell.textLabel.text = NSLocalizedString(@"NOTIFICATIONS_SHOW", nil);
+        cell.detailTextLabel.text = detailString;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-    } else {
-        BOOL soundEnabled = [prefs soundInForeground];
 
-        [[cell textLabel] setText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)];
-        [[cell detailTextLabel] setText:nil];
-        UISwitch *switchv = [[UISwitch alloc] initWithFrame:CGRectZero];
-        switchv.on        = soundEnabled;
-        [switchv addTarget:self
-                      action:@selector(didToggleSoundNotificationsSwitch:)
-            forControlEvents:UIControlEventValueChanged];
-
-        cell.accessoryView = switchv;
+        return cell;
     }
+                                   actionBlock:^{
+                                       NotificationSettingsOptionsViewController *vc =
+                                           [NotificationSettingsOptionsViewController new];
+                                       [weakSelf.navigationController pushViewController:vc animated:YES];
+                                   }]];
+    [contents addSection:backgroundSection];
 
-    return cell;
+    OWSTableSection *inAppSection = [OWSTableSection new];
+    inAppSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil);
+    [inAppSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)
+                                                      isOn:[prefs soundInForeground]
+                                                    target:weakSelf
+                                                  selector:@selector(didToggleSoundNotificationsSwitch:)]];
+    [contents addSection:inAppSection];
+
+    self.contents = contents;
 }
+
+#pragma mark - Events
 
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender {
     [Environment.preferences setSoundInForeground:sender.on];
-}
-
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    switch (indexPath.section) {
-        case kNotificationOptionSection: {
-            return indexPath;
-        }
-        default: {
-            return nil;
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    switch (indexPath.section) {
-        case kNotificationOptionSection: {
-            NotificationSettingsOptionsViewController *vc =
-                [[NotificationSettingsOptionsViewController alloc] initWithStyle:UITableViewStyleGrouped];
-            [self.navigationController pushViewController:vc animated:YES];
-            break;
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType    = UITableViewCellAccessoryNone;
 }
 
 @end

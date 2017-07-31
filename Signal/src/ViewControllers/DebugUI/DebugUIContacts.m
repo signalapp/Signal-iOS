@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIContacts.h"
-#import "DebugUIMessages.h"
+#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <Contacts/Contacts.h>
 
@@ -25,10 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Factory Methods
 
-+ (OWSTableSection *)section
+- (NSString *)name
 {
+    return @"Contacts";
+}
 
-    return [OWSTableSection sectionWithTitle:@"Contacts"
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
+{
+    return [OWSTableSection sectionWithTitle:self.name
                                        items:@[
                                            [OWSTableItem itemWithTitle:@"Create 1 Random Contact"
                                                            actionBlock:^{
@@ -1103,7 +1107,9 @@ NS_ASSUME_NONNULL_BEGIN
         @"Noel",
         @"Vang",
     ];
-    return values[arc4random_uniform(values.count)];
+    
+    uint32_t index = arc4random_uniform((uint32_t)values.count);
+    return values[index];
 }
 
 

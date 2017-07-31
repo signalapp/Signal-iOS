@@ -132,7 +132,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.debug("\(self.TAG) \(#function)")
 
-        assertionFailure("CallKit should answer calls via system call screen, not via notifications.")
+        owsFail("\(self.TAG) \(#function) CallKit should answer calls via system call screen, not via notifications.")
     }
 
     func answerCall(_ call: SignalCall) {
@@ -144,9 +144,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     func declineCall(localId: UUID) {
         AssertIsOnMainThread()
-        Logger.debug("\(self.TAG) \(#function)")
 
-        assertionFailure("CallKit should decline calls via system call screen, not via notifications.")
+        owsFail("\(self.TAG) \(#function) CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func declineCall(_ call: SignalCall) {

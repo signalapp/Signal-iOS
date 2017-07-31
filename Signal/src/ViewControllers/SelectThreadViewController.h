@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewController.h"
+
 @class TSThread;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // A base class for views used to pick a single signal user, either by
 // entering a phone number or picking from your contacts.
-@interface SelectThreadViewController : UIViewController
+@interface SelectThreadViewController : OWSViewController
 
 @property (nonatomic, weak) id<SelectThreadViewControllerDelegate> delegate;
 

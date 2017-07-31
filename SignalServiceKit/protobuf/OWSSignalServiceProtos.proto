@@ -1,0 +1,209 @@
+/**
+ * Copyright (C) 2014-2016 Open Whisper Systems
+ *
+ * Licensed according to the LICENSE file in this repository.
+ */
+
+package signalservice;
+
+option java_package = "org.whispersystems.signalservice.internal.push";
+option java_outer_classname = "SignalServiceProtos";
+
+import "objectivec-descriptor.proto";
+option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignalServiceProtos";
+
+message Envelope {
+  enum Type {
+    UNKNOWN       = 0;
+    CIPHERTEXT    = 1;
+    KEY_EXCHANGE  = 2;
+    PREKEY_BUNDLE = 3;
+    RECEIPT       = 5;
+  }
+
+  optional Type   type          = 1;
+  optional string source        = 2;
+  optional uint32 sourceDevice  = 7;
+  optional string relay         = 3;
+  optional uint64 timestamp     = 5;
+  optional bytes  legacyMessage = 6; // Contains an encrypted DataMessage
+  optional bytes  content       = 8; // Contains an encrypted Content
+}
+
+message Content {
+  optional DataMessage dataMessage = 1;
+  optional SyncMessage syncMessage = 2;
+  optional CallMessage callMessage = 3;
+  optional NullMessage nullMessage = 4;
+}
+
+message NullMessage {
+  optional bytes padding = 1;
+}
+
+message Verified {
+  enum State {
+    DEFAULT    = 0;
+    VERIFIED   = 1;
+    UNVERIFIED = 2;
+  }
+
+  optional string destination = 1;
+  optional bytes  identityKey = 2;
+  optional State  state       = 3;
+  optional bytes  nullMessage = 4;
+}
+
+message CallMessage {
+  message Offer {
+    optional uint64 id          = 1;
+	// We've renamed the description field on iOS to avoid
+	// conflicts with [NSObject description].
+    optional string sessionDescription = 2;
+  }
+
+  message Answer {
+    optional uint64 id          = 1;
+	// We've renamed the description field on iOS to avoid
+	// conflicts with [NSObject description].
+    optional string sessionDescription = 2;
+  }
+
+  message IceUpdate {
+    optional uint64 id            = 1;
+    optional string sdpMid        = 2;
+    optional uint32 sdpMLineIndex = 3;
+    optional string sdp           = 4;
+  }
+
+  message Busy {
+    optional uint64 id = 1;
+  }
+
+  message Hangup {
+    optional uint64 id = 1;
+  }
+
+
+  optional Offer     offer     = 1;
+  optional Answer    answer    = 2;
+  repeated IceUpdate iceUpdate = 3;
+  optional Hangup    hangup    = 4;
+  optional Busy      busy      = 5;
+}
+
+message DataMessage {
+  enum Flags {
+    END_SESSION = 1;
+    EXPIRATION_TIMER_UPDATE = 2;
+  }
+
+  optional string             body        = 1;
+  repeated AttachmentPointer  attachments = 2;
+  optional GroupContext       group       = 3;
+  optional uint32             flags       = 4;
+  optional uint32             expireTimer = 5;
+}
+
+message SyncMessage {
+  message Sent {
+    optional string      destination              = 1;
+    optional uint64      timestamp                = 2;
+    optional DataMessage message                  = 3;
+    optional uint64      expirationStartTimestamp = 4;
+  }
+
+  message Contacts {
+    optional AttachmentPointer blob = 1;
+    optional bool              isComplete = 2 [default = false];
+  }
+
+  message Groups {
+    optional AttachmentPointer blob = 1;
+  }
+
+  message Blocked {
+    repeated string numbers = 1;
+  }
+
+  message Request {
+    enum Type {
+      UNKNOWN  = 0;
+      CONTACTS = 1;
+      GROUPS   = 2;
+      BLOCKED  = 3;
+    }
+
+    optional Type type = 1;
+  }
+
+  message Read {
+    optional string sender    = 1;
+    optional uint64 timestamp = 2;
+  }
+
+  optional Sent     sent     = 1;
+  optional Contacts contacts = 2;
+  optional Groups   groups   = 3;
+  optional Request  request  = 4;
+  repeated Read     read     = 5;
+  optional Blocked  blocked  = 6;
+  optional Verified verified = 7;
+  optional bytes    padding  = 8;
+}
+
+message AttachmentPointer {
+  enum Flags {
+    VOICE_MESSAGE = 1;
+  }
+
+  optional fixed64 id          = 1;
+  optional string  contentType = 2;
+  optional bytes   key         = 3;
+  optional uint32  size        = 4;
+  optional bytes   thumbnail   = 5;
+  optional bytes   digest      = 6;
+  optional string  fileName    = 7;
+  optional uint32 flags = 8;
+}
+
+message GroupContext {
+  enum Type {
+    UNKNOWN      = 0;
+    UPDATE       = 1;
+    DELIVER      = 2;
+    QUIT         = 3;
+    REQUEST_INFO = 4;
+  }
+  optional bytes             id      = 1;
+  optional Type              type    = 2;
+  optional string            name    = 3;
+  repeated string            members = 4;
+  optional AttachmentPointer avatar  = 5;
+}
+
+message ContactDetails {
+  message Avatar {
+    optional string contentType = 1;
+    optional uint32 length      = 2;
+  }
+
+  optional string number  = 1;
+  optional string name    = 2;
+  optional Avatar avatar  = 3;
+  optional string color   = 4;
+  optional Verified verified = 5;
+}
+
+message GroupDetails {
+  message Avatar {
+    optional string contentType = 1;
+    optional uint32 length      = 2;
+  }
+
+  optional bytes  id       = 1;
+  optional string name     = 2;
+  repeated string members  = 3;
+  optional Avatar avatar   = 4;
+  optional bool   active   = 5 [default = true];
+}

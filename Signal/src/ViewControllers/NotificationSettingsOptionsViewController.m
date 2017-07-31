@@ -6,53 +6,49 @@
 #import "Environment.h"
 #import "PropertyListPreferences.h"
 
-@interface NotificationSettingsOptionsViewController ()
-
-@property NSArray *options;
-
-@end
-
 @implementation NotificationSettingsOptionsViewController
 
 - (void)viewDidLoad {
-    self.options = @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ];
-
-    [super viewDidLoad];
+    [self updateTableContents];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table Contents
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
+- (void)updateTableContents
+{
+    OWSTableContents *contents = [OWSTableContents new];
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (NSInteger)[self.options count];
-}
+    __weak NotificationSettingsOptionsViewController *weakSelf = self;
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                                   reuseIdentifier:@"NotificationSettingsOption"];
+    OWSTableSection *section = [OWSTableSection new];
+    section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
+
     PropertyListPreferences *prefs = [Environment preferences];
-    NSUInteger notifType           = [[self.options objectAtIndex:(NSUInteger)indexPath.row] unsignedIntegerValue];
-    [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notifType]];
-
     NotificationType selectedNotifType = [prefs notificationPreviewType];
+    for (NSNumber *option in
+        @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ]) {
+        NotificationType notificationType = (NotificationType)option.intValue;
 
-    if (selectedNotifType == notifType) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [UITableViewCell new];
+            [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
+            if (selectedNotifType == notificationType) {
+                cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            }
+            return cell;
+        }
+                             actionBlock:^{
+                                 [weakSelf setNotificationType:notificationType];
+                             }]];
     }
+    [contents addSection:section];
 
-    return cell;
+    self.contents = contents;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    return NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [Environment.preferences
-        setNotificationPreviewType:[[self.options objectAtIndex:(NSUInteger)indexPath.row] unsignedIntegerValue]];
+- (void)setNotificationType:(NotificationType)notificationType
+{
+    [Environment.preferences setNotificationPreviewType:notificationType];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

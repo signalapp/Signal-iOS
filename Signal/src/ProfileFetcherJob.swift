@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 class ProfileFetcherJob: NSObject {
@@ -12,34 +13,54 @@ class ProfileFetcherJob: NSObject {
     let networkManager: TSNetworkManager
     let storageManager: TSStorageManager
 
-    let thread: TSThread
-
     // This property is only accessed on the main queue.
     static var fetchDateMap = [String: Date]()
 
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
-        ProfileFetcherJob(thread: thread, networkManager: networkManager).run()
+        ProfileFetcherJob(networkManager: networkManager).run(thread: thread)
     }
 
-    init(thread: TSThread, networkManager: TSNetworkManager) {
+    init(networkManager: TSNetworkManager) {
         self.networkManager = networkManager
         self.storageManager = TSStorageManager.shared()
-
-        self.thread = thread
     }
 
-    public func run() {
+    public func run(thread: TSThread) {
         AssertIsOnMainThread()
 
         DispatchQueue.main.async {
-            for recipientId in self.thread.recipientIdentifiers {
-                self.getProfile(recipientId: recipientId)
+            for recipientId in thread.recipientIdentifiers {
+                self.updateProfile(recipientId: recipientId)
             }
         }
     }
 
-    public func getProfile(recipientId: String, remainingRetries: Int = 3) {
+    enum ProfileFetcherJobError: Error {
+        case throttled(lastTimeInterval: TimeInterval),
+             unknownNetworkError
+    }
 
+    public func updateProfile(recipientId: String, remainingRetries: Int = 3) {
+        self.getProfile(recipientId: recipientId).then { profile in
+            self.updateProfile(signalServiceProfile: profile)
+        }.catch { error in
+            switch error {
+            case ProfileFetcherJobError.throttled(let lastTimeInterval):
+                Logger.info("\(self.TAG) skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+            case let error as SignalServiceProfile.ValidationError:
+                Logger.warn("\(self.TAG) skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
+            default:
+                if remainingRetries > 0 {
+                    self.updateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
+                } else {
+                    owsFail("\(self.TAG) in \(#function) failed to get profile with error: \(error)")
+                }
+            }
+        }.retainUntilComplete()
+    }
+
+    public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
+        AssertIsOnMainThread()
         if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
             let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
             // Don't check a profile more often than every N minutes.
@@ -48,8 +69,7 @@ class ProfileFetcherJob: NSObject {
             // facilitate debugging.
             let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
             guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
-                Logger.info("\(self.TAG) skipping getProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
-                return
+                return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
             }
         }
         ProfileFetcherJob.fetchDateMap[recipientId] = Date()
@@ -58,37 +78,31 @@ class ProfileFetcherJob: NSObject {
 
         let request = OWSGetProfileRequest(recipientId: recipientId)
 
+        let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
+
         self.networkManager.makeRequest(
             request,
             success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                guard let profileResponse = SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject) else {
-                    Logger.error("\(self.TAG) response object had unexpected content")
-                    assertionFailure("\(self.TAG) response object had unexpected content")
-                    return
+                do {
+                    let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
+                    fulfill(profile)
+                } catch {
+                    reject(error)
                 }
-
-                self.processResponse(signalServiceProfile: profileResponse)
         },
             failure: { (_: URLSessionDataTask?, error: Error?) in
-                guard let error = error else {
-                    Logger.error("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
-                    assertionFailure("\(self.TAG) error in \(#function) was surpringly nil. sheesh rough day.")
-                    return
+
+                if let error = error {
+                    reject(error)
                 }
 
-                Logger.error("\(self.TAG) failed to fetch profile for recipient: \(recipientId) with error: \(error)")
-
-                if remainingRetries > 1 {
-                    DispatchQueue.global().async {
-                        self.getProfile(recipientId: recipientId, remainingRetries:remainingRetries - 1)
-                    }
-                }
+                reject(ProfileFetcherJobError.unknownNetworkError)
         })
+
+        return promise
     }
 
-    private func processResponse(signalServiceProfile: SignalServiceProfile) {
-        Logger.debug("\(TAG) in \(#function) for \(signalServiceProfile)")
-
+    private func updateProfile(signalServiceProfile: SignalServiceProfile) {
         verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
         // Eventually we'll want to do more things with new SignalServiceProfile fields here.
@@ -109,31 +123,32 @@ class ProfileFetcherJob: NSObject {
 struct SignalServiceProfile {
     let TAG = "[SignalServiceProfile]"
 
+    enum ValidationError: Error {
+        case invalid(description: String)
+        case invalidIdentityKey(description: String)
+    }
+
     public let recipientId: String
     public let identityKey: Data
 
-    init?(recipientId: String, rawResponse: Any?) {
+    init(recipientId: String, rawResponse: Any?) throws {
         self.recipientId = recipientId
 
         guard let responseDict = rawResponse as? [String: Any?] else {
-            Logger.error("\(TAG) unexpected type: \(String(describing: rawResponse))")
-            return nil
+            throw ValidationError.invalid(description: "\(TAG) unexpected type: \(String(describing: rawResponse))")
         }
 
         guard let identityKeyString = responseDict["identityKey"] as? String else {
-            Logger.error("\(TAG) missing identity key: \(String(describing: rawResponse))")
-            return nil
+            throw ValidationError.invalidIdentityKey(description: "\(TAG) missing identity key: \(String(describing: rawResponse))")
         }
 
         guard let identityKeyWithType = Data(base64Encoded: identityKeyString) else {
-            Logger.error("\(TAG) unable to parse identity key: \(identityKeyString)")
-            return nil
+            throw ValidationError.invalidIdentityKey(description: "\(TAG) unable to parse identity key: \(identityKeyString)")
         }
 
         let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
-            Logger.error("\(TAG) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
-            return nil
+            throw ValidationError.invalidIdentityKey(description: "\(TAG) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
         }
 
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.

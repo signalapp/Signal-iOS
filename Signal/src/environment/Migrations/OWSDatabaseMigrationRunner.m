@@ -8,6 +8,7 @@
 #import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
 #import "OWS105AttachmentFilePaths.h"
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,8 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
-        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager],
-        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager]
+        // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
+        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager],
+        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:self.storageManager]
     ];
 }
 
@@ -46,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runSafeBlockingMigrations
 {
+    // This should only include migrations which:
+    //
+    // a) Do read/write database transactions and therefore would block on the async database
+    //    view registration.
+    // b) Will not affect any of the data used by the async database views.
     [self runMigrations:@[
         [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:self.storageManager],
     ]];

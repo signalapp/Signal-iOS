@@ -130,6 +130,9 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (UIView *)firstSectionHeader
 {
     UIView *firstSectionHeader = [UIView new];
+    firstSectionHeader.userInteractionEnabled = YES;
+    [firstSectionHeader
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
     firstSectionHeader.backgroundColor = [UIColor whiteColor];
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
@@ -141,7 +144,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kNewGroupViewControllerAvatarWidth];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
     [self updateAvatarView];
@@ -158,14 +161,21 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                  forControlEvents:UIControlEventEditingChanged];
     [threadInfoView addSubview:groupNameTextField];
     [groupNameTextField autoVCenterInSuperview];
-    [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
-    [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
+    [groupNameTextField autoPinTrailingToSuperView];
+    [groupNameTextField autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
+}
+
+- (void)headerWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.groupNameTextField becomeFirstResponder];
+    }
 }
 
 - (void)avatarTouched:(UIGestureRecognizer *)sender
@@ -206,7 +216,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [nonContactsSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
-                    OWSAssert(strongSelf);
+                    OWSCAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
                     SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
@@ -299,7 +309,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [signalAccountSection
                 addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     NewGroupViewController *strongSelf = weakSelf;
-                    OWSAssert(strongSelf);
+                    OWSCAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
 
@@ -364,16 +374,10 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                             }]];
         }
     } else {
-        [signalAccountSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(
-                @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            return cell;
-        }
-                                                                actionBlock:nil]];
+        [signalAccountSection
+            addItem:[OWSTableItem
+                        softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                        @"A label that indicates the user has no Signal contacts.")]];
     }
     [contents addSection:signalAccountSection];
 
@@ -383,22 +387,16 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (OWSTableItem *)createAddNonContactItem
 {
     __weak NewGroupViewController *weakSelf = self;
-    return [OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
-            @"A label for the cell that lets you add a new non-contact member to a group.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-        customRowHeight:[ContactTableViewCell rowHeight]
-        actionBlock:^{
-            AddToGroupViewController *viewController = [AddToGroupViewController new];
-            viewController.addToGroupDelegate = weakSelf;
-            viewController.hideContacts = YES;
-            [weakSelf.navigationController pushViewController:viewController animated:YES];
-        }];
+    return [OWSTableItem
+        disclosureItemWithText:NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
+                                   @"A label for the cell that lets you add a new non-contact member to a group.")
+               customRowHeight:[ContactTableViewCell rowHeight]
+                   actionBlock:^{
+                       AddToGroupViewController *viewController = [AddToGroupViewController new];
+                       viewController.addToGroupDelegate = weakSelf;
+                       viewController.hideContacts = YES;
+                       [weakSelf.navigationController pushViewController:viewController animated:YES];
+                   }];
 }
 
 - (void)removeRecipientId:(NSString *)recipientId
@@ -444,7 +442,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbConnection
+    [[TSStorageManager sharedManager].dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];

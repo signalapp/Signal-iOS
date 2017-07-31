@@ -2,9 +2,12 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #import <ZXingObjC/ZXingObjC.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class OWSQRCodeScanningViewController;
 
@@ -20,10 +23,12 @@
 #pragma mark -
 
 @interface OWSQRCodeScanningViewController
-    : UIViewController <AVCaptureMetadataOutputObjectsDelegate, ZXCaptureDelegate>
+    : OWSViewController <AVCaptureMetadataOutputObjectsDelegate, ZXCaptureDelegate>
 
 @property (nonatomic, weak) UIViewController<OWSQRScannerDelegate> *scanDelegate;
 
 - (void)startCapture;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -22,6 +22,11 @@ This repository is set up with [BitHub](https://whispersystems.org/blog/bithub/)
 ## Contributing Ideas
 Have something you want to say about Open Whisper Systems projects or want to be part of the conversation? Get involved in the [community forum](https://whispersystems.discoursehosting.net).
 
+## SignalServiceKit
+
+Check out the [SignalServiceKit README](SignalServiceKit/README.md) for
+details about using SignalServiceKit in your own app.
+
 ## Cryptography Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. 

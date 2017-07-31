@@ -5,7 +5,7 @@
 #import "SettingsTableViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
-#import "DebugSettingsTableViewController.h"
+#import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSContactsManager.h"
@@ -97,6 +97,8 @@
     __weak SettingsTableViewController *weakSelf = self;
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         UILabel *titleLabel = [UILabel new];
         titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
@@ -112,7 +114,7 @@
         subtitleLabel.textAlignment = NSTextAlignmentCenter;
 
         UIView *stack = [UIView new];
-        [cell addSubview:stack];
+        [cell.contentView addSubview:stack];
         [stack autoCenterInSuperview];
 
         [stack addSubview:titleLabel];
@@ -143,7 +145,7 @@
             cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
             cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
             cell.textLabel.textColor = [UIColor blackColor];
-
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             UILabel *accessoryLabel = [UILabel new];
             accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
             switch ([TSSocketManager sharedManager].state) {
@@ -195,14 +197,16 @@
                                               }]];
 
 #ifdef DEBUG
-    [section addItem:[OWSTableItem disclosureItemWithText:@"Debugging"
+    [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
                                               actionBlock:^{
-                                                  [weakSelf showDebugging];
+                                                  [weakSelf showDebugUI];
                                               }]];
 #endif
 
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor ows_destructiveRedColor];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -212,10 +216,7 @@
         [cell.contentView addSubview:button];
         [button autoSetDimension:ALDimensionHeight toSize:50.f];
         [button autoVCenterInSuperview];
-        [button autoPinEdgeToSuperviewEdge:ALEdgeLeft
-                                 withInset:cell.layoutMargins.left + cell.contentView.layoutMargins.left];
-        [button autoPinEdgeToSuperviewEdge:ALEdgeRight
-                                 withInset:cell.layoutMargins.right + cell.contentView.layoutMargins.right];
+        [button autoPinLeadingAndTrailingToSuperview];
         [button addTarget:self action:@selector(unregisterUser) forControlEvents:UIControlEventTouchUpInside];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
@@ -238,8 +239,6 @@
 - (void)showPrivacy
 {
     PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"Privacy Settings View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -259,23 +258,18 @@
 - (void)showAdvanced
 {
     AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"Advanced Settings View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showAbout
 {
     AboutTableViewController *vc = [[AboutTableViewController alloc] init];
-    NSAssert(self.navigationController != nil, @"Navigation controller must not be nil");
-    NSAssert(vc != nil, @"About View Controller must not be nil");
     [self.navigationController pushViewController:vc animated:YES];
 }
 
-- (void)showDebugging
+- (void)showDebugUI
 {
-    DebugSettingsTableViewController *vc = [[DebugSettingsTableViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
+    [DebugUITableViewController presentDebugUIFromViewController:self];
 }
 
 - (void)dismissWasPressed:(id)sender

@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "InboxTableViewCell.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
@@ -137,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (TSThread *thread in [self filteredThreadsWithSearchText]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
-            OWSAssert(strongSelf);
+            OWSCAssert(strongSelf);
 
             // To be consistent with the threads (above), we use ContactTableViewCell
             // instead of InboxTableViewCell to present contacts and threads.
@@ -156,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
-            OWSAssert(strongSelf);
+            OWSCAssert(strongSelf);
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
@@ -176,16 +175,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (section.itemCount < 1) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(
-                @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-            cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            return cell;
-        }
-                                                   actionBlock:nil]];
+        [section
+            addItem:[OWSTableItem
+                        softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                        @"A label that indicates the user has no Signal contacts.")]];
     }
     [contents addSection:section];
 
@@ -215,9 +208,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [[TSStorageManager sharedManager].dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
-    }];
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        }];
     OWSAssert(thread);
 
     [self.delegate threadWasSelected:thread];

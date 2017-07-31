@@ -5,7 +5,7 @@
 import Foundation
 import MediaPlayer
 
-class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlayerDelegate {
+class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPlayerDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
 
@@ -33,7 +33,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
                                                       dataUTI: kUTTypeContent as String,
                                                       filename:nil)
         super.init(coder: aDecoder)
-        assertionFailure()
+        owsFail("\(self.TAG) invalid constructor")
     }
 
     required init(attachment: SignalAttachment, successCompletion : @escaping () -> Void) {
@@ -438,7 +438,7 @@ class AttachmentApprovalViewController: UIViewController, OWSAudioAttachmentPlay
 
     private func updateAudioStatusLabel() {
         guard let audioStatusLabel = self.audioStatusLabel else {
-            assertionFailure("Missing audio status label")
+            owsFail("Missing audio status label")
             return
         }
 

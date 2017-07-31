@@ -51,10 +51,10 @@ class ReminderView: UIView {
         self.backgroundColor = UIColor.ows_reminderYellow()
         self.clipsToBounds = true
 
-        let container = UIView()
-
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
-        container.addGestureRecognizer(tapGesture)
+        self.addGestureRecognizer(tapGesture)
+
+        let container = UIView()
 
         self.addSubview(container)
         container.autoPinWidthToSuperview(withMargin: 16)

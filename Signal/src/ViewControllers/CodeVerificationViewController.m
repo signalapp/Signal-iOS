@@ -8,6 +8,7 @@
 #import "SignalsNavigationController.h"
 #import "SignalsViewController.h"
 #import "StringUtil.h"
+#import "UIViewController+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -117,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                           forState:UIControlStateNormal];
     backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [header addSubview:backButton];
-    [backButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10];
+    [backButton autoPinLeadingToSuperViewWithMargin:10.f];
     [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
     [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -126,6 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     _phoneNumberLabel.font = [UIFont ows_regularFontWithSize:20.f];
     _phoneNumberLabel.numberOfLines = 2;
     _phoneNumberLabel.adjustsFontSizeToFitWidth = YES;
+    _phoneNumberLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneNumberLabel];
     [_phoneNumberLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(32)];
     [_phoneNumberLabel autoPinEdge:ALEdgeTop
@@ -173,15 +175,15 @@ NS_ASSUME_NONNULL_BEGIN
     [_challengeButton autoSetDimension:ALDimensionHeight toSize:47.f];
 
     const CGFloat kSpinnerSize = 20;
-    const CGFloat kSpinnerSpacing = 15;
+    const CGFloat kSpinnerSpacing = ScaleFromIPhone5To7Plus(5, 15);
 
     _submitCodeSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [_challengeButton addSubview:_submitCodeSpinner];
     [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_submitCodeSpinner autoVCenterInSuperview];
-    [_submitCodeSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
-    
+    [_submitCodeSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
+
     _sendCodeViaSMSAgainButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaSMSAgainButton.backgroundColor = [UIColor whiteColor];
     [_sendCodeViaSMSAgainButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_AGAIN", @"button text during registration to request another SMS code be sent")
@@ -203,8 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoVCenterInSuperview];
-    [_requestCodeAgainSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
-    
+    [_requestCodeAgainSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
+
     _sendCodeViaVoiceButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaVoiceButton.backgroundColor = [UIColor whiteColor];
     [_sendCodeViaVoiceButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SEND_VIA_VOICE",
@@ -226,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCallSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCallSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCallSpinner autoVCenterInSuperview];
-    [_requestCallSpinner autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kSpinnerSpacing];
+    [_requestCallSpinner autoPinTrailingToSuperViewWithMargin:kSpinnerSpacing];
 }
 
 - (NSString *)phoneNumberText
@@ -259,27 +261,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)verifyChallengeAction:(nullable id)sender
 {
     [self startActivityIndicator];
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
         .then(^{
+            OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
+
             DDLogInfo(@"%@ Successfully registered Signal account.", self.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
 
-                UIStoryboard *storyboard = [UIStoryboard main];
-                UIViewController *viewController = [storyboard instantiateInitialViewController];
-                OWSAssert([viewController isKindOfClass:[SignalsNavigationController class]]);
-                SignalsNavigationController *navigationController = (SignalsNavigationController *)viewController;
+                SignalsViewController *homeView = [SignalsViewController new];
+                homeView.newlyRegisteredUser = YES;
+                SignalsNavigationController *navigationController =
+                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
                 AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
                 appDelegate.window.rootViewController = navigationController;
                 OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
-
-                DDLogDebug(@"%@ notifying signals view controller of new user.", self.tag);
-                SignalsViewController *signalsViewController
-                    = (SignalsViewController *)navigationController.topViewController;
-                signalsViewController.newlyRegisteredUser = YES;
             });
         })
         .catch(^(NSError *_Nonnull error) {
+            OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
             DDLogError(@"%@ error verifying challenge: %@", self.tag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self stopActivityIndicator];
@@ -306,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               message:error.localizedDescription
                                                        preferredStyle:UIAlertControllerStyleAlert];
     }
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction *action) {
                                                               [_challengeTextField becomeFirstResponder];
@@ -323,6 +324,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Send codes again
 
 - (void)sendCodeViaSMSAction:(id)sender {
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringRequestedNewCodeBySms]);
+
     [self enableServerActions:NO];
 
     [_requestCodeAgainSpinner startAnimating];
@@ -340,6 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sendCodeViaVoiceAction:(id)sender {
+    OWSProdInfo([OWSAnalyticsEvents registrationRegisteringRequestedNewCodeByVoice]);
+
     [self enableServerActions:NO];
 
     [_requestCallSpinner startAnimating];
@@ -369,6 +374,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)backButtonPressed:(id)sender {
+    OWSProdInfo([OWSAnalyticsEvents registrationVerificationBack]);
+
     [self.navigationController popViewControllerAnimated:YES];
 }
 

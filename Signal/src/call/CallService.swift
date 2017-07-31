@@ -138,7 +138,16 @@ protocol CallServiceObserver: class {
             call?.addObserverAndSyncState(observer: self)
 
             updateIsVideoEnabled()
-            updateLockTimerEnabling()
+
+            // Prevent device from sleeping while we have an active call.
+            if oldValue != call {
+                if let oldValue = oldValue {
+                    DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
+                }
+                if let call = call {
+                    DeviceSleepManager.sharedInstance.addBlock(blockObject: call)
+                }
+            }
 
             Logger.debug("\(self.TAG) .call setter: \(oldValue?.identifiersForLogs as Optional) -> \(call?.identifiersForLogs as Optional)")
 
@@ -147,6 +156,10 @@ protocol CallServiceObserver: class {
             }
         }
     }
+
+    // Used to coordinate promises across delegate methods
+    private var fulfillCallConnectedPromise: (() -> Void)?
+    private var rejectCallConnectedPromise: ((Error) -> Void)?
 
     /**
      * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
@@ -159,8 +172,17 @@ protocol CallServiceObserver: class {
     var sendIceUpdatesImmediately = true
     var pendingIceUpdateMessages = [OWSCallIceUpdateMessage]()
 
-    // Used to coordinate promises across delegate methods
-    var fulfillCallConnectedPromise: (() -> Void)?
+    // Used by waitForPeerConnectionClient to make sure any received
+    // ICE messages wait until the peer connection client is set up.
+    private var fulfillPeerConnectionClientPromise: (() -> Void)?
+    private var rejectPeerConnectionClientPromise: ((Error) -> Void)?
+    private var peerConnectionClientPromise: Promise<Void>?
+
+    // Used by waituntilReadyToSendIceUpdates to make sure CallOffer was 
+    // sent before sending any ICE updates.
+    private var fulfillReadyToSendIceUpdatesPromise: (() -> Void)?
+    private var rejectReadyToSendIceUpdatesPromise: ((Error) -> Void)?
+    private var readyToSendIceUpdatesPromise: Promise<Void>?
 
     weak var localVideoTrack: RTCVideoTrack? {
         didSet {
@@ -218,15 +240,11 @@ protocol CallServiceObserver: class {
 
     func didEnterBackground() {
         AssertIsOnMainThread()
-        Logger.info("\(self.TAG) \(#function)")
-
         self.updateIsVideoEnabled()
     }
 
     func didBecomeActive() {
         AssertIsOnMainThread()
-        Logger.info("\(self.TAG) \(#function)")
-
         self.updateIsVideoEnabled()
     }
 
@@ -255,7 +273,8 @@ protocol CallServiceObserver: class {
             let errorDescription = "\(TAG) call was unexpectedly already set."
             Logger.error(errorDescription)
             call.state = .localFailure
-            return Promise(error: CallError.assertionError(description: errorDescription))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallAlreadySet(), file:#file, function:#function, line:#line)
+            return Promise(error: CallError.assertionError(description:errorDescription))
         }
 
         self.call = call
@@ -277,7 +296,8 @@ protocol CallServiceObserver: class {
             guard self.peerConnectionClient == nil else {
                 let errorDescription = "\(self.TAG) peerconnection was unexpectedly already set."
                 Logger.error(errorDescription)
-                throw CallError.assertionError(description: errorDescription)
+                OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionAlreadySet(), file:#file, function:#function, line:#line)
+                throw CallError.assertionError(description:errorDescription)
             }
 
             let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
@@ -285,6 +305,7 @@ protocol CallServiceObserver: class {
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for call: \(call.identifiersForLogs)")
             self.peerConnectionClient = peerConnectionClient
+            self.fulfillPeerConnectionClientPromise?()
 
             return peerConnectionClient.createOffer()
         }.then { (sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> in
@@ -292,7 +313,7 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
             guard let peerConnectionClient = self.peerConnectionClient else {
-                assertionFailure("Missing peerConnectionClient in \(#function)")
+                owsFail("Missing peerConnectionClient in \(#function)")
                 throw CallError.obsoleteCall(description:"Missing peerConnectionClient in \(#function)")
             }
 
@@ -306,12 +327,18 @@ protocol CallServiceObserver: class {
                 throw CallError.obsoleteCall(description:"obsolete call in \(#function)")
             }
 
-            let (callConnectedPromise, fulfill, _) = Promise<Void>.pending()
+            // For outgoing calls, wait until call offer is sent before we send any ICE updates, to ensure message ordering for
+            // clients that don't support receiving ICE updates before receiving the call offer.
+            self.readyToSendIceUpdates(call: call)
+
+            let (callConnectedPromise, fulfill, reject) = Promise<Void>.pending()
             self.fulfillCallConnectedPromise = fulfill
+            self.rejectCallConnectedPromise = reject
 
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingOutgoing(), file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting to receive call answer")
             }
 
@@ -324,14 +351,37 @@ protocol CallServiceObserver: class {
             Logger.error("\(self.TAG) placing call \(call.identifiersForLogs) failed with error: \(error)")
 
             if let callError = error as? CallError {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorOutgoingConnectionFailedInternal(), file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: call, error: callError)
             } else {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorOutgoingConnectionFailedExternal(), file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
         }
         promise.retainUntilComplete()
         return promise
+    }
+
+    func readyToSendIceUpdates(call: SignalCall) {
+        AssertIsOnMainThread()
+
+        guard self.call == call else {
+            self.handleFailedCall(failedCall: call, error: .obsoleteCall(description:"obsolete call in \(#function)"))
+            return
+        }
+
+        if self.fulfillReadyToSendIceUpdatesPromise == nil {
+            createReadyToSendIceUpdatesPromise()
+        }
+
+        guard let fulfillReadyToSendIceUpdatesPromise = self.fulfillReadyToSendIceUpdatesPromise else {
+            OWSProdError(OWSAnalyticsEvents.callServiceMissingFulfillReadyToSendIceUpdatesPromise(), file:#file, function:#function, line:#line)
+            self.handleFailedCall(failedCall: call, error: CallError.assertionError(description:"failed to create fulfillReadyToSendIceUpdatesPromise"))
+            return
+        }
+
+        fulfillReadyToSendIceUpdatesPromise()
     }
 
     /**
@@ -365,7 +415,8 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "peerConnectionClient was unexpectedly nil in \(#function)"))
+            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"peerConnectionClient was unexpectedly nil in \(#function)"))
             return
         }
 
@@ -374,8 +425,10 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleReceivedErrorInternal(), file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: call, error: callError)
             } else {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleReceivedErrorExternal(), file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: call, error: externalError)
             }
@@ -464,8 +517,7 @@ protocol CallServiceObserver: class {
 
             switch untrustedIdentity!.verificationState {
             case .verified:
-                Logger.error("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
-                assertionFailure("shouldn't have missed a call due to untrusted identity if the identity is verified")
+                owsFail("\(TAG) shouldn't have missed a call due to untrusted identity if the identity is verified")
                 self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
             case .default:
                 self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
@@ -492,14 +544,26 @@ protocol CallServiceObserver: class {
 
             handleLocalBusyCall(newCall, thread: thread)
 
-            if self.call?.remotePhoneNumber == newCall.remotePhoneNumber {
-                // If we're receiving a new call offer from the user we think we have a call with, terminate
-                // our current call to get back to a known good state.  If they call back, we'll be ready.
+            if self.call!.remotePhoneNumber == newCall.remotePhoneNumber {
+                Logger.info("\(TAG) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
+
+                // If we're receiving a new call offer from the user we already think we have a call with,
+                // terminate our current call to get back to a known good state.  If they call back, we'll 
+                // be ready.
                 // 
                 // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
-                // b) ever connected.  There will be a bit of complexity around making sure that two
+                // b) never connected.  There will be a bit of complexity around making sure that two
                 // parties that call each other at the same time end up connected.
-                terminateCall()
+                switch self.call!.state {
+                case .idle, .dialing, .remoteRinging:
+                    // If both users are trying to call each other at the same time,
+                    // both should see busy.
+                    handleRemoteBusy(thread:self.call!.thread)
+                case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+                    // If one user calls another while the other has a "vestigial" call with
+                    // that same user, fail the old call.
+                    terminateCall()
+                }
             }
 
             return
@@ -539,6 +603,7 @@ protocol CallServiceObserver: class {
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
             self.peerConnectionClient = peerConnectionClient
+            self.fulfillPeerConnectionClientPromise?()
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
             let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -546,10 +611,11 @@ protocol CallServiceObserver: class {
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return peerConnectionClient.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
+            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
+
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
-            Logger.debug("\(self.TAG) set the remote description for: \(newCall.identifiersForLogs)")
 
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
@@ -561,15 +627,21 @@ protocol CallServiceObserver: class {
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
-            let (promise, fulfill, _) = Promise<Void>.pending()
+            // There's nothing technically forbidding receiving ICE updates before receiving the CallAnswer, but this
+            // a more intuitive ordering.
+            self.readyToSendIceUpdates(call: newCall)
+
+            let (promise, fulfill, reject) = Promise<Void>.pending()
 
             let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingIncoming(), file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting for call to connect")
             }
 
             // This will be fulfilled (potentially) by the RTCDataChannel delegate method
             self.fulfillCallConnectedPromise = fulfill
+            self.rejectCallConnectedPromise = reject
 
             return race(promise, timeout)
         }.then {
@@ -578,12 +650,14 @@ protocol CallServiceObserver: class {
                 : "\(self.TAG) obsolete incoming call connected: \(newCall.identifiersForLogs).")
         }.catch { error in
             guard self.call == newCall else {
-                Logger.debug("\(self.TAG) error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
+                Logger.debug("\(self.TAG) ignoring error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
                 return
             }
             if let callError = error as? CallError {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorIncomingConnectionFailedInternal(), file:#file, function:#function, line:#line)
                 self.handleFailedCall(failedCall: newCall, error: callError)
             } else {
+                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorIncomingConnectionFailedExternal(), file:#file, function:#function, line:#line)
                 let externalError = CallError.externalError(underlyingError: error)
                 self.handleFailedCall(failedCall: newCall, error: externalError)
             }
@@ -598,30 +672,34 @@ protocol CallServiceObserver: class {
      * Remote client (could be caller or callee) sent us a connectivity update
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
-        AssertIsOnMainThread()
-        Logger.info("\(TAG) called \(#function)")
+        waitForPeerConnectionClient().then { () -> Void in
+            AssertIsOnMainThread()
 
-        guard let call = self.call else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
-            return
-        }
+            guard let call = self.call else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
+                return
+            }
 
-        guard call.signalingId == callId else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to callId mismatch. Call already ended?")
-            return
-        }
+            guard call.signalingId == callId else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to callId mismatch. Call already ended?")
+                return
+            }
 
-        guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to thread mismatch. Call already ended?")
-            return
-        }
+            guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to thread mismatch. Call already ended?")
+                return
+            }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current peerConnectionClient. Call already ended?")
-            return
-        }
+            guard let peerConnectionClient = self.peerConnectionClient else {
+                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current peerConnectionClient. Call already ended?")
+                return
+            }
 
-        peerConnectionClient.addIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+            peerConnectionClient.addRemoteIceCandidate(RTCIceCandidate(sdp: sdp, sdpMLineIndex: lineIndex, sdpMid: mid))
+        }.catch { error in
+            OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleRemoteAddedIceCandidate(), file:#file, function:#function, line:#line)
+            Logger.error("\(self.TAG) in \(#function) waitForPeerConnectionClient failed with error: \(error)")
+        }.retainUntilComplete()
     }
 
     /**
@@ -632,34 +710,46 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            // This will only be called for the current peerConnectionClient, so
-            // fail the current call.
-            handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since there is no current call."))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            self.handleFailedCurrentCall(error: CallError.assertionError(description:"ignoring local ice candidate, since there is no current call."))
             return
         }
 
-        guard call.state != .idle else {
-            // This will only be called for the current peerConnectionClient, so
-            // fail the current call.
-            handleFailedCurrentCall(error: .assertionError(description: "ignoring local ice candidate, since call is now idle."))
-            return
-        }
+        // Wait until we've sent the CallOffer before sending any ice updates for the call to ensure
+        // intuitive message ordering for other clients.
+        waitUntilReadyToSendIceUpdates().then { () -> Void in
+            guard call == self.call else {
+                self.handleFailedCurrentCall(error: .obsoleteCall(description: "current call changed since we became ready to send ice updates"))
+                return
+            }
 
-        let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+            guard call.state != .idle else {
+                // This will only be called for the current peerConnectionClient, so
+                // fail the current call.
+                OWSProdError(OWSAnalyticsEvents.callServiceCallUnexpectedlyIdle(), file:#file, function:#function, line:#line)
+                self.handleFailedCurrentCall(error: CallError.assertionError(description:"ignoring local ice candidate, since call is now idle."))
+                return
+            }
 
-        if self.sendIceUpdatesImmediately {
-            Logger.info("\(TAG) in \(#function). Sending immediately.")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendCallMessage(callMessage)
-            sendPromise.retainUntilComplete()
-        } else {
-            // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
-            // e.g. if the client has blocked our message due to an identity change, we'd otherwise
-            // bombard them with a bunch *more* undecipherable messages.
-            Logger.info("\(TAG) in \(#function). Enqueing for later.")
-            self.pendingIceUpdateMessages.append(iceUpdateMessage)
-            return
-        }
+            let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+
+            if self.sendIceUpdatesImmediately {
+                Logger.info("\(self.TAG) in \(#function). Sending immediately.")
+                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
+                let sendPromise = self.messageSender.sendCallMessage(callMessage)
+                sendPromise.retainUntilComplete()
+            } else {
+                // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
+                // e.g. if the client has blocked our message due to an identity change, we'd otherwise
+                // bombard them with a bunch *more* undecipherable messages.
+                Logger.info("\(self.TAG) in \(#function). Enqueing for later.")
+                self.pendingIceUpdateMessages.append(iceUpdateMessage)
+                return
+            }
+        }.catch { error in
+            OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file:#file, function:#function, line:#line)
+            Logger.error("\(self.TAG) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
+        }.retainUntilComplete()
     }
 
     /**
@@ -674,7 +764,8 @@ protocol CallServiceObserver: class {
         guard let call = self.call else {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call."))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) ignoring \(#function) since there is no current call."))
             return
         }
 
@@ -704,7 +795,7 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This may happen if we hang up slightly before they hang up.
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            handleFailedCurrentCall(error: .obsoleteCall(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
@@ -733,7 +824,7 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     * User chose to answer call referred to by call `localId`. Used by the Callee only.
      *
      * Used by notification actions which can't serialize a call object.
      */
@@ -742,15 +833,17 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -758,7 +851,7 @@ protocol CallServiceObserver: class {
     }
 
     /**
-     * User chose to answer call referrred to by call `localId`. Used by the Callee only.
+     * User chose to answer call referred to by call `localId`. Used by the Callee only.
      */
     public func handleAnswerCall(_ call: SignalCall) {
         AssertIsOnMainThread()
@@ -766,7 +859,8 @@ protocol CallServiceObserver: class {
         Logger.debug("\(TAG) in \(#function)")
 
         guard let currentCall = self.call else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
@@ -778,7 +872,8 @@ protocol CallServiceObserver: class {
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
             return
         }
 
@@ -789,7 +884,7 @@ protocol CallServiceObserver: class {
         call.callRecord = callRecord
 
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"connected")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"connected", isCritical:true)
 
         handleConnectedCall(call)
     }
@@ -803,7 +898,8 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
+            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) peerConnectionClient unexpectedly nil in \(#function)"))
             return
         }
 
@@ -832,15 +928,17 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) call was unexpectedly nil in \(#function)"))
             return
         }
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            owsFail("\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -857,6 +955,15 @@ protocol CallServiceObserver: class {
 
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
+        if let callRecord = call.callRecord {
+            owsFail("Not expecting callrecord to already be set")
+            callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
+        } else {
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
+            callRecord.save()
+            call.callRecord = callRecord
+        }
+
         // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
         handleLocalHungupCall(call)
     }
@@ -870,17 +977,20 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let currentCall = self.call else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) ignoring \(#function) since there is no current call"))
             return
         }
 
         guard call == currentCall else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMismatch(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) ignoring \(#function) for call other than current call"))
             return
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
-            handleFailedCall(failedCall: call, error: .assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
+            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
             return
         }
 
@@ -894,7 +1004,7 @@ protocol CallServiceObserver: class {
 
         // If the call is connected, we can send the hangup via the data channel.
         let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
@@ -902,6 +1012,7 @@ protocol CallServiceObserver: class {
         let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(call.thread.contactIdentifier())")
         }.catch { error in
+            OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file:#file, function:#function, line:#line)
             Logger.error("\(self.TAG) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
         }
         sendPromise.retainUntilComplete()
@@ -919,8 +1030,9 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
 
@@ -973,8 +1085,9 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) call was unexpectedly nil in \(#function)")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
             return
         }
 
@@ -1011,8 +1124,9 @@ protocol CallServiceObserver: class {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            assertionFailure("\(TAG) received data message, but there is no current call. Ignoring.")
-            handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
+            owsFail("\(TAG) received data message, but there is no current call. Ignoring.")
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
+            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) received data message, but there is no current call. Ignoring."))
             return
         }
 
@@ -1023,8 +1137,9 @@ protocol CallServiceObserver: class {
 
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                assertionFailure("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
-                handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+                owsFail("\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
+                OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file:#file, function:#function, line:#line)
+                handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
@@ -1038,8 +1153,9 @@ protocol CallServiceObserver: class {
 
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                assertionFailure("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
-                handleFailedCurrentCall(error: .assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+                owsFail("\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
+                OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file:#file, function:#function, line:#line)
+                handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
@@ -1138,6 +1254,89 @@ protocol CallServiceObserver: class {
 
     // MARK: Helpers
 
+    private func waitUntilReadyToSendIceUpdates() -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        if self.readyToSendIceUpdatesPromise == nil {
+            createReadyToSendIceUpdatesPromise()
+        }
+
+        guard let readyToSendIceUpdatesPromise = self.readyToSendIceUpdatesPromise else {
+            OWSProdError(OWSAnalyticsEvents.callServiceCouldNotCreateReadyToSendIceUpdatesPromise(), file:#file, function:#function, line:#line)
+            return Promise(error: CallError.assertionError(description:"failed to create readyToSendIceUpdatesPromise"))
+        }
+
+        return readyToSendIceUpdatesPromise
+    }
+
+    private func createReadyToSendIceUpdatesPromise() {
+        AssertIsOnMainThread()
+
+        guard self.readyToSendIceUpdatesPromise == nil else {
+            owsFail("expected readyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        guard self.fulfillReadyToSendIceUpdatesPromise == nil else {
+            owsFail("expected fulfillReadyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        guard self.rejectReadyToSendIceUpdatesPromise == nil else {
+            owsFail("expected rejectReadyToSendIceUpdatesPromise to be nil")
+            return
+        }
+
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        self.fulfillReadyToSendIceUpdatesPromise = fulfill
+        self.rejectReadyToSendIceUpdatesPromise = reject
+        self.readyToSendIceUpdatesPromise = promise
+    }
+
+    private func waitForPeerConnectionClient() -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        guard self.peerConnectionClient == nil else {
+            // peerConnectionClient already set
+            return Promise(value: ())
+        }
+
+        if self.peerConnectionClientPromise == nil {
+            createPeerConnectionClientPromise()
+        }
+
+        guard let peerConnectionClientPromise = self.peerConnectionClientPromise else {
+            OWSProdError(OWSAnalyticsEvents.callServiceCouldNotCreatePeerConnectionClientPromise(), file:#file, function:#function, line:#line)
+            return Promise(error: CallError.assertionError(description:"failed to create peerConnectionClientPromise"))
+        }
+
+        return peerConnectionClientPromise
+    }
+
+    private func createPeerConnectionClientPromise() {
+        AssertIsOnMainThread()
+
+        guard self.peerConnectionClientPromise == nil else {
+            owsFail("expected peerConnectionClientPromise to be nil")
+            return
+        }
+
+        guard self.fulfillPeerConnectionClientPromise == nil else {
+            owsFail("expected fulfillPeerConnectionClientPromise to be nil")
+            return
+        }
+
+        guard self.rejectPeerConnectionClientPromise == nil else {
+            owsFail("expected rejectPeerConnectionClientPromise to be nil")
+            return
+        }
+
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        self.fulfillPeerConnectionClientPromise = fulfill
+        self.rejectPeerConnectionClientPromise = reject
+        self.peerConnectionClientPromise = promise
+    }
+
     /**
      * RTCIceServers are used when attempting to establish an optimal connection to the other party. SignalService supplies
      * a list of servers, plus we have fallback servers hardcoded in the app.
@@ -1187,6 +1386,10 @@ protocol CallServiceObserver: class {
     public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
         AssertIsOnMainThread()
 
+        if case CallError.assertionError(description:let description) = error {
+            owsFail(description)
+        }
+
         if let failedCall = failedCall {
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             failedCall.error = error
@@ -1216,21 +1419,43 @@ protocol CallServiceObserver: class {
 
         Logger.debug("\(TAG) in \(#function)")
 
-        localVideoTrack = nil
-        remoteVideoTrack = nil
-        isRemoteVideoEnabled = false
+        self.localVideoTrack = nil
+        self.remoteVideoTrack = nil
+        self.isRemoteVideoEnabled = false
 
         PeerConnectionClient.stopAudioSession()
-        peerConnectionClient?.terminate()
+        self.peerConnectionClient?.terminate()
         Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
-        peerConnectionClient = nil
+        self.peerConnectionClient = nil
 
-        call?.removeAllObservers()
-        call = nil
-        sendIceUpdatesImmediately = true
+        self.call?.removeAllObservers()
+        self.call = nil
+        self.sendIceUpdatesImmediately = true
         Logger.info("\(TAG) clearing pendingIceUpdateMessages")
-        pendingIceUpdateMessages = []
-        fulfillCallConnectedPromise = nil
+        self.pendingIceUpdateMessages = []
+        self.fulfillCallConnectedPromise = nil
+        if let rejectCallConnectedPromise = self.rejectCallConnectedPromise {
+            rejectCallConnectedPromise(CallError.obsoleteCall(description: "Terminating call"))
+        }
+        self.rejectCallConnectedPromise = nil
+
+        // In case we're still waiting on the peer connection setup somewhere, we need to reject it to avoid a memory leak.
+        // There is no harm in rejecting a previously fulfilled promise.
+        if let rejectPeerConnectionClientPromise = self.rejectPeerConnectionClientPromise {
+            rejectPeerConnectionClientPromise(CallError.obsoleteCall(description: "Terminating call"))
+        }
+        self.rejectPeerConnectionClientPromise = nil
+        self.fulfillPeerConnectionClientPromise = nil
+        self.peerConnectionClientPromise = nil
+
+        // In case we're still waiting on this promise somewhere, we need to reject it to avoid a memory leak.
+        // There is no harm in rejecting a previously fulfilled promise.
+        if let rejectReadyToSendIceUpdatesPromise = self.rejectReadyToSendIceUpdatesPromise {
+            rejectReadyToSendIceUpdatesPromise(CallError.obsoleteCall(description: "Terminating call"))
+        }
+        self.fulfillReadyToSendIceUpdatesPromise = nil
+        self.rejectReadyToSendIceUpdatesPromise = nil
+        self.readyToSendIceUpdatesPromise = nil
     }
 
     // MARK: - CallObserver
@@ -1252,7 +1477,7 @@ protocol CallServiceObserver: class {
         // Do nothing
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         // Do nothing
     }
@@ -1341,16 +1566,6 @@ protocol CallServiceObserver: class {
                                                  localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
-    }
-
-    private func updateLockTimerEnabling() {
-        AssertIsOnMainThread()
-
-        // Prevent screen from dimming during call.
-        //
-        // Note that this state has no effect if app is in the background.
-        let hasCall = call != nil
-        UIApplication.shared.isIdleTimerDisabled = hasCall
     }
 }
 

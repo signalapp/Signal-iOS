@@ -49,6 +49,24 @@ NS_ASSUME_NONNULL_BEGIN
                                   inThread:(TSThread *)thread
                              messageSender:(OWSMessageSender *)messageSender
 {
+    return [self sendMessageWithText:text
+        inThread:thread
+        messageSender:messageSender
+        success:^{
+            DDLogInfo(@"%@ Successfully sent message.", self.tag);
+        }
+        failure:^(NSError *error) {
+            DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
+        }];
+}
+
+
++ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
+                                  inThread:(TSThread *)thread
+                             messageSender:(OWSMessageSender *)messageSender
+                                   success:(void (^)())successHandler
+                                   failure:(void (^)(NSError *error))failureHandler
+{
     OWSAssert([NSThread isMainThread]);
     OWSAssert(text.length > 0);
     OWSAssert(thread);
@@ -62,13 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          messageBody:text
                                        attachmentIds:[NSMutableArray new]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-    [messageSender sendMessage:message
-        success:^{
-            DDLogInfo(@"%@ Successfully sent message.", self.tag);
-        }
-        failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
-        }];
+
+    [messageSender sendMessage:message success:successHandler failure:failureHandler];
 
     return message;
 }
@@ -274,7 +287,14 @@ NS_ASSUME_NONNULL_BEGIN
                     if (!isMissing) {
                         continue;
                     }
-                    [missingUnseenSafetyNumberChanges addObject:safetyNumberChange.newIdentityKey];
+
+                    NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
+                    if (newIdentityKey == nil) {
+                        OWSFail(@"Safety number change was missing it's new identity key.");
+                        continue;
+                    }
+
+                    [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
                 }
 
                 // Count the de-duplicated "blocking" safety number changes and all

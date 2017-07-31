@@ -7,6 +7,8 @@
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface OWSQRCodeScanningViewController ()
 
 @property (atomic) ZXCapture *capture;
@@ -36,7 +38,7 @@
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
     if (!self) {
@@ -159,3 +161,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

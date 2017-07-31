@@ -15,9 +15,9 @@ typedef enum : NSUInteger {
     kCallMissed = 3,
     kCallOutgoingIncomplete = 4,
     kCallIncomingIncomplete = 5,
-    // kGroupUpdateJoin has been deprecated.
-    kGroupUpdateLeft = 7,
-    kGroupUpdate = 8,
+    // kGroupUpdateJoin = 6, has been deprecated.
+    // kGroupUpdateLeft = 7, has been deprecated.
+    // kGroupUpdate = 8, has been deprecated.
     kCallMissedBecauseOfChangedIdentity = 9,
 } CallStatus;
 
@@ -26,14 +26,6 @@ typedef enum : NSUInteger {
 #pragma mark - Initialization
 
 - (instancetype)initWithCallRecord:(TSCall *)callRecord;
-
-- (instancetype)initWithInteraction:(TSInteraction *)interaction
-                           callerId:(NSString *)senderId
-                  callerDisplayName:(NSString *)senderDisplayName
-                               date:(nullable NSDate *)date
-                             status:(CallStatus)status
-                      displayString:(NSString *)detailString NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 /*

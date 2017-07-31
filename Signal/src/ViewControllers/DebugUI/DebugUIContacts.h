@@ -2,13 +2,13 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSTableViewController.h"
+#import "DebugUIPage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DebugUIContacts : NSObject
+@class OWSTableSection;
 
-+ (OWSTableSection *)section;
+@interface DebugUIContacts : DebugUIPage
 
 @end
 

@@ -67,6 +67,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
@@ -100,7 +101,7 @@ static const int JSQ_TOOLBAR_ICON_HEIGHT = 22;
 static const int JSQ_TOOLBAR_ICON_WIDTH = 22;
 static const int JSQ_IMAGE_INSET = 5;
 
-static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * 60;
+static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * kMinuteInterval;
 
 NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
 
@@ -218,6 +219,10 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) UIView *scrollDownButton;
 
+@property (nonatomic) BOOL isViewVisible;
+@property (nonatomic) BOOL isAppInBackground;
+@property (nonatomic) BOOL shouldObserveDBModifications;
+
 @end
 
 #pragma mark -
@@ -226,6 +231,9 @@ typedef enum : NSUInteger {
 
 - (void)dealloc
 {
+    // Surface memory leaks by logging the deallocation of view controllers.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -290,6 +298,30 @@ typedef enum : NSUInteger {
                                              selector:@selector(identityStateDidChange:)
                                                  name:kNSNotificationName_IdentityStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didChangePreferredContentSize:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(cancelReadTimer)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
@@ -332,16 +364,16 @@ typedef enum : NSUInteger {
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
 
-    // We need to create the "unread indicator" before we mark
-    // all messages as read.
-    [self ensureDynamicInteractions];
-
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     self.messageMappings =
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
+    // We need to impose the range restrictions on the mappings immediately to avoid
+    // doing a great deal of unnecessary work and causing a perf hotspot.
+    [self updateMessageMappingRangeOptions];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    [self updateShouldObserveDBModifications];
     self.page = 0;
 
     if (self.dynamicInteractions.unreadIndicatorPosition != nil) {
@@ -358,10 +390,6 @@ typedef enum : NSUInteger {
             MIN(kYapDatabaseMaxInitialPageCount - 1,
                 (unreadIndicatorPosition + kPreferredSeenMessageCount) / kYapDatabasePageSize));
     }
-
-    [self updateMessageMappingRangeOptions];
-    [self updateLoadEarlierVisible];
-    [self.collectionView reloadData];
 }
 
 - (BOOL)userLeftGroup
@@ -429,6 +457,7 @@ typedef enum : NSUInteger {
 
     [self initializeToolbars];
     [self createScrollDownButton];
+    [self createHeaderViews];
 }
 
 - (void)registerCustomMessageNibs
@@ -456,60 +485,16 @@ typedef enum : NSUInteger {
           forCellWithReuseIdentifier:[OWSIncomingMessageCollectionViewCell mediaCellReuseIdentifier]];
 }
 
-- (void)toggleObservers:(BOOL)shouldObserve
-{
-    if (shouldObserve) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didChangePreferredContentSize:)
-                                                     name:UIContentSizeCategoryDidChangeNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackground:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillResignActive:)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(cancelReadTimer)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIContentSizeCategoryDidChangeNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationWillEnterForegroundNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationWillResignActiveNotification
-                                                      object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIApplicationDidEnterBackgroundNotification
-                                                      object:nil];
-    }
-}
-
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    [self resetContentAndLayout];
     [self startReadTimer];
     [self startExpirationTimerAnimations];
-    [self ensureDynamicInteractions];
+    self.isAppInBackground = NO;
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    self.isAppInBackground = YES;
     if (self.hasClearedUnreadMessagesIndicator) {
         self.hasClearedUnreadMessagesIndicator = NO;
         [self.dynamicInteractions clearUnreadIndicatorState];
@@ -543,9 +528,6 @@ typedef enum : NSUInteger {
     // We need to update the dynamic interactions before we do any layout.
     [self ensureDynamicInteractions];
 
-    // Triggering modified notification renders "call notification" when leaving full screen call view
-    [self.thread touch];
-
     [self ensureBannerState];
 
     [super viewWillAppear:animated];
@@ -561,19 +543,7 @@ typedef enum : NSUInteger {
     // or on another device.
     [self hideInputIfNeeded];
 
-    self.messageAdapterCache = [[NSCache alloc] init];
-
-    // We need to `beginLongLivedReadTransaction` before we update our
-    // mapping in order to jump to the most recent commit.
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.messageMappings updateWithTransaction:transaction];
-    }];
-    [self updateMessageMappingRangeOptions];
-    
-    [self resetContentAndLayout];
-
-    [self toggleObservers:YES];
+    self.isViewVisible = YES;
 
     // restart any animations that were stopped e.g. while inspecting the contact info screens.
     [self startExpirationTimerAnimations];
@@ -649,6 +619,8 @@ typedef enum : NSUInteger {
     } else {
         [self scrollToBottomAnimated:NO];
     }
+
+    [self ensureScrollDownButton];
 }
 
 - (void)scrollToUnreadIndicatorAnimated
@@ -670,6 +642,8 @@ typedef enum : NSUInteger {
                                                 animated:YES];
         }
     }
+    
+    [self ensureScrollDownButton];
 }
 
 - (void)resetContentAndLayout
@@ -751,7 +725,7 @@ typedef enum : NSUInteger {
                 [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
                                                @"Indicates that some members of this group has been blocked. Embeds "
                                                @"{{the number of blocked users in this group}}."),
-                          blockedGroupMemberCount];
+                          [ViewControllerUtils formatInt:blockedGroupMemberCount]];
         }
     }
 
@@ -767,7 +741,7 @@ typedef enum : NSUInteger {
     OWSAssert(title.length > 0);
     OWSAssert(bannerColor);
 
-    UIView *bannerView = [UIView new];
+    UIView *bannerView = [UIView containerView];
     bannerView.backgroundColor = bannerColor;
     bannerView.layer.cornerRadius = 2.5f;
 
@@ -790,7 +764,7 @@ typedef enum : NSUInteger {
     [bannerView addSubview:closeButton];
     const CGFloat kBannerCloseButtonPadding = 8.f;
     [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
-    [closeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kBannerCloseButtonPadding];
+    [closeButton autoPinTrailingToSuperViewWithMargin:kBannerCloseButtonPadding];
     [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
     [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
 
@@ -798,9 +772,9 @@ typedef enum : NSUInteger {
     [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
     [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
     const CGFloat kBannerHPadding = 15.f;
-    [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kBannerHPadding];
+    [label autoPinLeadingToSuperViewWithMargin:kBannerHPadding];
     const CGFloat kBannerHSpacing = 10.f;
-    [label autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:closeButton withOffset:-kBannerHSpacing];
+    [closeButton autoPinLeadingToTrailingOfView:label margin:kBannerHSpacing];
 
     [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
 
@@ -868,13 +842,11 @@ typedef enum : NSUInteger {
                     }];
         [actionSheetController addAction:verifyAction];
 
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT",
-                                               @"Generic short text for button to dismiss a dialog")
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [weakSelf resetVerificationStateToDefault];
-                                   }];
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:^(UIAlertAction *_Nonnull action) {
+                                                                  [weakSelf resetVerificationStateToDefault];
+                                                              }];
         [actionSheetController addAction:dismissAction];
 
         [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -1003,7 +975,8 @@ typedef enum : NSUInteger {
     DDLogDebug(@"%@ viewWillDisappear", self.tag);
 
     [super viewWillDisappear:animated];
-    [self toggleObservers:NO];
+
+    self.isViewVisible = NO;
 
     // Since we're using a custom back button, we have to do some extra work to manage the
     // interactivePopGestureRecognizer
@@ -1056,33 +1029,63 @@ typedef enum : NSUInteger {
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 }
 
+- (void)createHeaderViews
+{
+    _backButtonUnreadCountView = [UIView new];
+    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
+    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
+    _backButtonUnreadCountView.hidden = YES;
+    _backButtonUnreadCountView.userInteractionEnabled = NO;
+
+    _backButtonUnreadCountLabel = [UILabel new];
+    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
+    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
+    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
+
+    self.navigationBarTitleView = [UIView containerView];
+    [self.navigationBarTitleView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(navigationTitleTapped:)]];
+#ifdef DEBUG
+    [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
+                                                          initWithTarget:self
+                                                                  action:@selector(navigationTitleLongPressed:)]];
+#endif
+
+    self.navigationBarTitleLabel = [UILabel new];
+    self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
+    self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
+    self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
+
+    self.navigationBarSubtitleLabel = [UILabel new];
+    [self updateNavigationBarSubtitleLabel];
+    [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
+}
+
+- (CGFloat)unreadCountViewDiameter
+{
+    return 16;
+}
+
 - (void)setBarButtonItemsForDisappearingMessagesConfiguration:
     (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
-    const CGFloat unreadCountViewDiameter = 16;
-    if (_backButtonUnreadCountView == nil) {
-        _backButtonUnreadCountView = [UIView new];
-        _backButtonUnreadCountView.layer.cornerRadius = unreadCountViewDiameter / 2;
-        _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-        _backButtonUnreadCountView.hidden = YES;
-        _backButtonUnreadCountView.userInteractionEnabled = NO;
-
-        _backButtonUnreadCountLabel = [UILabel new];
-        _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-        _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-        _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-        _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-    }
     // This method gets called multiple times, so it's important we re-layout the unread badge
     // with respect to the new backItem.
     [backItem.customView addSubview:_backButtonUnreadCountView];
+    // TODO: The back button assets are assymetrical.  There are strong reasons
+    // to use spacing in the assets to manipulate the size and positioning of
+    // bar button items, but it means we'll probably need separate RTL and LTR
+    // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:1];
-    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:unreadCountViewDiameter];
+    [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
+    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
     // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
     [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
-                                          toSize:unreadCountViewDiameter
+                                          toSize:self.unreadCountViewDiameter
                                         relation:NSLayoutRelationGreaterThanOrEqual];
 
     [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
@@ -1092,30 +1095,7 @@ typedef enum : NSUInteger {
     // Initialize newly created unread count badge to accurately reflect the current unread count.
     [self updateBackButtonUnreadCount];
 
-
     const CGFloat kTitleVSpacing = 0.f;
-    if (!self.navigationBarTitleView) {
-        self.navigationBarTitleView = [UIView new];
-        [self.navigationBarTitleView
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                         action:@selector(navigationTitleTapped:)]];
-#ifdef DEBUG
-        [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
-                                                              initWithTarget:self
-                                                                      action:@selector(navigationTitleLongPressed:)]];
-#endif
-
-        self.navigationBarTitleLabel = [UILabel new];
-        self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-        self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
-        self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
-
-        self.navigationBarSubtitleLabel = [UILabel new];
-        [self updateNavigationBarSubtitleLabel];
-        [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
-    }
-
     // We need to manually resize and position the title views;
     // iOS AutoLayout doesn't work inside navigation bar items.
     [self.navigationBarTitleLabel sizeToFit];
@@ -1159,7 +1139,9 @@ typedef enum : NSUInteger {
             + kTitleVSpacing);
     self.navigationBarTitleLabel.frame
         = CGRectMake(0, 0, titleViewWidth, self.navigationBarTitleLabel.frame.size.height);
-    self.navigationBarSubtitleLabel.frame = CGRectMake(0,
+    self.navigationBarSubtitleLabel.frame = CGRectMake((self.view.isRTL ? self.navigationBarTitleView.frame.size.width
+                                                                   - self.navigationBarSubtitleLabel.frame.size.width
+                                                                        : 0),
         self.navigationBarTitleView.frame.size.height - self.navigationBarSubtitleLabel.frame.size.height,
         titleViewWidth,
         self.navigationBarSubtitleLabel.frame.size.height);
@@ -1809,7 +1791,7 @@ typedef enum : NSUInteger {
 - (void)didChangePreferredContentSize:(NSNotification *)notification
 {
     [self.collectionView.collectionViewLayout setMessageBubbleFont:[UIFont ows_dynamicTypeBodyFont]];
-    [self.collectionView reloadData];
+    [self resetContentAndLayout];
     [self reloadInputToolbarSizeIfNeeded];
 }
 
@@ -1835,6 +1817,13 @@ typedef enum : NSUInteger {
         id<OWSMessageData> previousMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section]];
 
+        if ([previousMessage.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+            // Always show timestamp between unread indicator and the following interaction
+            return YES;
+        }
+
+        OWSAssert(currentMessage.date);
+        OWSAssert(previousMessage.date);
         NSTimeInterval timeDifference = [currentMessage.date timeIntervalSinceDate:previousMessage.date];
         if (timeDifference > kTSMessageSentDateShowTimeInterval) {
             showDate = YES;
@@ -1870,8 +1859,8 @@ typedef enum : NSUInteger {
 {
     NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section];
     for (NSInteger row = indexPath.row + 1; row < rowCount; row++) {
-        id<OWSMessageData> nextMessage =
-            [self messageAtIndexPath:[NSIndexPath indexPathForRow:row inSection:indexPath.section]];
+        NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:row inSection:indexPath.section];
+        TSInteraction *nextMessage = [self interactionAtIndexPath:nextIndexPath];
         if ([nextMessage isKindOfClass:[TSOutgoingMessage class]]) {
             return (TSOutgoingMessage *)nextMessage;
         }
@@ -2251,41 +2240,8 @@ typedef enum : NSUInteger {
 
     self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
 
-    // To update a YapDatabaseViewMappings, you can call either:
-    //
-    // * [YapDatabaseViewMappings updateWithTransaction]
-    // * [YapDatabaseViewMappings getSectionChanges:rowChanges:forNotifications:withMappings:]
-    //
-    // ...but you can't call both.
-    //
-    // If ensureDynamicInteractionsForThread modifies the database,
-    // the mappings will be updated by yapDatabaseModified.
-    // This will leave the mapping range in a bad state.
-    // Therefore we temporarily disable observation of YapDatabaseModifiedNotification
-    // while updating the range and the dynamic interactions.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
+    [self resetMappings];
 
-    // We need to update the dynamic interactions after loading earlier messages,
-    // since the unseen indicator may need to move or change.
-    [self ensureDynamicInteractions];
-
-    [self updateMessageMappingRangeOptions];
-
-    // We need to `beginLongLivedReadTransaction` before we update our
-    // mapping in order to jump to the most recent commit.
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.messageMappings updateWithTransaction:transaction];
-    }];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:nil];
-
-    [self.collectionView.collectionViewLayout
-        invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-    [self.collectionView reloadData];
     [self.collectionView layoutSubviews];
 
     self.collectionView.contentOffset = CGPointMake(0, self.collectionView.contentSize.height - scrollDistanceToBottom);
@@ -2329,12 +2285,17 @@ typedef enum : NSUInteger {
 
 - (void)updateMessageMappingRangeOptions
 {
+    // The "page" length may have been increased by loading "prev" pages at the
+    // top of the window.
+    NSUInteger pageLength = kYapDatabasePageSize * (self.page + 1);
+    // The "old" length may have been increased by insertions of new messages
+    // at the bottom of the window.
+    NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    NSUInteger newLength = MAX(pageLength, oldLength);
     YapDatabaseViewRangeOptions *rangeOptions =
-        [YapDatabaseViewRangeOptions flexibleRangeWithLength:kYapDatabasePageSize * (self.page + 1)
-                                                      offset:0
-                                                        from:YapDatabaseViewEnd];
+        [YapDatabaseViewRangeOptions flexibleRangeWithLength:newLength offset:0 from:YapDatabaseViewEnd];
 
-    rangeOptions.maxLength = kYapDatabaseRangeMaxLength;
+    rangeOptions.maxLength = MAX(newLength, kYapDatabaseRangeMaxLength);
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
@@ -2939,9 +2900,8 @@ typedef enum : NSUInteger {
                                      @"Alert body when picking a document fails because user picked a directory/bundle")
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:nil];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
         [alertController addAction:dismissAction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2967,9 +2927,8 @@ typedef enum : NSUInteger {
                              message:nil
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"DISMISS_BUTTON_TEXT", nil)
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:nil];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
         [alertController addAction:dismissAction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -3265,6 +3224,10 @@ typedef enum : NSUInteger {
     // the database is modified.  That doesn't seem optimal, but
     // in practice it's efficient enough.
 
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
     // We need to `beginLongLivedReadTransaction` before we update our
     // models in order to jump to the most recent commit.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -3312,12 +3275,7 @@ typedef enum : NSUInteger {
         // may need to extend the mapping's contents to reflect the current
         // range.
         [self updateMessageMappingRangeOptions];
-
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.messageMappings updateWithTransaction:transaction];
-        }];
         [self resetContentAndLayout];
-
         return;
     }
 
@@ -3375,9 +3333,7 @@ typedef enum : NSUInteger {
     }
         completion:^(BOOL success) {
             if (!success) {
-                [self.collectionView.collectionViewLayout
-                    invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-                [self.collectionView reloadData];
+                [self resetContentAndLayout];
             }
 
             [self updateLastVisibleTimestamp];
@@ -3426,6 +3382,8 @@ typedef enum : NSUInteger {
 
 - (id<OWSMessageData>)messageAtIndexPath:(NSIndexPath *)indexPath
 {
+    OWSAssert(self.messageAdapterCache);
+
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
     id<OWSMessageData> messageAdapter = [self.messageAdapterCache objectForKey:interaction.uniqueId];
@@ -3615,6 +3573,18 @@ typedef enum : NSUInteger {
     [self.audioRecorder stop];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;
+}
+
+- (void)setAudioRecorder:(AVAudioRecorder *)audioRecorder
+{
+    // Prevent device from sleeping while recording a voice message.
+    if (audioRecorder) {
+        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:audioRecorder];
+    } else if (_audioRecorder) {
+        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:_audioRecorder];
+    }
+
+    _audioRecorder = audioRecorder;
 }
 
 #pragma mark Accessory View
@@ -3885,7 +3855,7 @@ typedef enum : NSUInteger {
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [@(MIN(kMaxUnreadCount, unreadCount)) stringValue];
+    _backButtonUnreadCountLabel.text = [ViewControllerUtils formatInt:(int) MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions
@@ -4157,9 +4127,7 @@ typedef enum : NSUInteger {
     [groupMemberIds addObject:[TSAccountManager localNumber]];
     groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
     [self updateGroupModelTo:groupModel successCompletion:nil];
-    [self.collectionView.collectionViewLayout
-        invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
-    [self.collectionView reloadData];
+    [self resetContentAndLayout];
 }
 
 - (void)popAllConversationSettingsViews
@@ -4183,6 +4151,65 @@ typedef enum : NSUInteger {
     
     // Show any top/bottom labels for all but the unread indicator
     return ![interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
+}
+
+#pragma mark - Database Observation
+
+- (void)setIsViewVisible:(BOOL)isViewVisible
+{
+    _isViewVisible = isViewVisible;
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)setIsAppInBackground:(BOOL)isAppInBackground
+{
+    _isAppInBackground = isAppInBackground;
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)updateShouldObserveDBModifications
+{
+    self.shouldObserveDBModifications = self.isViewVisible && !self.isAppInBackground;
+}
+
+- (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
+{
+    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
+        return;
+    }
+
+    _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    if (self.shouldObserveDBModifications) {
+        [self resetMappings];
+    }
+}
+
+- (void)resetMappings
+{
+    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
+    // reset all state updated by yapDatabaseModified:.
+    if (self.messageMappings != nil) {
+        // Before we begin observing database modifications, make sure
+        // our mapping and table state is up-to-date.
+        //
+        // We need to `beginLongLivedReadTransaction` before we update our
+        // mapping in order to jump to the most recent commit.
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self updateMessageMappingRangeOptions];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.messageMappings updateWithTransaction:transaction];
+        }];
+    }
+
+    self.messageAdapterCache = [[NSCache alloc] init];
+    [self resetContentAndLayout];
+    [self updateLoadEarlierVisible];
+    [self ensureDynamicInteractions];
+    [self updateBackButtonUnreadCount];
+    [self updateNavigationBarSubtitleLabel];
 }
 
 #pragma mark - Class methods

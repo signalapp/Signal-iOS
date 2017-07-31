@@ -173,6 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.thread.groupModel);
 
     UIView *firstSectionHeader = [UIView new];
+    firstSectionHeader.userInteractionEnabled = YES;
+    [firstSectionHeader
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
     firstSectionHeader.backgroundColor = [UIColor whiteColor];
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
@@ -185,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
@@ -205,14 +208,21 @@ NS_ASSUME_NONNULL_BEGIN
                  forControlEvents:UIControlEventEditingChanged];
     [threadInfoView addSubview:groupNameTextField];
     [groupNameTextField autoVCenterInSuperview];
-    [groupNameTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:avatarView withOffset:16.f];
-    [groupNameTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:16.f];
+    [groupNameTextField autoPinTrailingToSuperView];
+    [groupNameTextField autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
 
     return firstSectionHeader;
+}
+
+- (void)headerWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.groupNameTextField becomeFirstResponder];
+    }
 }
 
 - (void)avatarTouched:(UIGestureRecognizer *)sender
@@ -239,21 +249,15 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
 
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"EDIT_GROUP_MEMBERS_ADD_MEMBER", @"Label for the cell that lets you add a new member to a group.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
-    }
-                         customRowHeight:[ContactTableViewCell rowHeight]
-                         actionBlock:^{
-                             AddToGroupViewController *viewController = [AddToGroupViewController new];
-                             viewController.addToGroupDelegate = weakSelf;
-                             [weakSelf.navigationController pushViewController:viewController animated:YES];
-                         }]];
+    [section addItem:[OWSTableItem
+                         disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
+                                                    @"Label for the cell that lets you add a new member to a group.")
+                                customRowHeight:[ContactTableViewCell rowHeight]
+                                    actionBlock:^{
+                                        AddToGroupViewController *viewController = [AddToGroupViewController new];
+                                        viewController.addToGroupDelegate = weakSelf;
+                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                    }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[contactsViewHelper localNumber]];
@@ -261,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
         [section
             addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UpdateGroupViewController *strongSelf = weakSelf;
-                OWSAssert(strongSelf);
+                OWSCAssert(strongSelf);
 
                 ContactTableViewCell *cell = [ContactTableViewCell new];
                 SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];

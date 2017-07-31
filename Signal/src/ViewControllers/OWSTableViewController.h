@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -72,7 +72,21 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text;
+
++ (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight;
+
 + (OWSTableItem *)labelItemWithText:(NSString *)text;
+
++ (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText;
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector;
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+                                isOn:(BOOL)isOn
+                           isEnabled:(BOOL)isEnabled
+                              target:(id)target
+                            selector:(SEL)selector;
 
 - (nullable UITableViewCell *)customCell;
 - (NSNumber *)customRowHeight;
@@ -89,7 +103,7 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
 
 #pragma mark -
 
-@interface OWSTableViewController : UIViewController
+@interface OWSTableViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSTableViewControllerDelegate> delegate;
 

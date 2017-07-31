@@ -8,11 +8,12 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
+#import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -53,14 +54,14 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     return [self initWithNetworkManager:[Environment getCurrent].networkManager
                          storageManager:[TSStorageManager sharedManager]
                           callUIAdapter:[Environment getCurrent].callService.callUIAdapter
-                        messagesManager:[TSMessagesManager sharedManager]
+                        messageReceiver:[OWSMessageReceiver sharedInstance]
                           messageSender:[Environment getCurrent].messageSender];
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
                          callUIAdapter:(CallUIAdapter *)callUIAdapter
-                       messagesManager:(TSMessagesManager *)messagesManager
+                       messageReceiver:(OWSMessageReceiver *)messageReceiver
                          messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
@@ -72,7 +73,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     _messageSender = messageSender;
 
     OWSSignalService *signalService = [OWSSignalService sharedInstance];
-    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessagesManager:messagesManager
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:messageReceiver
                                                                 networkManager:networkManager
                                                                  signalService:signalService];
 
@@ -147,17 +148,16 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
         if (threadId) {
             TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-            TSOutgoingMessage *message =
-                [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                    inThread:thread
-                                                 messageBody:responseInfo[UIUserNotificationActionResponseTypedTextKey]];
-            [self.messageSender sendMessage:message
+            NSString *replyText = responseInfo[UIUserNotificationActionResponseTypedTextKey];
+
+            [ThreadUtil sendMessageWithText:replyText
+                inThread:thread
+                messageSender:self.messageSender
                 success:^{
                     // TODO do we really want to mark them all as read?
                     [self markAllInThreadAsRead:notification.userInfo completionHandler:completionHandler];
-                    [[[[Environment getCurrent] signalsViewController] tableView] reloadData];
                 }
-                failure:^(NSError *error) {
+                failure:^(NSError *_Nonnull error) {
                     // TODO Surface the specific error in the notification?
                     DDLogError(@"Message send failed with error: %@", error);
 
@@ -227,7 +227,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-    [[TSStorageManager sharedManager].dbConnection
+    [[TSStorageManager sharedManager].dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             // TODO: I suspect we only want to mark the message in
             // question as read.

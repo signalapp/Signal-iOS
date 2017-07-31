@@ -2,12 +2,15 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSMessageData.h"
+#import "OWSViewController.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
-#import "OWSMessageData.h"
+#import <UIKit/UIKit.h>
 
-@interface FullImageViewController : UIViewController
+NS_ASSUME_NONNULL_BEGIN
+
+@interface FullImageViewController : OWSViewController
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                           fromRect:(CGRect)rect
@@ -18,3 +21,5 @@
 - (void)presentFromViewController:(UIViewController *)viewController;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -80,16 +80,16 @@
         [self clearBloomFilterCache];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.4.1"] && [TSAccountManager isRegistered]) {
-        // Cleaning orphaned data can take a while, so let's run it in the background.
-        // This means this migration is not resiliant to failures - we'll only run it once
-        // regardless of its success.
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            DDLogInfo(@"OWSMigration: beginning removing orphaned data.");
-            [[OWSOrphanedDataCleaner new] removeOrphanedData];
-            DDLogInfo(@"OWSMigration: completed removing orphaned data.");
-        });
-    }
+#ifdef DEBUG
+    // A bug in orphan cleanup could be disastrous so let's only
+    // run it in DEBUG builds for a few releases.
+    //
+    // TODO: Release to production once we have analytics.
+    // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
+    //       of disk access.  We might want to only run it "once per version"
+    //       or something like that in production.
+    [OWSOrphanedDataCleaner auditAndCleanupAsync:nil];
+#endif
 
     [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];
 }
@@ -115,23 +115,7 @@
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
 }
 
-#pragma mark Upgrading to 2.1 - Needs to register VOIP token + Removing video cache folder
-
-+ (void)nonBlockingPushRegistration {
-    void (^failedBlock)(NSError *) = ^(NSError *error) {
-        DDLogError(@"Failed to register VOIP push token: %@", error.debugDescription);
-    };
-    [[PushManager sharedManager] requestPushTokenWithSuccess:^(NSString *pushToken, NSString *voipToken) {
-        [[TSAccountManager sharedInstance]
-            registerForPushNotificationsWithPushToken:pushToken
-                                            voipToken:voipToken
-                                              success:^{
-                                                  DDLogWarn(@"Registered for VOIP Push.");
-                                              }
-                                              failure:failedBlock];
-    }
-                                                     failure:failedBlock];
-}
+#pragma mark Upgrading to 2.1 - Removing video cache folder
 
 + (void)clearVideoCache {
     NSArray *paths     = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -162,13 +146,16 @@
       TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
-            success = YES;
-            dispatch_semaphore_signal(sema);
+              success = YES;
+              dispatch_semaphore_signal(sema);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
-            success = NO;
-            DDLogError(@"Updating attributess failed with error: %@", error.description);
-            dispatch_semaphore_signal(sema);
+              if (!IsNSErrorNetworkFailure(error)) {
+                  OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
+              }
+              success = NO;
+              DDLogError(@"Updating attributess failed with error: %@", error.description);
+              dispatch_semaphore_signal(sema);
           }];
 
 
@@ -200,10 +187,10 @@
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             DDLogInfo(@"Successfully removed bloom filter cache.");
-            [[TSStorageManager sharedManager]
-             .dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                 [transaction removeAllObjectsInCollection:@"TSRecipient"];
-             }];
+            [[TSStorageManager sharedManager].dbReadWriteConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
+                }];
             DDLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
         } else {
             DDLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);

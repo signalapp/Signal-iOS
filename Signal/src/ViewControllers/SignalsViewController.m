@@ -19,6 +19,7 @@
 #import "TSStorageManager.h"
 #import "UIUtil.h"
 #import "VersionMigrations.h"
+#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -28,10 +29,12 @@
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
-#define CELL_HEIGHT 72.0f
-#define HEADER_HEIGHT 44.0f
+typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
-@interface SignalsViewController ()
+@interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) UILabel *emptyBoxLabel;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -57,8 +60,10 @@
 
 // Views
 
-@property (weak, nonatomic) IBOutlet ReminderView *missingContactsPermissionView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
+@property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+
+@property (nonatomic) TSThread *lastThread;
 
 @end
 
@@ -82,6 +87,8 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
+    OWSFail(@"Do not load this from the storyboard.");
+
     self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
@@ -119,6 +126,10 @@
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -146,24 +157,95 @@
 
 #pragma mark - View Life Cycle
 
-- (void)awakeFromNib
+- (void)loadView
 {
-    [super awakeFromNib];
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    // TODO: Remove this.
     [[Environment getCurrent] setSignalsViewController:self];
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                      target:self
+                                                      action:@selector(composeNew)];
+
+    ReminderView *archiveReminderView = [ReminderView new];
+    archiveReminderView.text = NSLocalizedString(
+        @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
+    __weak SignalsViewController *weakSelf = self;
+    archiveReminderView.tapAction = ^{
+        [weakSelf showInboxGrouping];
+    };
+    [self.view addSubview:archiveReminderView];
+    [archiveReminderView autoPinWidthToSuperview];
+    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
+
+    ReminderView *missingContactsPermissionView = [ReminderView new];
+    missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
+    missingContactsPermissionView.tapAction = ^{
+        [[UIApplication sharedApplication] openSystemSettings];
+    };
+    [self.view addSubview:missingContactsPermissionView];
+    [missingContactsPermissionView autoPinWidthToSuperview];
+    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
+    self.hideMissingContactsPermissionViewConstraint =
+        [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
+
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.tableView registerClass:[InboxTableViewCell class]
+           forCellReuseIdentifier:InboxTableViewCell.cellReuseIdentifier];
+    [self.view addSubview:self.tableView];
+    [self.tableView autoPinWidthToSuperview];
+    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+
+    UILabel *emptyBoxLabel = [UILabel new];
+    self.emptyBoxLabel = emptyBoxLabel;
+    [self.view addSubview:emptyBoxLabel];
+    [emptyBoxLabel autoPinWidthToSuperview];
+    [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+
+    [self updateReminderViews];
+}
+
+- (void)updateReminderViews
+{
+    BOOL shouldHideArchiveReminderView = self.viewingThreadsIn != kArchiveState;
+    BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
+    if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
+        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
+        return;
+    }
+    self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
+    self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
+    [self.view setNeedsLayout];
+    [self.view layoutSubviews];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    [self tableViewSetUp];
-
     self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
 
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self selectedInbox:self];
+    [self showInboxGrouping];
+
+    // because this uses the table data source, `tableViewSetup` must happen
+    // after mappings have been set up in `showInboxGrouping`
+    [self tableViewSetUp];
+
 
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
@@ -179,16 +261,6 @@
     navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
         @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
-
-    self.missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
-    self.missingContactsPermissionView.tapAction = ^{
-        [[UIApplication sharedApplication] openSystemSettings];
-    };
-    // Should only have to do this once per load (e.g. vs did appear) since app restarts when permissions change.
-    self.hideMissingContactsPermissionViewConstraint.active = !self.shouldShowMissingContactsPermissionView;
-
-
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
         (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
@@ -199,34 +271,37 @@
 
 - (void)updateBarButtonItems {
     const CGFloat kBarButtonSize = 44;
-    if (YES) {
-        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-        // The contents of the navigation bar are cramped in this view.
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-        [button setImage:image
-                forState:UIControlStateNormal];
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // left inset tighten up the layout.
-        imageEdgeInsets.right = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + imageEdgeInsets.right)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        button.imageEdgeInsets = imageEdgeInsets;
-        button.accessibilityLabel = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
-        [button addTarget:self
-                   action:@selector(settingsButtonPressed:)
-             forControlEvents:UIControlEventTouchUpInside];
-        button.frame = CGRectMake(0, 0,
-                                  round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-                                  round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
+    // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
+    // The contents of the navigation bar are cramped in this view.
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+    [button setImage:image forState:UIControlStateNormal];
+    UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+    // We normally would want to use left and right insets that ensure the button
+    // is square and the icon is centered.  However UINavigationBar doesn't offer us
+    // control over the margins and spacing of its content, and the buttons end up
+    // too far apart and too far from the edge of the screen. So we use a smaller
+    // leading inset tighten up the layout.
+    CGFloat hInset = round((kBarButtonSize - image.size.width) * 0.5f);
+    if (self.view.isRTL) {
+        imageEdgeInsets.right = hInset;
+        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
+    } else {
+        imageEdgeInsets.left = hInset;
+        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
     }
+    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+    button.imageEdgeInsets = imageEdgeInsets;
+    button.accessibilityLabel
+        = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+    [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    button.frame = CGRectMake(0,
+        0,
+        round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
+        round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
 - (void)settingsButtonPressed:(id)sender {
@@ -244,6 +319,7 @@
 
         MessagesViewController *vc = [MessagesViewController new];
         TSThread *thread           = [self threadForIndexPath:indexPath];
+        self.lastThread = thread;
         [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
         [vc peekSetup];
 
@@ -261,7 +337,7 @@
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (IBAction)composeNew
+- (void)composeNew
 {
     MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
 
@@ -282,20 +358,45 @@
 
 - (void)swappedSegmentedControl {
     if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self selectedInbox:nil];
+        [self showInboxGrouping];
     } else {
-        [self selectedArchive:nil];
+        [self showArchiveGrouping];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([TSThread numberOfKeysInCollection] > 0) {
-        [self.contactsManager requestSystemContactsOnce];
+        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self updateReminderViews];
+            });
+        }];
     }
+
     [self updateInboxCountLabel];
 
     self.isViewVisible = YES;
+
+    // When returning to home view, try to ensure that the "last" thread is still
+    // visible.  The threads often change ordering while in conversation view due
+    // to incoming & outgoing messages.
+    if (self.lastThread) {
+        __block NSIndexPath *indexPathOfLastThread = nil;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            indexPathOfLastThread =
+                [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
+                                                                              inCollection:[TSThread collection]
+                                                                              withMappings:self.threadMappings];
+        }];
+
+        if (indexPathOfLastThread) {
+            [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
+                                  atScrollPosition:UITableViewScrollPositionNone
+                                          animated:NO];
+        }
+    }
+
     [self checkIfEmptyView];
 }
 
@@ -327,7 +428,22 @@
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
 {
-    if (!_shouldObserveDBModifications && shouldObserveDBModifications && self.threadMappings != nil) {
+    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
+        return;
+    }
+
+    _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    if (self.shouldObserveDBModifications) {
+        [self resetMappings];
+    }
+}
+
+- (void)resetMappings
+{
+    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
+    // reset all state updated by yapDatabaseModified:.
+    if (self.threadMappings != nil) {
         // Before we begin observing database modifications, make sure
         // our mapping and table state is up-to-date.
         //
@@ -337,25 +453,23 @@
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
         }];
-
-        [[self tableView] reloadData];
     }
 
-    _shouldObserveDBModifications = shouldObserveDBModifications;
+    [[self tableView] reloadData];
+    [self checkIfEmptyView];
+    [self updateInboxCountLabel];
 
-    if (shouldObserveDBModifications) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
+    // If the user hasn't already granted contact access
+    // we don't want to request until they receive a message.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnce];
     }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     self.isAppInBackground = NO;
+    [self checkIfEmptyView];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -365,14 +479,15 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
     if (self.newlyRegisteredUser) {
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
         [self ensureNotificationsUpToDate];
 
-        // Clean up any messages that expired since last launch immediately
-        // and continue cleaning in the background.
+        // Start running the disappearing messages job in case the newly registered user
+        // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
     } else {
         [self displayAnyUnseenUpgradeExperience];
@@ -452,12 +567,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     InboxTableViewCell *cell =
-        [self.tableView dequeueReusableCellWithIdentifier:NSStringFromClass([InboxTableViewCell class])];
-    TSThread *thread = [self threadForIndexPath:indexPath];
+        [self.tableView dequeueReusableCellWithIdentifier:InboxTableViewCell.cellReuseIdentifier];
+    OWSAssert(cell);
 
-    if (!cell) {
-        cell = [InboxTableViewCell inboxTableViewCell];
-    }
+    TSThread *thread = [self threadForIndexPath:indexPath];
 
     [cell configureWithThread:thread contactsManager:self.contactsManager blockedPhoneNumberSet:_blockedPhoneNumberSet];
 
@@ -479,7 +592,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return CELL_HEIGHT;
+    return InboxTableViewCell.rowHeight;
 }
 
 #pragma mark Table Swipe to Delete
@@ -590,22 +703,19 @@
     [self checkIfEmptyView];
 }
 
-- (NSNumber *)updateInboxCountLabel {
+- (void)updateInboxCountLabel
+{
     NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
-    NSNumber *badgeNumber    = [NSNumber numberWithUnsignedInteger:numberOfItems];
     NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
-    if (![badgeNumber isEqualToNumber:@0]) {
-        NSString *badgeValue = [badgeNumber stringValue];
-        unreadString         = [unreadString stringByAppendingFormat:@" (%@)", badgeValue];
+    if (numberOfItems > 0) {
+        unreadString =
+            [unreadString stringByAppendingFormat:@" (%@)", [ViewControllerUtils formatInt:(int)numberOfItems]];
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
     [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber.integerValue];
-
-    return badgeNumber;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -624,6 +734,7 @@
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];
+        self.lastThread = thread;
 
         if (self.presentedViewController) {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -694,30 +805,55 @@
     }
 }
 
-#pragma mark - IBAction
+#pragma mark - Groupings
 
-- (IBAction)selectedInbox:(id)sender {
+- (YapDatabaseViewMappings *)threadMappings
+{
+    OWSAssert(_threadMappings != nil);
+    return _threadMappings;
+}
+
+- (void)showInboxGrouping
+{
     self.viewingThreadsIn = kInboxState;
-    [self changeToGrouping:TSInboxGroup];
 }
 
-- (IBAction)selectedArchive:(id)sender {
+- (void)showArchiveGrouping
+{
     self.viewingThreadsIn = kArchiveState;
-    [self changeToGrouping:TSArchiveGroup];
 }
 
-- (void)changeToGrouping:(NSString *)grouping {
+- (void)setViewingThreadsIn:(CellState)viewingThreadsIn
+{
+    BOOL didChange = _viewingThreadsIn != viewingThreadsIn;
+    _viewingThreadsIn = viewingThreadsIn;
+    self.segmentedControl.selectedSegmentIndex = (viewingThreadsIn == kInboxState ? 0 : 1);
+    if (didChange || !self.threadMappings) {
+        [self updateMappings];
+    } else {
+        [self checkIfEmptyView];
+        [self updateReminderViews];
+    }
+}
+
+- (NSString *)currentGrouping
+{
+    return self.viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup;
+}
+
+- (void)updateMappings
+{
     OWSAssert([NSThread isMainThread]);
 
-    self.shouldObserveDBModifications = NO;
+    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
+                                                                     view:TSThreadDatabaseViewExtensionName];
+    [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
-    self.threadMappings =
-        [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
-    [self.threadMappings setIsReversed:YES forGroup:grouping];
+    [self resetMappings];
 
-    [self updateShouldObserveDBModifications];
-
+    [[self tableView] reloadData];
     [self checkIfEmptyView];
+    [self updateReminderViews];
 }
 
 #pragma mark Database delegates
@@ -733,9 +869,19 @@
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification {
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
     NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    NSArray *sectionChanges = nil;
-    NSArray *rowChanges     = nil;
+
+    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
+                                                                               inNotifications:notifications]) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.self.threadMappings updateWithTransaction:transaction];
+        }];
+        return;
+    }
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
@@ -743,6 +889,8 @@
         [self.contactsManager requestSystemContactsOnce];
     }
 
+    NSArray *sectionChanges = nil;
+    NSArray *rowChanges = nil;
     [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
                                                                               rowChanges:&rowChanges
                                                                         forNotifications:notifications
@@ -751,6 +899,7 @@
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
     [self updateInboxCountLabel];
+    [self checkIfEmptyView];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         return;
@@ -806,13 +955,6 @@
     }
 
     [self.tableView endUpdates];
-    [self checkIfEmptyView];
-}
-
-- (IBAction)unwindSettingsDone:(UIStoryboardSegue *)segue {
-}
-
-- (IBAction)unwindMessagesView:(UIStoryboardSegue *)segue {
 }
 
 - (void)checkIfEmptyView {

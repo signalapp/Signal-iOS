@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContactsManager;
 @class OWSBlockingManager;
+@class CNContact;
 
 @interface ContactsViewHelper : NSObject
 
@@ -44,6 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
 
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+
+// Suitable when the user tries to perform an action which is not possible due to the user having
+// previously denied contact access.
+- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -69,6 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately;
+
+// This method can be used to edit existing contacts.
+- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                                   editImmediately:(BOOL)shouldEditImmediately
+                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
 
 @end
 

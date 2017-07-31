@@ -23,7 +23,7 @@ class AttachmentPointerAdapter: JSQMediaItem, OWSMessageEditing {
 
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        assertionFailure("init(coder:) has not been implemented")
+        owsFail("init(coder:) has not been implemented")
         self.isIncoming = true
         self.attachmentPointer = TSAttachmentPointer()
         super.init(coder: aDecoder)
@@ -36,8 +36,7 @@ class AttachmentPointerAdapter: JSQMediaItem, OWSMessageEditing {
 
     func performAction(_ action: Selector) {
         // Should not get here, as you can't perform any actions on a downloading attachment.
-        Logger.error("\(TAG) unexpectedly trying to perform action: \(action) on downloading attachment.")
-        assertionFailure()
+        owsFail("\(TAG) unexpectedly trying to perform action: \(action) on downloading attachment.")
     }
 
     // MARK: JSQ Overrides
@@ -88,30 +87,26 @@ class AttachmentPointerAdapter: JSQMediaItem, OWSMessageEditing {
 
     func attachmentDownloadProgress(_ notification: NSNotification) {
         guard let attachmentPointerView = self.attachmentPointerView else {
-            Logger.error("\(TAG) downloading view was unexpectedly nil for notification: \(notification)")
-            assertionFailure()
+            owsFail("\(TAG) downloading view was unexpectedly nil for notification: \(notification)")
             return
         }
 
         guard let userInfo = notification.userInfo else {
-            Logger.error("\(TAG) user info was unexpectedly nil for notification: \(notification)")
-            assertionFailure()
+            owsFail("\(TAG) user info was unexpectedly nil for notification: \(notification)")
             return
         }
 
         guard let progress = userInfo[kAttachmentDownloadProgressKey] as? CGFloat else {
-            Logger.error("\(TAG) missing progress measure for notification user info: \(userInfo)")
-            assertionFailure()
+            owsFail("\(TAG) missing progress measure for notification user info: \(userInfo)")
             return
         }
 
         guard let attachmentId = userInfo[kAttachmentDownloadAttachmentIDKey] as? String else {
-            Logger.error("\(TAG) missing attachmentId for notification user info: \(userInfo)")
-            assertionFailure()
+            owsFail("\(TAG) missing attachmentId for notification user info: \(userInfo)")
             return
         }
 
-        if (self.attachmentPointer.uniqueId == attachmentId) {
+        if self.attachmentPointer.uniqueId == attachmentId {
             attachmentPointerView.progress = progress
         }
     }

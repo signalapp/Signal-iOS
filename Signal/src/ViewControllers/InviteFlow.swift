@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 11/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 import Social
@@ -31,7 +32,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         super.init()
 
         actionSheetController.addAction(dismissAction())
-        
+
         if #available(iOS 9.0, *) {
             if let messageAction = messageAction() {
                 actionSheetController.addAction(messageAction)
@@ -72,7 +73,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
 
         let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment:"action sheet item")
-        return UIAlertAction(title: tweetTitle, style: .default) { action in
+        return UIAlertAction(title: tweetTitle, style: .default) { _ in
             Logger.debug("\(self.TAG) Chose tweet")
 
             self.presentingViewController.present(twitterViewController, animated: true, completion: nil)
@@ -80,7 +81,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     }
 
     func dismissAction() -> UIAlertAction {
-        return UIAlertAction(title: NSLocalizedString("DISMISS_BUTTON_TEXT", comment:""), style: .cancel)
+        return UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
     }
 
     // MARK: ContactsPickerDelegate
@@ -134,10 +135,10 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
 
         let messageTitle = NSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
-        return UIAlertAction(title: messageTitle, style: .default) { action in
+        return UIAlertAction(title: messageTitle, style: .default) { _ in
             Logger.debug("\(self.TAG) Chose message.")
             self.channel = .message
-            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .phoneNumber)            
+            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .phoneNumber)
             let navigationController = UINavigationController(rootViewController: picker)
             self.presentingViewController.present(navigationController, animated: true)
         }
@@ -173,7 +174,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         switch result {
         case .failed:
             let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment:"Alert body after invite failed"), preferredStyle: .alert)
-            warning.addAction(UIAlertAction(title: NSLocalizedString("DISMISS_BUTTON_TEXT", comment:""), style: .default, handler: nil))
+            warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
             self.presentingViewController.present(warning, animated: true, completion: nil)
         case .sent:
             Logger.debug("\(self.TAG) user successfully invited their friends via SMS.")
@@ -192,7 +193,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
 
         let mailActionTitle = NSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
-        return UIAlertAction(title: mailActionTitle, style: .default) { action in
+        return UIAlertAction(title: mailActionTitle, style: .default) { _ in
             Logger.debug("\(self.TAG) Chose mail.")
             self.channel = .mail
 
@@ -216,8 +217,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
         self.presentingViewController.dismiss(animated: true) {
-            self.presentingViewController.navigationController?.present(mailComposeViewController, animated:true)  {
-                UIUtil.applySignalAppearence();
+            self.presentingViewController.navigationController?.present(mailComposeViewController, animated:true) {
+                UIUtil.applySignalAppearence()
             }
         }
     }
@@ -230,7 +231,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         switch result {
         case .failed:
             let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment:"Alert body after invite failed"), preferredStyle: .alert)
-            warning.addAction(UIAlertAction(title: NSLocalizedString("DISMISS_BUTTON_TEXT", comment:""), style: .default, handler: nil))
+            warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
             self.presentingViewController.present(warning, animated: true, completion: nil)
         case .sent:
             Logger.debug("\(self.TAG) user successfully invited their friends via mail.")

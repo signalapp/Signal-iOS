@@ -34,15 +34,11 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callViewController = CallViewController()
-        let thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
-        callViewController.call = call
-        callViewController.thread = thread
+        let callViewController = CallViewController(call:call)
         callViewController.modalTransitionStyle = .crossDissolve
 
         guard let presentingViewController = Environment.getCurrent().signalsViewController else {
-            Logger.error("in \(#function) view controller unexpectedly nil")
-            assertionFailure("in \(#function) view controller unexpectedly nil")
+            owsFail("in \(#function) view controller unexpectedly nil")
             return
         }
 
@@ -63,6 +59,7 @@ extension CallUIAdaptee {
 
         guard self.callService.call == nil else {
             Logger.info("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
+            //TODO terminate existing call.
             return
         }
 
@@ -80,7 +77,7 @@ extension CallUIAdaptee {
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
-    private let audioService: CallAudioService
+    internal let audioService: CallAudioService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         AssertIsOnMainThread()
@@ -207,13 +204,13 @@ extension CallUIAdaptee {
         adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
-    internal func setIsSpeakerphoneEnabled(call: SignalCall, isEnabled: Bool) {
+    internal func setAudioSource(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
 
-        // Speakerphone is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
-        // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's 
+        // AudioSource is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
+        // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's
         // assigned property.
-        call.isSpeakerphoneEnabled = isEnabled
+        call.audioSource = audioSource
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.

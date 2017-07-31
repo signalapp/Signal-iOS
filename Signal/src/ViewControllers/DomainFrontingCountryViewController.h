@@ -2,11 +2,11 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DomainFrontingCountryViewController : UIViewController
+@interface DomainFrontingCountryViewController : OWSViewController
 
 @end
 

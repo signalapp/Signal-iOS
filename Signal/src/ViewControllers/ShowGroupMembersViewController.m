@@ -169,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *recipientId in [recipientIds sortedArrayUsingSelector:@selector(compare:)]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ShowGroupMembersViewController *strongSelf = weakSelf;
-            OWSAssert(strongSelf);
+            OWSCAssert(strongSelf);
 
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];

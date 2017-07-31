@@ -18,8 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-NSString *const kNSUserDefaultsKey_LastRegisteredCountryCode = @"kNSUserDefaultsKey_LastRegisteredCountryCode";
-NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaultsKey_LastRegisteredPhoneNumber";
+NSString *const kKeychainService_LastRegistered = @"kKeychainService_LastRegistered";
+NSString *const kKeychainKey_LastRegisteredCountryCode = @"kKeychainKey_LastRegisteredCountryCode";
+NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegisteredPhoneNumber";
 
 #endif
 
@@ -49,6 +50,12 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     // Do any additional setup after loading the view.
     [self populateDefaultCountryNameAndCode];
     [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    OWSProdInfo([OWSAnalyticsEvents registrationBegan]);
 }
 
 - (void)createViews
@@ -89,25 +96,25 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
         [logoView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:headerLabel withOffset:-14.f];
     }
 
-    UIView *contentView = [UIView new];
+    const CGFloat kRowHeight = 60.f;
+    const CGFloat kRowHMargin = 20.f;
+    const CGFloat kSeparatorHeight = 1.f;
+    const CGFloat kExamplePhoneNumberVSpacing = 8.f;
+    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
+
+    UIView *contentView = [UIView containerView];
+    [contentView setHLayoutMargins:kRowHMargin];
     contentView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:contentView];
     [contentView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [contentView autoPinWidthToSuperview];
     [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
 
-    const CGFloat kRowHeight = 60.f;
-    const CGFloat kRowLeftMargin = 20.f;
-    const CGFloat kRowRightMargin = 16.f;
-    const CGFloat kSeparatorHeight = 1.f;
-    const CGFloat kButtonHMargin = 30.f;
-    const CGFloat kExamplePhoneNumberVSpacing = 8.f;
-    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
-
     // Country
-    UIView *countryRow = [UIView new];
+    UIView *countryRow = [UIView containerView];
+    countryRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:countryRow];
-    [countryRow autoPinWidthToSuperview];
+    [countryRow autoPinLeadingAndTrailingToSuperview];
     [countryRow autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [countryRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
     [countryRow
@@ -121,7 +128,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     countryNameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [countryRow addSubview:countryNameLabel];
     [countryNameLabel autoVCenterInSuperview];
-    [countryNameLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
+    [countryNameLabel autoPinLeadingToSuperView];
 
     UILabel *countryCodeLabel = [UILabel new];
     self.countryCodeLabel = countryCodeLabel;
@@ -129,7 +136,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2.f];
     [countryRow addSubview:countryCodeLabel];
     [countryCodeLabel autoVCenterInSuperview];
-    [countryCodeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [countryCodeLabel autoPinTrailingToSuperView];
 
     UIView *separatorView1 = [UIView new];
     separatorView1.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.f];
@@ -139,9 +146,10 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     [separatorView1 autoSetDimension:ALDimensionHeight toSize:kSeparatorHeight];
 
     // Phone Number
-    UIView *phoneNumberRow = [UIView new];
+    UIView *phoneNumberRow = [UIView containerView];
+    phoneNumberRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:phoneNumberRow];
-    [phoneNumberRow autoPinWidthToSuperview];
+    [phoneNumberRow autoPinLeadingAndTrailingToSuperview];
     [phoneNumberRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView1];
     [phoneNumberRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
 
@@ -152,7 +160,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoVCenterInSuperview];
-    [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kRowLeftMargin];
+    [phoneNumberLabel autoPinLeadingToSuperView];
 
     UITextField *phoneNumberTextField = [UITextField new];
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;
@@ -165,14 +173,14 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
-    [phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [phoneNumberTextField autoPinTrailingToSuperView];
 
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
     examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
     examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
     [contentView addSubview:examplePhoneNumberLabel];
-    [examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kRowRightMargin];
+    [examplePhoneNumberLabel autoPinTrailingToSuperView];
     [examplePhoneNumberLabel autoPinEdge:ALEdgeTop
                                   toEdge:ALEdgeBottom
                                   ofView:phoneNumberTextField
@@ -198,8 +206,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     [activateButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [activateButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:activateButton];
-    [activateButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kButtonHMargin];
-    [activateButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kButtonHMargin];
+    [activateButton autoPinLeadingAndTrailingToSuperview];
     [activateButton autoPinEdge:ALEdgeTop
                          toEdge:ALEdgeBottom
                          ofView:separatorView2
@@ -214,7 +221,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     [spinnerView autoVCenterInSuperview];
     [spinnerView autoSetDimension:ALDimensionWidth toSize:20.f];
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
-    [spinnerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
+    [spinnerView autoPinTrailingToSuperViewWithMargin:20.f];
     [spinnerView stopAnimating];
 
     // Existing Account Button
@@ -226,8 +233,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     [existingAccountButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
     [existingAccountButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:existingAccountButton];
-    [existingAccountButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:kButtonHMargin];
-    [existingAccountButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:kButtonHMargin];
+    [existingAccountButton autoPinLeadingAndTrailingToSuperview];
     [existingAccountButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:activateButton withOffset:9.f];
     [existingAccountButton autoSetDimension:ALDimensionHeight toSize:36.f];
     [existingAccountButton addTarget:self
@@ -335,6 +341,8 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     __weak RegistrationViewController *weakSelf = self;
     [TSAccountManager registerWithPhoneNumber:parsedPhoneNumber
         success:^{
+            OWSProdInfo([OWSAnalyticsEvents registrationRegisteredPhoneNumber]);
+
             [weakSelf.spinnerView stopAnimating];
 
             CodeVerificationViewController *vc = [CodeVerificationViewController new];
@@ -378,8 +386,7 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
 - (void)presentInvalidCountryCodeError {
     [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
                           message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
-                      buttonTitle:NSLocalizedString(
-                                      @"DISMISS_BUTTON_TEXT", @"Generic short text for button to dismiss a dialog")];
+                      buttonTitle:CommonStrings.dismissButton];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
@@ -440,7 +447,12 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     OWSCAssert([NSThread isMainThread]);
     OWSCAssert(key.length > 0);
 
-    return [[NSUserDefaults standardUserDefaults] stringForKey:key];
+    NSError *error;
+    NSString *value = [SAMKeychain passwordForService:kKeychainService_LastRegistered account:key error:&error];
+    if (value && !error) {
+        return value;
+    }
+    return nil;
 }
 
 - (void)setDebugValue:(NSString *)value forKey:(NSString *)key
@@ -449,30 +461,46 @@ NSString *const kNSUserDefaultsKey_LastRegisteredPhoneNumber = @"kNSUserDefaults
     OWSCAssert(key.length > 0);
     OWSCAssert(value.length > 0);
 
-    [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
+    NSError *error;
+    [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
+    if (error) {
+        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.tag, error);
+    }
 }
 
 - (NSString *_Nullable)lastRegisteredCountryCode
 {
-    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
+    return [self debugValueForKey:kKeychainKey_LastRegisteredCountryCode];
 }
 
 - (void)setLastRegisteredCountryCode:(NSString *)value
 {
-    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredCountryCode];
+    [self setDebugValue:value forKey:kKeychainKey_LastRegisteredCountryCode];
 }
 
 - (NSString *_Nullable)lastRegisteredPhoneNumber
 {
-    return [self debugValueForKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
+    return [self debugValueForKey:kKeychainKey_LastRegisteredPhoneNumber];
 }
 
 - (void)setLastRegisteredPhoneNumber:(NSString *)value
 {
-    [self setDebugValue:value forKey:kNSUserDefaultsKey_LastRegisteredPhoneNumber];
+    [self setDebugValue:value forKey:kKeychainKey_LastRegisteredPhoneNumber];
 }
 
 #endif
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
 
 @end
 

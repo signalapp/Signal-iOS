@@ -19,10 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvancedSettingsTableViewController ()
 
-@property (nonatomic) UISwitch *enableLogSwitch;
-
-@property (nonatomic) UISwitch *enableCensorshipCircumventionSwitch;
-
 @property (nonatomic) Reachability *reachability;
 
 @end
@@ -36,17 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super loadView];
 
     self.title = NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"");
-
-    self.enableLogSwitch = [UISwitch new];
-    [self.enableLogSwitch setOn:[PropertyListPreferences loggingIsEnabled]];
-    [self.enableLogSwitch addTarget:self
-                             action:@selector(didToggleEnableLogSwitch:)
-                   forControlEvents:UIControlEventValueChanged];
-
-    self.enableCensorshipCircumventionSwitch = [UISwitch new];
-    [self.enableCensorshipCircumventionSwitch addTarget:self
-                                                 action:@selector(didToggleEnableCensorshipCircumventionSwitch:)
-                                       forControlEvents:UIControlEventValueChanged];
 
     self.reachability = [Reachability reachabilityForInternetConnection];
 
@@ -103,22 +88,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableSection *loggingSection = [OWSTableSection new];
     loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
-    [loggingSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
+    [loggingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"")
+                                                        isOn:[PropertyListPreferences loggingIsEnabled]
+                                                      target:weakSelf
+                                                    selector:@selector(didToggleEnableLogSwitch:)]];
 
-        cell.accessoryView = self.enableLogSwitch;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
-    }
-                                                      actionBlock:nil]];
-    if (self.enableLogSwitch.isOn) {
+
+    if ([PropertyListPreferences loggingIsEnabled]) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
-                                             DDLogInfo(@"%@ Submitting debug logs", self.tag);
+                                             DDLogInfo(@"%@ Submitting debug logs", weakSelf.tag);
                                              [DDLog flushLog];
                                              [Pastelog submitLogs];
                                          }]];
@@ -167,62 +147,50 @@ NS_ASSUME_NONNULL_BEGIN
             @"Table footer for the 'censorship circumvention' section when censorship circumvention can be manually "
             @"enabled.");
     }
-    [censorshipSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.textLabel.text = NSLocalizedString(
-            @"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION", @"Label for the  'manual censorship circumvention' switch.");
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
 
-        // Do enable if :
-        //
-        // * ...Censorship circumvention is already manually enabled (to allow users to disable it).
-        //
-        // Otherwise, don't enable if:
-        //
-        // * ...Censorship circumvention is already enabled based on the local phone number.
-        // * ...The websocket is connected, since that demonstrates that no censorship is in effect.
-        // * ...The internet is not reachable, since we don't want to let users to activate
-        //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
-        //      internet connection.
-        BOOL shouldEnable = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
+    // Do enable if :
+    //
+    // * ...Censorship circumvention is already manually enabled (to allow users to disable it).
+    //
+    // Otherwise, don't enable if:
+    //
+    // * ...Censorship circumvention is already enabled based on the local phone number.
+    // * ...The websocket is connected, since that demonstrates that no censorship is in effect.
+    // * ...The internet is not reachable, since we don't want to let users to activate
+    //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
+    //      internet connection.
+    BOOL isManualCensorshipCircumventionOnEnabled
+        = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
             || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber &&
                    [TSSocketManager sharedManager].state != SocketManagerStateOpen
                    && weakSelf.reachability.isReachable));
-        weakSelf.enableCensorshipCircumventionSwitch.enabled = shouldEnable;
-        if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
-            [weakSelf.enableCensorshipCircumventionSwitch setOn:YES];
-        } else {
-            [weakSelf.enableCensorshipCircumventionSwitch
-                setOn:OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated];
-        }
-
-        cell.accessoryView = weakSelf.enableCensorshipCircumventionSwitch;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
+    BOOL isCensorshipCircumventionOn = NO;
+    if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
+        isCensorshipCircumventionOn = YES;
+    } else {
+        isCensorshipCircumventionOn = OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated;
     }
-                                                         actionBlock:nil]];
+    [censorshipSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
+                                                     @"Label for the  'manual censorship circumvention' switch.")
+                                            isOn:isCensorshipCircumventionOn
+                                       isEnabled:isManualCensorshipCircumventionOnEnabled
+                                          target:weakSelf
+                                        selector:@selector(didToggleEnableCensorshipCircumventionSwitch:)]];
 
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated) {
-        [censorshipSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            OWSCountryMetadata *manualCensorshipCircumventionCountry =
-                [weakSelf ensureManualCensorshipCircumventionCountry];
-            OWSAssert(manualCensorshipCircumventionCountry);
-
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = [NSString
-                stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
-                                     @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
-                                     @"censorship circumvention country}}."),
-                manualCensorshipCircumventionCountry.localizedCountryName];
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            return cell;
-        }
-                                       actionBlock:^{
-                                           [weakSelf showDomainFrontingCountryView];
-                                       }]];
+        OWSCountryMetadata *manualCensorshipCircumventionCountry =
+            [weakSelf ensureManualCensorshipCircumventionCountry];
+        OWSAssert(manualCensorshipCircumventionCountry);
+        NSString *text = [NSString
+            stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
+                                 @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
+                                 @"censorship circumvention country}}."),
+            manualCensorshipCircumventionCountry.localizedCountryName];
+        [censorshipSection addItem:[OWSTableItem disclosureItemWithText:text
+                                                            actionBlock:^{
+                                                                [weakSelf showDomainFrontingCountryView];
+                                                            }]];
     }
     [contents addSection:censorshipSection];
 

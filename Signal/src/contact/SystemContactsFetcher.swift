@@ -25,6 +25,8 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     private let contactStore = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
+    private var lastSortOrder: CNContactSortOrder?
+
     let supportsContactEditing = true
 
     private let allowedContactKeys: [CNKeyDescriptor] = [
@@ -52,14 +54,29 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         // should only call once
         assert(self.changeHandler == nil)
         self.changeHandler = changeHandler
+        self.lastSortOrder = CNContactsUserDefaults.shared().sortOrder
         NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: .CNContactStoreDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .UIApplicationDidBecomeActive, object: nil)
+    }
+
+    @objc
+    func didBecomeActive() {
+        let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
+
+        guard currentSortOrder != self.lastSortOrder else {
+            // sort order unchanged
+            return
+        }
+
+        Logger.info("\(TAG) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
+        self.lastSortOrder = currentSortOrder
+        self.runChangeHandler()
     }
 
     @objc
     func runChangeHandler() {
         guard let changeHandler = self.changeHandler else {
-            Logger.error("\(TAG) trying to run change handler before it was registered")
-            assertionFailure()
+            owsFail("\(TAG) trying to run change handler before it was registered")
             return
         }
         changeHandler()
@@ -73,12 +90,12 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         var systemContacts = [CNContact]()
         do {
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
+            contactFetchRequest.sortOrder = .userDefault
             try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
-            Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
-            assertionFailure()
+            owsFail("\(self.TAG) Failed to fetch contacts with error:\(error)")
             return .error(error)
         }
 
@@ -115,8 +132,7 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
     @objc
     func runChangeHandler() {
         guard let changeHandler = self.changeHandler else {
-            Logger.error("\(TAG) trying to run change handler before it was registered")
-            assertionFailure()
+            owsFail("\(TAG) trying to run change handler before it was registered")
             return
         }
         changeHandler()
@@ -161,7 +177,7 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
         let lastName = addressBookRecord.lastName
         let phoneNumbers = addressBookRecord.phoneNumbers
 
-        if (firstName == nil && lastName == nil) {
+        if firstName == nil && lastName == nil {
             if let companyName = addressBookRecord.companyName {
                 firstName = companyName
             } else {
@@ -319,8 +335,7 @@ class SystemContactsFetcher: NSObject {
 
     public var isAuthorized: Bool {
         guard self.authorizationStatus != .notDetermined else {
-            assertionFailure("should have called `requestOnce` before this point.")
-            Logger.error("\(TAG) should have called `requestOnce` before checking authorization status.")
+            owsFail("should have called `requestOnce` before checking authorization status.")
             return false
         }
 
@@ -380,9 +395,8 @@ class SystemContactsFetcher: NSObject {
                 }
 
                 guard granted else {
-                    Logger.info("\(self.TAG) declined contact access.")
                     // This case should have been caught be the error guard a few lines up.
-                    assertionFailure()
+                    owsFail("\(self.TAG) declined contact access.")
                     DispatchQueue.main.async {
                         completion?(nil)
                     }
@@ -431,8 +445,7 @@ class SystemContactsFetcher: NSObject {
             }
 
             guard let contacts = fetchedContacts else {
-                Logger.error("\(self.TAG) contacts was unexpectedly not set.")
-                assertionFailure()
+                owsFail("\(self.TAG) contacts was unexpectedly not set.")
                 completion?(nil)
             }
 
@@ -471,8 +484,6 @@ class SystemContactsFetcher: NSObject {
                     return
                 }
 
-                Logger.debug("\(self.TAG) Notifying delegate that system contacts did change. hash:\(contactsHash)")
-
                 self.lastDelegateNotificationDate = Date()
                 self.lastContactUpdateHash = contactsHash
 
@@ -492,8 +503,11 @@ struct HashableArray<Element: Hashable>: Hashable {
     var hashValue: Int {
         // random generated 32bit number
         let base = 224712574
+        var position = 0
         return elements.reduce(base) { (result, element) -> Int in
-            return result ^ element.hashValue
+            // Make sure change in sort order invalidates hash
+            position += 1
+            return result ^ element.hashValue + position
         }
     }
 

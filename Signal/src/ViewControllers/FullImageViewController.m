@@ -12,6 +12,8 @@
 #import "UIColor+OWS.h"
 #import "AttachmentSharing.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define kMinZoomScale 1.0f
 #define kMaxZoomScale 8.0f
 
@@ -32,8 +34,7 @@
 }
 
 // We only use custom actions in UIMenuController.
-- (BOOL)canPerformAction:(SEL)action
-              withSender:(id)sender
+- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
 {
     return NO;
 }
@@ -459,7 +460,8 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+- (nullable UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
     return self.imageView;
 }
 
@@ -471,7 +473,8 @@
     }
 }
 
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
+{
     self.scrollView.scrollEnabled = (scale > 1);
     self.scrollView.contentInset  = [self contentInsetForScrollView:scale];
 }
@@ -510,3 +513,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

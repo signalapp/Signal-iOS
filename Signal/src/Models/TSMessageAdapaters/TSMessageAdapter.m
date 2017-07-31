@@ -224,28 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.infoMessageType    = infoMessage.messageType;
         adapter.messageBody        = infoMessage.description;
         adapter.messageType        = TSInfoMessageAdapter;
-        if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit ||
-            adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
-            // repurposing call display for info message stuff for group updates, ! adapter will know because the date
-            // is nil.
-            //
-            // TODO: I suspect that we'll want a separate model
-            //       that conforms to <OWSMessageData> for info
-            //       messages.
-            CallStatus status = 0;
-            if (adapter.infoMessageType == TSInfoMessageTypeGroupQuit) {
-                status = kGroupUpdateLeft;
-            } else if (adapter.infoMessageType == TSInfoMessageTypeGroupUpdate) {
-                status = kGroupUpdate;
-            }
-            OWSCall *call = [[OWSCall alloc] initWithInteraction:interaction
-                                                        callerId:@""
-                                               callerDisplayName:adapter.messageBody
-                                                            date:nil
-                                                          status:status
-                                                   displayString:@""];
-            return call;
-        }
     } else if ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
         adapter.messageType = TSUnreadIndicatorAdapter;
     } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
@@ -261,6 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.outgoingMessageStatus = ((TSOutgoingMessage *)interaction).messageState;
     }
 
+    OWSAssert(adapter.date);
     return adapter;
 }
 

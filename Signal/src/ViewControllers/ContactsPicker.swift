@@ -34,7 +34,7 @@ public enum SubtitleCellValue {
 }
 
 @available(iOS 9.0, *)
-open class ContactsPicker: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var searchBar: UISearchBar!

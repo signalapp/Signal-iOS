@@ -27,6 +27,34 @@ NS_ASSUME_NONNULL_BEGIN
                                        timestamp:[NSDate new]];
 }
 
+- (void)testDataScrubbed
+{
+    NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"<01234567 89a23def 23234567 89ab1234>" : @"[ REDACTED_DATA:01... ]",
+        @"My data is: <01234567 89a23def 23234567 89ab1223>" : @"My data is: [ REDACTED_DATA:01... ]",
+        @"My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>" :
+            @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
+    };
+
+    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+
+    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
+    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
+
+    for (NSString *input in expectedOutputs) {
+
+        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:input]];
+
+        // strip out dynamic date portion of log line
+        NSString *actual =
+            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
+
+        NSString *expected = expectedOutputs[input];
+
+        XCTAssertEqualObjects(expected, actual);
+    }
+}
+
 - (void)testPhoneNumbersScrubbed
 {
     NSArray<NSString *> *phoneStrings = @[

@@ -8,7 +8,7 @@ import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class CallViewController: UIViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
+class CallViewController: OWSViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
 
     let TAG = "[CallViewController]"
 
@@ -19,8 +19,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
     // MARK: Properties
 
-    var thread: TSContactThread!
-    var call: SignalCall!
+    let thread: TSContactThread
+    let call: SignalCall
     var hasDismissed = false
 
     // MARK: Views
@@ -41,7 +41,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var ongoingCallView: UIView!
 
     var hangUpButton: UIButton!
-    var speakerPhoneButton: UIButton!
+    var audioSourceButton: UIButton!
     var audioModeMuteButton: UIButton!
     var audioModeVideoButton: UIButton!
     var videoModeMuteButton: UIButton!
@@ -86,18 +86,58 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     var settingsNagView: UIView!
     var settingsNagDescriptionLabel: UILabel!
 
+    // MARK: Audio Source
+
+    var hasAlternateAudioSources: Bool {
+        Logger.info("\(TAG) available audio sources: \(allAudioSources)")
+        // internal mic and speakerphone will be the first two, any more than one indicates e.g. an attached bluetooth device.
+
+        // TODO is this sufficient? Are their devices w/ bluetooth but no external speaker? e.g. ipod?
+        return allAudioSources.count > 2
+    }
+
+    var allAudioSources: Set<AudioSource>
+
+    var appropriateAudioSources: Set<AudioSource> {
+        if call.hasLocalVideo {
+            let appropriateForVideo = allAudioSources.filter { audioSource in
+                if audioSource.isBuiltInSpeaker {
+                    return true
+                } else {
+                    guard let portDescription = audioSource.portDescription else {
+                        owsFail("Only built in speaker should be lacking a port description.")
+                        return false
+                    }
+
+                    // Don't use receiver when video is enabled. Only bluetooth or speaker
+                    return portDescription.portType != AVAudioSessionPortBuiltInMic
+                }
+            }
+            return Set(appropriateForVideo)
+        } else {
+            return allAudioSources
+        }
+    }
+
     // MARK: Initializers
 
+    @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         contactsManager = Environment.getCurrent().contactsManager
         callUIAdapter = Environment.getCurrent().callUIAdapter
+        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
+        self.call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: "+1234567890")
+        self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(coder: aDecoder)
         observeNotifications()
     }
 
-    required init() {
+    required init(call: SignalCall) {
         contactsManager = Environment.getCurrent().contactsManager
         callUIAdapter = Environment.getCurrent().callUIAdapter
+        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
+        self.call = call
+        self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
         observeNotifications()
     }
@@ -107,6 +147,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
                                                selector:#selector(didBecomeActive),
                                                name:NSNotification.Name.UIApplicationDidBecomeActive,
                                                object:nil)
+
+        NotificationCenter.default.addObserver(forName: CallAudioServiceSessionChanged, object: nil, queue: nil) { [weak self] _ in
+            self?.didChangeAudioSession()
+        }
     }
 
     deinit {
@@ -137,26 +181,20 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let thread = self.thread else {
-            Logger.error("\(TAG) tried to show call call without specifying thread.")
-            showCallFailed(error: OWSErrorMakeAssertionError())
-            return
-        }
-
         createViews()
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
         updateAvatarImage()
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { _ in
-            Logger.info("\(self.TAG) updating avatar image")
-            self.updateAvatarImage()
+        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
+            guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.TAG) updating avatar image")
+            strongSelf.updateAvatarImage()
         }
 
-        assert(call != nil)
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
 
-        Environment.getCurrent().callService.addObserverAndSyncState(observer:self)
+        Environment.getCurrent().callService.addObserverAndSyncState(observer: self)
     }
 
     // MARK: - Create Views
@@ -172,9 +210,10 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
+        self.view.setHLayoutMargins(0)
+
         // Create the video views first, as they are under the other views.
         createVideoViews()
-
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
@@ -287,8 +326,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
 //        textMessageButton = createButton(imageName:"message-active-wide",
 //                                                action:#selector(didPressTextMessage))
-        speakerPhoneButton = createButton(imageName:"audio-call-speaker-inactive",
-                                          action:#selector(didPressSpeakerphone))
+        audioSourceButton = createButton(imageName:"audio-call-speaker-inactive",
+                                          action:#selector(didPressAudioSource))
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
         audioModeMuteButton = createButton(imageName:"audio-call-mute-inactive",
@@ -304,12 +343,53 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
         setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
         setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
-        setButtonSelectedImage(button: speakerPhoneButton, imageName: "audio-call-speaker-active")
 
         ongoingCallView = createContainerForCallControls(controlGroups : [
-            [audioModeMuteButton, speakerPhoneButton, audioModeVideoButton ],
+            [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
             [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
-            ])
+        ])
+    }
+
+    func didChangeAudioSession() {
+        AssertIsOnMainThread()
+
+        // Which sources are available depends on the state of your Session.
+        // When the audio session is not yet in PlayAndRecord none are available
+        // Then if we're in speakerphone, bluetooth isn't available. 
+        // So we acrew all possible audio sources in a set, and that list lives as longs as the CallViewController
+        // The downside of this is that if you e.g. unpair your bluetooth mid call, it will still appear as an option
+        // until your next call.
+        // FIXME: There's got to be a better way, but this is where I landed after a bit of work, and seems to work
+        // pretty well in practrice.
+        let availableInputs = callUIAdapter.audioService.availableInputs
+        self.allAudioSources.formUnion(availableInputs)
+    }
+
+    func presentAudioSourcePicker() {
+        AssertIsOnMainThread()
+
+        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        let dismissAction = UIAlertAction(title:  CommonStrings.dismissButton, style: .cancel, handler: nil)
+        actionSheetController.addAction(dismissAction)
+
+        let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
+        for audioSource in self.appropriateAudioSources {
+            let routeAudioAction = UIAlertAction(title: audioSource.localizedName, style: .default) { _ in
+                self.callUIAdapter.setAudioSource(call: self.call, audioSource: audioSource)
+            }
+
+            // HACK: private API to create checkmark for active audio source.
+            routeAudioAction.setValue(currentAudioSource == audioSource, forKey: "checked")
+
+            // TODO: pick some icons. Leaving out for MVP
+            // HACK: private API to add image to actionsheet
+            // routeAudioAction.setValue(audioSource.image, forKey: "image")
+
+            actionSheetController.addAction(routeAudioAction)
+        }
+
+        self.present(actionSheetController, animated: true)
     }
 
     func setButtonSelectedImage(button: UIButton, imageName: String) {
@@ -431,7 +511,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             hasConstraints = true
 
             let topMargin = CGFloat(40)
-            let contactHMargin = CGFloat(30)
+            let contactHMargin = CGFloat(5)
             let contactVSpacing = CGFloat(3)
             let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
             let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
@@ -450,18 +530,18 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
 
-            localVideoView.autoPinEdge(toSuperviewEdge:.right, withInset:videoPreviewHMargin)
+            localVideoView.autoPinTrailingToSuperView(withMargin: videoPreviewHMargin)
             localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
             localVideoView.autoSetDimension(.width, toSize:localVideoSize)
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
-            contactNameLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
+            contactNameLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
 
             callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
-            callStatusLabel.autoPinEdge(toSuperviewEdge:.left, withInset:contactHMargin)
+            callStatusLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
 
             contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
@@ -552,13 +632,13 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         var constraints: [NSLayoutConstraint] = []
 
         if localVideoView.isHidden {
-            let contactHMargin = CGFloat(30)
-            constraints.append(contactNameLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
-            constraints.append(callStatusLabel.autoPinEdge(toSuperviewEdge:.right, withInset:contactHMargin))
+            let contactHMargin = CGFloat(5)
+            constraints.append(contactNameLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
+            constraints.append(callStatusLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
         } else {
             let spacing = CGFloat(10)
-            constraints.append(contactNameLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
-            constraints.append(callStatusLabel.autoPinEdge(.right, to:.left, of:localVideoView, withOffset:-spacing))
+            constraints.append(localVideoView.autoPinLeading(toTrailingOf: contactNameLabel, margin: spacing))
+            constraints.append(localVideoView.autoPinLeading(toTrailingOf: callStatusLabel, margin: spacing))
         }
 
         self.localVideoConstraints = constraints
@@ -587,30 +667,26 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         case .answering:
             return NSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
-            if let call = self.call {
-                let callDuration = call.connectionDuration()
-                let callDurationDate = Date(timeIntervalSinceReferenceDate:callDuration)
-                if dateFormatter == nil {
-                    dateFormatter = DateFormatter()
-                    dateFormatter!.dateFormat = "HH:mm:ss"
-                    dateFormatter!.timeZone = TimeZone(identifier:"UTC")!
-                }
-                var formattedDate = dateFormatter!.string(from: callDurationDate)
-                if formattedDate.hasPrefix("00:") {
-                    // Don't show the "hours" portion of the date format unless the 
-                    // call duration is at least 1 hour.
-                    formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 3))
-                } else {
-                    // If showing the "hours" portion of the date format, strip any leading
-                    // zeroes.
-                    if formattedDate.hasPrefix("0") {
-                        formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 1))
-                    }
-                }
-                return formattedDate
-            } else {
-                return NSLocalizedString("IN_CALL_TALKING", comment: "Call setup status label")
+            let callDuration = call.connectionDuration()
+            let callDurationDate = Date(timeIntervalSinceReferenceDate:callDuration)
+            if dateFormatter == nil {
+                dateFormatter = DateFormatter()
+                dateFormatter!.dateFormat = "HH:mm:ss"
+                dateFormatter!.timeZone = TimeZone(identifier:"UTC")!
             }
+            var formattedDate = dateFormatter!.string(from: callDurationDate)
+            if formattedDate.hasPrefix("00:") {
+                // Don't show the "hours" portion of the date format unless the
+                // call duration is at least 1 hour.
+                formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 3))
+            } else {
+                // If showing the "hours" portion of the date format, strip any leading
+                // zeroes.
+                if formattedDate.hasPrefix("0") {
+                    formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 1))
+                }
+            }
+            return formattedDate
         case .remoteBusy:
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
@@ -652,7 +728,6 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         videoModeMuteButton.isSelected = call.isMuted
         audioModeVideoButton.isSelected = call.hasLocalVideo
         videoModeVideoButton.isSelected = call.hasLocalVideo
-        speakerPhoneButton.isSelected = call.isSpeakerphoneEnabled
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
@@ -667,7 +742,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
 
         // Rework control state if local video is available.
         let hasLocalVideo = !localVideoView.isHidden
-        for subview in [speakerPhoneButton, audioModeMuteButton, audioModeVideoButton] {
+
+        for subview in [audioModeMuteButton, audioModeVideoButton] {
             subview?.isHidden = hasLocalVideo
         }
         for subview in [videoModeMuteButton, videoModeVideoButton] {
@@ -684,6 +760,32 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
             callStatusLabel.isHidden = false
         }
 
+        // Audio Source Handling (bluetooth)
+        if self.hasAlternateAudioSources {
+            // With bluetooth, button does not stay selected. Pressing it pops an actionsheet
+            // and the button should immediately "unselect".
+            audioSourceButton.isSelected = false
+
+            if hasLocalVideo {
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .normal)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .selected)
+            } else {
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .normal)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .selected)
+            }
+            audioSourceButton.isHidden = false
+        } else {
+            // No bluetooth audio detected
+
+            audioSourceButton.isSelected = call.isSpeakerphoneEnabled
+            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-inactive"), for: .normal)
+            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-active"), for: .selected)
+
+            // If there's no bluetooth, we always use speakerphone, so no need for
+            // a button, giving more screen back for the video.
+            audioSourceButton.isHidden = hasLocalVideo
+        }
+
         // Dismiss Handling
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
@@ -698,11 +800,12 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         if callState == .connected {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
-                callDurationTimer = Timer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
+                callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
                                                          target:self,
-                                                         selector:#selector(updateCallDuration),
                                                          userInfo:nil,
-                                                         repeats:true)
+                                                         repeats:true) {[weak self] _ in
+                                                            self?.updateCallDuration()
+                }
             }
         } else {
             callDurationTimer?.invalidate()
@@ -710,7 +813,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         }
     }
 
-    func updateCallDuration(timer: Timer?) {
+    func updateCallDuration() {
         updateCallStatusLabel(callState: call.state)
     }
 
@@ -721,11 +824,8 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
      */
     func didPressHangup(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
-        if let call = self.call {
-            callUIAdapter.localHangupCall(call)
-        } else {
-            Logger.warn("\(TAG) hung up, but call was unexpectedly nil")
-        }
+
+        callUIAdapter.localHangupCall(call)
 
         dismissIfPossible(shouldDelay:false)
     }
@@ -733,24 +833,32 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressMute(sender muteButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
-        if let call = self.call {
-            callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
-        } else {
-            Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
-        }
+
+        callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
     }
 
-    func didPressSpeakerphone(sender speakerphoneButton: UIButton) {
+    func didPressAudioSource(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
-        speakerphoneButton.isSelected = !speakerphoneButton.isSelected
-        if let call = self.call {
-            callUIAdapter.setIsSpeakerphoneEnabled(call: call, isEnabled: speakerphoneButton.isSelected)
+
+        if self.hasAlternateAudioSources {
+            presentAudioSourcePicker()
         } else {
-            Logger.warn("\(TAG) pressed mute, but call was unexpectedly nil")
+            didPressSpeakerphone(sender: button)
         }
     }
 
-    func didPressTextMessage(sender speakerphoneButton: UIButton) {
+    func didPressSpeakerphone(sender button: UIButton) {
+        Logger.info("\(TAG) called \(#function)")
+        button.isSelected = !button.isSelected
+        if button.isSelected {
+            callUIAdapter.setAudioSource(call: call, audioSource: AudioSource.builtInSpeaker)
+        } else {
+            // use default audio source
+            callUIAdapter.setAudioSource(call: call, audioSource: nil)
+        }
+    }
+
+    func didPressTextMessage(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         dismissIfPossible(shouldDelay:false)
@@ -759,28 +867,14 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressAnswerCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
-        guard let call = self.call else {
-            Logger.error("\(TAG) call was unexpectedly nil. Terminating call.")
-
-            let text = String(format: CallStrings.callStatusFormat,
-                              NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label"))
-            self.callStatusLabel.text = text
-
-            dismissIfPossible(shouldDelay:true)
-            return
-        }
-
         callUIAdapter.answerCall(call)
     }
 
     func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         let hasLocalVideo = !sender.isSelected
-        if let call = self.call {
-            callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
-        } else {
-            Logger.warn("\(TAG) pressed video, but call was unexpectedly nil")
-        }
+
+        callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
     /**
@@ -789,11 +883,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
     func didPressDeclineCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
-        if let call = self.call {
-            callUIAdapter.declineCall(call)
-        } else {
-            Logger.warn("\(TAG) denied call, but call was unexpectedly nil")
-        }
+        callUIAdapter.declineCall(call)
 
         dismissIfPossible(shouldDelay:false)
     }
@@ -858,7 +948,7 @@ class CallViewController: UIViewController, CallObserver, CallServiceObserver, R
         self.updateCallUI(callState: call.state)
     }
 
-    internal func speakerphoneDidChange(call: SignalCall, isEnabled: Bool) {
+    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }

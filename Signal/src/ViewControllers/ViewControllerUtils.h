@@ -20,11 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
 
++ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
+
+#pragma mark - Formatting
+
++ (NSString *)formatInt:(int)value;
+
 + (NSString *)formatFileSize:(unsigned long)fileSize;
 
 + (NSString *)formatDurationSeconds:(long)timeSeconds;
-
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
 
 @end
 

@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "Signal-Swift.h"
 #import "Util.h"
+#import "ViewControllerUtils.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -157,6 +158,8 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             [self intersectContacts];
 
             [self updateSignalAccounts];
+
+            [self updateCachedDisplayNames];
         });
     });
 }
@@ -172,7 +175,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         // in order to avoid database deadlock.
         NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
             [NSMutableDictionary new];
-        [[TSStorageManager sharedManager].dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
@@ -203,10 +206,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             self.signalAccounts = [signalAccounts copy];
 
             [self updateCachedDisplayNames];
-
-            [[NSNotificationCenter defaultCenter]
-                postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
-                              object:nil];
         });
     });
 }
@@ -215,14 +214,10 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 {
     OWSAssert([NSThread isMainThread]);
 
-    // Preserve any existing values, so that contacts that have been removed
-    // from system contacts still show up properly in the app.
-    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap
-        = (self.cachedAccountNameMap ? [self.cachedAccountNameMap mutableCopy] : [NSMutableDictionary new]);
-    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap
-        = (self.cachedFirstNameMap ? [self.cachedFirstNameMap mutableCopy] : [NSMutableDictionary new]);
-    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap
-        = (self.cachedLastNameMap ? [self.cachedLastNameMap mutableCopy] : [NSMutableDictionary new]);
+    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
+
     for (SignalAccount *signalAccount in self.signalAccounts) {
         NSString *baseName
             = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
@@ -239,6 +234,20 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         }
         if (signalAccount.contact.lastName.length > 0) {
             cachedLastNameMap[signalAccount.recipientId] = signalAccount.contact.lastName;
+        }
+    }
+
+    // As a fallback, make sure we can also display names for not-yet-registered
+    // and no-longer-registered users.
+    for (Contact *contact in self.allContacts) {
+        NSString *displayName = contact.fullName;
+        if (displayName.length > 0) {
+            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
+                NSString *e164 = phoneNumber.toE164;
+                if (!cachedAccountNameMap[e164]) {
+                    cachedAccountNameMap[e164] = displayName;
+                }
+            }
         }
     }
 
@@ -266,6 +275,9 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             }
         }];
     });
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
+                                                        object:nil];
 }
 
 - (void)loadCachedDisplayNames
@@ -360,12 +372,13 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
             [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+        NSString *indexText = [ViewControllerUtils formatInt:(int)index + 1];
         phoneNumberLabel =
-            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_FORMAT",
+            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "
                                            @"(e.g. 'home')}} and {{index, e.g. 2}}."),
                       phoneNumberLabel,
-                      (int)index];
+                      indexText];
     }
 
     return phoneNumberLabel;

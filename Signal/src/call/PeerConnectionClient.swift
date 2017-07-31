@@ -227,8 +227,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard let videoCaptureSession = self.videoCaptureSession else {
-                Logger.error("\(self.TAG) videoCaptureSession was unexpectedly nil")
-                assertionFailure()
+                owsFail("\(self.TAG) videoCaptureSession was unexpectedly nil")
                 return
             }
 
@@ -444,13 +443,13 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
-    public func addIceCandidate(_ candidate: RTCIceCandidate) {
+    public func addRemoteIceCandidate(_ candidate: RTCIceCandidate) {
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) adding candidate")
+            Logger.info("\(self.TAG) adding remote ICE candidate: \(candidate.sdp)")
             self.peerConnection.add(candidate)
         }
     }
@@ -505,7 +504,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data, description: String) {
+    public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool = false) {
         AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.async {
@@ -528,6 +527,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) sendDataChannelMessage succeeded: \(description)")
             } else {
                 Logger.warn("\(self.TAG) sendDataChannelMessage failed: \(description)")
+                if isCritical {
+                    OWSProdError(OWSAnalyticsEvents.peerConnectionClientErrorSendDataChannelMessageFailed(), file:#file, function:#function, line:#line)
+                }
             }
         }
     }
@@ -672,7 +674,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) didGenerate IceCandidate:\(candidate.sdp)")
+            Logger.info("\(self.TAG) adding local ICE candidate:\(candidate.sdp)")
             if let delegate = self.delegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
@@ -721,11 +723,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
      * We synchronize access to state in this class using this queue.
      */
     private func assertOnSignalingQueue() {
-        if #available(iOS 10.0, *) {
-            dispatchPrecondition(condition: .onQueue(type(of: self).signalingQueue))
-        } else {
-            // Skipping check on <iOS10, since syntax is different and it's just a development convenience.
-        }
+        assertOnQueue(type(of: self).signalingQueue)
     }
 
     // MARK: Test-only accessors

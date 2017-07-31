@@ -158,7 +158,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (!_phoneNumberTextField) {
         _phoneNumberTextField = [UITextField new];
         _phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-        _phoneNumberTextField.textAlignment = NSTextAlignmentRight;
+        _phoneNumberTextField.textAlignment = _phoneNumberTextField.textAlignmentUnnatural;
         _phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];
         _phoneNumberTextField.placeholder = NSLocalizedString(
             @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
@@ -198,9 +198,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     previousRow:(nullable UIView *)previousRow
                       superview:(nullable UIView *)superview
 {
-    UIView *row = [UIView new];
+    UIView *row = [UIView containerView];
     [superview addSubview:row];
-    [row autoPinWidthToSuperview];
+    [row autoPinLeadingAndTrailingToSuperview];
     if (previousRow) {
         [row autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousRow withOffset:0];
     } else {
@@ -223,8 +223,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         callingCode = [localNumber getCountryCode];
         OWSAssert(callingCode);
         if (callingCode) {
-            countryCode = [[PhoneNumberUtil sharedUtil]
-                probableCountryCodeForCallingCode:[@"+" stringByAppendingString:[callingCode description]]];
+            NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
+            countryCode = [[PhoneNumberUtil sharedUtil] probableCountryCodeForCallingCode:prefix];
         }
     }
 
@@ -376,11 +376,17 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     }
     NSString *possiblePhoneNumber =
         [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
-    PhoneNumber *parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:possiblePhoneNumber];
+    NSArray<PhoneNumber *> *parsePhoneNumbers =
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:possiblePhoneNumber
+                                              clientPhoneNumber:[TSAccountManager localNumber]];
+    if (parsePhoneNumbers.count < 1) {
+        return NO;
+    }
+    PhoneNumber *parsedPhoneNumber = parsePhoneNumbers[0];
     // It'd be nice to use [PhoneNumber isValid] but it always returns false for some countries
     // (like afghanistan) and there doesn't seem to be a good way to determine beforehand
     // which countries it can validate for without forking libPhoneNumber.
-    return parsedPhoneNumber && parsedPhoneNumber.toE164.length > 1;
+    return parsedPhoneNumber.toE164.length > 1;
 }
 
 - (void)updatePhoneNumberButtonEnabling
@@ -440,7 +446,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
-
     __weak SelectRecipientViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
@@ -452,55 +457,59 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     const CGFloat kButtonRowHeight = 60;
     [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         SelectRecipientViewController *strongSelf = weakSelf;
-        OWSAssert(strongSelf);
+        OWSCAssert(strongSelf);
 
         UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         // Country Row
-        UIView *countryRow = [self createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
-        [countryRow addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+        UIView *countryRow =
+            [strongSelf createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
+        [countryRow addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
                                                                                  action:@selector(countryRowTouched:)]];
 
-        UILabel *countryCodeLabel = self.countryCodeLabel;
+        UILabel *countryCodeLabel = strongSelf.countryCodeLabel;
         [countryRow addSubview:countryCodeLabel];
-        [countryCodeLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
+        [countryCodeLabel autoPinLeadingToSuperView];
         [countryCodeLabel autoVCenterInSuperview];
 
-        [countryRow addSubview:self.countryCodeButton];
-        [self.countryCodeButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
-        [self.countryCodeButton autoVCenterInSuperview];
+        [countryRow addSubview:strongSelf.countryCodeButton];
+        [strongSelf.countryCodeButton autoPinTrailingToSuperView];
+        [strongSelf.countryCodeButton autoVCenterInSuperview];
 
         // Phone Number Row
         UIView *phoneNumberRow =
-            [self createRowWithHeight:kPhoneNumberRowHeight previousRow:countryRow superview:cell.contentView];
+            [strongSelf createRowWithHeight:kPhoneNumberRowHeight previousRow:countryRow superview:cell.contentView];
         [phoneNumberRow
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
                                                                          action:@selector(phoneNumberRowTouched:)]];
 
-        UILabel *phoneNumberLabel = self.phoneNumberLabel;
+        UILabel *phoneNumberLabel = strongSelf.phoneNumberLabel;
         [phoneNumberRow addSubview:phoneNumberLabel];
-        [phoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20.f];
+        [phoneNumberLabel autoPinLeadingToSuperView];
         [phoneNumberLabel autoVCenterInSuperview];
 
-        [phoneNumberRow addSubview:self.phoneNumberTextField];
-        [self.phoneNumberTextField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
-        [self.phoneNumberTextField autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:phoneNumberLabel withOffset:0];
-        [self.phoneNumberTextField autoVCenterInSuperview];
+        [phoneNumberRow addSubview:strongSelf.phoneNumberTextField];
+        [strongSelf.phoneNumberTextField autoPinLeadingToTrailingOfView:phoneNumberLabel margin:10.f];
+        [strongSelf.phoneNumberTextField autoPinTrailingToSuperView];
+        [strongSelf.phoneNumberTextField autoVCenterInSuperview];
 
         // Example row.
-        UIView *examplePhoneNumberRow = [self createRowWithHeight:examplePhoneNumberRowHeight
-                                                      previousRow:phoneNumberRow
-                                                        superview:cell.contentView];
-        [examplePhoneNumberRow addSubview:self.examplePhoneNumberLabel];
-        [self.examplePhoneNumberLabel autoVCenterInSuperview];
-        [self.examplePhoneNumberLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+        UIView *examplePhoneNumberRow = [strongSelf createRowWithHeight:examplePhoneNumberRowHeight
+                                                            previousRow:phoneNumberRow
+                                                              superview:cell.contentView];
+        [examplePhoneNumberRow addSubview:strongSelf.examplePhoneNumberLabel];
+        [strongSelf.examplePhoneNumberLabel autoVCenterInSuperview];
+        [strongSelf.examplePhoneNumberLabel autoPinTrailingToSuperView];
 
         // Phone Number Button Row
-        UIView *buttonRow =
-            [self createRowWithHeight:kButtonRowHeight previousRow:examplePhoneNumberRow superview:cell.contentView];
-        [buttonRow addSubview:self.phoneNumberButton];
-        [self.phoneNumberButton autoVCenterInSuperview];
-        [self.phoneNumberButton autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20.f];
+        UIView *buttonRow = [strongSelf createRowWithHeight:kButtonRowHeight
+                                                previousRow:examplePhoneNumberRow
+                                                  superview:cell.contentView];
+        [buttonRow addSubview:strongSelf.phoneNumberButton];
+        [strongSelf.phoneNumberButton autoVCenterInSuperview];
+        [strongSelf.phoneNumberButton autoPinTrailingToSuperView];
 
         [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
@@ -520,24 +529,17 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         if (signalAccounts.count == 0) {
             // No Contacts
 
-            [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [UITableViewCell new];
-                cell.textLabel.text = NSLocalizedString(
-                    @"SETTINGS_BLOCK_LIST_NO_CONTACTS", @"A label that indicates the user has no Signal contacts.");
-                cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
-                cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-                cell.textLabel.textAlignment = NSTextAlignmentCenter;
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                return cell;
-            }
-                                                               actionBlock:nil]];
+            [contactsSection
+                addItem:[OWSTableItem softCenterLabelItemWithText:
+                                          NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                              @"A label that indicates the user has no Signal contacts.")]];
         } else {
             // Contacts
 
             for (SignalAccount *signalAccount in signalAccounts) {
                 [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
                     SelectRecipientViewController *strongSelf = weakSelf;
-                    OWSAssert(strongSelf);
+                    OWSCAssert(strongSelf);
 
                     ContactTableViewCell *cell = [ContactTableViewCell new];
                     BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];

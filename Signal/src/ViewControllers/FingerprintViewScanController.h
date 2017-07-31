@@ -2,9 +2,11 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewController.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FingerprintViewScanController : UIViewController
+@interface FingerprintViewScanController : OWSViewController
 
 - (void)configureWithRecipientId:(NSString *)recipientId NS_SWIFT_NAME(configure(recipientId:));
 

@@ -26,7 +26,7 @@ import Foundation
     public func initiateCall(handle: String) -> Bool {
         Logger.info("\(TAG) in \(#function) with handle: \(handle)")
 
-        guard let recipientId = PhoneNumber(fromUserSpecifiedText: handle)?.toE164() else {
+        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
             Logger.warn("\(TAG) unable to parse signalId from phone number: \(handle)")
             return false
         }
@@ -41,8 +41,7 @@ import Foundation
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings
         guard let callUIAdapter = Environment.getCurrent().callUIAdapter else {
-            assertionFailure()
-            Logger.error("\(TAG) can't initiate call because callUIAdapter is nil")
+            owsFail("\(TAG) can't initiate call because callUIAdapter is nil")
             return false
         }
 
