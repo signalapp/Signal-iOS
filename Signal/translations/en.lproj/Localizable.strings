@@ -1036,6 +1036,21 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
 
+/* Instructions for how to change the profile avatar. */
+"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
+
+/* Header title for the profile avatar field of the profile view. */
+"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "Profile";
+
 /* No comment provided by engineer. */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
 
