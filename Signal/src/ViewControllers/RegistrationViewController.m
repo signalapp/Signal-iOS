@@ -61,6 +61,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)createViews
 {
     self.view.backgroundColor = [UIColor ows_signalBrandBlueColor];
+    self.view.userInteractionEnabled = YES;
+    [self.view
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundTapped:)]];
 
     UIView *header = [UIView new];
     header.backgroundColor = [UIColor ows_signalBrandBlueColor];
@@ -363,6 +366,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
             [weakSelf.activateButton setEnabled:YES];
             [weakSelf.spinnerView stopAnimating];
+            [weakSelf.phoneNumberTextField becomeFirstResponder];
         }
         smsVerification:YES];
 }
@@ -387,6 +391,13 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
                           message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
                       buttonTitle:CommonStrings.dismissButton];
+}
+
+- (void)backgroundTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.phoneNumberTextField becomeFirstResponder];
+    }
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
