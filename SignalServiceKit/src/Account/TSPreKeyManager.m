@@ -79,6 +79,8 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
     OWSSingletonAssert();
 
+    [self observeNotifications];
+
     return self;
 }
 
