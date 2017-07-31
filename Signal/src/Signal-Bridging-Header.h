@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
@@ -23,7 +24,6 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "SettingsTableViewController.h"
 #import "SignalsViewController.h"
 #import "TSMessageAdapter.h"
 #import "UIColor+OWS.h"

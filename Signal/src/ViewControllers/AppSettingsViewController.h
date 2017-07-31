@@ -4,6 +4,6 @@
 
 #import "OWSTableViewController.h"
 
-@interface SettingsTableViewController : OWSTableViewController
+@interface AppSettingsViewController : OWSTableViewController
 
 @end
