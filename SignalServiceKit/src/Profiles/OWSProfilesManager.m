@@ -10,9 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
+
 NSString *const kOWSProfilesManager_Collection = @"kOWSProfilesManager_Collection";
 // This key is used to persist the local user's profile key.
 NSString *const kOWSProfilesManager_LocalProfileKey = @"kOWSProfilesManager_LocalProfileKey";
+NSString *const kOWSProfilesManager_LocalProfileNameKey = @"kOWSProfilesManager_LocalProfileNameKey";
+NSString *const kOWSProfilesManager_LocalProfileAvatarFilenameKey
+    = @"kOWSProfilesManager_LocalProfileAvatarFilenameKey";
 
 // TODO:
 static const NSInteger kProfileKeyLength = 16;
@@ -22,7 +27,11 @@ static const NSInteger kProfileKeyLength = 16;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
-@property (nonatomic, readonly, nullable) NSData *localProfileKey;
+@property (atomic, readonly, nullable) NSData *localProfileKey;
+
+@property (atomic, nullable) NSString *localProfileName;
+@property (atomic, nullable) UIImage *localProfileAvatarImage;
+@property (atomic) BOOL hasLoadedLocalProfile;
 
 @end
 
@@ -84,6 +93,8 @@ static const NSInteger kProfileKeyLength = 16;
     }
     OWSAssert(_localProfileKey.length == kProfileKeyLength);
 
+    [self loadLocalProfileAsync];
+
     return self;
 }
 
@@ -109,10 +120,71 @@ static const NSInteger kProfileKeyLength = 16;
     return [SecurityUtils generateRandomBytes:kProfileKeyLength];
 }
 
-- (nullable NSData *)localProfileKey
+#pragma mark - Local Profile
+
+- (void)loadLocalProfileAsync
 {
-    OWSAssert(_localProfileKey.length == kProfileKeyLength);
-    return _localProfileKey;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *_Nullable localProfileName = [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileNameKey
+                                                                    inCollection:kOWSProfilesManager_Collection];
+        NSString *_Nullable localProfileAvatarFilename =
+            [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileAvatarFilenameKey
+                                 inCollection:kOWSProfilesManager_Collection];
+        UIImage *_Nullable localProfileAvatar = nil;
+        if (localProfileAvatarFilename) {
+            localProfileAvatar = [self loadProfileAvatarsWithFilename:localProfileAvatarFilename];
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.localProfileName = localProfileName;
+            self.localProfileAvatarImage = localProfileAvatar;
+            self.hasLoadedLocalProfile = YES;
+
+            if (localProfileAvatar || localProfileName) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
+                                                                    object:nil
+                                                                  userInfo:nil];
+            }
+        });
+    });
+}
+
+#pragma mark - Avatar Disk Cache
+
+- (nullable UIImage *)loadProfileAvatarsWithFilename:(NSString *)filename
+{
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
+    return image;
+}
+
+- (NSString *)profileAvatarsDirPath
+{
+    static NSString *profileAvatarsDirPath = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSString *documentsPath =
+            [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+        profileAvatarsDirPath = [documentsPath stringByAppendingPathComponent:@"ProfileAvatars"];
+
+        BOOL isDirectory;
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:profileAvatarsDirPath isDirectory:&isDirectory];
+        if (exists) {
+            OWSAssert(isDirectory);
+
+            DDLogInfo(@"Profile avatars directory already exists");
+        } else {
+            NSError *error = nil;
+            [[NSFileManager defaultManager] createDirectoryAtPath:profileAvatarsDirPath
+                                      withIntermediateDirectories:YES
+                                                       attributes:nil
+                                                            error:&error];
+            if (error) {
+                DDLogError(@"Failed to create profile avatars directory: %@", error);
+            }
+        }
+    });
+    return profileAvatarsDirPath;
 }
 
 #pragma mark - Notifications
