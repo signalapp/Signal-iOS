@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        textColor:[UIColor whiteColor]
                                                                             font:[UIFont ows_boldFontWithSize:fontSize]
                                                                         diameter:self.diameter] avatarImage];
-    [self.contactsManager.avatarCache setObject:image forKey:self.signalId];
+    [self.contactsManager.avatarCache setObject:image forKey:cacheKey];
     return image;
 }
 

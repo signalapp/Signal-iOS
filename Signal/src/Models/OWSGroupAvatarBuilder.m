@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/26/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSGroupAvatarBuilder.h"
 #import "TSGroupThread.h"
@@ -32,7 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)buildDefaultImage
 {
-    return [UIImage imageNamed:@"empty-group-avatar"];
+    static UIImage *defaultGroupImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultGroupImage = [UIImage imageNamed:@"empty-group-avatar"];
+    });
+    return defaultGroupImage;
 }
 
 @end

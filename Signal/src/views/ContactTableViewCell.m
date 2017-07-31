@@ -139,8 +139,8 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     self.nameLabel.attributedText = attributedText;
 
     self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
-                                                  contactsManager:contactsManager
-                                                         diameter:kContactTableViewCellAvatarSize];
+                                                         diameter:kContactTableViewCellAvatarSize
+                                                  contactsManager:contactsManager];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
