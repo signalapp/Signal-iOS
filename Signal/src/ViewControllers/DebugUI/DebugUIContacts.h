@@ -7,8 +7,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSTableSection;
+@class CNContact;
 
 @interface DebugUIContacts : DebugUIPage
+
++ (void)createRandomContacts:(NSUInteger)count
+              contactHandler:
+                  (nullable void (^)(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler;
 
 @end
 
