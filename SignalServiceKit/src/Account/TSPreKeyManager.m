@@ -236,16 +236,12 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 // This method is called whenever the app activates and is less insistent.
 //
 // Under normal circumstances, we don't need to check that often.
-- (void)checkPreKeysOnActivation
++ (void)checkPreKeysOnActivation
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
 
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               dispatch_async(TSPreKeyManager.serialQueue, ^{
-                                                   [self checkPreKeysWithMaxFrequency:kPreKeyCheckSlowFrequencySeconds];
-                                               });
-                                           }];
+    [self checkPreKeysWithMaxFrequency:kPreKeyCheckSlowFrequencySeconds];
 }
 
 // This method is called whenever the app receives a PreKeyWhisperMessage and is more insistent.
@@ -255,13 +251,17 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 // receiving PreKeyWhisperMessage all signed with the same one-time prekey.
 + (void)didReceivePreKeyWhisperMessage
 {
-    [[TSAccountManager sharedInstance]
-        ifRegistered:YES
-            runAsync:^{
-                dispatch_async(TSPreKeyManager.serialQueue, ^{
-                    [self.sharedManager checkPreKeysWithMaxFrequency:kPreKeyCheckFastFrequencySeconds];
-                });
-            }];
+    [self checkPreKeysWithMaxFrequency:kPreKeyCheckFastFrequencySeconds];
+}
+
++ (void)checkPreKeysWithMaxFrequency:(NSTimeInterval)maxFrequency
+{
+    [[TSAccountManager sharedInstance] ifRegistered:YES
+                                           runAsync:^{
+                                               dispatch_async(TSPreKeyManager.serialQueue, ^{
+                                                   [self.sharedManager checkPreKeysWithMaxFrequency:maxFrequency];
+                                               });
+                                           }];
 }
 
 - (void)checkPreKeysWithMaxFrequency:(NSTimeInterval)maxFrequency
@@ -504,7 +504,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
     OWSAssert([NSThread isMainThread]);
 
     // Always check prekeys after app launches, and sometimes check on app activation.
-    [self checkPreKeysOnActivation];
+    [TSPreKeyManager checkPreKeysOnActivation];
 }
 
 #pragma mark - Logging
