@@ -560,7 +560,7 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
 @property (strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (strong) OWSSignalServiceProtosNullMessage* nullMessage;
-@property (strong) NSString* profileKey;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosContent
@@ -606,7 +606,7 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
     self.syncMessage = [OWSSignalServiceProtosSyncMessage defaultInstance];
     self.callMessage = [OWSSignalServiceProtosCallMessage defaultInstance];
     self.nullMessage = [OWSSignalServiceProtosNullMessage defaultInstance];
-    self.profileKey = @"";
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -639,7 +639,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
     [output writeMessage:4 value:self.nullMessage];
   }
   if (self.hasProfileKey) {
-    [output writeString:5 value:self.profileKey];
+    [output writeData:5 value:self.profileKey];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -663,7 +663,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
     size_ += computeMessageSize(4, self.nullMessage);
   }
   if (self.hasProfileKey) {
-    size_ += computeStringSize(5, self.profileKey);
+    size_ += computeDataSize(5, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -909,7 +909,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
         break;
       }
       case 42: {
-        [self setProfileKey:[input readString]];
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -1038,17 +1038,17 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 - (BOOL) hasProfileKey {
   return resultContent.hasProfileKey;
 }
-- (NSString*) profileKey {
+- (NSData*) profileKey {
   return resultContent.profileKey;
 }
-- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSString*) value {
+- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSData*) value {
   resultContent.hasProfileKey = YES;
   resultContent.profileKey = value;
   return self;
 }
 - (OWSSignalServiceProtosContentBuilder*) clearProfileKey {
   resultContent.hasProfileKey = NO;
-  resultContent.profileKey = @"";
+  resultContent.profileKey = [NSData data];
   return self;
 }
 @end
