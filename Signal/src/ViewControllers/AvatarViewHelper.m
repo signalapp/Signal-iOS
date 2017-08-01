@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "GroupViewHelper.h"
+#import "AvatarViewHelper.h"
 #import "OWSContactsManager.h"
 #import "UIUtil.h"
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -13,24 +13,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface GroupViewHelper () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface AvatarViewHelper () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end
 
 #pragma mark -
 
-@implementation GroupViewHelper
+@implementation AvatarViewHelper
 
-#pragma mark - Group Avatar
+#pragma mark - Avatar Avatar
 
-- (void)showChangeGroupAvatarUI
+- (void)showChangeAvatarUI
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(self.delegate);
 
     UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"NEW_GROUP_ADD_PHOTO_ACTION",
-                                                        @"Action Sheet title prompting the user for a group avatar")
+        [UIAlertController alertControllerWithTitle:self.delegate.avatarActionSheetTitle
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
@@ -119,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // See: GroupCreateActivity.java in Signal-Android.java.
         UIImage *resizedAvatar = [rawAvatar resizedImageToFillPixelSize:CGSizeMake(210, 210)];
-        [self.delegate groupAvatarDidChange:resizedAvatar];
+        [self.delegate avatarDidChange:resizedAvatar];
     }
 
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
