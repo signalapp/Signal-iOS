@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-@interface OWSConversationSettingsTableViewController : OWSTableViewController
+@interface OWSConversationSettingsViewController : OWSTableViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
