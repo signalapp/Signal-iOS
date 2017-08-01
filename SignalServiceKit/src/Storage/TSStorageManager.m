@@ -277,7 +277,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 #if TARGET_OS_IPHONE
     NSURL *fileURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSString *path = [fileURL path];
-    databasePath   = [path stringByAppendingFormat:@"/%@", databaseName];
+    databasePath = [path stringByAppendingPathComponent:databaseName];
 #elif TARGET_OS_MAC
 
     NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
@@ -289,7 +289,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         [fileManager createDirectoryAtURL:appDirectory withIntermediateDirectories:NO attributes:nil error:nil];
     }
 
-    databasePath = [appDirectory.filePathURL.absoluteString stringByAppendingFormat:@"/%@", databaseName];
+    databasePath = [appDirectory.filePathURL.absoluteString stringByAppendingPathComponent:databaseName];
 #endif
 
     return databasePath;

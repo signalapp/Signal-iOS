@@ -4,6 +4,10 @@
 
 #import "OWSTableViewController.h"
 
-@interface SettingsTableViewController : OWSTableViewController
+NS_ASSUME_NONNULL_BEGIN
+
+@interface ProfileViewController : OWSTableViewController
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -23,8 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
-                         messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {

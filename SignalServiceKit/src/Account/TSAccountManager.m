@@ -314,7 +314,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
             DDLogInfo(@"%@ Successfully unregistered", self.tag);
             success();
 
-            // This is called from `[SettingsTableViewController proceedToUnregistration]` whose
+            // This is called from `[AppSettingsViewController proceedToUnregistration]` whose
             // success handler calls `[Environment resetAppData]`.
             // This method, after calling that success handler, fires
             // `kNSNotificationName_RegistrationStateDidChange` which is only safe to fire after
