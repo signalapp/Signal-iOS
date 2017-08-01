@@ -217,8 +217,13 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (BOOL)isRTL
 {
-    return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
-        == UIUserInterfaceLayoutDirectionRightToLeft);
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
+            == UIUserInterfaceLayoutDirectionRightToLeft);
+    } else {
+        return
+            [UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+    }
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToSuperView
@@ -228,10 +233,16 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
 {
-    NSLayoutConstraint *constraint =
-        [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor constant:margin];
-    constraint.active = YES;
-    return constraint;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+            [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
+                                               constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        margin += (self.isRTL ? self.superview.layoutMargins.right : self.superview.layoutMargins.left);
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:margin];
+    }
 }
 
 - (NSLayoutConstraint *)autoPinTrailingToSuperView
@@ -241,10 +252,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
 {
-    NSLayoutConstraint *constraint =
-        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor constant:-margin];
-    constraint.active = YES;
-    return constraint;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+            [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
+                                                constant:-margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        CGFloat oldMargin = margin;
+        margin += (self.isRTL ? self.superview.layoutMargins.left : self.superview.layoutMargins.right);
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:margin];
+    }
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
@@ -258,9 +276,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
-    constraint.active = YES;
-    return constraint;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+            [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:view withOffset:margin];
+    }
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view
@@ -274,9 +297,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
-    constraint.active = YES;
-    return constraint;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+            [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:view withOffset:margin];
+    }
 }
 
 - (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view
@@ -290,9 +318,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
-    constraint.active = YES;
-    return constraint;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+            [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:view withOffset:margin];
+    }
 }
 
 - (NSTextAlignment)textAlignmentUnnatural
