@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
-        @"PROFILE_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");
+        @"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");
 }
 
 - (void)avatarDidChange:(UIImage *)image
@@ -289,6 +289,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIViewController *)fromViewController
 {
     return self;
+}
+
+- (BOOL)hasClearAvatarAction
+{
+    return YES;
+}
+
+- (NSString *)clearAvatarActionLabel
+{
+    return NSLocalizedString(@"PROFILE_VIEW_CLEAR_AVATAR", @"Label for action that clear's the user's profile avatar");
+}
+
+- (void)clearAvatar
+{
+    self.avatar = nil;
 }
 
 #pragma mark - Logging

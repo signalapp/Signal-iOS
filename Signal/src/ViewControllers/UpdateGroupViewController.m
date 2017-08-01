@@ -507,6 +507,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (BOOL)hasClearAvatarAction
+{
+    return NO;
+}
+
 #pragma mark - AddToGroupViewControllerDelegate
 
 - (void)recipientIdWasAdded:(NSString *)recipientId
