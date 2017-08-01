@@ -223,12 +223,6 @@ NS_ASSUME_NONNULL_BEGIN
                         failure:^{
                             //                                                         <#code#>
                         }];
-    //    OWSAssert(self.conversationSettingsViewDelegate);
-    //
-    //    [self updateGroup];
-    //
-    //    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
-    //    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -239,33 +233,22 @@ NS_ASSUME_NONNULL_BEGIN
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
 {
+    // TODO: Possibly filter invalid input.
+    // TODO: Possibly prevent user from typing overlong name.
     return YES;
-
-    //    [ViewControllerUtils phoneNumberTextField:textField
-    //                shouldChangeCharactersInRange:range
-    //                            replacementString:insertionText
-    //                                  countryCode:_callingCode];
-    //
-    //    [self updatePhoneNumberButtonEnabling];
-    //
-    //    return NO; // inform our caller that we took care of performing the change
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    return YES;
-
-    //    [textField resignFirstResponder];
-    //    if ([self hasValidPhoneNumber]) {
-    //        [self tryToSelectPhoneNumber];
-    //    }
-    //    return NO;
+    [self updateProfile];
+    return NO;
 }
 
 - (void)textFieldDidChange:(id)sender
 {
     self.hasUnsavedChanges = YES;
-    //    [self updatePhoneNumberButtonEnabling];
+
+    // TODO: Update length warning.
 }
 
 #pragma mark - Avatar
