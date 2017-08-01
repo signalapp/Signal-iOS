@@ -38,6 +38,10 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
 
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId;
+
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
 
 #pragma mark - Known Profile Keys
