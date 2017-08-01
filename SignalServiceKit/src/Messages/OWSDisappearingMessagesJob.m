@@ -18,8 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesJob ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
-
 @property (nonatomic, readonly) YapDatabaseConnection *databaseConnection;
 
 @property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
@@ -52,7 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _storageManager = storageManager;
     _databaseConnection = storageManager.newDatabaseConnection;
     _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
 

@@ -9,7 +9,9 @@
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
 #import "OWSCallOfferMessage.h"
+#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -120,11 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
 //    return _thread;
 //}
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setCallMessage:[self asProtobuf]];
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 
