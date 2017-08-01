@@ -17,6 +17,14 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 
 - (nullable UIImage *)localProfileAvatarImage;
 
+// This method is used to update the "local profile" state on the client
+// and the service.  Client state is only updated if service state is
+// successfully updated.
+- (void)setLocalProfileName:(nullable NSString *)localProfileName
+    localProfileAvatarImage:(nullable UIImage *)localProfileAvatarImage
+                    success:(void (^)())successBlock
+                    failure:(void (^)())failureBlock;
+
 @end
 
 NS_ASSUME_NONNULL_END
