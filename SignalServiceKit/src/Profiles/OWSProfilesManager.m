@@ -3,12 +3,12 @@
 //
 
 #import "OWSProfilesManager.h"
+#import "NSData+hexString.h"
 #import "OWSMessageSender.h"
 #import "SecurityUtils.h"
 #import "TSStorageManager.h"
-#import "TextSecureKitEnv.h"
-
 #import "TSYapDatabaseObject.h"
+#import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -82,7 +82,8 @@ NSString *const kOWSProfilesManager_LocalProfileNameKey = @"kOWSProfilesManager_
 NSString *const kOWSProfilesManager_LocalProfileAvatarMetadataKey
     = @"kOWSProfilesManager_LocalProfileAvatarMetadataKey";
 
-NSString *const kOWSProfilesManager_WhitelistCollection = @"kOWSProfilesManager_WhitelistCollection";
+NSString *const kOWSProfilesManager_UserWhitelistCollection = @"kOWSProfilesManager_UserWhitelistCollection";
+NSString *const kOWSProfilesManager_GroupWhitelistCollection = @"kOWSProfilesManager_GroupWhitelistCollection";
 
 NSString *const kOWSProfilesManager_KnownProfileKeysCollection = @"kOWSProfilesManager_KnownProfileKeysCollection";
 
@@ -101,7 +102,8 @@ static const NSInteger kProfileKeyLength = 16;
 @property (atomic, nullable) AvatarMetadata *localProfileAvatarMetadata;
 
 // These caches are lazy-populated.  The single point truth is the database.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *>*profileWhitelistCache;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *userProfileWhitelistCache;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *groupProfileWhitelistCache;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSData *>*knownProfileKeyCache;
 
 @end
@@ -143,7 +145,8 @@ static const NSInteger kProfileKeyLength = 16;
 
     _messageSender = messageSender;
     _dbConnection = storageManager.newDatabaseConnection;
-    _profileWhitelistCache = [NSMutableDictionary new];
+    _userProfileWhitelistCache = [NSMutableDictionary new];
+    _groupProfileWhitelistCache = [NSMutableDictionary new];
     _knownProfileKeyCache = [NSMutableDictionary new];
 
     OWSSingletonAssert();
@@ -416,21 +419,47 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert(recipientId.length > 0);
 
-    [self.dbConnection setObject:@(1) forKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection];
-    self.profileWhitelistCache[recipientId] = @(YES);
+    [self.dbConnection setObject:@(1) forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
+    self.userProfileWhitelistCache[recipientId] = @(YES);
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    NSNumber *_Nullable value = self.profileWhitelistCache[recipientId];
+    NSNumber *_Nullable value = self.userProfileWhitelistCache[recipientId];
     if (value) {
         return [value boolValue];
     }
-    
-    value = @(nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection]);
-    self.profileWhitelistCache[recipientId] = value;
+
+    value =
+        @(nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection]);
+    self.userProfileWhitelistCache[recipientId] = value;
+    return [value boolValue];
+}
+
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+{
+    OWSAssert(groupId.length > 0);
+
+    NSString *groupIdKey = [groupId hexadecimalString];
+    [self.dbConnection setObject:@(1) forKey:groupIdKey inCollection:kOWSProfilesManager_GroupWhitelistCollection];
+    self.groupProfileWhitelistCache[groupIdKey] = @(YES);
+}
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId
+{
+    OWSAssert(groupId.length > 0);
+
+    NSString *groupIdKey = [groupId hexadecimalString];
+    NSNumber *_Nullable value = self.groupProfileWhitelistCache[groupIdKey];
+    if (value) {
+        return [value boolValue];
+    }
+
+    value =
+        @(nil != [self.dbConnection objectForKey:groupIdKey inCollection:kOWSProfilesManager_GroupWhitelistCollection]);
+    self.groupProfileWhitelistCache[groupIdKey] = value;
     return [value boolValue];
 }
 
