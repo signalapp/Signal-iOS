@@ -95,8 +95,8 @@ static const NSInteger kProfileKeyLength = 16;
 // These properties should only be mutated on the main thread,
 // but they may be accessed on other threads.
 @property (atomic, nullable) NSString *localProfileName;
-@property (atomic, nullable) AvatarMetadata *localProfileAvatarMetadata;
 @property (atomic, nullable) UIImage *localProfileAvatarImage;
+@property (atomic, nullable) AvatarMetadata *localProfileAvatarMetadata;
 
 @end
 
@@ -181,7 +181,7 @@ static const NSInteger kProfileKeyLength = 16;
 + (NSData *)generateLocalProfileKey
 {
     // TODO:
-    OWSFail(@"Profile key generation is not yet implemented.");
+    DDLogVerbose(@"%@ Profile key generation is not yet implemented.", self.tag);
     return [SecurityUtils generateRandomBytes:kProfileKeyLength];
 }
 
@@ -230,14 +230,21 @@ static const NSInteger kProfileKeyLength = 16;
                                                       userInfo:nil];
 }
 
-- (void)setLocalProfileName:(nullable NSString *)localProfileName
-    localProfileAvatarImage:(nullable UIImage *)localProfileAvatarImage
-                    success:(void (^)())successBlock
-                    failure:(void (^)())failureBlock
+- (void)updateLocalProfileName:(nullable NSString *)localProfileName
+       localProfileAvatarImage:(nullable UIImage *)localProfileAvatarImage
+                       success:(void (^)())successBlock
+                       failure:(void (^)())failureBlockParameter
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssert(failureBlockParameter);
+
+    // Ensure that the failure block is called on the main thread.
+    void (^failureBlock)() = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            failureBlockParameter();
+        });
+    };
 
     // The final steps are to:
     //
@@ -247,10 +254,12 @@ static const NSInteger kProfileKeyLength = 16;
         [self updateProfileOnService:localProfileName
             avatarMetadata:avatarMetadata
             success:^{
-                [self updateLocalProfileName:localProfileName
-                       localProfileAvatarImage:localProfileAvatarImage
-                    localProfileAvatarMetadata:avatarMetadata];
-                successBlock();
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self updateLocalProfileName:localProfileName
+                           localProfileAvatarImage:localProfileAvatarImage
+                        localProfileAvatarMetadata:avatarMetadata];
+                    successBlock();
+                });
             }
             failure:^{
                 failureBlock();

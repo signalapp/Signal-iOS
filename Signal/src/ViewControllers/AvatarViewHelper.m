@@ -29,8 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.delegate);
 
     UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"NEW_GROUP_ADD_PHOTO_ACTION",
-                                                        @"Action Sheet title prompting the user for a group avatar")
+        [UIAlertController alertControllerWithTitle:self.delegate.avatarActionSheetTitle
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")

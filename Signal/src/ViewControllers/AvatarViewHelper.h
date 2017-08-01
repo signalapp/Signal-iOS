@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol AvatarViewHelperDelegate <NSObject>
 
+- (NSString *)avatarActionSheetTitle;
+
 - (void)avatarDidChange:(UIImage *)image;
 
 - (UIViewController *)fromViewController;

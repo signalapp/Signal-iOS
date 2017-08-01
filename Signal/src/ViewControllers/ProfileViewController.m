@@ -9,6 +9,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import <SignalServiceKit/OWSProfilesManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
+    _avatar = [OWSProfilesManager.sharedManager localProfileAvatarImage];
+
     [self createViews];
 }
 
@@ -53,10 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
     _nameTextField = [UITextField new];
     _nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
     _nameTextField.textColor = [UIColor ows_materialBlueColor];
-    // TODO: Copy.
     _nameTextField.placeholder = NSLocalizedString(
         @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
     _nameTextField.delegate = self;
+    _nameTextField.text = [OWSProfilesManager.sharedManager localProfileName];
+    DDLogError(@"_nameTextField.text: %@", _nameTextField.text);
+    [DDLog flushLog];
     [_nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
     _avatarView = [AvatarImageView new];
@@ -95,10 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
 
-        // TODO: Use the current avatar.
         AvatarImageView *avatarView = weakSelf.avatarView;
         [weakSelf updateAvatarView];
-
         [cell.contentView addSubview:avatarView];
         [avatarView autoHCenterInSuperview];
         [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarTopMargin];
@@ -134,7 +137,6 @@ NS_ASSUME_NONNULL_BEGIN
                     cell.contentView.preservesSuperviewLayoutMargins = YES;
 
                     UITextField *nameTextField = weakSelf.nameTextField;
-                    // TODO: Use the current profile name.
                     [cell.contentView addSubview:nameTextField];
                     [nameTextField autoPinLeadingToSuperView];
                     [nameTextField autoPinTrailingToSuperView];
@@ -211,6 +213,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateProfile
 {
+    __weak ProfileViewController *weakSelf = self;
+    [OWSProfilesManager.sharedManager
+         updateLocalProfileName:self.nameTextField.text
+        localProfileAvatarImage:self.avatar
+                        success:^{
+                            [weakSelf.navigationController popViewControllerAnimated:YES];
+                        }
+                        failure:^{
+                            //                                                         <#code#>
+                        }];
     //    OWSAssert(self.conversationSettingsViewDelegate);
     //
     //    [self updateGroup];
@@ -275,6 +287,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - AvatarViewHelperDelegate
+
+- (NSString *)avatarActionSheetTitle
+{
+    return NSLocalizedString(
+        @"PROFILE_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");
+}
 
 - (void)avatarDidChange:(UIImage *)image
 {

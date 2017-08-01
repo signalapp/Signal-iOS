@@ -608,6 +608,12 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - AvatarViewHelperDelegate
 
+- (NSString *)avatarActionSheetTitle
+{
+    return NSLocalizedString(
+        @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");
+}
+
 - (void)avatarDidChange:(UIImage *)image
 {
     OWSAssert(image);
