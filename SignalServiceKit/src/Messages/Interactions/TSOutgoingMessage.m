@@ -4,8 +4,10 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSOutgoingSyncMessage.h"
 #import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -456,24 +458,54 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return [[self dataMessageBuilder] build];
 }
 
-- (NSData *)buildPlainTextData
+- (void)addLocalProfileKeyIfNecessary:(OWSSignalServiceProtosContentBuilder *)contentBuilder
+                            recipient:(SignalRecipient *)recipient
+{
+    OWSAssert(contentBuilder);
+    OWSAssert(recipient);
+
+#ifndef SKIP_PROFILE_KEYS
+    OWSAssert(OWSProfilesManager.sharedManager.localProfileKey.length > 0);
+    BOOL shouldIncludeProfileKey = NO;
+
+    if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        // Always sync the profile key to linked devices.
+        shouldIncludeProfileKey = YES;
+    } else {
+        OWSAssert(self.thread);
+
+        // For 1:1 threads, we want to include the profile key IFF the
+        // contact is in the whitelist.
+        //
+        // For Group threads, we want to include the profile key IFF the
+        // recipient OR the group is in the whitelist.
+        if ([OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipient.recipientId]) {
+            shouldIncludeProfileKey = YES;
+        } else if (self.thread.isGroupThread) {
+            TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+            NSData *groupId = groupThread.groupModel.groupId;
+
+            if ([OWSProfilesManager.sharedManager isGroupIdInProfileWhitelist:groupId]) {
+                [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
+            }
+        } else {
+            TSContactThread *contactThread = (TSContactThread *)self.thread;
+            NSString *recipientId = contactThread.contactIdentifier;
+            OWSAssert([recipientId isEqualToString:recipient.recipientId]);
+        }
+    }
+
+    if (shouldIncludeProfileKey) {
+        [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
+    }
+#endif
+}
+
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     contentBuilder.dataMessage = [self buildDataMessage];
-    
-#ifndef SKIP_PROFILE_KEYS
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self.thread;
-        NSString *recipientId = contactThread.contactIdentifier;
-        
-        if (OWSProfilesManager.sharedManager.localProfileKey &&
-            [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId]) {
-            [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
-        }
-    }
-#endif
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 

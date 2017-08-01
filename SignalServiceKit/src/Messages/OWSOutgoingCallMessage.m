@@ -122,24 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
 //    return _thread;
 //}
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setCallMessage:[self asProtobuf]];
-    
-#ifndef SKIP_PROFILE_KEYS
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self.thread;
-        NSString *recipientId = contactThread.contactIdentifier;
-    
-        if (OWSProfilesManager.sharedManager.localProfileKey &&
-            [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId]) {
-            [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
-        }
-    }
-#endif
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 
