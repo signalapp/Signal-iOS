@@ -4,6 +4,7 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -459,6 +460,19 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     contentBuilder.dataMessage = [self buildDataMessage];
+    
+#ifndef SKIP_PROFILE_KEYS
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
+        NSString *recipientId = contactThread.contactIdentifier;
+        
+        if (OWSProfilesManager.sharedManager.localProfileKey &&
+            [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId]) {
+            [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
+        }
+    }
+#endif
 
     return [[contentBuilder build] data];
 }

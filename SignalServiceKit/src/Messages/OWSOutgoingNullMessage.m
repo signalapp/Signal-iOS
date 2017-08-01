@@ -3,11 +3,12 @@
 //
 
 #import "OWSOutgoingNullMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "Cryptography.h"
-#import "OWSVerificationStateSyncMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSContactThread.h"
+#import "OWSProfilesManager.h"
+#import "OWSSignalServiceProtos.pb.h"
+#import "OWSVerificationStateSyncMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,6 +58,19 @@ NS_ASSUME_NONNULL_BEGIN
     
     contentBuilder.nullMessage = [nullMessageBuilder build];
     
+#ifndef SKIP_PROFILE_KEYS
+    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
+        NSString *recipientId = contactThread.contactIdentifier;
+        
+        if (OWSProfilesManager.sharedManager.localProfileKey &&
+            [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId]) {
+            [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
+        }
+    }
+#endif
+
     return [contentBuilder build].data;
 }
 

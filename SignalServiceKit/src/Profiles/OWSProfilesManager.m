@@ -94,21 +94,21 @@ static const NSInteger kProfileKeyLength = 16;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-@property (atomic, readonly, nullable) NSData *localProfileKey;
-
 // These properties should only be mutated on the main thread,
 // but they may be accessed on other threads.
 @property (atomic, nullable) NSString *localProfileName;
 @property (atomic, nullable) UIImage *localProfileAvatarImage;
 @property (atomic, nullable) AvatarMetadata *localProfileAvatarMetadata;
 
+// These caches are lazy-populated.  The single point truth is the database.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *>*profileWhitelistCache;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSData *>*knownProfileKeyCache;
+
 @end
 
 #pragma mark -
 
 @implementation OWSProfilesManager
-
-@synthesize localProfileKey = _localProfileKey;
 
 + (instancetype)sharedManager
 {
@@ -137,11 +137,14 @@ static const NSInteger kProfileKeyLength = 16;
         return self;
     }
 
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(storageManager);
     OWSAssert(messageSender);
 
     _messageSender = messageSender;
     _dbConnection = storageManager.newDatabaseConnection;
+    _profileWhitelistCache = [NSMutableDictionary new];
+    _knownProfileKeyCache = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -409,13 +412,35 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert(recipientId.length > 0);
 
     [self.dbConnection setObject:@(1) forKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection];
+    self.profileWhitelistCache[recipientId] = @(YES);
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return (nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection]);
+    NSNumber *_Nullable value = self.profileWhitelistCache[recipientId];
+    if (value) {
+        return [value boolValue];
+    }
+    
+    value = @(nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection]);
+    self.profileWhitelistCache[recipientId] = value;
+    return [value boolValue];
+}
+
+- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds
+{
+    OWSAssert(contactRecipientIds);
+    
+    // TODO: The persisted whitelist could either be:
+    //
+    // * Just users manually added to the whitelist.
+    // * Also include users auto-added by, for example, being in the user's
+    //   contacts or when the user initiates a 1:1 conversation with them, etc.
+    for (NSString *recipientId in contactRecipientIds) {
+        [self addUserToProfileWhitelist:recipientId];
+    }
 }
 
 #pragma mark - Known Profile Keys
@@ -424,20 +449,37 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert(profileKey.length == kProfileKeyLength);
     OWSAssert(recipientId.length > 0);
+    if (profileKey.length != kProfileKeyLength) {
+        return;
+    }
 
+    NSData *_Nullable existingProfileKey = [self profileKeyForRecipientId:recipientId];
+    if (existingProfileKey &&
+        [existingProfileKey isEqual:profileKey]) {
+        // Ignore redundant update.
+        return;
+    }
+    
     [self.dbConnection setObject:profileKey
                           forKey:recipientId
                     inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
+    self.knownProfileKeyCache[recipientId] = profileKey;
 }
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    NSData *_Nullable profileKey =
-        [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
+    NSData *_Nullable profileKey = self.knownProfileKeyCache[recipientId];
+    if (profileKey.length > 0) {
+        return profileKey;
+    }
+
+    profileKey =
+    [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
     if (profileKey) {
         OWSAssert(profileKey.length == kProfileKeyLength);
+        self.knownProfileKeyCache[recipientId] = profileKey;
     }
     return profileKey;
 }
