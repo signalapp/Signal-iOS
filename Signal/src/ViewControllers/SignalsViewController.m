@@ -4,6 +4,7 @@
 
 #import "SignalsViewController.h"
 #import "AppDelegate.h"
+#import "AppSettingsViewController.h"
 #import "InboxTableViewCell.h"
 #import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
@@ -11,7 +12,6 @@
 #import "OWSContactsManager.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
-#import "SettingsTableViewController.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
@@ -305,7 +305,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (void)settingsButtonPressed:(id)sender {
-    SettingsTableViewController *vc = [SettingsTableViewController new];
+    AppSettingsViewController *vc = [AppSettingsViewController new];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navigationController animated:YES completion:nil];
 }

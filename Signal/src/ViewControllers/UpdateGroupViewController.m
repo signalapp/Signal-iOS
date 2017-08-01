@@ -4,11 +4,11 @@
 
 #import "UpdateGroupViewController.h"
 #import "AddToGroupViewController.h"
+#import "AvatarViewHelper.h"
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "GroupViewHelper.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
@@ -30,14 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UpdateGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
     ContactsViewHelperDelegate,
-    GroupViewHelperDelegate,
+    AvatarViewHelperDelegate,
     AddToGroupViewControllerDelegate,
     OWSTableViewControllerDelegate,
     UINavigationControllerDelegate>
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) GroupViewHelper *groupViewHelper;
+@property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
@@ -83,8 +83,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _messageSender = [Environment getCurrent].messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _groupViewHelper = [GroupViewHelper new];
-    _groupViewHelper.delegate = self;
+    _avatarViewHelper = [AvatarViewHelper new];
+    _avatarViewHelper.delegate = self;
 
     self.memberRecipientIds = [NSMutableSet new];
 }
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.groupNameTextField becomeFirstResponder];
             break;
         case UpdateGroupMode_EditGroupAvatar:
-            [self showChangeGroupAvatarUI];
+            [self showChangeAvatarUI];
             break;
         default:
             break;
@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)avatarTouched:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self showChangeGroupAvatarUI];
+        [self showChangeAvatarUI];
     }
 }
 
@@ -384,11 +384,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Group Avatar
 
-- (void)showChangeGroupAvatarUI
+- (void)showChangeAvatarUI
 {
     [self.groupNameTextField resignFirstResponder];
 
-    [self.groupViewHelper showChangeGroupAvatarUI];
+    [self.avatarViewHelper showChangeAvatarUI];
 }
 
 - (void)setGroupAvatar:(nullable UIImage *)groupAvatar
@@ -487,9 +487,15 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-#pragma mark - GroupViewHelperDelegate
+#pragma mark - AvatarViewHelperDelegate
 
-- (void)groupAvatarDidChange:(UIImage *)image
+- (NSString *)avatarActionSheetTitle
+{
+    return NSLocalizedString(
+        @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");
+}
+
+- (void)avatarDidChange:(UIImage *)image
 {
     OWSAssert(image);
 
@@ -499,6 +505,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIViewController *)fromViewController
 {
     return self;
+}
+
+- (BOOL)hasClearAvatarAction
+{
+    return NO;
 }
 
 #pragma mark - AddToGroupViewControllerDelegate

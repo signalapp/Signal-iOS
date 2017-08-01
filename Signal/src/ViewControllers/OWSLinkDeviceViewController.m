@@ -5,7 +5,6 @@
 #import "OWSLinkDeviceViewController.h"
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkedDevicesTableViewController.h"
-#import "SettingsTableViewController.h"
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>

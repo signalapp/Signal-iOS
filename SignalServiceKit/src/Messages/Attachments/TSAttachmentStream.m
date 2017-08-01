@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         NSString *documentsPath =
             [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        attachmentsFolder = [documentsPath stringByAppendingFormat:@"/Attachments"];
+        attachmentsFolder = [documentsPath stringByAppendingPathComponent:@"Attachments"];
 
         BOOL isDirectory;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentsFolder isDirectory:&isDirectory];
