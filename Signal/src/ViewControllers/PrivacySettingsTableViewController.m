@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
             [callKitSection
                 addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
                                                              @"Label for 'CallKit privacy' preference")
-                                                    isOn:[Environment.preferences isCallKitPrivacyEnabled]
+                                                    isOn:![Environment.preferences isCallKitPrivacyEnabled]
                                                   target:weakSelf
                                                 selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
         }
