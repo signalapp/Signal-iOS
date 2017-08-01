@@ -1036,6 +1036,9 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
 
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
+
 /* Instructions for how to change the profile avatar. */
 "PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
 

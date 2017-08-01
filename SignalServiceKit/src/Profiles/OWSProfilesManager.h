@@ -13,17 +13,16 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 
 + (instancetype)sharedManager;
 
-- (nullable NSString *)localProfileName;
-
-- (nullable UIImage *)localProfileAvatarImage;
+@property (atomic, nullable, readonly) NSString *localProfileName;
+@property (atomic, nullable, readonly) UIImage *localProfileAvatarImage;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
 // successfully updated.
-- (void)setLocalProfileName:(nullable NSString *)localProfileName
-    localProfileAvatarImage:(nullable UIImage *)localProfileAvatarImage
-                    success:(void (^)())successBlock
-                    failure:(void (^)())failureBlock;
+- (void)updateLocalProfileName:(nullable NSString *)localProfileName
+       localProfileAvatarImage:(nullable UIImage *)localProfileAvatarImage
+                       success:(void (^)())successBlock
+                       failure:(void (^)())failureBlock;
 
 @end
 
