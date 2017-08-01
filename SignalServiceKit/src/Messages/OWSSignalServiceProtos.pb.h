@@ -278,16 +278,16 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Content_profileKey @"profileKey"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasProfileKey_:1;
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
   BOOL hasCallMessage_:1;
   BOOL hasNullMessage_:1;
-  NSString* profileKey;
+  BOOL hasProfileKey_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
   OWSSignalServiceProtosCallMessage* callMessage;
   OWSSignalServiceProtosNullMessage* nullMessage;
+  NSData* profileKey;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
@@ -298,7 +298,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (readonly, strong) OWSSignalServiceProtosNullMessage* nullMessage;
-@property (readonly, strong) NSString* profileKey;
+@property (readonly, strong) NSData* profileKey;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -364,8 +364,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage;
 
 - (BOOL) hasProfileKey;
-- (NSString*) profileKey;
-- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSString*) value;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSData*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearProfileKey;
 @end
 
