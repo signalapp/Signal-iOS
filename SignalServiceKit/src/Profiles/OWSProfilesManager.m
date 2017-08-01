@@ -82,6 +82,10 @@ NSString *const kOWSProfilesManager_LocalProfileNameKey = @"kOWSProfilesManager_
 NSString *const kOWSProfilesManager_LocalProfileAvatarMetadataKey
     = @"kOWSProfilesManager_LocalProfileAvatarMetadataKey";
 
+NSString *const kOWSProfilesManager_WhitelistCollection = @"kOWSProfilesManager_WhitelistCollection";
+
+NSString *const kOWSProfilesManager_KnownProfileKeysCollection = @"kOWSProfilesManager_KnownProfileKeysCollection";
+
 // TODO:
 static const NSInteger kProfileKeyLength = 16;
 
@@ -401,6 +405,46 @@ static const NSInteger kProfileKeyLength = 16;
                                                               userInfo:nil];
         });
     });
+}
+
+#pragma mark - Profile Whitelist
+
+- (void)addUserToProfileWhitelist:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    [self.dbConnection setObject:@(1) forKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection];
+}
+
+- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return (nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_WhitelistCollection]);
+}
+
+#pragma mark - Known Profile Keys
+
+- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+{
+    OWSAssert(profileKey.length == kProfileKeyLength);
+    OWSAssert(recipientId.length > 0);
+
+    [self.dbConnection setObject:profileKey
+                          forKey:recipientId
+                    inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
+}
+
+- (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    NSData *_Nullable profileKey =
+        [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
+    if (profileKey) {
+        OWSAssert(profileKey.length == kProfileKeyLength);
+    }
+    return profileKey;
 }
 
 #pragma mark - Avatar Disk Cache

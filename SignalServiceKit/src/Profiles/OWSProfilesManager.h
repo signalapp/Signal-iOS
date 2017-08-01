@@ -13,6 +13,8 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 
 + (instancetype)sharedManager;
 
+#pragma mark - Local Profile
+
 @property (atomic, nullable, readonly) NSString *localProfileName;
 @property (atomic, nullable, readonly) UIImage *localProfileAvatarImage;
 
@@ -25,6 +27,18 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
                        failure:(void (^)())failureBlock;
 
 - (void)appLaunchDidBegin;
+
+#pragma mark - Profile Whitelist
+
+- (void)addUserToProfileWhitelist:(NSString *)recipientId;
+
+- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
+
+#pragma mark - Known Profile Keys
+
+- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
+
+- (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId;
 
 @end
 
