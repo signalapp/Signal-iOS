@@ -41,17 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSSignalServiceProtosSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setSyncMessage:[self buildSyncMessage]];
-    
-#ifndef SKIP_PROFILE_KEYS
-    if (OWSProfilesManager.sharedManager.localProfileKey) {
-        [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
-    }
-#endif
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 

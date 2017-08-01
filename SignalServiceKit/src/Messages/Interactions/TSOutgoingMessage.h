@@ -32,6 +32,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosDataMessageBuilder;
+@class OWSSignalServiceProtosContentBuilder;
+@class SignalRecipient;
 
 @interface TSOutgoingMessage : TSMessage
 
@@ -107,7 +109,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (NSData *)buildPlainTextData;
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient;
 
 /**
  * Intermediate protobuf representation
@@ -175,6 +177,11 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (BOOL)wasSentToRecipient:(NSString *)contactId;
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSentRecipient:(NSString *)contactId;
+
+#pragma mark -
+
+- (void)addLocalProfileKeyIfNecessary:(OWSSignalServiceProtosContentBuilder *)contentBuilder
+                            recipient:(SignalRecipient *)recipient;
 
 @end
 
