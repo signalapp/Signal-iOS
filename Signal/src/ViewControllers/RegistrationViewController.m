@@ -112,7 +112,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Country
     UIView *countryRow = [UIView containerView];
-    countryRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:countryRow];
     [countryRow autoPinLeadingAndTrailingToSuperview];
     [countryRow autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -147,7 +146,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Phone Number
     UIView *phoneNumberRow = [UIView containerView];
-    phoneNumberRow.preservesSuperviewLayoutMargins = YES;
     [contentView addSubview:phoneNumberRow];
     [phoneNumberRow autoPinLeadingAndTrailingToSuperview];
     [phoneNumberRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView1];
