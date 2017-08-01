@@ -24,6 +24,8 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock;
 
+- (void)appLaunchDidBegin;
+
 @end
 
 NS_ASSUME_NONNULL_END

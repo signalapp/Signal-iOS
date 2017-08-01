@@ -161,7 +161,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
     [OWSAnalytics appLaunchDidBegin];
-    [OWSProfilesManager sharedManager];
+    [OWSProfilesManager.sharedManager appLaunchDidBegin];
 
     return YES;
 }

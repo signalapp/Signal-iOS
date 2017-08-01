@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (rawAvatar) {
         // We resize the avatar to fill a 210x210 square.
         //
-        // See: AvatarCreateActivity.java in Signal-Android.java.
+        // See: GroupCreateActivity.java in Signal-Android.java.
         UIImage *resizedAvatar = [rawAvatar resizedImageToFillPixelSize:CGSizeMake(210, 210)];
         [self.delegate avatarDidChange:resizedAvatar];
     }

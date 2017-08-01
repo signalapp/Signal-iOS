@@ -60,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
         @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
     _nameTextField.delegate = self;
     _nameTextField.text = [OWSProfilesManager.sharedManager localProfileName];
-    DDLogError(@"_nameTextField.text: %@", _nameTextField.text);
-    [DDLog flushLog];
     [_nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
     _avatarView = [AvatarImageView new];
@@ -85,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak ProfileViewController *weakSelf = self;
 
-    // Avatar
+    // Profile Avatar
     OWSTableSection *avatarSection = [OWSTableSection new];
     avatarSection.headerTitle = NSLocalizedString(
         @"PROFILE_VIEW_AVATAR_SECTION_HEADER", @"Header title for the profile avatar field of the profile view.");
@@ -124,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      actionBlock:nil]];
     [contents addSection:avatarSection];
 
-    // Profile
+    // Profile Name
     OWSTableSection *nameSection = [OWSTableSection new];
     nameSection.headerTitle = NSLocalizedString(
         @"PROFILE_VIEW_NAME_SECTION_HEADER", @"Label for the profile name field of the profile view.");

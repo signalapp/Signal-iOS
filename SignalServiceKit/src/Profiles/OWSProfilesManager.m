@@ -77,7 +77,7 @@ NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationNam
 
 NSString *const kOWSProfilesManager_Collection = @"kOWSProfilesManager_Collection";
 // This key is used to persist the local user's profile key.
-NSString *const kOWSProfilesManager_LocalProfileKey = @"kOWSProfilesManager_LocalProfileKey";
+NSString *const kOWSProfilesManager_LocalProfileSecretKey = @"kOWSProfilesManager_LocalProfileSecretKey";
 NSString *const kOWSProfilesManager_LocalProfileNameKey = @"kOWSProfilesManager_LocalProfileNameKey";
 NSString *const kOWSProfilesManager_LocalProfileAvatarMetadataKey
     = @"kOWSProfilesManager_LocalProfileAvatarMetadataKey";
@@ -146,14 +146,14 @@ static const NSInteger kProfileKeyLength = 16;
     [messageSender setProfilesManager:self];
 
     // Try to load.
-    _localProfileKey = [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileKey
+    _localProfileKey = [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileSecretKey
                                             inCollection:kOWSProfilesManager_Collection];
     if (!_localProfileKey) {
         // Generate
         _localProfileKey = [OWSProfilesManager generateLocalProfileKey];
         // Persist
         [self.storageManager setObject:_localProfileKey
-                                forKey:kOWSProfilesManager_LocalProfileKey
+                                forKey:kOWSProfilesManager_LocalProfileSecretKey
                           inCollection:kOWSProfilesManager_Collection];
     }
     OWSAssert(_localProfileKey.length == kProfileKeyLength);
@@ -174,6 +174,11 @@ static const NSInteger kProfileKeyLength = 16;
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
+}
+
+- (void)appLaunchDidBegin
+{
+    // Do nothing; we only want to make sure this singleton is created on startup.
 }
 
 #pragma mark - Local Profile Key
@@ -380,7 +385,7 @@ static const NSInteger kProfileKeyLength = 16;
                                  inCollection:kOWSProfilesManager_Collection];
         UIImage *_Nullable localProfileAvatarImage = nil;
         if (localProfileAvatarMetadata) {
-            localProfileAvatarImage = [self loadProfileAvatarsWithFilename:localProfileAvatarMetadata.fileName];
+            localProfileAvatarImage = [self loadProfileAvatarWithFilename:localProfileAvatarMetadata.fileName];
             if (!localProfileAvatarImage) {
                 localProfileAvatarMetadata = nil;
             }
@@ -400,7 +405,7 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Avatar Disk Cache
 
-- (nullable UIImage *)loadProfileAvatarsWithFilename:(NSString *)fileName
+- (nullable UIImage *)loadProfileAvatarWithFilename:(NSString *)fileName
 {
     OWSAssert(fileName.length > 0);
 
