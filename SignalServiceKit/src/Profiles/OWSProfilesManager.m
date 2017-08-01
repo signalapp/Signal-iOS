@@ -87,8 +87,8 @@ static const NSInteger kProfileKeyLength = 16;
 
 @interface OWSProfilesManager ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (atomic, readonly, nullable) NSData *localProfileKey;
 
@@ -136,8 +136,8 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert(storageManager);
     OWSAssert(messageSender);
 
-    _storageManager = storageManager;
     _messageSender = messageSender;
+    _dbConnection = storageManager.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -146,15 +146,15 @@ static const NSInteger kProfileKeyLength = 16;
     [messageSender setProfilesManager:self];
 
     // Try to load.
-    _localProfileKey = [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileKey
-                                            inCollection:kOWSProfilesManager_Collection];
+    _localProfileKey = [self.dbConnection objectForKey:kOWSProfilesManager_LocalProfileKey
+                                          inCollection:kOWSProfilesManager_Collection];
     if (!_localProfileKey) {
         // Generate
         _localProfileKey = [OWSProfilesManager generateLocalProfileKey];
         // Persist
-        [self.storageManager setObject:_localProfileKey
-                                forKey:kOWSProfilesManager_LocalProfileKey
-                          inCollection:kOWSProfilesManager_Collection];
+        [self.dbConnection setObject:_localProfileKey
+                              forKey:kOWSProfilesManager_LocalProfileKey
+                        inCollection:kOWSProfilesManager_Collection];
     }
     OWSAssert(_localProfileKey.length == kProfileKeyLength);
 
@@ -209,20 +209,20 @@ static const NSInteger kProfileKeyLength = 16;
     self.localProfileAvatarMetadata = localProfileAvatarMetadata;
 
     if (localProfileName) {
-        [self.storageManager setObject:localProfileName
-                                forKey:kOWSProfilesManager_LocalProfileNameKey
-                          inCollection:kOWSProfilesManager_Collection];
+        [self.dbConnection setObject:localProfileName
+                              forKey:kOWSProfilesManager_LocalProfileNameKey
+                        inCollection:kOWSProfilesManager_Collection];
     } else {
-        [self.storageManager removeObjectForKey:kOWSProfilesManager_LocalProfileNameKey
-                                   inCollection:kOWSProfilesManager_Collection];
+        [self.dbConnection removeObjectForKey:kOWSProfilesManager_LocalProfileNameKey
+                                 inCollection:kOWSProfilesManager_Collection];
     }
     if (localProfileAvatarMetadata) {
-        [self.storageManager setObject:localProfileAvatarMetadata
-                                forKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
-                          inCollection:kOWSProfilesManager_Collection];
+        [self.dbConnection setObject:localProfileAvatarMetadata
+                              forKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
+                        inCollection:kOWSProfilesManager_Collection];
     } else {
-        [self.storageManager removeObjectForKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
-                                   inCollection:kOWSProfilesManager_Collection];
+        [self.dbConnection removeObjectForKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
+                                 inCollection:kOWSProfilesManager_Collection];
     }
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
@@ -373,11 +373,11 @@ static const NSInteger kProfileKeyLength = 16;
 - (void)loadLocalProfileAsync
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *_Nullable localProfileName = [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileNameKey
-                                                                    inCollection:kOWSProfilesManager_Collection];
+        NSString *_Nullable localProfileName = [self.dbConnection objectForKey:kOWSProfilesManager_LocalProfileNameKey
+                                                                  inCollection:kOWSProfilesManager_Collection];
         AvatarMetadata *_Nullable localProfileAvatarMetadata =
-            [self.storageManager objectForKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
-                                 inCollection:kOWSProfilesManager_Collection];
+            [self.dbConnection objectForKey:kOWSProfilesManager_LocalProfileAvatarMetadataKey
+                               inCollection:kOWSProfilesManager_Collection];
         UIImage *_Nullable localProfileAvatarImage = nil;
         if (localProfileAvatarMetadata) {
             localProfileAvatarImage = [self loadProfileAvatarsWithFilename:localProfileAvatarMetadata.fileName];
