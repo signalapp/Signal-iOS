@@ -19,6 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIViewController *)fromViewController;
 
+- (BOOL)hasClearAvatarAction;
+
+@optional
+
+- (NSString *)clearAvatarActionLabel;
+
+- (void)clearAvatar;
+
 @end
 
 #pragma mark -

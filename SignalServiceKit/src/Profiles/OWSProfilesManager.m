@@ -443,6 +443,8 @@ static const NSInteger kProfileKeyLength = 16;
     return profileAvatarsDirPath;
 }
 
+// TODO: We may want to clean up this directory in the "orphan cleanup" logic.
+
 #pragma mark - Notifications
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
