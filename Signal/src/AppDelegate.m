@@ -244,8 +244,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }];
 
     self.incomingMessageReadObserver =
-        [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
-                                                         messageSender:[Environment getCurrent].messageSender];
+        [[OWSIncomingMessageReadObserver alloc] initWithMessageSender:[Environment getCurrent].messageSender];
     [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];
