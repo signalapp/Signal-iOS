@@ -1137,13 +1137,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)createRandomContacts:(int)count
 {
     OWSAssert(count > 0);
+    [self createRandomContacts:count contactHandler:nil];
+}
 
++ (void)createRandomContacts:(NSUInteger)count
+              contactHandler:
+                  (nullable void (^)(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
+{
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
         [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
         return;
     }
 
+    NSMutableArray<CNContact *> *contacts = [NSMutableArray new];
     CNContactStore *store = [[CNContactStore alloc] init];
     [store
         requestAccessForEntityType:CNEntityTypeContacts
@@ -1166,12 +1173,17 @@ NS_ASSUME_NONNULL_BEGIN
                                              value:[CNPhoneNumber phoneNumberWithStringValue:[self randomPhoneNumber]]];
                          contact.phoneNumbers = @[ homePhone ];
 
+                         [contacts addObject:contact];
                          [request addContact:contact toContainerWithIdentifier:nil];
                      }
                      NSError *saveError = nil;
                      if (![store executeSaveRequest:request error:&saveError]) {
                          NSLog(@"error = %@", saveError);
                          [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
+                     } else {
+                         if (contactHandler) {
+                             [contacts enumerateObjectsUsingBlock:contactHandler];
+                         }
                      }
                  }];
 }

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define DATE_LABEL_SIZE 13
 #define SWIPE_ARCHIVE_OFFSET -50
 
-const NSUInteger kavatarViewDiameter = 52;
+const NSUInteger kAvatarViewDiameter = 52;
 
 @interface InboxTableViewCell ()
 
@@ -227,16 +227,8 @@ const NSUInteger kavatarViewDiameter = 52;
         self.unreadLabel.hidden = YES;
     }
 
-    NSString *threadIdCopy = thread.uniqueId;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *avatar =
-            [OWSAvatarBuilder buildImageForThread:thread contactsManager:contactsManager diameter:kavatarViewDiameter];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([_threadId isEqualToString:threadIdCopy]) {
-                self.avatarView.image = avatar;
-            }
-        });
-    });
+    self.avatarView.image =
+        [OWSAvatarBuilder buildImageForThread:thread diameter:kAvatarViewDiameter contactsManager:contactsManager];
 }
 
 - (void)updateCellForUnreadMessage {
