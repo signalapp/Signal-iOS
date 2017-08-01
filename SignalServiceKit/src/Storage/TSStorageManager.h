@@ -3,7 +3,7 @@
 //
 
 #import "TSStorageKeys.h"
-
+#import "YapDatabaseConnection+OWS.h"
 #import <Foundation/Foundation.h>
 #import <YapDatabase/YapDatabase.h>
 
