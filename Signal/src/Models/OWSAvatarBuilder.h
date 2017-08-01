@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager NS_SWIFT_NAME(buildImage(thread:diameter:contactsManager:));
 
++ (UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
+
 - (nullable UIImage *)buildSavedImage;
 - (UIImage *)buildDefaultImage;
 - (UIImage *)build;
