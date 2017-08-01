@@ -17,7 +17,7 @@
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
 #import "OWSContactsManager.h"
-#import "OWSConversationSettingsTableViewController.h"
+#import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSExpirableMessageView.h"
@@ -1973,7 +1973,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSConversationSettingsTableViewController *settingsVC = [OWSConversationSettingsTableViewController new];
+    OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread];
     settingsVC.showVerificationOnAppear = showVerification;
