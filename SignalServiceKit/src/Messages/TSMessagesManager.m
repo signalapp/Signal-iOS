@@ -499,8 +499,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([content hasProfileKey]) {
             NSData *profileKey = [content profileKey];
             NSString *recipientId = envelope.source;
-            [OWSProfilesManager.sharedManager setProfileKey:profileKey
-                                             forRecipientId:recipientId];
+            [OWSProfilesManager setProfileKey:profileKey forRecipientId:recipientId];
         }
 
         if (content.hasSyncMessage) {

@@ -212,15 +212,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProfile
 {
     __weak ProfileViewController *weakSelf = self;
-    [OWSProfilesManager.sharedManager
-        updateLocalProfileName:self.nameTextField.text
-                   avatarImage:self.avatar
-                       success:^{
-                           [weakSelf.navigationController popViewControllerAnimated:YES];
-                       }
-                       failure:^{
-                           //                                                         <#code#>
-                       }];
+    [OWSProfilesManager.sharedManager updateLocalProfileName:self.nameTextField.text
+                                                 avatarImage:self.avatar
+                                                     success:^{
+                                                         [weakSelf.navigationController popViewControllerAnimated:YES];
+                                                     }
+                                                     failure:^{
+                                                         // TODO: Handle failure.
+                                                     }];
 }
 
 #pragma mark - UITextFieldDelegate

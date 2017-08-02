@@ -17,7 +17,11 @@ class ProfileFetcherJob: NSObject {
     static var fetchDateMap = [String: Date]()
 
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
-        ProfileFetcherJob(networkManager: networkManager).run(thread: thread)
+        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
+    }
+
+    public class func run(recipientId: String, networkManager: TSNetworkManager) {
+        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: [recipientId])
     }
 
     init(networkManager: TSNetworkManager) {
@@ -25,11 +29,11 @@ class ProfileFetcherJob: NSObject {
         self.storageManager = TSStorageManager.shared()
     }
 
-    public func run(thread: TSThread) {
+    public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
 
         DispatchQueue.main.async {
-            for recipientId in thread.recipientIdentifiers {
+            for recipientId in recipientIds {
                 self.updateProfile(recipientId: recipientId)
             }
         }

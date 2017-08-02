@@ -7,7 +7,6 @@
 #import "NSDate+OWS.h"
 #import "OWSMessageSender.h"
 #import "SecurityUtils.h"
-#import "TSAccountManager.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
@@ -16,9 +15,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// UserProfile properties should only be mutated on the main thread.
 @interface UserProfile : TSYapDatabaseObject
 
-@property (nonatomic, readonly) NSString *recipientId;
+// These properties may be accessed from any thread.
+@property (atomic, readonly) NSString *recipientId;
+@property (atomic, nullable) NSData *profileKey;
+
+// These properties may be accessed only from the main thread.
 @property (nonatomic, nullable) NSString *profileName;
 @property (nonatomic, nullable) NSString *avatarUrl;
 @property (nonatomic, nullable) NSString *avatarDigest;
@@ -28,8 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This should reflect when either:
 //
-// * The last successful update was started.
-// * The in-flight update was started.
+// * The last successful update finished.
+// * The current in-flight update began.
+//
+// This property may be accessed from any thread.
 @property (nonatomic, nullable) NSDate *lastUpdateDate;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -41,10 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation UserProfile
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
-                        profileName:(NSString *_Nullable)profileName
-                          avatarUrl:(NSString *_Nullable)avatarUrl
-                       avatarDigest:(NSString *_Nullable)avatarDigest
-                     avatarFileName:(NSString *_Nullable)avatarFileName
 {
     self = [super initWithUniqueId:recipientId];
 
@@ -54,10 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(recipientId.length > 0);
     _recipientId = recipientId;
-    _profileName = profileName;
-    _avatarUrl = avatarUrl;
-    _avatarDigest = avatarDigest;
-    _avatarFileName = avatarFileName;
 
     return self;
 }
@@ -82,18 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+NSString *const kNSNotificationName_LocalProfileUniqueId = @"kNSNotificationName_LocalProfileUniqueId";
+
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 
-NSString *const kOWSProfilesManager_Collection = @"kOWSProfilesManager_Collection";
-// This key is used to persist the local user's profile key.
-NSString *const kOWSProfilesManager_LocalProfileSecretKey = @"kOWSProfilesManager_LocalProfileSecretKey";
-
 NSString *const kOWSProfilesManager_UserWhitelistCollection = @"kOWSProfilesManager_UserWhitelistCollection";
 NSString *const kOWSProfilesManager_GroupWhitelistCollection = @"kOWSProfilesManager_GroupWhitelistCollection";
-
-NSString *const kOWSProfilesManager_OtherUsersProfileKeysCollection
-    = @"kOWSProfilesManager_OtherUsersProfileKeysCollection";
 
 // TODO:
 static const NSInteger kProfileKeyLength = 16;
@@ -103,10 +96,7 @@ static const NSInteger kProfileKeyLength = 16;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-// This property should only be mutated on the main thread,
-//
-// NOTE: Do not access this property directly; use getOrCreateLocalUserProfile instead.
-@property (nonatomic, nullable) UserProfile *localUserProfile;
+@property (atomic, nullable) UserProfile *localUserProfile;
 // This property should only be mutated on the main thread,
 @property (nonatomic, nullable) UIImage *localCachedAvatarImage;
 
@@ -115,7 +105,6 @@ static const NSInteger kProfileKeyLength = 16;
 // These three properties can be accessed on any thread.
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *userProfileWhitelistCache;
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *groupProfileWhitelistCache;
-@property (atomic, readonly) NSMutableDictionary<NSString *, NSData *> *otherUsersProfileKeyCache;
 
 // This property should only be mutated on the main thread,
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
@@ -161,27 +150,22 @@ static const NSInteger kProfileKeyLength = 16;
     _dbConnection = storageManager.newDatabaseConnection;
     _userProfileWhitelistCache = [NSMutableDictionary new];
     _groupProfileWhitelistCache = [NSMutableDictionary new];
-    _otherUsersProfileKeyCache = [NSMutableDictionary new];
     _otherUsersProfileAvatarImageCache = [NSCache new];
 
     OWSSingletonAssert();
 
-    // Register this manager with the message sender.
-    // This is a circular dependency.
-    [messageSender setProfilesManager:self];
-
-    // Try to load.
-    _localProfileKey = [self.dbConnection objectForKey:kOWSProfilesManager_LocalProfileSecretKey
-                                            inCollection:kOWSProfilesManager_Collection];
-    if (!_localProfileKey) {
-        // Generate
-        _localProfileKey = [OWSProfilesManager generateLocalProfileKey];
-        // Persist
-        [self.dbConnection setObject:_localProfileKey
-                                forKey:kOWSProfilesManager_LocalProfileSecretKey
-                          inCollection:kOWSProfilesManager_Collection];
+    self.localUserProfile = [self getOrCreateUserProfileForRecipientId:kNSNotificationName_LocalProfileUniqueId];
+    OWSAssert(self.localUserProfile);
+    if (!self.localUserProfile.profileKey) {
+        self.localUserProfile.profileKey = [OWSProfilesManager generateLocalProfileKey];
+        // Make sure to save on the local db connection for consistency.
+        //
+        // NOTE: we do an async read/write here to avoid blocking during app launch path.
+        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.localUserProfile saveWithTransaction:transaction];
+        }];
     }
-    OWSAssert(_localProfileKey.length == kProfileKeyLength);
+    OWSAssert(self.localUserProfile.profileKey.length == kProfileKeyLength);
 
     return self;
 }
@@ -206,44 +190,36 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - User Profile Accessor
 
+// This method can be safely called from any thread.
 - (UserProfile *)getOrCreateUserProfileForRecipientId:(NSString *)recipientId
 {
-    OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
     __block UserProfile *instance;
     // Make sure to read on the local db connection for consistency.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         instance = [UserProfile fetchObjectWithUniqueID:recipientId transaction:transaction];
-
-        if (!instance) {
-            instance = [[UserProfile alloc] initWithRecipientId:recipientId
-                                                    profileName:nil
-                                                      avatarUrl:nil
-                                                   avatarDigest:nil
-                                                 avatarFileName:nil];
-            [instance saveWithTransaction:transaction];
-        }
     }];
+
+    if (!instance) {
+        instance = [[UserProfile alloc] initWithRecipientId:recipientId];
+    }
 
     OWSAssert(instance);
 
     return instance;
 }
 
-- (nullable UserProfile *)getOrCreateLocalUserProfile
+// All writes to user profiles should occur on the main thread.
+- (void)saveUserProfile:(UserProfile *)userProfile
 {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert(userProfile);
 
-    if (!self.localUserProfile) {
-        NSString *_Nullable recipientId = [TSAccountManager localNumber];
-        if (!recipientId) {
-            OWSFail(@"Missing local number.");
-            return nil;
-        }
-        self.localUserProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
-    }
-    return self.localUserProfile;
+    // Make sure to save on the local db connection for consistency.
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [userProfile saveWithTransaction:transaction];
+    }];
 }
 
 #pragma mark - Local Profile Key
@@ -257,14 +233,21 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Local Profile
 
-- (NSString *)localProfileName
+- (NSData *)localProfileKey
+{
+    OWSAssert(self.localUserProfile.profileKey.length == kProfileKeyLength);
+
+    return self.localUserProfile.profileKey;
+}
+
+- (nullable NSString *)localProfileName
 {
     OWSAssert([NSThread isMainThread]);
 
-    return [self getOrCreateLocalUserProfile].profileName;
+    return self.localUserProfile.profileName;
 }
 
-- (UIImage *)localProfileAvatarImage
+- (nullable UIImage *)localProfileAvatarImage
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -299,16 +282,15 @@ static const NSInteger kProfileKeyLength = 16;
             success:^{
                 // All reads and writes to user profiles should happen on the main thread.
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    UserProfile *userProfile = [self getOrCreateLocalUserProfile];
+                    UserProfile *userProfile = self.localUserProfile;
                     OWSAssert(userProfile);
                     userProfile.profileName = profileName;
                     userProfile.avatarUrl = avatarUrl;
                     userProfile.avatarDigest = avatarDigest;
                     userProfile.avatarFileName = avatarFileName;
-                    // Make sure to save on the local db connection for consistency.
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [userProfile saveWithTransaction:transaction];
-                    }];
+
+                    [self saveUserProfile:userProfile];
+
                     self.localCachedAvatarImage = avatarImage;
 
                     successBlock();
@@ -323,7 +305,7 @@ static const NSInteger kProfileKeyLength = 16;
             }];
     };
 
-    UserProfile *userProfile = [self getOrCreateLocalUserProfile];
+    UserProfile *userProfile = self.localUserProfile;
     OWSAssert(userProfile);
 
     // If we have a new avatar image, we must first:
@@ -536,43 +518,41 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Other User's Profiles
 
++ (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[self sharedManager] setProfileKey:profileKey forRecipientId:recipientId];
+    });
+}
+
 - (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(profileKey.length == kProfileKeyLength);
     OWSAssert(recipientId.length > 0);
     if (profileKey.length != kProfileKeyLength) {
         return;
     }
 
-    NSData *_Nullable existingProfileKey = [self profileKeyForRecipientId:recipientId];
-    if (existingProfileKey &&
-        [existingProfileKey isEqual:profileKey]) {
+    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    OWSAssert(userProfile);
+    if (userProfile.profileKey && [userProfile.profileKey isEqual:profileKey]) {
         // Ignore redundant update.
         return;
     }
 
-    [self.dbConnection setObject:profileKey
-                          forKey:recipientId
-                    inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
-    self.otherUsersProfileKeyCache[recipientId] = profileKey;
+    userProfile.profileKey = profileKey;
+
+    [self saveUserProfile:userProfile];
 }
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    NSData *_Nullable profileKey = self.otherUsersProfileKeyCache[recipientId];
-    if (profileKey.length > 0) {
-        return profileKey;
-    }
-
-    profileKey =
-        [self.dbConnection dataForKey:recipientId inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
-    if (profileKey) {
-        OWSAssert(profileKey.length == kProfileKeyLength);
-        self.otherUsersProfileKeyCache[recipientId] = profileKey;
-    }
-    return profileKey;
+    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    OWSAssert(userProfile);
+    return userProfile.profileKey;
 }
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
@@ -580,7 +560,7 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    [self fetchProfileForRecipientId:recipientId];
+    [self refreshProfileForRecipientId:recipientId];
 
     UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
     return userProfile.profileName;
@@ -591,7 +571,7 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    [self fetchProfileForRecipientId:recipientId];
+    [self refreshProfileForRecipientId:recipientId];
 
     UIImage *_Nullable image = [self.otherUsersProfileAvatarImageCache objectForKey:recipientId];
     if (image) {
@@ -609,8 +589,9 @@ static const NSInteger kProfileKeyLength = 16;
     return image;
 }
 
-- (void)fetchProfileForRecipientId:(NSString *)recipientId
+- (void)refreshProfileForRecipientId:(NSString *)recipientId
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
     UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
@@ -623,9 +604,8 @@ static const NSInteger kProfileKeyLength = 16;
     }
 
     userProfile.lastUpdateDate = [NSDate new];
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [userProfile saveWithTransaction:transaction];
-    }];
+
+    [self saveUserProfile:userProfile];
 
     // TODO: Actually update the profile.
 }

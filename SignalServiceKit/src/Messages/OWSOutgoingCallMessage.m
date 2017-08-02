@@ -9,7 +9,6 @@
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
 #import "OWSCallOfferMessage.h"
-#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSContactThread.h"
 

@@ -18,11 +18,10 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Local Profile
 
-@property (atomic, readonly) NSData *localProfileKey;
-
 // These two methods should only be called from the main thread.
-- (NSString *)localProfileName;
-- (UIImage *)localProfileAvatarImage;
+- (NSData *)localProfileKey;
+- (nullable NSString *)localProfileName;
+- (nullable UIImage *)localProfileAvatarImage;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
@@ -51,7 +50,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Other User's Profiles
 
-- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
++ (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId;
 
@@ -59,7 +58,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
 
-- (void)fetchProfileForRecipientId:(NSString *)recipientId;
+- (void)refreshProfileForRecipientId:(NSString *)recipientId;
 
 @end
 

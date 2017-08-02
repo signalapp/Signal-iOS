@@ -75,6 +75,7 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSProfilesManager.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
@@ -966,6 +967,7 @@ typedef enum : NSUInteger {
     }
     [self updateNavigationBarSubtitleLabel];
     [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
+    [OWSProfilesManager.sharedManager refreshProfilesForThread:self.thread];
 
     [self markVisibleMessagesAsRead];
 }
