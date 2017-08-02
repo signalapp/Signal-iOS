@@ -14,6 +14,7 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
+#import "OWSProfilesManager.h"
 #import "OWSUploadingService.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
@@ -356,6 +357,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSProfilesManager *profilesManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
@@ -396,6 +398,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(!_blockingManager);
 
     _blockingManager = blockingManager;
+}
+
+- (void)setProfilesManager:(OWSProfilesManager *)profilesManager
+{
+    OWSAssert(profilesManager);
+    OWSAssert(!_profilesManager);
+
+    _profilesManager = profilesManager;
 }
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -1158,7 +1168,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
     
     NSData *plainText = [message buildPlainTextData];
-    DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], plainText.length);
+    DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], (unsigned long)plainText.length);
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {

@@ -3,9 +3,9 @@
 //
 
 #import "DebugUIMessages.h"
+#import "DebugUIContacts.h"
 #import "Environment.h"
 #import "OWSTableViewController.h"
-#import "SecurityUtils.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
@@ -81,6 +82,22 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Create 10 fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100 fake threads with 10 messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:100 withFakeMessages:10];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10 fake threads with 100 messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:10 withFakeMessages:100];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10 fake threads with 10 messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:10 withFakeMessages:10];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100 fake threads with 100 messages"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:100 withFakeMessages:100];
                         }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
@@ -836,11 +853,27 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)sendFakeMessages:(int)counter thread:(TSThread *)thread
++ (void)createFakeThreads:(NSUInteger)threadCount withFakeMessages:(NSUInteger)messageCount
+{
+    [DebugUIContacts
+        createRandomContacts:threadCount
+              contactHandler:^(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop) {
+                  NSString *phoneNumberText = contact.phoneNumbers.firstObject.value.stringValue;
+                  OWSAssert(phoneNumberText);
+                  PhoneNumber *phoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumberText];
+                  OWSAssert(phoneNumber);
+                  OWSAssert(phoneNumber.toE164);
+
+                  TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
+                  [self sendFakeMessages:messageCount thread:contactThread];
+              }];
+}
+
++ (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *transaction) {
-        for (int i = 0; i < counter; i++) {
+        for (NSUInteger i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             switch (arc4random_uniform(4)) {
                 case 0: {

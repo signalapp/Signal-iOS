@@ -28,6 +28,7 @@
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSProfilesManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -160,6 +161,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
     [OWSAnalytics appLaunchDidBegin];
+    [OWSProfilesManager.sharedManager appLaunchDidBegin];
 
     return YES;
 }
@@ -242,8 +244,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }];
 
     self.incomingMessageReadObserver =
-        [[OWSIncomingMessageReadObserver alloc] initWithStorageManager:[TSStorageManager sharedManager]
-                                                         messageSender:[Environment getCurrent].messageSender];
+        [[OWSIncomingMessageReadObserver alloc] initWithMessageSender:[Environment getCurrent].messageSender];
     [self.incomingMessageReadObserver startObserving];
 
     self.staleNotificationObserver = [OWSStaleNotificationObserver new];

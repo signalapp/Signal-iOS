@@ -19,6 +19,7 @@
  *  @return Initialized object
  */
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 /**
  *  Returns the collection to which the object belongs.

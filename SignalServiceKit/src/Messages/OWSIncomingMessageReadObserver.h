@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/24/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,8 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSIncomingMessageReadObserver : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
-                         messageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender NS_DESIGNATED_INITIALIZER;
 
 - (void)startObserving;
 

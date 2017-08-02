@@ -1066,6 +1066,27 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
 
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
+
+/* Instructions for how to change the profile avatar. */
+"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
+
+/* Header title for the profile avatar field of the profile view. */
+"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
+
+/* Label for action that clear's the user's profile avatar */
+"PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "Profile";
+
 /* No comment provided by engineer. */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
 

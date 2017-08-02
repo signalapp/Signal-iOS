@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "SettingsTableViewController.h"
+#import "AppSettingsViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugUITableViewController.h"
@@ -11,6 +11,7 @@
 #import "OWSContactsManager.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "PrivacySettingsTableViewController.h"
+#import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
@@ -18,7 +19,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
-@interface SettingsTableViewController ()
+@interface AppSettingsViewController ()
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
@@ -26,7 +27,7 @@
 
 #pragma mark -
 
-@implementation SettingsTableViewController
+@implementation AppSettingsViewController
 
 - (instancetype)init
 {
@@ -72,7 +73,7 @@
     [self observeNotifications];
 
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
-    
+
     [self updateTableContents];
 }
 
@@ -83,7 +84,8 @@
     [self updateTableContents];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -94,7 +96,7 @@
     OWSTableContents *contents = [OWSTableContents new];
     OWSTableSection *section = [OWSTableSection new];
 
-    __weak SettingsTableViewController *weakSelf = self;
+    __weak AppSettingsViewController *weakSelf = self;
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.preservesSuperviewLayoutMargins = YES;
@@ -168,6 +170,13 @@
         }
                                                    actionBlock:nil]];
     }
+
+    [section addItem:[OWSTableItem
+                         disclosureItemWithText:NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.")
+                                    actionBlock:^{
+                                        [weakSelf showProfile];
+                                    }]];
+
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
                                               actionBlock:^{
@@ -225,7 +234,7 @@
                                                actionBlock:nil]];
 
     [contents addSection:section];
-    
+
     self.contents = contents;
 }
 
@@ -252,6 +261,12 @@
 {
     OWSLinkedDevicesTableViewController *vc =
         [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSLinkedDevicesTableViewController"];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showProfile
+{
+    ProfileViewController *vc = [[ProfileViewController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -288,7 +303,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
                                                         style:UIAlertActionStyleDestructive
                                                       handler:^(UIAlertAction *action) {
-                                                        [self proceedToUnregistration];
+                                                          [self proceedToUnregistration];
                                                       }]];
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
                                                         style:UIAlertActionStyleCancel
@@ -297,7 +312,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)proceedToUnregistration {
+- (void)proceedToUnregistration
+{
     [TSAccountManager unregisterTextSecureWithSuccess:^{
         [Environment resetAppData];
     }
@@ -316,9 +332,10 @@
                                                object:nil];
 }
 
-- (void)socketStateDidChange {
+- (void)socketStateDidChange
+{
     OWSAssert([NSThread isMainThread]);
-    
+
     [self updateTableContents];
 }
 

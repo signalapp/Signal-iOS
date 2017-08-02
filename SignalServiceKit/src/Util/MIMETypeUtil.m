@@ -364,36 +364,41 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 }
 
 + (NSString *)filePathForImage:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
-        stringByAppendingPathExtension:[self getSupportedExtensionFromImageMIMEType:contentType]];
+    return [self filePathForData:uniqueId
+               withFileExtension:[self getSupportedExtensionFromImageMIMEType:contentType]
+                        inFolder:folder];
 }
 
 + (NSString *)filePathForVideo:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
-        stringByAppendingPathExtension:[self getSupportedExtensionFromVideoMIMEType:contentType]];
+    return [self filePathForData:uniqueId
+               withFileExtension:[self getSupportedExtensionFromVideoMIMEType:contentType]
+                        inFolder:folder];
 }
 
 + (NSString *)filePathForAudio:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
-        stringByAppendingPathExtension:[self getSupportedExtensionFromAudioMIMEType:contentType]];
+    return [self filePathForData:uniqueId
+               withFileExtension:[self getSupportedExtensionFromAudioMIMEType:contentType]
+                        inFolder:folder];
 }
 
 + (NSString *)filePathForAnimated:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
-        stringByAppendingPathExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]];
+    return [self filePathForData:uniqueId
+               withFileExtension:[self getSupportedExtensionFromAnimatedMIMEType:contentType]
+                        inFolder:folder];
 }
 
 + (NSString *)filePathForBinaryData:(NSString *)uniqueId ofMIMEType:(NSString *)contentType inFolder:(NSString *)folder
 {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId]
-        stringByAppendingPathExtension:[self getSupportedExtensionFromBinaryDataMIMEType:contentType]];
+    return [self filePathForData:uniqueId
+               withFileExtension:[self getSupportedExtensionFromBinaryDataMIMEType:contentType]
+                        inFolder:folder];
 }
 
 + (NSString *)filePathForData:(NSString *)uniqueId
             withFileExtension:(NSString *)fileExtension
                      inFolder:(NSString *)folder
 {
-    return [[folder stringByAppendingFormat:@"/%@", uniqueId] stringByAppendingPathExtension:fileExtension];
+    return [folder stringByAppendingPathComponent:[uniqueId stringByAppendingPathExtension:fileExtension]];
 }
 
 + (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType

@@ -1,0 +1,143 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
+#import "YapDatabaseConnection+OWS.h"
+#import <25519/Curve25519.h>
+#import <AxolotlKit/PreKeyRecord.h>
+#import <AxolotlKit/SignedPrekeyRecord.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@implementation YapDatabaseConnection (OWS)
+
+- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    __block NSString *_Nullable object;
+
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        object = [transaction objectForKey:key inCollection:collection];
+    }];
+
+    return object;
+}
+
+- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection ofExpectedType:(Class) class {
+    id _Nullable value = [self objectForKey:key inCollection:collection];
+    OWSAssert(!value || [value isKindOfClass:class]);
+    return value;
+}
+
+    - (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSDictionary class]];
+}
+
+- (nullable NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSString class]];
+}
+
+- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return [number boolValue];
+}
+
+- (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSData class]];
+}
+
+- (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[ECKeyPair class]];
+}
+
+- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
+}
+
+- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[SignedPreKeyRecord class]];
+}
+
+- (int)intForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return [number intValue];
+}
+
+- (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    if (value) {
+        return [NSDate dateWithTimeIntervalSince1970:value.doubleValue];
+    } else {
+        return nil;
+    }
+}
+
+#pragma mark -
+
+- (void)purgeCollection:(NSString *)collection
+{
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:collection];
+    }];
+}
+
+- (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(object);
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:object forKey:key inCollection:collection];
+    }];
+}
+
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeObjectForKey:key inCollection:collection];
+    }];
+}
+
+- (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self setObject:@(integer) forKey:key inCollection:collection];
+}
+
+- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    __block int value = 0;
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        value = [[transaction objectForKey:key inCollection:collection] intValue];
+        value++;
+        [transaction setObject:@(value) forKey:key inCollection:collection];
+    }];
+    return value;
+}
+
+- (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    [self setObject:@(value.timeIntervalSince1970) forKey:key inCollection:collection];
+}
+
+@end
+
+NS_ASSUME_NONNULL_END

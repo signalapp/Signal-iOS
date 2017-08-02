@@ -4,14 +4,13 @@
 
 #import "NewGroupViewController.h"
 #import "AddToGroupViewController.h"
+#import "AvatarViewHelper.h"
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "GroupViewHelper.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
-#import "SecurityUtils.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
@@ -20,6 +19,7 @@
 #import "UIViewController+OWS.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -31,14 +31,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 @interface NewGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
     ContactsViewHelperDelegate,
-    GroupViewHelperDelegate,
+    AvatarViewHelperDelegate,
     AddToGroupViewControllerDelegate,
     OWSTableViewControllerDelegate,
     UINavigationControllerDelegate>
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) GroupViewHelper *groupViewHelper;
+@property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
@@ -84,8 +84,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     _messageSender = [Environment getCurrent].messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _groupViewHelper = [GroupViewHelper new];
-    _groupViewHelper.delegate = self;
+    _avatarViewHelper = [AvatarViewHelper new];
+    _avatarViewHelper.delegate = self;
 
     self.memberRecipientIds = [NSMutableSet new];
 }
@@ -181,7 +181,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (void)avatarTouched:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self showChangeGroupAvatarUI];
+        [self showChangeAvatarUI];
     }
 }
 
@@ -520,9 +520,9 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - Group Avatar
 
-- (void)showChangeGroupAvatarUI
+- (void)showChangeAvatarUI
 {
-    [self.groupViewHelper showChangeGroupAvatarUI];
+    [self.avatarViewHelper showChangeAvatarUI];
 }
 
 - (void)setGroupAvatar:(nullable UIImage *)groupAvatar
@@ -606,9 +606,15 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     return YES;
 }
 
-#pragma mark - GroupViewHelperDelegate
+#pragma mark - AvatarViewHelperDelegate
 
-- (void)groupAvatarDidChange:(UIImage *)image
+- (NSString *)avatarActionSheetTitle
+{
+    return NSLocalizedString(
+        @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");
+}
+
+- (void)avatarDidChange:(UIImage *)image
 {
     OWSAssert(image);
 
@@ -618,6 +624,11 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (UIViewController *)fromViewController
 {
     return self;
+}
+
+- (BOOL)hasClearAvatarAction
+{
+    return NO;
 }
 
 #pragma mark - AddToGroupViewControllerDelegate
