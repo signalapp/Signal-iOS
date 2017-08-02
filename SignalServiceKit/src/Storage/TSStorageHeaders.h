@@ -12,7 +12,6 @@
 #import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager+messageIDs.h"
 
 #endif

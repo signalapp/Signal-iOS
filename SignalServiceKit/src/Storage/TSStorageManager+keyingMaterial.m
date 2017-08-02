@@ -6,17 +6,6 @@
 
 @implementation TSStorageManager (keyingMaterial)
 
-+ (NSString *)localNumber
-{
-    return [[self sharedManager] localNumber];
-}
-
-- (NSString *)localNumber
-{
-    // TODO cache this? It only changes once, ever, and otherwise causes "surprising" transactions to occur.
-    return [self stringForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection];
-}
-
 - (void)ifLocalNumberPresent:(BOOL)runIfPresent runAsync:(void (^)())block;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

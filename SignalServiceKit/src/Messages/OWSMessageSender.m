@@ -30,7 +30,6 @@
 #import "TSPreKeyManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
@@ -623,7 +622,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             || [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
             TSContactThread *contactThread = (TSContactThread *)thread;
-            if ([contactThread.contactIdentifier isEqualToString:self.storageManager.localNumber]
+            if ([contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]]
                 && ![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
                 [self handleSendToMyself:message];
@@ -632,7 +631,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSString *recipientContactId = [message isKindOfClass:[OWSOutgoingSyncMessage class]]
-                ? self.storageManager.localNumber
+                ? [TSAccountManager localNumber]
                 : contactThread.contactIdentifier;
 
             // If we block a user, don't send 1:1 messages to them. The UI
@@ -734,7 +733,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *recipientId = recipient.recipientId;
 
         // We don't need to send the message to ourselves...
-        if ([recipientId isEqualToString:[TSStorageManager localNumber]]) {
+        if ([recipientId isEqualToString:[TSAccountManager localNumber]]) {
             continue;
         }
         // We don't need to sent the message to all group members if

@@ -23,11 +23,38 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
 @interface TSAccountManager ()
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 
 @end
 
 #pragma mark -
+
+@interface TSStorageManager (TSAccountManagerStorage)
+
+/**
+ *  Stored registered phone number
+ *
+ *  @return E164 string of the registered phone number
+ */
++ (nullable NSString *)localNumber;
+- (nullable NSString *)localNumber;
+
+@end
+
+@implementation TSStorageManager (TSAccountManagerStorage)
+
++ (nullable NSString *)localNumber
+{
+    return [[self sharedManager] localNumber];
+}
+
+- (nullable NSString *)localNumber
+{
+    return [self stringForKey:TSStorageRegisteredNumberKey inCollection:TSStorageUserAccountCollection];
+}
+
+@end
 
 @implementation TSAccountManager
 
@@ -95,13 +122,25 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
 
 + (nullable NSString *)localNumber
 {
-    TSAccountManager *sharedManager = [self sharedInstance];
-    NSString *awaitingVerif         = sharedManager.phoneNumberAwaitingVerification;
+    return [[self sharedInstance] localNumber];
+}
+
+- (nullable NSString *)localNumber
+{
+    NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
     if (awaitingVerif) {
         return awaitingVerif;
     }
 
-    return [TSStorageManager localNumber];
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self)
+    {
+        if (self.cachedLocalNumber == nil) {
+            self.cachedLocalNumber = [TSStorageManager localNumber];
+        }
+    }
+
+    return self.cachedLocalNumber;
 }
 
 + (uint32_t)getOrGenerateRegistrationId {
