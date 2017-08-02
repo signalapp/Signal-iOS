@@ -5,9 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
-
-// TODO: Remove feature flag
-//#define SKIP_PROFILE_KEYS
+extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfilesManager : NSObject
@@ -44,11 +42,15 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
 
-#pragma mark - Known Profile Keys
+#pragma mark - Other User's Profiles
 
 - (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId;
+
+- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
+
+- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
 
 @end
 

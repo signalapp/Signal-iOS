@@ -464,7 +464,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(contentBuilder);
     OWSAssert(recipient);
 
-#ifndef SKIP_PROFILE_KEYS
     OWSAssert(OWSProfilesManager.sharedManager.localProfileKey.length > 0);
     BOOL shouldIncludeProfileKey = NO;
 
@@ -498,7 +497,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     if (shouldIncludeProfileKey) {
         [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
     }
-#endif
 }
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient

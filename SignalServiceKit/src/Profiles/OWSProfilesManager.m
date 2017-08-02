@@ -74,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
+NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 
 NSString *const kOWSProfilesManager_Collection = @"kOWSProfilesManager_Collection";
 // This key is used to persist the local user's profile key.
@@ -85,7 +86,12 @@ NSString *const kOWSProfilesManager_LocalProfileAvatarMetadataKey
 NSString *const kOWSProfilesManager_UserWhitelistCollection = @"kOWSProfilesManager_UserWhitelistCollection";
 NSString *const kOWSProfilesManager_GroupWhitelistCollection = @"kOWSProfilesManager_GroupWhitelistCollection";
 
-NSString *const kOWSProfilesManager_KnownProfileKeysCollection = @"kOWSProfilesManager_KnownProfileKeysCollection";
+NSString *const kOWSProfilesManager_OtherUsersProfileKeysCollection
+    = @"kOWSProfilesManager_OtherUsersProfileKeysCollection";
+NSString *const kOWSProfilesManager_OtherUsersProfileNamesCollection
+    = @"kOWSProfilesManager_OtherUsersProfileNamesCollection";
+NSString *const kOWSProfilesManager_OtherUsersProfileAvatarMetadataCollection
+    = @"kOWSProfilesManager_OtherUsersProfileAvatarMetadataCollection";
 
 // TODO:
 static const NSInteger kProfileKeyLength = 16;
@@ -104,7 +110,10 @@ static const NSInteger kProfileKeyLength = 16;
 // These caches are lazy-populated.  The single point truth is the database.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *userProfileWhitelistCache;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *groupProfileWhitelistCache;
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSData *>*knownProfileKeyCache;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSData *> *otherUsersProfileKeyCache;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *otherUsersProfileNameCache;
+// TODO: Replace with NSCache.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
 
 @end
 
@@ -147,7 +156,9 @@ static const NSInteger kProfileKeyLength = 16;
     _dbConnection = storageManager.newDatabaseConnection;
     _userProfileWhitelistCache = [NSMutableDictionary new];
     _groupProfileWhitelistCache = [NSMutableDictionary new];
-    _knownProfileKeyCache = [NSMutableDictionary new];
+    _otherUsersProfileKeyCache = [NSMutableDictionary new];
+    _otherUsersProfileNameCache = [NSMutableDictionary new];
+    _otherUsersProfileAvatarImageCache = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -477,7 +488,7 @@ static const NSInteger kProfileKeyLength = 16;
     }
 }
 
-#pragma mark - Known Profile Keys
+#pragma mark - Other User's Profiles
 
 - (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
@@ -493,30 +504,70 @@ static const NSInteger kProfileKeyLength = 16;
         // Ignore redundant update.
         return;
     }
-    
+
     [self.dbConnection setObject:profileKey
                           forKey:recipientId
-                    inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
-    self.knownProfileKeyCache[recipientId] = profileKey;
+                    inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
+    self.otherUsersProfileKeyCache[recipientId] = profileKey;
 }
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    NSData *_Nullable profileKey = self.knownProfileKeyCache[recipientId];
+    NSData *_Nullable profileKey = self.otherUsersProfileKeyCache[recipientId];
     if (profileKey.length > 0) {
         return profileKey;
     }
 
     profileKey =
-    [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_KnownProfileKeysCollection];
+        [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
     if (profileKey) {
         OWSAssert(profileKey.length == kProfileKeyLength);
-        self.knownProfileKeyCache[recipientId] = profileKey;
+        self.otherUsersProfileKeyCache[recipientId] = profileKey;
     }
     return profileKey;
 }
+
+- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    NSString *_Nullable profileName = self.otherUsersProfileNameCache[recipientId];
+    if (profileName.length > 0) {
+        return profileName;
+    }
+
+    profileName =
+        [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_OtherUsersProfileNamesCollection];
+    if (profileName) {
+        OWSAssert(profileName.length == kProfileKeyLength);
+        self.otherUsersProfileNameCache[recipientId] = profileName;
+    } else {
+        [self fetchProfileForRecipientId:recipientId];
+    }
+    return profileName;
+}
+
+- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
+{
+    // TODO:
+    return nil;
+}
+
+- (void)fetchProfileForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    // TODO:
+}
+
+// NSString *const kOWSProfilesManager_OtherUsersProfileNamesCollection =
+// @"kOWSProfilesManager_OtherUsersProfileNamesCollection";  NSString *const
+// kOWSProfilesManager_OtherUsersProfileAvatarMetadataCollection =
+// @"kOWSProfilesManager_OtherUsersProfileAvatarMetadataCollection";  kNSNotificationName_OtherUsersProfileDidChange
+//@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *otherUsersProfileNameCache;
+//@property (nonatomic, readonly) NSMutableDictionary<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
 
 #pragma mark - Avatar Disk Cache
 

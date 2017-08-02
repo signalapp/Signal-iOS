@@ -496,14 +496,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         DDLogInfo(@"%@ handling content: <Content: %@>", self.tag, [self descriptionForContent:content]);
         
-#ifndef SKIP_PROFILE_KEYS
         if ([content hasProfileKey]) {
             NSData *profileKey = [content profileKey];
             NSString *recipientId = envelope.source;
             [OWSProfilesManager.sharedManager setProfileKey:profileKey
                                              forRecipientId:recipientId];
         }
-#endif
 
         if (content.hasSyncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
