@@ -50,6 +50,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
@@ -89,6 +90,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(messageSender);
 
     _storageManager = storageManager;
+    _dbConnection = storageManager.newDatabaseConnection;
     _messageSender = messageSender;
 
     OWSSingletonAssert();
@@ -113,9 +115,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)generateNewIdentityKey
 {
-    [self.storageManager setObject:[Curve25519 generateKeyPair]
-                            forKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                      inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    [self.dbConnection setObject:[Curve25519 generateKeyPair]
+                          forKey:TSStorageManagerIdentityKeyStoreIdentityKey
+                    inCollection:TSStorageManagerIdentityKeyStoreCollection];
 }
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
@@ -128,8 +130,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (nullable ECKeyPair *)identityKeyPair
 {
-    return [self.storageManager keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                                 inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    return [self.dbConnection keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
+                               inCollection:TSStorageManagerIdentityKeyStoreCollection];
 }
 
 - (int)localRegistrationId
@@ -148,9 +150,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // decisions, but it's desirable to try to keep it up to date with our trusted identitys
         // while we're switching between versions, e.g. so we don't get into a state where we have a
         // session for an identity not in our key store.
-        [self.storageManager setObject:identityKey
-                                forKey:recipientId
-                          inCollection:TSStorageManagerTrustedKeysCollection];
+        [self.dbConnection setObject:identityKey forKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
 
         OWSRecipientIdentity *existingIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
 
@@ -415,7 +415,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
     }
 
-    [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (TSMessage *message in messages) {
             [message saveWithTransaction:transaction];
         }
@@ -429,9 +429,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            [self.storageManager setObject:recipientId
-                                    forKey:recipientId
-                              inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+            [self.dbConnection setObject:recipientId
+                                  forKey:recipientId
+                            inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -455,8 +455,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         @synchronized(self)
         {
             NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
-            [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(
-                YapDatabaseReadWriteTransaction *transaction) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
                                                       usingBlock:^(NSString *_Nonnull recipientId,
                                                                    id _Nonnull object,
@@ -558,8 +557,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            [self.storageManager removeObjectForKey:recipientId
-                                       inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+            [self.dbConnection removeObjectForKey:recipientId
+                                     inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
         }
     });
 }
@@ -742,7 +741,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                      isLocalChange:isLocalChange]];
     }
 
-    [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (TSMessage *message in messages) {
             [message saveWithTransaction:transaction];
         }

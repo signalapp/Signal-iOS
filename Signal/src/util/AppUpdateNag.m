@@ -14,7 +14,7 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
 @interface AppUpdateNag () <ATAppUpdaterDelegate>
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -49,7 +49,7 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
     OWSAssert(storageManager);
 
-    _storageManager = storageManager;
+    _dbConnection = storageManager.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -68,9 +68,9 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
     if (!canPresent) {
         return;
     }
-    
-    NSDate *lastNagDate = [[TSStorageManager sharedManager] dateForKey:TSStorageManagerAppUpgradeNagDate
-                                                          inCollection:TSStorageManagerAppUpgradeNagCollection];
+
+    NSDate *lastNagDate = [self.dbConnection dateForKey:TSStorageManagerAppUpgradeNagDate
+                                           inCollection:TSStorageManagerAppUpgradeNagCollection];
     const NSTimeInterval kNagFrequency = kDayInterval * 14;
     BOOL canNag = (!lastNagDate || fabs(lastNagDate.timeIntervalSinceNow) > kNagFrequency);
     if (!canNag) {
@@ -96,9 +96,9 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 {
     DDLogInfo(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
 
-    [[TSStorageManager sharedManager] setDate:[NSDate new]
-                                       forKey:TSStorageManagerAppUpgradeNagDate
-                                 inCollection:TSStorageManagerAppUpgradeNagCollection];
+    [self.dbConnection setDate:[NSDate new]
+                        forKey:TSStorageManagerAppUpgradeNagDate
+                  inCollection:TSStorageManagerAppUpgradeNagCollection];
 }
 
 - (void)appUpdaterUserDidLaunchAppStore
