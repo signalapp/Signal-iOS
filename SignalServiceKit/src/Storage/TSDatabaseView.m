@@ -224,11 +224,17 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
         TSThread *thread = (TSThread *)object;
 
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-        OWSAssert(viewTransaction);
-        NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
-        if (threadMessageCount < 1) {
-            return nil;
+        if (thread.isGroupThread) {
+            // Do nothing; we never hide group threads.
+        } else if (thread.hasEverHadMessage) {
+            // Do nothing; we never hide threads that have ever had a message.
+        } else {
+            YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+            OWSAssert(viewTransaction);
+            NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
+            if (threadMessageCount < 1) {
+                return nil;
+            }
         }
 
         if (thread.archivalDate) {
@@ -248,7 +254,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
     YapDatabaseView *databaseView =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"2" options:options];
+        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [[TSStorageManager sharedManager].database registerExtension:databaseView
                                                         withName:TSThreadDatabaseViewExtensionName];
