@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     return recipient;
 }
 
+// TODO This method should probably live on the TSAccountManager rather than grabbing a global singleton.
 + (instancetype)selfRecipient
 {
     SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSAccountManager localNumber]];

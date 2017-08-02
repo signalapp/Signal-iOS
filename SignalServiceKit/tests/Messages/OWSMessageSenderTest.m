@@ -10,13 +10,13 @@
 #import "OWSFakeNetworkManager.h"
 #import "OWSMessageSender.h"
 #import "OWSUploadingService.h"
+#import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
@@ -174,6 +174,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface TSAccountManager (Testing)
+
+- (void)storeLocalNumber:(NSString *)localNumber;
+
+@end
+
 @interface OWSMessageSenderTest : XCTestCase
 
 @property (nonatomic) TSThread *thread;
@@ -192,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     // Hack to make sure we don't explode when sending sync message.
-    [[TSStorageManager sharedManager] storePhoneNumber:@"+13231231234"];
+    [[TSAccountManager sharedInstance] storeLocalNumber:@"+13231231234"];
 
     self.thread = [[TSContactThread alloc] initWithUniqueId:@"fake-thread-id"];
     [self.thread save];
