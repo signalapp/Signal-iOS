@@ -3,15 +3,21 @@
 //
 
 #import "YapDatabaseConnection+OWS.h"
+#import <25519/Curve25519.h>
+#import <AxolotlKit/PreKeyRecord.h>
+#import <AxolotlKit/SignedPrekeyRecord.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation YapDatabaseConnection (OWS)
 
-- (id)objectForKey:(NSString *)key inCollection:(NSString *)collection
+- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    __block NSString *object;
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    __block NSString *_Nullable object;
 
     [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:key inCollection:collection];
@@ -20,68 +26,57 @@ NS_ASSUME_NONNULL_BEGIN
     return object;
 }
 
-- (nullable NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection
+- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection ofExpectedType:(Class) class {
+    id _Nullable value = [self objectForKey:key inCollection:collection];
+    OWSAssert(!value || [value isKindOfClass:class]);
+    return value;
+}
+
+    - (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
 {
-    __block NSDictionary *object;
-
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        object = [transaction objectForKey:key inCollection:collection];
-    }];
-
-    return object;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSDictionary class]];
 }
 
 - (nullable NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    NSString *string = [self objectForKey:key inCollection:collection];
-
-    return string;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSString class]];
 }
 
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    NSNumber *boolNum = [self objectForKey:key inCollection:collection];
-
-    return [boolNum boolValue];
+    NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return [number boolValue];
 }
 
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    NSData *data = [self objectForKey:key inCollection:collection];
-    return data;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[NSData class]];
 }
 
 - (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    ECKeyPair *keyPair = [self objectForKey:key inCollection:collection];
-
-    return keyPair;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[ECKeyPair class]];
 }
 
 - (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    PreKeyRecord *preKeyRecord = [self objectForKey:key inCollection:collection];
-
-    return preKeyRecord;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
 }
 
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    SignedPreKeyRecord *preKeyRecord = [self objectForKey:key inCollection:collection];
-
-    return preKeyRecord;
+    return [self objectForKey:key inCollection:collection ofExpectedType:[SignedPreKeyRecord class]];
 }
 
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    int integer = [[self objectForKey:key inCollection:collection] intValue];
-
-    return integer;
+    NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return [number intValue];
 }
 
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    NSNumber *value = [self objectForKey:key inCollection:collection];
+    NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
     if (value) {
         return [NSDate dateWithTimeIntervalSince1970:value.doubleValue];
     } else {
@@ -100,21 +95,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
+    OWSAssert(object);
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:object forKey:key inCollection:collection];
     }];
 }
 
-- (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection
+- (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeObjectForKey:string inCollection:collection];
+        [transaction removeObjectForKey:key inCollection:collection];
     }];
 }
 
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    [self setObject:[NSNumber numberWithInt:integer] forKey:key inCollection:collection];
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self setObject:@(integer) forKey:key inCollection:collection];
 }
 
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection
