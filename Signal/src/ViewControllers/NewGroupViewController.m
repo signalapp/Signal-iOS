@@ -626,6 +626,11 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     return self;
 }
 
+- (BOOL)hasClearAvatarAction
+{
+    return NO;
+}
+
 #pragma mark - AddToGroupViewControllerDelegate
 
 - (void)recipientIdWasAdded:(NSString *)recipientId

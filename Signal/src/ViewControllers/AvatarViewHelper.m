@@ -53,6 +53,15 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
     [actionSheetController addAction:choosePictureAction];
 
+    if (self.delegate.hasClearAvatarAction) {
+        UIAlertAction *clearAction = [UIAlertAction actionWithTitle:self.delegate.clearAvatarActionLabel
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                                [self.delegate clearAvatar];
+                                                            }];
+        [actionSheetController addAction:clearAction];
+    }
+
     [self.delegate.fromViewController presentViewController:actionSheetController animated:true completion:nil];
 }
 
