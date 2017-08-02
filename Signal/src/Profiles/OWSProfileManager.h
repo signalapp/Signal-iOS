@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/ProfileManagerProtocol.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
@@ -10,7 +12,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 @class TSThread;
 
 // This class can be safely accessed and used from any thread.
-@interface OWSProfilesManager : NSObject
+@interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -33,9 +35,6 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock;
 
-// This method should only be called from the main thread.
-- (void)appLaunchDidBegin;
-
 #pragma mark - Profile Whitelist
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId;
@@ -50,7 +49,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Other User's Profiles
 
-+ (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
+- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId;
 

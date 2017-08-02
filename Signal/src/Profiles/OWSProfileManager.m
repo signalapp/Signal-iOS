@@ -2,16 +2,18 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSProfilesManager.h"
-#import "NSData+hexString.h"
-#import "NSDate+OWS.h"
-#import "OWSMessageSender.h"
-#import "SecurityUtils.h"
-#import "TSGroupThread.h"
-#import "TSStorageManager.h"
-#import "TSThread.h"
-#import "TSYapDatabaseObject.h"
-#import "TextSecureKitEnv.h"
+#import "OWSProfileManager.h"
+#import "Environment.h"
+#import <SignalServiceKit/NSData+hexString.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/SecurityUtils.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *avatarUrl;
 @property (nonatomic, nullable) NSString *avatarDigest;
 
-// This filename is relative to OWSProfilesManager.profileAvatarsDirPath.
+// This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (nonatomic, nullable) NSString *avatarFileName;
 
 // This should reflect when either:
@@ -85,13 +87,13 @@ NSString *const kNSNotificationName_LocalProfileUniqueId = @"kNSNotificationName
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 
-NSString *const kOWSProfilesManager_UserWhitelistCollection = @"kOWSProfilesManager_UserWhitelistCollection";
-NSString *const kOWSProfilesManager_GroupWhitelistCollection = @"kOWSProfilesManager_GroupWhitelistCollection";
+NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
+NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
 // TODO:
 static const NSInteger kProfileKeyLength = 16;
 
-@interface OWSProfilesManager ()
+@interface OWSProfileManager ()
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -113,11 +115,11 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark -
 
-@implementation OWSProfilesManager
+@implementation OWSProfileManager
 
 + (instancetype)sharedManager
 {
-    static OWSProfilesManager *sharedMyManager = nil;
+    static OWSProfileManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] initDefault];
@@ -128,7 +130,7 @@ static const NSInteger kProfileKeyLength = 16;
 - (instancetype)initDefault
 {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
 
     return [self initWithStorageManager:storageManager messageSender:messageSender];
 }
@@ -157,7 +159,7 @@ static const NSInteger kProfileKeyLength = 16;
     self.localUserProfile = [self getOrCreateUserProfileForRecipientId:kNSNotificationName_LocalProfileUniqueId];
     OWSAssert(self.localUserProfile);
     if (!self.localUserProfile.profileKey) {
-        self.localUserProfile.profileKey = [OWSProfilesManager generateLocalProfileKey];
+        self.localUserProfile.profileKey = [OWSProfileManager generateLocalProfileKey];
         // Make sure to save on the local db connection for consistency.
         //
         // NOTE: we do an async read/write here to avoid blocking during app launch path.
@@ -181,11 +183,6 @@ static const NSInteger kProfileKeyLength = 16;
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
-}
-
-- (void)appLaunchDidBegin
-{
-    // Do nothing; we only want to make sure this singleton is created on startup.
 }
 
 #pragma mark - User Profile Accessor
@@ -422,7 +419,7 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
+    [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
     self.userProfileWhitelistCache[recipientId] = @(YES);
 }
 
@@ -444,7 +441,7 @@ static const NSInteger kProfileKeyLength = 16;
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *recipientId in recipientIds) {
-            [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
+            [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
             self.userProfileWhitelistCache[recipientId] = @(YES);
         }
     }];
@@ -459,7 +456,7 @@ static const NSInteger kProfileKeyLength = 16;
         return [value boolValue];
     }
 
-    value = @([self.dbConnection hasObjectForKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection]);
+    value = @([self.dbConnection hasObjectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection]);
     self.userProfileWhitelistCache[recipientId] = value;
     return [value boolValue];
 }
@@ -469,7 +466,7 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert(groupId.length > 0);
 
     NSString *groupIdKey = [groupId hexadecimalString];
-    [self.dbConnection setObject:@(1) forKey:groupIdKey inCollection:kOWSProfilesManager_GroupWhitelistCollection];
+    [self.dbConnection setObject:@(1) forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
     self.groupProfileWhitelistCache[groupIdKey] = @(YES);
 }
 
@@ -484,7 +481,7 @@ static const NSInteger kProfileKeyLength = 16;
     }
 
     value =
-        @(nil != [self.dbConnection objectForKey:groupIdKey inCollection:kOWSProfilesManager_GroupWhitelistCollection]);
+        @(nil != [self.dbConnection objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection]);
     self.groupProfileWhitelistCache[groupIdKey] = value;
     return [value boolValue];
 }
@@ -496,10 +493,10 @@ static const NSInteger kProfileKeyLength = 16;
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
-        return [OWSProfilesManager.sharedManager isGroupIdInProfileWhitelist:groupId];
+        return [self isGroupIdInProfileWhitelist:groupId];
     } else {
         NSString *recipientId = thread.contactIdentifier;
-        return [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId];
+        return [self isUserInProfileWhitelist:recipientId];
     }
 }
 
@@ -507,7 +504,7 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(contactRecipientIds);
-    
+
     // TODO: The persisted whitelist could either be:
     //
     // * Just users manually added to the whitelist.
@@ -518,32 +515,26 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Other User's Profiles
 
-+ (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[self sharedManager] setProfileKey:profileKey forRecipientId:recipientId];
-    });
-}
-
 - (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
-    OWSAssert([NSThread isMainThread]);
     OWSAssert(profileKey.length == kProfileKeyLength);
     OWSAssert(recipientId.length > 0);
     if (profileKey.length != kProfileKeyLength) {
         return;
     }
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
-    OWSAssert(userProfile);
-    if (userProfile.profileKey && [userProfile.profileKey isEqual:profileKey]) {
-        // Ignore redundant update.
-        return;
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+        OWSAssert(userProfile);
+        if (userProfile.profileKey && [userProfile.profileKey isEqual:profileKey]) {
+            // Ignore redundant update.
+            return;
+        }
 
-    userProfile.profileKey = profileKey;
+        userProfile.profileKey = profileKey;
 
-    [self saveUserProfile:userProfile];
+        [self saveUserProfile:userProfile];
+    });
 }
 
 - (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId

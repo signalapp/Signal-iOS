@@ -19,12 +19,12 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
-#import "OWSProfilesManager.h"
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
+#import "ProfileManagerProtocol.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSCall.h"
@@ -499,7 +499,8 @@ NS_ASSUME_NONNULL_BEGIN
         if ([content hasProfileKey]) {
             NSData *profileKey = [content profileKey];
             NSString *recipientId = envelope.source;
-            [OWSProfilesManager setProfileKey:profileKey forRecipientId:recipientId];
+            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+            [profileManager setProfileKey:profileKey forRecipientId:recipientId];
         }
 
         if (content.hasSyncMessage) {

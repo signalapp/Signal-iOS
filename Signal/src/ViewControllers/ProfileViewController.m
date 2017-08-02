@@ -4,12 +4,12 @@
 
 #import "ProfileViewController.h"
 #import "AvatarViewHelper.h"
+#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
-#import <SignalServiceKit/OWSProfilesManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    _avatar = [OWSProfilesManager.sharedManager localProfileAvatarImage];
+    _avatar = [OWSProfileManager.sharedManager localProfileAvatarImage];
 
     [self createViews];
 }
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     _nameTextField.placeholder = NSLocalizedString(
         @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
     _nameTextField.delegate = self;
-    _nameTextField.text = [OWSProfilesManager.sharedManager localProfileName];
+    _nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
     [_nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
     _avatarView = [AvatarImageView new];
@@ -212,14 +212,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProfile
 {
     __weak ProfileViewController *weakSelf = self;
-    [OWSProfilesManager.sharedManager updateLocalProfileName:self.nameTextField.text
-                                                 avatarImage:self.avatar
-                                                     success:^{
-                                                         [weakSelf.navigationController popViewControllerAnimated:YES];
-                                                     }
-                                                     failure:^{
-                                                         // TODO: Handle failure.
-                                                     }];
+    [OWSProfileManager.sharedManager updateLocalProfileName:self.nameTextField.text
+                                                avatarImage:self.avatar
+                                                    success:^{
+                                                        [weakSelf.navigationController popViewControllerAnimated:YES];
+                                                    }
+                                                    failure:^{
+                                                        // TODO: Handle failure.
+                                                    }];
 }
 
 #pragma mark - UITextFieldDelegate
