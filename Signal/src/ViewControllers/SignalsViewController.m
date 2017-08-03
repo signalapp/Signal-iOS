@@ -797,7 +797,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // Perform the first step.
     if (self.presentedViewController) {
         if ([self.presentedViewController isKindOfClass:[CallViewController class]]) {
-            OWSProdInfo(@"error_could_not_present_view_due_to_call");
+            OWSProdInfo([OWSAnalyticsEvents errorCouldNotPresentViewDueToCall]);
             return;
         }
         [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];

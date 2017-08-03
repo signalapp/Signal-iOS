@@ -167,6 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"error_attachment_request_failed";
 }
 
++ (NSString *)errorCouldNotPresentViewDueToCall
+{
+    return @"error_could_not_present_view_due_to_call";
+}
+
 + (NSString *)errorEnableVideoCallingRequestFailed
 {
     return @"error_enable_video_calling_request_failed";
