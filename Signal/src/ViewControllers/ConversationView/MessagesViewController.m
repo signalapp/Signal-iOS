@@ -2956,8 +2956,6 @@ typedef enum : NSUInteger {
 
     [self.locationManager requestLocationWithCompletionHandler:^(NSString * _Nonnull stringLocation, UIImage * _Nonnull imageOfLocation) {
 
-        // Send message
-
         if ([Environment.preferences soundInForeground]) {
             [JSQSystemSoundPlayer jsq_playMessageSentSound];
         }
@@ -2969,12 +2967,10 @@ typedef enum : NSUInteger {
 
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
-
         [self finishSendingMessage];
         [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
 
         // Send image
-
         SignalAttachment *attachment =
         [SignalAttachment imageAttachmentWithImage:imageOfLocation
                                            dataUTI:(NSString *)kUTTypeJPEG
@@ -3719,7 +3715,6 @@ typedef enum : NSUInteger {
     OWSAssert(chooseDocumentImage);
     [sendLocationAction setValue:shareLocationImage forKey:@"image"];
     [actionSheetController addAction:sendLocationAction];
-
 
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
