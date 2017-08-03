@@ -144,6 +144,8 @@ NS_ASSUME_NONNULL_BEGIN
             case TSInfoMessageTypeSessionDidEnd:
             case TSInfoMessageTypeUnsupportedMessage:
             case TSInfoMessageAddToContactsOffer:
+            case TSInfoMessageAddUserToProfileWhitelistOffer:
+            case TSInfoMessageAddGroupToProfileWhitelistOffer:
                 result = [UIImage imageNamed:@"system_message_info"];
                 break;
             case TSInfoMessageTypeGroupUpdate:

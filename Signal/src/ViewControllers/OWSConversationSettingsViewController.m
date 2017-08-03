@@ -305,9 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 @"Indicates that user's profile has been shared with a user."))iconName
                                  :@"table_ic_share_profile"];
         }
-                                 actionBlock:^{
-                                     [weakSelf showShareProfileAlert];
-                                 }]];
+                                                       actionBlock:nil]];
     } else {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return
@@ -801,14 +799,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)shareProfile
 {
-    if (self.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        [OWSProfileManager.sharedManager addGroupIdToProfileWhitelist:groupId];
-    } else {
-        NSString *recipientId = self.thread.contactIdentifier;
-        [OWSProfileManager.sharedManager addUserToProfileWhitelist:recipientId];
-    }
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
 
     [self updateTableContents];
 }

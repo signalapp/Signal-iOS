@@ -95,6 +95,12 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageVerificationStateChange:
             return NSLocalizedString(@"VERIFICATION_STATE_CHANGE_GENERIC",
                 @"Generic message indicating that verification state changed for a given user.");
+        case TSInfoMessageAddUserToProfileWhitelistOffer:
+            return NSLocalizedString(@"ADD_USER_TO_PROFILE_WHITELIST_OFFER",
+                @"Message shown in conversation view that offers to share your profile with a user.");
+        case TSInfoMessageAddGroupToProfileWhitelistOffer:
+            return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
+                @"Message shown in conversation view that offers to share your profile with a group.");
         default:
             break;
     }

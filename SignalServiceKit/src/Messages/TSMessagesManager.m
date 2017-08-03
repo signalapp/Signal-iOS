@@ -674,6 +674,7 @@ NS_ASSUME_NONNULL_BEGIN
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
     OWSAssert([NSThread isMainThread]);
+
     if (syncMessage.hasSent) {
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];

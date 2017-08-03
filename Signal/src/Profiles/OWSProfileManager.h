@@ -24,6 +24,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 // These two methods should only be called from the main thread.
 - (NSData *)localProfileKey;
+- (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
 
@@ -39,15 +40,13 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Profile Whitelist
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
+
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
 
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
-
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
-
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
 
 #pragma mark - Other User's Profiles
 
