@@ -254,6 +254,13 @@ static const NSInteger kProfileKeyLength = 16;
     return self.localUserProfile.profileKey;
 }
 
+- (BOOL)hasLocalProfile
+{
+    OWSAssert([NSThread isMainThread]);
+
+    return (self.localProfileName.length > 0 || self.localProfileAvatarImage != nil);
+}
+
 - (nullable NSString *)localProfileName
 {
     OWSAssert([NSThread isMainThread]);
@@ -487,6 +494,20 @@ static const NSInteger kProfileKeyLength = 16;
     NSString *groupIdKey = [groupId hexadecimalString];
     [self.dbConnection setObject:@(1) forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
     self.groupProfileWhitelistCache[groupIdKey] = @(YES);
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        NSData *groupId = groupThread.groupModel.groupId;
+        [self addGroupIdToProfileWhitelist:groupId];
+    } else {
+        NSString *recipientId = thread.contactIdentifier;
+        [self addUserToProfileWhitelist:recipientId];
+    }
 }
 
 - (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId
