@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
+@class TSThread;
+
 // This class can be safely accessed and used from any thread.
 @interface OWSProfilesManager : NSObject
 
@@ -43,9 +45,9 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 
-- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId;
-
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
+
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
 
 #pragma mark - Other User's Profiles
 

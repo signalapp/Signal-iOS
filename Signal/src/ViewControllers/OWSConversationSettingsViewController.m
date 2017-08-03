@@ -294,16 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  }]];
     }
 
-    BOOL isOnProfileWhitelist = NO;
-    if (self.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        isOnProfileWhitelist = [OWSProfilesManager.sharedManager isGroupIdInProfileWhitelist:groupId];
-    } else {
-        NSString *recipientId = self.thread.contactIdentifier;
-        isOnProfileWhitelist = [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId];
-    }
-    if (isOnProfileWhitelist) {
+    if ([OWSProfilesManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 labelCellWithName:(self.isGroupThread

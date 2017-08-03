@@ -8,7 +8,9 @@
 #import "OWSMessageSender.h"
 #import "SecurityUtils.h"
 #import "TSAccountManager.h"
+#import "TSGroupThread.h"
 #import "TSStorageManager.h"
+#import "TSThread.h"
 #import "TSYapDatabaseObject.h"
 #import "TextSecureKitEnv.h"
 
@@ -60,11 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (NSString *)collection
-{
-    return @"UserProfile";
-}
-
 #pragma mark - NSObject
 
 - (BOOL)isEqual:(UserProfile *)other
@@ -113,7 +110,7 @@ static const NSInteger kProfileKeyLength = 16;
 // This property should only be mutated on the main thread,
 @property (nonatomic, nullable) UIImage *localCachedAvatarImage;
 
-// These caches are lazy-populated.  The single point truth is the database.
+// These caches are lazy-populated.  The single point of truth is the database.
 //
 // These three properties can be accessed on any thread.
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *userProfileWhitelistCache;
@@ -440,10 +437,35 @@ static const NSInteger kProfileKeyLength = 16;
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    [self.dbConnection setObject:@(1) forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
+    [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
     self.userProfileWhitelistCache[recipientId] = @(YES);
+}
+
+- (void)addUsersToProfileWhitelist:(NSArray<NSString *> *)recipientIds
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(recipientIds);
+
+    NSMutableArray<NSString *> *newRecipientIds = [NSMutableArray new];
+    for (NSString *recipientId in recipientIds) {
+        if (!self.userProfileWhitelistCache[recipientId]) {
+            [newRecipientIds addObject:recipientId];
+        }
+    }
+
+    if (newRecipientIds.count < 1) {
+        return;
+    }
+
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (NSString *recipientId in recipientIds) {
+            [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection];
+            self.userProfileWhitelistCache[recipientId] = @(YES);
+        }
+    }];
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
@@ -455,8 +477,7 @@ static const NSInteger kProfileKeyLength = 16;
         return [value boolValue];
     }
 
-    value =
-        @(nil != [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection]);
+    value = @([self.dbConnection hasObjectForKey:recipientId inCollection:kOWSProfilesManager_UserWhitelistCollection]);
     self.userProfileWhitelistCache[recipientId] = value;
     return [value boolValue];
 }
@@ -486,8 +507,23 @@ static const NSInteger kProfileKeyLength = 16;
     return [value boolValue];
 }
 
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        NSData *groupId = groupThread.groupModel.groupId;
+        return [OWSProfilesManager.sharedManager isGroupIdInProfileWhitelist:groupId];
+    } else {
+        NSString *recipientId = thread.contactIdentifier;
+        return [OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipientId];
+    }
+}
+
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(contactRecipientIds);
     
     // TODO: The persisted whitelist could either be:
@@ -495,9 +531,7 @@ static const NSInteger kProfileKeyLength = 16;
     // * Just users manually added to the whitelist.
     // * Also include users auto-added by, for example, being in the user's
     //   contacts or when the user initiates a 1:1 conversation with them, etc.
-    for (NSString *recipientId in contactRecipientIds) {
-        [self addUserToProfileWhitelist:recipientId];
-    }
+    [self addUsersToProfileWhitelist:contactRecipientIds];
 }
 
 #pragma mark - Other User's Profiles
@@ -533,7 +567,7 @@ static const NSInteger kProfileKeyLength = 16;
     }
 
     profileKey =
-        [self.dbConnection objectForKey:recipientId inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
+        [self.dbConnection dataForKey:recipientId inCollection:kOWSProfilesManager_OtherUsersProfileKeysCollection];
     if (profileKey) {
         OWSAssert(profileKey.length == kProfileKeyLength);
         self.otherUsersProfileKeyCache[recipientId] = profileKey;

@@ -480,17 +480,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         // recipient OR the group is in the whitelist.
         if ([OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipient.recipientId]) {
             shouldIncludeProfileKey = YES;
-        } else if (self.thread.isGroupThread) {
-            TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-            NSData *groupId = groupThread.groupModel.groupId;
-
-            if ([OWSProfilesManager.sharedManager isGroupIdInProfileWhitelist:groupId]) {
-                [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
-            }
-        } else {
-            TSContactThread *contactThread = (TSContactThread *)self.thread;
-            NSString *recipientId = contactThread.contactIdentifier;
-            OWSAssert([recipientId isEqualToString:recipient.recipientId]);
+        } else if ([OWSProfilesManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
+            shouldIncludeProfileKey = YES;
         }
     }
 
