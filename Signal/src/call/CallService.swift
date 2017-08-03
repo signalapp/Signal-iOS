@@ -894,7 +894,7 @@ protocol CallServiceObserver: class {
      * For incoming call, when the local user has chosen to accept the call.
      */
     func handleConnectedCall(_ call: SignalCall) {
-        Logger.debug("\(TAG) in \(#function)")
+        Logger.info("\(TAG) in \(#function)")
         AssertIsOnMainThread()
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -910,6 +910,8 @@ protocol CallServiceObserver: class {
         self.fulfillCallConnectedPromise?()
 
         call.state = .connected
+
+        self.startActiveCallTimer(call: call)
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
         peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
@@ -1430,6 +1432,7 @@ protocol CallServiceObserver: class {
 
         self.call?.removeAllObservers()
         self.call = nil
+        self.stopAnyActiveCallTimer()
         self.sendIceUpdatesImmediately = true
         Logger.info("\(TAG) clearing pendingIceUpdateMessages")
         self.pendingIceUpdateMessages = []
@@ -1566,6 +1569,52 @@ protocol CallServiceObserver: class {
                                                  localVideoTrack:localVideoTrack,
                                                  remoteVideoTrack:remoteVideoTrack)
         }
+    }
+
+    // MARK: CallViewController Timer
+
+    var activeCallTimer: Timer?
+    func startActiveCallTimer(call: SignalCall) {
+        AssertIsOnMainThread()
+        assert(call.state == .connected)
+
+        if self.activeCallTimer != nil {
+            owsFail("\(TAG) activeCallTimer should only be set once per call")
+            self.activeCallTimer!.invalidate()
+            self.activeCallTimer = nil
+        }
+
+        self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { [weak self] timer in
+            guard let strongSelf = self else {
+                return
+            }
+
+            guard call == strongSelf.call else {
+                owsFail("\(strongSelf.TAG) call has since ended. Timer should have been invalidated.")
+                timer.invalidate()
+                return
+            }
+
+            strongSelf.ensureCallScreenVisible(call: call)
+        }
+    }
+
+    func ensureCallScreenVisible(call: SignalCall) {
+        guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
+            owsFail("\(TAG) in \(#function) CallViewController should already be visible.")
+            self.callUIAdapter.showCall(call)
+            return
+        }
+
+        Logger.debug("\(TAG) in \(#function) already visible.")
+    }
+
+    func stopAnyActiveCallTimer() {
+        AssertIsOnMainThread()
+        assert(self.call == nil)
+
+        self.activeCallTimer?.invalidate()
+        self.activeCallTimer = nil
     }
 }
 
