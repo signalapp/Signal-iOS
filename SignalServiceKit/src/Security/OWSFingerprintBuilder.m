@@ -6,21 +6,21 @@
 #import "ContactsManagerProtocol.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
-#import "TSStorageManager+keyingMaterial.h"
+#import "TSAccountManager.h"
 #import <25519/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFingerprintBuilder ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 
 @end
 
 @implementation OWSFingerprintBuilder
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithAccountManager:(TSAccountManager *)accountManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     self = [super init];
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _storageManager = storageManager;
+    _accountManager = accountManager;
     _contactsManager = contactsManager;
 
     return self;
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
-    NSString *mySignalId = [self.storageManager localNumber];
+    NSString *mySignalId = [self.accountManager localNumber];
     NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableId:mySignalId

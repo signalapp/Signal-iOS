@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _storageManager = [TSStorageManager sharedManager];
+    _accountManager = [TSAccountManager sharedInstance];
     _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
@@ -925,7 +925,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-    [newGroupMemberIds removeObject:[self.storageManager localNumber]];
+    [newGroupMemberIds removeObject:[self.accountManager localNumber]];
     gThread.groupModel.groupMemberIds = newGroupMemberIds;
     [gThread save];
 

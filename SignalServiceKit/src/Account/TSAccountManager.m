@@ -20,16 +20,23 @@ NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificationName_RegistrationStateDidChange";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
+NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
+NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
+
 @interface TSAccountManager ()
 
+@property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, nullable) NSString *cachedLocalNumber;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
 #pragma mark -
 
 @implementation TSAccountManager
+
+@synthesize isRegistered = _isRegistered;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
@@ -40,7 +47,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
     }
 
     _networkManager = networkManager;
-    _storageManager = storageManager;
+    _dbConnection = [storageManager newDatabaseConnection];
 
     OWSSingletonAssert();
 
@@ -68,13 +75,42 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
                                                       userInfo:nil];
 }
 
-+ (BOOL)isRegistered {
-    return [TSStorageManager localNumber] ? YES : NO;
++ (BOOL)isRegistered
+{
+    return [[self sharedInstance] isRegistered];
 }
 
-- (void)ifRegistered:(BOOL)isRegistered runAsync:(void (^)())block
+- (BOOL)isRegistered
 {
-    [self.storageManager ifLocalNumberPresent:isRegistered runAsync:block];
+    if (_isRegistered) {
+        return YES;
+    } else {
+        @synchronized (self) {
+            // Cache this once it's true since it's called alot, involves a dbLookup, and once set - it doesn't change.
+            _isRegistered = [self storedLocalNumber] != nil;
+        }
+    }
+    return _isRegistered;
+}
+
+- (void)ifRegistered:(BOOL)runIfRegistered runAsync:(void (^)())block
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if ([self isRegistered] == runIfRegistered) {
+            if (runIfRegistered) {
+                DDLogDebug(@"%@ Running existing-user block", self.tag);
+            } else {
+                DDLogDebug(@"%@ Running new-user block", self.tag);
+            }
+            block();
+        } else {
+            if (runIfRegistered) {
+                DDLogDebug(@"%@ Skipping existing-user block for new-user", self.tag);
+            } else {
+                DDLogDebug(@"%@ Skipping new-user block for existing-user", self.tag);
+            }
+        }
+    });
 }
 
 - (void)didRegister
@@ -86,7 +122,7 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
         @throw [NSException exceptionWithName:@"RegistrationFail" reason:@"Internal Corrupted State" userInfo:nil];
     }
 
-    [self.storageManager storePhoneNumber:phoneNumber];
+    [self storeLocalNumber:phoneNumber];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
                                                         object:nil
@@ -95,32 +131,61 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
 
 + (nullable NSString *)localNumber
 {
-    TSAccountManager *sharedManager = [self sharedInstance];
-    NSString *awaitingVerif         = sharedManager.phoneNumberAwaitingVerification;
+    return [[self sharedInstance] localNumber];
+}
+
+- (nullable NSString *)localNumber
+{
+    NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
     if (awaitingVerif) {
         return awaitingVerif;
     }
 
-    return [TSStorageManager localNumber];
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self)
+    {
+        if (self.cachedLocalNumber == nil) {
+            self.cachedLocalNumber = self.storedLocalNumber;
+        }
+    }
+
+    return self.cachedLocalNumber;
 }
 
-+ (uint32_t)getOrGenerateRegistrationId {
-    YapDatabaseConnection *dbConn   = [[TSStorageManager sharedManager] newDatabaseConnection];
-    __block uint32_t registrationID = 0;
+- (nullable NSString *)storedLocalNumber
+{
+    @synchronized (self) {
+        return [self.dbConnection stringForKey:TSAccountManager_RegisteredNumberKey
+                                  inCollection:TSStorageUserAccountCollection];
+    }
+}
 
-    [dbConn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      registrationID = [[transaction objectForKey:TSStorageLocalRegistrationId
-                                     inCollection:TSStorageUserAccountCollection] unsignedIntValue];
-    }];
+- (void)storeLocalNumber:(NSString *)localNumber
+{
+    @synchronized (self) {
+        [self.dbConnection setObject:localNumber
+                              forKey:TSAccountManager_RegisteredNumberKey
+                        inCollection:TSStorageUserAccountCollection];
+    }
+}
+
++ (uint32_t)getOrGenerateRegistrationId
+{
+    return [[self sharedInstance] getOrGenerateRegistrationId];
+}
+
+- (uint32_t)getOrGenerateRegistrationId
+{
+    uint32_t registrationID = [[self.dbConnection objectForKey:TSAccountManager_LocalRegistrationIdKey
+                                                  inCollection:TSStorageUserAccountCollection] unsignedIntValue];
 
     if (registrationID == 0) {
         registrationID = (uint32_t)arc4random_uniform(16380) + 1;
+        DDLogWarn(@"%@ Generated a new registrationID: %u", self.tag, registrationID);
 
-        [dbConn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-          [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                          forKey:TSStorageLocalRegistrationId
-                    inCollection:TSStorageUserAccountCollection];
-        }];
+        [self.dbConnection setObject:[NSNumber numberWithUnsignedInteger:registrationID]
+                              forKey:TSAccountManager_LocalRegistrationIdKey
+                        inCollection:TSStorageUserAccountCollection];
     }
 
     return registrationID;

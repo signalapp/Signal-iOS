@@ -9,7 +9,6 @@
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSMessagesManager.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIDevice+TSHardwareVersion.h"

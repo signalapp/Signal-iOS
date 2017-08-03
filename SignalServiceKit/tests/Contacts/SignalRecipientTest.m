@@ -3,9 +3,15 @@
 //
 
 #import "SignalRecipient.h"
+#import "TSAccountManager.h"
 #import "TSStorageManager+keyingMaterial.h"
-#import "TSStorageManager.h"
 #import <XCTest/XCTest.h>
+
+@interface TSAccountManager (Testing)
+
+- (void)storeLocalNumber:(NSString *)localNumber;
+
+@end
 
 @interface SignalRecipientTest : XCTestCase
 
@@ -19,7 +25,7 @@
 {
     [super setUp];
     self.localNumber = @"+13231231234";
-    [[TSStorageManager sharedManager] storePhoneNumber:self.localNumber];
+    [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
 }
 
 - (void)testSelfRecipientWithExistingRecord

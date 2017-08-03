@@ -476,10 +476,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (NSString *)webSocketAuthenticationString {
-    return [NSString
-        stringWithFormat:@"?login=%@&password=%@",
-                         [[TSStorageManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                         [TSStorageManager serverAuthToken]];
+    return [NSString stringWithFormat:@"?login=%@&password=%@",
+                     [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+                     [TSStorageManager serverAuthToken]];
 }
 
 #pragma mark - Socket LifeCycle

@@ -3,9 +3,8 @@
 //
 
 #import "TSAttributes.h"
-
 #import "TSAccountManager.h"
-#import "TSStorageHeaders.h"
+#import "TSStorageManager+keyingMaterial.h"
 
 @implementation TSAttributes
 

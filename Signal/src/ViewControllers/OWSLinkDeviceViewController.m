@@ -8,7 +8,7 @@
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.ows_privateKey;
-    NSString *accountIdentifier = [TSStorageManager localNumber];
+    NSString *accountIdentifier = [TSAccountManager localNumber];
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
                                                                              myPrivateKey:myPrivateKey

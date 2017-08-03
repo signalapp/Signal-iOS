@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewScanController () <OWSQRScannerDelegate>
 
-@property (nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) NSString *recipientId;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) OWSFingerprint *fingerprint;
@@ -39,8 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     self.recipientId = recipientId;
-
-    self.storageManager = [TSStorageManager sharedManager];
+    self.accountManager = [TSAccountManager sharedInstance];
 
     OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
     self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
@@ -53,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =
-        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
+        [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
     self.fingerprint =
         [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
 }
