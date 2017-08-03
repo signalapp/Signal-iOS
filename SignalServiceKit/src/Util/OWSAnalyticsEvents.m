@@ -72,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"call_service_call_unexpectedly_idle";
 }
 
++ (NSString *)callServiceCallViewCouldNotPresent
+{
+    return @"call_service_call_view_could_not_present";
+}
+
 + (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise
 {
     return @"call_service_could_not_create_peer_connection_client_promise";

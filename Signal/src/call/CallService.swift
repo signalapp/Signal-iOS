@@ -1610,7 +1610,7 @@ protocol CallServiceObserver: class {
         }
 
         guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
-            OWSProdError("call_service_call_view_could_not_present", file:#file, function:#function, line:#line)
+            OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file:#file, function:#function, line:#line)
             owsFail("\(TAG) in \(#function) CallViewController should already be visible.")
             self.terminateCall()
             return
