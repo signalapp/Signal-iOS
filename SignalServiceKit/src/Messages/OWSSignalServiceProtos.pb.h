@@ -275,30 +275,25 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Content_syncMessage @"syncMessage"
 #define Content_callMessage @"callMessage"
 #define Content_nullMessage @"nullMessage"
-#define Content_profileKey @"profileKey"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
   BOOL hasCallMessage_:1;
   BOOL hasNullMessage_:1;
-  BOOL hasProfileKey_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
   OWSSignalServiceProtosCallMessage* callMessage;
   OWSSignalServiceProtosNullMessage* nullMessage;
-  NSData* profileKey;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
 - (BOOL) hasCallMessage;
 - (BOOL) hasNullMessage;
-- (BOOL) hasProfileKey;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (readonly, strong) OWSSignalServiceProtosNullMessage* nullMessage;
-@property (readonly, strong) NSData* profileKey;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -362,11 +357,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) setNullMessageBuilder:(OWSSignalServiceProtosNullMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosContentBuilder*) mergeNullMessage:(OWSSignalServiceProtosNullMessage*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage;
-
-- (BOOL) hasProfileKey;
-- (NSData*) profileKey;
-- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSData*) value;
-- (OWSSignalServiceProtosContentBuilder*) clearProfileKey;
 @end
 
 #define NullMessage_padding @"padding"
@@ -504,27 +494,32 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define CallMessage_iceUpdate @"iceUpdate"
 #define CallMessage_hangup @"hangup"
 #define CallMessage_busy @"busy"
+#define CallMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosCallMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasOffer_:1;
   BOOL hasAnswer_:1;
   BOOL hasHangup_:1;
   BOOL hasBusy_:1;
+  BOOL hasProfileKey_:1;
   OWSSignalServiceProtosCallMessageOffer* offer;
   OWSSignalServiceProtosCallMessageAnswer* answer;
   OWSSignalServiceProtosCallMessageHangup* hangup;
   OWSSignalServiceProtosCallMessageBusy* busy;
+  NSData* profileKey;
   NSMutableArray * iceUpdateArray;
 }
 - (BOOL) hasOffer;
 - (BOOL) hasAnswer;
 - (BOOL) hasHangup;
 - (BOOL) hasBusy;
+- (BOOL) hasProfileKey;
 @property (readonly, strong) OWSSignalServiceProtosCallMessageOffer* offer;
 @property (readonly, strong) OWSSignalServiceProtosCallMessageAnswer* answer;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosCallMessageIceUpdate*> * iceUpdate;
 @property (readonly, strong) OWSSignalServiceProtosCallMessageHangup* hangup;
 @property (readonly, strong) OWSSignalServiceProtosCallMessageBusy* busy;
+@property (readonly, strong) NSData* profileKey;
 - (OWSSignalServiceProtosCallMessageIceUpdate*)iceUpdateAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -895,6 +890,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosCallMessageBuilder*) setBusyBuilder:(OWSSignalServiceProtosCallMessageBusyBuilder*) builderForValue;
 - (OWSSignalServiceProtosCallMessageBuilder*) mergeBusy:(OWSSignalServiceProtosCallMessageBusy*) value;
 - (OWSSignalServiceProtosCallMessageBuilder*) clearBusy;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosCallMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSSignalServiceProtosCallMessageBuilder*) clearProfileKey;
 @end
 
 #define DataMessage_body @"body"
@@ -902,14 +902,17 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define DataMessage_group @"group"
 #define DataMessage_flags @"flags"
 #define DataMessage_expireTimer @"expireTimer"
+#define DataMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosDataMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasBody_:1;
   BOOL hasGroup_:1;
+  BOOL hasProfileKey_:1;
   BOOL hasFlags_:1;
   BOOL hasExpireTimer_:1;
   NSString* body;
   OWSSignalServiceProtosGroupContext* group;
+  NSData* profileKey;
   UInt32 flags;
   UInt32 expireTimer;
   NSMutableArray * attachmentsArray;
@@ -918,11 +921,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasGroup;
 - (BOOL) hasFlags;
 - (BOOL) hasExpireTimer;
+- (BOOL) hasProfileKey;
 @property (readonly, strong) NSString* body;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosAttachmentPointer*> * attachments;
 @property (readonly, strong) OWSSignalServiceProtosGroupContext* group;
 @property (readonly) UInt32 flags;
 @property (readonly) UInt32 expireTimer;
+@property (readonly, strong) NSData* profileKey;
 - (OWSSignalServiceProtosAttachmentPointer*)attachmentsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -987,6 +992,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (UInt32) expireTimer;
 - (OWSSignalServiceProtosDataMessageBuilder*) setExpireTimer:(UInt32) value;
 - (OWSSignalServiceProtosDataMessageBuilder*) clearExpireTimer;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosDataMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSSignalServiceProtosDataMessageBuilder*) clearProfileKey;
 @end
 
 #define SyncMessage_sent @"sent"
@@ -997,6 +1007,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define SyncMessage_blocked @"blocked"
 #define SyncMessage_verified @"verified"
 #define SyncMessage_padding @"padding"
+#define SyncMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosSyncMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasSent_:1;
@@ -1006,6 +1017,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasBlocked_:1;
   BOOL hasVerified_:1;
   BOOL hasPadding_:1;
+  BOOL hasProfileKey_:1;
   OWSSignalServiceProtosSyncMessageSent* sent;
   OWSSignalServiceProtosSyncMessageContacts* contacts;
   OWSSignalServiceProtosSyncMessageGroups* groups;
@@ -1013,6 +1025,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   OWSSignalServiceProtosSyncMessageBlocked* blocked;
   OWSSignalServiceProtosVerified* verified;
   NSData* padding;
+  NSData* profileKey;
   NSMutableArray * readArray;
 }
 - (BOOL) hasSent;
@@ -1022,6 +1035,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasBlocked;
 - (BOOL) hasVerified;
 - (BOOL) hasPadding;
+- (BOOL) hasProfileKey;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageSent* sent;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageGroups* groups;
@@ -1030,6 +1044,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 @property (readonly, strong) NSData* padding;
+@property (readonly, strong) NSData* profileKey;
 - (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -1475,6 +1490,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) padding;
 - (OWSSignalServiceProtosSyncMessageBuilder*) setPadding:(NSData*) value;
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosSyncMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSSignalServiceProtosSyncMessageBuilder*) clearProfileKey;
 @end
 
 #define AttachmentPointer_id @"id"

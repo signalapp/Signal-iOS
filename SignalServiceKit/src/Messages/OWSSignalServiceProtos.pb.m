@@ -560,7 +560,6 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
 @property (strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (strong) OWSSignalServiceProtosNullMessage* nullMessage;
-@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosContent
@@ -593,20 +592,12 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
   hasNullMessage_ = !!_value_;
 }
 @synthesize nullMessage;
-- (BOOL) hasProfileKey {
-  return !!hasProfileKey_;
-}
-- (void) setHasProfileKey:(BOOL) _value_ {
-  hasProfileKey_ = !!_value_;
-}
-@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.dataMessage = [OWSSignalServiceProtosDataMessage defaultInstance];
     self.syncMessage = [OWSSignalServiceProtosSyncMessage defaultInstance];
     self.callMessage = [OWSSignalServiceProtosCallMessage defaultInstance];
     self.nullMessage = [OWSSignalServiceProtosNullMessage defaultInstance];
-    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -638,9 +629,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (self.hasNullMessage) {
     [output writeMessage:4 value:self.nullMessage];
   }
-  if (self.hasProfileKey) {
-    [output writeData:5 value:self.profileKey];
-  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -661,9 +649,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasNullMessage) {
     size_ += computeMessageSize(4, self.nullMessage);
-  }
-  if (self.hasProfileKey) {
-    size_ += computeDataSize(5, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -724,9 +709,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
-  if (self.hasProfileKey) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
-  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -750,9 +732,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
    [self.nullMessage storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"nullMessage"];
   }
-  if (self.hasProfileKey) {
-    [dictionary setObject: self.profileKey forKey: @"profileKey"];
-  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -772,8 +751,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
       (!self.hasCallMessage || [self.callMessage isEqual:otherMessage.callMessage]) &&
       self.hasNullMessage == otherMessage.hasNullMessage &&
       (!self.hasNullMessage || [self.nullMessage isEqual:otherMessage.nullMessage]) &&
-      self.hasProfileKey == otherMessage.hasProfileKey &&
-      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -789,9 +766,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasNullMessage) {
     hashCode = hashCode * 31 + [self.nullMessage hash];
-  }
-  if (self.hasProfileKey) {
-    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -848,9 +822,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (other.hasNullMessage) {
     [self mergeNullMessage:other.nullMessage];
   }
-  if (other.hasProfileKey) {
-    [self setProfileKey:other.profileKey];
-  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -906,10 +877,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setNullMessage:[subBuilder buildPartial]];
-        break;
-      }
-      case 42: {
-        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -1033,22 +1000,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage {
   resultContent.hasNullMessage = NO;
   resultContent.nullMessage = [OWSSignalServiceProtosNullMessage defaultInstance];
-  return self;
-}
-- (BOOL) hasProfileKey {
-  return resultContent.hasProfileKey;
-}
-- (NSData*) profileKey {
-  return resultContent.profileKey;
-}
-- (OWSSignalServiceProtosContentBuilder*) setProfileKey:(NSData*) value {
-  resultContent.hasProfileKey = YES;
-  resultContent.profileKey = value;
-  return self;
-}
-- (OWSSignalServiceProtosContentBuilder*) clearProfileKey {
-  resultContent.hasProfileKey = NO;
-  resultContent.profileKey = [NSData data];
   return self;
 }
 @end
@@ -1646,6 +1597,7 @@ NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtos
 @property (strong) NSMutableArray<OWSSignalServiceProtosCallMessageIceUpdate*> * iceUpdateArray;
 @property (strong) OWSSignalServiceProtosCallMessageHangup* hangup;
 @property (strong) OWSSignalServiceProtosCallMessageBusy* busy;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosCallMessage
@@ -1680,12 +1632,20 @@ NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtos
   hasBusy_ = !!_value_;
 }
 @synthesize busy;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.offer = [OWSSignalServiceProtosCallMessageOffer defaultInstance];
     self.answer = [OWSSignalServiceProtosCallMessageAnswer defaultInstance];
     self.hangup = [OWSSignalServiceProtosCallMessageHangup defaultInstance];
     self.busy = [OWSSignalServiceProtosCallMessageBusy defaultInstance];
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -1726,6 +1686,9 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
   if (self.hasBusy) {
     [output writeMessage:5 value:self.busy];
   }
+  if (self.hasProfileKey) {
+    [output writeData:6 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1749,6 +1712,9 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
   }
   if (self.hasBusy) {
     size_ += computeMessageSize(5, self.busy);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(6, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1815,6 +1781,9 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1843,6 +1812,9 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
    [self.busy storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"busy"];
   }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1863,6 +1835,8 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
       (!self.hasHangup || [self.hangup isEqual:otherMessage.hangup]) &&
       self.hasBusy == otherMessage.hasBusy &&
       (!self.hasBusy || [self.busy isEqual:otherMessage.busy]) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1881,6 +1855,9 @@ static OWSSignalServiceProtosCallMessage* defaultOWSSignalServiceProtosCallMessa
   }
   if (self.hasBusy) {
     hashCode = hashCode * 31 + [self.busy hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3219,6 +3196,9 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
   if (other.hasBusy) {
     [self mergeBusy:other.busy];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3280,6 +3260,10 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setBusy:[subBuilder buildPartial]];
+        break;
+      }
+      case 50: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -3426,6 +3410,22 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
   resultCallMessage.busy = [OWSSignalServiceProtosCallMessageBusy defaultInstance];
   return self;
 }
+- (BOOL) hasProfileKey {
+  return resultCallMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultCallMessage.profileKey;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) setProfileKey:(NSData*) value {
+  resultCallMessage.hasProfileKey = YES;
+  resultCallMessage.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosCallMessageBuilder*) clearProfileKey {
+  resultCallMessage.hasProfileKey = NO;
+  resultCallMessage.profileKey = [NSData data];
+  return self;
+}
 @end
 
 @interface OWSSignalServiceProtosDataMessage ()
@@ -3434,6 +3434,7 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
 @property (strong) OWSSignalServiceProtosGroupContext* group;
 @property UInt32 flags;
 @property UInt32 expireTimer;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosDataMessage
@@ -3468,12 +3469,20 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
   hasExpireTimer_ = !!_value_;
 }
 @synthesize expireTimer;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.body = @"";
     self.group = [OWSSignalServiceProtosGroupContext defaultInstance];
     self.flags = 0;
     self.expireTimer = 0;
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -3514,6 +3523,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasExpireTimer) {
     [output writeUInt32:5 value:self.expireTimer];
   }
+  if (self.hasProfileKey) {
+    [output writeData:6 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -3537,6 +3549,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   }
   if (self.hasExpireTimer) {
     size_ += computeUInt32Size(5, self.expireTimer);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(6, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3594,6 +3609,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasExpireTimer) {
     [output appendFormat:@"%@%@: %@\n", indent, @"expireTimer", [NSNumber numberWithInteger:self.expireTimer]];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -3616,6 +3634,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasExpireTimer) {
     [dictionary setObject: [NSNumber numberWithInteger:self.expireTimer] forKey: @"expireTimer"];
   }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -3636,6 +3657,8 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
       (!self.hasFlags || self.flags == otherMessage.flags) &&
       self.hasExpireTimer == otherMessage.hasExpireTimer &&
       (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -3654,6 +3677,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   }
   if (self.hasExpireTimer) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.expireTimer] hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3737,6 +3763,9 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   if (other.hasExpireTimer) {
     [self setExpireTimer:other.expireTimer];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3783,6 +3812,10 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
       }
       case 40: {
         [self setExpireTimer:[input readUInt32]];
+        break;
+      }
+      case 50: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -3887,6 +3920,22 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   resultDataMessage.expireTimer = 0;
   return self;
 }
+- (BOOL) hasProfileKey {
+  return resultDataMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultDataMessage.profileKey;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) setProfileKey:(NSData*) value {
+  resultDataMessage.hasProfileKey = YES;
+  resultDataMessage.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) clearProfileKey {
+  resultDataMessage.hasProfileKey = NO;
+  resultDataMessage.profileKey = [NSData data];
+  return self;
+}
 @end
 
 @interface OWSSignalServiceProtosSyncMessage ()
@@ -3898,6 +3947,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 @property (strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (strong) OWSSignalServiceProtosVerified* verified;
 @property (strong) NSData* padding;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosSyncMessage
@@ -3953,6 +4003,13 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   hasPadding_ = !!_value_;
 }
 @synthesize padding;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sent = [OWSSignalServiceProtosSyncMessageSent defaultInstance];
@@ -3962,6 +4019,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
     self.blocked = [OWSSignalServiceProtosSyncMessageBlocked defaultInstance];
     self.verified = [OWSSignalServiceProtosVerified defaultInstance];
     self.padding = [NSData data];
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -4011,6 +4069,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output writeData:8 value:self.padding];
   }
+  if (self.hasProfileKey) {
+    [output writeData:9 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4043,6 +4104,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   }
   if (self.hasPadding) {
     size_ += computeDataSize(8, self.padding);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(9, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -4124,6 +4188,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4165,6 +4232,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [dictionary setObject: self.padding forKey: @"padding"];
   }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -4191,6 +4261,8 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
       (!self.hasVerified || [self.verified isEqual:otherMessage.verified]) &&
       self.hasPadding == otherMessage.hasPadding &&
       (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4218,6 +4290,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   }
   if (self.hasPadding) {
     hashCode = hashCode * 31 + [self.padding hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -5891,6 +5966,9 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   if (other.hasPadding) {
     [self setPadding:other.padding];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -5974,6 +6052,10 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
       }
       case 66: {
         [self setPadding:[input readData]];
+        break;
+      }
+      case 74: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -6194,6 +6276,22 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding {
   resultSyncMessage.hasPadding = NO;
   resultSyncMessage.padding = [NSData data];
+  return self;
+}
+- (BOOL) hasProfileKey {
+  return resultSyncMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultSyncMessage.profileKey;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) setProfileKey:(NSData*) value {
+  resultSyncMessage.hasProfileKey = YES;
+  resultSyncMessage.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder*) clearProfileKey {
+  resultSyncMessage.hasProfileKey = NO;
+  resultSyncMessage.profileKey = [NSData data];
   return self;
 }
 @end
