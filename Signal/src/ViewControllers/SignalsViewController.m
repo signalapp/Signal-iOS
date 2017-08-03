@@ -728,6 +728,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    // TODO: Do this synchronously if we're already on the main thread.
     dispatch_async(dispatch_get_main_queue(), ^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
@@ -736,11 +737,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                 callOnViewAppearing:callOnViewAppearing];
         self.lastThread = thread;
 
-        if (self.presentedViewController) {
-            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-        }
-        [self.navigationController popToRootViewControllerAnimated:YES];
-        [self.navigationController pushViewController:mvc animated:YES];
+        [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
     });
 }
 
@@ -799,6 +796,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // Perform the first step.
     if (self.presentedViewController) {
+        if ([self.presentedViewController isKindOfClass:[CallViewController class]]) {
+            OWSProdInfo(@"error_could_not_present_view_due_to_call");
+            return;
+        }
         [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];
     } else {
         dismissNavigationBlock();
