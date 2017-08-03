@@ -144,8 +144,10 @@ protocol CallServiceObserver: class {
                 if let oldValue = oldValue {
                     DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
                 }
+                stopAnyCallTimer()
                 if let call = call {
                     DeviceSleepManager.sharedInstance.addBlock(blockObject: call)
+                    self.startCallTimer()
                 }
             }
 
@@ -911,8 +913,6 @@ protocol CallServiceObserver: class {
 
         call.state = .connected
 
-        self.startActiveCallTimer(call: call)
-
         // We don't risk transmitting any media until the remote client has admitted to being connected.
         peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
@@ -1432,7 +1432,6 @@ protocol CallServiceObserver: class {
 
         self.call?.removeAllObservers()
         self.call = nil
-        self.stopAnyActiveCallTimer()
         self.sendIceUpdatesImmediately = true
         Logger.info("\(TAG) clearing pendingIceUpdateMessages")
         self.pendingIceUpdateMessages = []
@@ -1574,9 +1573,8 @@ protocol CallServiceObserver: class {
     // MARK: CallViewController Timer
 
     var activeCallTimer: Timer?
-    func startActiveCallTimer(call: SignalCall) {
+    func startCallTimer() {
         AssertIsOnMainThread()
-        assert(call.state == .connected)
 
         if self.activeCallTimer != nil {
             owsFail("\(TAG) activeCallTimer should only be set once per call")
@@ -1589,29 +1587,38 @@ protocol CallServiceObserver: class {
                 return
             }
 
-            guard call == strongSelf.call else {
+            guard let call = strongSelf.call else {
                 owsFail("\(strongSelf.TAG) call has since ended. Timer should have been invalidated.")
                 timer.invalidate()
                 return
             }
 
-            strongSelf.ensureCallScreenVisible(call: call)
+            strongSelf.ensureCallScreenPresented(call: call)
         }
     }
 
-    func ensureCallScreenVisible(call: SignalCall) {
-        guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
-            owsFail("\(TAG) in \(#function) CallViewController should already be visible.")
-            self.callUIAdapter.showCall(call)
+    func ensureCallScreenPresented(call: SignalCall) {
+        guard let connectedDate = call.connectedDate else {
+            // Ignore; call hasn't connected yet.
             return
         }
 
-        Logger.debug("\(TAG) in \(#function) already visible.")
+        let kMaxViewPresentationDelay = 2.5
+        guard fabs(connectedDate.timeIntervalSinceNow) > kMaxViewPresentationDelay else {
+            // Ignore; call connected recently.
+            return
+        }
+
+        guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
+            OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file:#file, function:#function, line:#line)
+            owsFail("\(TAG) in \(#function) Call terminated due to call view presentation delay.")
+            self.terminateCall()
+            return
+        }
     }
 
-    func stopAnyActiveCallTimer() {
+    func stopAnyCallTimer() {
         AssertIsOnMainThread()
-        assert(self.call == nil)
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
