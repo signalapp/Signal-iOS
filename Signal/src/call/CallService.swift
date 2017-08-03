@@ -144,10 +144,10 @@ protocol CallServiceObserver: class {
                 if let oldValue = oldValue {
                     DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
                 }
-                stopAnyActiveCallTimer()
+                stopAnyCallTimer()
                 if let call = call {
                     DeviceSleepManager.sharedInstance.addBlock(blockObject: call)
-                    self.startActiveCallTimer()
+                    self.startCallTimer()
                 }
             }
 
@@ -1573,7 +1573,7 @@ protocol CallServiceObserver: class {
     // MARK: CallViewController Timer
 
     var activeCallTimer: Timer?
-    func startActiveCallTimer() {
+    func startCallTimer() {
         AssertIsOnMainThread()
 
         if self.activeCallTimer != nil {
@@ -1593,11 +1593,11 @@ protocol CallServiceObserver: class {
                 return
             }
 
-            strongSelf.ensureCallScreenVisible(call: call)
+            strongSelf.ensureCallScreenPresented(call: call)
         }
     }
 
-    func ensureCallScreenVisible(call: SignalCall) {
+    func ensureCallScreenPresented(call: SignalCall) {
         guard let connectedDate = call.connectedDate else {
             // Ignore; call hasn't connected yet.
             return
@@ -1611,13 +1611,13 @@ protocol CallServiceObserver: class {
 
         guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file:#file, function:#function, line:#line)
-            owsFail("\(TAG) in \(#function) CallViewController should already be visible.")
+            owsFail("\(TAG) in \(#function) Call terminated due to call view presentation delay.")
             self.terminateCall()
             return
         }
     }
 
-    func stopAnyActiveCallTimer() {
+    func stopAnyCallTimer() {
         AssertIsOnMainThread()
 
         self.activeCallTimer?.invalidate()
