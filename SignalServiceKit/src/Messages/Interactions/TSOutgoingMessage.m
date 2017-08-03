@@ -4,7 +4,10 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSOutgoingSyncMessage.h"
+#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -455,11 +458,43 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return [[self dataMessageBuilder] build];
 }
 
-- (NSData *)buildPlainTextData
+- (void)addLocalProfileKeyIfNecessary:(OWSSignalServiceProtosContentBuilder *)contentBuilder
+                            recipient:(SignalRecipient *)recipient
+{
+    OWSAssert(contentBuilder);
+    OWSAssert(recipient);
+
+    OWSAssert(OWSProfilesManager.sharedManager.localProfileKey.length > 0);
+    BOOL shouldIncludeProfileKey = NO;
+
+    if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        // Always sync the profile key to linked devices.
+        shouldIncludeProfileKey = YES;
+    } else {
+        OWSAssert(self.thread);
+
+        // For 1:1 threads, we want to include the profile key IFF the
+        // contact is in the whitelist.
+        //
+        // For Group threads, we want to include the profile key IFF the
+        // recipient OR the group is in the whitelist.
+        if ([OWSProfilesManager.sharedManager isUserInProfileWhitelist:recipient.recipientId]) {
+            shouldIncludeProfileKey = YES;
+        } else if ([OWSProfilesManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
+            shouldIncludeProfileKey = YES;
+        }
+    }
+
+    if (shouldIncludeProfileKey) {
+        [contentBuilder setProfileKey:OWSProfilesManager.sharedManager.localProfileKey];
+    }
+}
+
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     contentBuilder.dataMessage = [self buildDataMessage];
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 

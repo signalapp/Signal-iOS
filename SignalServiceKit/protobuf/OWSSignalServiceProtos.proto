@@ -35,6 +35,7 @@ message Content {
   optional SyncMessage syncMessage = 2;
   optional CallMessage callMessage = 3;
   optional NullMessage nullMessage = 4;
+  optional bytes profileKey        = 5;
 }
 
 message NullMessage {

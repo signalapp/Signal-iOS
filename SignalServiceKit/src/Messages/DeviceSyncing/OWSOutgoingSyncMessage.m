@@ -3,8 +3,9 @@
 //
 
 #import "OWSOutgoingSyncMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "Cryptography.h"
+#import "OWSProfilesManager.h"
+#import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,11 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSSignalServiceProtosSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setSyncMessage:[self buildSyncMessage]];
-
+    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
     return [[contentBuilder build] data];
 }
 

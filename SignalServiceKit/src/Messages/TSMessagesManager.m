@@ -19,6 +19,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
+#import "OWSProfilesManager.h"
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
@@ -494,6 +495,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         DDLogInfo(@"%@ handling content: <Content: %@>", self.tag, [self descriptionForContent:content]);
+        
+        if ([content hasProfileKey]) {
+            NSData *profileKey = [content profileKey];
+            NSString *recipientId = envelope.source;
+            [OWSProfilesManager.sharedManager setProfileKey:profileKey
+                                             forRecipientId:recipientId];
+        }
+
         if (content.hasSyncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
         } else if (content.hasDataMessage) {
