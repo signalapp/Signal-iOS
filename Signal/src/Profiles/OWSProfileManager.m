@@ -668,12 +668,8 @@ static const NSInteger kProfileKeyLength = 16;
         avatarDigest = nil;
     }
 
-    BOOL isProfileNameSame = [self isNullableStringEqual:userProfile.profileName toString:profileName];
     BOOL isAvatarSame = ([self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl] &&
         [self isNullableDataEqual:userProfile.avatarDigest toData:avatarDigest]);
-    if (isProfileNameSame && isAvatarSame) {
-        return;
-    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         userProfile.profileName = profileName;
@@ -683,11 +679,13 @@ static const NSInteger kProfileKeyLength = 16;
         if (!isAvatarSame) {
             // Evacuate avatar image cache.
             [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
+
+            if (avatarUrl) {
+                [self downloadProfileAvatarWithUrl:avatarUrl recipientId:recipientId];
+            }
         }
 
-        if (avatarUrl) {
-            [self downloadProfileAvatarWithUrl:avatarUrl recipientId:recipientId];
-        }
+        userProfile.lastUpdateDate = [NSDate new];
 
         [self saveUserProfile:userProfile];
     });
