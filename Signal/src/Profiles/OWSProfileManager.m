@@ -4,6 +4,7 @@
 
 #import "OWSProfileManager.h"
 #import "Environment.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -27,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 // These properties may be accessed only from the main thread.
 @property (nonatomic, nullable) NSString *profileName;
 @property (nonatomic, nullable) NSString *avatarUrl;
-@property (nonatomic, nullable) NSString *avatarDigest;
+@property (nonatomic, nullable) NSData *avatarDigest;
 
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (nonatomic, nullable) NSString *avatarFileName;
@@ -68,8 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return ([other isKindOfClass:[UserProfile class]] && [self.recipientId isEqualToString:other.recipientId] &&
         [self.profileName isEqualToString:other.profileName] && [self.avatarUrl isEqualToString:other.avatarUrl] &&
-        [self.avatarDigest isEqualToString:other.avatarDigest] &&
-        [self.avatarFileName isEqualToString:other.avatarFileName]);
+        [self.avatarDigest isEqual:other.avatarDigest] && [self.avatarFileName isEqualToString:other.avatarFileName]);
 }
 
 - (NSUInteger)hash
@@ -97,6 +97,7 @@ static const NSInteger kProfileKeyLength = 16;
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
 
 @property (atomic, nullable) UserProfile *localUserProfile;
 // This property should only be mutated on the main thread,
@@ -131,12 +132,14 @@ static const NSInteger kProfileKeyLength = 16;
 {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    TSNetworkManager *networkManager = [Environment getCurrent].networkManager;
 
-    return [self initWithStorageManager:storageManager messageSender:messageSender];
+    return [self initWithStorageManager:storageManager messageSender:messageSender networkManager:networkManager];
 }
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
                          messageSender:(OWSMessageSender *)messageSender
+                        networkManager:(TSNetworkManager *)networkManager
 {
     self = [super init];
 
@@ -147,9 +150,12 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(storageManager);
     OWSAssert(messageSender);
+    OWSAssert(messageSender);
 
     _messageSender = messageSender;
     _dbConnection = storageManager.newDatabaseConnection;
+    _networkManager = networkManager;
+
     _userProfileWhitelistCache = [NSMutableDictionary new];
     _groupProfileWhitelistCache = [NSMutableDictionary new];
     _otherUsersProfileAvatarImageCache = [NSCache new];
@@ -217,6 +223,16 @@ static const NSInteger kProfileKeyLength = 16;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [userProfile saveWithTransaction:transaction];
     }];
+
+    if (userProfile == self.localUserProfile) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
+                                                            object:nil
+                                                          userInfo:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_OtherUsersProfileDidChange
+                                                            object:nil
+                                                          userInfo:nil];
+    }
 }
 
 #pragma mark - Local Profile Key
@@ -271,8 +287,8 @@ static const NSInteger kProfileKeyLength = 16;
     //
     // * Try to update the service.
     // * Update client state on success.
-    void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable, NSString *_Nullable) = ^(
-        NSString *_Nullable avatarUrl, NSString *_Nullable avatarDigest, NSString *_Nullable avatarFileName) {
+    void (^tryToUpdateService)(NSString *_Nullable, NSData *_Nullable, NSString *_Nullable) = ^(
+        NSString *_Nullable avatarUrl, NSData *_Nullable avatarDigest, NSString *_Nullable avatarFileName) {
         [self updateProfileOnService:profileName
             avatarUrl:avatarUrl
             avatarDigest:avatarDigest
@@ -291,10 +307,6 @@ static const NSInteger kProfileKeyLength = 16;
                     self.localCachedAvatarImage = avatarImage;
 
                     successBlock();
-
-                    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
-                                                                        object:nil
-                                                                      userInfo:nil];
                 });
             }
             failure:^{
@@ -325,7 +337,7 @@ static const NSInteger kProfileKeyLength = 16;
                 success:^(NSData *data, NSString *fileName) {
                     [self uploadAvatarToService:data
                         fileName:fileName
-                        success:^(NSString *avatarUrl, NSString *avatarDigest) {
+                        success:^(NSString *avatarUrl, NSData *avatarDigest) {
                             tryToUpdateService(avatarUrl, avatarDigest, fileName);
                         }
                         failure:^{
@@ -372,7 +384,7 @@ static const NSInteger kProfileKeyLength = 16;
 // TODO: The exact API & encryption scheme for avatars is not yet settled.
 - (void)uploadAvatarToService:(NSData *)data
                      fileName:(NSString *)fileName
-                      success:(void (^)(NSString *avatarUrl, NSString *avatarDigest))successBlock
+                      success:(void (^)(NSString *avatarUrl, NSData *avatarDigest))successBlock
                       failure:(void (^)())failureBlock
 {
     OWSAssert(data.length > 0);
@@ -383,7 +395,7 @@ static const NSInteger kProfileKeyLength = 16;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // TODO:
         NSString *avatarUrl = @"avatarUrl";
-        NSString *avatarDigest = @"avatarDigest";
+        NSData *avatarDigest = [@"avatarDigest" dataUsingEncoding:NSUTF8StringEncoding];
         if (YES) {
             successBlock(avatarUrl, avatarDigest);
             return;
@@ -395,7 +407,7 @@ static const NSInteger kProfileKeyLength = 16;
 // TODO: The exact API & encryption scheme for profiles is not yet settled.
 - (void)updateProfileOnService:(nullable NSString *)localProfileName
                      avatarUrl:(nullable NSString *)avatarUrl
-                  avatarDigest:(nullable NSString *)avatarDigest
+                  avatarDigest:(nullable NSData *)avatarDigest
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock
 {
@@ -403,6 +415,12 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // TODO: Do we need to use NSDataBase64EncodingOptions?
+        NSString *_Nullable localProfileNameEncrypted =
+            [[self encryptProfileString:localProfileName] base64EncodedString];
+        NSString *_Nullable avatarUrlEncrypted = [[self encryptProfileString:avatarUrl] base64EncodedString];
+        NSString *_Nullable avatarDigestEncrypted = [[self encryptProfileData:avatarDigest] base64EncodedString];
+
         // TODO:
         if (YES) {
             successBlock();
@@ -534,6 +552,8 @@ static const NSInteger kProfileKeyLength = 16;
         userProfile.profileKey = profileKey;
 
         [self saveUserProfile:userProfile];
+
+        [self refreshProfileForRecipientId:recipientId ignoreThrottling:YES];
     });
 }
 
@@ -575,17 +595,39 @@ static const NSInteger kProfileKeyLength = 16;
         if (image) {
             [self.otherUsersProfileAvatarImageCache setObject:image forKey:recipientId];
         }
+    } else if (userProfile.avatarUrl) {
+        [self downloadProfileAvatarWithUrl:userProfile.avatarUrl recipientId:recipientId];
     }
 
     return image;
 }
 
+- (void)downloadProfileAvatarWithUrl:(NSString *)avatarUrl recipientId:(NSString *)recipientId
+{
+    OWSAssert(avatarUrl.length > 0);
+    OWSAssert(recipientId.length > 0);
+
+    // TODO:
+}
+
 - (void)refreshProfileForRecipientId:(NSString *)recipientId
+{
+    [self refreshProfileForRecipientId:recipientId ignoreThrottling:NO];
+}
+
+- (void)refreshProfileForRecipientId:(NSString *)recipientId ignoreThrottling:(BOOL)ignoreThrottling
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
     UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+
+    if (!userProfile.profileKey) {
+        // There's no point in fetching the profile for a user
+        // if we don't have their profile key; we won't be able
+        // to decrypt it.
+        return;
+    }
 
     // Throttle and debounce the updates.
     const NSTimeInterval kMaxRefreshFrequency = 5 * kMinuteInterval;
@@ -598,7 +640,153 @@ static const NSInteger kProfileKeyLength = 16;
 
     [self saveUserProfile:userProfile];
 
-    // TODO: Actually update the profile.
+    [ProfileFetcherJob runWithRecipientId:recipientId
+                           networkManager:self.networkManager
+                         ignoreThrottling:ignoreThrottling];
+}
+
+- (void)updateProfileForRecipientId:(NSString *)recipientId
+               profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
+                 avatarUrlEncrypted:(NSData *_Nullable)avatarUrlEncrypted
+              avatarDigestEncrypted:(NSData *_Nullable)avatarDigestEncrypted
+{
+    OWSAssert(recipientId.length > 0);
+
+    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    if (!userProfile.profileKey) {
+        return;
+    }
+
+    NSString *_Nullable profileName =
+        [self decryptProfileString:profileNameEncrypted profileKey:userProfile.profileKey];
+    NSString *_Nullable avatarUrl = [self decryptProfileString:avatarUrlEncrypted profileKey:userProfile.profileKey];
+    NSData *_Nullable avatarDigest = [self decryptProfileData:avatarDigestEncrypted profileKey:userProfile.profileKey];
+
+    if (!avatarUrl || !avatarDigest) {
+        // If either avatar url or digest is missing, skip both.
+        avatarUrl = nil;
+        avatarDigest = nil;
+    }
+
+    BOOL isProfileNameSame = [self isNullableStringEqual:userProfile.profileName toString:profileName];
+    BOOL isAvatarSame = ([self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl] &&
+        [self isNullableDataEqual:userProfile.avatarDigest toData:avatarDigest]);
+    if (isProfileNameSame && isAvatarSame) {
+        return;
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        userProfile.profileName = profileName;
+        userProfile.avatarUrl = avatarUrl;
+        userProfile.avatarDigest = avatarDigest;
+
+        if (!isAvatarSame) {
+            // Evacuate avatar image cache.
+            [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
+        }
+
+        if (avatarUrl) {
+            [self downloadProfileAvatarWithUrl:avatarUrl recipientId:recipientId];
+        }
+
+        [self saveUserProfile:userProfile];
+    });
+}
+
+- (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
+{
+    if (left == nil && right == nil) {
+        return YES;
+    } else if (left == nil || right == nil) {
+        return YES;
+    } else {
+        return [left isEqual:right];
+    }
+}
+
+- (BOOL)isNullableStringEqual:(NSString *_Nullable)left toString:(NSString *_Nullable)right
+{
+    if (left == nil && right == nil) {
+        return YES;
+    } else if (left == nil || right == nil) {
+        return YES;
+    } else {
+        return [left isEqualToString:right];
+    }
+}
+
+#pragma mark - Profile Encryption
+
++ (NSData *_Nullable)decryptProfileData:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+{
+    OWSAssert(profileKey.length == kProfileKeyLength);
+
+    if (!encryptedData) {
+        return nil;
+    }
+
+    // TODO: Decrypt.
+    return nil;
+}
+
++ (NSString *_Nullable)decryptProfileString:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+{
+    OWSAssert(profileKey.length == kProfileKeyLength);
+
+    NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKey];
+
+    if (decryptedData) {
+        return [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+    } else {
+        return nil;
+    }
+}
+
++ (NSData *_Nullable)encryptProfileData:(NSData *_Nullable)data profileKey:(NSData *)profileKey
+{
+    OWSAssert(profileKey.length == kProfileKeyLength);
+
+    if (!data) {
+        return nil;
+    }
+
+    // TODO: Encrypt.
+    return nil;
+}
+
++ (NSData *_Nullable)encryptProfileString:(NSString *_Nullable)value profileKey:(NSData *)profileKey
+{
+    OWSAssert(profileKey.length == kProfileKeyLength);
+
+    if (value) {
+        NSData *_Nullable data = [value dataUsingEncoding:NSUTF8StringEncoding];
+        if (data) {
+            NSData *_Nullable encryptedData = [self encryptProfileData:data profileKey:profileKey];
+            return encryptedData;
+        }
+    }
+
+    return nil;
+}
+
+- (NSData *_Nullable)decryptProfileData:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+{
+    return [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKey];
+}
+
+- (NSString *_Nullable)decryptProfileString:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+{
+    return [OWSProfileManager decryptProfileString:encryptedData profileKey:profileKey];
+}
+
+- (NSData *_Nullable)encryptProfileData:(NSData *_Nullable)data
+{
+    return [OWSProfileManager encryptProfileData:data profileKey:self.localProfileKey];
+}
+
+- (NSData *_Nullable)encryptProfileString:(NSString *_Nullable)value
+{
+    return [OWSProfileManager encryptProfileString:value profileKey:self.localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache

@@ -16,17 +16,20 @@ class ProfileFetcherJob: NSObject {
     // This property is only accessed on the main queue.
     static var fetchDateMap = [String: Date]()
 
+    let ignoreThrottling: Bool
+
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
         ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
     }
 
-    public class func run(recipientId: String, networkManager: TSNetworkManager) {
-        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: [recipientId])
+    public class func run(recipientId: String, networkManager: TSNetworkManager, ignoreThrottling: Bool) {
+        ProfileFetcherJob(networkManager: networkManager, ignoreThrottling:ignoreThrottling).run(recipientIds: [recipientId])
     }
 
-    init(networkManager: TSNetworkManager) {
+    init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
         self.networkManager = networkManager
         self.storageManager = TSStorageManager.shared()
+        self.ignoreThrottling = ignoreThrottling
     }
 
     public func run(recipientIds: [String]) {
@@ -65,15 +68,17 @@ class ProfileFetcherJob: NSObject {
 
     public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
         AssertIsOnMainThread()
-        if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
-            let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-            // Don't check a profile more often than every N minutes.
-            //
-            // Only throttle profile fetch in production builds in order to
-            // facilitate debugging.
-            let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
-            guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
-                return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
+        if !ignoreThrottling {
+            if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
+                let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
+                // Don't check a profile more often than every N minutes.
+                //
+                // Only throttle profile fetch in production builds in order to
+                // facilitate debugging.
+                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
+                guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
+                    return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
+                }
             }
         }
         ProfileFetcherJob.fetchDateMap[recipientId] = Date()
@@ -109,7 +114,10 @@ class ProfileFetcherJob: NSObject {
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
         verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
-        // Eventually we'll want to do more things with new SignalServiceProfile fields here.
+        OWSProfileManager.shared().updateProfile(forRecipientId : signalServiceProfile.recipientId,
+                                                 profileNameEncrypted : signalServiceProfile.profileNameEncrypted,
+                                                 avatarUrlEncrypted : signalServiceProfile.avatarUrlEncrypted,
+                                                 avatarDigestEncrypted : signalServiceProfile.avatarDigestEncrypted)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -130,13 +138,21 @@ struct SignalServiceProfile {
     enum ValidationError: Error {
         case invalid(description: String)
         case invalidIdentityKey(description: String)
+        case invalidProfileName(description: String)
+        case invalidAvatarUrl(description: String)
+        case invalidAvatarDigest(description: String)
     }
 
     public let recipientId: String
     public let identityKey: Data
+    public let profileNameEncrypted: Data?
+    public let avatarUrlEncrypted: Data?
+    public let avatarDigestEncrypted: Data?
 
     init(recipientId: String, rawResponse: Any?) throws {
         self.recipientId = recipientId
+
+        Logger.info("rawResponse: \(rawResponse)")
 
         guard let responseDict = rawResponse as? [String: Any?] else {
             throw ValidationError.invalid(description: "\(TAG) unexpected type: \(String(describing: rawResponse))")
@@ -145,17 +161,42 @@ struct SignalServiceProfile {
         guard let identityKeyString = responseDict["identityKey"] as? String else {
             throw ValidationError.invalidIdentityKey(description: "\(TAG) missing identity key: \(String(describing: rawResponse))")
         }
-
         guard let identityKeyWithType = Data(base64Encoded: identityKeyString) else {
             throw ValidationError.invalidIdentityKey(description: "\(TAG) unable to parse identity key: \(identityKeyString)")
         }
-
         let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "\(TAG) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
         }
 
+        var profileNameEncrypted: Data? = nil
+        if let profileNameString = responseDict["name"] as? String {
+            guard let data = Data(base64Encoded: profileNameString) else {
+                throw ValidationError.invalidProfileName(description: "\(TAG) unable to parse profile name: \(profileNameString)")
+            }
+            profileNameEncrypted = data
+        }
+
+        var avatarUrlEncrypted: Data? = nil
+        if let avatarUrlString = responseDict["avatar"] as? String {
+            guard let data = Data(base64Encoded: avatarUrlString) else {
+                throw ValidationError.invalidAvatarUrl(description: "\(TAG) unable to parse avatar URL: \(avatarUrlString)")
+            }
+            avatarUrlEncrypted = data
+        }
+
+        var avatarDigestEncrypted: Data? = nil
+        if let avatarDigestString = responseDict["avatarDigest"] as? String {
+            guard let data = Data(base64Encoded: avatarDigestString) else {
+                throw ValidationError.invalidAvatarDigest(description: "\(TAG) unable to parse avatar digest: \(avatarDigestString)")
+            }
+            avatarDigestEncrypted = data
+        }
+
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
         self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
+        self.profileNameEncrypted = profileNameEncrypted
+        self.avatarUrlEncrypted = avatarUrlEncrypted
+        self.avatarDigestEncrypted = avatarDigestEncrypted
     }
 }
