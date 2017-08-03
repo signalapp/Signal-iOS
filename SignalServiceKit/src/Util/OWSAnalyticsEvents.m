@@ -72,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"call_service_call_unexpectedly_idle";
 }
 
++ (NSString *)callServiceCallViewCouldNotPresent
+{
+    return @"call_service_call_view_could_not_present";
+}
+
 + (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise
 {
     return @"call_service_could_not_create_peer_connection_client_promise";
@@ -160,6 +165,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)errorAttachmentRequestFailed
 {
     return @"error_attachment_request_failed";
+}
+
++ (NSString *)errorCouldNotPresentViewDueToCall
+{
+    return @"error_could_not_present_view_due_to_call";
 }
 
 + (NSString *)errorEnableVideoCallingRequestFailed

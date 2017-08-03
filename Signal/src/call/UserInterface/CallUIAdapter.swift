@@ -34,7 +34,7 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callViewController = CallViewController(call:call)
+        let callViewController = CallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
 
         guard let presentingViewController = Environment.getCurrent().signalsViewController else {

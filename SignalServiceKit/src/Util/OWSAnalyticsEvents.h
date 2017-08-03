@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)callServiceCallUnexpectedlyIdle;
 
++ (NSString *)callServiceCallViewCouldNotPresent;
+
 + (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise;
 
 + (NSString *)callServiceCouldNotCreateReadyToSendIceUpdatesPromise;
@@ -71,6 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)contactsErrorContactsIntersectionFailed;
 
 + (NSString *)errorAttachmentRequestFailed;
+
++ (NSString *)errorCouldNotPresentViewDueToCall;
 
 + (NSString *)errorEnableVideoCallingRequestFailed;
 
