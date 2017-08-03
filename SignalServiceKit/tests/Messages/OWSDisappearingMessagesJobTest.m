@@ -7,9 +7,9 @@
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeContactsManager.h"
+#import "TSContactThread.h"
 #import "TSMessage.h"
 #import "TSStorageManager.h"
-#import "TSThread.h"
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testRemoveAnyExpiredMessage
 {
-    TSThread *thread = [TSThread new];
+    TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     TSMessage *expiredMessage1 = [[TSMessage alloc] initWithTimestamp:1
                                                              inThread:thread
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testBecomeConsistentWithMessageConfiguration
 {
-    TSThread *thread = [[TSThread alloc] initWithUniqueId:@"fake-thread-id"];
+    TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     [thread save];
 
     OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testBecomeConsistentWithUnexpiringMessageConfiguration
 {
-    TSThread *thread = [[TSThread alloc] initWithUniqueId:@"fake-thread-id"];
+    TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     [thread save];
 
     OWSDisappearingMessagesConfiguration *configuration =
