@@ -112,6 +112,9 @@ static const NSInteger kProfileKeyLength = 16;
 // This property should only be mutated on the main thread,
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
 
+// This property should only be mutated on the main thread,
+@property (atomic, readonly) NSMutableSet<NSString *> *currentAvatarDownloads;
+
 @end
 
 #pragma mark -
@@ -159,6 +162,7 @@ static const NSInteger kProfileKeyLength = 16;
     _userProfileWhitelistCache = [NSMutableDictionary new];
     _groupProfileWhitelistCache = [NSMutableDictionary new];
     _otherUsersProfileAvatarImageCache = [NSCache new];
+    _currentAvatarDownloads = [NSMutableSet new];
 
     OWSSingletonAssert();
 
@@ -632,18 +636,106 @@ static const NSInteger kProfileKeyLength = 16;
             [self.otherUsersProfileAvatarImageCache setObject:image forKey:recipientId];
         }
     } else if (userProfile.avatarUrl) {
-        [self downloadProfileAvatarWithUrl:userProfile.avatarUrl recipientId:recipientId];
+        [self downloadAvatarForUserProfile:userProfile];
     }
 
     return image;
 }
 
-- (void)downloadProfileAvatarWithUrl:(NSString *)avatarUrl recipientId:(NSString *)recipientId
+- (void)downloadAvatarForUserProfile:(UserProfile *)userProfile
 {
-    OWSAssert(avatarUrl.length > 0);
-    OWSAssert(recipientId.length > 0);
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(userProfile);
 
-    // TODO:
+    if (userProfile.profileKey.length < 1 || userProfile.avatarUrl.length < 1) {
+        return;
+    }
+
+    NSData *profileKeyAtStart = userProfile.profileKey;
+
+    NSURL *url = [NSURL URLWithString:userProfile.avatarUrl];
+    if (!url) {
+        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrl);
+        return;
+    }
+
+    NSString *_Nullable fileExtension = [[[url lastPathComponent] pathExtension] lowercaseString];
+    NSSet<NSString *> *validFileExtensions = [NSSet setWithArray:@[
+        @"jpg",
+        @"jpeg",
+        @"png",
+        @"gif",
+    ]];
+    if (![validFileExtensions containsObject:fileExtension]) {
+        DDLogWarn(@"Ignoring avatar with invalid file extension: %@", userProfile.avatarUrl);
+    }
+    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:fileExtension];
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+
+    if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
+        // Download already in flight; ignore.
+        return;
+    }
+    [self.currentAvatarDownloads addObject:userProfile.recipientId];
+
+    NSString *tempDirectory = NSTemporaryDirectory();
+    NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
+
+    // TODO: Should we use a special configuration as we do in TSNetworkManager?
+    // TODO: How does censorship circumvention fit in?
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request
+        progress:nil
+        destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+            return [NSURL fileURLWithPath:tempFilePath];
+        }
+        completionHandler:^(NSURLResponse *response, NSURL *filePathParam, NSError *error) {
+            OWSAssert([[NSURL fileURLWithPath:tempFilePath] isEqual:filePathParam]);
+
+            // Ensure disk IO and decryption occurs off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+                NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
+                NSData *_Nullable decryptedData =
+                    [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                UIImage *_Nullable image = nil;
+                if (decryptedData) {
+                    // TODO: Verify avatar digest.
+                    BOOL success = [decryptedData writeToFile:filePath atomically:YES];
+                    if (success) {
+                        image = [UIImage imageWithContentsOfFile:filePath];
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.currentAvatarDownloads removeObject:userProfile.recipientId];
+
+                    UserProfile *currentUserProfile =
+                        [self getOrBuildUserProfileForRecipientId:userProfile.recipientId];
+                    if (currentUserProfile.profileKey.length < 1
+                        || ![currentUserProfile.profileKey isEqual:userProfile.profileKey]) {
+                        DDLogWarn(@"%@ Ignoring avatar download for obsolete user profile.", self.tag);
+                    } else if (error) {
+                        DDLogError(@"%@ avatar download failed: %@", self.tag, error);
+                    } else if (!encryptedData) {
+                        DDLogError(@"%@ avatar encrypted data could not be read.", self.tag);
+                    } else if (!decryptedData) {
+                        DDLogError(@"%@ avatar data could not be decrypted.", self.tag);
+                    } else if (!image) {
+                        DDLogError(@"%@ avatar image could not be loaded: %@", self.tag, error);
+                    } else {
+                        [self.otherUsersProfileAvatarImageCache setObject:image forKey:userProfile.recipientId];
+
+                        userProfile.avatarFileName = fileName;
+
+                        [self saveUserProfile:userProfile];
+                    }
+                });
+            });
+        }];
+    [downloadTask resume];
 }
 
 - (void)refreshProfileForRecipientId:(NSString *)recipientId
@@ -721,7 +813,7 @@ static const NSInteger kProfileKeyLength = 16;
                 [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
 
                 if (avatarUrl) {
-                    [self downloadProfileAvatarWithUrl:avatarUrl recipientId:recipientId];
+                    [self downloadAvatarForUserProfile:userProfile];
                 }
             }
 
