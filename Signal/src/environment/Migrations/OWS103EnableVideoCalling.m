@@ -21,31 +21,27 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 - (void)runUp
 {
     DDLogWarn(@"%@ running migration...", self.tag);
-
-    // TODO: It'd be nice if TSAccountManager had a
-    //       [ifRegisteredRunAsync: ifNoRegisteredRunAsync:] method.
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc]
-                                                   initWithUpdatedAttributesWithVoice];
-                                               [[TSNetworkManager sharedManager] makeRequest:request
-                                                   success:^(NSURLSessionDataTask *task, id responseObject) {
-                                                       DDLogInfo(@"%@ successfully ran", self.tag);
-                                                       [self save];
-                                                   }
-                                                   failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                                       if (!IsNSErrorNetworkFailure(error)) {
-                                                           OWSProdError([OWSAnalyticsEvents
-                                                               errorEnableVideoCallingRequestFailed]);
-                                                       }
-                                                       DDLogError(@"%@ failed with error: %@", self.tag, error);
-                                                   }];
-                                           }];
-    [[TSAccountManager sharedInstance] ifRegistered:NO
-                                           runAsync:^{
-                                               DDLogInfo(@"%@ skipping; not registered", self.tag);
-                                               [self save];
-                                           }];
+    if ([TSAccountManager isRegistered]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
+            [[TSNetworkManager sharedManager] makeRequest:request
+                success:^(NSURLSessionDataTask *task, id responseObject) {
+                    DDLogInfo(@"%@ successfully ran", self.tag);
+                    [self save];
+                }
+                failure:^(NSURLSessionDataTask *task, NSError *error) {
+                    if (!IsNSErrorNetworkFailure(error)) {
+                        OWSProdError([OWSAnalyticsEvents errorEnableVideoCallingRequestFailed]);
+                    }
+                    DDLogError(@"%@ failed with error: %@", self.tag, error);
+                }];
+        });
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            DDLogInfo(@"%@ skipping; not registered", self.tag);
+            [self save];
+        });
+    }
 }
 
 #pragma mark - Logging
