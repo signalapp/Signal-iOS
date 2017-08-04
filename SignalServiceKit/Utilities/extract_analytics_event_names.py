@@ -355,12 +355,12 @@ if __name__ == "__main__":
 
     event_names_header_file_path = os.path.join(git_repo_path, 'SignalServiceKit', 'src', 'Util', 'OWSAnalyticsEvents.h')
     if not os.path.exists(event_names_header_file_path):
-        print 'Macros header does not exist:', event_names_header_file_path
+        print 'event_names_header_file_path does not exist:', event_names_header_file_path
         sys.exit(1)
 
     event_names_source_file_path = os.path.join(git_repo_path, 'SignalServiceKit', 'src', 'Util', 'OWSAnalyticsEvents.m')
     if not os.path.exists(event_names_source_file_path):
-        print 'Macros header does not exist:', event_names_source_file_path
+        print 'event_names_source_file_path does not exist:', event_names_source_file_path
         sys.exit(1)
         
     for rootdir, dirnames, filenames in os.walk(git_repo_path):
