@@ -340,6 +340,8 @@ NS_ASSUME_NONNULL_BEGIN
                     shouldHaveAddToContactsOffer = NO;
                     // Only create block offers for users which are not already blocked.
                     shouldHaveBlockOffer = NO;
+                    // Don't create profile whitelist offers for users which are not already blocked.
+                    shouldHaveAddToProfileWhitelistOffer = NO;
                 }
 
                 SignalAccount *signalAccount = contactsManager.signalAccountMap[recipientId];
@@ -374,6 +376,19 @@ NS_ASSUME_NONNULL_BEGIN
             // Don't show offer if thread is local user hasn't configured their profile.
             // Don't show offer if thread is already in profile whitelist.
             shouldHaveAddToProfileWhitelistOffer = NO;
+        } else if (thread.isGroupThread) {
+            BOOL hasUnwhitelistedMember = NO;
+            for (NSString *recipientId in thread.recipientIdentifiers) {
+                if (![OWSProfileManager.sharedManager isUserInProfileWhitelist:recipientId]) {
+                    hasUnwhitelistedMember = YES;
+                    break;
+                }
+            }
+            if (!hasUnwhitelistedMember) {
+                // Don't show offer in group thread if all members are already individually
+                // whitelisted.
+                hasUnwhitelistedMember = YES;
+            }
         }
 
         // We use these offset to control the ordering of the offers and indicators.

@@ -50,6 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [self setProfileKey:self.localProfileKey];
+
+        if (recipientId.length > 0) {
+            // Once we've shared our profile key with a user (perhaps due to being
+            // a member of a whitelisted group), make sure they're whitelisted.
+            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+            [profileManager addUserToProfileWhitelist:recipientId];
+        }
     }
 }
 
@@ -66,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [self setProfileKey:self.localProfileKey];
+
+        // Once we've shared our profile key with a user (perhaps due to being
+        // a member of a whitelisted group), make sure they're whitelisted.
+        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        [profileManager addUserToProfileWhitelist:recipientId];
     }
 }
 

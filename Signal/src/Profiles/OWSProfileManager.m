@@ -10,6 +10,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
 #import <SignalServiceKit/TSSetProfileRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
@@ -112,6 +113,9 @@ static const NSInteger kProfileKeyLength = 16;
 // This property should only be mutated on the main thread,
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
 
+// This property should only be mutated on the main thread,
+@property (atomic, readonly) NSMutableSet<NSString *> *currentAvatarDownloads;
+
 @end
 
 #pragma mark -
@@ -159,6 +163,7 @@ static const NSInteger kProfileKeyLength = 16;
     _userProfileWhitelistCache = [NSMutableDictionary new];
     _groupProfileWhitelistCache = [NSMutableDictionary new];
     _otherUsersProfileAvatarImageCache = [NSCache new];
+    _currentAvatarDownloads = [NSMutableSet new];
 
     OWSSingletonAssert();
 
@@ -271,6 +276,12 @@ static const NSInteger kProfileKeyLength = 16;
 - (nullable UIImage *)localProfileAvatarImage
 {
     OWSAssert([NSThread isMainThread]);
+
+    if (!self.localCachedAvatarImage) {
+        if (self.localUserProfile.avatarFileName) {
+            self.localCachedAvatarImage = [self loadProfileAvatarWithFilename:self.localUserProfile.avatarFileName];
+        }
+    }
 
     return self.localCachedAvatarImage;
 }
@@ -404,11 +415,164 @@ static const NSInteger kProfileKeyLength = 16;
         // TODO:
         NSString *avatarUrl = @"avatarUrl";
         NSData *avatarDigest = [@"avatarDigest" dataUsingEncoding:NSUTF8StringEncoding];
-        if (YES) {
-            successBlock(avatarUrl, avatarDigest);
-            return;
-        }
-        failureBlock();
+
+        // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
+        TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
+
+        [self.networkManager makeRequest:formRequest
+            success:^(NSURLSessionDataTask *task, id formResponseObject) {
+
+                if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_response");
+                    failureBlock();
+                    return;
+                }
+                NSDictionary *responseMap = formResponseObject;
+                DDLogError(@"responseObject: %@", formResponseObject);
+                //                                     acl = private;
+                //                                     algorithm = "AWS4-HMAC-SHA256";
+                //                                     credential =
+                //                                     "AKIAINTYCHN42UH3LGRA/20170804/us-east-1/s3/aws4_request"; date =
+                //                                     20170804T193927Z; key = PtRO3iSkY6twBA; policy =
+                //                                     eyAiZXhwaXJhdGlvbiI6ICIyMDE3LTA4LTA0VDIwOjA5OjI3LjMwMFoiLAogICJjb25kaXRpb25zIjogWwogICAgeyJidWNrZXQiOiAic2lnbmFsLXByb2ZpbGVzLXN0YWdpbmcifSwKICAgIHsia2V5IjogIlB0Uk8zaVNrWTZ0d0JBIn0sCiAgICB7ImFjbCI6ICJwcml2YXRlIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sCgogICAgeyJ4LWFtei1jcmVkZW50aWFsIjogIkFLSUFJTlRZQ0hONDJVSDNMR1JBLzIwMTcwODA0L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSwKICAgIHsieC1hbXotYWxnb3JpdGhtIjogIkFXUzQtSE1BQy1TSEEyNTYifSwKICAgIHsieC1hbXotZGF0ZSI6ICIyMDE3MDgwNFQxOTM5MjdaIiB9CiAgXQp9;
+                //                                     signature =
+                //                                     3608fdc9af8ca0d13c754c34eb37014c9995b058c2e0166550468de47b00f316;
+                //                                     url = "profiles-staging.signal.org";
+
+                NSString *formUrl = responseMap[@"url"];
+                if (![formUrl isKindOfClass:[NSString class]] || formUrl.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_url");
+                    failureBlock();
+                    return;
+                }
+                NSString *formAcl = responseMap[@"acl"];
+                if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_acl");
+                    failureBlock();
+                    return;
+                }
+                NSString *formKey = responseMap[@"key"];
+                if (![formKey isKindOfClass:[NSString class]] || formKey.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_key");
+                    failureBlock();
+                    return;
+                }
+                NSString *formPolicy = responseMap[@"policy"];
+                if (![formPolicy isKindOfClass:[NSString class]] || formPolicy.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_policy");
+                    failureBlock();
+                    return;
+                }
+                NSString *formAlgorithm = responseMap[@"algorithm"];
+                if (![formAlgorithm isKindOfClass:[NSString class]] || formAlgorithm.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_algorithm");
+                    failureBlock();
+                    return;
+                }
+                NSString *formCredential = responseMap[@"credential"];
+                if (![formCredential isKindOfClass:[NSString class]] || formCredential.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_credential");
+                    failureBlock();
+                    return;
+                }
+                NSString *formDate = responseMap[@"date"];
+                if (![formDate isKindOfClass:[NSString class]] || formDate.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_date");
+                    failureBlock();
+                    return;
+                }
+                NSString *formSignature = responseMap[@"signature"];
+                if (![formSignature isKindOfClass:[NSString class]] || formSignature.length < 1) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_signature");
+                    failureBlock();
+                    return;
+                }
+                NSDictionary<NSString *, NSString *> *parameters = @{
+                    @"acl" : formAcl,
+                    @"x-amz-algorithm" : formAlgorithm,
+                    @"x-amz-credential" : formCredential,
+                    @"x-amz-date" : formDate,
+                    @"key" : formKey,
+                    @"policy" : formPolicy,
+                    @"x-amz-signature" : formSignature,
+
+                };
+
+                NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+                NSInputStream *fileInputStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
+                if (!fileInputStream) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_file_stream");
+                    failureBlock();
+                    return;
+                }
+
+                NSError *error;
+                long long fileSize =
+                    [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize]
+                        longLongValue];
+                if (error || fileSize <= 0) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_file_size");
+                    failureBlock();
+                    return;
+                }
+
+                NSMutableURLRequest *uploadRequest = [[AFHTTPRequestSerializer serializer]
+                    multipartFormRequestWithMethod:@"post"
+                                         URLString:[@"https://" stringByAppendingString:formUrl]
+                                        parameters:parameters
+                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+                             //                                                                                                                   [formData appendPartWithFormData:<#(nonnull NSData *)#> name:@"acl"];
+
+                             [formData appendPartWithInputStream:fileInputStream
+                                                            name:@"file"
+                                                        fileName:fileName
+                                                          length:fileSize
+                                                        mimeType:@"image/jpeg"];
+                         }
+                                             error:&error];
+
+                if (error || !uploadRequest) {
+                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_upload_request");
+                    failureBlock();
+                    return;
+                }
+
+                [uploadRequest setValue:@"Content-Type: text/html; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+
+
+                //                                     [uploadRequest setAllHTTPHeaderFields:headerDictionary];
+
+                // TODO: Should we use a special configuration as we do in TSNetworkManager?
+                // TODO: How does censorship circumvention fit in?
+                AFURLSessionManager *manager = [[AFURLSessionManager alloc]
+                    initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+                manager.responseSerializer = [AFXMLParserResponseSerializer new];
+                NSURLSessionUploadTask *uploadTask;
+                uploadTask = [manager uploadTaskWithStreamedRequest:uploadRequest
+                    progress:^(NSProgress *_Nonnull uploadProgress) {
+                        // This is not called back on the main queue.
+                        // You are responsible for dispatching to the main queue for UI updates
+
+                        DDLogVerbose(@"%@ Avatar upload progress: %f", self.tag, uploadProgress.fractionCompleted);
+                    }
+                    completionHandler:^(NSURLResponse *_Nonnull response,
+                        id _Nullable uploadResponseObject,
+                        NSError *_Nullable uploadError) {
+
+                        if (uploadError) {
+                            DDLogError(@"%@ Avatar upload failed: %@", self.tag, uploadError);
+                            failureBlock();
+                        } else {
+                            DDLogVerbose(@"%@ Avatar upload succeeded", self.tag);
+                            successBlock(avatarUrl, avatarDigest);
+                        }
+                    }];
+                [uploadTask resume];
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                DDLogError(@"%@ Failed to get profile avatar upload form: %@", self.tag, error);
+                failureBlock();
+            }];
     });
 }
 
@@ -575,6 +739,12 @@ static const NSInteger kProfileKeyLength = 16;
 
         userProfile.profileKey = profileKey;
 
+        // Clear profile state.
+        userProfile.profileName = nil;
+        userProfile.avatarUrl = nil;
+        userProfile.avatarDigest = nil;
+        userProfile.avatarFileName = nil;
+
         [self saveUserProfile:userProfile];
 
         [self refreshProfileForRecipientId:recipientId ignoreThrottling:YES];
@@ -620,18 +790,106 @@ static const NSInteger kProfileKeyLength = 16;
             [self.otherUsersProfileAvatarImageCache setObject:image forKey:recipientId];
         }
     } else if (userProfile.avatarUrl) {
-        [self downloadProfileAvatarWithUrl:userProfile.avatarUrl recipientId:recipientId];
+        [self downloadAvatarForUserProfile:userProfile];
     }
 
     return image;
 }
 
-- (void)downloadProfileAvatarWithUrl:(NSString *)avatarUrl recipientId:(NSString *)recipientId
+- (void)downloadAvatarForUserProfile:(UserProfile *)userProfile
 {
-    OWSAssert(avatarUrl.length > 0);
-    OWSAssert(recipientId.length > 0);
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(userProfile);
 
-    // TODO:
+    if (userProfile.profileKey.length < 1 || userProfile.avatarUrl.length < 1) {
+        return;
+    }
+
+    NSData *profileKeyAtStart = userProfile.profileKey;
+
+    NSURL *url = [NSURL URLWithString:userProfile.avatarUrl];
+    if (!url) {
+        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrl);
+        return;
+    }
+
+    NSString *_Nullable fileExtension = [[[url lastPathComponent] pathExtension] lowercaseString];
+    NSSet<NSString *> *validFileExtensions = [NSSet setWithArray:@[
+        @"jpg",
+        @"jpeg",
+        @"png",
+        @"gif",
+    ]];
+    if (![validFileExtensions containsObject:fileExtension]) {
+        DDLogWarn(@"Ignoring avatar with invalid file extension: %@", userProfile.avatarUrl);
+    }
+    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:fileExtension];
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+
+    if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
+        // Download already in flight; ignore.
+        return;
+    }
+    [self.currentAvatarDownloads addObject:userProfile.recipientId];
+
+    NSString *tempDirectory = NSTemporaryDirectory();
+    NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
+
+    // TODO: Should we use a special configuration as we do in TSNetworkManager?
+    // TODO: How does censorship circumvention fit in?
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request
+        progress:nil
+        destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+            return [NSURL fileURLWithPath:tempFilePath];
+        }
+        completionHandler:^(NSURLResponse *response, NSURL *filePathParam, NSError *error) {
+            OWSAssert([[NSURL fileURLWithPath:tempFilePath] isEqual:filePathParam]);
+
+            // Ensure disk IO and decryption occurs off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+                NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
+                NSData *_Nullable decryptedData =
+                    [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                UIImage *_Nullable image = nil;
+                if (decryptedData) {
+                    // TODO: Verify avatar digest.
+                    BOOL success = [decryptedData writeToFile:filePath atomically:YES];
+                    if (success) {
+                        image = [UIImage imageWithContentsOfFile:filePath];
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.currentAvatarDownloads removeObject:userProfile.recipientId];
+
+                    UserProfile *currentUserProfile =
+                        [self getOrBuildUserProfileForRecipientId:userProfile.recipientId];
+                    if (currentUserProfile.profileKey.length < 1
+                        || ![currentUserProfile.profileKey isEqual:userProfile.profileKey]) {
+                        DDLogWarn(@"%@ Ignoring avatar download for obsolete user profile.", self.tag);
+                    } else if (error) {
+                        DDLogError(@"%@ avatar download failed: %@", self.tag, error);
+                    } else if (!encryptedData) {
+                        DDLogError(@"%@ avatar encrypted data could not be read.", self.tag);
+                    } else if (!decryptedData) {
+                        DDLogError(@"%@ avatar data could not be decrypted.", self.tag);
+                    } else if (!image) {
+                        DDLogError(@"%@ avatar image could not be loaded: %@", self.tag, error);
+                    } else {
+                        [self.otherUsersProfileAvatarImageCache setObject:image forKey:userProfile.recipientId];
+
+                        userProfile.avatarFileName = fileName;
+
+                        [self saveUserProfile:userProfile];
+                    }
+                });
+            });
+        }];
+    [downloadTask resume];
 }
 
 - (void)refreshProfileForRecipientId:(NSString *)recipientId
@@ -709,7 +967,7 @@ static const NSInteger kProfileKeyLength = 16;
                 [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
 
                 if (avatarUrl) {
-                    [self downloadProfileAvatarWithUrl:avatarUrl recipientId:recipientId];
+                    [self downloadAvatarForUserProfile:userProfile];
                 }
             }
 
