@@ -4,9 +4,9 @@
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSDisappearingMessagesFinder.h"
+#import "TSContactThread.h"
 #import "TSMessage.h"
 #import "TSStorageManager.h"
-#import "TSThread.h"
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.storageManager = [TSStorageManager sharedManager];
     self.dbConnection = self.storageManager.newDatabaseConnection;
-    self.thread = [TSThread new];
-    [self.thread save];
+    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
+
     self.now = [NSDate ows_millisecondTimeStamp];
 
     // Test subject
