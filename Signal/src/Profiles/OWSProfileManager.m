@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-NSString *const kNSNotificationName_LocalProfileUniqueId = @"kNSNotificationName_LocalProfileUniqueId";
+NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
@@ -162,7 +162,7 @@ static const NSInteger kProfileKeyLength = 16;
 
     OWSSingletonAssert();
 
-    self.localUserProfile = [self getOrCreateUserProfileForRecipientId:kNSNotificationName_LocalProfileUniqueId];
+    self.localUserProfile = [self getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId];
     OWSAssert(self.localUserProfile);
     if (!self.localUserProfile.profileKey) {
         self.localUserProfile.profileKey = [OWSProfileManager generateLocalProfileKey];
@@ -194,7 +194,7 @@ static const NSInteger kProfileKeyLength = 16;
 #pragma mark - User Profile Accessor
 
 // This method can be safely called from any thread.
-- (UserProfile *)getOrCreateUserProfileForRecipientId:(NSString *)recipientId
+- (UserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -239,6 +239,7 @@ static const NSInteger kProfileKeyLength = 16;
 
 + (NSData *)generateLocalProfileKey
 {
+    DDLogInfo(@"%@ Generating profile key for local user.", self.tag);
     // TODO:
     DDLogVerbose(@"%@ Profile key generation is not yet implemented.", self.tag);
     return [SecurityUtils generateRandomBytes:kProfileKeyLength];
@@ -542,7 +543,7 @@ static const NSInteger kProfileKeyLength = 16;
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+        UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
         OWSAssert(userProfile);
         if (userProfile.profileKey && [userProfile.profileKey isEqual:profileKey]) {
             // Ignore redundant update.
@@ -561,7 +562,7 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert(recipientId.length > 0);
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
     OWSAssert(userProfile);
     return userProfile.profileKey;
 }
@@ -573,7 +574,7 @@ static const NSInteger kProfileKeyLength = 16;
 
     [self refreshProfileForRecipientId:recipientId];
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
     return userProfile.profileName;
 }
 
@@ -589,7 +590,7 @@ static const NSInteger kProfileKeyLength = 16;
         return image;
     }
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
     if (userProfile.avatarFileName) {
         image = [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
         if (image) {
@@ -620,7 +621,7 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(recipientId.length > 0);
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
 
     if (!userProfile.profileKey) {
         // There's no point in fetching the profile for a user
@@ -652,7 +653,7 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert(recipientId.length > 0);
 
-    UserProfile *userProfile = [self getOrCreateUserProfileForRecipientId:recipientId];
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
     if (!userProfile.profileKey) {
         return;
     }
