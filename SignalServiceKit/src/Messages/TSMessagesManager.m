@@ -495,13 +495,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
         DDLogInfo(@"%@ handling content: <Content: %@>", self.tag, [self descriptionForContent:content]);
-        
-        if ([content hasProfileKey]) {
-            NSData *profileKey = [content profileKey];
-            NSString *recipientId = envelope.source;
-            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-            [profileManager setProfileKey:profileKey forRecipientId:recipientId];
-        }
 
         if (content.hasSyncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage];
@@ -518,6 +511,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosDataMessage *dataMessage =
             [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
         DDLogInfo(@"%@ handling dataMessage: %@", self.tag, [self descriptionForDataMessage:dataMessage]);
+
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
     } else {
         DDLogWarn(@"%@ Ignoring envelope with neither DataMessage nor Content.", self.tag);
@@ -528,6 +522,13 @@ NS_ASSUME_NONNULL_BEGIN
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     OWSAssert([NSThread isMainThread]);
+
+    if ([dataMessage hasProfileKey]) {
+        NSData *profileKey = [dataMessage profileKey];
+        NSString *recipientId = incomingEnvelope.source;
+        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        [profileManager setProfileKey:profileKey forRecipientId:recipientId];
+    }
 
     if (dataMessage.hasGroup) {
         __block BOOL ignoreMessage = NO;
@@ -586,6 +587,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
+    OWSAssert(incomingEnvelope);
+    OWSAssert(callMessage);
+
+    if ([callMessage hasProfileKey]) {
+        NSData *profileKey = [callMessage profileKey];
+        NSString *recipientId = incomingEnvelope.source;
+        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        [profileManager setProfileKey:profileKey forRecipientId:recipientId];
+    }
+
     if (callMessage.hasOffer) {
         [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:incomingEnvelope.source];
     } else if (callMessage.hasAnswer) {
@@ -675,6 +686,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
+    OWSAssert([TSAccountManager isRegistered]);
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (![localNumber isEqualToString:messageEnvelope.source]) {
+        // Sync messages should only come from linked devices.
+        OWSProdErrorWEnvelope(@"message_manager_error_sync_message_from_unknown_source", messageEnvelope);
+        return;
+    }
+
     if (syncMessage.hasSent) {
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
@@ -683,6 +702,16 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript
                                                                     messageSender:self.messageSender
                                                                    networkManager:self.networkManager];
+
+        OWSSignalServiceProtosDataMessage *dataMessage = syncMessage.sent.message;
+        OWSAssert(dataMessage);
+        NSString *destination = syncMessage.sent.destination;
+        if (dataMessage && destination.length > 0 && [dataMessage hasProfileKey]) {
+            // If we observe a linked device sending our profile key to another
+            // user, we can infer that that user belongs in our profile whitelist.
+            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+            [profileManager addUserToProfileWhitelist:destination];
+        }
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
             [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {

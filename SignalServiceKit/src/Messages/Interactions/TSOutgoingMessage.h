@@ -178,11 +178,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSentRecipient:(NSString *)contactId;
 
-#pragma mark -
-
-- (void)addLocalProfileKeyIfNecessary:(OWSSignalServiceProtosContentBuilder *)contentBuilder
-                            recipient:(SignalRecipient *)recipient;
-
 @end
 
 NS_ASSUME_NONNULL_END
