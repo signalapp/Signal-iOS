@@ -19,6 +19,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageAddToContactsOffer,
     TSInfoMessageVerificationStateChange,
+    TSInfoMessageAddUserToProfileWhitelistOffer,
+    TSInfoMessageAddGroupToProfileWhitelistOffer,
 };
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread;

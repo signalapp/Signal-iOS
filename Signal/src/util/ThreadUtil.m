@@ -8,6 +8,7 @@
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
+#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -151,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Find any "dynamic" interactions and safety number changes.
         __block OWSAddToContactsOfferMessage *existingAddToContactsOffer = nil;
+        __block OWSAddToProfileWhitelistOfferMessage *existingOWSAddToProfileWhitelistOffer = nil;
         __block OWSUnknownContactBlockOfferMessage *existingBlockOffer = nil;
         __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
@@ -167,6 +169,9 @@ NS_ASSUME_NONNULL_BEGIN
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
                               OWSAssert(!existingAddToContactsOffer);
                               existingAddToContactsOffer = (OWSAddToContactsOfferMessage *)object;
+                          } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
+                              OWSAssert(!existingOWSAddToProfileWhitelistOffer);
+                              existingOWSAddToProfileWhitelistOffer = (OWSAddToProfileWhitelistOfferMessage *)object;
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
                               OWSAssert(!existingUnreadIndicator);
                               existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
@@ -311,6 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         BOOL shouldHaveBlockOffer = YES;
         BOOL shouldHaveAddToContactsOffer = YES;
+        BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
         BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
         if (!isContactThread) {
@@ -326,6 +332,8 @@ NS_ASSUME_NONNULL_BEGIN
                 shouldHaveAddToContactsOffer = NO;
                 // Don't bother to block self.
                 shouldHaveBlockOffer = NO;
+                // Don't bother adding self to profile whitelist.
+                shouldHaveAddToProfileWhitelistOffer = NO;
             } else {
                 if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
                     // Only create "add to contacts" offers for users which are not already blocked.
@@ -361,7 +369,15 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveBlockOffer = NO;
         }
 
+        if (![OWSProfileManager.sharedManager hasLocalProfile] ||
+            [OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
+            // Don't show offer if thread is local user hasn't configured their profile.
+            // Don't show offer if thread is already in profile whitelist.
+            shouldHaveAddToProfileWhitelistOffer = NO;
+        }
+
         // We use these offset to control the ordering of the offers and indicators.
+        const int kAddToProfileWhitelistOfferOffset = -4;
         const int kBlockOfferOffset = -3;
         const int kAddToContactsOfferOffset = -2;
         const int kUnreadIndicatorOfferOffset = -1;
@@ -371,7 +387,6 @@ NS_ASSUME_NONNULL_BEGIN
                 self.tag,
                 existingBlockOffer.uniqueId,
                 existingBlockOffer.timestampForSorting);
-            ;
             [existingBlockOffer removeWithTransaction:transaction];
         } else if (!existingBlockOffer && shouldHaveBlockOffer) {
             DDLogInfo(@"Creating block offer for unknown contact");
@@ -402,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
             [existingAddToContactsOffer removeWithTransaction:transaction];
         } else if (!existingAddToContactsOffer && shouldHaveAddToContactsOffer) {
 
-            DDLogInfo(@"Creating 'add to contacts' offer for unknown contact");
+            DDLogInfo(@"%@ Creating 'add to contacts' offer for unknown contact", self.tag);
 
             // We want the offer to be the first interaction in their
             // conversation's timeline, so we back-date it to slightly before
@@ -417,6 +432,32 @@ NS_ASSUME_NONNULL_BEGIN
             [offerMessage saveWithTransaction:transaction];
 
             DDLogInfo(@"%@ Creating 'add to contacts' offer: %@ (%llu)",
+                self.tag,
+                offerMessage.uniqueId,
+                offerMessage.timestampForSorting);
+        }
+
+        if (existingOWSAddToProfileWhitelistOffer && !shouldHaveAddToProfileWhitelistOffer) {
+            DDLogInfo(@"%@ Removing 'add to profile whitelist' offer: %@ (%llu)",
+                self.tag,
+                existingOWSAddToProfileWhitelistOffer.uniqueId,
+                existingOWSAddToProfileWhitelistOffer.timestampForSorting);
+            [existingOWSAddToProfileWhitelistOffer removeWithTransaction:transaction];
+        } else if (!existingOWSAddToProfileWhitelistOffer && shouldHaveAddToProfileWhitelistOffer) {
+
+            DDLogInfo(@"%@ Creating 'add to profile whitelist' offer", self.tag);
+
+            // We want the offer to be the first interaction in their
+            // conversation's timeline, so we back-date it to slightly before
+            // the first incoming message (which we know is the first message).
+            uint64_t offerTimestamp
+                = (uint64_t)((long long)firstMessage.timestampForSorting + kAddToProfileWhitelistOfferOffset);
+
+            TSMessage *offerMessage =
+                [OWSAddToProfileWhitelistOfferMessage addToProfileWhitelistOfferMessage:offerTimestamp thread:thread];
+            [offerMessage saveWithTransaction:transaction];
+
+            DDLogInfo(@"%@ Creating 'add to profile whitelist' offer: %@ (%llu)",
                 self.tag,
                 offerMessage.uniqueId,
                 offerMessage.timestampForSorting);

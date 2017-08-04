@@ -57,8 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     contentBuilder.nullMessage = [nullMessageBuilder build];
 
-    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
-
     return [contentBuilder build].data;
 }
 

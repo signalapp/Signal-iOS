@@ -70,6 +70,7 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
+#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -2457,6 +2458,11 @@ typedef enum : NSUInteger {
             OWSAssert([message isKindOfClass:[OWSAddToContactsOfferMessage class]]);
             [self tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message];
             return;
+        case TSInfoMessageAddUserToProfileWhitelistOffer:
+        case TSInfoMessageAddGroupToProfileWhitelistOffer:
+            OWSAssert([message isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]);
+            [self tappedAddToProfileWhitelistOfferMessage:(OWSAddToProfileWhitelistOfferMessage *)message];
+            return;
         case TSInfoMessageTypeGroupUpdate:
             [self showConversationSettings];
             return;
@@ -2584,7 +2590,7 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-- (void)tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)errorMessage
+- (void)tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message
 {
     if (!self.contactsManager.supportsContactEditing) {
         DDLogError(@"%@ Contact editing not supported", self.tag);
@@ -2601,6 +2607,32 @@ typedef enum : NSUInteger {
     [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
                                                      fromViewController:self
                                                         editImmediately:YES];
+}
+
+- (void)tappedAddToProfileWhitelistOfferMessage:(OWSAddToProfileWhitelistOfferMessage *)message
+{
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *leaveAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+                            @"Button to confirm that user wants to share their profile with a user or group.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+                    [self ensureDynamicInteractions];
+                }];
+    [alertController addAction:leaveAction];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *_Nonnull action){
+                                                             // Do nothing.
+                                                         }];
+    [alertController addAction:cancelAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)handleCallTap:(TSCall *)call

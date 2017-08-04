@@ -14,4 +14,6 @@
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
 
+- (void)addUserToProfileWhitelist:(NSString *)recipientId;
+
 @end

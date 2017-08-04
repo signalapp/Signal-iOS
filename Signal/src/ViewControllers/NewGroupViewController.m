@@ -443,14 +443,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     TSGroupModel *model = [self makeGroup];
 
-    [OWSProfileManager.sharedManager addGroupIdToProfileWhitelist:model.groupId];
-
     __block TSGroupThread *thread;
     [[TSStorageManager sharedManager].dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];
     OWSAssert(thread);
+    
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     void (^successHandler)() = ^{
         DDLogError(@"Group creation successful.");

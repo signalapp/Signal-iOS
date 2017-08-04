@@ -10,6 +10,8 @@
 #import "OWSCallIceUpdateMessage.h"
 #import "OWSCallOfferMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "ProtoBuf+OWS.h"
+#import "SignalRecipient.h"
 #import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -123,13 +125,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
+    OWSAssert(recipient);
+
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setCallMessage:[self asProtobuf]];
-    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
+    [contentBuilder setCallMessage:[self buildCallMessage:recipient.recipientId]];
     return [[contentBuilder build] data];
 }
 
-- (OWSSignalServiceProtosCallMessage *)asProtobuf
+- (OWSSignalServiceProtosCallMessage *)buildCallMessage:(NSString *)recipientId
 {
     OWSSignalServiceProtosCallMessageBuilder *builder = [OWSSignalServiceProtosCallMessageBuilder new];
 
@@ -154,6 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.busyMessage) {
         [builder setBusy:[self.busyMessage asProtobuf]];
     }
+
+    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
 
     return [builder build];
 }
