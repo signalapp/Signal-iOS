@@ -439,7 +439,11 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)createGroup
 {
+    OWSAssert([NSThread isMainThread]);
+
     TSGroupModel *model = [self makeGroup];
+
+    [OWSProfileManager.sharedManager addGroupIdToProfileWhitelist:model.groupId];
 
     __block TSGroupThread *thread;
     [[TSStorageManager sharedManager].dbReadWriteConnection
