@@ -272,6 +272,12 @@ static const NSInteger kProfileKeyLength = 16;
 {
     OWSAssert([NSThread isMainThread]);
 
+    if (!self.localCachedAvatarImage) {
+        if (self.localUserProfile.avatarFileName) {
+            self.localCachedAvatarImage = [self loadProfileAvatarWithFilename:self.localUserProfile.avatarFileName];
+        }
+    }
+
     return self.localCachedAvatarImage;
 }
 
