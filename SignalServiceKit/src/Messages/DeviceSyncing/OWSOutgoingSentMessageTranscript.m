@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Normally this is private, but we need to embed this
  * data structure within our own.
+ *
+ * recipientId is nil when building "sent" sync messages for messages
+ * sent to groups.
  */
 - (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 

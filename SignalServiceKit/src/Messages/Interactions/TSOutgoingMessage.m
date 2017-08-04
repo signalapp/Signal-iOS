@@ -455,6 +455,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return builder;
 }
 
+// recipientId is nil when building "sent" sync messages for messages
+// sent to groups.
 - (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
