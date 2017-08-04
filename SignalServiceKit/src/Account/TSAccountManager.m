@@ -93,26 +93,6 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     return _isRegistered;
 }
 
-- (void)ifRegistered:(BOOL)runIfRegistered runAsync:(void (^)())block
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if ([self isRegistered] == runIfRegistered) {
-            if (runIfRegistered) {
-                DDLogDebug(@"%@ Running existing-user block", self.tag);
-            } else {
-                DDLogDebug(@"%@ Running new-user block", self.tag);
-            }
-            block();
-        } else {
-            if (runIfRegistered) {
-                DDLogDebug(@"%@ Skipping existing-user block for new-user", self.tag);
-            } else {
-                DDLogDebug(@"%@ Skipping new-user block for existing-user", self.tag);
-            }
-        }
-    });
-}
-
 - (void)didRegister
 {
     DDLogInfo(@"%@ didRegister", self.tag);
