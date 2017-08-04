@@ -18,6 +18,8 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 + (instancetype)sharedManager;
 
+- (void)resetProfileStorage;
+
 #pragma mark - Local Profile
 
 // These two methods should only be called from the main thread.

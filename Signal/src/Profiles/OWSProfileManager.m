@@ -830,6 +830,17 @@ static const NSInteger kProfileKeyLength = 16;
 
 // TODO: We may want to clean up this directory in the "orphan cleanup" logic.
 
+- (void)resetProfileStorage
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
+    if (error) {
+        DDLogError(@"Failed to delete database: %@", error.description);
+    }
+}
+
 #pragma mark - Notifications
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
