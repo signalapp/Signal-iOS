@@ -455,10 +455,9 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return builder;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *)recipientId
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
-    OWSAssert(recipientId.length > 0);
 
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];

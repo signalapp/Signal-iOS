@@ -12,11 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PBGeneratedMessageBuilder (OWS)
 
-- (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *)recipientId
-//                            recipient:(SignalRecipient *)recipient
+- (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
     OWSAssert(thread);
-    OWSAssert(recipientId.length > 0);
 
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
 
@@ -25,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if ([profileManager isUserInProfileWhitelist:recipientId]) {
+    if (recipientId.length > 0 && [profileManager isUserInProfileWhitelist:recipientId]) {
         return YES;
     } else if ([profileManager isThreadInProfileWhitelist:thread]) {
         return YES;
@@ -46,10 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSignalServiceProtosDataMessageBuilder (OWS)
 
-- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId
+- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
     OWSAssert(thread);
-    OWSAssert(recipientId.length > 0);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [self setProfileKey:self.localProfileKey];

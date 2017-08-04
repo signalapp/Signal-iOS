@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Normally this is private, but we need to embed this
  * data structure within our own.
  */
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *)recipientId;
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 @end
 
