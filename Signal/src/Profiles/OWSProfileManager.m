@@ -581,6 +581,12 @@ static const NSInteger kProfileKeyLength = 16;
 
         userProfile.profileKey = profileKey;
 
+        // Clear profile state.
+        userProfile.profileName = nil;
+        userProfile.avatarUrl = nil;
+        userProfile.avatarDigest = nil;
+        userProfile.avatarFileName = nil;
+
         [self saveUserProfile:userProfile];
 
         [self refreshProfileForRecipientId:recipientId ignoreThrottling:YES];
