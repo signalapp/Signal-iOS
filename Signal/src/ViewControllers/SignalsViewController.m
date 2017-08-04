@@ -26,6 +26,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -728,8 +729,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
-    // TODO: Do this synchronously if we're already on the main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // We do this synchronously if we're already on the main thread.
+    DispatchMainThreadSafe(^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
         [mvc configureForThread:thread
