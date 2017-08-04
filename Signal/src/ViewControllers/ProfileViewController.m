@@ -213,13 +213,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __weak ProfileViewController *weakSelf = self;
     [OWSProfileManager.sharedManager updateLocalProfileName:self.nameTextField.text
-                                                avatarImage:self.avatar
-                                                    success:^{
-                                                        [weakSelf.navigationController popViewControllerAnimated:YES];
-                                                    }
-                                                    failure:^{
-                                                        // TODO: Handle failure.
-                                                    }];
+        avatarImage:self.avatar
+        success:^{
+            [weakSelf.navigationController popViewControllerAnimated:YES];
+        }
+        failure:^{
+            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
+                                  message:NSLocalizedString(@"PROFILE_VIEW_ERROR_UPDATE_FAILED",
+                                              @"Error message shown when a profile update fails.")];
+        }];
 }
 
 #pragma mark - UITextFieldDelegate

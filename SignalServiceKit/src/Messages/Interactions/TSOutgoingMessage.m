@@ -7,6 +7,7 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProfileManagerProtocol.h"
+#import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -454,51 +455,19 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return builder;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    return [[self dataMessageBuilder] build];
-}
+    OWSAssert(self.thread);
 
-- (void)addLocalProfileKeyIfNecessary:(OWSSignalServiceProtosContentBuilder *)contentBuilder
-                            recipient:(SignalRecipient *)recipient
-{
-    OWSAssert(contentBuilder);
-    OWSAssert(recipient);
-
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-    NSData *localProfileKey = profileManager.localProfileKey;
-
-    OWSAssert(localProfileKey.length > 0);
-    BOOL shouldIncludeProfileKey = NO;
-
-    if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        // Always sync the profile key to linked devices.
-        shouldIncludeProfileKey = YES;
-    } else {
-        OWSAssert(self.thread);
-
-        // For 1:1 threads, we want to include the profile key IFF the
-        // contact is in the whitelist.
-        //
-        // For Group threads, we want to include the profile key IFF the
-        // recipient OR the group is in the whitelist.
-        if ([profileManager isUserInProfileWhitelist:recipient.recipientId]) {
-            shouldIncludeProfileKey = YES;
-        } else if ([profileManager isThreadInProfileWhitelist:self.thread]) {
-            shouldIncludeProfileKey = YES;
-        }
-    }
-
-    if (shouldIncludeProfileKey) {
-        [contentBuilder setProfileKey:localProfileKey];
-    }
+    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
+    return [builder build];
 }
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    contentBuilder.dataMessage = [self buildDataMessage];
-    [self addLocalProfileKeyIfNecessary:contentBuilder recipient:recipient];
+    contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
     return [[contentBuilder build] data];
 }
 
