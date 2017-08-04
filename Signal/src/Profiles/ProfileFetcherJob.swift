@@ -116,8 +116,8 @@ class ProfileFetcherJob: NSObject {
 
         OWSProfileManager.shared().updateProfile(forRecipientId : signalServiceProfile.recipientId,
                                                  profileNameEncrypted : signalServiceProfile.profileNameEncrypted,
-                                                 avatarUrlEncrypted : signalServiceProfile.avatarUrlEncrypted,
-                                                 avatarDigestEncrypted : signalServiceProfile.avatarDigestEncrypted)
+                                                 avatarUrlData : signalServiceProfile.avatarUrlData,
+                                                 avatarDigest : signalServiceProfile.avatarDigest)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -146,13 +146,11 @@ struct SignalServiceProfile {
     public let recipientId: String
     public let identityKey: Data
     public let profileNameEncrypted: Data?
-    public let avatarUrlEncrypted: Data?
-    public let avatarDigestEncrypted: Data?
+    public let avatarUrlData: Data?
+    public let avatarDigest: Data?
 
     init(recipientId: String, rawResponse: Any?) throws {
         self.recipientId = recipientId
-
-        Logger.info("rawResponse: \(rawResponse)")
 
         guard let responseDict = rawResponse as? [String: Any?] else {
             throw ValidationError.invalid(description: "\(TAG) unexpected type: \(String(describing: rawResponse))")
@@ -177,26 +175,26 @@ struct SignalServiceProfile {
             profileNameEncrypted = data
         }
 
-        var avatarUrlEncrypted: Data? = nil
+        var avatarUrlData: Data? = nil
         if let avatarUrlString = responseDict["avatar"] as? String {
             guard let data = Data(base64Encoded: avatarUrlString) else {
                 throw ValidationError.invalidAvatarUrl(description: "\(TAG) unable to parse avatar URL: \(avatarUrlString)")
             }
-            avatarUrlEncrypted = data
+            avatarUrlData = data
         }
 
-        var avatarDigestEncrypted: Data? = nil
+        var avatarDigest: Data? = nil
         if let avatarDigestString = responseDict["avatarDigest"] as? String {
             guard let data = Data(base64Encoded: avatarDigestString) else {
                 throw ValidationError.invalidAvatarDigest(description: "\(TAG) unable to parse avatar digest: \(avatarDigestString)")
             }
-            avatarDigestEncrypted = data
+            avatarDigest = data
         }
 
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
         self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
         self.profileNameEncrypted = profileNameEncrypted
-        self.avatarUrlEncrypted = avatarUrlEncrypted
-        self.avatarDigestEncrypted = avatarDigestEncrypted
+        self.avatarUrlData = avatarUrlData
+        self.avatarDigest = avatarDigest
     }
 }

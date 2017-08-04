@@ -424,10 +424,9 @@ static const NSInteger kProfileKeyLength = 16;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // TODO: Do we need to use NSDataBase64EncodingOptions?
-        NSString *_Nullable localProfileNameEncrypted =
-            [[self encryptProfileString:localProfileName] base64EncodedString];
-        NSString *_Nullable avatarUrlEncrypted = [[self encryptProfileString:avatarUrl] base64EncodedString];
-        NSString *_Nullable avatarDigestEncrypted = [[self encryptProfileData:avatarDigest] base64EncodedString];
+        NSString *_Nullable localProfileNameBase64 = [[self encryptProfileString:localProfileName] base64EncodedString];
+        NSString *_Nullable avatarUrlBase64 = [[avatarUrl dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString];
+        NSString *_Nullable avatarDigestBase64 = [avatarDigest base64EncodedString];
 
         // TODO:
         if (YES) {
@@ -669,8 +668,8 @@ static const NSInteger kProfileKeyLength = 16;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
-                 avatarUrlEncrypted:(NSData *_Nullable)avatarUrlEncrypted
-              avatarDigestEncrypted:(NSData *_Nullable)avatarDigestEncrypted
+                      avatarUrlData:(NSData *_Nullable)avatarUrlData
+                       avatarDigest:(NSData *_Nullable)avatarDigest
 {
     OWSAssert(recipientId.length > 0);
 
@@ -681,8 +680,8 @@ static const NSInteger kProfileKeyLength = 16;
 
     NSString *_Nullable profileName =
         [self decryptProfileString:profileNameEncrypted profileKey:userProfile.profileKey];
-    NSString *_Nullable avatarUrl = [self decryptProfileString:avatarUrlEncrypted profileKey:userProfile.profileKey];
-    NSData *_Nullable avatarDigest = [self decryptProfileData:avatarDigestEncrypted profileKey:userProfile.profileKey];
+    NSString *_Nullable avatarUrl
+        = (avatarUrlData ? [[NSString alloc] initWithData:avatarUrlData encoding:NSUTF8StringEncoding] : nil);
 
     if (!avatarUrl || !avatarDigest) {
         // If either avatar url or digest is missing, skip both.
@@ -745,8 +744,8 @@ static const NSInteger kProfileKeyLength = 16;
         return nil;
     }
 
-    // TODO: Decrypt.
-    return nil;
+    // TODO: Decrypt.  For now, return the input.
+    return encryptedData;
 }
 
 + (NSString *_Nullable)decryptProfileString:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
@@ -770,8 +769,8 @@ static const NSInteger kProfileKeyLength = 16;
         return nil;
     }
 
-    // TODO: Encrypt.
-    return nil;
+    // TODO: Encrypt.  For now, return the input.
+    return data;
 }
 
 + (NSData *_Nullable)encryptProfileString:(NSString *_Nullable)value profileKey:(NSData *)profileKey
