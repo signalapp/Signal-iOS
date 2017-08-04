@@ -62,8 +62,8 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
-                 avatarUrlEncrypted:(NSData *_Nullable)avatarUrlEncrypted
-              avatarDigestEncrypted:(NSData *_Nullable)avatarDigestEncrypted;
+                      avatarUrlData:(NSData *_Nullable)avatarUrlData
+                       avatarDigest:(NSData *_Nullable)avatarDigest;
 
 @end
 
