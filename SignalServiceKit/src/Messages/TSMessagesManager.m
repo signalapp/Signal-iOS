@@ -702,6 +702,9 @@ NS_ASSUME_NONNULL_BEGIN
             // user, we can infer that that user belongs in our profile whitelist.
             id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
             [profileManager addUserToProfileWhitelist:destination];
+
+            // TODO: Can we also infer when groups are added to the whitelist
+            //       from sent messages to groups?
         }
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
