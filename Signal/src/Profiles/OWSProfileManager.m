@@ -830,7 +830,7 @@ static const NSInteger kProfileKeyLength = 16;
 
 // TODO: We may want to clean up this directory in the "orphan cleanup" logic.
 
-- (void)resetSignalStorage
+- (void)resetProfileStorage
 {
     OWSAssert([NSThread isMainThread]);
 

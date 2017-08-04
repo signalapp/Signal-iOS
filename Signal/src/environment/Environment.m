@@ -241,7 +241,7 @@ static Environment *environment = nil;
     [DDLog flushLog];
 
     [[TSStorageManager sharedManager] resetSignalStorage];
-    [[OWSProfileManager sharedManager] resetSignalStorage];
+    [[OWSProfileManager sharedManager] resetProfileStorage];
     [Environment.preferences clear];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 

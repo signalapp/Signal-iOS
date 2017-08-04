@@ -18,7 +18,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 + (instancetype)sharedManager;
 
-- (void)resetSignalStorage;
+- (void)resetProfileStorage;
 
 #pragma mark - Local Profile
 
