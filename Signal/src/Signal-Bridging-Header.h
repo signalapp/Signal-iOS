@@ -18,6 +18,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
+#import "OWSProfileManager.h"
 #import "OWSProgressView.h"
 #import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"

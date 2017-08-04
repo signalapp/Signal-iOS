@@ -11,6 +11,7 @@
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
+#import "OWSProfileManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
@@ -24,7 +25,6 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
-#import <SignalServiceKit/OWSProfilesManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  }]];
     }
 
-    if ([OWSProfilesManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
+    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 labelCellWithName:(self.isGroupThread
@@ -804,10 +804,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         NSData *groupId = groupThread.groupModel.groupId;
-        [OWSProfilesManager.sharedManager addGroupIdToProfileWhitelist:groupId];
+        [OWSProfileManager.sharedManager addGroupIdToProfileWhitelist:groupId];
     } else {
         NSString *recipientId = self.thread.contactIdentifier;
-        [OWSProfilesManager.sharedManager addUserToProfileWhitelist:recipientId];
+        [OWSProfileManager.sharedManager addUserToProfileWhitelist:recipientId];
     }
 
     [self updateTableContents];

@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/ProfileManagerProtocol.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
@@ -10,7 +12,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 @class TSThread;
 
 // This class can be safely accessed and used from any thread.
-@interface OWSProfilesManager : NSObject
+@interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -18,11 +20,10 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Local Profile
 
-@property (atomic, readonly) NSData *localProfileKey;
-
 // These two methods should only be called from the main thread.
-- (NSString *)localProfileName;
-- (UIImage *)localProfileAvatarImage;
+- (NSData *)localProfileKey;
+- (nullable NSString *)localProfileName;
+- (nullable UIImage *)localProfileAvatarImage;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
@@ -33,9 +34,6 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock;
-
-// This method should only be called from the main thread.
-- (void)appLaunchDidBegin;
 
 #pragma mark - Profile Whitelist
 
@@ -59,7 +57,12 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
 
-- (void)fetchProfileForRecipientId:(NSString *)recipientId;
+- (void)refreshProfileForRecipientId:(NSString *)recipientId;
+
+- (void)updateProfileForRecipientId:(NSString *)recipientId
+               profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
+                 avatarUrlEncrypted:(NSData *_Nullable)avatarUrlEncrypted
+              avatarDigestEncrypted:(NSData *_Nullable)avatarDigestEncrypted;
 
 @end
 

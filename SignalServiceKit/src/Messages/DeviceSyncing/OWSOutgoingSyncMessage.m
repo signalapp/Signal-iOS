@@ -4,7 +4,6 @@
 
 #import "OWSOutgoingSyncMessage.h"
 #import "Cryptography.h"
-#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN

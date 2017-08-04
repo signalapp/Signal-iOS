@@ -11,6 +11,7 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
+#import "OWSProfileManager.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
 #import "PropertyListPreferences.h"
@@ -28,7 +29,6 @@
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSProfilesManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -161,7 +161,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
     [OWSAnalytics appLaunchDidBegin];
-    [OWSProfilesManager.sharedManager appLaunchDidBegin];
 
     return YES;
 }
@@ -236,7 +235,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
                                              contactsManager:[Environment getCurrent].contactsManager
                                                messageSender:[Environment getCurrent].messageSender
-                                        notificationsManager:[Environment getCurrent].notificationsManager];
+                                        notificationsManager:[Environment getCurrent].notificationsManager
+                                              profileManager:OWSProfileManager.sharedManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{

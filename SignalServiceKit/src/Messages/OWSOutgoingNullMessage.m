@@ -6,7 +6,6 @@
 #import "Cryptography.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSContactThread.h"
-#import "OWSProfilesManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
 
