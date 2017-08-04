@@ -269,7 +269,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "ربط جهاز جديد";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "ربما يكون %@ قد اعاد تثبيت التطبيق او غير جهازه. من أجل ضمان الخصوصية قم بالتحقق معهم من رقم الأمان.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "لقد تم تغيير رقم الأمان مع %@";
@@ -599,7 +599,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "مسح علامة التحقق للجميع";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "سيؤدي ذلك إلى مسح علامة التحقق الخاص بجميع أعضاء المجموعة الذين تغيرت أرقام الأمان الخاصة بهم منذ آخر عملية تحقق لهم.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "الأعضاء";

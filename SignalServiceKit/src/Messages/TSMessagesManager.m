@@ -43,20 +43,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// The debug logs can be more verbose than the analytics events.
-//
-// In this case `descriptionForEnvelope` is valuable enough to
-// log but too dangerous to include in the analytics event.
-#define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
-    {                                                                                                                  \
-        DDLogError(@"%s:%d %@: %@",                                                                                    \
-            __PRETTY_FUNCTION__,                                                                                       \
-            __LINE__,                                                                                                  \
-            __analyticsEventName,                                                                                      \
-            [self descriptionForEnvelope:__envelope]);                                                                 \
-        OWSProdError(__analyticsEventName)                                                                             \
-    }
-
 @interface TSMessagesManager ()
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
@@ -279,6 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
              completion:(nullable MessageManagerCompletionBlock)completionHandler
 {
     OWSAssert([NSThread isMainThread]);
+    OWSAssert([TSAccountManager isRegistered]);
 
     // Ensure that completionHandler is called on the main thread,
     // and handle the nil case.
@@ -367,6 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleDeliveryReceipt:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert([NSThread isMainThread]);
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSInteraction *interaction =
             [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
@@ -381,6 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
                       completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssert([NSThread isMainThread]);
+
     @synchronized(self) {
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         NSString *recipientId = messageEnvelope.source;
@@ -520,7 +509,7 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogInfo(@"%@ handling dataMessage: %@", self.tag, [self descriptionForDataMessage:dataMessage]);
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
     } else {
-        DDLogWarn(@"%@ Ignoring envelope with neither DataMessage nor Content.", self.tag);
+        OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
 }
 
@@ -600,7 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (callMessage.hasBusy) {
         [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:incomingEnvelope.source];
     } else {
-        DDLogWarn(@"%@ Ignoring Received CallMessage without actionable content: %@", self.tag, callMessage);
+        OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], incomingEnvelope);
     }
 }
 
@@ -609,6 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupIdData:dataMessage.group.id];
+    OWSAssert(groupThread);
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
                                                         timestamp:envelope.timestamp
@@ -637,6 +627,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
     TSThread *thread = [self threadForEnvelope:envelope dataMessage:dataMessage];
+    OWSAssert(thread);
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
                                                         timestamp:envelope.timestamp
@@ -674,6 +665,15 @@ NS_ASSUME_NONNULL_BEGIN
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
 {
     OWSAssert([NSThread isMainThread]);
+
+    OWSAssert([TSAccountManager isRegistered]);
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (![localNumber isEqualToString:messageEnvelope.source]) {
+        // Sync messages should only come from linked devices.
+        OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], messageEnvelope);
+        return;
+    }
+
     if (syncMessage.hasSent) {
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:messageEnvelope.relay];
@@ -786,6 +786,7 @@ NS_ASSUME_NONNULL_BEGIN
                      enabled:NO
              durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
     }
+    OWSAssert(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration save];
     NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
@@ -807,6 +808,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(gThread);
+    OWSAssert(gThread.groupModel);
     OWSAssert(message);
 
     if (gThread.groupModel.groupImage) {
@@ -1032,30 +1034,30 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSErrorMessage *errorMessage;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
       if ([exception.name isEqualToString:NoSessionException]) {
-          OWSProdErrorWEnvelope(@"message_manager_error_no_session", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
           errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyException]) {
-          OWSProdErrorWEnvelope(@"message_manager_error_invalid_key", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
           errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
-          OWSProdErrorWEnvelope(@"message_manager_error_invalid_key_id", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
           errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:DuplicateMessageException]) {
           // Duplicate messages are dismissed
           return;
       } else if ([exception.name isEqualToString:InvalidVersionException]) {
-          OWSProdErrorWEnvelope(@"message_manager_error_invalid_message_version", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
           errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
       } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
           // Should no longer get here, since we now record the new identity for incoming messages.
-          OWSProdErrorWEnvelope(@"message_manager_error_untrusted_identity_key_exception", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
           OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
               self.tag,
               envelope.source,
               envelope.sourceDevice);
           return;
       } else {
-          OWSProdErrorWEnvelope(@"message_manager_error_corrupt_message", envelope);
+          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
           errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
       }
 
