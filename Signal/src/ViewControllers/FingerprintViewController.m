@@ -17,9 +17,9 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
-#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -74,7 +74,7 @@ typedef void (^CustomLayoutBlock)();
 
 @property (nonatomic) NSString *recipientId;
 @property (nonatomic) NSData *identityKey;
-@property (nonatomic) TSStorageManager *storageManager;
+@property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
 
@@ -118,6 +118,8 @@ typedef void (^CustomLayoutBlock)();
         return self;
     }
 
+    _accountManager = [TSAccountManager sharedInstance];
+
     [self observeNotifications];
 
     return self;
@@ -142,8 +144,6 @@ typedef void (^CustomLayoutBlock)();
 
     self.recipientId = recipientId;
 
-    self.storageManager = [TSStorageManager sharedManager];
-
     OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
     self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
 
@@ -155,7 +155,7 @@ typedef void (^CustomLayoutBlock)();
     self.identityKey = recipientIdentity.identityKey;
 
     OWSFingerprintBuilder *builder =
-        [[OWSFingerprintBuilder alloc] initWithStorageManager:self.storageManager contactsManager:contactsManager];
+        [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
     self.fingerprint =
         [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
 }

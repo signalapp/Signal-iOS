@@ -11,6 +11,7 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
+#import "OWSProfileManager.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
 #import "PropertyListPreferences.h"
@@ -28,7 +29,6 @@
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSProfilesManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSMessagesManager.h>
@@ -161,7 +161,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
     [OWSAnalytics appLaunchDidBegin];
-    [OWSProfilesManager.sharedManager appLaunchDidBegin];
 
     return YES;
 }
@@ -236,7 +235,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
                                              contactsManager:[Environment getCurrent].contactsManager
                                                messageSender:[Environment getCurrent].messageSender
-                                        notificationsManager:[Environment getCurrent].notificationsManager];
+                                        notificationsManager:[Environment getCurrent].notificationsManager
+                                              profileManager:OWSProfileManager.sharedManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
@@ -394,14 +394,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
         DDLogInfo(@"Application opened with URL: %@", url);
 
-        [[TSAccountManager sharedInstance] ifRegistered:YES
-                                               runAsync:^{
-                                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                                       // Wait up to N seconds for database view registrations to
-                                                       // complete.
-                                                       [self showImportUIForAttachment:attachment remainingRetries:5];
-                                                   });
-                                               }];
+        if ([TSAccountManager isRegistered]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Wait up to N seconds for database view registrations to
+                // complete.
+                [self showImportUIForAttachment:attachment remainingRetries:5];
+            });
+        }
 
         return YES;
     } else {
@@ -455,70 +454,52 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        RTCInitializeSSL();
 
+        if ([TSAccountManager isRegistered]) {
+            // At this point, potentially lengthy DB locking migrations could be running.
+            // Avoid blocking app launch by putting all further possible DB access in async block
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                DDLogInfo(
+                    @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
+
+                // Clean up any messages that expired since last launch immediately
+                // and continue cleaning in the background.
+                [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+
+                // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
+                // sent before the app exited should be marked as failures.
+                [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+
+                [AppStoreRating setupRatingLibrary];
+            });
+        } else {
+            DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
+
+            // Unregistered user should have no unread messages. e.g. if you delete your account.
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+
+            [TSSocketManager requestSocketOpen];
+
+            UITapGestureRecognizer *gesture =
+                [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
+            gesture.numberOfTapsRequired = 8;
+            [self.window addGestureRecognizer:gesture];
+        }
+    }); // end dispatchOnce for first time we become active
+
+    // Every time we become active...
+    if ([TSAccountManager isRegistered]) {
         // At this point, potentially lengthy DB locking migrations could be running.
-        // Avoid blocking app launch by putting all further possible DB access in async thread.
-        [[TSAccountManager sharedInstance]
-            ifRegistered:YES
-                runAsync:^{
-                    DDLogInfo(@"%@ running post launch block for registered user: %@",
-                        self.tag,
-                        [TSAccountManager localNumber]);
-
-                    RTCInitializeSSL();
-
-                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                              accountManager:[Environment getCurrent].accountManager
-                                                 preferences:[Environment preferences]
-                                                  showAlerts:NO];
-
-                    // Clean up any messages that expired since last launch immediately
-                    // and continue cleaning in the background.
-                    [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-
-                    // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
-                    // sent before the app exited should be marked as failures.
-                    [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                    [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]]
-                        run];
-
-                    [AppStoreRating setupRatingLibrary];
-                }];
-
-        [[TSAccountManager sharedInstance]
-            ifRegistered:NO
-                runAsync:^{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
-
-                        // Unregistered user should have no unread messages. e.g. if you delete your account.
-                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-
-                        [TSSocketManager requestSocketOpen];
-
-                        UITapGestureRecognizer *gesture =
-                            [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
-                                                                    action:@selector(submitLogs)];
-                        gesture.numberOfTapsRequired = 8;
-                        [self.window addGestureRecognizer:gesture];
-                    });
-                    RTCInitializeSSL();
-                }];
-    });
-
-    [[TSAccountManager sharedInstance]
-        ifRegistered:YES
-            runAsync:^{
-                [TSSocketManager requestSocketOpen];
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
-                });
-
-                // This will fetch new messages, if we're using domain
-                // fronting.
-                [[PushManager sharedManager] applicationDidBecomeActive];
-            }];
+        // Avoid blocking app launch by putting all further possible DB access in async block
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [TSSocketManager requestSocketOpen];
+            [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
+            // This will fetch new messages, if we're using domain fronting.
+            [[PushManager sharedManager] applicationDidBecomeActive];
+        });
+    }
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
 }

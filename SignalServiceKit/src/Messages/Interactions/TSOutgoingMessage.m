@@ -4,10 +4,15 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSOutgoingSyncMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "ProfileManagerProtocol.h"
+#import "ProtoBuf+OWS.h"
+#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -450,16 +455,21 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return builder;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage
+// recipientId is nil when building "sent" sync messages for messages
+// sent to groups.
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    return [[self dataMessageBuilder] build];
+    OWSAssert(self.thread);
+
+    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
+    return [builder build];
 }
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    contentBuilder.dataMessage = [self buildDataMessage];
-
+    contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
     return [[contentBuilder build] data];
 }
 

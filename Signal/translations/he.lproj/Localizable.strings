@@ -2,55 +2,55 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "אשר/י מספר ביטחון חדש";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Add";
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "הוסף";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Add Contact";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "הוסף איש קשר";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Add by Phone Number";
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "הוסף לפי מספר טלפון";
 
 /* Title for the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Add Member";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Would you like to add this user to your contacts?";
+"ADD_TO_CONTACTS_OFFER" = "האם ברצונך להוסיף משתמש זה לרשימת אנשי הקשר שלך?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Discard";
+"ALERT_DISCARD_BUTTON" = "התעלם";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "Don't Save";
+"ALERT_DONT_SAVE" = "אל תשמור";
 
 /* Title for a generic error alert. */
-"ALERT_ERROR_TITLE" = "Error";
+"ALERT_ERROR_TITLE" = "תקלה";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Save";
+"ALERT_SAVE" = "שמור";
 
 /* A message for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
 
 /* A title for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_TITLE" = "Validating";
+"ALERT_VALIDATE_RECIPIENT_TITLE" = "מאמת";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "כבר יש לך חשבון בסיגנל?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "כבר יש לך משתמש Signal?";
 
 /* No comment provided by engineer. */
-"ANSWER_CALL_BUTTON_TITLE" = "לענות";
+"ANSWER_CALL_BUTTON_TITLE" = "ענה";
 
 /* No comment provided by engineer. */
-"APN_Message" = "מסר חדש!";
+"APN_Message" = "הודעה חדשה!";
 
 /* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "מסר מאת";
+"APN_MESSAGE_FROM" = "הודעה מ-";
 
 /* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "מסר בקבוצה";
+"APN_MESSAGE_IN_GROUP" = "הודעה בקבוצה";
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ בקבוצה %@: %@";
@@ -59,7 +59,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "גרסה חדשה של Signal זמינה להורדה";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
@@ -68,7 +68,7 @@
 "APPLICATION_NAME" = "סיגנל";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "לשלוח לארכיון";
+"ARCHIVE_ACTION" = "העבר לארכיון";
 
 /* No comment provided by engineer. */
 "ARCHIVE_NAV_BAR_TITLE" = "ארכיון";
@@ -83,25 +83,25 @@
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "גודל: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "קובץ מצורף";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "השליחה נכשלה. הקש לשליחה מחדש.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloading…";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "מוריד...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Queued";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "ממתין להורדה";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "שגיאה בשליחת קובץ מצורף";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
@@ -110,16 +110,16 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "הקובץ המצורף גדול מידי";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment has invalid contents.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "הקובץ המצורף מכיל תוכן לא תקין";
 
 /* Attachment error message for attachments with an invalid file format */
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has invalid file format.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "הקובץ המצורף ריק מתוכן";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "תצלם או בחר/י צילום ושלח/י";
@@ -128,79 +128,79 @@
 "ATTACHMENT_LABEL" = "קובץ";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "שגיאה בבחירת קובץ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "קובץ לא נתמך";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "הודעה קולית";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "רמקול";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "אנשי קשר חסומים לא יוכלו להתקשר אליך או לשלוח לך הודעות";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "חסום";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "לחסום את %@?";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "בטל חסימה";
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "לבטל את חסימת %@?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "חסום";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Failed to Block User.";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "חסימת משתמש נכשלה";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "שגיאה";
 
 /* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ נחסם";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "המשתמש נחסם";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "אין אפשרות לחסום את עצמך";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "שגיאה";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Error";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "שגיאה";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "הוסרה חסימת %@";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "User Unblocked";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "הוסרה חסימת המשתמש";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Block";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "חסום";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "לחסום את %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls and record voice messages. You can grant this permission in the Settings app.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal צריך גישה למיקרופון המכשיר בשביל לאפשר שיחות טלפון והודעות שמע. אפשר לאשר זאת בהגדרות המכשיר.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
+"CALL_AUDIO_PERMISSION_TITLE" = "נדרשת גישה למיקרופון";
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "התקשר";

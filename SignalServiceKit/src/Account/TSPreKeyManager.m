@@ -109,10 +109,11 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
             //       condition.
             lastPreKeyCheckTimestamp = [NSDate date];
 
-            [[TSAccountManager sharedInstance] ifRegistered:YES
-                                                   runAsync:^{
-                                                       [TSPreKeyManager checkPreKeys];
-                                                   }];
+            if ([TSAccountManager isRegistered]) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [TSPreKeyManager checkPreKeys];
+                });
+            }
         }
     });
 }

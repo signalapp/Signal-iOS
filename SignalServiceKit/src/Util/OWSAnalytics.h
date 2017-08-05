@@ -134,4 +134,32 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdCritical(__eventName) OWSProdEventWParams(OWSAnalyticsSeverityCritical, __eventName, nil)
 
+#pragma mark - TSMessagesManager macros
+// Defined here rather than in TSMessagesManager so that our analytic event extraction script
+// can properly detect the event names.
+//
+// The debug logs can be more verbose than the analytics events.
+//
+// In this case `descriptionForEnvelope` is valuable enough to
+// log but too dangerous to include in the analytics event.
+#define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
+    {                                                                                                                  \
+        DDLogError(@"%s:%d %@: %@",                                                                                    \
+            __PRETTY_FUNCTION__,                                                                                       \
+            __LINE__,                                                                                                  \
+            __analyticsEventName,                                                                                      \
+            [self descriptionForEnvelope:__envelope]);                                                                 \
+        OWSProdError(__analyticsEventName)                                                                             \
+    }
+
+#define OWSProdInfoWEnvelope(__analyticsEventName, __envelope)                                                         \
+    {                                                                                                                  \
+        DDLogInfo(@"%s:%d %@: %@",                                                                                     \
+            __PRETTY_FUNCTION__,                                                                                       \
+            __LINE__,                                                                                                  \
+            __analyticsEventName,                                                                                      \
+            [self descriptionForEnvelope:__envelope]);                                                                 \
+        OWSProdInfo(__analyticsEventName)                                                                              \
+    }
+
 NS_ASSUME_NONNULL_END

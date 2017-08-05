@@ -84,12 +84,12 @@ message CallMessage {
     optional uint64 id = 1;
   }
 
-
-  optional Offer     offer     = 1;
-  optional Answer    answer    = 2;
-  repeated IceUpdate iceUpdate = 3;
-  optional Hangup    hangup    = 4;
-  optional Busy      busy      = 5;
+  optional Offer     offer      = 1;
+  optional Answer    answer     = 2;
+  repeated IceUpdate iceUpdate  = 3;
+  optional Hangup    hangup     = 4;
+  optional Busy      busy       = 5;
+  optional bytes     profileKey = 6;
 }
 
 message DataMessage {
@@ -103,6 +103,7 @@ message DataMessage {
   optional GroupContext       group       = 3;
   optional uint32             flags       = 4;
   optional uint32             expireTimer = 5;
+  optional bytes              profileKey  = 6;
 }
 
 message SyncMessage {
@@ -142,14 +143,15 @@ message SyncMessage {
     optional uint64 timestamp = 2;
   }
 
-  optional Sent     sent     = 1;
-  optional Contacts contacts = 2;
-  optional Groups   groups   = 3;
-  optional Request  request  = 4;
-  repeated Read     read     = 5;
-  optional Blocked  blocked  = 6;
-  optional Verified verified = 7;
-  optional bytes    padding  = 8;
+  optional Sent     sent       = 1;
+  optional Contacts contacts   = 2;
+  optional Groups   groups     = 3;
+  optional Request  request    = 4;
+  repeated Read     read       = 5;
+  optional Blocked  blocked    = 6;
+  optional Verified verified   = 7;
+  optional bytes    padding    = 8;
+  optional bytes    profileKey = 9;
 }
 
 message AttachmentPointer {

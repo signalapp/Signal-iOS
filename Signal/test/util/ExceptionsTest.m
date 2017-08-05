@@ -6,6 +6,7 @@
 #import "TestUtil.h"
 
 @implementation ExceptionsTest
+
 - (void)testContracts {
     ows_require(1 + 1 == 2);
     @try {

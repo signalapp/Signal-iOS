@@ -321,6 +321,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    self.hasEverHadMessage = YES;
+
     NSDate *lastMessageDate = [lastMessage dateForSorting];
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;

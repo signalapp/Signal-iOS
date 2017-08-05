@@ -3,11 +3,11 @@
 //
 
 #import "OWSOutgoingNullMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "Cryptography.h"
-#import "OWSVerificationStateSyncMessage.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSContactThread.h"
+#import "OWSSignalServiceProtos.pb.h"
+#import "OWSVerificationStateSyncMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
     
     contentBuilder.nullMessage = [nullMessageBuilder build];
-    
+
     return [contentBuilder build].data;
 }
 

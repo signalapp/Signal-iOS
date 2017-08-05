@@ -14,7 +14,6 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
-#import "OWSProfilesManager.h"
 #import "OWSUploadingService.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
@@ -30,7 +29,6 @@
 #import "TSPreKeyManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
@@ -357,7 +355,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) OWSProfilesManager *profilesManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
@@ -398,14 +395,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(!_blockingManager);
 
     _blockingManager = blockingManager;
-}
-
-- (void)setProfilesManager:(OWSProfilesManager *)profilesManager
-{
-    OWSAssert(profilesManager);
-    OWSAssert(!_profilesManager);
-
-    _profilesManager = profilesManager;
 }
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -623,7 +612,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             || [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
             TSContactThread *contactThread = (TSContactThread *)thread;
-            if ([contactThread.contactIdentifier isEqualToString:self.storageManager.localNumber]
+            if ([contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]]
                 && ![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
                 [self handleSendToMyself:message];
@@ -632,7 +621,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSString *recipientContactId = [message isKindOfClass:[OWSOutgoingSyncMessage class]]
-                ? self.storageManager.localNumber
+                ? [TSAccountManager localNumber]
                 : contactThread.contactIdentifier;
 
             // If we block a user, don't send 1:1 messages to them. The UI
@@ -734,7 +723,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *recipientId = recipient.recipientId;
 
         // We don't need to send the message to ourselves...
-        if ([recipientId isEqualToString:[TSStorageManager localNumber]]) {
+        if ([recipientId isEqualToString:[TSAccountManager localNumber]]) {
             continue;
         }
         // We don't need to sent the message to all group members if
@@ -1166,8 +1155,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                    inThread:(TSThread *)thread
 {
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
-    
-    NSData *plainText = [message buildPlainTextData];
+
+    NSData *plainText = [message buildPlainTextData:recipient];
     DDLogDebug(@"%@ built message: %@ plainTextData.length: %lu", self.tag, [message class], (unsigned long)plainText.length);
 
     for (NSNumber *deviceNumber in recipient.devices) {

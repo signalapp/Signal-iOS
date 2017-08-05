@@ -439,6 +439,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)createGroup
 {
+    OWSAssert([NSThread isMainThread]);
+
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
@@ -447,6 +449,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];
     OWSAssert(thread);
+    
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     void (^successHandler)() = ^{
         DDLogError(@"Group creation successful.");

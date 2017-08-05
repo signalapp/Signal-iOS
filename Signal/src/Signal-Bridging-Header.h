@@ -18,6 +18,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
+#import "OWSProfileManager.h"
 #import "OWSProgressView.h"
 #import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
@@ -86,7 +87,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
-#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 #import <SignalServiceKit/TSThread.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>

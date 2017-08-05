@@ -26,6 +26,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -728,7 +729,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // We do this synchronously if we're already on the main thread.
+    DispatchMainThreadSafe(^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
                                                                                bundle:nil];
         [mvc configureForThread:thread
@@ -736,11 +738,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                 callOnViewAppearing:callOnViewAppearing];
         self.lastThread = thread;
 
-        if (self.presentedViewController) {
-            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-        }
-        [self.navigationController popToRootViewControllerAnimated:YES];
-        [self.navigationController pushViewController:mvc animated:YES];
+        [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
     });
 }
 
@@ -799,6 +797,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // Perform the first step.
     if (self.presentedViewController) {
+        if ([self.presentedViewController isKindOfClass:[CallViewController class]]) {
+            OWSProdInfo([OWSAnalyticsEvents errorCouldNotPresentViewDueToCall]);
+            return;
+        }
         [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];
     } else {
         dismissNavigationBlock();

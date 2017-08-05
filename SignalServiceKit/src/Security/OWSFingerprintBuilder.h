@@ -4,14 +4,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSStorageManager;
+@class TSAccountManager;
 @class OWSFingerprint;
 @protocol ContactsManagerProtocol;
 
 @interface OWSFingerprintBuilder : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithAccountManager:(TSAccountManager *)accountManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager NS_DESIGNATED_INITIALIZER;
 
 /**

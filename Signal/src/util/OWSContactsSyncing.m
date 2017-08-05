@@ -139,12 +139,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
         return;
     }
 
-    [[TSAccountManager sharedInstance] ifRegistered:YES
-                                           runAsync:^{
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   [self sendSyncContactsMessageIfNecessary];
-                                               });
-                                           }];
+    if ([TSAccountManager sharedInstance]) {
+        [self sendSyncContactsMessageIfNecessary];
+    }
 }
 
 #pragma mark - Logging

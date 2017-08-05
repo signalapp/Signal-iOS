@@ -4,8 +4,8 @@
 
 #import "NSDate+millisecondTimeStamp.h"
 #import "TSAttachmentStream.h"
+#import "TSContactThread.h"
 #import "TSMessage.h"
-#import "TSThread.h"
 
 #import <XCTest/XCTest.h>
 
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp {
     [super setUp];
-    self.thread = [[TSThread alloc] init];
+    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
 }
 
 - (void)tearDown {

@@ -4,6 +4,7 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
+#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "Util.h"
 #import "ViewControllerUtils.h"
@@ -204,6 +205,8 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         dispatch_async(dispatch_get_main_queue(), ^{
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
+
+            [OWSProfileManager.sharedManager setContactRecipientIds:signalAccountMap.allKeys];
 
             [self updateCachedDisplayNames];
         });

@@ -15,7 +15,6 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
@@ -326,7 +325,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     @synchronized(self)
     {
-        if ([[self.storageManager localNumber] isEqualToString:recipientId]) {
+        if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
             if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {

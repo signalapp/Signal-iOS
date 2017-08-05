@@ -72,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"call_service_call_unexpectedly_idle";
 }
 
++ (NSString *)callServiceCallViewCouldNotPresent
+{
+    return @"call_service_call_view_could_not_present";
+}
+
 + (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise
 {
     return @"call_service_could_not_create_peer_connection_client_promise";
@@ -162,6 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"error_attachment_request_failed";
 }
 
++ (NSString *)errorCouldNotPresentViewDueToCall
+{
+    return @"error_could_not_present_view_due_to_call";
+}
+
 + (NSString *)errorEnableVideoCallingRequestFailed
 {
     return @"error_enable_video_calling_request_failed";
@@ -212,6 +222,16 @@ NS_ASSUME_NONNULL_BEGIN
     return @"error_update_attributes_request_failed";
 }
 
++ (NSString *)messageManagerErrorCallMessageNoActionablePayload
+{
+    return @"message_manager_error_call_message_no_actionable_payload";
+}
+
++ (NSString *)messageManagerErrorCorruptMessage
+{
+    return @"message_manager_error_corrupt_message";
+}
+
 + (NSString *)messageManagerErrorCouldNotHandlePrekeyBundle
 {
     return @"message_manager_error_could_not_handle_prekey_bundle";
@@ -220,6 +240,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)messageManagerErrorCouldNotHandleSecureMessage
 {
     return @"message_manager_error_could_not_handle_secure_message";
+}
+
++ (NSString *)messageManagerErrorEnvelopeNoActionablePayload
+{
+    return @"message_manager_error_envelope_no_actionable_payload";
 }
 
 + (NSString *)messageManagerErrorEnvelopeTypeKeyExchange
@@ -237,6 +262,21 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_manager_error_envelope_type_unknown";
 }
 
++ (NSString *)messageManagerErrorInvalidKey
+{
+    return @"message_manager_error_invalid_key";
+}
+
++ (NSString *)messageManagerErrorInvalidKeyId
+{
+    return @"message_manager_error_invalid_key_id";
+}
+
++ (NSString *)messageManagerErrorInvalidMessageVersion
+{
+    return @"message_manager_error_invalid_message_version";
+}
+
 + (NSString *)messageManagerErrorInvalidProtocolMessage
 {
     return @"message_manager_error_invalid_protocol_message";
@@ -247,6 +287,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_manager_error_message_envelope_has_no_content";
 }
 
++ (NSString *)messageManagerErrorNoSession
+{
+    return @"message_manager_error_no_session";
+}
+
 + (NSString *)messageManagerErrorOversizeMessage
 {
     return @"message_manager_error_oversize_message";
@@ -255,6 +300,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent
 {
     return @"message_manager_error_prekey_bundle_envelope_has_no_content";
+}
+
++ (NSString *)messageManagerErrorSyncMessageFromUnknownSource
+{
+    return @"message_manager_error_sync_message_from_unknown_source";
+}
+
++ (NSString *)messageManagerErrorUntrustedIdentityKeyException
+{
+    return @"message_manager_error_untrusted_identity_key_exception";
 }
 
 + (NSString *)messageReceiverErrorLargeMessage

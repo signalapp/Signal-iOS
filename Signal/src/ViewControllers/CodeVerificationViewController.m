@@ -13,7 +13,6 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSStorageManager+keyingMaterial.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

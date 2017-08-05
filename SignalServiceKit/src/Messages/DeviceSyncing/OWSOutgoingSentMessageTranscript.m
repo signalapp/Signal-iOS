@@ -13,8 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Normally this is private, but we need to embed this
  * data structure within our own.
+ *
+ * recipientId is nil when building "sent" sync messages for messages
+ * sent to groups.
  */
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage;
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 @end
 
@@ -46,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
     [sentBuilder setDestination:self.message.recipientIdentifier];
-    [sentBuilder setMessage:[self.message buildDataMessage]];
+    [sentBuilder setMessage:[self.message buildDataMessage:self.message.recipientIdentifier]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];

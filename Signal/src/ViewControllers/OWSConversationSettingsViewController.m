@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSConversationSettingsTableViewController.h"
+#import "OWSConversationSettingsViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -11,6 +11,7 @@
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
+#import "OWSProfileManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
@@ -33,14 +34,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSConversationSettingsTableViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
+@interface OWSConversationSettingsViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) TSThread *thread;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -52,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSConversationSettingsTableViewController
+@implementation OWSConversationSettingsViewController
 
 - (instancetype)init
 {
@@ -78,20 +79,21 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (!self) {
         return self;
     }
-    
+
     [self commonInit];
-    
+
     return self;
 }
 
 - (void)commonInit
 {
-    _storageManager = [TSStorageManager sharedManager];
+    _accountManager = [TSAccountManager sharedInstance];
     _contactsManager = [Environment getCurrent].contactsManager;
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
@@ -244,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
-    __weak OWSConversationSettingsTableViewController *weakSelf = self;
+    __weak OWSConversationSettingsViewController *weakSelf = self;
 
     // Main section.
 
@@ -271,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         iconName:@"table_ic_add_to_existing_contact"];
         }
                                  actionBlock:^{
-                                     OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                                     OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssert(strongSelf);
                                      TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
                                      NSString *recipientId = contactThread.contactIdentifier;
@@ -292,10 +294,39 @@ NS_ASSUME_NONNULL_BEGIN
                                  }]];
     }
 
+    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
+        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return [weakSelf
+                labelCellWithName:(self.isGroupThread
+                                          ? NSLocalizedString(
+                                                @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
+                                                @"Indicates that user's profile has been shared with a group.")
+                                          : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
+                                                @"Indicates that user's profile has been shared with a user."))iconName
+                                 :@"table_ic_share_profile"];
+        }
+                                                       actionBlock:nil]];
+    } else {
+        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            return
+                [weakSelf disclosureCellWithName:(self.isGroupThread
+                                                         ? NSLocalizedString(
+                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
+                                                               @"Action that shares user profile with a group.")
+                                                         : NSLocalizedString(
+                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
+                                                               @"Action that shares user profile with a user."))iconName
+                                                :@"table_ic_share_profile"];
+        }
+                                 actionBlock:^{
+                                     [weakSelf showShareProfileAlert];
+                                 }]];
+    }
+
     [mainSection
         addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
-            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+            OWSConversationSettingsViewController *strongSelf = weakSelf;
             OWSCAssert(strongSelf);
             cell.preservesSuperviewLayoutMargins = YES;
             cell.contentView.preservesSuperviewLayoutMargins = YES;
@@ -354,7 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             UITableViewCell *cell = [UITableViewCell new];
-                            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
                             OWSCAssert(strongSelf);
                             cell.preservesSuperviewLayoutMargins = YES;
                             cell.contentView.preservesSuperviewLayoutMargins = YES;
@@ -442,7 +473,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *muteSection = [OWSTableSection new];
     [muteSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-        OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+        OWSConversationSettingsViewController *strongSelf = weakSelf;
         OWSCAssert(strongSelf);
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
@@ -514,7 +545,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
                                                      @"table cell label in conversation settings")
                                         iconName:@"table_ic_block"];
-            OWSConversationSettingsTableViewController *strongSelf = weakSelf;
+            OWSConversationSettingsViewController *strongSelf = weakSelf;
             OWSCAssert(strongSelf);
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -538,7 +569,7 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
-- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
+- (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
 {
     OWSAssert(name.length > 0);
     OWSAssert(iconName.length > 0);
@@ -546,7 +577,6 @@ NS_ASSUME_NONNULL_BEGIN
     UITableViewCell *cell = [UITableViewCell new];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     UIImageView *iconView = [self viewForIconWithName:iconName];
     [cell.contentView addSubview:iconView];
@@ -563,6 +593,20 @@ NS_ASSUME_NONNULL_BEGIN
     [rowLabel autoPinLeadingToTrailingOfView:iconView margin:self.iconSpacing];
     [rowLabel autoPinTrailingToSuperView];
 
+    return cell;
+}
+
+- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
+{
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    return cell;
+}
+
+- (UITableViewCell *)labelCellWithName:(NSString *)name iconName:(NSString *)iconName
+{
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    cell.accessoryType = UITableViewCellAccessoryNone;
     return cell;
 }
 
@@ -728,6 +772,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Actions
 
+- (void)showShareProfileAlert
+{
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *leaveAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+                            @"Button to confirm that user wants to share their profile with a user or group.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self shareProfile];
+                }];
+    [alertController addAction:leaveAction];
+
+    UIAlertAction *cancelAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                  style:UIAlertActionStyleCancel
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+                }];
+    [alertController addAction:cancelAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)shareProfile
+{
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+    [self updateTableContents];
+}
+
 - (void)showVerificationView
 {
     NSString *recipientId = self.thread.contactIdentifier;
@@ -840,7 +916,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-    [newGroupMemberIds removeObject:[self.storageManager localNumber]];
+    [newGroupMemberIds removeObject:[self.accountManager localNumber]];
     gThread.groupModel.groupMemberIds = newGroupMemberIds;
     [gThread save];
 
@@ -949,7 +1025,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             message:message
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
-    __weak OWSConversationSettingsTableViewController *weakSelf = self;
+    __weak OWSConversationSettingsViewController *weakSelf = self;
     if (self.thread.isMuted) {
         UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_UNMUTE_ACTION",
                                                                    @"Label for button to unmute a thread.")

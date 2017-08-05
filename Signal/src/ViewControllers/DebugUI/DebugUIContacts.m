@@ -1134,7 +1134,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)createRandomContacts:(int)count
++ (void)createRandomContacts:(NSUInteger)count
 {
     OWSAssert(count > 0);
     [self createRandomContacts:count contactHandler:nil];
@@ -1163,15 +1163,33 @@ NS_ASSUME_NONNULL_BEGIN
                      }
 
                      CNSaveRequest *request = [[CNSaveRequest alloc] init];
-                     for (int i = 0; i < count; i++) {
+                     for (NSUInteger i = 0; i < count; i++) {
                          CNMutableContact *contact = [[CNMutableContact alloc] init];
                          contact.familyName = [@"Rando-" stringByAppendingString:[self randomLastName]];
                          contact.givenName = [self randomFirstName];
 
+                         NSString *phoneString = [self randomPhoneNumber];
                          CNLabeledValue *homePhone = [CNLabeledValue
                              labeledValueWithLabel:CNLabelHome
-                                             value:[CNPhoneNumber phoneNumberWithStringValue:[self randomPhoneNumber]]];
+                                             value:[CNPhoneNumber phoneNumberWithStringValue:phoneString]];
                          contact.phoneNumbers = @[ homePhone ];
+
+                         // 50% chance of fake contact having an avatar
+                         const NSUInteger kPercentWithAvatar = 50;
+                         const NSUInteger kMinimumAvatarDiameter = 200;
+                         const NSUInteger kMaximumAvatarDiameter = 800;
+                         OWSAssert(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
+                         if (arc4random_uniform(100) < kPercentWithAvatar) {
+                             NSUInteger avatarDiameter
+                                 = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
+                                 + kMinimumAvatarDiameter;
+                             // Note this doesn't work on iOS9, since iOS9 doesn't generate the imageThumbnailData from
+                             // programmatically assigned imageData. We could make our own thumbnail in Contact.m, but
+                             // it's not worth it for the sake of debug UI.
+                             contact.imageData = UIImageJPEGRepresentation(
+                                 [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter], (CGFloat)0.9);
+                             DDLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
+                         }
 
                          [contacts addObject:contact];
                          [request addContact:contact toContainerWithIdentifier:nil];

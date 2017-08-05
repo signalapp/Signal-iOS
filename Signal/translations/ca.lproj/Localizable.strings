@@ -776,7 +776,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Heu blocat 1 membre d'aquest grup";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of this Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Heu blocat %@ membres d'aquest grup";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no és marcat com a verificat. Toqueu per a més opcions.";
@@ -1346,31 +1346,31 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Els números de seguretat coincideixen!";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ dies";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ hores";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ minuts";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ segons";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dia";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ hora";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minut";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ setmana";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ setmanes";
 
 /* generic cancel text */
 "TXT_CANCEL_TITLE" = "Cancel·la";
@@ -1510,16 +1510,16 @@
 // Strings Copied in from JSQMessagesViewController
 
 
-"load_earlier_messages" = "Load Earlier Messages";
+"load_earlier_messages" = "Carrega els missatges anteriors";
 
-"send" = "Send";
+"send" = "Envia";
 
-"new_message" = "New Message";
+"new_message" = "Missatge nou";
 
 "text_message_accessibility_label" = "%@: %@";
 
-"media_message_accessibility_label" = "%@: media message";
+"media_message_accessibility_label" = "%@: missatge multimèdia";
 
-"accessory_button_accessibility_label" = "Share media";
+"accessory_button_accessibility_label" = "Comparteix el contingut";
 
-"new_message_received_accessibility_announcement" = "New message received";
+"new_message_received_accessibility_announcement" = "S'ha rebut un missatge nou";

@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseConnection (OWS)
 
+- (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;

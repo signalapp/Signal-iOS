@@ -12,6 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation YapDatabaseConnection (OWS)
 
+- (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    return nil != [self objectForKey:key inCollection:collection];
+}
+
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection
 {
     OWSAssert(key.length > 0);
@@ -104,6 +112,14 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self setObject:@(value) forKey:key inCollection:collection];
+}
+
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
     OWSAssert(key.length > 0);
@@ -114,12 +130,12 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection
+- (void)setInt:(int)value forKey:(NSString *)key inCollection:(NSString *)collection
 {
     OWSAssert(key.length > 0);
     OWSAssert(collection.length > 0);
 
-    [self setObject:@(integer) forKey:key inCollection:collection];
+    [self setObject:@(value) forKey:key inCollection:collection];
 }
 
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection

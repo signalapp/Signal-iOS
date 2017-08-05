@@ -22,7 +22,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager;
+                        storageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedInstance;
 
@@ -35,14 +35,13 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  */
 + (BOOL)isRegistered;
 
-- (void)ifRegistered:(BOOL)isRegistered runAsync:(void (^)())block;
-
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
  *
  *  @return E164 formatted phone number
  */
 + (nullable NSString *)localNumber;
+- (nullable NSString *)localNumber;
 
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled

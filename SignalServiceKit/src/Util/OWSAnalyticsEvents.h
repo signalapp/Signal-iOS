@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)callServiceCallUnexpectedlyIdle;
 
++ (NSString *)callServiceCallViewCouldNotPresent;
+
 + (NSString *)callServiceCouldNotCreatePeerConnectionClientPromise;
 
 + (NSString *)callServiceCouldNotCreateReadyToSendIceUpdatesPromise;
@@ -72,6 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)errorAttachmentRequestFailed;
 
++ (NSString *)errorCouldNotPresentViewDueToCall;
+
 + (NSString *)errorEnableVideoCallingRequestFailed;
 
 + (NSString *)errorGetDevicesFailed;
@@ -92,9 +96,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)errorUpdateAttributesRequestFailed;
 
++ (NSString *)messageManagerErrorCallMessageNoActionablePayload;
+
++ (NSString *)messageManagerErrorCorruptMessage;
+
 + (NSString *)messageManagerErrorCouldNotHandlePrekeyBundle;
 
 + (NSString *)messageManagerErrorCouldNotHandleSecureMessage;
+
++ (NSString *)messageManagerErrorEnvelopeNoActionablePayload;
 
 + (NSString *)messageManagerErrorEnvelopeTypeKeyExchange;
 
@@ -102,13 +112,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageManagerErrorEnvelopeTypeUnknown;
 
++ (NSString *)messageManagerErrorInvalidKey;
+
++ (NSString *)messageManagerErrorInvalidKeyId;
+
++ (NSString *)messageManagerErrorInvalidMessageVersion;
+
 + (NSString *)messageManagerErrorInvalidProtocolMessage;
 
 + (NSString *)messageManagerErrorMessageEnvelopeHasNoContent;
 
++ (NSString *)messageManagerErrorNoSession;
+
 + (NSString *)messageManagerErrorOversizeMessage;
 
 + (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent;
+
++ (NSString *)messageManagerErrorSyncMessageFromUnknownSource;
+
++ (NSString *)messageManagerErrorUntrustedIdentityKeyException;
 
 + (NSString *)messageReceiverErrorLargeMessage;
 

@@ -3,8 +3,9 @@
 //
 
 #import "OWSOutgoingSyncMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "Cryptography.h"
+#import "OWSSignalServiceProtos.pb.h"
+#import "ProtoBuf+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Add a random 1-512 bytes to obscure sync message type
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
     builder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
-    
+
+    [builder addLocalProfileKey];
+
     return [builder build];
 }
 
@@ -40,11 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSSignalServiceProtosSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData
+- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setSyncMessage:[self buildSyncMessage]];
-
     return [[contentBuilder build] data];
 }
 

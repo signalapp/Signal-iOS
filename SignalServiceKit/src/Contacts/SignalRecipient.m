@@ -4,7 +4,8 @@
 
 #import "SignalRecipient.h"
 #import "OWSIdentityManager.h"
-#import "TSStorageHeaders.h"
+#import "TSAccountManager.h"
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,12 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
     return recipient;
 }
 
+// TODO This method should probably live on the TSAccountManager rather than grabbing a global singleton.
 + (instancetype)selfRecipient
 {
-    SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSStorageManager localNumber]];
+    SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSAccountManager localNumber]];
     if (!myself) {
-        myself = [[self alloc] initWithTextSecureIdentifier:[TSStorageManager localNumber]
-                                                      relay:nil];
+        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber] relay:nil];
     }
     return myself;
 }
