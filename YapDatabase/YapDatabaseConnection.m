@@ -1426,7 +1426,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateCollectionsStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT DISTINCT \"collection\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
@@ -1467,7 +1467,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateCollectionsForKeyStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"collection\" FROM \"database2\" WHERE \"key\" = ?;";
 		int stmtLen = (int)strlen(stmt);
@@ -1508,7 +1508,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysInCollectionStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"key\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
@@ -1549,7 +1549,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysInAllCollectionsStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\" FROM \"database2\";";
 		int stmtLen = (int)strlen(stmt);
@@ -1590,7 +1590,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysAndMetadataInCollectionStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"metadata\" FROM \"database2\" WHERE collection = ?;";
 		int stmtLen = (int)strlen(stmt);
@@ -1631,7 +1631,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysAndMetadataInAllCollectionsStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"metadata\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
@@ -1673,7 +1673,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysAndObjectsInCollectionStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"data\" FROM \"database2\" WHERE \"collection\" = ?;";
 		int stmtLen = (int)strlen(stmt);
@@ -1714,7 +1714,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateKeysAndObjectsInAllCollectionsStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
@@ -1756,7 +1756,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateRowsInCollectionStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"key\", \"data\", \"metadata\""
 		                   " FROM \"database2\" WHERE \"collection\" = ?;";
@@ -1798,7 +1798,7 @@ static int connectionBusyHandler(void *ptr, int count)
 {
 	sqlite3_stmt **statement = &enumerateRowsInAllCollectionsStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		const char *stmt = "SELECT \"rowid\", \"collection\", \"key\", \"data\", \"metadata\""
 		                   " FROM \"database2\" ORDER BY \"collection\" ASC;";
