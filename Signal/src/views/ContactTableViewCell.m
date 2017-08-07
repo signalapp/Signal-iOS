@@ -81,26 +81,13 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
 {
     [self configureWithRecipientId:signalAccount.recipientId
-                        avatarName:signalAccount.contact.fullName
-                       displayName:[contactsManager formattedDisplayNameForSignalAccount:signalAccount
-                                                                                    font:self.nameLabel.font]
                    contactsManager:contactsManager];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
-{
-    [self
-        configureWithRecipientId:recipientId
-                      avatarName:@""
-                     displayName:[contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font]
-                 contactsManager:contactsManager];
-}
-
 - (void)configureWithRecipientId:(NSString *)recipientId
-                      avatarName:(NSString *)avatarName
-                     displayName:(NSAttributedString *)displayName
                  contactsManager:(OWSContactsManager *)contactsManager
 {
+    NSAttributedString *displayName = [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
     NSMutableAttributedString *attributedText = [displayName mutableCopy];
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
@@ -113,10 +100,9 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
         self.accessoryView = blockedLabel;
     }
     self.nameLabel.attributedText = attributedText;
-    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithContactId:recipientId
-                                                                           name:avatarName
-                                                                contactsManager:contactsManager
-                                                                       diameter:kContactTableViewCellAvatarSize] build];
+    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
+                                                                      diameter:kContactTableViewCellAvatarSize
+                                                               contactsManager:contactsManager] build];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

@@ -24,10 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactAvatarBuilder
 
+#pragma mark - Initializers
+
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
-                  contactsManager:(OWSContactsManager *)contactsManager
                          diameter:(NSUInteger)diameter
+                  contactsManager:(OWSContactsManager *)contactsManager
 {
     self = [super init];
     if (!self) {
@@ -36,18 +38,29 @@ NS_ASSUME_NONNULL_BEGIN
     
     _signalId = contactId;
     _contactName = name;
-    _contactsManager = contactsManager;
     _diameter = diameter;
+    _contactsManager = contactsManager;
     
     return self;
 }
 
-- (instancetype)initWithThread:(TSContactThread *)thread
-               contactsManager:(OWSContactsManager *)contactsManager
-                      diameter:(NSUInteger)diameter
+- (instancetype)initWithSignalId:(NSString *)signalId
+                        diameter:(NSUInteger)diameter
+                 contactsManager:(OWSContactsManager *)contactsManager
 {
-    return [self initWithContactId:thread.contactIdentifier name:thread.name contactsManager:contactsManager diameter:diameter];
+    NSString *name = [contactsManager displayNameForPhoneIdentifier:signalId];
+    return [self initWithContactId:signalId name:name diameter:diameter contactsManager:contactsManager];
 }
+
+- (instancetype)initWithNonSignalName:(NSString *)nonSignalName
+                            colorSeed:(NSString *)colorSeed
+                             diameter:(NSUInteger)diameter
+                      contactsManager:(OWSContactsManager *)contactsManager
+{
+    return [self initWithContactId:colorSeed name:nonSignalName diameter:diameter contactsManager:contactsManager];
+}
+
+#pragma mark - Instance methods
 
 - (nullable UIImage *)buildSavedImage
 {
