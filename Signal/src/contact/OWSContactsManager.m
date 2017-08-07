@@ -206,11 +206,17 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
 
-            [OWSProfileManager.sharedManager setContactRecipientIds:signalAccountMap.allKeys];
+            [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
 
             [self updateCachedDisplayNames];
         });
     });
+}
+
+// TODO dependency inject, avoid circular dependencies.
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
 }
 
 - (void)updateCachedDisplayNames
@@ -405,10 +411,19 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         return self.unknownContactName;
     }
 
-    NSString *displayName = [self cachedDisplayNameForRecipientId:recipientId];
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable displayName = [self cachedDisplayNameForRecipientId:recipientId];
+
+    // Else try to use their profile name
+    if (displayName.length < 1) {
+        displayName = [self.profileManager profileNameForRecipientId:recipientId];
+    }
+
+    // Else fall back to just using their recipientId
     if (displayName.length < 1) {
         displayName = recipientId;
     }
+
     return displayName;
 }
 
@@ -475,9 +490,19 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedLastName
                                                                               attributes:lastNameAttributes]];
     } else {
-        return [[NSAttributedString alloc]
-            initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]
-                attributes:normalFontAttributes];
+        
+        // If there's no name saved in our contacts, try their profile.
+        // TODO we might want to format this specially.
+        NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+        if (profileName.length < 1) {
+            // Else, fall back to using just their recipientId
+            NSString *phoneString = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
+            return [[NSAttributedString alloc] initWithString:phoneString
+                                                   attributes:normalFontAttributes];
+        }
+        
+        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:profileName
+                                                                              attributes:lastNameAttributes]];
     }
 
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
@@ -520,7 +545,15 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = self.allContactsMap[identifier];
 
-    return contact.image;
+    // Prefer the contact image from the local address book if available
+    UIImage *_Nullable image = contact.image;
+
+    // Else try to use the image from their profile
+    if (image == nil) {
+        image = [self.profileManager profileAvatarForRecipientId:identifier];
+    }
+
+    return image;
 }
 
 #pragma mark - Logging
