@@ -510,16 +510,23 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     if (dataMessage.hasGroup) {
-        __block BOOL ignoreMessage = NO;
+        __block BOOL unknownGroup = NO;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSGroupModel *emptyModelToFillOutId =
                 [[TSGroupModel alloc] initWithTitle:nil memberIds:nil image:nil groupId:dataMessage.group.id];
             TSGroupThread *gThread = [TSGroupThread threadWithGroupModel:emptyModelToFillOutId transaction:transaction];
             if (gThread == nil && dataMessage.group.type != OWSSignalServiceProtosGroupContextTypeUpdate) {
-                ignoreMessage = YES;
+                unknownGroup = YES;
             }
         }];
-        if (ignoreMessage) {
+        if (unknownGroup) {
+            if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
+                DDLogInfo(@"%@ Ignoring group info request for group I don't know about from: %@",
+                    self.tag,
+                    incomingEnvelope.source);
+                return;
+            }
+
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
             DDLogInfo(@"%@ Received message from group that I left or don't know about from: %@.",
                 self.tag,
