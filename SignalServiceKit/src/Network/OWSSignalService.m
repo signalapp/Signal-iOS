@@ -154,17 +154,17 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 }
 
-- (AFHTTPSessionManager *)HTTPSessionManager
+- (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
         DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
-        return self.reflectorHTTPSessionManager;
+        return self.reflectorSignalServiceSessionManager;
     } else {
-        return self.defaultHTTPSessionManager;
+        return self.defaultSignalServiceSessionManager;
     }
 }
 
-- (AFHTTPSessionManager *)defaultHTTPSessionManager
+- (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
@@ -178,7 +178,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)reflectorHTTPSessionManager
+- (AFHTTPSessionManager *)reflectorSignalServiceSessionManager
 {
     NSString *localNumber = [TSAccountManager localNumber];
     OWSAssert(localNumber.length > 0);

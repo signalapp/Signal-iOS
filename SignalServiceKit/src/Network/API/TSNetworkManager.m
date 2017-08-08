@@ -61,7 +61,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     void (^failure)(NSURLSessionDataTask *task, NSError *error) =
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
-    AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].HTTPSessionManager;
+    AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
 
     if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
         // We plant the Authorization parameter ourselves, no need to double add.
