@@ -8,10 +8,12 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import <25519/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSCall.h>
@@ -201,6 +203,21 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendTextAndSystemMessages:1000 thread:thread];
                         }],
+        [OWSTableItem
+            itemWithTitle:@"Request Bogus group info"
+              actionBlock:^{
+                  DDLogInfo(@"%@ Requesting bogus group info for thread: %@", self.tag, thread);
+                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
+                                                                  groupId:[Randomness generateRandomBytes:16]];
+                  [[Environment getCurrent].messageSender sendMessage:syncGroupsRequestMessage
+                      success:^{
+                          DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.tag);
+                      }
+                      failure:^(NSError *error) {
+                          DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
+                      }];
+              }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
