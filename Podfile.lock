@@ -131,7 +131,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 28afe5c1dbcfdea73d147e464c53d191d1e3ea50
+    :commit: 6e9d5e8c3dc87e397b4b7485172507b0990a22dd
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
     :commit: 560e59f8e4f35612c20d6d9387d1d81789f74b0f
@@ -144,7 +144,7 @@ SPEC CHECKSUMS:
   '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
-  AxolotlKit: a9530d6835baae0f204b1f6b9dd79b7901176f0d
+  AxolotlKit: ba0ab24b879d34559a68e1270b079cc9bd7b3417
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66

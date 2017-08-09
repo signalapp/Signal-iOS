@@ -42,6 +42,7 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureDevicesAPIFormat @"v1/devices/%@"
 #define textSecureProfileAPIFormat @"v1/profile/%@"
 #define textSecureSetProfileAPI @"v1/profile"
+#define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 
 #pragma mark Push RegistrationSpecific Constants
 typedef NS_ENUM(NSInteger, TSPushRegistrationError) {

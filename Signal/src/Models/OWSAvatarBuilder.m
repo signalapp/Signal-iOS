@@ -20,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithThread:(TSContactThread *)thread contactsManager:contactsManager diameter:diameter];
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier diameter:diameter contactsManager:contactsManager];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
     } else {
