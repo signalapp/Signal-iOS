@@ -27,6 +27,7 @@ build: dependencies
 
 test:
 	bundle exec fastlane scan
+	cd SignalServiceKit && make test
 
 clean:
 	cd $(WORKING_DIR) && \
