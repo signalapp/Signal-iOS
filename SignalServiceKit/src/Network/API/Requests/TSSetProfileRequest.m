@@ -22,11 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (profileNameEncrypted.length > 0) {
         self.parameters[@"name"] = [profileNameEncrypted base64EncodedString];
     }
-    if (avatarUrl.length > 0) {
+    if (avatarUrl.length > 0 && avatarDigest.length > 0) {
+        // TODO why is this base64 encoded?
         self.parameters[@"avatar"] = [[avatarUrl dataUsingEncoding:NSUTF8StringEncoding] base64EncodedString];
-    }
-    if (avatarDigest.length > 0) {
+
         self.parameters[@"avatarDigest"] = [avatarDigest base64EncodedString];
+    } else {
+        OWSAssert(avatarUrl.length == 0);
+        OWSAssert(avatarDigest.length == 0);
     }
 
     return self;
