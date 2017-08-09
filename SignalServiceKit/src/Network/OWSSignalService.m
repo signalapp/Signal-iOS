@@ -167,6 +167,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
+    OWSAssert(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
@@ -190,6 +191,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         frontingHost = self.manualCensorshipCircumventionDomain;
     };
     NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
+    OWSAssert(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
@@ -200,6 +202,25 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [sessionManager.requestSerializer setValue:self.censorshipConfiguration.reflectorHost forHTTPHeaderField:@"Host"];
 
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+    return sessionManager;
+}
+
+#pragma mark - Profile Uploading
+
+- (AFHTTPSessionManager *)profileUploadingSessionManagerWithHostname:(NSString *)hostname
+{
+    OWSAssert(hostname.length > 0);
+    if (self.isCensorshipCircumventionActive) {
+        DDLogInfo(@"%@ Profile uploading may not work when under censorship.", self.tag);
+    }
+
+    NSURL *baseURL = [[NSURL alloc] initWithString:[@"https://" stringByAppendingString:hostname]];
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
 
     return sessionManager;
 }

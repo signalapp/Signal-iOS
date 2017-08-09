@@ -14,6 +14,8 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 @property (nonatomic, readonly) AFHTTPSessionManager *signalServiceSessionManager;
 
+- (AFHTTPSessionManager *)profileUploadingSessionManagerWithHostname:(NSString *)hostname;
+
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
 
 @property (nonatomic, readonly) BOOL hasCensoredPhoneNumber;
