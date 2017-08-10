@@ -296,7 +296,7 @@
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Zu vorhandenem Kontakt hinzufügen";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Zu bestehenden Kontakt hinzufügen";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Benutzer blockieren";
@@ -428,7 +428,7 @@
 "EDIT_TXT" = "Bearbeiten";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hallo,\n\nseit einiger Zeit verwende ich Signal, um die Konversationen auf meinem iPhone vertraulich zu halten. Es wäre schön, wenn auch du es installieren könntest, sodass wir darauf vertrauen können, dass nur du und ich unsere Nachrichten sehen oder unsere Telefonate hören können.\n\nSignal ist für iPhones und Android-Geräte verfügbar. Du erhälst es hier: %@\n\nSignal funktioniert wie deine bereits existierende Sofortnachrichten-App. Wir können Bilder und Videos versenden, Anrufe tätigen und Gruppenunterhaltungen beginnen. Das Beste daran ist, dass niemand anderes irgendetwas davon sehen kann - selbst nicht die Leute, die Signal entwickeln!\n\nDu kannst mehr über Open Whisper Systems, die Entwickler von Signal, hier erfahren: %@";
+"EMAIL_INVITE_BODY" = "Hallo,\n\nseit einiger Zeit verwende ich Signal, um die Konversationen auf meinem iPhone vertraulich zu halten. Es wäre schön, wenn auch du es installieren könntest, sodass wir darauf vertrauen können, dass nur du und ich unsere Nachrichten sehen oder unsere Telefonate hören können.\n\nSignal ist für iPhones und Android-Geräte verfügbar. Du erhälst es hier: %@\n\nSignal funktioniert wie deine bereits vorhandene Sofortnachrichten-App. Wir können Bilder und Videos versenden, Anrufe tätigen und Gruppenunterhaltungen beginnen. Das Beste daran ist, dass niemand anderes irgendetwas davon sehen kann - selbst nicht die Leute, die Signal entwickeln!\n\nDu kannst mehr über Open Whisper Systems, die Entwickler von Signal, hier erfahren: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Lass uns zu Signal wechseln";

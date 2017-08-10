@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "לא עכשיו";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "אשר/י מספר ביטחון חדש";
@@ -14,7 +14,7 @@
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "הוסף לפי מספר טלפון";
 
 /* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Add Member";
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "הוסף חבר לקבוצה";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "האם ברצונך להוסיף משתמש זה לרשימת אנשי הקשר שלך?";
@@ -32,7 +32,7 @@
 "ALERT_SAVE" = "שמור";
 
 /* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "מאמת חשבון Signal זה ";
 
 /* A title for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_TITLE" = "מאמת";
@@ -56,7 +56,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ בקבוצה %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "גרסה %@ זמינה כעת להורדה מחנות האפליקציות";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "גרסה חדשה של Signal זמינה להורדה";
@@ -80,13 +80,13 @@
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "סוג קובץ: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "גודל: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "שלח";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "קובץ מצורף";
@@ -104,7 +104,7 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "שגיאה בשליחת קובץ מצורף";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Image attachment could not be resized.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "שגיאה במהלך עיבוד תמונה לשליחה";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
@@ -131,7 +131,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "שגיאה בבחירת קובץ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal לא יכול לעשות שימוש בתצורת קובץ זו. נסה/י להמירו ל-zip לפני השליחה.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "קובץ לא נתמך";
@@ -179,7 +179,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "שגיאה";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Failed to Unblock User.";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "ביטול חסימת משתמש נכשלה";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "שגיאה";
@@ -212,46 +212,46 @@
 "CALL_STATUS_FORMAT" = "%@ סיגנל ";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Call";
+"CALL_USER_ALERT_CALL_BUTTON" = "חייג";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "האם תרצה/י לחייג ל%@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Call?";
+"CALL_USER_ALERT_TITLE" = "לחייג?";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "ניתן לענות לשיחות ממסך הנעילה ולראות את השם ומספר הטלפון של שיחות נכנסות ע״י שינוי ההגדרות שלך.\n\nראה/י הגדרות פרטיות לפרטים נוספים.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "ניתן לראות את השם ומספר הטלפון של שיחות נכנסות ע״י שינוי ההגדרות שלך.\n\nראה/י הגדרות פרטיות לפרטים נוספים.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "לא עכשיו";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "הצג הגדרות פרטיות";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Call Back";
+"CALLBACK_BUTTON_TITLE" = "חיוג חוזר";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "משתמש Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "זהות משתמש זה לא יכולה להיאמת עד שתהיה תחלופת הודעות ביניכם.";
 
 /* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "שגיאה";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "בחר מדינה";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "השווה ללוח גזירים";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "כדי לראות מי מאנשי הקשר שלך משתמש בסיגנל, אשר/י גישה לאנשי הקשר בהגדרות המכשיר.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "זה יאתחל את האפליקציה באמצעות מחיקת המסרים שלך וביטול הרישום שלך בשרת. האפליקציה תיסגר אחרי מחיקת הנתונים.";
@@ -260,28 +260,28 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "האם ברצונך באמת למחוק את החשבון שלך?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "לא תהיה לך אפשרות לשלוח או לקבל הודעות בקבוצה זו.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "האם את/ה בטוח/ה רוצה לעזוב?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "קשר מכשיר חדש";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "ייתכן ו%@ התקין מחדש את האפילקציה או החליף מכשיר. אמת את מספר הביטחון שלך עמו כדי להבטיח פרטיות.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "מספר הביטחון עם %@ השתנה";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "אישור";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+"CONTACT_CELL_IS_BLOCKED" = "חסום";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "לא מאומת";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "מספר לא רשום";
@@ -296,64 +296,64 @@
 "CONVERSATION_SETTINGS" = "הגדרות שיחה";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "הוסף לאיש קשר קיים";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "חסום משתמש זה";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "פרטי איש קשר";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "פרטי קבוצה";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "השתק";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "השתק";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "לא מושתק";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "השתק ליום אחד";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "השתק לשעה אחת";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "השתק לדקה אחת";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "השתק לשבוע אחד";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "השתק לשבוע אחד";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "עד %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "צור איש קשר חדש";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "הסר השתקה";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "איפוס שיחה זו תאפשר לך לקבל הודעות עתידיות מ%@, אבל זה לא יאחזר הודעות פגומות.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "נא לבחור קוד מדינה";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Create new group";
+"CREATE_NEW_GROUP" = "צור קבוצה חדשה";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "ייתכן וזה יקח מספר דקות";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "מעדכן מסד נתונים";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "פעילות אחרונה: %@";
@@ -368,7 +368,7 @@
 "DISAPPEARING_MESSAGES" = "הודעות נעלמות";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this conversation will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "במידה ויופעל, הודעות אשר נשלחו והתקבלו בשיחה זו יעלמו לאחר שנקראו.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "כרגע הודעות נעלמות אחרי %@";
@@ -377,13 +377,13 @@
 "DISAPPEARING_MESSAGES_LABEL" = "הגדרות הודעות נעלמות";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"DISMISS_BUTTON_TEXT" = "בטל";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "מיקום עקיפת צנזורה";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "ניתן לאפשר לסיגנל גישה בהגדרות המכשיר.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
@@ -413,7 +413,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "You've changed this group. Would you like to save these changes?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "שינויים לא שמורים";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copy";
@@ -422,10 +422,10 @@
 "EDIT_ITEM_SAVE_ACTION" = "שמור";
 
 /* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
+"EDIT_ITEM_SHARE_ACTION" = "שתף";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Edit";
+"EDIT_TXT" = "ערוך";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
@@ -473,19 +473,19 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "הודעה לא נשלחה";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "לא ניתן לשלוח בגלל נתוני פרטיות לא נאותים";
 
 /* Error mesage indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "לא ניתן לשלוח הודעה מכיוון שהמשתמש חסום על ידך";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "סיגנל לא הצליח להתחבר לאינטרנט. נסה מחיבור WiFi אחר או דרך אינטרנט סלולרי.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Your device is no longer registered for your phone number. You must remove and reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "מכשיר זה לא תואם למספר הטלפון שלך. נדרש להסיר ולהתקין מחדש את סיגנל.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
@@ -494,7 +494,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occurred.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "איש קשר אינו משתמש סיגנל";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "הגיע מסר כפול.";
@@ -503,7 +503,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "המפתח של המקבל אינו תקין.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync. Tap to reset your secure session.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "ההודעה שהתקבלה אינה מסונכרנת. הקש לאיפוס שיחה מאובטחת.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "הגיע מסר שאינו תואם לגרסה הזאת.";
@@ -533,16 +533,16 @@
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Invalid filename.";
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "שגיאה בהעלאת קובץ";
 
 /* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "סוג קובץ לא מוכר";
 
 /* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Error";
+"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "שגיאה";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again shortly.";
