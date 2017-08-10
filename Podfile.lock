@@ -134,7 +134,7 @@ CHECKOUT OPTIONS:
     :commit: 28afe5c1dbcfdea73d147e464c53d191d1e3ea50
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
-    :commit: 560e59f8e4f35612c20d6d9387d1d81789f74b0f
+    :commit: 8c10f920bb566fe1051f92abd360a2e3d5530e00
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   SocketRocket:
     :commit: 877ac7438be3ad0b45ef5ca3969574e4b97112bf
