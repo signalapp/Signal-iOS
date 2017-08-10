@@ -257,7 +257,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Isto irá repôr as definições de origem da aplicação, apagando todas as mensagens e desregistando-se do servidor. A aplicaçāo fechar-se-á após os dados terem sido removidos.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Tem a certeza que deseja apagar a sua conta?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Deseja realmente eliminar a sua conta?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Não poderá receber ou enviar mensagens neste grupo.";
@@ -302,7 +302,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear este utilizador";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informação do Contacto";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info. Contacto";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupo";
@@ -596,10 +596,10 @@
 "GROUP_MEMBERS_CALL" = "Chamar";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Limpar Verificação Para Todos";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Retirar Verificação Para Todos";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Isto irá limpar as verificações de todos os membros do grupo cujos números de segurança mudaram desde a última vez que foram verificados.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Isto irá retirar as verificações de todos os membros do grupo cujos números de segurança mudaram desde a última vez que foram verificados.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membros";
@@ -629,7 +629,7 @@
 "GROUP_YOU_LEFT" = "Saiu do grupo.";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqueado";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Utilizadores Bloqueados";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "A ligar...";
@@ -986,13 +986,13 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Trabalho Fax";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Não marcou %@ como verificado.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "O contacto %@não está verificado.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificado";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ está verificado. ";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "O contacto %@ está verificado. ";
 
 /* Label for a link to more information about safety numbers and verification. */
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Saber Mais";
@@ -1001,7 +1001,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Toque para Scanear";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Limpar Verificação";
+"PRIVACY_UNVERIFY_BUTTON" = "Retirar Verificação";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Isto não parece o seu número de segurança com %@. Está a verificar o contacto correcto?";
@@ -1244,7 +1244,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Sem Resultados";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Bloqueado";
+"SETTINGS_BLOCK_LIST_TITLE" = "Utilizadores Bloqueados";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Definições";
@@ -1310,7 +1310,7 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "A integração de chamadas iOS mostra as chamadas Signal no seu lock screen e no seu histórico de chamadas. Se o iCloud estiver activado, o histórico de chamadas será partilhado com a Apple.";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "A chamar";
+"SETTINGS_SECTION_TITLE_CALLING" = "Chamadas";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Segurança de Ecrã";
