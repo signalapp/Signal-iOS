@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 // These properties may be accessed only from the main thread.
 @property (nonatomic, nullable) NSString *profileName;
 @property (nonatomic, nullable) NSString *avatarUrl;
-@property (nonatomic, nullable) NSData *avatarDigest;
 
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (nonatomic, nullable) NSString *avatarFileName;
@@ -70,13 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return ([other isKindOfClass:[UserProfile class]] && [self.recipientId isEqualToString:other.recipientId] &&
         [self.profileName isEqualToString:other.profileName] && [self.avatarUrl isEqualToString:other.avatarUrl] &&
-        [self.avatarDigest isEqual:other.avatarDigest] && [self.avatarFileName isEqualToString:other.avatarFileName]);
+        [self.avatarFileName isEqualToString:other.avatarFileName]);
 }
 
 - (NSUInteger)hash
 {
-    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrl.hash ^ self.avatarDigest.hash
-        ^ self.avatarFileName.hash;
+    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrl.hash ^ self.avatarFileName.hash;
 }
 
 @end
@@ -306,11 +304,10 @@ static const NSInteger kProfileKeyLength = 16;
     //
     // * Try to update the service.
     // * Update client state on success.
-    void (^tryToUpdateService)(NSString *_Nullable, NSData *_Nullable, NSString *_Nullable) = ^(
-        NSString *_Nullable avatarUrl, NSData *_Nullable avatarDigest, NSString *_Nullable avatarFileName) {
+    void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable) = ^(
+        NSString *_Nullable avatarUrl, NSString *_Nullable avatarFileName) {
         [self updateProfileOnService:profileName
             avatarUrl:avatarUrl
-            avatarDigest:avatarDigest
             success:^{
                 // All reads and writes to user profiles should happen on the main thread.
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -318,7 +315,6 @@ static const NSInteger kProfileKeyLength = 16;
                     OWSAssert(userProfile);
                     userProfile.profileName = profileName;
                     userProfile.avatarUrl = avatarUrl;
-                    userProfile.avatarDigest = avatarDigest;
                     userProfile.avatarFileName = avatarFileName;
 
                     [self saveUserProfile:userProfile];
@@ -347,20 +343,20 @@ static const NSInteger kProfileKeyLength = 16;
         // * Send asset service info to Signal Service
         if (self.localCachedAvatarImage == avatarImage) {
             OWSAssert(userProfile.avatarUrl.length > 0);
-            OWSAssert(userProfile.avatarDigest.length > 0);
+            // TODO do we need avatarFileName?
             OWSAssert(userProfile.avatarFileName.length > 0);
 
             DDLogVerbose(@"%@ Updating local profile on service with unchanged avatar.", self.tag);
             // If the avatar hasn't changed, reuse the existing metadata.
-            tryToUpdateService(userProfile.avatarUrl, userProfile.avatarDigest, userProfile.avatarFileName);
+            tryToUpdateService(userProfile.avatarUrl, userProfile.avatarFileName);
         } else {
             DDLogVerbose(@"%@ Updating local profile on service with new avatar.", self.tag);
             [self writeAvatarToDisk:avatarImage
                 success:^(NSData *data, NSString *fileName) {
                     [self uploadAvatarToService:data
                         fileName:fileName
-                        success:^(NSString *avatarUrl, NSData *avatarDigest) {
-                            tryToUpdateService(avatarUrl, avatarDigest, fileName);
+                        success:^(NSString *avatarUrl) {
+                            tryToUpdateService(avatarUrl, fileName);
                         }
                         failure:^{
                             failureBlock();
@@ -372,7 +368,7 @@ static const NSInteger kProfileKeyLength = 16;
         }
     } else {
         DDLogVerbose(@"%@ Updating local profile on service with no avatar.", self.tag);
-        tryToUpdateService(nil, nil, nil);
+        tryToUpdateService(nil, nil);
     }
 }
 
@@ -403,21 +399,16 @@ static const NSInteger kProfileKeyLength = 16;
     });
 }
 
-- (NSData *)encryptedAvatarData:(NSData *)plainTextData outDigest:(NSData **)outDigest
+- (NSData *)encryptedAvatarData:(NSData *)plainTextData
 {
     DDLogError(@"TODO: Profile encryption scheme not yet settled.");
-
-    // server accepts up to 14 base64 chars for digest
-    // 14 <= 4 * ceil(n/3)
-    NSUInteger kAvatarDigestByteLength = 9;
-    *outDigest = [Cryptography computeSHA256Digest:plainTextData truncatedToBytes:kAvatarDigestByteLength];
 
     return plainTextData;
 }
 
 - (void)uploadAvatarToService:(NSData *)avatarData
                      fileName:(NSString *)fileName // TODO do we need filename?
-                      success:(void (^)(NSString *avatarUrl, NSData *avatarDigest))successBlock
+                      success:(void (^)(NSString *avatarUrl))successBlock
                       failure:(void (^)())failureBlock
 {
     OWSAssert(avatarData.length > 0);
@@ -426,10 +417,8 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *encryptedAvatarDigest;
-        NSData *encryptedAvatarData = [self encryptedAvatarData:avatarData outDigest:&encryptedAvatarDigest];
+        NSData *encryptedAvatarData = [self encryptedAvatarData:avatarData];
         OWSAssert(encryptedAvatarData.length > 0);
-        OWSAssert(encryptedAvatarDigest.length > 0);
 
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
@@ -534,11 +523,8 @@ static const NSInteger kProfileKeyLength = 16;
                             return;
                         }
 
-                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@ digest: %@",
-                            self.tag,
-                            avatarURL,
-                            encryptedAvatarDigest);
-                        successBlock(avatarURL, encryptedAvatarDigest);
+                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@", self.tag, avatarURL);
+                        successBlock(avatarURL);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
                         DDLogVerbose(@"%@ uploading avatar failed with error: %@", self.tag, error);
@@ -555,7 +541,6 @@ static const NSInteger kProfileKeyLength = 16;
 // TODO: The exact API & encryption scheme for profiles is not yet settled.
 - (void)updateProfileOnService:(nullable NSString *)localProfileName
                      avatarUrl:(nullable NSString *)avatarUrl
-                  avatarDigest:(nullable NSData *)avatarDigest
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock
 {
@@ -565,18 +550,19 @@ static const NSInteger kProfileKeyLength = 16;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable profileNameEncrypted = [self encryptProfileString:localProfileName];
 
-        TSSetProfileRequest *request = [[TSSetProfileRequest alloc] initWithProfileName:profileNameEncrypted
-                                                                              avatarUrl:avatarUrl
-                                                                           avatarDigest:avatarDigest];
-
-        [self.networkManager makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                successBlock();
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogError(@"%@ Failed to update profile with error: %@", self.tag, error);
-                failureBlock();
-            }];
+        DDLogError(@"%@ TODO replace with set Name request.", self.tag);
+        //        TSSetProfileRequest *request = [[TSSetProfileRequest alloc] initWithProfileName:profileNameEncrypted
+        //                                                                              avatarUrl:avatarUrl
+        //                                                                           avatarDigest:avatarDigest];
+        //
+        //        [self.networkManager makeRequest:request
+        //            success:^(NSURLSessionDataTask *task, id responseObject) {
+        //                successBlock();
+        //            }
+        //            failure:^(NSURLSessionDataTask *task, NSError *error) {
+        //                DDLogError(@"%@ Failed to update profile with error: %@", self.tag, error);
+        //                failureBlock();
+        //            }];
     });
 }
 
@@ -718,7 +704,6 @@ static const NSInteger kProfileKeyLength = 16;
         // Clear profile state.
         userProfile.profileName = nil;
         userProfile.avatarUrl = nil;
-        userProfile.avatarDigest = nil;
         userProfile.avatarFileName = nil;
 
         [self saveUserProfile:userProfile];
@@ -832,7 +817,6 @@ static const NSInteger kProfileKeyLength = 16;
                     [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKeyAtStart];
                 UIImage *_Nullable image = nil;
                 if (decryptedData) {
-                    // TODO: Verify avatar digest.
                     BOOL success = [decryptedData writeToFile:filePath atomically:YES];
                     if (success) {
                         image = [UIImage imageWithContentsOfFile:filePath];
@@ -906,7 +890,6 @@ static const NSInteger kProfileKeyLength = 16;
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
                       avatarUrlData:(NSData *_Nullable)avatarUrlData
-                       avatarDigest:(NSData *_Nullable)avatarDigestParam
 {
     OWSAssert(recipientId.length > 0);
 
@@ -920,23 +903,16 @@ static const NSInteger kProfileKeyLength = 16;
 
         NSString *_Nullable profileName =
             [self decryptProfileString:profileNameEncrypted profileKey:userProfile.profileKey];
+
+        // TODO this will be plain text, no need for it to be base64 encoded
         NSString *_Nullable avatarUrl
             = (avatarUrlData ? [[NSString alloc] initWithData:avatarUrlData encoding:NSUTF8StringEncoding] : nil);
-        NSData *_Nullable avatarDigest = avatarDigestParam;
 
-        if (!avatarUrl || !avatarDigest) {
-            // If either avatar url or digest is missing, skip both.
-            avatarUrl = nil;
-            avatarDigest = nil;
-        }
-
-        BOOL isAvatarSame = ([self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl] &&
-            [self isNullableDataEqual:userProfile.avatarDigest toData:avatarDigest]);
+        BOOL isAvatarSame = [self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             userProfile.profileName = profileName;
             userProfile.avatarUrl = avatarUrl;
-            userProfile.avatarDigest = avatarDigest;
 
             if (!isAvatarSame) {
                 // Evacuate avatar image cache.
