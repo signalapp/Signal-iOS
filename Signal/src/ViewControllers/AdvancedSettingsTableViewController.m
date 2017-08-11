@@ -12,6 +12,7 @@
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
+#import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
 #import <SignalServiceKit/OWSSignalService.h>
 
@@ -242,10 +243,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSyncPushTokensJob *job =
         [[OWSSyncPushTokensJob alloc] initWithPushManager:[PushManager sharedManager]
                                            accountManager:[Environment getCurrent].accountManager
-                                              preferences:[Environment preferences]
-                                               showAlerts:YES];
+                                              preferences:[Environment preferences]];
     job.uploadOnlyIfStale = NO;
-    [job run];
+    [job run]
+        .then(^{
+            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"PUSH_REGISTER_SUCCESS",
+                                              @"Title of alert shown when push tokens sync job succeeds.")];
+        })
+        .catch(^(NSError *error) {
+            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_BODY",
+                                              @"Title of alert shown when push tokens sync job fails.")];
+        });
 }
 
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender {
