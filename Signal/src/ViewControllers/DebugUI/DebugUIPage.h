@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name;
 
-- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread;
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread NS_SWIFT_NAME(section(thread:));
 
 @end
 

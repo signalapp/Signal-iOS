@@ -92,76 +92,12 @@ NS_ASSUME_NONNULL_BEGIN
     if ([thread isKindOfClass:[TSContactThread class]]) {
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
+        [subsectionItems
+            addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
-
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
-        // we give a little delay.
-        uint64_t notificationDelay = 5;
-        [contents
-            addSection:
-                [OWSTableSection
-                    sectionWithTitle:[NSString
-                                         stringWithFormat:@"Call Notifications (%llu second delay)", notificationDelay]
-                               items:@[
-                                   [OWSTableItem
-                                       itemWithTitle:@"Missed Call"
-                                         actionBlock:^{
-                                             SignalCall *call =
-                                                 [SignalCall incomingCallWithLocalId:[NSUUID new]
-                                                                   remotePhoneNumber:thread.contactIdentifier
-                                                                         signalingId:0];
-
-                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                                (int64_t)(notificationDelay * NSEC_PER_SEC)),
-                                                 dispatch_get_main_queue(),
-                                                 ^{
-                                                     [[Environment getCurrent].callService.notificationsAdapter
-                                                         presentMissedCall:call
-                                                                callerName:thread.name];
-                                                 });
-                                         }],
-                                   [OWSTableItem
-                                       itemWithTitle:@"Rejected Call with New Safety Number"
-                                         actionBlock:^{
-                                             SignalCall *call =
-                                                 [SignalCall incomingCallWithLocalId:[NSUUID new]
-                                                                   remotePhoneNumber:thread.contactIdentifier
-                                                                         signalingId:0];
-
-                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                                (int64_t)(notificationDelay * NSEC_PER_SEC)),
-                                                 dispatch_get_main_queue(),
-                                                 ^{
-                                                     [[Environment getCurrent].callService.notificationsAdapter
-                                                         presentMissedCallBecauseOfNewIdentityWithCall:call
-                                                                                            callerName:thread.name];
-                                                 });
-                                         }],
-                                   [OWSTableItem
-                                       itemWithTitle:@"Rejected Call with No Longer Verified Safety Number"
-                                         actionBlock:^{
-                                             SignalCall *call =
-                                                 [SignalCall incomingCallWithLocalId:[NSUUID new]
-                                                                   remotePhoneNumber:thread.contactIdentifier
-                                                                         signalingId:0];
-
-                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                                (int64_t)(notificationDelay * NSEC_PER_SEC)),
-                                                 dispatch_get_main_queue(),
-                                                 ^{
-                                                     [[Environment getCurrent].callService.notificationsAdapter
-                                                         presentMissedCallBecauseOfNoLongerVerifiedIdentityWithCall:call
-                                                                                                         callerName:
-                                                                                                             thread
-                                                                                                                 .name];
-                                                 });
-                                         }],
-                               ]]];
-    } // end contact thread section
 
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
