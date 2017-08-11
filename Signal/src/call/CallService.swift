@@ -322,7 +322,7 @@ protocol CallServiceObserver: class {
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
-                return self.messageSender.sendCallMessage(callMessage)
+                return self.messageSender.sendPromise(message: callMessage)
             }
         }.then {
             guard self.call == call else {
@@ -410,7 +410,7 @@ protocol CallServiceObserver: class {
             Logger.error("\(self.TAG) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
 
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
+            let sendPromise = messageSender.sendPromise(message: callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
             }
             sendPromise.retainUntilComplete()
@@ -471,7 +471,7 @@ protocol CallServiceObserver: class {
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
-        let sendPromise = messageSender.sendCallMessage(callMessage)
+        let sendPromise = messageSender.sendPromise(message: callMessage)
         sendPromise.retainUntilComplete()
 
         handleMissedCall(call, thread: thread)
@@ -629,10 +629,10 @@ protocol CallServiceObserver: class {
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
-            return self.messageSender.sendCallMessage(callAnswerMessage)
+            return self.messageSender.sendPromise(message: callAnswerMessage)
         }.then {
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call")
+                throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
@@ -745,7 +745,7 @@ protocol CallServiceObserver: class {
             if self.sendIceUpdatesImmediately {
                 Logger.info("\(self.TAG) in \(#function). Sending immediately.")
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-                let sendPromise = self.messageSender.sendCallMessage(callMessage)
+                let sendPromise = self.messageSender.sendPromise(message: callMessage)
                 sendPromise.retainUntilComplete()
             } else {
                 // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
@@ -1023,7 +1023,7 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
+        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(call.thread.contactIdentifier())")
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file:#file, function:#function, line:#line)
@@ -1634,16 +1634,5 @@ protocol CallServiceObserver: class {
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
-    }
-}
-
-fileprivate extension MessageSender {
-    /**
-     * Wrap message sending in a Promise for easier callback chaining.
-     */
-    fileprivate func sendCallMessage(_ message: OWSOutgoingCallMessage) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.send(message, success: fulfill, failure: reject)
-        }
     }
 }

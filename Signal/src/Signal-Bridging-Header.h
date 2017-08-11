@@ -6,6 +6,7 @@
 
 #import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
+#import "DebugUIPage.h"
 #import "Environment.h"
 #import "FLAnimatedImage.h"
 #import "FingerprintViewController.h"
