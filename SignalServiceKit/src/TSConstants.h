@@ -22,13 +22,13 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 
 #define textSecureHTTPTimeOut 10
 
-#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
-#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
-#define textSecureProfileServerURL @"https://profiles.signal.org"
+//#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
+//#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
+//#define textSecureCDNServerURL @"https://cdn.signal.org"
 
-//#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-//#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
-//#define textSecureProfileServerURL @"https://profiles-staging.signal.org"
+#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
+#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
 
 #define textSecureGeneralAPI @"v1"
 #define textSecureAccountsAPI @"v1/accounts"

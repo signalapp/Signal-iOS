@@ -445,12 +445,6 @@ static const NSInteger kProfileKeyLength = 16;
                 NSDictionary *responseMap = formResponseObject;
                 DDLogError(@"responseObject: %@", formResponseObject);
 
-                NSString *formUrl = responseMap[@"url"];
-                if (![formUrl isKindOfClass:[NSString class]] || formUrl.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_url");
-                    failureBlock();
-                    return;
-                }
                 NSString *formAcl = responseMap[@"acl"];
                 if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
                     OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_acl");
@@ -495,11 +489,8 @@ static const NSInteger kProfileKeyLength = 16;
                 }
 
                 AFHTTPSessionManager *profileHttpManager =
-                    [[OWSSignalService sharedInstance] profileUploadingSessionManagerWithHostname:formUrl];
-
-                // Default acceptable content headers are rejected by AWS
-                profileHttpManager.responseSerializer.acceptableContentTypes = nil;
-
+                    [[OWSSignalService sharedInstance] cdnSessionManager];
+                
                 [profileHttpManager POST:@""
                     parameters:nil
                     constructingBodyWithBlock:^(id<AFMultipartFormData> _Nonnull formData) {
