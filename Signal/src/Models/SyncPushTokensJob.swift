@@ -11,22 +11,20 @@ class SyncPushTokensJob: NSObject {
     let pushManager: PushManager
     let accountManager: AccountManager
     let preferences: PropertyListPreferences
-    let showAlerts: Bool
     var uploadOnlyIfStale = true
 
-    required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences, showAlerts: Bool) {
+    required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
         self.pushManager = pushManager
         self.accountManager = accountManager
         self.preferences = preferences
-        self.showAlerts = showAlerts
     }
 
-    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences, showAlerts: Bool = false) {
-        let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences, showAlerts:showAlerts)
-        job.run()
+    class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> Promise<Void> {
+        let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
+        return job.run()
     }
 
-    func run() {
+    func run() -> Promise<Void> {
         Logger.info("\(TAG) Starting.")
 
         // Required to potentially prompt user for notifications settings
@@ -61,20 +59,29 @@ class SyncPushTokensJob: NSObject {
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
             }.then {
                 Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
-                if self.showAlerts {
-                    OWSAlerts.showAlert(withTitle:NSLocalizedString("PUSH_REGISTER_SUCCESS", comment: "Title of alert shown when push tokens sync job succeeds."))
-                }
-                return Promise(value: ())
             }.catch { error in
                 Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
-                if self.showAlerts {
-                    OWSAlerts.showAlert(withTitle:NSLocalizedString("REGISTRATION_BODY", comment: "Title of alert shown when push tokens sync job fails."))
-                }
             }
         }
 
         runPromise.retainUntilComplete()
+
+        return runPromise
     }
+
+    // MARK - objc wrappers, since objc can't use swift parameterized types
+
+    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> AnyPromise {
+        let promise: Promise<Void> = self.run(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
+        return AnyPromise(promise)
+    }
+
+    @objc func run() -> AnyPromise {
+        let promise: Promise<Void> = self.run()
+        return AnyPromise(promise)
+    }
+
+    // MARK - private helpers
 
     private func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
         return Promise { fulfill, reject in

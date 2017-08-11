@@ -13,10 +13,17 @@ class AccountManager: NSObject {
     let TAG = "[AccountManager]"
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
+    let preferences: PropertyListPreferences
 
-    required init(textSecureAccountManager: TSAccountManager) {
+    var pushManager: PushManager {
+        // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
+        return PushManager.shared()
+    }
+
+    required init(textSecureAccountManager: TSAccountManager, preferences: PropertyListPreferences) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
+        self.preferences = preferences
     }
 
     // MARK: registration
@@ -26,7 +33,7 @@ class AccountManager: NSObject {
     }
 
     func register(verificationCode: String) -> Promise<Void> {
-        return firstly {
+        let registrationPromise = firstly {
             Promise { fulfill, reject in
                 if verificationCode.characters.count == 0 {
                     let error = OWSErrorWithCodeDescription(.userError,
@@ -40,8 +47,13 @@ class AccountManager: NSObject {
             Logger.debug("\(self.TAG) verification code looks well formed.")
             return self.registerForTextSecure(verificationCode: verificationCode)
         }.then {
+            return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
+        }.then {
             Logger.debug("\(self.TAG) successfully registered for TextSecure")
         }
+        registrationPromise.retainUntilComplete()
+
+        return registrationPromise
     }
 
     private func registerForTextSecure(verificationCode: String) -> Promise<Void> {

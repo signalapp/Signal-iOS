@@ -466,10 +466,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
                     RTCInitializeSSL();
 
-                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                              accountManager:[Environment getCurrent].accountManager
-                                                 preferences:[Environment preferences]
-                                                  showAlerts:NO];
+                    __unused AnyPromise *promise =
+                        [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                                  accountManager:[Environment getCurrent].accountManager
+                                                     preferences:[Environment preferences]];
 
                     // Clean up any messages that expired since last launch immediately
                     // and continue cleaning in the background.

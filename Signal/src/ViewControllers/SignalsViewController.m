@@ -484,8 +484,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
-        [self ensureNotificationsUpToDate];
-
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
@@ -530,14 +528,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                              [self markAllUpgradeExperiencesAsSeen];
                          }];
     }
-}
-
-- (void)ensureNotificationsUpToDate
-{
-    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                              accountManager:self.accountManager
-                                 preferences:[Environment preferences]
-                                  showAlerts:NO];
 }
 
 - (void)tableViewSetUp {
