@@ -37,16 +37,16 @@ class SyncPushTokensJob: NSObject {
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
-                Logger.debug("\(self.TAG) Push tokens changed.")
+                Logger.info("\(self.TAG) Push tokens changed.")
                 shouldUploadTokens = true
             } else if !self.uploadOnlyIfStale {
-                Logger.debug("\(self.TAG) Uploading even though tokens didn't change.")
+                Logger.info("\(self.TAG) Uploading even though tokens didn't change.")
                 shouldUploadTokens = true
             }
 
             Logger.warn("\(self.TAG) lastAppVersion: \(AppVersion.instance().lastAppVersion), currentAppVersion: \(AppVersion.instance().currentAppVersion)")
             if AppVersion.instance().lastAppVersion != AppVersion.instance().currentAppVersion {
-                Logger.debug("\(self.TAG) Fresh install or app upgrade.")
+                Logger.info("\(self.TAG) Fresh install or app upgrade.")
                 shouldUploadTokens = true
             }
 
@@ -60,7 +60,7 @@ class SyncPushTokensJob: NSObject {
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
             }.then {
-                Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
+                Logger.info("\(self.TAG) Successfully ran syncPushTokensJob.")
                 if self.showAlerts {
                     OWSAlerts.showAlert(withTitle:NSLocalizedString("PUSH_REGISTER_SUCCESS", comment: "Title of alert shown when push tokens sync job succeeds."))
                 }
@@ -80,9 +80,13 @@ class SyncPushTokensJob: NSObject {
         return Promise { fulfill, reject in
             self.pushManager.requestPushToken(
                 success: { (pushToken: String, voipToken: String) in
+                    Logger.info("\(self.TAG) success in \(#function)")
                     fulfill((pushToken:pushToken, voipToken:voipToken))
                 },
-                failure: reject
+                failure: { error in
+                    Logger.info("\(self.TAG) \(#function) rejected with error:\(error)")
+                    reject(error)
+                }
             )
         }
     }

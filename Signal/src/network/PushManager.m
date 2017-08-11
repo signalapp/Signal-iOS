@@ -246,6 +246,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)pushRegistry:(PKPushRegistry *)registry
     didUpdatePushCredentials:(PKPushCredentials *)credentials
                      forType:(NSString *)type {
+    DDLogInfo(@"%@ in received push credentials.", self.tag);
     [[PushManager sharedManager].pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
 }
 
@@ -260,12 +261,14 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (TOCFuture *)registerPushKitNotificationFuture {
     if ([self supportsVOIPPush]) {
+        DDLogInfo(@"%@ setting pushKitNotificationFutureSource", self.tag);
         self.pushKitNotificationFutureSource = [TOCFutureSource new];
         PKPushRegistry *voipRegistry         = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
         voipRegistry.delegate                = self;
         voipRegistry.desiredPushTypes        = [NSSet setWithObject:PKPushTypeVoIP];
         return self.pushKitNotificationFutureSource.future;
     } else {
+        DDLogInfo(@"%@ setting pushKitNotificationFutureSource for old iOS", self.tag);
         TOCFutureSource *futureSource = [TOCFutureSource new];
         [futureSource trySetResult:nil];
         [Environment.preferences setHasRegisteredVOIPPush:FALSE];
