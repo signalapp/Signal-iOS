@@ -3,19 +3,23 @@
 //
 
 #import "OWSFakeProfileManager.h"
+#import "Cryptography.h"
 #import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager ()
 
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSData *> *profileKeys;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAES128Key *> *profileKeys;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
+@property (nonatomic, readonly) OWSAES128Key *localProfileKey;
 
 @end
 
 @implementation OWSFakeProfileManager
+
+@synthesize localProfileKey = _localProfileKey;
 
 - (instancetype)init
 {
@@ -32,14 +36,19 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (NSData *)localProfileKey
+- (OWSAES128Key *)localProfileKey
 {
-    return [@"fake-local-profile-key-for-testing" dataUsingEncoding:NSUTF8StringEncoding];
+    if (_localProfileKey == nil) {
+        _localProfileKey = [OWSAES128Key generateRandomKey];
+    }
+    return _localProfileKey;
 }
 
-- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
-    self.profileKeys[recipientId] = profileKey;
+    OWSAES128Key *key = [OWSAES128Key keyWithData:profileKey];
+    NSAssert(key, @"Unable to build key. Invalid key data?");
+    self.profileKeys[recipientId] = key;
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId

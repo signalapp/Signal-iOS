@@ -4,6 +4,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kAES128_KeyByteLength;
+
+/// Key appropriate for use in AES128 crypto
+@interface OWSAES128Key: NSObject <NSSecureCoding>
+
+/// Generates new secure random key
+- (instancetype)init;
++ (instancetype)generateRandomKey;
+
+/**
+ * @param data  representing the raw key bytes
+ *
+ * @returns a new instance if key is of appropriate length for AES128 crypto
+ *          else returns nil.
+ */
++ (nullable instancetype)keyWithData:(NSData *)data;
+
+/// The raw key material
+@property (nonatomic, readonly) NSData *keyData;
+
+@end
+
 @interface Cryptography : NSObject
 
 typedef NS_ENUM(NSInteger, TSMACType) {
@@ -37,6 +59,9 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (NSData *)encryptAttachmentData:(NSData *)attachmentData
                            outKey:(NSData *_Nonnull *_Nullable)outKey
                         outDigest:(NSData *_Nonnull *_Nullable)outDigest;
+
++ (nullable NSData *)encryptAESGCMWithData:(NSData *)plainTextData key:(OWSAES128Key *)key;
++ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES128Key *)key;
 
 @end
 

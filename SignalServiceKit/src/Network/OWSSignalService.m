@@ -208,19 +208,23 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 #pragma mark - Profile Uploading
 
-- (AFHTTPSessionManager *)profileUploadingSessionManagerWithHostname:(NSString *)hostname
+- (AFHTTPSessionManager *)cdnSessionManager
 {
-    OWSAssert(hostname.length > 0);
     if (self.isCensorshipCircumventionActive) {
         DDLogInfo(@"%@ Profile uploading may not work when under censorship.", self.tag);
     }
 
-    NSURL *baseURL = [[NSURL alloc] initWithString:[@"https://" stringByAppendingString:hostname]];
+    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
+    OWSAssert(baseURL);
+    
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    
+    // Default acceptable content headers are rejected by AWS
+    sessionManager.responseSerializer.acceptableContentTypes = nil;
 
     return sessionManager;
 }

@@ -7,6 +7,7 @@
 #import "SignalRecipient.h"
 #import "TSThread.h"
 #import "TextSecureKitEnv.h"
+#import "Cryptography.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSData *)localProfileKey
+- (OWSAES128Key *)localProfileKey
 {
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
     return profileManager.localProfileKey;
@@ -49,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
-        [self setProfileKey:self.localProfileKey];
+        [self setProfileKey:self.localProfileKey.keyData];
 
         if (recipientId.length > 0) {
             // Once we've shared our profile key with a user (perhaps due to being
@@ -75,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
-        [self setProfileKey:self.localProfileKey];
+        [self setProfileKey:self.localProfileKey.keyData];
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
@@ -95,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addLocalProfileKey
 {
-    [self setProfileKey:self.localProfileKey];
+    [self setProfileKey:self.localProfileKey.keyData];
 }
 
 @end
