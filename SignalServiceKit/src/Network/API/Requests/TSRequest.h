@@ -1,9 +1,5 @@
 //
-//  TSRequest.h
-//  TextSecureiOS
-//
-//  Created by Frederic Jacobs on 9/27/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -13,5 +9,10 @@
 @property (nonatomic, retain) NSMutableDictionary *parameters;
 
 - (void)makeAuthenticatedRequest;
+
+#pragma mark - Factory methods
+
+// move to builder class/header
++ (instancetype)setProfileNameRequestWithProfileName:(NSString *)encryptedName;
 
 @end

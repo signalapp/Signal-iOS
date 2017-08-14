@@ -481,19 +481,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [OWSProfileManager.sharedManager updateLocalProfileName:@"My profile name."
-            avatarImage:[UIImage imageNamed:@"introductory_splash_callkit"]
-            success:^{
-                DDLogInfo(@"%@ fake profile upload.", self.tag);
-            }
-            failure:^{
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                      message:NSLocalizedString(@"PROFILE_VIEW_ERROR_UPDATE_FAILED",
-                                                  @"Error message shown when a profile update fails.")];
-            }];
-    });
-
     if (self.newlyRegisteredUser) {
         [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];

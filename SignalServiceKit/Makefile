@@ -9,9 +9,7 @@ XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME
 .PHONY: build test retest clean
 
 default: test
-ci: test
-
-test: dependencies test
+ci: dependencies test
 
 dependencies:
 	cd $(WORKING_DIR) && \

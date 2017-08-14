@@ -43,7 +43,7 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureDeviceProvisioningAPIFormat @"v1/provisioning/%@"
 #define textSecureDevicesAPIFormat @"v1/devices/%@"
 #define textSecureProfileAPIFormat @"v1/profile/%@"
-#define textSecureSetProfileAPI @"v1/profile"
+#define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 
 #pragma mark Push RegistrationSpecific Constants

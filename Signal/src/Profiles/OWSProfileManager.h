@@ -10,6 +10,7 @@ extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 @class TSThread;
+@class OWSAES128Key;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -23,7 +24,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 #pragma mark - Local Profile
 
 // These two methods should only be called from the main thread.
-- (NSData *)localProfileKey;
+- (OWSAES128Key *)localProfileKey;
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
@@ -50,9 +51,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 #pragma mark - Other User's Profiles
 
-- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
-
-- (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId;
+- (nullable OWSAES128Key *)profileKeyForRecipientId:(NSString *)recipientId;
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 
@@ -61,9 +60,8 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 - (void)refreshProfileForRecipientId:(NSString *)recipientId;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
-               profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
-                      avatarUrlData:(NSData *_Nullable)avatarUrlData
-                       avatarDigest:(NSData *_Nullable)avatarDigest;
+               profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                          avatarUrl:(nullable NSString *)avatarUrl;
 
 @end
 
