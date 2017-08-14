@@ -97,41 +97,14 @@
     OWSTableSection *section = [OWSTableSection new];
 
     __weak AppSettingsViewController *weakSelf = self;
+
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-
-        UILabel *titleLabel = [UILabel new];
-        titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
-        titleLabel.textColor = [UIColor blackColor];
-        titleLabel.text = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
-        titleLabel.textAlignment = NSTextAlignmentCenter;
-
-        UILabel *subtitleLabel = [UILabel new];
-        subtitleLabel.font = [UIFont ows_mediumFontWithSize:15.f];
-        subtitleLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-        subtitleLabel.text =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
-        subtitleLabel.textAlignment = NSTextAlignmentCenter;
-
-        UIView *stack = [UIView new];
-        [cell.contentView addSubview:stack];
-        [stack autoCenterInSuperview];
-
-        [stack addSubview:titleLabel];
-        [stack addSubview:subtitleLabel];
-        [titleLabel autoPinWidthToSuperview];
-        [subtitleLabel autoPinWidthToSuperview];
-        [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-        [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
+        return [weakSelf profileHeaderCell];
     }
-                                           customRowHeight:96.f
-                                               actionBlock:nil]];
+                         customRowHeight:100.f
+                         actionBlock:^{
+                             [weakSelf showProfile];
+                         }]];
 
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
         [section
@@ -236,6 +209,70 @@
     [contents addSection:section];
 
     self.contents = contents;
+}
+
+- (UITableViewCell *)profileHeaderCell
+{
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.preservesSuperviewLayoutMargins = YES;
+    cell.contentView.preservesSuperviewLayoutMargins = YES;
+
+    const NSUInteger kAvatarSize = 68;
+    // TODO: Replace this icon.
+    UIImage *avatarImage
+        = ([OWSProfileManager.sharedManager localProfileAvatarImage] ?: [UIImage imageNamed:@"profile_avatar_default"]);
+    // TODO:
+    //    UIImage *avatarImage =
+    //    [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize contactsManager:self.contactsManager];
+    OWSAssert(avatarImage);
+
+    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+    [cell.contentView addSubview:avatarView];
+    [avatarView autoVCenterInSuperview];
+    [avatarView autoPinLeadingToSuperView];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+    UIView *threadNameView = [UIView containerView];
+    [cell.contentView addSubview:threadNameView];
+    [threadNameView autoVCenterInSuperview];
+    [threadNameView autoPinTrailingToSuperView];
+    [threadNameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+
+    UILabel *threadTitleLabel = [UILabel new];
+    // TODO: Handle nil case, etc.
+    NSString *_Nullable profileName = [OWSProfileManager.sharedManager localProfileName];
+    threadTitleLabel.text = profileName;
+    threadTitleLabel.textColor = [UIColor blackColor];
+    threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
+    threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [threadNameView addSubview:threadTitleLabel];
+    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [threadTitleLabel autoPinWidthToSuperview];
+
+    __block UIView *lastTitleView = threadTitleLabel;
+
+    const CGFloat kSubtitlePointSize = 12.f;
+    void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        subtitleLabel.attributedText = subtitle;
+        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [threadNameView addSubview:subtitleLabel];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+        [subtitleLabel autoPinLeadingToSuperView];
+        lastTitleView = subtitleLabel;
+    };
+
+    NSAttributedString *subtitle = [[NSAttributedString alloc]
+        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
+                                                                                                       localNumber]]];
+    addSubtitle(subtitle);
+
+    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    return cell;
 }
 
 - (void)showInviteFlow
