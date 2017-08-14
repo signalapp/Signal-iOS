@@ -87,16 +87,13 @@
     }
 }
 
-+ (UIFont *)ows_dynamicTypeTitle3Font
++ (UIFont *)ows_dynamicTypeHeadlineFont
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
-        return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+        return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     } else {
-        // Dynamic title font for ios8 defaults to bold 12.0 pt, whereas ios9+ it's 22.0pt regular weight.
-        // Here we chose to break dynamic font, in order to have uniform style across versions.
-        // It's already huge, so it's unlikely to present a usability issue.
-        // Handy font translations: http://swiftiostutorials.com/comparison-of-system-fonts-on-ios-8-and-ios-9/
-        return [self ows_regularFontWithSize:22.0];
+        // See ows_dynamicTypeTitle2Font.
+        return [self ows_regularFontWithSize:17.0];
     }
 }
 

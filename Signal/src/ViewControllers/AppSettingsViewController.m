@@ -262,8 +262,7 @@
         threadTitleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
         threadTitleLabel.textColor = [UIColor ows_materialBlueColor];
-        threadTitleLabel.font = [UIFont ows_dynamicTypeTitle3Font];
-        DDLogError(@"threadTitleLabel.font: %f", threadTitleLabel.font.pointSize);
+        threadTitleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [threadNameView addSubview:threadTitleLabel];
