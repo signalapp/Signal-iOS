@@ -30,9 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 // These properties may be accessed only from the main thread.
 @property (nonatomic, nullable) NSString *profileName;
 
-// TODO This isn't really a URL, since it doesn't contain the host.
-//      rename to "avatarPath" or "avatarKey"
-@property (nonatomic, nullable) NSString *avatarUrl;
+@property (nonatomic, nullable) NSString *avatarUrlPath;
 
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (nonatomic, nullable) NSString *avatarFileName;
@@ -72,13 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqual:(UserProfile *)other
 {
     return ([other isKindOfClass:[UserProfile class]] && [self.recipientId isEqualToString:other.recipientId] &&
-        [self.profileName isEqualToString:other.profileName] && [self.avatarUrl isEqualToString:other.avatarUrl] &&
+        [self.profileName isEqualToString:other.profileName] && [self.avatarUrlPath isEqualToString:other.avatarUrlPath] &&
         [self.avatarFileName isEqualToString:other.avatarFileName]);
 }
 
 - (NSUInteger)hash
 {
-    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrl.hash ^ self.avatarFileName.hash;
+    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrlPath.hash ^ self.avatarFileName.hash;
 }
 
 @end
@@ -306,7 +304,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
     // * Try to update the service.
     // * Update client state on success.
     void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable) = ^(
-        NSString *_Nullable avatarUrl, NSString *_Nullable avatarFileName) {
+        NSString *_Nullable avatarUrlPath, NSString *_Nullable avatarFileName) {
         [self updateServiceWithProfileName:profileName
             success:^{
                 // All reads and writes to user profiles should happen on the main thread.
@@ -315,9 +313,9 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
                     OWSAssert(userProfile);
                     userProfile.profileName = profileName;
 
-                    // TODO remote avatarUrl changes as result of fetching form -
+                    // TODO remote avatarUrlPath changes as result of fetching form -
                     // we should probably invalidate it at that point, and refresh again when uploading file completes.
-                    userProfile.avatarUrl = avatarUrl;
+                    userProfile.avatarUrlPath = avatarUrlPath;
                     userProfile.avatarFileName = avatarFileName;
 
                     [self saveUserProfile:userProfile];
@@ -345,19 +343,19 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
         // * Upload it to asset service
         // * Send asset service info to Signal Service
         if (self.localCachedAvatarImage == avatarImage) {
-            OWSAssert(userProfile.avatarUrl.length > 0);
+            OWSAssert(userProfile.avatarUrlPath.length > 0);
             OWSAssert(userProfile.avatarFileName.length > 0);
 
             DDLogVerbose(@"%@ Updating local profile on service with unchanged avatar.", self.tag);
             // If the avatar hasn't changed, reuse the existing metadata.
-            tryToUpdateService(userProfile.avatarUrl, userProfile.avatarFileName);
+            tryToUpdateService(userProfile.avatarUrlPath, userProfile.avatarFileName);
         } else {
             DDLogVerbose(@"%@ Updating local profile on service with new avatar.", self.tag);
             [self writeAvatarToDisk:avatarImage
                 success:^(NSData *data, NSString *fileName) {
                     [self uploadAvatarToService:data
-                        success:^(NSString *avatarUrl) {
-                            tryToUpdateService(avatarUrl, fileName);
+                        success:^(NSString *avatarUrlPath) {
+                            tryToUpdateService(avatarUrlPath, fileName);
                         }
                         failure:^{
                             failureBlock();
@@ -401,7 +399,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 }
 
 - (void)uploadAvatarToService:(NSData *)avatarData
-                      success:(void (^)(NSString *avatarUrl))successBlock
+                      success:(void (^)(NSString *avatarUrlPath))successBlock
                       failure:(void (^)())failureBlock
 {
     OWSAssert(avatarData.length > 0);
@@ -509,15 +507,15 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
                         // but the approach of getting it from the remote provider seems a more
                         // robust way to ensure we've actually created the resource where we
                         // think we have.
-                        NSString *avatarURL = response.allHeaderFields[@"Location"];
-                        if (avatarURL.length == 0) {
+                        NSString *avatarUrlPath = response.allHeaderFields[@"Location"];
+                        if (avatarUrlPath.length == 0) {
                             OWSProdFail(@"profile_manager_error_avatar_upload_no_location_in_response");
                             failureBlock();
                             return;
                         }
 
-                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@", self.tag, avatarURL);
-                        successBlock(avatarURL);
+                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@", self.tag, avatarUrlPath);
+                        successBlock(avatarUrlPath);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
                         DDLogVerbose(@"%@ uploading avatar failed with error: %@", self.tag, error);
@@ -691,7 +689,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 
         // Clear profile state.
         userProfile.profileName = nil;
-        userProfile.avatarUrl = nil;
+        userProfile.avatarUrlPath = nil;
         userProfile.avatarFileName = nil;
 
         [self saveUserProfile:userProfile];
@@ -738,7 +736,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
         if (image) {
             [self.otherUsersProfileAvatarImageCache setObject:image forKey:recipientId];
         }
-    } else if (userProfile.avatarUrl.length > 0) {
+    } else if (userProfile.avatarUrlPath.length > 0) {
         [self downloadAvatarForUserProfile:userProfile];
     }
 
@@ -750,12 +748,12 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(userProfile);
 
-    if (userProfile.avatarUrl.length < 1) {
-        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrl);
+    if (userProfile.avatarUrlPath.length < 1) {
+        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrlPath);
         return;
     }
 
-    if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrl.length < 1) {
+    if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
         return;
     }
 
@@ -773,8 +771,8 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
     NSString *tempDirectory = NSTemporaryDirectory();
     NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
-    NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrl relativeToURL:self.avatarHTTPManager.baseURL];
-    NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrl];
+    NSURL *avatarUrlPath = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+    NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
     NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
         progress:^(NSProgress *_Nonnull downloadProgress) {
             DDLogVerbose(@"%@ Downloading avatar for %@", self.tag, userProfile.recipientId);
@@ -862,7 +860,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                          avatarUrl:(nullable NSString *)avatarUrl;
+                      avatarUrlPath:(nullable NSString *)avatarUrlPath;
 {
     OWSAssert(recipientId.length > 0);
 
@@ -877,17 +875,17 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-        BOOL isAvatarSame = [self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl];
+        BOOL isAvatarSame = [self isNullableStringEqual:userProfile.avatarUrlPath toString:avatarUrlPath];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             userProfile.profileName = profileName;
-            userProfile.avatarUrl = avatarUrl;
+            userProfile.avatarUrlPath = avatarUrlPath;
 
             if (!isAvatarSame) {
                 // Evacuate avatar image cache.
                 [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
 
-                if (avatarUrl) {
+                if (avatarUrlPath) {
                     [self downloadAvatarForUserProfile:userProfile];
                 }
             }
@@ -993,6 +991,8 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
     NSUInteger paddingByteCount = kOWSProfileManager_NameDataLength - nameData.length;
 
     NSMutableData *paddedNameData = [nameData mutableCopy];
+    // Since we want all encrypted profile names to be the same length on the server, we use `increaseLengthBy`
+    // to pad out any remaining length with 0 bytes.
     [paddedNameData increaseLengthBy:paddingByteCount];
     OWSAssert(paddedNameData.length == kOWSProfileManager_NameDataLength);
 

@@ -116,7 +116,7 @@ class ProfileFetcherJob: NSObject {
 
         OWSProfileManager.shared().updateProfile(forRecipientId: signalServiceProfile.recipientId,
                                                  profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
-                                                 avatarUrl: signalServiceProfile.avatarUrl)
+                                                 avatarUrlPath: signalServiceProfile.avatarUrlPath)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -138,13 +138,12 @@ struct SignalServiceProfile {
         case invalid(description: String)
         case invalidIdentityKey(description: String)
         case invalidProfileName(description: String)
-        case invalidAvatarUrl(description: String)
     }
 
     public let recipientId: String
     public let identityKey: Data
     public let profileNameEncrypted: Data?
-    public let avatarUrl: String?
+    public let avatarUrlPath: String?
 
     init(recipientId: String, rawResponse: Any?) throws {
         self.recipientId = recipientId
@@ -173,7 +172,7 @@ struct SignalServiceProfile {
             self.profileNameEncrypted = nil
         }
 
-        self.avatarUrl = responseDict["avatar"] as? String
+        self.avatarUrlPath = responseDict["avatar"] as? String
 
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
         self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data

@@ -10,9 +10,4 @@
 
 - (void)makeAuthenticatedRequest;
 
-#pragma mark - Factory methods
-
-// move to builder class/header
-+ (instancetype)setProfileNameRequestWithProfileName:(NSString *)encryptedName;
-
 @end
