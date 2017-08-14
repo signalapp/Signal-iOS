@@ -216,22 +216,35 @@
     UITableViewCell *cell = [UITableViewCell new];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     const NSUInteger kAvatarSize = 68;
     // TODO: Replace this icon.
-    UIImage *avatarImage
-        = ([OWSProfileManager.sharedManager localProfileAvatarImage] ?: [UIImage imageNamed:@"profile_avatar_default"]);
-    // TODO:
-    //    UIImage *avatarImage =
-    //    [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize contactsManager:self.contactsManager];
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *avatarImage = (localProfileAvatarImage
+            ?: [[UIImage imageNamed:@"profile_avatar_default"]
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
     OWSAssert(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+    if (!localProfileAvatarImage) {
+        avatarView.tintColor = [UIColor colorWithRGBHex:0x888888];
+    }
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperView];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+    if (!localProfileAvatarImage) {
+        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+        cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        cameraImageView.tintColor = [UIColor ows_materialBlueColor];
+        [cell.contentView addSubview:cameraImageView];
+        [cameraImageView autoPinTrailingToView:avatarView];
+        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    }
 
     UIView *threadNameView = [UIView containerView];
     [cell.contentView addSubview:threadNameView];
@@ -240,11 +253,18 @@
     [threadNameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
     UILabel *threadTitleLabel = [UILabel new];
-    // TODO: Handle nil case, etc.
-    NSString *_Nullable profileName = [OWSProfileManager.sharedManager localProfileName];
-    threadTitleLabel.text = profileName;
-    threadTitleLabel.textColor = [UIColor blackColor];
-    threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    if (localProfileName.length > 0) {
+        threadTitleLabel.text = localProfileName;
+        threadTitleLabel.textColor = [UIColor blackColor];
+        threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
+    } else {
+        threadTitleLabel.text = NSLocalizedString(
+            @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
+        threadTitleLabel.textColor = [UIColor ows_materialBlueColor];
+        threadTitleLabel.font = [UIFont ows_dynamicTypeTitle3Font];
+        DDLogError(@"threadTitleLabel.font: %f", threadTitleLabel.font.pointSize);
+    }
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [threadNameView addSubview:threadTitleLabel];
     [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];

@@ -1011,10 +1011,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
 {
-    if (name.length == 0) {
-        return nil;
-    }
-    
+    // TODO: Should this be nil or a padded-out empty string?
+    //    if (name.length == 0) {
+    //        return nil;
+    //    }
+
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
         OWSFail(@"%@ name data is too long with length:%lu", self.tag, (unsigned long)nameData.length);
