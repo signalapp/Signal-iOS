@@ -144,12 +144,6 @@
                                                    actionBlock:nil]];
     }
 
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.")
-                                    actionBlock:^{
-                                        [weakSelf showProfile];
-                                    }]];
-
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
                                               actionBlock:^{
@@ -246,50 +240,50 @@
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
 
-    UIView *threadNameView = [UIView containerView];
-    [cell.contentView addSubview:threadNameView];
-    [threadNameView autoVCenterInSuperview];
-    [threadNameView autoPinTrailingToSuperView];
-    [threadNameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+    UIView *nameView = [UIView containerView];
+    [cell.contentView addSubview:nameView];
+    [nameView autoVCenterInSuperview];
+    [nameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
 
-    UILabel *threadTitleLabel = [UILabel new];
+    UILabel *titleLabel = [UILabel new];
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
     if (localProfileName.length > 0) {
-        threadTitleLabel.text = localProfileName;
-        threadTitleLabel.textColor = [UIColor blackColor];
-        threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
+        titleLabel.text = localProfileName;
+        titleLabel.textColor = [UIColor blackColor];
+        titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
-        threadTitleLabel.text = NSLocalizedString(
+        titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
-        threadTitleLabel.textColor = [UIColor ows_materialBlueColor];
-        threadTitleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
+        titleLabel.textColor = [UIColor ows_materialBlueColor];
+        titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
-    threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [threadNameView addSubview:threadTitleLabel];
-    [threadTitleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [threadTitleLabel autoPinWidthToSuperview];
-
-    __block UIView *lastTitleView = threadTitleLabel;
+    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [nameView addSubview:titleLabel];
+    [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [titleLabel autoPinWidthToSuperview];
 
     const CGFloat kSubtitlePointSize = 12.f;
-    void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
-        UILabel *subtitleLabel = [UILabel new];
-        subtitleLabel.textColor = [UIColor ows_darkGrayColor];
-        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-        subtitleLabel.attributedText = subtitle;
-        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [threadNameView addSubview:subtitleLabel];
-        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-        [subtitleLabel autoPinLeadingToSuperView];
-        lastTitleView = subtitleLabel;
-    };
-
-    NSAttributedString *subtitle = [[NSAttributedString alloc]
+    UILabel *subtitleLabel = [UILabel new];
+    subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+    subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+    subtitleLabel.attributedText = [[NSAttributedString alloc]
         initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
                                                                                                        localNumber]]];
-    addSubtitle(subtitle);
+    subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [nameView addSubview:subtitleLabel];
+    [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
+    [subtitleLabel autoPinLeadingToSuperView];
+    [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    UIImage *disclosureImage = [UIImage imageNamed:(self.view.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+    OWSAssert(disclosureImage);
+    UIImageView *disclosureButton =
+        [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+    disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
+    [cell.contentView addSubview:disclosureButton];
+    [disclosureButton autoVCenterInSuperview];
+    [disclosureButton autoPinTrailingToSuperView];
+    [disclosureButton autoPinLeadingToTrailingOfView:nameView margin:16.f];
 
     return cell;
 }
