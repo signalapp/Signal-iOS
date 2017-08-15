@@ -322,7 +322,7 @@ protocol CallServiceObserver: class {
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
-                return self.messageSender.sendCallMessage(callMessage)
+                return self.messageSender.sendPromise(message: callMessage)
             }
         }.then {
             guard self.call == call else {
@@ -399,7 +399,7 @@ protocol CallServiceObserver: class {
         }
 
         guard call.signalingId == callId else {
-            Logger.warn("\(self.TAG) ignoring obsolete call: \(callId) in \(#function)")
+            Logger.warn("\(self.TAG) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
             return
         }
 
@@ -410,7 +410,7 @@ protocol CallServiceObserver: class {
             Logger.error("\(self.TAG) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
 
             let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            let sendPromise = messageSender.sendCallMessage(callMessage).catch { error in
+            let sendPromise = messageSender.sendPromise(message: callMessage).catch { error in
                 Logger.error("\(self.TAG) failed to send ice updates in \(#function) with error: \(error)")
             }
             sendPromise.retainUntilComplete()
@@ -471,7 +471,7 @@ protocol CallServiceObserver: class {
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
-        let sendPromise = messageSender.sendCallMessage(callMessage)
+        let sendPromise = messageSender.sendPromise(message: callMessage)
         sendPromise.retainUntilComplete()
 
         handleMissedCall(call, thread: thread)
@@ -480,12 +480,17 @@ protocol CallServiceObserver: class {
     /**
      * The callee was already in another call.
      */
-    public func handleRemoteBusy(thread: TSContactThread) {
+    public func handleRemoteBusy(thread: TSContactThread, callId: UInt64) {
         Logger.info("\(TAG) \(#function) for thread: \(thread.contactIdentifier())")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            Logger.warn("\(self.TAG) ignoring obsolete call in \(#function)")
+            Logger.warn("\(self.TAG) ignoring obsolete call: \(callId) in \(#function)")
+            return
+        }
+
+        guard call.signalingId == callId else {
+            Logger.warn("\(self.TAG) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
             return
         }
 
@@ -541,13 +546,15 @@ protocol CallServiceObserver: class {
         }
 
         guard self.call == nil else {
+            let existingCall = self.call!
+
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
-            Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
+            Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
             handleLocalBusyCall(newCall, thread: thread)
 
-            if self.call!.remotePhoneNumber == newCall.remotePhoneNumber {
-                Logger.info("\(TAG) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(call!.identifiersForLogs)")
+            if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
+                Logger.info("\(TAG) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
                 // If we're receiving a new call offer from the user we already think we have a call with,
                 // terminate our current call to get back to a known good state.  If they call back, we'll 
@@ -556,11 +563,11 @@ protocol CallServiceObserver: class {
                 // TODO: Auto-accept this incoming call if our current call was either a) outgoing or 
                 // b) never connected.  There will be a bit of complexity around making sure that two
                 // parties that call each other at the same time end up connected.
-                switch self.call!.state {
+                switch existingCall.state {
                 case .idle, .dialing, .remoteRinging:
                     // If both users are trying to call each other at the same time,
                     // both should see busy.
-                    handleRemoteBusy(thread:self.call!.thread)
+                    handleRemoteBusy(thread:existingCall.thread, callId:existingCall.signalingId)
                 case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
                     // If one user calls another while the other has a "vestigial" call with
                     // that same user, fail the old call.
@@ -622,10 +629,10 @@ protocol CallServiceObserver: class {
             let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
             let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
 
-            return self.messageSender.sendCallMessage(callAnswerMessage)
+            return self.messageSender.sendPromise(message: callAnswerMessage)
         }.then {
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "sendCallMessage() response for obsolete call")
+                throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
             }
             Logger.debug("\(self.TAG) successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
@@ -683,7 +690,7 @@ protocol CallServiceObserver: class {
             }
 
             guard call.signalingId == callId else {
-                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to callId mismatch. Call already ended?")
+                Logger.warn("\(self.TAG) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
                 return
             }
 
@@ -738,7 +745,7 @@ protocol CallServiceObserver: class {
             if self.sendIceUpdatesImmediately {
                 Logger.info("\(self.TAG) in \(#function). Sending immediately.")
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-                let sendPromise = self.messageSender.sendCallMessage(callMessage)
+                let sendPromise = self.messageSender.sendPromise(message: callMessage)
                 sendPromise.retainUntilComplete()
             } else {
                 // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
@@ -791,13 +798,18 @@ protocol CallServiceObserver: class {
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleRemoteHangup(thread: TSContactThread) {
+    public func handleRemoteHangup(thread: TSContactThread, callId: UInt64) {
         Logger.debug("\(TAG) in \(#function)")
         AssertIsOnMainThread()
 
         guard let call = self.call else {
             // This may happen if we hang up slightly before they hang up.
             handleFailedCurrentCall(error: .obsoleteCall(description:"\(TAG) call was unexpectedly nil in \(#function)"))
+            return
+        }
+
+        guard call.signalingId == callId else {
+            Logger.warn("\(self.TAG) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
             return
         }
 
@@ -1011,7 +1023,7 @@ protocol CallServiceObserver: class {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendCallMessage(callMessage).then {
+        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
             Logger.debug("\(self.TAG) successfully sent hangup call message to \(call.thread.contactIdentifier())")
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file:#file, function:#function, line:#line)
@@ -1161,7 +1173,7 @@ protocol CallServiceObserver: class {
                 return
             }
 
-            handleRemoteHangup(thread: call.thread)
+            handleRemoteHangup(thread: call.thread, callId: hangup.id)
         } else if message.hasVideoStreamingStatus() {
             Logger.debug("\(TAG) remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
 
@@ -1622,16 +1634,5 @@ protocol CallServiceObserver: class {
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
-    }
-}
-
-fileprivate extension MessageSender {
-    /**
-     * Wrap message sending in a Promise for easier callback chaining.
-     */
-    fileprivate func sendCallMessage(_ message: OWSOutgoingCallMessage) -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.send(message, success: fulfill, failure: reject)
-        }
     }
 }

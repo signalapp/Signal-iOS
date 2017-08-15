@@ -5,13 +5,14 @@
 #import "OWSProfileManager.h"
 #import "Environment.h"
 #import "Signal-Swift.h"
+#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
-#import <SignalServiceKit/TSSetProfileRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
@@ -24,12 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 // These properties may be accessed from any thread.
 @property (atomic, readonly) NSString *recipientId;
-@property (atomic, nullable) NSData *profileKey;
+@property (atomic, nullable) OWSAES128Key *profileKey;
 
 // These properties may be accessed only from the main thread.
 @property (nonatomic, nullable) NSString *profileName;
-@property (nonatomic, nullable) NSString *avatarUrl;
-@property (nonatomic, nullable) NSData *avatarDigest;
+
+@property (nonatomic, nullable) NSString *avatarUrlPath;
 
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (nonatomic, nullable) NSString *avatarFileName;
@@ -69,14 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqual:(UserProfile *)other
 {
     return ([other isKindOfClass:[UserProfile class]] && [self.recipientId isEqualToString:other.recipientId] &&
-        [self.profileName isEqualToString:other.profileName] && [self.avatarUrl isEqualToString:other.avatarUrl] &&
-        [self.avatarDigest isEqual:other.avatarDigest] && [self.avatarFileName isEqualToString:other.avatarFileName]);
+        [self.profileName isEqualToString:other.profileName] && [self.avatarUrlPath isEqualToString:other.avatarUrlPath] &&
+        [self.avatarFileName isEqualToString:other.avatarFileName]);
 }
 
 - (NSUInteger)hash
 {
-    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrl.hash ^ self.avatarDigest.hash
-        ^ self.avatarFileName.hash;
+    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrlPath.hash ^ self.avatarFileName.hash;
 }
 
 @end
@@ -91,8 +91,9 @@ NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificati
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
-// TODO:
-static const NSInteger kProfileKeyLength = 16;
+/// The max bytes for a user's profile name, encoded in UTF8.
+/// Before encrypting and submitting we NULL pad the name data to this length.
+static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 
 @interface OWSProfileManager ()
 
@@ -170,7 +171,8 @@ static const NSInteger kProfileKeyLength = 16;
     self.localUserProfile = [self getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId];
     OWSAssert(self.localUserProfile);
     if (!self.localUserProfile.profileKey) {
-        self.localUserProfile.profileKey = [OWSProfileManager generateLocalProfileKey];
+        DDLogInfo(@"%@ Generating local profile key", self.tag);
+        self.localUserProfile.profileKey = [OWSAES128Key generateRandomKey];
         // Make sure to save on the local db connection for consistency.
         //
         // NOTE: we do an async read/write here to avoid blocking during app launch path.
@@ -178,7 +180,7 @@ static const NSInteger kProfileKeyLength = 16;
             [self.localUserProfile saveWithTransaction:transaction];
         }];
     }
-    OWSAssert(self.localUserProfile.profileKey.length == kProfileKeyLength);
+    OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES128_KeyByteLength);
 
     return self;
 }
@@ -194,6 +196,11 @@ static const NSInteger kProfileKeyLength = 16;
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
+}
+
+- (AFHTTPSessionManager *)avatarHTTPManager
+{
+    return [OWSSignalService sharedInstance].cdnSessionManager;
 }
 
 #pragma mark - User Profile Accessor
@@ -240,21 +247,11 @@ static const NSInteger kProfileKeyLength = 16;
     }
 }
 
-#pragma mark - Local Profile Key
-
-+ (NSData *)generateLocalProfileKey
-{
-    DDLogInfo(@"%@ Generating profile key for local user.", self.tag);
-    // TODO:
-    DDLogVerbose(@"%@ Profile key generation is not yet implemented.", self.tag);
-    return [SecurityUtils generateRandomBytes:kProfileKeyLength];
-}
-
 #pragma mark - Local Profile
 
-- (NSData *)localProfileKey
+- (OWSAES128Key *)localProfileKey
 {
-    OWSAssert(self.localUserProfile.profileKey.length == kProfileKeyLength);
+    OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES128_KeyByteLength);
 
     return self.localUserProfile.profileKey;
 }
@@ -306,19 +303,19 @@ static const NSInteger kProfileKeyLength = 16;
     //
     // * Try to update the service.
     // * Update client state on success.
-    void (^tryToUpdateService)(NSString *_Nullable, NSData *_Nullable, NSString *_Nullable) = ^(
-        NSString *_Nullable avatarUrl, NSData *_Nullable avatarDigest, NSString *_Nullable avatarFileName) {
-        [self updateProfileOnService:profileName
-            avatarUrl:avatarUrl
-            avatarDigest:avatarDigest
+    void (^tryToUpdateService)(NSString *_Nullable, NSString *_Nullable) = ^(
+        NSString *_Nullable avatarUrlPath, NSString *_Nullable avatarFileName) {
+        [self updateServiceWithProfileName:profileName
             success:^{
                 // All reads and writes to user profiles should happen on the main thread.
                 dispatch_async(dispatch_get_main_queue(), ^{
                     UserProfile *userProfile = self.localUserProfile;
                     OWSAssert(userProfile);
                     userProfile.profileName = profileName;
-                    userProfile.avatarUrl = avatarUrl;
-                    userProfile.avatarDigest = avatarDigest;
+
+                    // TODO remote avatarUrlPath changes as result of fetching form -
+                    // we should probably invalidate it at that point, and refresh again when uploading file completes.
+                    userProfile.avatarUrlPath = avatarUrlPath;
                     userProfile.avatarFileName = avatarFileName;
 
                     [self saveUserProfile:userProfile];
@@ -336,28 +333,29 @@ static const NSInteger kProfileKeyLength = 16;
     UserProfile *userProfile = self.localUserProfile;
     OWSAssert(userProfile);
 
-    // If we have a new avatar image, we must first:
-    //
-    // * Encode it to JPEG.
-    // * Write it to disk.
-    // * Upload it to service.
     if (avatarImage) {
+
+        // If we have a new avatar image, we must first:
+        //
+        // * Encode it to JPEG.
+        // * Write it to disk.
+        // * Encrypt it
+        // * Upload it to asset service
+        // * Send asset service info to Signal Service
         if (self.localCachedAvatarImage == avatarImage) {
-            OWSAssert(userProfile.avatarUrl.length > 0);
-            OWSAssert(userProfile.avatarDigest.length > 0);
+            OWSAssert(userProfile.avatarUrlPath.length > 0);
             OWSAssert(userProfile.avatarFileName.length > 0);
 
             DDLogVerbose(@"%@ Updating local profile on service with unchanged avatar.", self.tag);
             // If the avatar hasn't changed, reuse the existing metadata.
-            tryToUpdateService(userProfile.avatarUrl, userProfile.avatarDigest, userProfile.avatarFileName);
+            tryToUpdateService(userProfile.avatarUrlPath, userProfile.avatarFileName);
         } else {
             DDLogVerbose(@"%@ Updating local profile on service with new avatar.", self.tag);
             [self writeAvatarToDisk:avatarImage
                 success:^(NSData *data, NSString *fileName) {
                     [self uploadAvatarToService:data
-                        fileName:fileName
-                        success:^(NSString *avatarUrl, NSData *avatarDigest) {
-                            tryToUpdateService(avatarUrl, avatarDigest, fileName);
+                        success:^(NSString *avatarUrlPath) {
+                            tryToUpdateService(avatarUrlPath, fileName);
                         }
                         failure:^{
                             failureBlock();
@@ -369,7 +367,7 @@ static const NSInteger kProfileKeyLength = 16;
         }
     } else {
         DDLogVerbose(@"%@ Updating local profile on service with no avatar.", self.tag);
-        tryToUpdateService(nil, nil, nil);
+        tryToUpdateService(nil, nil);
     }
 }
 
@@ -400,24 +398,24 @@ static const NSInteger kProfileKeyLength = 16;
     });
 }
 
-// TODO: The exact API & encryption scheme for avatars is not yet settled.
-- (void)uploadAvatarToService:(NSData *)data
-                     fileName:(NSString *)fileName
-                      success:(void (^)(NSString *avatarUrl, NSData *avatarDigest))successBlock
+- (void)uploadAvatarToService:(NSData *)avatarData
+                      success:(void (^)(NSString *avatarUrlPath))successBlock
                       failure:(void (^)())failureBlock
 {
-    OWSAssert(data.length > 0);
-    OWSAssert(fileName.length > 0);
+    OWSAssert(avatarData.length > 0);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // TODO:
-        NSString *avatarUrl = @"avatarUrl";
-        NSData *avatarDigest = [@"avatarDigest" dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *encryptedAvatarData = [self encryptProfileData:avatarData];
+        OWSAssert(encryptedAvatarData.length > 0);
 
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
+
+        // TODO: Since this form request causes the server to reset my avatar URL, if the update fails
+        // at some point from here on out, we want the user to understand they probably no longer have
+        // a profile avatar on the server.
 
         [self.networkManager makeRequest:formRequest
             success:^(NSURLSessionDataTask *task, id formResponseObject) {
@@ -429,22 +427,7 @@ static const NSInteger kProfileKeyLength = 16;
                 }
                 NSDictionary *responseMap = formResponseObject;
                 DDLogError(@"responseObject: %@", formResponseObject);
-                //                                     acl = private;
-                //                                     algorithm = "AWS4-HMAC-SHA256";
-                //                                     credential =
-                //                                     "AKIAINTYCHN42UH3LGRA/20170804/us-east-1/s3/aws4_request"; date =
-                //                                     20170804T193927Z; key = PtRO3iSkY6twBA; policy =
-                //                                     eyAiZXhwaXJhdGlvbiI6ICIyMDE3LTA4LTA0VDIwOjA5OjI3LjMwMFoiLAogICJjb25kaXRpb25zIjogWwogICAgeyJidWNrZXQiOiAic2lnbmFsLXByb2ZpbGVzLXN0YWdpbmcifSwKICAgIHsia2V5IjogIlB0Uk8zaVNrWTZ0d0JBIn0sCiAgICB7ImFjbCI6ICJwcml2YXRlIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sCgogICAgeyJ4LWFtei1jcmVkZW50aWFsIjogIkFLSUFJTlRZQ0hONDJVSDNMR1JBLzIwMTcwODA0L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSwKICAgIHsieC1hbXotYWxnb3JpdGhtIjogIkFXUzQtSE1BQy1TSEEyNTYifSwKICAgIHsieC1hbXotZGF0ZSI6ICIyMDE3MDgwNFQxOTM5MjdaIiB9CiAgXQp9;
-                //                                     signature =
-                //                                     3608fdc9af8ca0d13c754c34eb37014c9995b058c2e0166550468de47b00f316;
-                //                                     url = "profiles-staging.signal.org";
 
-                NSString *formUrl = responseMap[@"url"];
-                if (![formUrl isKindOfClass:[NSString class]] || formUrl.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_url");
-                    failureBlock();
-                    return;
-                }
                 NSString *formAcl = responseMap[@"acl"];
                 if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
                     OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_acl");
@@ -487,87 +470,57 @@ static const NSInteger kProfileKeyLength = 16;
                     failureBlock();
                     return;
                 }
-                NSDictionary<NSString *, NSString *> *parameters = @{
-                    @"acl" : formAcl,
-                    @"x-amz-algorithm" : formAlgorithm,
-                    @"x-amz-credential" : formCredential,
-                    @"x-amz-date" : formDate,
-                    @"key" : formKey,
-                    @"policy" : formPolicy,
-                    @"x-amz-signature" : formSignature,
 
-                };
+                [self.avatarHTTPManager POST:@""
+                    parameters:nil
+                    constructingBodyWithBlock:^(id<AFMultipartFormData> _Nonnull formData) {
+                        NSData * (^formDataForString)(NSString *formString) = ^(NSString *formString) {
+                            return [formString dataUsingEncoding:NSUTF8StringEncoding];
+                        };
 
-                NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
-                NSInputStream *fileInputStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
-                if (!fileInputStream) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_file_stream");
-                    failureBlock();
-                    return;
-                }
+                        // We have to build up the form manually vs. simply passing in a paramaters dict
+                        // because AWS is sensitive to the order of the order of the form params (at least
+                        // the "key" field must occur early on).
+                        // For consistency, all fields are ordered here in a known working order.
+                        [formData appendPartWithFormData:formDataForString(formKey) name:@"key"];
+                        [formData appendPartWithFormData:formDataForString(formAcl) name:@"acl"];
+                        [formData appendPartWithFormData:formDataForString(formAlgorithm) name:@"x-amz-algorithm"];
+                        [formData appendPartWithFormData:formDataForString(formCredential) name:@"x-amz-credential"];
+                        [formData appendPartWithFormData:formDataForString(formDate) name:@"x-amz-date"];
+                        [formData appendPartWithFormData:formDataForString(formPolicy) name:@"policy"];
+                        [formData appendPartWithFormData:formDataForString(formSignature) name:@"x-amz-signature"];
+                        [formData appendPartWithFormData:formDataForString(OWSMimeTypeApplicationOctetStream)
+                                                    name:@"Content-Type"];
+                        [formData appendPartWithFormData:encryptedAvatarData name:@"file"];
 
-                NSError *error;
-                long long fileSize =
-                    [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize]
-                        longLongValue];
-                if (error || fileSize <= 0) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_file_size");
-                    failureBlock();
-                    return;
-                }
-
-                NSMutableURLRequest *uploadRequest = [[AFHTTPRequestSerializer serializer]
-                    multipartFormRequestWithMethod:@"post"
-                                         URLString:[@"https://" stringByAppendingString:formUrl]
-                                        parameters:parameters
-                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                             //                                                                                                                   [formData appendPartWithFormData:<#(nonnull NSData *)#> name:@"acl"];
-
-                             [formData appendPartWithInputStream:fileInputStream
-                                                            name:@"file"
-                                                        fileName:fileName
-                                                          length:fileSize
-                                                        mimeType:@"image/jpeg"];
-                         }
-                                             error:&error];
-
-                if (error || !uploadRequest) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_invalid_upload_request");
-                    failureBlock();
-                    return;
-                }
-
-                [uploadRequest setValue:@"Content-Type: text/html; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-
-
-                //                                     [uploadRequest setAllHTTPHeaderFields:headerDictionary];
-
-                // TODO: Should we use a special configuration as we do in TSNetworkManager?
-                // TODO: How does censorship circumvention fit in?
-                AFURLSessionManager *manager = [[AFURLSessionManager alloc]
-                    initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-                manager.responseSerializer = [AFXMLParserResponseSerializer new];
-                NSURLSessionUploadTask *uploadTask;
-                uploadTask = [manager uploadTaskWithStreamedRequest:uploadRequest
-                    progress:^(NSProgress *_Nonnull uploadProgress) {
-                        // This is not called back on the main queue.
-                        // You are responsible for dispatching to the main queue for UI updates
-
-                        DDLogVerbose(@"%@ Avatar upload progress: %f", self.tag, uploadProgress.fractionCompleted);
+                        DDLogVerbose(@"%@ constructed body", self.tag);
                     }
-                    completionHandler:^(NSURLResponse *_Nonnull response,
-                        id _Nullable uploadResponseObject,
-                        NSError *_Nullable uploadError) {
+                    progress:^(NSProgress *_Nonnull uploadProgress) {
+                        DDLogVerbose(
+                            @"%@ avatar upload progress: %.2f%%", self.tag, uploadProgress.fractionCompleted * 100);
+                    }
+                    success:^(NSURLSessionDataTask *_Nonnull uploadTask, id _Nullable responseObject) {
+                        OWSAssert([uploadTask.response isKindOfClass:[NSHTTPURLResponse class]]);
+                        NSHTTPURLResponse *response = (NSHTTPURLResponse *)uploadTask.response;
 
-                        if (uploadError) {
-                            DDLogError(@"%@ Avatar upload failed: %@", self.tag, uploadError);
+                        // We could also construct this URL locally from manager.baseUrl + formKey
+                        // but the approach of getting it from the remote provider seems a more
+                        // robust way to ensure we've actually created the resource where we
+                        // think we have.
+                        NSString *avatarUrlPath = response.allHeaderFields[@"Location"];
+                        if (avatarUrlPath.length == 0) {
+                            OWSProdFail(@"profile_manager_error_avatar_upload_no_location_in_response");
                             failureBlock();
-                        } else {
-                            DDLogVerbose(@"%@ Avatar upload succeeded", self.tag);
-                            successBlock(avatarUrl, avatarDigest);
+                            return;
                         }
+
+                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@", self.tag, avatarUrlPath);
+                        successBlock(avatarUrlPath);
+                    }
+                    failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
+                        DDLogVerbose(@"%@ uploading avatar failed with error: %@", self.tag, error);
+                        failureBlock();
                     }];
-                [uploadTask resume];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 DDLogError(@"%@ Failed to get profile avatar upload form: %@", self.tag, error);
@@ -577,30 +530,25 @@ static const NSInteger kProfileKeyLength = 16;
 }
 
 // TODO: The exact API & encryption scheme for profiles is not yet settled.
-- (void)updateProfileOnService:(nullable NSString *)localProfileName
-                     avatarUrl:(nullable NSString *)avatarUrl
-                  avatarDigest:(nullable NSData *)avatarDigest
-                       success:(void (^)())successBlock
-                       failure:(void (^)())failureBlock
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
+                             success:(void (^)())successBlock
+                             failure:(void (^)())failureBlock
 {
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *_Nullable profileNameEncrypted = [self encryptProfileString:localProfileName];
-
-        TSSetProfileRequest *request = [[TSSetProfileRequest alloc] initWithProfileName:profileNameEncrypted
-                                                                              avatarUrl:avatarUrl
-                                                                           avatarDigest:avatarDigest];
-
+        NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
+        
+        TSRequest *request = [OWSRequestBuilder profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                successBlock();
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogError(@"%@ Failed to update profile with error: %@", self.tag, error);
-                failureBlock();
-            }];
+                                 success:^(NSURLSessionDataTask *task, id responseObject) {
+                                     successBlock();
+                                 }
+                                 failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                     DDLogError(@"%@ Failed to update profile with error: %@", self.tag, error);
+                                     failureBlock();
+                                 }];
     });
 }
 
@@ -721,18 +669,18 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Other User's Profiles
 
-- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 {
-    OWSAssert(profileKey.length == kProfileKeyLength);
-    OWSAssert(recipientId.length > 0);
-    if (profileKey.length != kProfileKeyLength) {
+    OWSAES128Key *_Nullable profileKey = [OWSAES128Key keyWithData:profileKeyData];
+    if (profileKey == nil) {
+        OWSFail(@"Failed to make profile key for key data");
         return;
     }
-
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
         OWSAssert(userProfile);
-        if (userProfile.profileKey && [userProfile.profileKey isEqual:profileKey]) {
+        if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
             // Ignore redundant update.
             return;
         }
@@ -741,8 +689,7 @@ static const NSInteger kProfileKeyLength = 16;
 
         // Clear profile state.
         userProfile.profileName = nil;
-        userProfile.avatarUrl = nil;
-        userProfile.avatarDigest = nil;
+        userProfile.avatarUrlPath = nil;
         userProfile.avatarFileName = nil;
 
         [self saveUserProfile:userProfile];
@@ -751,7 +698,7 @@ static const NSInteger kProfileKeyLength = 16;
     });
 }
 
-- (nullable NSData *)profileKeyForRecipientId:(NSString *)recipientId
+- (nullable OWSAES128Key *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -784,12 +731,12 @@ static const NSInteger kProfileKeyLength = 16;
     }
 
     UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
-    if (userProfile.avatarFileName) {
+    if (userProfile.avatarFileName.length > 0) {
         image = [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
         if (image) {
             [self.otherUsersProfileAvatarImageCache setObject:image forKey:recipientId];
         }
-    } else if (userProfile.avatarUrl) {
+    } else if (userProfile.avatarUrlPath.length > 0) {
         [self downloadAvatarForUserProfile:userProfile];
     }
 
@@ -801,29 +748,18 @@ static const NSInteger kProfileKeyLength = 16;
     OWSAssert([NSThread isMainThread]);
     OWSAssert(userProfile);
 
-    if (userProfile.profileKey.length < 1 || userProfile.avatarUrl.length < 1) {
+    if (userProfile.avatarUrlPath.length < 1) {
+        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrlPath);
         return;
     }
 
-    NSData *profileKeyAtStart = userProfile.profileKey;
-
-    NSURL *url = [NSURL URLWithString:userProfile.avatarUrl];
-    if (!url) {
-        OWSFail(@"%@ Malformed avatar URL: %@", self.tag, userProfile.avatarUrl);
+    if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
         return;
     }
 
-    NSString *_Nullable fileExtension = [[[url lastPathComponent] pathExtension] lowercaseString];
-    NSSet<NSString *> *validFileExtensions = [NSSet setWithArray:@[
-        @"jpg",
-        @"jpeg",
-        @"png",
-        @"gif",
-    ]];
-    if (![validFileExtensions containsObject:fileExtension]) {
-        DDLogWarn(@"Ignoring avatar with invalid file extension: %@", userProfile.avatarUrl);
-    }
-    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:fileExtension];
+    OWSAES128Key *profileKeyAtStart = userProfile.profileKey;
+
+    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
     NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
 
     if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
@@ -835,28 +771,23 @@ static const NSInteger kProfileKeyLength = 16;
     NSString *tempDirectory = NSTemporaryDirectory();
     NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
-    // TODO: Should we use a special configuration as we do in TSNetworkManager?
-    // TODO: How does censorship circumvention fit in?
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request
-        progress:nil
-        destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+    NSURL *avatarUrlPath = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+    NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
+    NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
+        progress:^(NSProgress *_Nonnull downloadProgress) {
+            DDLogVerbose(@"%@ Downloading avatar for %@", self.tag, userProfile.recipientId);
+        }
+        destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
             return [NSURL fileURLWithPath:tempFilePath];
         }
-        completionHandler:^(NSURLResponse *response, NSURL *filePathParam, NSError *error) {
-            OWSAssert([[NSURL fileURLWithPath:tempFilePath] isEqual:filePathParam]);
-
+        completionHandler:^(
+            NSURLResponse *_Nonnull response, NSURL *_Nullable filePathParam, NSError *_Nullable error) {
             // Ensure disk IO and decryption occurs off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
                 NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData =
-                    [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKeyAtStart];
+                NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
                 UIImage *_Nullable image = nil;
                 if (decryptedData) {
-                    // TODO: Verify avatar digest.
                     BOOL success = [decryptedData writeToFile:filePath atomically:YES];
                     if (success) {
                         image = [UIImage imageWithContentsOfFile:filePath];
@@ -868,7 +799,7 @@ static const NSInteger kProfileKeyLength = 16;
 
                     UserProfile *currentUserProfile =
                         [self getOrBuildUserProfileForRecipientId:userProfile.recipientId];
-                    if (currentUserProfile.profileKey.length < 1
+                    if (currentUserProfile.profileKey.keyData.length < 1
                         || ![currentUserProfile.profileKey isEqual:userProfile.profileKey]) {
                         DDLogWarn(@"%@ Ignoring avatar download for obsolete user profile.", self.tag);
                     } else if (error) {
@@ -928,9 +859,8 @@ static const NSInteger kProfileKeyLength = 16;
 }
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
-               profileNameEncrypted:(NSData *_Nullable)profileNameEncrypted
-                      avatarUrlData:(NSData *_Nullable)avatarUrlData
-                       avatarDigest:(NSData *_Nullable)avatarDigestParam
+               profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                      avatarUrlPath:(nullable NSString *)avatarUrlPath;
 {
     OWSAssert(recipientId.length > 0);
 
@@ -943,30 +873,19 @@ static const NSInteger kProfileKeyLength = 16;
         }
 
         NSString *_Nullable profileName =
-            [self decryptProfileString:profileNameEncrypted profileKey:userProfile.profileKey];
-        NSString *_Nullable avatarUrl
-            = (avatarUrlData ? [[NSString alloc] initWithData:avatarUrlData encoding:NSUTF8StringEncoding] : nil);
-        NSData *_Nullable avatarDigest = avatarDigestParam;
+            [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-        if (!avatarUrl || !avatarDigest) {
-            // If either avatar url or digest is missing, skip both.
-            avatarUrl = nil;
-            avatarDigest = nil;
-        }
-
-        BOOL isAvatarSame = ([self isNullableStringEqual:userProfile.avatarUrl toString:avatarUrl] &&
-            [self isNullableDataEqual:userProfile.avatarDigest toData:avatarDigest]);
+        BOOL isAvatarSame = [self isNullableStringEqual:userProfile.avatarUrlPath toString:avatarUrlPath];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             userProfile.profileName = profileName;
-            userProfile.avatarUrl = avatarUrl;
-            userProfile.avatarDigest = avatarDigest;
+            userProfile.avatarUrlPath = avatarUrlPath;
 
             if (!isAvatarSame) {
                 // Evacuate avatar image cache.
                 [self.otherUsersProfileAvatarImageCache removeObjectForKey:recipientId];
 
-                if (avatarUrl) {
+                if (avatarUrlPath) {
                     [self downloadAvatarForUserProfile:userProfile];
                 }
             }
@@ -1002,76 +921,82 @@ static const NSInteger kProfileKeyLength = 16;
 
 #pragma mark - Profile Encryption
 
-+ (NSData *_Nullable)decryptProfileData:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+- (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
 {
-    OWSAssert(profileKey.length == kProfileKeyLength);
+    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
 
     if (!encryptedData) {
         return nil;
     }
 
-    // TODO: Decrypt.  For now, return the input.
-    return encryptedData;
+    return [Cryptography encryptAESGCMWithData:encryptedData key:profileKey];
 }
 
-+ (NSString *_Nullable)decryptProfileString:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+- (nullable NSData *)decryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
 {
-    OWSAssert(profileKey.length == kProfileKeyLength);
+    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
+
+    if (!encryptedData) {
+        return nil;
+    }
+    
+    return [Cryptography decryptAESGCMWithData:encryptedData key:profileKey];
+}
+
+- (nullable NSString *)decryptProfileNameData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
+{
+    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
 
     NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKey];
-
-    if (decryptedData) {
-        return [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
-    } else {
-        return nil;
-    }
-}
-
-+ (NSData *_Nullable)encryptProfileData:(NSData *_Nullable)data profileKey:(NSData *)profileKey
-{
-    OWSAssert(profileKey.length == kProfileKeyLength);
-
-    if (!data) {
+    if (decryptedData.length < 1) {
         return nil;
     }
 
-    // TODO: Encrypt.  For now, return the input.
-    return data;
-}
 
-+ (NSData *_Nullable)encryptProfileString:(NSString *_Nullable)value profileKey:(NSData *)profileKey
-{
-    OWSAssert(profileKey.length == kProfileKeyLength);
+    // Unpad profile name.
+    NSUInteger unpaddedLength = 0;
+    const char *bytes = decryptedData.bytes;
 
-    if (value) {
-        NSData *_Nullable data = [value dataUsingEncoding:NSUTF8StringEncoding];
-        if (data) {
-            NSData *_Nullable encryptedData = [self encryptProfileData:data profileKey:profileKey];
-            return encryptedData;
+    // Work through the bytes until we encounter our first
+    // padding byte (our padding scheme is NULL bytes)
+    for (NSUInteger i = 0; i < decryptedData.length; i++) {
+        if (bytes[i] == 0x00) {
+            break;
         }
+        unpaddedLength = i + 1;
     }
 
-    return nil;
+    NSData *unpaddedData = [decryptedData subdataWithRange:NSMakeRange(0, unpaddedLength)];
+
+    return [[NSString alloc] initWithData:unpaddedData encoding:NSUTF8StringEncoding];
 }
 
-- (NSData *_Nullable)decryptProfileData:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+- (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
-    return [OWSProfileManager decryptProfileData:encryptedData profileKey:profileKey];
+    return [self encryptProfileData:data profileKey:self.localProfileKey];
 }
 
-- (NSString *_Nullable)decryptProfileString:(NSData *_Nullable)encryptedData profileKey:(NSData *)profileKey
+- (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
 {
-    return [OWSProfileManager decryptProfileString:encryptedData profileKey:profileKey];
-}
+    if (name.length == 0) {
+        return nil;
+    }
+    
+    NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
+    if (nameData.length > kOWSProfileManager_NameDataLength) {
+        OWSFail(@"%@ name data is too long with length:%lu", self.tag, (unsigned long)nameData.length);
+        return nil;
+    }
 
-- (NSData *_Nullable)encryptProfileData:(NSData *_Nullable)data
-{
-    return [OWSProfileManager encryptProfileData:data profileKey:self.localProfileKey];
-}
+    NSUInteger paddingByteCount = kOWSProfileManager_NameDataLength - nameData.length;
 
-- (NSData *_Nullable)encryptProfileString:(NSString *_Nullable)value
-{
-    return [OWSProfileManager encryptProfileString:value profileKey:self.localProfileKey];
+    NSMutableData *paddedNameData = [nameData mutableCopy];
+    // Since we want all encrypted profile names to be the same length on the server, we use `increaseLengthBy`
+    // to pad out any remaining length with 0 bytes.
+    [paddedNameData increaseLengthBy:paddingByteCount];
+    OWSAssert(paddedNameData.length == kOWSProfileManager_NameDataLength);
+
+    return [self encryptProfileData:[paddedNameData copy] profileKey:self.localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache

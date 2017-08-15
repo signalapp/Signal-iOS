@@ -12,7 +12,11 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 @interface OWSSignalService : NSObject
 
-@property (nonatomic, readonly) AFHTTPSessionManager *HTTPSessionManager;
+/// For interacting with the Signal Service
+@property (nonatomic, readonly) AFHTTPSessionManager *signalServiceSessionManager;
+
+/// For uploading avatar assets.
+@property (nonatomic, readonly) AFHTTPSessionManager *cdnSessionManager;
 
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
 

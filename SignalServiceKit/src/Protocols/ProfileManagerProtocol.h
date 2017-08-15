@@ -3,12 +3,13 @@
 //
 
 @class TSThread;
+@class OWSAES128Key;
 
 @protocol ProfileManagerProtocol <NSObject>
 
-- (NSData *)localProfileKey;
+- (OWSAES128Key *)localProfileKey;
 
-- (void)setProfileKey:(NSData *)profileKey forRecipientId:(NSString *)recipientId;
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
 

@@ -120,6 +120,25 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertEqualObjects(expectedTruncatedDigest, truncatedDigest);
 }
 
+- (void)testGCMRoundTrip
+{
+    NSData *plainTextData = [@"Super🔥secret🔥test🔥data🏁🏁" dataUsingEncoding:NSUTF8StringEncoding];
+    // Sanity Check
+    XCTAssertEqual(39, plainTextData.length);
+    
+    OWSAES128Key *key = [OWSAES128Key new];
+    NSData *encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
+    
+    const NSUInteger ivLength = 12;
+    const NSUInteger tagLength = 16;
+    
+    XCTAssertEqual(ivLength + plainTextData.length + tagLength, encryptedData.length);
+    
+    NSData *decryptedData = [Cryptography decryptAESGCMWithData:encryptedData key:key];
+    XCTAssertEqual(39, decryptedData.length);
+    XCTAssertEqualObjects(plainTextData, decryptedData);
+    XCTAssertEqualObjects(@"Super🔥secret🔥test🔥data🏁🏁", [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding]);
+}
 
 @end
 

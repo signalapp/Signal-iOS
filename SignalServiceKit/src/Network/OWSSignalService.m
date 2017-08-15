@@ -154,19 +154,20 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 }
 
-- (AFHTTPSessionManager *)HTTPSessionManager
+- (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
         DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
-        return self.reflectorHTTPSessionManager;
+        return self.reflectorSignalServiceSessionManager;
     } else {
-        return self.defaultHTTPSessionManager;
+        return self.defaultSignalServiceSessionManager;
     }
 }
 
-- (AFHTTPSessionManager *)defaultHTTPSessionManager
+- (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
+    OWSAssert(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
@@ -178,7 +179,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)reflectorHTTPSessionManager
+- (AFHTTPSessionManager *)reflectorSignalServiceSessionManager
 {
     NSString *localNumber = [TSAccountManager localNumber];
     OWSAssert(localNumber.length > 0);
@@ -190,6 +191,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         frontingHost = self.manualCensorshipCircumventionDomain;
     };
     NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
+    OWSAssert(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
@@ -200,6 +202,29 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [sessionManager.requestSerializer setValue:self.censorshipConfiguration.reflectorHost forHTTPHeaderField:@"Host"];
 
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+    return sessionManager;
+}
+
+#pragma mark - Profile Uploading
+
+- (AFHTTPSessionManager *)cdnSessionManager
+{
+    if (self.isCensorshipCircumventionActive) {
+        DDLogInfo(@"%@ Profile uploading may not work when under censorship.", self.tag);
+    }
+
+    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
+    OWSAssert(baseURL);
+    
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    
+    // Default acceptable content headers are rejected by AWS
+    sessionManager.responseSerializer.acceptableContentTypes = nil;
 
     return sessionManager;
 }

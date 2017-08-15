@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Agora Não";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Aceitar novo número de segurança";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Aceitar Novo Número de Segurança ";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Adicionar";
@@ -11,7 +11,7 @@
 "ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Adicionar Contato";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Adicionar por número de telefone";
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Adicionar por Número de Telefone";
 
 /* Title for the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Adicionar Membro";
@@ -56,10 +56,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ no grupo %@: %@";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versão %@ está disponível na App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A versão %@ está disponível na App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Uma nova versão do Signal está disponível";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Uma Nova Versão do Signal Está Disponível";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Atualizar";
@@ -134,7 +134,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "O Signal não pode lidar com este arquivo na maneira como está. Tente zipá-lo antes de enviar.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Arquivo não suportado";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Arquivo Incompatível";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mensagem de voz";
@@ -197,7 +197,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquear %@?";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "O Signal necessita de acesso ao seu microfone para fazer chamadas e gravar mensagens de voz. Você pode conseguir esta permissão no app Ajustes.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "O Signal necessita de acesso ao seu microfone para fazer chamadas e gravar mensagens de voz. Você pode conseguir esta permissão no app Configurações.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Necessário acesso ao microfone";
@@ -230,7 +230,7 @@
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Agora não";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostrar configurações de privacidade";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostrar Configurações de Privacidade";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Retornar a chamada";
@@ -245,13 +245,13 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Erro";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selecione o país";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selecione o País";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparar com Área de Transferência";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para verificar quais dos seus contatos são usuários do Signal,  permita acesso aos contatos nos ajustes de sistema.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para verificar quais dos seus contatos são usuários do Signal,  permita acesso aos contatos nas Configurações de Sistema.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Isto irá zerar o aplicativo ao remover suas mensagens e desregistrá-lo com o servidor. A app irá fechar após a remoção dos dados.";
@@ -269,10 +269,10 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Conectar Novo Dispositivo";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@talvez tenha reinstalado ou trocado de dispositivo. Verifique seu número de segurança com ele para garantir privacidade.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@talvez tenha reinstalado ou trocado de aparelho. Verifique seu número de segurança com esse contato para garantir privacidade.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Número de segurança com %@ foi alterado";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Número de segurança com %@ mudou";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Confirmar";
@@ -299,7 +299,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar à Lista de Contatos";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloqueie este usuário";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear este usuário";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informações do contato";
@@ -338,7 +338,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar Novo Contato";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ativer o som";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ativar o som";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Restabelecer sua sessão lhe permitirá receber mensagens futuras de %@, mas não recuperará qualquer mensagem que já esteja corrompida.";
@@ -482,7 +482,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "O Signal não pôde se conectar à Internet. Tente outra rede Wi-Fi ou utilize dados móveis.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Mensagem falhou devido a falta de destinatários válidos.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "O envio da mensagem falhou devido à falta de destinatários válidos.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "O seu dispositivo não está mais cadastrado para o seu número de telefone. Você precisa remover e reinstalar o Signal.";
@@ -515,13 +515,13 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Número de segurança mudou.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Seu número de segurança com %@ foi alterado.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Seu número de segurança com %@ mudou.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Erro desconhecido,";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Número de segurança mudado. Clique para verificar.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Número de segurança mudou. Toque para verificar.";
 
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "Por enquanto o Signal somente pode estar ativo em um dispositivo móvel por número de telefone.";

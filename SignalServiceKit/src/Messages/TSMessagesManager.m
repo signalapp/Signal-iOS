@@ -516,7 +516,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
         id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKey:profileKey forRecipientId:recipientId];
+        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
     if (dataMessage.hasGroup) {
@@ -590,7 +590,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [callMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
         id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKey:profileKey forRecipientId:recipientId];
+        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
     if (callMessage.hasOffer) {

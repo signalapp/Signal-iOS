@@ -38,6 +38,7 @@
 		45B840211D988DA100F9E938 /* OWSReadReceiptTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */; };
 		45C6A09A1D2F029B007D8AC0 /* TSMessageTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */; };
 		45D7243F1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */; };
+		45DC30C71F3B69B7008C4378 /* OWSFakeProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 45DC30C61F3B69B7008C4378 /* OWSFakeProfileManager.m */; };
 		45E741B61E5D14E800735842 /* OWSIncomingMessageFinderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */; };
 		51520592F83F2440F2DE4D67 /* libPods-TSKitiOSTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8362AB8E280E0F64352F08A /* libPods-TSKitiOSTestApp.a */; };
 		6323E1F7730289398452E5C5 /* OWSFingerprintTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */; };
@@ -104,6 +105,8 @@
 		45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSReadReceiptTest.m; path = ../../../tests/Devices/OWSReadReceiptTest.m; sourceTree = "<group>"; };
 		45C6A0991D2F029B007D8AC0 /* TSMessageTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessageTest.m; path = ../../../tests/Messages/Interactions/TSMessageTest.m; sourceTree = "<group>"; };
 		45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisionerTest.m; path = ../../../tests/Devices/OWSDeviceProvisionerTest.m; sourceTree = "<group>"; };
+		45DC30C51F3B69B7008C4378 /* OWSFakeProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFakeProfileManager.h; path = ../../../tests/TestSupport/Fakes/OWSFakeProfileManager.h; sourceTree = "<group>"; };
+		45DC30C61F3B69B7008C4378 /* OWSFakeProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFakeProfileManager.m; path = ../../../tests/TestSupport/Fakes/OWSFakeProfileManager.m; sourceTree = "<group>"; };
 		45E741B51E5D14E800735842 /* OWSIncomingMessageFinderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSIncomingMessageFinderTest.m; path = ../../../tests/Messages/OWSIncomingMessageFinderTest.m; sourceTree = "<group>"; };
 		6323E02A33682A8838FE3F27 /* OWSFingerprintTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSFingerprintTest.m; path = ../../../tests/Security/OWSFingerprintTest.m; sourceTree = "<group>"; };
 		6323E3E540CF763D71DACB59 /* SignalRecipientTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalRecipientTest.m; path = ../../tests/Contacts/SignalRecipientTest.m; sourceTree = "<group>"; };
@@ -157,6 +160,8 @@
 		453E1FD51DA83DDC00DDD7B7 /* Fakes */ = {
 			isa = PBXGroup;
 			children = (
+				45DC30C51F3B69B7008C4378 /* OWSFakeProfileManager.h */,
+				45DC30C61F3B69B7008C4378 /* OWSFakeProfileManager.m */,
 				453E1FD61DA83E1000DDD7B7 /* OWSFakeContactsManager.h */,
 				453E1FD71DA83E1000DDD7B7 /* OWSFakeContactsManager.m */,
 				453E1FD91DA83EFB00DDD7B7 /* OWSFakeContactsUpdater.h */,
@@ -573,6 +578,7 @@
 				45AE484C1E072871004D96C2 /* OWSFakeCallMessageHandler.m in Sources */,
 				45AE48491E072711004D96C2 /* OWSUnitTestEnvironment.m in Sources */,
 				459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */,
+				45DC30C71F3B69B7008C4378 /* OWSFakeProfileManager.m in Sources */,
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				453E1FDB1DA83EFB00DDD7B7 /* OWSFakeContactsUpdater.m in Sources */,
 				452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */,

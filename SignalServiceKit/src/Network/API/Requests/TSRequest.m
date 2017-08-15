@@ -1,9 +1,5 @@
 //
-//  TSRequest.m
-//  TextSecureiOS
-//
-//  Created by Frederic Jacobs on 9/27/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -14,6 +10,7 @@
 @implementation TSRequest
 
 - (id)initWithURL:(NSURL *)URL {
+    OWSAssert(URL);
     self = [super initWithURL:URL
                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
               timeoutInterval:textSecureHTTPTimeOut];
@@ -43,7 +40,4 @@
     [self.parameters addEntriesFromDictionary:@{ @"Authorization" : [TSStorageManager serverAuthToken] }];
 }
 
-- (BOOL)usingExternalServer {
-    return NO;
-}
 @end

@@ -114,10 +114,9 @@ class ProfileFetcherJob: NSObject {
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
         verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
-        OWSProfileManager.shared().updateProfile(forRecipientId : signalServiceProfile.recipientId,
-                                                 profileNameEncrypted : signalServiceProfile.profileNameEncrypted,
-                                                 avatarUrlData : signalServiceProfile.avatarUrlData,
-                                                 avatarDigest : signalServiceProfile.avatarDigest)
+        OWSProfileManager.shared().updateProfile(forRecipientId: signalServiceProfile.recipientId,
+                                                 profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
+                                                 avatarUrlPath: signalServiceProfile.avatarUrlPath)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -139,15 +138,12 @@ struct SignalServiceProfile {
         case invalid(description: String)
         case invalidIdentityKey(description: String)
         case invalidProfileName(description: String)
-        case invalidAvatarUrl(description: String)
-        case invalidAvatarDigest(description: String)
     }
 
     public let recipientId: String
     public let identityKey: Data
     public let profileNameEncrypted: Data?
-    public let avatarUrlData: Data?
-    public let avatarDigest: Data?
+    public let avatarUrlPath: String?
 
     init(recipientId: String, rawResponse: Any?) throws {
         self.recipientId = recipientId
@@ -167,34 +163,18 @@ struct SignalServiceProfile {
             throw ValidationError.invalidIdentityKey(description: "\(TAG) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
         }
 
-        var profileNameEncrypted: Data? = nil
         if let profileNameString = responseDict["name"] as? String {
             guard let data = Data(base64Encoded: profileNameString) else {
                 throw ValidationError.invalidProfileName(description: "\(TAG) unable to parse profile name: \(profileNameString)")
             }
-            profileNameEncrypted = data
+            self.profileNameEncrypted = data
+        } else {
+            self.profileNameEncrypted = nil
         }
 
-        var avatarUrlData: Data? = nil
-        if let avatarUrlString = responseDict["avatar"] as? String {
-            guard let data = Data(base64Encoded: avatarUrlString) else {
-                throw ValidationError.invalidAvatarUrl(description: "\(TAG) unable to parse avatar URL: \(avatarUrlString)")
-            }
-            avatarUrlData = data
-        }
-
-        var avatarDigest: Data? = nil
-        if let avatarDigestString = responseDict["avatarDigest"] as? String {
-            guard let data = Data(base64Encoded: avatarDigestString) else {
-                throw ValidationError.invalidAvatarDigest(description: "\(TAG) unable to parse avatar digest: \(avatarDigestString)")
-            }
-            avatarDigest = data
-        }
+        self.avatarUrlPath = responseDict["avatar"] as? String
 
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
         self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
-        self.profileNameEncrypted = profileNameEncrypted
-        self.avatarUrlData = avatarUrlData
-        self.avatarDigest = avatarDigest
     }
 }
