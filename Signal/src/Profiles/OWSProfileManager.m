@@ -947,9 +947,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
             [self saveUserProfile:userProfile];
 
-            [ProfileFetcherJob runWithRecipientId:recipientId
-                                   networkManager:self.networkManager
-                                 ignoreThrottling:ignoreThrottling];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [ProfileFetcherJob runWithRecipientId:recipientId
+                                       networkManager:self.networkManager
+                                     ignoreThrottling:ignoreThrottling];
+            });
         }
     });
 }
