@@ -94,7 +94,7 @@ NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManag
 /// The max bytes for a user's profile name, encoded in UTF8.
 /// Before encrypting and submitting we NULL pad the name data to this length.
 static const NSUInteger kOWSProfileManager_NameDataLength = 26;
-const NSUInteger kOWSProfileManager_MaxAvatarWidth = 640;
+const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 @interface OWSProfileManager ()
 
@@ -403,13 +403,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarWidth = 640;
 {
     NSUInteger kMaxAvatarBytes = 5 * 1000 * 1000;
 
-    if (image.size.width != kOWSProfileManager_MaxAvatarWidth
-        || image.size.height != kOWSProfileManager_MaxAvatarWidth) {
+    if (image.size.width != kOWSProfileManager_MaxAvatarDiameter
+        || image.size.height != kOWSProfileManager_MaxAvatarDiameter) {
         // To help ensure the user is being shown the same cropping of their avatar as
         // everyone else will see, we want to be sure that the image was resized before this point.
         OWSFail(@"Avatar image should have been resized before trying to upload");
-        image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarWidth,
-                                                       kOWSProfileManager_MaxAvatarWidth)];
+        image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
+                                                       kOWSProfileManager_MaxAvatarDiameter)];
     }
 
     NSData *_Nullable data;

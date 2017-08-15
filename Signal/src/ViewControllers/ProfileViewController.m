@@ -280,8 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(image);
 
-    self.avatar = [image
-        resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarWidth, kOWSProfileManager_MaxAvatarWidth)];
+    self.avatar = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
+                                                         kOWSProfileManager_MaxAvatarDiameter)];
 }
 
 - (UIViewController *)fromViewController
