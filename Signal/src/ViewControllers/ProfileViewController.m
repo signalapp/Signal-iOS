@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) AvatarImageView *avatarView;
 
+@property (nonatomic) UIImageView *cameraImageView;
+
 @property (nonatomic) UILabel *avatarLabel;
 
 @property (nonatomic, nullable) UIImage *avatar;
@@ -64,6 +66,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     _avatarView = [AvatarImageView new];
 
+    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+    cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    _cameraImageView.tintColor = [UIColor ows_materialBlueColor];
+
     _avatarLabel = [UILabel new];
     _avatarLabel.font = [UIFont ows_regularFontWithSize:14.f];
     _avatarLabel.textColor = [UIColor ows_materialBlueColor];
@@ -99,12 +106,16 @@ NS_ASSUME_NONNULL_BEGIN
         cell.contentView.preservesSuperviewLayoutMargins = YES;
 
         AvatarImageView *avatarView = weakSelf.avatarView;
-        [weakSelf updateAvatarView];
+        UIImageView *cameraImageView = weakSelf.cameraImageView;
         [cell.contentView addSubview:avatarView];
+        [cell.contentView addSubview:cameraImageView];
+        [weakSelf updateAvatarView];
         [avatarView autoHCenterInSuperview];
         [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarTopMargin];
         [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
         [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
+        [cameraImageView autoPinTrailingToView:avatarView];
+        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
 
         UILabel *avatarLabel = weakSelf.avatarLabel;
         [cell.contentView addSubview:avatarLabel];
@@ -265,7 +276,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.avatar ?: [UIImage imageNamed:@"profile_avatar_default"]);
+    self.avatarView.image = (self.avatar
+            ?: [[UIImage imageNamed:@"profile_avatar_default"]
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+    self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
+    self.cameraImageView.hidden = self.avatar != nil;
 }
 
 #pragma mark - AvatarViewHelperDelegate

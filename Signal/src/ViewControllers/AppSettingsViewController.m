@@ -97,41 +97,14 @@
     OWSTableSection *section = [OWSTableSection new];
 
     __weak AppSettingsViewController *weakSelf = self;
+
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-
-        UILabel *titleLabel = [UILabel new];
-        titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
-        titleLabel.textColor = [UIColor blackColor];
-        titleLabel.text = NSLocalizedString(@"REGISTERED_NUMBER_TEXT", @"");
-        titleLabel.textAlignment = NSTextAlignmentCenter;
-
-        UILabel *subtitleLabel = [UILabel new];
-        subtitleLabel.font = [UIFont ows_mediumFontWithSize:15.f];
-        subtitleLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-        subtitleLabel.text =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
-        subtitleLabel.textAlignment = NSTextAlignmentCenter;
-
-        UIView *stack = [UIView new];
-        [cell.contentView addSubview:stack];
-        [stack autoCenterInSuperview];
-
-        [stack addSubview:titleLabel];
-        [stack addSubview:subtitleLabel];
-        [titleLabel autoPinWidthToSuperview];
-        [subtitleLabel autoPinWidthToSuperview];
-        [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-        [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
+        return [weakSelf profileHeaderCell];
     }
-                                           customRowHeight:96.f
-                                               actionBlock:nil]];
+                         customRowHeight:100.f
+                         actionBlock:^{
+                             [weakSelf showProfile];
+                         }]];
 
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
         [section
@@ -170,12 +143,6 @@
         }
                                                    actionBlock:nil]];
     }
-
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.")
-                                    actionBlock:^{
-                                        [weakSelf showProfile];
-                                    }]];
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
@@ -236,6 +203,89 @@
     [contents addSection:section];
 
     self.contents = contents;
+}
+
+- (UITableViewCell *)profileHeaderCell
+{
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.preservesSuperviewLayoutMargins = YES;
+    cell.contentView.preservesSuperviewLayoutMargins = YES;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+    const NSUInteger kAvatarSize = 68;
+    // TODO: Replace this icon.
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *avatarImage = (localProfileAvatarImage
+            ?: [[UIImage imageNamed:@"profile_avatar_default"]
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+    OWSAssert(avatarImage);
+
+    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+    if (!localProfileAvatarImage) {
+        avatarView.tintColor = [UIColor colorWithRGBHex:0x888888];
+    }
+    [cell.contentView addSubview:avatarView];
+    [avatarView autoVCenterInSuperview];
+    [avatarView autoPinLeadingToSuperView];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+    if (!localProfileAvatarImage) {
+        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+        cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        cameraImageView.tintColor = [UIColor ows_materialBlueColor];
+        [cell.contentView addSubview:cameraImageView];
+        [cameraImageView autoPinTrailingToView:avatarView];
+        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    }
+
+    UIView *nameView = [UIView containerView];
+    [cell.contentView addSubview:nameView];
+    [nameView autoVCenterInSuperview];
+    [nameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+
+    UILabel *titleLabel = [UILabel new];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    if (localProfileName.length > 0) {
+        titleLabel.text = localProfileName;
+        titleLabel.textColor = [UIColor blackColor];
+        titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
+    } else {
+        titleLabel.text = NSLocalizedString(
+            @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
+        titleLabel.textColor = [UIColor ows_materialBlueColor];
+        titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
+    }
+    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [nameView addSubview:titleLabel];
+    [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [titleLabel autoPinWidthToSuperview];
+
+    const CGFloat kSubtitlePointSize = 12.f;
+    UILabel *subtitleLabel = [UILabel new];
+    subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+    subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+    subtitleLabel.attributedText = [[NSAttributedString alloc]
+        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
+                                                                                                       localNumber]]];
+    subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [nameView addSubview:subtitleLabel];
+    [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
+    [subtitleLabel autoPinLeadingToSuperView];
+    [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    UIImage *disclosureImage = [UIImage imageNamed:(self.view.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+    OWSAssert(disclosureImage);
+    UIImageView *disclosureButton =
+        [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+    disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
+    [cell.contentView addSubview:disclosureButton];
+    [disclosureButton autoVCenterInSuperview];
+    [disclosureButton autoPinTrailingToSuperView];
+    [disclosureButton autoPinLeadingToTrailingOfView:nameView margin:16.f];
+
+    return cell;
 }
 
 - (void)showInviteFlow

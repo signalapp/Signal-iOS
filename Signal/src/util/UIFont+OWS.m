@@ -87,4 +87,14 @@
     }
 }
 
++ (UIFont *)ows_dynamicTypeHeadlineFont
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    } else {
+        // See ows_dynamicTypeTitle2Font.
+        return [self ows_regularFontWithSize:17.0];
+    }
+}
+
 @end
