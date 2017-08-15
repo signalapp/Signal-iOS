@@ -412,13 +412,9 @@ NS_ASSUME_NONNULL_BEGIN
         CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
             [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
         newContact.phoneNumbers = @[ labeledPhoneNumber ];
-        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
 
-        UIImage *_Nullable profileImage = [self.profileManager profileAvatarForRecipientId:recipientId];
-        if (profileImage) {
-            // TODO get raw jpg data from profileManager to avoid recompress.
-            newContact.imageData = UIImageJPEGRepresentation(profileImage, 0.9);
-        }
+        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
+        newContact.imageData = [self.profileManager profileAvatarDataForRecipientId:recipientId];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

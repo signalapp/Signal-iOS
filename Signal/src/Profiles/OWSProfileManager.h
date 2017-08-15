@@ -57,6 +57,10 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
 
+// Reads raw avatar data from disk if available. Uncached, so shouldn't be used frequently,
+// but useful to get the raw image data for populating cnContact.imageData without lossily re-encoding.
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
+
 - (void)refreshProfileForRecipientId:(NSString *)recipientId;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
