@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * NOTE: This method calls `[UIUtil applyDefaultSystemAppearence]`.
- * When using this method, you must call `[UIUtil applySignalAppearence]` once contact editing is   finished;
+ * When using this method, you must call `[UIUtil applySignalAppearence]` once contact editing is finished;
  */
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController

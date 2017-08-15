@@ -5,6 +5,7 @@
 #import "ContactsViewHelper.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
+#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -28,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
+@property (nonatomic) OWSProfileManager *profileManager;
 
 @end
 
@@ -49,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
     _contactsManager = [Environment getCurrent].contactsManager;
+    _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.
     self.shouldNotifyDelegateOfUpdatedContacts = YES;
@@ -409,6 +412,13 @@ NS_ASSUME_NONNULL_BEGIN
         CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
             [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
         newContact.phoneNumbers = @[ labeledPhoneNumber ];
+        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
+
+        UIImage *_Nullable profileImage = [self.profileManager profileAvatarForRecipientId:recipientId];
+        if (profileImage) {
+            // TODO get raw jpg data from profileManager to avoid recompress.
+            newContact.imageData = UIImageJPEGRepresentation(profileImage, 0.9);
+        }
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }
