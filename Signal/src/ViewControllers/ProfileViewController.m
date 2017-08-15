@@ -3,9 +3,12 @@
 //
 
 #import "ProfileViewController.h"
+#import "AppDelegate.h"
 #import "AvatarViewHelper.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
+#import "SignalsNavigationController.h"
+#import "SignalsViewController.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -42,8 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
     self.title = NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.");
-    self.navigationItem.leftBarButtonItem =
-        [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
@@ -51,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     _avatar = [OWSProfileManager.sharedManager localProfileAvatarImage];
 
     [self createViews];
+    [self updateNavigationItem];
 }
 
 - (void)createViews
@@ -164,11 +166,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)backButtonPressed:(id)sender
 {
+    [self leaveViewCheckingForUnsavedChanges:^{
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+}
+
+- (void)leaveViewCheckingForUnsavedChanges:(void (^_Nonnull)())leaveViewBlock
+{
+    OWSAssert(leaveViewBlock);
+
     [self.nameTextField resignFirstResponder];
 
     if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
-        [self.navigationController popViewControllerAnimated:YES];
+        leaveViewBlock();
         return;
     }
 
@@ -185,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
-                                             [self.navigationController popViewControllerAnimated:YES];
+                                             leaveViewBlock();
                                          }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
                                                    style:UIAlertActionStyleCancel
@@ -204,15 +215,43 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _hasUnsavedChanges = hasUnsavedChanges;
 
-    if (hasUnsavedChanges) {
-        self.navigationItem.rightBarButtonItem = (self.hasUnsavedChanges
-                ? [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_GROUP_UPDATE_BUTTON",
-                                                             @"The title for the 'update group' button.")
-                                                   style:UIBarButtonItemStylePlain
-                                                  target:self
-                                                  action:@selector(updatePressed)]
-                : nil);
+    [self updateNavigationItem];
+}
+
+- (void)updateNavigationItem
+{
+    // The navigation bar is hidden in the registration workflow.
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+
+    UIBarButtonItem *rightItem = nil;
+    switch (self.profileViewMode) {
+        case ProfileViewMode_AppSettings:
+            self.navigationItem.leftBarButtonItem =
+                [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
+            break;
+        case ProfileViewMode_Registration:
+        case ProfileViewMode_UpgradeOrNag:
+            // Registration and "upgrade or nag" mode don't need a back button.
+            self.navigationItem.hidesBackButton = YES;
+
+            // Registration and "upgrade or nag" mode have "skip" or "update".
+            //
+            // TODO: Should this be some other verb instead of "update"?
+            rightItem = [[UIBarButtonItem alloc]
+                initWithTitle:NSLocalizedString(@"NAVIGATION_ITEM_SKIP_BUTTON", @"A button to skip a view.")
+                        style:UIBarButtonItemStylePlain
+                       target:self
+                       action:@selector(skipPressed)];
+            break;
     }
+    if (self.hasUnsavedChanges) {
+        rightItem = [[UIBarButtonItem alloc]
+            initWithTitle:NSLocalizedString(@"EDIT_GROUP_UPDATE_BUTTON", @"The title for the 'update group' button.")
+                    style:UIBarButtonItemStylePlain
+                   target:self
+                   action:@selector(updatePressed)];
+    }
+    self.navigationItem.rightBarButtonItem = rightItem;
 }
 
 - (void)updatePressed
@@ -239,8 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
                              success:^{
                                  [alertController dismissViewControllerAnimated:NO
                                                                      completion:^{
-                                                                         [weakSelf.navigationController
-                                                                             popViewControllerAnimated:YES];
+                                                                         [weakSelf updateProfileCompleted];
                                                                      }];
                              }
                              failure:^{
@@ -263,6 +301,44 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)normalizedProfileName
 {
     return [self.nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+}
+
+- (void)updateProfileCompleted
+{
+    [self profileCompletedOrSkipped];
+}
+
+- (void)skipPressed
+{
+    [self leaveViewCheckingForUnsavedChanges:^{
+        [self profileCompletedOrSkipped];
+    }];
+}
+
+- (void)profileCompletedOrSkipped
+{
+    switch (self.profileViewMode) {
+        case ProfileViewMode_AppSettings:
+            [self.navigationController popViewControllerAnimated:YES];
+            break;
+        case ProfileViewMode_Registration:
+            [self showHomeView];
+            break;
+        case ProfileViewMode_UpgradeOrNag:
+            [self dismissViewControllerAnimated:YES completion:nil];
+            break;
+    }
+}
+
+- (void)showHomeView
+{
+    SignalsViewController *homeView = [SignalsViewController new];
+    homeView.newlyRegisteredUser = YES;
+    SignalsNavigationController *navigationController =
+        [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navigationController;
+    OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
 }
 
 #pragma mark - UITextFieldDelegate

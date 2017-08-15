@@ -861,6 +861,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
 
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
+
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check you're online and try again.";
 
