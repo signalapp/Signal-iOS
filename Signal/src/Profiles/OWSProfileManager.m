@@ -413,17 +413,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 
     NSData *_Nullable data;
-    for (NSUInteger attempts = 0; attempts < 5; attempts++) {
-        CGFloat quality = (CGFloat)0.95 - attempts * (CGFloat)0.1;
-        data = UIImageJPEGRepresentation(image, quality);
-        if (data.length <= kMaxAvatarBytes) {
-            return data;
-        } else {
-            // This for-loop is really just paranoia. Our avatar dimensions are so small that
-            // it's incredibly unlikely we wouldn't be able to fit our profile photo with even
-            // our highest quality.
-            OWSFail(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
-        }
+    if (data.length > kMaxAvatarBytes) {
+        // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't be able to fit our profile
+        // photo. e.g. generating pure noise at our resolution compresses to ~200k.
+        OWSFail(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
     }
 
     return data;
