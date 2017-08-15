@@ -8,6 +8,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface Cryptography (TestingPrivateMethods)
+
++ (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
+                                                cipherText:(NSData *)cipherText
+                                                   authTag:(NSData *)authTagFromEncrypt
+                                                       key:(OWSAES128Key *)key;
+
+@end
+
 @interface CryptographyTests : XCTestCase
 
 @end
@@ -127,17 +136,69 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertEqual(39, plainTextData.length);
     
     OWSAES128Key *key = [OWSAES128Key new];
-    NSData *encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
-    
+    NSData *_Nullable encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
+
     const NSUInteger ivLength = 12;
     const NSUInteger tagLength = 16;
     
     XCTAssertEqual(ivLength + plainTextData.length + tagLength, encryptedData.length);
-    
-    NSData *decryptedData = [Cryptography decryptAESGCMWithData:encryptedData key:key];
+
+    NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithData:encryptedData key:key];
+    XCTAssert(decryptedData != nil);
     XCTAssertEqual(39, decryptedData.length);
     XCTAssertEqualObjects(plainTextData, decryptedData);
     XCTAssertEqualObjects(@"Super🔥secret🔥test🔥data🏁🏁", [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding]);
+}
+
+- (void)testGCMWithBadTag
+{
+    NSData *plainTextData = [@"Super🔥secret🔥test🔥data🏁🏁" dataUsingEncoding:NSUTF8StringEncoding];
+    // Sanity Check
+    XCTAssertEqual(39, plainTextData.length);
+
+    OWSAES128Key *key = [OWSAES128Key new];
+    NSData *_Nullable encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
+
+    const NSUInteger ivLength = 12;
+    const NSUInteger tagLength = 16;
+
+    XCTAssertEqual(ivLength + plainTextData.length + tagLength, encryptedData.length);
+
+    // Logic to slice up encryptedData copied from `[Cryptography decryptAESGCMWithData:key:]`
+
+    // encryptedData layout: initializationVector || cipherText || authTag
+    NSUInteger cipherTextLength = encryptedData.length - ivLength - tagLength;
+
+    NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, ivLength)];
+    NSData *cipherText = [encryptedData subdataWithRange:NSMakeRange(ivLength, cipherTextLength)];
+    NSData *authTag = [encryptedData subdataWithRange:NSMakeRange(ivLength + cipherTextLength, tagLength)];
+
+    NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithInitializationVector:initializationVector
+                                                                               cipherText:cipherText
+                                                                                  authTag:authTag
+                                                                                      key:key];
+
+    // Before we corrupt the tag, make sure we can decrypt the text as a sanity check to ensure we divided up the
+    // encryptedData correctly.
+    XCTAssert(decryptedData != nil);
+    XCTAssertEqualObjects(
+        @"Super🔥secret🔥test🔥data🏁🏁", [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding]);
+
+    // Now that we know it decrypts, try again with a bogus authTag
+    NSMutableData *bogusAuthTag = [authTag mutableCopy];
+
+    // Corrupt one byte in the bogusAuthTag
+    uint8_t flippedByte;
+    [bogusAuthTag getBytes:&flippedByte length:1];
+    flippedByte = flippedByte ^ 0xff;
+    [bogusAuthTag replaceBytesInRange:NSMakeRange(0, 1) withBytes:&flippedByte];
+
+    decryptedData = [Cryptography decryptAESGCMWithInitializationVector:initializationVector
+                                                             cipherText:cipherText
+                                                                authTag:bogusAuthTag
+                                                                    key:key];
+
+    XCTAssertNil(decryptedData, @"Should have failed to decrypt");
 }
 
 @end

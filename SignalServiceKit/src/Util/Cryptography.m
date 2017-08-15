@@ -410,22 +410,23 @@ const NSUInteger kAES128_KeyByteLength = 16;
     // Comment was:
     //     tagLength is actual an input <rdar://problem/30660074>
     size_t tagLength = kAESGCM128_TagLength;
-    
-    CCCryptorStatus status = CCCryptorGCM(kCCEncrypt, // CCOperation 	op,				/* kCCEncrypt, kCCDecrypt */
-                                          kCCAlgorithmAES128, // CCAlgorithm		alg,
-                                          key.keyData.bytes, // const void 		*key,			/* raw key material */
-                                          key.keyData.length, // size_t 			keyLength,
-                                          initializationVector.bytes, // const void 		*iv,
-                                          initializationVector.length, // size_t 			ivLen,
-                                          NULL, // const void 		*aData,
-                                          0, // size_t 			aDataLen,
-                                          plainTextData.bytes, // const void 		*dataIn,
-                                          plainTextData.length, // size_t 			dataInLength,
-                                          cipherTextBytes, // void 			*dataOut,
-                                          authTagBytes, // const void 		*tag,
-                                          &tagLength //size_t 			*tagLength)
-                                          );
-    
+
+    CCCryptorStatus status
+        = CCCryptorGCM(kCCEncrypt,       // CCOperation op, /* kCCEncrypt, kCCDecrypt */
+            kCCAlgorithmAES128,          // CCAlgorithm alg,
+            key.keyData.bytes,           // const void *key, /* raw key material */
+            key.keyData.length,          // size_t keyLength,
+            initializationVector.bytes,  // const void *iv,
+            initializationVector.length, // size_t ivLen,
+            NULL,                        // const void *aData,
+            0,                           // size_t aDataLen,
+            plainTextData.bytes,         // const void *dataIn,
+            plainTextData.length,        // size_t dataInLength,
+            cipherTextBytes,             // void *dataOut,
+            authTagBytes,                // const void *tag,
+            &tagLength                   // size_t *tagLength)
+            );
+
     if (status != kCCSuccess) {
         OWSFail(@"CCCryptorGCM encrypt failed with status: %d", status);
         free(cipherTextBytes);
@@ -452,15 +453,31 @@ const NSUInteger kAES128_KeyByteLength = 16;
     // encryptedData layout: initializationVector || cipherText || authTag
     NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, kAESGCM128_IVLength)];
     NSData *cipherText = [encryptedData subdataWithRange:NSMakeRange(kAESGCM128_IVLength, cipherTextLength)];
-    NSData *authTag = [encryptedData subdataWithRange:NSMakeRange(kAESGCM128_IVLength + cipherTextLength,
-                                                                  kAESGCM128_TagLength)];
+    NSData *authTag =
+        [encryptedData subdataWithRange:NSMakeRange(kAESGCM128_IVLength + cipherTextLength, kAESGCM128_TagLength)];
 
-    void * plainTextBytes = malloc(cipherTextLength);
+    return
+        [self decryptAESGCMWithInitializationVector:initializationVector cipherText:cipherText authTag:authTag key:key];
+}
+
++ (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
+                                                cipherText:(NSData *)cipherText
+                                                   authTag:(NSData *)authTagFromEncrypt
+                                                       key:(OWSAES128Key *)key
+{
+    void *plainTextBytes = malloc(cipherText.length);
     if (plainTextBytes == NULL) {
         OWSFail(@"Failed to malloc plainTextBytes");
         return nil;
     }
-    
+
+    void *decryptAuthTagBytes = malloc(kAESGCM128_TagLength);
+    if (decryptAuthTagBytes == NULL) {
+        OWSFail(@"Failed to malloc decryptAuthTagBytes");
+        free(plainTextBytes);
+        return nil;
+    }
+
     // NOTE: Since `tagLength` is an input parameter, it seems weird that the signature for tagLength is a `size_t*` rather than just a `size_t`.
     //
     // I found a vague reference in the Safari repository implying that this may be a bug:
@@ -470,28 +487,36 @@ const NSUInteger kAES128_KeyByteLength = 16;
     //     tagLength is actual an input <rdar://problem/30660074>
     size_t tagLength = kAESGCM128_TagLength;
 
-    CCCryptorStatus status = CCCryptorGCM(kCCDecrypt, // CCOperation 	op,				/* kCCEncrypt, kCCDecrypt */
-                                          kCCAlgorithmAES128, // CCAlgorithm		alg,
-                                          key.keyData.bytes, // const void 		*key,			/* raw key material */
-                                          key.keyData.length, // size_t 			keyLength,
-                                          initializationVector.bytes, // const void 		*iv,
-                                          initializationVector.length, // size_t 			ivLen,
-                                          NULL, // const void 		*aData,
-                                          0, // size_t 			aDataLen,
-                                          cipherText.bytes, // const void 		*dataIn,
-                                          cipherText.length, // size_t 			dataInLength,
-                                          plainTextBytes, // void 			*dataOut,
-                                          authTag.bytes, // const void 		*tag,
-                                          &tagLength //size_t 			*tagLength)
-                                          );
-    
+    CCCryptorStatus status
+        = CCCryptorGCM(kCCDecrypt,       // CCOperation op, /* kCCEncrypt, kCCDecrypt */
+            kCCAlgorithmAES128,          // CCAlgorithm alg,
+            key.keyData.bytes,           // const void *key,	/* raw key material */
+            key.keyData.length,          // size_t keyLength,
+            initializationVector.bytes,  // const void *iv,
+            initializationVector.length, // size_t ivLen,
+            NULL,                        // const void *aData,
+            0,                           // size_t aDataLen,
+            cipherText.bytes,            // const void *dataIn,
+            cipherText.length,           // size_t dataInLength,
+            plainTextBytes,              // void *dataOut,
+            decryptAuthTagBytes,         // const void *tag,
+            &tagLength                   // size_t *tagLength
+            );
+
+    NSData *decryptAuthTag = [NSData dataWithBytesNoCopy:decryptAuthTagBytes length:tagLength freeWhenDone:YES];
+    if (![decryptAuthTag ows_constantTimeIsEqualToData:authTagFromEncrypt]) {
+        OWSFail(@"Auth tags don't match given tag: %@ computed tag: %@", authTagFromEncrypt, decryptAuthTag);
+        free(plainTextBytes);
+        return nil;
+    }
+
     if (status != kCCSuccess) {
         OWSFail(@"CCCryptorGCM decrypt failed with status: %d", status);
         free(plainTextBytes);
         return nil;
     }
-    
-    return [NSData dataWithBytesNoCopy:plainTextBytes length:cipherTextLength freeWhenDone:YES];
+
+    return [NSData dataWithBytesNoCopy:plainTextBytes length:cipherText.length freeWhenDone:YES];
 }
 
 #pragma mark - Logging
