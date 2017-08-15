@@ -16,8 +16,14 @@
 /* Title for the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "إضافة عضو";
 
+/* Message shown in conversation view that offers to share your profile with a group. */
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this group?";
+
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "هل ترغب في إضافة هذا المستخدم لجهات الأتصال الخاصه بك؟";
+"ADD_TO_CONTACTS_OFFER" = "هل ترغب في إضافة هذا المستخدم لجهات الاتصال الخاصة بك؟";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this user?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -339,6 +345,21 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "رفع الكتم";
+
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
+
+/* Indicates that user's profile has been shared with a user. */
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "This user can see your profile.";
+
+/* Button to confirm that user wants to share their profile with a user or group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Share Profile";
+
+/* Action that shares user profile with a group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Share Your Profile";
+
+/* Action that shares user profile with a user. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
@@ -811,7 +832,7 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal للوصول للكاميرا";
 
 /* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "اتصال لم يرد عليه لأن رقم الأمان الخاص بهم قد تغير.";
+"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "مكالمة لم يرد عليه لأن رقم الأمان الخاص بهم قد تغير.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "مكالمة فائتة من %@";
@@ -898,7 +919,7 @@
 "NOTIFICATION_SEND_FAILED" = "فشل إرسال رسالتك إلى %@.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "بسبب وجودد بعض الأعطاب المعروفة في إطار الإشعارات الخاص بأبل, سيتم إظهار الإشعارات فقط في حالة إستقبال الرسائل خلال 30 ثانية من إرسالها. فلربما يكون هناك عدم دقة في منظومة الإشعارات.";
+"NOTIFICATIONS_FOOTER_WARNING" = "بسبب وجودد بعض الأعطال المعروفة في إطار الإشعارات الخاص بأبل, سيتم إظهار الإشعارات فقط في حالة إستقبال الرسائل خلال 30 ثانية من إرسالها. فلربما يكون هناك عدم دقة في منظومة الإشعارات.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "عدم إظهار اسم المرسل او الرسالة";
@@ -1035,6 +1056,30 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "تقدم";
+
+/* Action Sheet title prompting the user for a profile avatar */
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
+
+/* Instructions for how to change the profile avatar. */
+"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
+
+/* Header title for the profile avatar field of the profile view. */
+"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
+
+/* Label for action that clear's the user's profile avatar */
+"PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+
+/* Error message shown when a profile update fails. */
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
+
+/* Default text for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+
+/* Label for the profile name field of the profile view. */
+"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+
+/* Title for the profile view. */
+"PROFILE_VIEW_TITLE" = "Profile";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_MARKREAD" = "وضع علامة \"مقروء\"";
@@ -1430,10 +1475,10 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "تصفح بسلاسة لتعرف الإجابة ببساطة";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "تدعم Signal حالياً الاتصال الفيديوي الآمن. إِبدأ بمجرد إجراء الاتصال الهاتفي المعتاد، وانقر على زرّ الكاميرا، ثم لوِّح لتلقي التحية. ";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "تدعم Signal حالياً إتصال الفيديو الآمن. إِبدأ بمجرد إجراء الاتصال الهاتفي المعتاد، وانقر على زرّ الكاميرا، ثم لوِّح لتلقي التحية. ";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "أهلاً بالاتصالات الفيديوية الآمنة! ";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "أهلاً بإتصالات الفيديو الآمنة! ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "سيتطلب تطبيق سجنال قريبا نظام التشغيل iOS 9 و الإصدارات الأحدث. يرجى ترقية نظام التشغيل في إعدادات التطبيق >> عام >> تحديث البرامج.";
@@ -1522,4 +1567,4 @@
 
 "accessory_button_accessibility_label" = "مشاركة الوسائط";
 
-"new_message_received_accessibility_announcement" = "وصلت رسالة جديدة";
+"new_message_received_accessibility_announcement" = "لديك رسالة جديدة";
