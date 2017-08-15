@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
+extern const NSUInteger kOWSProfileManager_MaxAvatarWidth;
+
 @class TSThread;
 @class OWSAES128Key;
 

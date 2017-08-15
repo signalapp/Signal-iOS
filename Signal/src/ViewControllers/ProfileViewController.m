@@ -280,9 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(image);
 
-    // TODO: Crop to square and possible resize.
-
-    self.avatar = image;
+    self.avatar = [image
+        resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarWidth, kOWSProfileManager_MaxAvatarWidth)];
 }
 
 - (UIViewController *)fromViewController

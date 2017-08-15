@@ -94,6 +94,7 @@ NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManag
 /// The max bytes for a user's profile name, encoded in UTF8.
 /// Before encrypting and submitting we NULL pad the name data to this length.
 static const NSUInteger kOWSProfileManager_NameDataLength = 26;
+const NSUInteger kOWSProfileManager_MaxAvatarWidth = 640;
 
 @interface OWSProfileManager ()
 
@@ -381,7 +382,7 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (avatar) {
-            NSData *_Nullable data = UIImageJPEGRepresentation(avatar, 1.f);
+            NSData *data = [self processedImageDataForRawAvatar:avatar];
             OWSAssert(data);
             if (data) {
                 NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
@@ -396,6 +397,36 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
         }
         failureBlock();
     });
+}
+
+- (NSData *)processedImageDataForRawAvatar:(UIImage *)image
+{
+    NSUInteger kMaxAvatarBytes = 5 * 1000 * 1000;
+
+    if (image.size.width != kOWSProfileManager_MaxAvatarWidth
+        || image.size.height != kOWSProfileManager_MaxAvatarWidth) {
+        // To help ensure the user is being shown the same cropping of their avatar as
+        // everyone else will see, we want to be sure that the image was resized before this point.
+        OWSFail(@"Avatar image should have been resized before trying to upload");
+        image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarWidth,
+                                                       kOWSProfileManager_MaxAvatarWidth)];
+    }
+
+    NSData *_Nullable data;
+    for (NSUInteger attempts = 0; attempts < 5; attempts++) {
+        CGFloat quality = (CGFloat)0.95 - attempts * (CGFloat)0.1;
+        data = UIImageJPEGRepresentation(image, quality);
+        if (data.length <= kMaxAvatarBytes) {
+            return data;
+        } else {
+            // This for-loop is really just paranoia. Our avatar dimensions are so small that
+            // it's incredibly unlikely we wouldn't be able to fit our profile photo with even
+            // our highest quality.
+            OWSFail(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
+        }
+    }
+
+    return data;
 }
 
 - (void)uploadAvatarToService:(NSData *)avatarData
