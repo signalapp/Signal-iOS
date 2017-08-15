@@ -718,6 +718,15 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
     return userProfile.profileName;
 }
 
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId
+{
+    UserProfile *userProfile = [self getOrBuildUserProfileForRecipientId:recipientId];
+    if (userProfile.avatarFileName.length > 0) {
+        return [self loadProfileDataWithFilename:userProfile.avatarFileName];
+    }
+    return nil;
+}
+
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
 {
     OWSAssert([NSThread isMainThread]);
@@ -1001,12 +1010,20 @@ static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 
 #pragma mark - Avatar Disk Cache
 
-- (nullable UIImage *)loadProfileAvatarWithFilename:(NSString *)fileName
+- (nullable NSData *)loadProfileDataWithFilename:(NSString *)filename
 {
-    OWSAssert(fileName.length > 0);
+    OWSAssert(filename.length > 0);
 
-    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
-    UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    return [NSData dataWithContentsOfFile:filePath];
+}
+
+- (nullable UIImage *)loadProfileAvatarWithFilename:(NSString *)filename
+{
+    OWSAssert(filename.length > 0);
+
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    UIImage *_Nullable image = [UIImage imageWithData:[self loadProfileDataWithFilename:filename]];
     return image;
 }
 
