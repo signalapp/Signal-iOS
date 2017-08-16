@@ -125,7 +125,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
     [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"2"
+                                      version:@"1"
                                         async:NO];
 }
 
