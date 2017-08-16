@@ -429,7 +429,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                        kOWSProfileManager_MaxAvatarDiameter)];
     }
 
-    NSData *_Nullable data;
+    NSData *_Nullable data = UIImageJPEGRepresentation(image, 0.95f);
     if (data.length > kMaxAvatarBytes) {
         // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't be able to fit our profile
         // photo. e.g. generating pure noise at our resolution compresses to ~200k.
