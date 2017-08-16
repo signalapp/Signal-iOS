@@ -169,13 +169,16 @@ typedef enum : NSUInteger {
 
 // These two properties must be updated in lockstep.
 //
-// * The first step is to update uiDatabaseConnection using beginLongLivedReadTransaction.
-// * The second step is to update messageMappings.
-// * We can't do the first step without doing the second step soon afterward.
-// * We can't do the second step without doing the first step first.
+// * The first (required) step is to update uiDatabaseConnection using beginLongLivedReadTransaction.
+// * The second (required) step is to update messageMappings.
+// * The third (optional) step is to update the messageMappings range using
+//   updateMessageMappingRangeOptions.
+// * The steps must be done in strict order.
+// * If we do any of the steps, we must do all of the required steps.
 // * We can't use messageMappings in between the first and second steps; e.g.
 //   we can't do any layout, since that uses numberOfItemsInSection: and
 //   interactionAtIndexPath: which use the messageMappings.
+// * If we do the third step, we must call resetContentAndLayout afterward.
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
@@ -380,10 +383,10 @@ typedef enum : NSUInteger {
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
-    [self updateMessageMappingRangeOptions];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
     self.page = 0;
 
@@ -1466,21 +1469,19 @@ typedef enum : NSUInteger {
         // We convert large text messages to attachments
         // which are presented as normal text messages.
         const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+        TSOutgoingMessage *message;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
             SignalAttachment *attachment =
                 [SignalAttachment attachmentWithData:[text dataUsingEncoding:NSUTF8StringEncoding]
                                              dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
                                             filename:nil];
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithAttachment:attachment
-                                                                          inThread:self.thread
-                                                                     messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            message =
+                [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithText:text
-                                                                    inThread:self.thread
-                                                               messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
+        [self updateLastVisibleTimestamp:message.timestampForSorting];
 
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
@@ -1491,6 +1492,9 @@ typedef enum : NSUInteger {
         [self clearDraft];
         [self finishSendingMessage];
         [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+        if (didAddToProfileWhitelist) {
+            [self ensureDynamicInteractions];
+        }
     }
 }
 
@@ -2295,17 +2299,23 @@ typedef enum : NSUInteger {
 
 - (void)updateMessageMappingRangeOptions
 {
-    // The "page" length may have been increased by loading "prev" pages at the
-    // top of the window.
-    NSUInteger pageLength = kYapDatabasePageSize * (self.page + 1);
-    // The "old" length may have been increased by insertions of new messages
+    // The "old" range length may have been increased by insertions of new messages
     // at the bottom of the window.
     NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    NSUInteger newLength = MAX(pageLength, oldLength);
+    // The "page-based" range length may have been increased by loading "prev" pages at the
+    // top of the window.
+    NSUInteger rangeLength;
+    while (YES) {
+        rangeLength = kYapDatabasePageSize * (self.page + 1);
+        if (rangeLength >= oldLength) {
+            break;
+        }
+        self.page = self.page + 1;
+    }
     YapDatabaseViewRangeOptions *rangeOptions =
-        [YapDatabaseViewRangeOptions flexibleRangeWithLength:newLength offset:0 from:YapDatabaseViewEnd];
+        [YapDatabaseViewRangeOptions flexibleRangeWithLength:rangeLength offset:0 from:YapDatabaseViewEnd];
 
-    rangeOptions.maxLength = MAX(newLength, kYapDatabaseRangeMaxLength);
+    rangeOptions.maxLength = MAX(rangeLength, kYapDatabaseRangeMaxLength);
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
@@ -3176,12 +3186,18 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)attachment.data.length,
         [attachment mimeType]);
-    [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithAttachment:attachment
-                                                                  inThread:self.thread
-                                                             messageSender:self.messageSender]
-                                         .timestampForSorting];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message =
+        [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
+    }];
+    [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
+    }
 }
 
 - (NSURL *)videoTempFolder
@@ -4244,10 +4260,10 @@ typedef enum : NSUInteger {
         // We need to `beginLongLivedReadTransaction` before we update our
         // mapping in order to jump to the most recent commit.
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
-        [self updateMessageMappingRangeOptions];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
+        [self updateMessageMappingRangeOptions];
     }
 
     self.messageAdapterCache = [[NSCache alloc] init];

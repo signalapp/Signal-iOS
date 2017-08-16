@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 
+- (NSUInteger)numberOfKeysInCollection:(NSString *)collection;
+
 #pragma mark -
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
@@ -31,8 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)purgeCollection:(NSString *)collection;
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
+
+- (void)purgeCollection:(NSString *)collection;
 
 @end
 

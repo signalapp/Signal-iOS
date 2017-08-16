@@ -4,6 +4,7 @@
 
 #import "ThreadUtil.h"
 #import "OWSContactsManager.h"
+#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
@@ -26,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
 
 @property (nonatomic) BOOL hasMoreUnseenMessages;
+
+@property (nonatomic) BOOL didInsertDynamicInteractions;
 
 @end
 
@@ -397,6 +400,10 @@ NS_ASSUME_NONNULL_BEGIN
         const int kAddToContactsOfferOffset = -2;
         const int kUnreadIndicatorOfferOffset = -1;
 
+        // Ensure dynamic interactions have a non-negative timestamp even if the conversation was empty.
+        long long startOfConversationTimestamp
+            = (long long)(firstMessage ? firstMessage.timestampForSorting : 1000);
+
         if (existingBlockOffer && !shouldHaveBlockOffer) {
             DDLogInfo(@"%@ Removing block offer: %@ (%llu)",
                 self.tag,
@@ -409,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
             // We want the block offer to be the first interaction in their
             // conversation's timeline, so we back-date it to slightly before
             // the first incoming message (which we know is the first message).
-            uint64_t blockOfferTimestamp = (uint64_t)((long long)firstMessage.timestampForSorting + kBlockOfferOffset);
+            uint64_t blockOfferTimestamp = (uint64_t)(startOfConversationTimestamp + kBlockOfferOffset);
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
             TSMessage *offerMessage =
@@ -417,6 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              thread:thread
                                                                           contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating block offer: %@ (%llu)",
                 self.tag,
@@ -437,14 +445,14 @@ NS_ASSUME_NONNULL_BEGIN
             // We want the offer to be the first interaction in their
             // conversation's timeline, so we back-date it to slightly before
             // the first incoming message (which we know is the first message).
-            uint64_t offerTimestamp
-                = (uint64_t)((long long)firstMessage.timestampForSorting + kAddToContactsOfferOffset);
+            uint64_t offerTimestamp = (uint64_t)(startOfConversationTimestamp + kAddToContactsOfferOffset);
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
             TSMessage *offerMessage = [OWSAddToContactsOfferMessage addToContactsOfferMessage:offerTimestamp
                                                                                        thread:thread
                                                                                     contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
+            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating 'add to contacts' offer: %@ (%llu)",
                 self.tag,
@@ -465,12 +473,12 @@ NS_ASSUME_NONNULL_BEGIN
             // We want the offer to be the first interaction in their
             // conversation's timeline, so we back-date it to slightly before
             // the first incoming message (which we know is the first message).
-            uint64_t offerTimestamp
-                = (uint64_t)((long long)firstMessage.timestampForSorting + kAddToProfileWhitelistOfferOffset);
+            uint64_t offerTimestamp = (uint64_t)(startOfConversationTimestamp + kAddToProfileWhitelistOfferOffset);
 
             TSMessage *offerMessage =
                 [OWSAddToProfileWhitelistOfferMessage addToProfileWhitelistOfferMessage:offerTimestamp thread:thread];
             [offerMessage saveWithTransaction:transaction];
+            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating 'add to profile whitelist' offer: %@ (%llu)",
                 self.tag,
@@ -511,6 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       hasMoreUnseenMessages:result.hasMoreUnseenMessages
                                        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
+                result.didInsertDynamicInteractions = YES;
 
                 DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
                     self.tag,
@@ -521,6 +530,24 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return result;
+}
+
++ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    if (thread.isGroupThread) {
+        return NO;
+    }
+    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
+        return NO;
+    }
+    if (!thread.hasEverHadMessage) {
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark - Logging

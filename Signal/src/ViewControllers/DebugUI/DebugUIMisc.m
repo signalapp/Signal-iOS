@@ -53,6 +53,16 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
                                      }]];
+#ifdef DEBUG
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Profile Whitelist"
+                                     actionBlock:^{
+                                         [OWSProfileManager.sharedManager clearProfileWhitelist];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log Profile Whitelist"
+                                     actionBlock:^{
+                                         [OWSProfileManager.sharedManager logProfileWhitelist];
+                                     }]];
+#endif
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

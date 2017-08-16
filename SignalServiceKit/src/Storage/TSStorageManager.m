@@ -391,9 +391,7 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 #pragma mark - convenience methods
 
 - (void)purgeCollection:(NSString *)collection {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:collection];
-    }];
+    [self.dbReadWriteConnection purgeCollection:collection];
 }
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection {

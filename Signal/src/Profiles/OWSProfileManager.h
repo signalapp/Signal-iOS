@@ -43,6 +43,12 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 #pragma mark - Profile Whitelist
 
+#ifdef DEBUG
+// These methods are for debugging.
+- (void)clearProfileWhitelist;
+- (void)logProfileWhitelist;
+#endif
+
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;

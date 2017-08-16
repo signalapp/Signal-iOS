@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:thread];
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
 
     [Environment messageThreadId:thread.uniqueId];
