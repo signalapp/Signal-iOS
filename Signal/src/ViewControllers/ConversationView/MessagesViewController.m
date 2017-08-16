@@ -166,6 +166,16 @@ typedef enum : NSUInteger {
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
 @property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+
+// These two properties must be updated in lockstep.
+//
+// * The first step is to update uiDatabaseConnection using beginLongLivedReadTransaction.
+// * The second step is to update messageMappings.
+// * We can't do the first step without doing the second step soon afterward.
+// * We can't do the second step without doing the first step first.
+// * We can't use messageMappings in between the first and second steps; e.g.
+//   we can't do any layout, since that uses numberOfItemsInSection: and
+//   interactionAtIndexPath: which use the messageMappings.
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
