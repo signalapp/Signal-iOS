@@ -91,8 +91,8 @@
 
 // Always load up to 50 messages when user arrives.
 static const int kYapDatabasePageSize = 50;
-// Never show more than 50*50 = 2,500 messages in conversation view at a time.
-static const int kYapDatabaseMaxPageCount = 50;
+// Never show more than 50*500 = 25k messages in conversation view at a time.
+static const int kYapDatabaseMaxPageCount = 500;
 // Never show more than 6*50 = 300 messages in conversation view when user
 // arrives.
 static const int kYapDatabaseMaxInitialPageCount = 6;
