@@ -399,10 +399,24 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 
 #pragma mark - Whisper User Management
 
+- (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId
+{
+    return [self cachedDisplayNameForRecipientId:recipientId] != nil;
+}
+
 - (NSString *)unknownContactName
 {
     return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
                              @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+}
+
+- (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
+{
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    if (profileName == nil) {
+        return nil;
+    }
+    return [@"~" stringByAppendingString:profileName];
 }
 
 - (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
@@ -413,11 +427,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 
     // Prefer a saved name from system contacts, if available
     NSString *_Nullable displayName = [self cachedDisplayNameForRecipientId:recipientId];
-
-    // Else try to use their profile name
-    if (displayName.length < 1) {
-        displayName = [self.profileManager profileNameForRecipientId:recipientId];
-    }
 
     // Else fall back to just using their recipientId
     if (displayName.length < 1) {
@@ -490,21 +499,13 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedLastName
                                                                               attributes:lastNameAttributes]];
     } else {
-        
-        // If there's no name saved in our contacts, try their profile.
-        // TODO we might want to format this specially.
-        NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
-        if (profileName.length < 1) {
-            // Else, fall back to using just their recipientId
-            NSString *phoneString = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
-            return [[NSAttributedString alloc] initWithString:phoneString
-                                                   attributes:normalFontAttributes];
-        }
-        
-        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:profileName
-                                                                              attributes:lastNameAttributes]];
+        // Else, fall back to using just their recipientId
+        NSString *phoneString =
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
+        return [[NSAttributedString alloc] initWithString:phoneString attributes:normalFontAttributes];
     }
 
+    // Append unique label for contacts with multiple Signal accounts
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
     if (signalAccount && signalAccount.multipleAccountLabelText) {
         OWSAssert(signalAccount.multipleAccountLabelText.length > 0);
@@ -519,6 +520,24 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     }
 
     return formattedName;
+}
+
+- (NSAttributedString *)attributedStringForMessageFooterWithPhoneIdentifier:(NSString *)recipientId
+{
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    if (savedContactName.length > 0) {
+        return [[NSAttributedString alloc] initWithString:savedContactName];
+    }
+
+    NSString *_Nullable formattedProfileName = [self formattedProfileNameForRecipientId:recipientId];
+    if (formattedProfileName.length > 0) {
+        NSString *numberAndProfileName = [NSString stringWithFormat:@"%@ %@", recipientId, formattedProfileName];
+        return [[NSAttributedString alloc] initWithString:numberAndProfileName];
+    }
+
+    // else fall back to recipient id
+    return [[NSAttributedString alloc] initWithString:recipientId];
 }
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId

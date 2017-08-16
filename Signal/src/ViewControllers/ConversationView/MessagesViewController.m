@@ -1932,10 +1932,7 @@ typedef enum : NSUInteger {
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
-        NSString *_Nonnull name = [self.contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId];
-        NSAttributedString *senderNameString = [[NSAttributedString alloc] initWithString:name];
-
-        return senderNameString;
+        return [self.contactsManager attributedStringForMessageFooterWithPhoneIdentifier:incomingMessage.authorId];
     }
 
     return nil;
