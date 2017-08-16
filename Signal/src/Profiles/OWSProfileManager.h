@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
+extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
+
 @class TSThread;
 @class OWSAES128Key;
 
@@ -56,6 +58,10 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
+
+// Reads raw avatar data from disk if available. Uncached, so shouldn't be used frequently,
+// but useful to get the raw image data for populating cnContact.imageData without lossily re-encoding.
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
 
 - (void)refreshProfileForRecipientId:(NSString *)recipientId;
 

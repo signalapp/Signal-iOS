@@ -26,6 +26,7 @@
 
 + (UIFont *)ows_dynamicTypeBodyFont;
 + (UIFont *)ows_dynamicTypeTitle2Font;
++ (UIFont *)ows_dynamicTypeHeadlineFont;
 + (UIFont *)ows_infoMessageFont;
 + (UIFont *)ows_footnoteFont;
 
