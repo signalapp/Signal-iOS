@@ -225,27 +225,37 @@ NS_ASSUME_NONNULL_BEGIN
     __weak ProfileViewController *weakSelf = self;
 
     // Show an activity indicator to block the UI during the profile upload.
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVING",
-                                                        @"Indicates that the user's profile view is being saved.")
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVING",
+                                     @"Alert title that indicates the user's profile view is being saved.")
+                         message:nil
+                  preferredStyle:UIAlertControllerStyleAlert];
 
     [self presentViewController:alertController
                        animated:YES
                      completion:^{
-                         [alertController dismissViewControllerAnimated:NO completion:nil];
-
                          [OWSProfileManager.sharedManager updateLocalProfileName:[self normalizedProfileName]
                              avatarImage:self.avatar
                              success:^{
-                                 [weakSelf.navigationController popViewControllerAnimated:YES];
+                                 [alertController dismissViewControllerAnimated:NO
+                                                                     completion:^{
+                                                                         [weakSelf.navigationController
+                                                                             popViewControllerAnimated:YES];
+                                                                     }];
                              }
                              failure:^{
-                                 [OWSAlerts
-                                     showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                                message:NSLocalizedString(@"PROFILE_VIEW_ERROR_UPDATE_FAILED",
-                                                            @"Error message shown when a profile update fails.")];
+                                 [alertController
+                                     dismissViewControllerAnimated:NO
+                                                        completion:^{
+                                                            [OWSAlerts
+                                                                showAlertWithTitle:NSLocalizedString(
+                                                                                       @"ALERT_ERROR_TITLE", @"")
+                                                                           message:
+                                                                               NSLocalizedString(
+                                                                                   @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
+                                                                                   @"Error message shown when a "
+                                                                                   @"profile update fails.")];
+                                                        }];
                              }];
                      }];
 }
