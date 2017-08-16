@@ -10,6 +10,7 @@
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
+#import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
@@ -49,6 +50,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
+@property (nonatomic) BOOL hasBeenPresented;
 
 // Dependencies
 
@@ -528,7 +530,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                          completion:^{
                              [self markAllUpgradeExperiencesAsSeen];
                          }];
+    } else if (!self.hasBeenPresented && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
+        [ProfileViewController presentForUpgradeOrNag:self];
     }
+
+    self.hasBeenPresented = YES;
 }
 
 - (void)tableViewSetUp {

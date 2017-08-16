@@ -13,8 +13,19 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/TSStorageManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, ProfileViewMode) {
+    ProfileViewMode_AppSettings = 0,
+    ProfileViewMode_Registration,
+    ProfileViewMode_UpgradeOrNag,
+};
+
+NSString *const kProfileView_Collection = @"kProfileView_Collection";
+NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
 
 @interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate>
 
@@ -32,11 +43,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
+@property (nonatomic) ProfileViewMode profileViewMode;
+
+@property (nonatomic) YapDatabaseConnection *databaseConnection;
+
 @end
 
 #pragma mark -
 
 @implementation ProfileViewController
+
+- (instancetype)initWithMode:(ProfileViewMode)profileViewMode
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    self.profileViewMode = profileViewMode;
+    self.databaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+
+    [self.databaseConnection setDate:[NSDate new]
+                              forKey:kProfileView_LastPresentedDate
+                        inCollection:kProfileView_Collection];
+
+    return self;
+}
 
 - (void)loadView
 {
@@ -164,22 +197,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Event Handling
 
-- (void)backButtonPressed:(id)sender
+- (void)backOrSkipButtonPressed
 {
-    [self leaveViewCheckingForUnsavedChanges:^{
-        [self.navigationController popViewControllerAnimated:YES];
-    }];
+    [self leaveViewCheckingForUnsavedChanges];
 }
 
-- (void)leaveViewCheckingForUnsavedChanges:(void (^_Nonnull)())leaveViewBlock
+- (void)leaveViewCheckingForUnsavedChanges
 {
-    OWSAssert(leaveViewBlock);
-
     [self.nameTextField resignFirstResponder];
 
     if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
-        leaveViewBlock();
+        [self profileCompletedOrSkipped];
         return;
     }
 
@@ -196,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
-                                             leaveViewBlock();
+                                             [self profileCompletedOrSkipped];
                                          }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
                                                    style:UIAlertActionStyleCancel
@@ -221,37 +250,39 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateNavigationItem
 {
     // The navigation bar is hidden in the registration workflow.
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    if (self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+    }
 
-    UIBarButtonItem *rightItem = nil;
+    // Always display a left item to leave the view without making changes.
+    // This might be a "back", "skip" or "cancel" button depending on the
+    // context.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
             self.navigationItem.leftBarButtonItem =
-                [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
+                [self createOWSBackButtonWithTarget:self selector:@selector(backOrSkipButtonPressed)];
+            break;
+        case ProfileViewMode_UpgradeOrNag:
+            self.navigationItem.leftBarButtonItem =
+                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                              target:self
+                                                              action:@selector(backOrSkipButtonPressed)];
             break;
         case ProfileViewMode_Registration:
-        case ProfileViewMode_UpgradeOrNag:
-            // Registration and "upgrade or nag" mode don't need a back button.
-            self.navigationItem.hidesBackButton = YES;
-
-            // Registration and "upgrade or nag" mode have "skip" or "update".
-            //
-            // TODO: Should this be some other verb instead of "update"?
-            rightItem = [[UIBarButtonItem alloc]
+            self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
                 initWithTitle:NSLocalizedString(@"NAVIGATION_ITEM_SKIP_BUTTON", @"A button to skip a view.")
                         style:UIBarButtonItemStylePlain
                        target:self
-                       action:@selector(skipPressed)];
+                       action:@selector(backOrSkipButtonPressed)];
             break;
     }
     if (self.hasUnsavedChanges) {
-        rightItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(@"EDIT_GROUP_UPDATE_BUTTON", @"The title for the 'update group' button.")
-                    style:UIBarButtonItemStylePlain
-                   target:self
-                   action:@selector(updatePressed)];
+        // If we have a unsaved changes, right item should be a "save" button.
+        self.navigationItem.rightBarButtonItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                          target:self
+                                                          action:@selector(updatePressed)];
     }
-    self.navigationItem.rightBarButtonItem = rightItem;
 }
 
 - (void)updatePressed
@@ -308,15 +339,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self profileCompletedOrSkipped];
 }
 
-- (void)skipPressed
-{
-    [self leaveViewCheckingForUnsavedChanges:^{
-        [self profileCompletedOrSkipped];
-    }];
-}
-
 - (void)profileCompletedOrSkipped
 {
+    // Dismiss this view.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
             [self.navigationController popViewControllerAnimated:YES];
@@ -385,6 +410,50 @@ NS_ASSUME_NONNULL_BEGIN
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
     self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
     self.cameraImageView.hidden = self.avatar != nil;
+}
+
+#pragma mark - AvatarViewHelperDelegate
+
++ (BOOL)shouldDisplayProfileViewOnLaunch
+{
+    // Only nag until the user sets a profile _name_.  Profile names are
+    // recommended; profile avatars are optional.
+    if ([OWSProfileManager sharedManager].localProfileName.length > 0) {
+        return NO;
+    }
+
+    NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
+    NSDate *_Nullable lastPresentedDate =
+        [[[TSStorageManager sharedManager] dbReadConnection] dateForKey:kProfileView_LastPresentedDate
+                                                           inCollection:kProfileView_Collection];
+    return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
+}
+
++ (void)presentForAppSettings:(UINavigationController *)navigationController
+{
+    OWSAssert(navigationController);
+
+    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings];
+    [navigationController pushViewController:vc animated:YES];
+}
+
++ (void)presentForRegistration:(UINavigationController *)navigationController
+{
+    OWSAssert(navigationController);
+
+    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_Registration];
+    [navigationController pushViewController:vc animated:YES];
+}
+
++ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController
+{
+    OWSAssert(presentingController);
+
+    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_UpgradeOrNag];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:vc];
+    [presentingController presentTopLevelModalViewController:navigationController
+                                            animateDismissal:YES
+                                         animatePresentation:YES];
 }
 
 #pragma mark - AvatarViewHelperDelegate

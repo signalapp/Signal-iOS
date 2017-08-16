@@ -283,9 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)vericationWasCompleted
 {
-    ProfileViewController *vc = [[ProfileViewController alloc] init];
-    vc.profileViewMode = ProfileViewMode_Registration;
-    [self.navigationController pushViewController:vc animated:YES];
+    [ProfileViewController presentForRegistration:self.navigationController];
 }
 
 - (void)presentAlertWithVerificationError:(NSError *)error

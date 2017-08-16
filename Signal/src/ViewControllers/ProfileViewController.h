@@ -6,15 +6,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, ProfileViewMode) {
-    ProfileViewMode_AppSettings = 0,
-    ProfileViewMode_Registration,
-    ProfileViewMode_UpgradeOrNag,
-};
+@class SignalsViewController;
 
 @interface ProfileViewController : OWSTableViewController
 
-@property (nonatomic) ProfileViewMode profileViewMode;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (BOOL)shouldDisplayProfileViewOnLaunch;
+
++ (void)presentForAppSettings:(UINavigationController *)navigationController;
++ (void)presentForRegistration:(UINavigationController *)navigationController;
++ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController;
 
 @end
 
