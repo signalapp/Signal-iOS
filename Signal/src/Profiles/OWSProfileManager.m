@@ -85,8 +85,8 @@ NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificati
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
-/// The max bytes for a user's profile name, encoded in UTF8.
-/// Before encrypting and submitting we NULL pad the name data to this length.
+// The max bytes for a user's profile name, encoded in UTF8.
+// Before encrypting and submitting we NULL pad the name data to this length.
 static const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
@@ -96,18 +96,21 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 
-// These properties can be accessed on any thread, while synchronized on self.
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, nullable) UserProfile *localUserProfile;
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, nullable) UIImage *localCachedAvatarImage;
 
 // These caches are lazy-populated.  The single point of truth is the database.
 //
-// These properties can be accessed on any thread, while synchronized on self.
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *userProfileWhitelistCache;
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *groupProfileWhitelistCache;
 
-// These properties can be accessed on any thread, while synchronized on self.
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
+// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSMutableSet<NSString *> *currentAvatarDownloads;
 
 @end
@@ -880,15 +883,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         {
                             [self.currentAvatarDownloads removeObject:userProfile.recipientId];
 
-                            UserProfile *currentUserProfile =
+                            UserProfile *latestUserProfile =
                                 [self getOrBuildUserProfileForRecipientId:userProfile.recipientId];
-                            if (currentUserProfile.profileKey.keyData.length < 1
-                                || ![currentUserProfile.profileKey isEqual:userProfile.profileKey]) {
+                            if (latestUserProfile.profileKey.keyData.length < 1
+                                || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
                                 DDLogWarn(@"%@ Ignoring avatar download for obsolete user profile.", self.tag);
-                            } else if (![avatarUrlPathAtStart isEqualToString:currentUserProfile.avatarUrlPath]) {
+                            } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
                                 DDLogInfo(@"%@ avatar url has changed during download", self.tag);
-                                if (currentUserProfile.avatarUrlPath.length > 0) {
-                                    [self downloadAvatarForUserProfile:currentUserProfile];
+                                if (latestUserProfile.avatarUrlPath.length > 0) {
+                                    [self downloadAvatarForUserProfile:latestUserProfile];
                                 }
                             } else if (error) {
                                 DDLogError(@"%@ avatar download failed: %@", self.tag, error);
@@ -899,7 +902,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                             } else if (!image) {
                                 DDLogError(@"%@ avatar image could not be loaded: %@", self.tag, error);
                             } else {
-                                // TODO: Verify that the avatar URL hasn't changed since the download began.
                                 [self.otherUsersProfileAvatarImageCache setObject:image forKey:userProfile.recipientId];
 
                                 userProfile.avatarFileName = fileName;
