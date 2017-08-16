@@ -1645,7 +1645,7 @@ typedef enum : NSUInteger {
             break;
         }
         default: {
-            DDLogWarn(@"using default cell constructor for message: %@", message);
+            OWSFail(@"using default cell constructor for message: %@", message);
             cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView
                                                    cellForItemAtIndexPath:indexPath];
             break;
@@ -1750,7 +1750,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Adjusting cell label heights
-
 
 /**
  Due to the usage of JSQMessagesViewController, and it non-conformity to Dynamyc Type
@@ -3260,6 +3259,18 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // HACK to work around radar #28167779
+    // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
+    // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
+    // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
+    //
+    // NOTE: It's critical we do this before beginLongLivedReadTransaction.
+    //       layoutIfNeeded triggers layout (obviously) which will update our cells using the current mappings
+    //       but loading cells using interactionAtIndexPath: and messageAtIndexPath:, which will return the
+    //       wrong results if the db connection has been updated but the mappings haven't.
+    [self.collectionView layoutIfNeeded];
+    // ENDHACK to work around radar #28167779
+
     // We need to `beginLongLivedReadTransaction` before we update our
     // models in order to jump to the most recent commit.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -3285,13 +3296,6 @@ typedef enum : NSUInteger {
         }];
         return;
     }
-
-    // HACK to work around radar #28167779
-    // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
-    // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
-    // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
-    [self.collectionView layoutIfNeeded];
-    // ENDHACK to work around radar #28167779
 
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges = nil;
