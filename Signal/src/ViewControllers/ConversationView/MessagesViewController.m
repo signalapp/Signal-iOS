@@ -1896,7 +1896,7 @@ typedef enum : NSUInteger {
 
             // Or when the next message is *not* an outgoing sent/delivered message.
             TSOutgoingMessage *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (nextMessage && nextMessage.messageState != TSOutgoingMessageStateSentToService) {
+            if (nextMessage && nextMessage.messageState == TSOutgoingMessageStateUnsent) {
                 [self updateLastDeliveredMessage:message];
                 return result;
             }
