@@ -38,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL hasMoreUnseenMessages;
 
-@property (nonatomic, readonly) BOOL didInsertDynamicInteractions;
-
 - (void)clearUnreadIndicatorState;
 
 @end

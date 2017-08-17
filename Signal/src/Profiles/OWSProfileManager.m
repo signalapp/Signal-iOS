@@ -598,6 +598,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 #ifdef DEBUG
 - (void)clearProfileWhitelist
 {
+    DDLogWarn(@"%@ Clearing the profile whitelist.", self.tag);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
@@ -621,8 +623,20 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             DDLogError(@"groupProfileWhitelistCache: %zd", self.groupProfileWhitelistCache.count);
             DDLogError(@"kOWSProfileManager_UserWhitelistCollection: %zd",
                 [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
+                                            usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                                DDLogError(@"\t profile whitelist user: %@", key);
+                                            }];
+            }];
             DDLogError(@"kOWSProfileManager_GroupWhitelistCollection: %zd",
                 [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [transaction enumerateKeysInCollection:kOWSProfileManager_GroupWhitelistCollection
+                                            usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                                DDLogError(@"\t profile whitelist group: %@", key);
+                                            }];
+            }];
         }
     });
 }

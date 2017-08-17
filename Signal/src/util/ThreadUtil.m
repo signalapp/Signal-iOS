@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL hasMoreUnseenMessages;
 
-@property (nonatomic) BOOL didInsertDynamicInteractions;
-
 @end
 
 #pragma mark -
@@ -400,7 +398,10 @@ NS_ASSUME_NONNULL_BEGIN
         const int kAddToContactsOfferOffset = -2;
         const int kUnreadIndicatorOfferOffset = -1;
 
-        // Ensure dynamic interactions have a non-negative timestamp even if the conversation was empty.
+        // We want the offers to be the first interactions in their
+        // conversation's timeline, so we back-date them to slightly before
+        // the first message - or at an aribtrary old timestamp if the
+        // conversation has no messages.
         long long startOfConversationTimestamp
             = (long long)(firstMessage ? firstMessage.timestampForSorting : 1000);
 
@@ -413,9 +414,6 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (!existingBlockOffer && shouldHaveBlockOffer) {
             DDLogInfo(@"Creating block offer for unknown contact");
 
-            // We want the block offer to be the first interaction in their
-            // conversation's timeline, so we back-date it to slightly before
-            // the first incoming message (which we know is the first message).
             uint64_t blockOfferTimestamp = (uint64_t)(startOfConversationTimestamp + kBlockOfferOffset);
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -424,7 +422,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              thread:thread
                                                                           contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
-            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating block offer: %@ (%llu)",
                 self.tag,
@@ -442,9 +439,6 @@ NS_ASSUME_NONNULL_BEGIN
 
             DDLogInfo(@"%@ Creating 'add to contacts' offer for unknown contact", self.tag);
 
-            // We want the offer to be the first interaction in their
-            // conversation's timeline, so we back-date it to slightly before
-            // the first incoming message (which we know is the first message).
             uint64_t offerTimestamp = (uint64_t)(startOfConversationTimestamp + kAddToContactsOfferOffset);
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -452,7 +446,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                        thread:thread
                                                                                     contactId:recipientId];
             [offerMessage saveWithTransaction:transaction];
-            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating 'add to contacts' offer: %@ (%llu)",
                 self.tag,
@@ -470,15 +463,11 @@ NS_ASSUME_NONNULL_BEGIN
 
             DDLogInfo(@"%@ Creating 'add to profile whitelist' offer", self.tag);
 
-            // We want the offer to be the first interaction in their
-            // conversation's timeline, so we back-date it to slightly before
-            // the first incoming message (which we know is the first message).
             uint64_t offerTimestamp = (uint64_t)(startOfConversationTimestamp + kAddToProfileWhitelistOfferOffset);
 
             TSMessage *offerMessage =
                 [OWSAddToProfileWhitelistOfferMessage addToProfileWhitelistOfferMessage:offerTimestamp thread:thread];
             [offerMessage saveWithTransaction:transaction];
-            result.didInsertDynamicInteractions = YES;
 
             DDLogInfo(@"%@ Creating 'add to profile whitelist' offer: %@ (%llu)",
                 self.tag,
@@ -519,7 +508,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       hasMoreUnseenMessages:result.hasMoreUnseenMessages
                                        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
-                result.didInsertDynamicInteractions = YES;
 
                 DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
                     self.tag,

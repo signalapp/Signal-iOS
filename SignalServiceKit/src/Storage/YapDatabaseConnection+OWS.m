@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)numberOfKeysInCollection:(NSString *)collection
 {
     __block NSUInteger result;
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [transaction numberOfKeysInCollection:collection];
     }];
     return result;
