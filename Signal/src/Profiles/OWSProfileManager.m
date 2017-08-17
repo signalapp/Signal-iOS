@@ -595,6 +595,53 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Profile Whitelist
 
+#ifdef DEBUG
+- (void)clearProfileWhitelist
+{
+    DDLogWarn(@"%@ Clearing the profile whitelist.", self.tag);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            [self.userProfileWhitelistCache removeAllObjects];
+            [self.groupProfileWhitelistCache removeAllObjects];
+
+            [self.dbConnection purgeCollection:kOWSProfileManager_UserWhitelistCollection];
+            [self.dbConnection purgeCollection:kOWSProfileManager_GroupWhitelistCollection];
+            OWSAssert(0 == [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+            OWSAssert(0 == [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
+        }
+    });
+}
+
+- (void)logProfileWhitelist
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            DDLogError(@"userProfileWhitelistCache: %zd", self.userProfileWhitelistCache.count);
+            DDLogError(@"groupProfileWhitelistCache: %zd", self.groupProfileWhitelistCache.count);
+            DDLogError(@"kOWSProfileManager_UserWhitelistCollection: %zd",
+                [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
+                                            usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                                DDLogError(@"\t profile whitelist user: %@", key);
+                                            }];
+            }];
+            DDLogError(@"kOWSProfileManager_GroupWhitelistCollection: %zd",
+                [self.dbConnection numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [transaction enumerateKeysInCollection:kOWSProfileManager_GroupWhitelistCollection
+                                            usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                                DDLogError(@"\t profile whitelist group: %@", key);
+                                            }];
+            }];
+        }
+    });
+}
+#endif
+
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);

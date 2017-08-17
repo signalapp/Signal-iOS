@@ -176,7 +176,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // we need to bump this constant.
     //
     // We added a number of database views in v2.13.0.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
+    NSString *kLastVersionWithDatabaseViewChange = @"2.16.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion

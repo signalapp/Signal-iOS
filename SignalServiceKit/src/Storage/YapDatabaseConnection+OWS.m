@@ -94,6 +94,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+- (NSUInteger)numberOfKeysInCollection:(NSString *)collection
+{
+    __block NSUInteger result;
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [transaction numberOfKeysInCollection:collection];
+    }];
+    return result;
+}
+
 - (void)purgeCollection:(NSString *)collection
 {
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

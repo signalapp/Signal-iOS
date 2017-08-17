@@ -35,6 +35,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
+
     return self;
 }
 
@@ -55,6 +59,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
     _messageType = infoMessage;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
+
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
 
     return self;
 }
