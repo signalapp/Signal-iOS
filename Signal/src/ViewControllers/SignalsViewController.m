@@ -10,6 +10,7 @@
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "OWSContactsManager.h"
+#import "OWSNavigationController.h"
 #import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
@@ -309,7 +310,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)settingsButtonPressed:(id)sender {
     AppSettingsViewController *vc = [AppSettingsViewController new];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:vc];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -353,8 +354,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         //
         // We just want to make sure contact access is *complete* before showing the compose
         // screen to avoid flicker.
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:viewController];
+        OWSNavigationController *navigationController =
+            [[OWSNavigationController alloc] initWithRootViewController:viewController];
         [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
     }];
 }

@@ -5,6 +5,7 @@
 #import "ProfileViewController.h"
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
+#import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
@@ -27,7 +28,7 @@ typedef NS_ENUM(NSInteger, ProfileViewMode) {
 NSString *const kProfileView_Collection = @"kProfileView_Collection";
 NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
 
-@interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate>
+@interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate, OWSNavigationView>
 
 @property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
@@ -259,8 +260,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // context.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
-            self.navigationItem.leftBarButtonItem =
-                [self createOWSBackButtonWithTarget:self selector:@selector(backOrSkipButtonPressed)];
             break;
         case ProfileViewMode_UpgradeOrNag:
             self.navigationItem.leftBarButtonItem =
@@ -432,6 +431,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 + (void)presentForAppSettings:(UINavigationController *)navigationController
 {
     OWSAssert(navigationController);
+    OWSAssert([navigationController isKindOfClass:[OWSNavigationController class]]);
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings];
     [navigationController pushViewController:vc animated:YES];
@@ -440,6 +440,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 + (void)presentForRegistration:(UINavigationController *)navigationController
 {
     OWSAssert(navigationController);
+    OWSAssert([navigationController isKindOfClass:[OWSNavigationController class]]);
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_Registration];
     [navigationController pushViewController:vc animated:YES];
@@ -450,7 +451,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSAssert(presentingController);
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_UpgradeOrNag];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:vc];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
     [presentingController presentTopLevelModalViewController:navigationController
                                             animateDismissal:YES
                                          animatePresentation:YES];
@@ -490,6 +491,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)clearAvatar
 {
     self.avatar = nil;
+}
+
+#pragma mark - OWSNavigationView
+
+- (void)navBackButtonPressed
+{
+    [self backOrSkipButtonPressed];
 }
 
 #pragma mark - Logging

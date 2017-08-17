@@ -10,6 +10,7 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
@@ -34,7 +35,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     AvatarViewHelperDelegate,
     AddToGroupViewControllerDelegate,
     OWSTableViewControllerDelegate,
-    UINavigationControllerDelegate>
+    UINavigationControllerDelegate,
+    OWSNavigationView>
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -97,8 +99,6 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [super loadView];
 
     self.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"The navbar title for the 'new group' view.");
-    self.navigationItem.leftBarButtonItem =
-        [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
         initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
@@ -547,7 +547,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - Event Handling
 
-- (void)backButtonPressed:(id)sender
+- (void)backButtonPressed
 {
     [self.groupNameTextField resignFirstResponder];
 
@@ -647,6 +647,13 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     OWSAssert(recipientId.length > 0);
 
     return [self.memberRecipientIds containsObject:recipientId];
+}
+
+#pragma mark - OWSNavigationView
+
+- (void)navBackButtonPressed
+{
+    [self backButtonPressed];
 }
 
 @end

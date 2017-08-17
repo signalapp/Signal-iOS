@@ -74,6 +74,7 @@
 		34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */; };
 		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */; };
+		34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
 		34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
@@ -505,6 +506,8 @@
 		34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34B3F8A01E8EA6040035BE1A /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
 		34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
+		34C42D591F45F7A80072EC04 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
+		34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
 		34CCAF361F0C0599004084F4 /* AppUpdateNag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppUpdateNag.h; sourceTree = "<group>"; };
 		34CCAF371F0C0599004084F4 /* AppUpdateNag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppUpdateNag.m; sourceTree = "<group>"; };
 		34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAddToContactViewController.h; sourceTree = "<group>"; };
@@ -1026,6 +1029,8 @@
 				34B3F85F1E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.h */,
 				34B3F8601E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.m */,
 				34B3F8611E8DF1700035BE1A /* OWSMessagesToolbarContentView.xib */,
+				34C42D591F45F7A80072EC04 /* OWSNavigationController.h */,
+				34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */,
 				34B3F8621E8DF1700035BE1A /* OWSQRCodeScanningViewController.h */,
 				34B3F8631E8DF1700035BE1A /* OWSQRCodeScanningViewController.m */,
 				34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */,
@@ -2307,6 +2312,7 @@
 				341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */,
 				34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */,
 				45F2B1941D9C9F48000D2C69 /* OWSOutgoingMessageCollectionViewCell.m in Sources */,
+				34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */,
 				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,

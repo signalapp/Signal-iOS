@@ -11,6 +11,7 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
+#import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
@@ -802,8 +803,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         self.window.rootViewController = navigationController;
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:viewController];
+        OWSNavigationController *navigationController =
+            [[OWSNavigationController alloc] initWithRootViewController:viewController];
         navigationController.navigationBarHidden = YES;
         self.window.rootViewController = navigationController;
     }

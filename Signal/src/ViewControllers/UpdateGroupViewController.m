@@ -10,6 +10,7 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
@@ -33,7 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
     AvatarViewHelperDelegate,
     AddToGroupViewControllerDelegate,
     OWSTableViewControllerDelegate,
-    UINavigationControllerDelegate>
+    UINavigationControllerDelegate,
+    OWSNavigationView>
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -103,8 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
 
     self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
-    self.navigationItem.leftBarButtonItem =
-        [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
 
     // First section.
 
@@ -409,13 +409,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Event Handling
 
-- (void)backButtonPressed:(id)sender
+- (void)backButtonPressed
 {
     [self.groupNameTextField resignFirstResponder];
 
     if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self.navigationController popViewControllerAnimated:YES];
         return;
     }
 
@@ -441,7 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              @"The label for the 'don't save' button in action sheets.")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *action) {
-                                                     [self dismissViewControllerAnimated:YES completion:nil];
+                                                     [self.navigationController popViewControllerAnimated:YES];
                                                  }]];
     [self presentViewController:controller animated:YES completion:nil];
 }
@@ -526,6 +526,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     return [self.memberRecipientIds containsObject:recipientId];
+}
+
+#pragma mark - OWSNavigationView
+
+- (void)navBackButtonPressed
+{
+    [self backButtonPressed];
 }
 
 @end
