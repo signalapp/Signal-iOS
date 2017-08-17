@@ -413,10 +413,14 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 - (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
 {
     NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
-    if (profileName == nil) {
+    if (profileName.length == 0) {
         return nil;
     }
-    return [@"~" stringByAppendingString:profileName];
+
+    NSString *profileNameFormatString = NSLocalizedString(@"PROFILE_NAME_LABEL_FORMAT",
+        @"Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}.");
+
+    return [NSString stringWithFormat:profileNameFormatString, profileName];
 }
 
 - (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
@@ -530,9 +534,15 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         return [[NSAttributedString alloc] initWithString:savedContactName];
     }
 
-    NSString *_Nullable formattedProfileName = [self formattedProfileNameForRecipientId:recipientId];
-    if (formattedProfileName.length > 0) {
-        NSString *numberAndProfileName = [NSString stringWithFormat:@"%@ %@", recipientId, formattedProfileName];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    if (profileName.length > 0) {
+        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
+            @"Label text combining the phone number and profile name separated by a simple demarcation character. "
+            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
+            @"with {{profile name}}");
+
+        NSString *numberAndProfileName =
+            [NSString stringWithFormat:numberAndProfileNameFormat, recipientId, profileName];
         return [[NSAttributedString alloc] initWithString:numberAndProfileName];
     }
 
