@@ -4,6 +4,7 @@
 
 #import "OWSProfileManager.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+hexString.h>
@@ -57,6 +58,11 @@ NS_ASSUME_NONNULL_BEGIN
     _recipientId = recipientId;
 
     return self;
+}
+
+- (void)setProfileName:(nullable NSString *)profileName
+{
+    _profileName = [profileName ows_stripped];
 }
 
 #pragma mark - NSObject
@@ -1161,7 +1167,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(filename.length > 0);
 
-    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
     UIImage *_Nullable image = [UIImage imageWithData:[self loadProfileDataWithFilename:filename]];
     return image;
 }
