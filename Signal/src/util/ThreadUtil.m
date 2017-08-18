@@ -3,6 +3,7 @@
 //
 
 #import "ThreadUtil.h"
+#import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"

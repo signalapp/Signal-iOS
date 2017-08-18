@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "NSBundle+JSQMessages.h"
 #import "OWSContactsManager.h"
-#import "TSUnreadIndicatorInteraction.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"

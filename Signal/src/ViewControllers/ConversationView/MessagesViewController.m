@@ -16,6 +16,8 @@
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
+#import "OWSContactOffersCell.h"
+#import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
@@ -1649,6 +1651,10 @@ typedef enum : NSUInteger {
             cell = [self loadUnreadIndicatorCell:indexPath interaction:message.interaction];
             break;
         }
+        case OWSContactOffersAdapter: {
+            cell = [self loadContactOffersCell:indexPath interaction:message.interaction];
+            break;
+        }
         default: {
             OWSFail(@"using default cell constructor for message: %@", message);
             cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView
@@ -1733,6 +1739,23 @@ typedef enum : NSUInteger {
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
     [cell configureWithInteraction:unreadIndicator];
+
+    return cell;
+}
+
+- (JSQMessagesCollectionViewCell *)loadContactOffersCell:(NSIndexPath *)indexPath
+                                             interaction:(TSInteraction *)interaction
+{
+    OWSAssert(indexPath);
+    OWSAssert(interaction);
+    OWSAssert([interaction isKindOfClass:[OWSContactOffersInteraction class]]);
+
+    OWSContactOffersInteraction *offersInteraction = (OWSContactOffersInteraction *)interaction;
+
+    OWSContactOffersCell *cell =
+        [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
+                                                       forIndexPath:indexPath];
+    [cell configureWithInteraction:offersInteraction];
 
     return cell;
 }
@@ -1822,6 +1845,7 @@ typedef enum : NSUInteger {
         id<OWSMessageData> previousMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section]];
 
+        // TODO: What about the contact offers?
         if ([previousMessage.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
             // Always show timestamp between unread indicator and the following interaction
             return YES;
@@ -2164,6 +2188,9 @@ typedef enum : NSUInteger {
         case TSCallAdapter:
         case TSUnreadIndicatorAdapter:
             OWSFail(@"Unexpected tap for system message.");
+            break;
+        case OWSContactOffersAdapter:
+            // TODO:
             break;
         default:
             DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);
@@ -4198,8 +4225,10 @@ typedef enum : NSUInteger {
 - (BOOL)shouldShowCellDecorationsAtIndexPath:(NSIndexPath *)indexPath
 {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
-    
+
     // Show any top/bottom labels for all but the unread indicator
+    //
+    // TODO: What about the contact offers?
     return ![interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
 }
 

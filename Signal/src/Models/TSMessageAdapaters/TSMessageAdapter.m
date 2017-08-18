@@ -5,6 +5,7 @@
 #import "TSMessageAdapter.h"
 #import "AttachmentSharing.h"
 #import "OWSCall.h"
+#import "OWSContactOffersInteraction.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -226,6 +227,8 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.messageType        = TSInfoMessageAdapter;
     } else if ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
         adapter.messageType = TSUnreadIndicatorAdapter;
+    } else if ([interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+        adapter.messageType = OWSContactOffersAdapter;
     } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
         adapter.errorMessageType = errorMessage.errorType;
