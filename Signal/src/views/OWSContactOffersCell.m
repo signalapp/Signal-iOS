@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton *addToProfileWhitelistButton;
 @property (nonatomic) UIButton *blockButton;
 
-@property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
-
 @end
 
 #pragma mark -
@@ -97,39 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(
         interaction.hasBlockOffer || interaction.hasAddToContactsOffer || interaction.hasAddToProfileWhitelistOffer);
 
-    if (self.layoutConstraints) {
-        [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
-    }
-    NSMutableArray<NSLayoutConstraint *> *layoutConstraints = [NSMutableArray new];
-
-    [layoutConstraints addObject:[self.titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin]];
-    [layoutConstraints addObjectsFromArray:[self.titleLabel autoPinLeadingAndTrailingToSuperview]];
-
-    __block UIView *lastView = self.titleLabel;
-    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, bool isVisible) {
-        if (isVisible) {
-            button.hidden = NO;
-
-            [layoutConstraints addObject:[button autoPinEdge:ALEdgeTop
-                                                      toEdge:ALEdgeBottom
-                                                      ofView:lastView
-                                                  withOffset:self.buttonVSpacing]];
-            [layoutConstraints addObject:[button autoSetDimension:ALDimensionHeight
-                                                           toSize:ceil([button sizeThatFits:CGSizeZero].height
-                                                                      + self.buttonVPadding)]];
-            [layoutConstraints addObjectsFromArray:[button autoPinLeadingAndTrailingToSuperview]];
-            lastView = button;
-        } else {
-            button.hidden = YES;
-        }
-    };
-
-    layoutButton(self.addToContactsButton, self.interaction.hasAddToContactsOffer);
-    layoutButton(self.addToProfileWhitelistButton, self.interaction.hasAddToProfileWhitelistOffer);
-    layoutButton(self.blockButton, self.interaction.hasBlockOffer);
-
-    self.layoutConstraints = layoutConstraints;
-
     [self setNeedsLayout];
 }
 
@@ -166,6 +131,42 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)buttonVSpacing
 {
     return 5.f;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    // We're using a bit of a hack to get JSQ to layout this and the unread indicator as
+    // "full width" cells.  These cells will end up with an erroneous left margin that we
+    // want to reverse.
+    CGFloat contentWidth = self.width;
+    CGFloat left = -self.left;
+
+    CGRect titleFrame = self.contentView.bounds;
+    titleFrame.origin = CGPointMake(left + self.hMargin, self.topVMargin);
+    titleFrame.size.width = contentWidth - 2 * self.hMargin;
+    titleFrame.size.height = ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
+    self.titleLabel.frame = titleFrame;
+
+    __block CGFloat y = round(self.titleLabel.bottom + self.buttonVSpacing);
+    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, bool isVisible) {
+        if (isVisible) {
+            button.hidden = NO;
+
+            button.frame = CGRectMake(round(left + self.hMargin),
+                round(y),
+                floor(contentWidth - 2 * self.hMargin),
+                ceil([button sizeThatFits:CGSizeZero].height + self.buttonVPadding));
+            y = round(button.bottom + self.buttonVSpacing);
+        } else {
+            button.hidden = YES;
+        }
+    };
+
+    layoutButton(self.addToContactsButton, self.interaction.hasAddToContactsOffer);
+    layoutButton(self.addToProfileWhitelistButton, self.interaction.hasAddToProfileWhitelistOffer);
+    layoutButton(self.blockButton, self.interaction.hasBlockOffer);
 }
 
 - (CGSize)bubbleSizeForInteraction:(OWSContactOffersInteraction *)interaction
