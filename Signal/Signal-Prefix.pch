@@ -7,8 +7,8 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
-    #import <CocoaLumberjack/CocoaLumberjack.h>
 
+    @import CocoaLumberjack;
     #ifdef DEBUG
     static const NSUInteger ddLogLevel = DDLogLevelAll;
     #else
