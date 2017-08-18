@@ -50,7 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
-@property (nonatomic) BOOL shouldIgnoreSavedChanges;
 
 @end
 
@@ -414,7 +413,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.groupNameTextField resignFirstResponder];
 
-    if (!self.hasUnsavedChanges || self.shouldIgnoreSavedChanges) {
+    if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
         [self.navigationController popViewControllerAnimated:YES];
         return;
@@ -442,7 +441,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                              @"The label for the 'don't save' button in action sheets.")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *action) {
-                                                     self.shouldIgnoreSavedChanges = YES;
                                                      [self.navigationController popViewControllerAnimated:YES];
                                                  }]];
     [self presentViewController:controller animated:YES completion:nil];
@@ -534,7 +532,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldCancelNavigationBack
 {
-    BOOL result = self.hasUnsavedChanges && !self.shouldIgnoreSavedChanges;
+    BOOL result = self.hasUnsavedChanges;
     if (result) {
         [self backButtonPressed];
     }

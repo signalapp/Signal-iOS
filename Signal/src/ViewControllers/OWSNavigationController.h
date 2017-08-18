@@ -8,6 +8,8 @@
 // presses and back gestures should implement this protocol.
 @protocol OWSNavigationView <NSObject>
 
+// shouldCancelNavigationBack will be called if the back button was pressed or
+// if a back gesture was performed but not if the view is popped programmatically.
 - (BOOL)shouldCancelNavigationBack;
 
 @end

@@ -44,8 +44,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
-@property (nonatomic) BOOL shouldIgnoreSavedChanges;
-
 @property (nonatomic) ProfileViewMode profileViewMode;
 
 @property (nonatomic) YapDatabaseConnection *databaseConnection;
@@ -209,7 +207,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     [self.nameTextField resignFirstResponder];
 
-    if (!self.hasUnsavedChanges || self.shouldIgnoreSavedChanges) {
+    if (!self.hasUnsavedChanges) {
         // If user made no changes, return to conversation settings view.
         [self profileCompletedOrSkipped];
         return;
@@ -228,7 +226,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
-                                             self.shouldIgnoreSavedChanges = YES;
                                              [self profileCompletedOrSkipped];
                                          }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
@@ -500,7 +497,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (BOOL)shouldCancelNavigationBack
 {
-    BOOL result = self.hasUnsavedChanges && !self.shouldIgnoreSavedChanges;
+    BOOL result = self.hasUnsavedChanges;
     if (result) {
         [self backOrSkipButtonPressed];
     }

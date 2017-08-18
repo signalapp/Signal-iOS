@@ -37,6 +37,8 @@
     OWSAssert(self.interactivePopGestureRecognizer.delegate == self);
     UIViewController *topViewController = self.topViewController;
 
+    // wasBackButtonClicked is YES if the back button was pressed but not
+    // if a back gesture was performed or if the view is popped programmatically.
     BOOL wasBackButtonClicked = topViewController.navigationItem == item;
     BOOL result = YES;
     if (wasBackButtonClicked) {
