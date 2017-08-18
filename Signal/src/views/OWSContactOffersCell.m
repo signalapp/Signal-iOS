@@ -115,20 +115,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)subtitleForInteraction:(OWSContactOffersInteraction *)interaction
 {
-    if (!interaction.hasMoreUnseenMessages) {
-        return nil;
-    }
-    NSString *subtitleFormat = (interaction.missingUnseenSafetyNumberChangeCount > 0
-            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT",
-                  @"Messages that indicates that there are more unseen messages that be revealed by tapping the 'load "
-                  @"earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}")
-            : NSLocalizedString(
-                  @"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT",
-                  @"Messages that indicates that there are more unseen messages including safety number changes that "
-                  @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier "
-                  @"messages' button}}."));
-    NSString *loadMoreButtonName = [NSBundle jsq_localizedStringForKey:@"load_earlier_messages"];
-    return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
+    return nil;
+    //    if (!interaction.hasMoreUnseenMessages) {
+    //        return nil;
+    //    }
+    //    NSString *subtitleFormat = (interaction.missingUnseenSafetyNumberChangeCount > 0
+    //            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT",
+    //                  @"Messages that indicates that there are more unseen messages that be revealed by tapping the
+    //                  'load "
+    //                  @"earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}")
+    //            : NSLocalizedString(
+    //                  @"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT",
+    //                  @"Messages that indicates that there are more unseen messages including safety number changes
+    //                  that "
+    //                  @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load
+    //                  earlier "
+    //                  @"messages' button}}."));
+    //    NSString *loadMoreButtonName = [NSBundle jsq_localizedStringForKey:@"load_earlier_messages"];
+    //    return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
 }
 
 - (CGFloat)subtitleHMargin

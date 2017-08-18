@@ -6,14 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSContactOffersInteraction ()
-
-//@property (atomic) BOOL hasMoreUnseenMessages;
-
-@end
-
-#pragma mark -
-
 @implementation OWSContactOffersInteraction
 
 - (instancetype)initWithCoder:(NSCoder *)coder
@@ -21,9 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
-//                   hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
-//    missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                           thread:(TSThread *)thread
+                    hasBlockOffer:(BOOL)hasBlockOffer
+            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                        contactId:(NSString *)contactId
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
 
@@ -31,8 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    //    _hasMoreUnseenMessages = hasMoreUnseenMessages;
-    //    _missingUnseenSafetyNumberChangeCount = missingUnseenSafetyNumberChangeCount;
+    _hasBlockOffer = hasBlockOffer;
+    _hasAddToContactsOffer = hasAddToContactsOffer;
+    _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
+    OWSAssert(contactId.length > 0);
+    _contactId = contactId;
 
     return self;
 }

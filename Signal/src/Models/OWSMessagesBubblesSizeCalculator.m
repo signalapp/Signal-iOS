@@ -158,8 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [cachedSize CGSizeValue];
     }
 
-    CGSize result = [self.referenceContactOffersCell bubbleSizeForInteraction:interaction
-                                                          collectionViewWidth:layout.collectionView.width];
+    CGSize result = [self.referenceUnreadIndicatorCell bubbleSizeForInteraction:interaction
+                                                            collectionViewWidth:layout.collectionView.width];
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 
@@ -178,8 +178,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [cachedSize CGSizeValue];
     }
 
-    CGSize result = [self.referenceUnreadIndicatorCell bubbleSizeForInteraction:interaction
-                                                            collectionViewWidth:layout.collectionView.width];
+    CGSize result = [self.referenceContactOffersCell bubbleSizeForInteraction:interaction
+                                                          collectionViewWidth:layout.collectionView.width];
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 
