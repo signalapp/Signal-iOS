@@ -46,8 +46,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) ProfileViewMode profileViewMode;
 
-@property (nonatomic) YapDatabaseConnection *databaseConnection;
-
 @end
 
 #pragma mark -
@@ -63,11 +61,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 
     self.profileViewMode = profileViewMode;
-    self.databaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
 
-    [self.databaseConnection setDate:[NSDate new]
-                              forKey:kProfileView_LastPresentedDate
-                        inCollection:kProfileView_Collection];
+    // Use the TSStorageManager.dbReadWriteConnection for consistency with the reads below.
+    [[[TSStorageManager sharedManager] dbReadWriteConnection] setDate:[NSDate new]
+                                                               forKey:kProfileView_LastPresentedDate
+                                                         inCollection:kProfileView_Collection];
 
     return self;
 }
@@ -421,10 +419,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return NO;
     }
 
+    // Use the TSStorageManager.dbReadWriteConnection for consistency with the writes above.
     NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
     NSDate *_Nullable lastPresentedDate =
-        [[[TSStorageManager sharedManager] dbReadConnection] dateForKey:kProfileView_LastPresentedDate
-                                                           inCollection:kProfileView_Collection];
+        [[[TSStorageManager sharedManager] dbReadWriteConnection] dateForKey:kProfileView_LastPresentedDate
+                                                                inCollection:kProfileView_Collection];
     return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
 }
 
