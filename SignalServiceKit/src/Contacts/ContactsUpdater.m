@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // This should never happen according to nullability annotations... but IIRC it does. =/
     if (!identifier) {
-        OWSAssert(NO);
+        OWSFail(@"%@ Cannot lookup nil identifier", self.tag);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                  failure:(void (^)(NSError *error))failure
 {
     if (identifiers.count < 1) {
-        OWSAssert(NO);
+        OWSFail(@"%@ Cannot lookup zero identifiers", self.tag);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
         return;
     }

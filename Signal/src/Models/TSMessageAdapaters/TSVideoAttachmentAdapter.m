@@ -435,9 +435,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
         NSString *actionString = NSStringFromSelector(action);
-        DDLogError(
+        OWSFail(
             @"Unexpected action: %@ for VideoAttachmentAdapter with contentType: %@", actionString, self.contentType);
-        OWSAssert(NO);
     }
 }
 

@@ -318,11 +318,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     NSString *actionString = NSStringFromSelector(action);
-    DDLogError(@"'%@' action unsupported for TSInteraction: uniqueId=%@, mediaType=%@",
+    OWSFail(@"'%@' action unsupported for TSInteraction: uniqueId=%@, mediaType=%@",
         actionString,
         self.interaction.uniqueId,
         [self.mediaItem class]);
-    OWSAssert(NO);
 }
 
 - (TSAttachmentStream *)attachmentStream

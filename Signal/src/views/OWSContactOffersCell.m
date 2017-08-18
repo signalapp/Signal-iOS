@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSContactOffersInteraction *interaction;
 
+@property (nonatomic) UILabel *messageLabel;
 @property (nonatomic) UIView *bannerView;
 @property (nonatomic) UIView *bannerTopHighlightView;
 @property (nonatomic) UIView *bannerBottomHighlightView1;
@@ -76,6 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.subtitleLabel];
+
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -235,6 +240,27 @@ NS_ASSUME_NONNULL_BEGIN
     [super prepareForReuse];
 
     self.interaction = nil;
+}
+
+#pragma mark - Gesture recognizers
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)tap
+{
+    OWSAssert(self.interaction);
+
+    //    [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end

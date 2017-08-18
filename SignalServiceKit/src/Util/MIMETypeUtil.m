@@ -452,8 +452,7 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
     for (NSString *mimeType in mimeTypes) {
         NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
         if (!utiType) {
-            DDLogError(@"%@ unknown utiType for mimetype: %@", self.tag, mimeType);
-            OWSAssert(NO);
+            OWSFail(@"%@ unknown utiType for mimetype: %@", self.tag, mimeType);
             continue;
         }
         [result addObject:utiType];

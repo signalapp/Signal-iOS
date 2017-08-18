@@ -414,6 +414,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         BOOL shouldHaveContactOffers
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
+        if (isContactThread) {
+            TSContactThread *contactThread = (TSContactThread *)thread;
+            // TODO: Set this property.
+            if (contactThread.hasDismissedOffers) {
+                shouldHaveContactOffers = NO;
+            }
+        }
 
         // We use these offset to control the ordering of the offers and indicators.
         const int kUnreadIndicatorOffset = -2;

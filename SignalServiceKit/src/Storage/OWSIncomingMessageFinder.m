@@ -116,8 +116,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
                     sourceDeviceId:(uint32_t)sourceDeviceId
 {
     if (![self.database registeredExtension:OWSIncomingMessageFinderExtensionName]) {
-        DDLogError(@"%@ in %s but extension is not registered", self.tag, __PRETTY_FUNCTION__);
-        OWSAssert(NO);
+        OWSFail(@"%@ in %s but extension is not registered", self.tag, __PRETTY_FUNCTION__);
 
         // we should be initializing this at startup rather than have an unexpectedly slow lazy setup at random.
         [self registerExtension];
@@ -138,7 +137,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     }];
 
     if (!success) {
-        OWSAssert(NO);
+        OWSFail(@"%@ Could not execute query", self.tag);
         return NO;
     }
 

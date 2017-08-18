@@ -78,7 +78,6 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -156,6 +155,7 @@ typedef enum : NSUInteger {
     OWSConversationSettingsViewDelegate,
     OWSMessagesCollectionViewFlowLayoutDelegate,
     OWSSystemMessageCellDelegate,
+    OWSContactOffersCellDelegate,
     OWSTextViewPasteDelegate,
     OWSVoiceMemoGestureDelegate,
     UIDocumentMenuDelegate,
@@ -482,6 +482,9 @@ typedef enum : NSUInteger {
 
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
+
+    [self.collectionView registerClass:[OWSContactOffersCell class]
+            forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
 
     self.outgoingCellIdentifier = [OWSOutgoingMessageCollectionViewCell cellReuseIdentifier];
     [self.collectionView registerNib:[OWSOutgoingMessageCollectionViewCell nib]
@@ -1755,6 +1758,7 @@ typedef enum : NSUInteger {
     OWSContactOffersCell *cell =
         [self.collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
                                                        forIndexPath:indexPath];
+    cell.contactOffersCellDelegate = self;
     [cell configureWithInteraction:offersInteraction];
 
     return cell;
@@ -2164,10 +2168,9 @@ typedef enum : NSUInteger {
                     // Restart failed downloads
                     if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
                         if (![interaction isKindOfClass:[TSMessage class]]) {
-                            DDLogError(@"%@ Expected attachment downloads from an instance of message, but found: %@",
+                            OWSFail(@"%@ Expected attachment downloads from an instance of message, but found: %@",
                                 self.tag,
                                 interaction);
-                            OWSAssert(NO);
                             return;
                         }
                         TSMessage *message = (TSMessage *)interaction;
@@ -2447,8 +2450,8 @@ typedef enum : NSUInteger {
         case TSErrorMessageInvalidVersion:
             break;
         case TSErrorMessageUnknownContactBlockOffer:
-            OWSAssert([message isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]);
-            [self tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)message];
+            // Unused.
+            OWSFail(@"TSErrorMessageUnknownContactBlockOffer");
             return;
         case TSErrorMessageGroupCreationFailed:
             [self resendGroupUpdateForErrorMessage:message];
@@ -2489,13 +2492,16 @@ typedef enum : NSUInteger {
             // Unused.
             break;
         case TSInfoMessageAddToContactsOffer:
-            OWSAssert([message isKindOfClass:[OWSAddToContactsOfferMessage class]]);
-            [self tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message];
+            // Unused.
+            OWSFail(@"TSInfoMessageAddToContactsOffer");
             return;
         case TSInfoMessageAddUserToProfileWhitelistOffer:
+            // Unused.
+            OWSFail(@"TSInfoMessageAddUserToProfileWhitelistOffer");
+            return;
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
-            OWSAssert([message isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]);
-            [self tappedAddToProfileWhitelistOfferMessage:(OWSAddToProfileWhitelistOfferMessage *)message];
+            // Unused.
+            OWSFail(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
             return;
         case TSInfoMessageTypeGroupUpdate:
             [self showConversationSettings];
@@ -2589,93 +2595,12 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-- (void)tappedUnknownContactBlockOfferMessage:(OWSUnknownContactBlockOfferMessage *)errorMessage
-{
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:errorMessage.contactId];
-    NSString *title =
-        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
-                                       @"Title format for action sheet that offers to block an unknown user."
-                                       @"Embeds {{the unknown user's name or phone number}}."),
-                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
-
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
-
-    UIAlertAction *blockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
-                                           @"Action sheet that will block an unknown user.")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *_Nonnull action) {
-                                   DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
-                                   [self.blockingManager addBlockedPhoneNumber:errorMessage.contactId];
-                                   // Delete the block offer.
-                                   [self.editingDatabaseConnection
-                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                           [errorMessage removeWithTransaction:transaction];
-                                       }];
-                               }];
-    [actionSheetController addAction:blockAction];
-
-    [self presentViewController:actionSheetController animated:YES completion:nil];
-}
-
-- (void)tappedAddToContactsOfferMessage:(OWSAddToContactsOfferMessage *)message
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        DDLogError(@"%@ Contact editing not supported", self.tag);
-        OWSAssert(NO);
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
-        OWSAssert(NO);
-        return;
-    }
-
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
-}
-
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSAddToProfileWhitelistOfferMessage *)message
-{
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *leaveAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
-                            @"Button to confirm that user wants to share their profile with a user or group.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
-
-                    [self ensureDynamicInteractions];
-                }];
-    [alertController addAction:leaveAction];
-
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction *_Nonnull action){
-                                                             // Do nothing.
-                                                         }];
-    [alertController addAction:cancelAction];
-
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
 - (void)handleCallTap:(TSCall *)call
 {
     OWSAssert(call);
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
-        OWSAssert(NO);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -2702,6 +2627,111 @@ typedef enum : NSUInteger {
     [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
                                                                             animated:YES
                                                                           completion:nil];
+}
+
+#pragma mark - OWSContactOffersCellDelegate
+
+- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        return;
+    }
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+
+    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.contactId];
+    NSString *title =
+        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
+                                       @"Title format for action sheet that offers to block an unknown user."
+                                       @"Embeds {{the unknown user's name or phone number}}."),
+                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:nil];
+    [actionSheetController addAction:dismissAction];
+
+    UIAlertAction *blockAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
+                                           @"Action sheet that will block an unknown user.")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
+                                   [self.blockingManager addBlockedPhoneNumber:interaction.contactId];
+                                   // Delete the offers.
+                                   [self.editingDatabaseConnection
+                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           contactThread.hasDismissedOffers = YES;
+                                           [contactThread saveWithTransaction:transaction];
+                                           [interaction removeWithTransaction:transaction];
+                                       }];
+                               }];
+    [actionSheetController addAction:blockAction];
+
+    [self presentViewController:actionSheetController animated:YES completion:nil];
+}
+
+- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        OWSFail(@"%@ Contact editing not supported", self.tag);
+        return;
+    }
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        return;
+    }
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+                                                     fromViewController:self
+                                                        editImmediately:YES];
+
+    // Delete the offers.
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        contactThread.hasDismissedOffers = YES;
+        [contactThread saveWithTransaction:transaction];
+        [interaction removeWithTransaction:transaction];
+    }];
+}
+
+- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
+{
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        return;
+    }
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *leaveAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+                            @"Button to confirm that user wants to share their profile with a user or group.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+                    // Delete the offers.
+                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        contactThread.hasDismissedOffers = YES;
+                        [contactThread saveWithTransaction:transaction];
+                        [interaction removeWithTransaction:transaction];
+                    }];
+                }];
+    [alertController addAction:leaveAction];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *_Nonnull action){
+                                                             // Do nothing.
+                                                         }];
+    [alertController addAction:cancelAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - OWSSystemMessageCellDelegate
@@ -2936,13 +2966,10 @@ typedef enum : NSUInteger {
     NSError *typeError;
     [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&typeError];
     if (typeError) {
-        DDLogError(
-            @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
-        OWSAssert(NO);
+        OWSFail(@"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
     }
     if (!type) {
-        DDLogDebug(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
-        OWSAssert(NO);
+        OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
         type = (__bridge NSString *)kUTTypeData;
     }
 
@@ -2950,11 +2977,10 @@ typedef enum : NSUInteger {
     NSError *isDirectoryError;
     [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
     if (isDirectoryError) {
-        DDLogError(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+        OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
             self.tag,
             url,
             isDirectoryError);
-        OWSAssert(NO);
     } else if ([isDirectory boolValue]) {
         DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
         UIAlertController *alertController = [UIAlertController
@@ -2978,15 +3004,13 @@ typedef enum : NSUInteger {
 
     NSString *filename = url.lastPathComponent;
     if (!filename) {
-        DDLogDebug(@"%@ Unable to determine filename from url: %@", self.tag, url);
-        OWSAssert(NO);
+        OWSFail(@"%@ Unable to determine filename from url: %@", self.tag, url);
         filename = NSLocalizedString(
             @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
     }
 
     if (!attachmentData || attachmentData.length == 0) {
-        DDLogError(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
-        OWSAssert(NO);
+        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
         UIAlertController *alertController = [UIAlertController
             alertControllerWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
                                          @"Alert title when picking a document fails for an unknown reason")

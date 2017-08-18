@@ -36,12 +36,11 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                      usingBlock:^(
                                          NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
                                          if (![object isKindOfClass:[NSData class]]) {
-                                             DDLogError(
+                                             OWSFail(
                                                  @"%@ Unexpected object in trusted keys collection key: %@ object: %@",
                                                  self.tag,
                                                  recipientId,
                                                  object);
-                                             OWSAssert(NO);
                                              return;
                                          }
                                          NSData *identityKey = (NSData *)object;
