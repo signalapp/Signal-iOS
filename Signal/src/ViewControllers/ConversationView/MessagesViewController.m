@@ -2193,7 +2193,7 @@ typedef enum : NSUInteger {
             OWSFail(@"Unexpected tap for system message.");
             break;
         case OWSContactOffersAdapter:
-            // TODO:
+            OWSFail(@"Unexpected tap for contacts offer.");
             break;
         default:
             DDLogDebug(@"Unhandled bubble touch for interaction: %@.", interaction);

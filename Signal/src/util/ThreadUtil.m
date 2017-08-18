@@ -236,23 +236,6 @@ NS_ASSUME_NONNULL_BEGIN
                           }
                       }];
 
-        __block TSInteraction *lastCallOrMessage = nil;
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                     withOptions:NSEnumerationReverse
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
-                          if ([object isKindOfClass:[TSIncomingMessage class]] ||
-                              [object isKindOfClass:[TSOutgoingMessage class]] ||
-                              [object isKindOfClass:[TSCall class]]) {
-                              lastCallOrMessage = object;
-                              *stop = YES;
-                          }
-                      }];
-
         NSUInteger outgoingMessageCount =
             [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
         NSUInteger threadMessageCount =
@@ -439,7 +422,6 @@ NS_ASSUME_NONNULL_BEGIN
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
         if (isContactThread) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            // TODO: Set this property.
             if (contactThread.hasDismissedOffers) {
                 shouldHaveContactOffers = NO;
             }
