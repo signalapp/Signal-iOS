@@ -158,7 +158,6 @@ typedef enum : NSUInteger {
     OWSVoiceMemoGestureDelegate,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate,
-    UIGestureRecognizerDelegate,
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate>
@@ -548,10 +547,6 @@ typedef enum : NSUInteger {
 
     // In case we're dismissing a CNContactViewController which requires default system appearance
     [UIUtil applySignalAppearence];
-
-    // Since we're using a custom back button, we have to do some extra work to manage the
-    // interactivePopGestureRecognizer
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
@@ -991,10 +986,6 @@ typedef enum : NSUInteger {
     [super viewWillDisappear:animated];
 
     self.isViewVisible = NO;
-
-    // Since we're using a custom back button, we have to do some extra work to manage the
-    // interactivePopGestureRecognizer
-    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
 
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;

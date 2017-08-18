@@ -4,9 +4,11 @@
 
 #import <UIKit/UIKit.h>
 
+// Any view controller which wants to be able cancel back button
+// presses and back gestures should implement this protocol.
 @protocol OWSNavigationView <NSObject>
 
-- (void)navBackButtonPressed;
+- (BOOL)shouldCancelNavigationBack;
 
 @end
 

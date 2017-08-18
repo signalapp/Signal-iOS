@@ -50,6 +50,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
+@property (nonatomic) BOOL shouldIgnoreSavedChanges;
 @property (nonatomic) BOOL hasAppeared;
 
 @end
@@ -551,7 +552,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     [self.groupNameTextField resignFirstResponder];
 
-    if (!self.hasUnsavedChanges) {
+    if (!self.hasUnsavedChanges || self.shouldIgnoreSavedChanges) {
         // If user made no changes, return to conversation settings view.
         [self.navigationController popViewControllerAnimated:YES];
         return;
@@ -570,6 +571,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
+                                             self.shouldIgnoreSavedChanges = YES;
                                              [self.navigationController popViewControllerAnimated:YES];
                                          }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
@@ -651,9 +653,13 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - OWSNavigationView
 
-- (void)navBackButtonPressed
+- (BOOL)shouldCancelNavigationBack
 {
-    [self backButtonPressed];
+    BOOL result = self.hasUnsavedChanges && !self.shouldIgnoreSavedChanges;
+    if (result) {
+        [self backButtonPressed];
+    }
+    return result;
 }
 
 @end

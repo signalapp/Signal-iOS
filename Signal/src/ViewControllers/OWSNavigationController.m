@@ -4,7 +4,15 @@
 
 #import "OWSNavigationController.h"
 
-@interface OWSNavigationController ()
+// We use a category to expose UINavigationController's private
+// UINavigationBarDelegate methods.
+@interface UINavigationController (OWSNavigationController) <UINavigationBarDelegate>
+
+@end
+
+#pragma mark -
+
+@interface OWSNavigationController () <UIGestureRecognizerDelegate>
 
 @end
 
@@ -12,24 +20,53 @@
 
 @implementation OWSNavigationController
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    self.interactivePopGestureRecognizer.delegate = self;
+}
+
+#pragma mark - UINavigationBarDelegate
+
+// All UINavigationController serve as the UINavigationBarDelegate for their navbar.
+// We override shouldPopItem: in order to cancel some back button presses - for example,
+// if a view has unsaved changes.
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item
 {
-
+    OWSAssert(self.interactivePopGestureRecognizer.delegate == self);
     UIViewController *topViewController = self.topViewController;
-    BOOL wasBackButtonClicked = topViewController.navigationItem == item;
 
+    BOOL wasBackButtonClicked = topViewController.navigationItem == item;
+    BOOL result = YES;
     if (wasBackButtonClicked) {
-        if ([topViewController respondsToSelector:@selector(navBackButtonPressed)]) {
-            // if user did press back on the view controller where you handle the navBackButtonPressed
-            [topViewController performSelector:@selector(navBackButtonPressed)];
-            return NO;
-        } else {
-            // if user did press back but you are not on the view controller that can handle the navBackButtonPressed
-            [self popViewControllerAnimated:YES];
-            return YES;
+        if ([topViewController conformsToProtocol:@protocol(OWSNavigationView)]) {
+            id<OWSNavigationView> navigationView = (id<OWSNavigationView>)topViewController;
+            result = ![navigationView shouldCancelNavigationBack];
         }
+    }
+
+    // If we're not going to cancel the pop/back, we need to call the super
+    // implementation since it has important side effects.
+    if (result) {
+        result = [super navigationBar:navigationBar shouldPopItem:item];
+        OWSAssert(result);
+    }
+    return result;
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+// We serve as the UIGestureRecognizerDelegate of the interactivePopGestureRecognizer
+// in order to cancel some "back" gestures - for example,
+// if a view has unsaved changes.
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    UIViewController *topViewController = self.topViewController;
+    if ([topViewController conformsToProtocol:@protocol(OWSNavigationView)]) {
+        id<OWSNavigationView> navigationView = (id<OWSNavigationView>)topViewController;
+        return ![navigationView shouldCancelNavigationBack];
     } else {
-        // when you call popViewController programmatically you do not want to pop it twice
         return YES;
     }
 }
