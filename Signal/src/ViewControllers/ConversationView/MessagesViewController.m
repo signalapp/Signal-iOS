@@ -4253,7 +4253,8 @@ typedef enum : NSUInteger {
     // Show any top/bottom labels for all but the unread indicator
     //
     // TODO: What about the contact offers?
-    return ![interaction isKindOfClass:[TSUnreadIndicatorInteraction class]];
+    return !([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
+        [interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 }
 
 #pragma mark - Database Observation

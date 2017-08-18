@@ -16,13 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSContactOffersInteraction *interaction;
 
-@property (nonatomic) UILabel *messageLabel;
-@property (nonatomic) UIView *bannerView;
-@property (nonatomic) UIView *bannerTopHighlightView;
-@property (nonatomic) UIView *bannerBottomHighlightView1;
-@property (nonatomic) UIView *bannerBottomHighlightView2;
 @property (nonatomic) UILabel *titleLabel;
-@property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UIButton *addToContactsButton;
+@property (nonatomic) UIButton *addToProfileWhitelistButton;
+@property (nonatomic) UIButton *blockButton;
+//@property (nonatomic) UIView *bannerView;
+//@property (nonatomic) UIView *bannerTopHighlightView;
+//@property (nonatomic) UIView *bannerBottomHighlightView1;
+//@property (nonatomic) UIView *bannerBottomHighlightView2;
+//@property (nonatomic) UILabel *titleLabel;
+//@property (nonatomic) UILabel *subtitleLabel;
 
 @end
 
@@ -42,45 +45,80 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
-    OWSAssert(!self.bannerView);
+    OWSAssert(!self.titleLabel);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-    self.backgroundColor = [UIColor whiteColor];
-
-    self.bannerView = [UIView new];
-    self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
-    [self.contentView addSubview:self.bannerView];
-
-    self.bannerTopHighlightView = [UIView new];
-    self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
-    [self.bannerView addSubview:self.bannerTopHighlightView];
-
-    self.bannerBottomHighlightView1 = [UIView new];
-    self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
-    [self.bannerView addSubview:self.bannerBottomHighlightView1];
-
-    self.bannerBottomHighlightView2 = [UIView new];
-    self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
-    [self.bannerView addSubview:self.bannerBottomHighlightView2];
+    //    self.backgroundColor = [UIColor whiteColor];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    self.titleLabel.textColor = [UIColor blackColor];
     self.titleLabel.font = [self titleFont];
-    [self.bannerView addSubview:self.titleLabel];
-
-    self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
-    self.subtitleLabel.font = [self subtitleFont];
+    self.titleLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE",
+        @"Title for the group of buttons show for unknown contacts offering to add them to contacts, etc.");
     // The subtitle may wrap to a second line.
-    self.subtitleLabel.numberOfLines = 0;
-    self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.contentView addSubview:self.subtitleLabel];
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.contentView addSubview:self.titleLabel];
+
+    self.addToContactsButton = [self
+        createButtonWithTitle:
+            NSLocalizedString(@"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+                @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.")];
+    self.addToProfileWhitelistButton =
+        [self createButtonWithTitle:
+                  NSLocalizedString(@"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER",
+                      @"Message shown in conversation view that offers to share your profile with a user.")];
+    self.blockButton =
+        [self createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER",
+                                        @"Message shown in conversation view that offers to block an unknown user.")];
+
+    //    self.bannerView = [UIView new];
+    //    self.bannerView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
+    //    [self.contentView addSubview:self.bannerView];
+    //
+    //    self.bannerTopHighlightView = [UIView new];
+    //    self.bannerTopHighlightView.backgroundColor = [UIColor colorWithRGBHex:0xf9f3eb];
+    //    [self.bannerView addSubview:self.bannerTopHighlightView];
+    //
+    //    self.bannerBottomHighlightView1 = [UIView new];
+    //    self.bannerBottomHighlightView1.backgroundColor = [UIColor colorWithRGBHex:0xd1c6b8];
+    //    [self.bannerView addSubview:self.bannerBottomHighlightView1];
+    //
+    //    self.bannerBottomHighlightView2 = [UIView new];
+    //    self.bannerBottomHighlightView2.backgroundColor = [UIColor colorWithRGBHex:0xdbcfc0];
+    //    [self.bannerView addSubview:self.bannerBottomHighlightView2];
+    //
+    //    self.titleLabel = [UILabel new];
+    //    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    //    self.titleLabel.font = [self titleFont];
+    //    [self.bannerView addSubview:self.titleLabel];
+    //
+    //    self.subtitleLabel = [UILabel new];
+    //    self.subtitleLabel.textColor = [UIColor ows_infoMessageBorderColor];
+    //    self.subtitleLabel.font = [self subtitleFont];
+    //    // The subtitle may wrap to a second line.
+    //    self.subtitleLabel.numberOfLines = 0;
+    //    self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    //    self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    //    [self.contentView addSubview:self.subtitleLabel];
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
+}
+
+- (UIButton *)createButtonWithTitle:(NSString *)title
+{
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    button.titleLabel.font = self.buttonFont;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [button setBackgroundColor:[UIColor colorWithRGBHex:0xf5f5f5]];
+    button.layer.cornerRadius = 5.f;
+    [self.contentView addSubview:button];
+    return button;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -94,70 +132,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     _interaction = interaction;
 
-    self.titleLabel.text = [self titleForInteraction:self.interaction];
-    self.subtitleLabel.text = [self subtitleForInteraction:self.interaction];
-
-    self.backgroundColor = [UIColor whiteColor];
+    OWSAssert(
+        interaction.hasBlockOffer || interaction.hasAddToContactsOffer || interaction.hasAddToProfileWhitelistOffer);
 
     [self setNeedsLayout];
 }
 
 - (UIFont *)titleFont
 {
-    return [UIFont ows_regularFontWithSize:16.f];
+    return [UIFont ows_mediumFontWithSize:16.f];
 }
 
-- (UIFont *)subtitleFont
+- (UIFont *)buttonFont
 {
-    return [UIFont ows_regularFontWithSize:12.f];
+    return [UIFont ows_regularFontWithSize:14.f];
 }
 
-- (NSString *)titleForInteraction:(OWSContactOffersInteraction *)interaction
-{
-    return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.")
-        .uppercaseString;
-}
-
-- (NSString *)subtitleForInteraction:(OWSContactOffersInteraction *)interaction
-{
-    return nil;
-    //    if (!interaction.hasMoreUnseenMessages) {
-    //        return nil;
-    //    }
-    //    NSString *subtitleFormat = (interaction.missingUnseenSafetyNumberChangeCount > 0
-    //            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT",
-    //                  @"Messages that indicates that there are more unseen messages that be revealed by tapping the
-    //                  'load "
-    //                  @"earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}")
-    //            : NSLocalizedString(
-    //                  @"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT",
-    //                  @"Messages that indicates that there are more unseen messages including safety number changes
-    //                  that "
-    //                  @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load
-    //                  earlier "
-    //                  @"messages' button}}."));
-    //    NSString *loadMoreButtonName = [NSBundle jsq_localizedStringForKey:@"load_earlier_messages"];
-    //    return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
-}
-
-- (CGFloat)subtitleHMargin
-{
-    return 20.f;
-}
-
-- (CGFloat)subtitleVSpacing
-{
-    return 3.f;
-}
-
-- (CGFloat)titleInnerHMargin
+- (CGFloat)hMargin
 {
     return 10.f;
-}
-
-- (CGFloat)titleVMargin
-{
-    return 5.5f;
 }
 
 - (CGFloat)topVMargin
@@ -170,67 +163,91 @@ NS_ASSUME_NONNULL_BEGIN
     return 5.f;
 }
 
+- (CGFloat)buttonVPadding
+{
+    return 5.f;
+}
+
+- (CGFloat)buttonVSpacing
+{
+    return 5.f;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL needsLayout = !CGSizeEqualToSize(frame.size, self.frame.size);
+    [super setFrame:frame];
+
+    if (needsLayout) {
+        [self layoutSubviews];
+    }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL needsLayout = !CGSizeEqualToSize(bounds.size, self.bounds.size);
+    [super setBounds:bounds];
+
+    if (needsLayout) {
+        [self layoutSubviews];
+    }
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 
-    [self.titleLabel sizeToFit];
+    // JSQ won't
+    CGFloat contentWidth = floor(MIN(self.contentView.width, self.width - 2 * self.contentView.left));
 
-    // It's a bit of a hack, but we use a view that extends _outside_ the cell's bounds
-    // to draw its background, since we want the background to extend to the edges of the
-    // collection view.
-    //
-    // This layout logic assumes that the cell insets are symmetrical and can be deduced
-    // from the cell frame.
-    CGRect bannerViewFrame = CGRectMake(-self.left,
-        round(self.topVMargin),
-        round(self.width + self.left * 2.f),
-        round(self.titleLabel.height + self.titleVMargin * 2.f));
-    self.bannerView.frame = [self convertRect:bannerViewFrame toView:self.contentView];
+    DDLogError(@"---- %f %f %f %f", self.width, self.contentView.width, contentWidth, self.contentView.left);
 
-    // The highlights should be 1px (not 1pt), so adapt their thickness to
-    // the device resolution.
-    CGFloat kHighlightThickness = 1.f / [UIScreen mainScreen].scale;
-    self.bannerTopHighlightView.frame = CGRectMake(0, 0, self.bannerView.width, kHighlightThickness);
-    self.bannerBottomHighlightView1.frame
-        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 2.f, self.bannerView.width, kHighlightThickness);
-    self.bannerBottomHighlightView2.frame
-        = CGRectMake(0, self.bannerView.height - kHighlightThickness * 1.f, self.bannerView.width, kHighlightThickness);
+    CGRect titleFrame = self.contentView.bounds;
+    titleFrame.origin = CGPointMake(self.hMargin, self.topVMargin);
+    titleFrame.size.width = contentWidth - 2 * self.hMargin;
+    titleFrame.size.height = ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
+    self.titleLabel.frame = titleFrame;
 
-    [self.titleLabel centerOnSuperview];
+    __block CGFloat y = round(self.titleLabel.bottom + self.buttonVSpacing);
+    DDLogError(@"first y: %f", y);
+    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, bool isVisible) {
+        if (isVisible) {
+            button.hidden = NO;
 
-    if (self.subtitleLabel.text.length > 0) {
-        CGSize subtitleSize = [self.subtitleLabel
-            sizeThatFits:CGSizeMake(self.contentView.width - [self subtitleHMargin] * 2.f, CGFLOAT_MAX)];
-        self.subtitleLabel.frame = CGRectMake(round((self.contentView.width - subtitleSize.width) * 0.5f),
-            round(self.bannerView.bottom + self.subtitleVSpacing),
-            ceil(subtitleSize.width),
-            ceil(subtitleSize.height));
-    }
+            button.frame = CGRectMake(round(self.hMargin),
+                round(y),
+                floor(contentWidth - 2 * self.hMargin),
+                ceil([button sizeThatFits:CGSizeZero].height + self.buttonVPadding));
+            y = round(button.bottom + self.buttonVSpacing);
+        } else {
+            button.hidden = YES;
+        }
+    };
+
+    layoutButton(self.addToContactsButton, self.interaction.hasAddToContactsOffer);
+    layoutButton(self.addToProfileWhitelistButton, self.interaction.hasAddToProfileWhitelistOffer);
+    layoutButton(self.blockButton, self.interaction.hasBlockOffer);
+
+    [self.contentView addRedBorder];
+    [self.titleLabel addRedBorder];
+    [self.addToContactsButton addRedBorder];
+    [self.addToProfileWhitelistButton addRedBorder];
+    [self.blockButton addRedBorder];
 }
 
 - (CGSize)bubbleSizeForInteraction:(OWSContactOffersInteraction *)interaction
                collectionViewWidth:(CGFloat)collectionViewWidth
 {
     CGSize result = CGSizeMake(collectionViewWidth, 0);
-    result.height += self.titleVMargin * 2.f;
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 
-    NSString *title = [self titleForInteraction:interaction];
-    NSString *subtitle = [self subtitleForInteraction:interaction];
-
-    self.titleLabel.text = title;
     result.height += ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
 
-    if (subtitle.length > 0) {
-        result.height += self.subtitleVSpacing;
-
-        self.subtitleLabel.text = subtitle;
-        result.height += ceil(
-            [self.subtitleLabel sizeThatFits:CGSizeMake(collectionViewWidth - self.subtitleHMargin * 2.f, CGFLOAT_MAX)]
-                .height);
-    }
+    int buttonCount = ((interaction.hasBlockOffer ? 1 : 0) + (interaction.hasAddToContactsOffer ? 1 : 0)
+        + (interaction.hasAddToProfileWhitelistOffer ? 1 : 0));
+    result.height += buttonCount
+        * (self.buttonVPadding + self.buttonVSpacing + ceil([self.addToContactsButton sizeThatFits:CGSizeZero].height));
 
     return result;
 }
@@ -244,11 +261,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)tap
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssert(self.interaction);
 
-    //    [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        //        [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+    }
 }
 
 #pragma mark - Logging
