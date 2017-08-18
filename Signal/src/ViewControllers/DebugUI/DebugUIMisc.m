@@ -63,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          [OWSProfileManager.sharedManager logProfileWhitelist];
                                      }]];
 #endif
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
+                                     actionBlock:^{
+                                         [DebugUIMisc clearHasDismissedOffers];
+                                     }]];
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -91,6 +95,30 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalService.sharedInstance.manualCensorshipCircumventionDomain = countryMetadata.googleDomain;
 
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = isEnabled;
+}
+
++ (void)clearHasDismissedOffers
+{
+    [TSStorageManager.sharedManager.dbReadConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
+            [transaction
+                enumerateKeysAndObjectsInCollection:[TSThread collection]
+                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
+                                             TSThread *thread = object;
+                                             if (thread.isGroupThread) {
+                                                 return;
+                                             }
+                                             TSContactThread *contactThread = object;
+                                             [contactThreads addObject:contactThread];
+                                         }];
+            for (TSContactThread *contactThread in contactThreads) {
+                if (contactThread.hasDismissedOffers) {
+                    contactThread.hasDismissedOffers = NO;
+                    [contactThread saveWithTransaction:transaction];
+                }
+            }
+        }];
 }
 
 @end
