@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        __block TSMessage *firstMessage = nil;
+        __block TSInteraction *firstCallOrMessage = nil;
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
@@ -229,8 +229,26 @@ NS_ASSUME_NONNULL_BEGIN
                           OWSAssert([object isKindOfClass:[TSInteraction class]]);
 
                           if ([object isKindOfClass:[TSIncomingMessage class]] ||
-                              [object isKindOfClass:[TSOutgoingMessage class]]) {
-                              firstMessage = (TSMessage *)object;
+                              [object isKindOfClass:[TSOutgoingMessage class]] ||
+                              [object isKindOfClass:[TSCall class]]) {
+                              firstCallOrMessage = object;
+                              *stop = YES;
+                          }
+                      }];
+
+        __block TSInteraction *lastCallOrMessage = nil;
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+            enumerateRowsInGroup:thread.uniqueId
+                     withOptions:NSEnumerationReverse
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
+
+                          if ([object isKindOfClass:[TSIncomingMessage class]] ||
+                              [object isKindOfClass:[TSOutgoingMessage class]] ||
+                              [object isKindOfClass:[TSCall class]]) {
+                              lastCallOrMessage = object;
                               *stop = YES;
                           }
                       }];
@@ -374,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        if (!firstMessage) {
+        if (!firstCallOrMessage) {
             shouldHaveAddToContactsOffer = NO;
             shouldHaveBlockOffer = NO;
             shouldHaveAddToProfileWhitelistOffer = NO;
@@ -385,7 +403,12 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveBlockOffer = NO;
         }
 
-        BOOL hasOutgoingBeforeIncomingInteraction = [firstMessage isKindOfClass:[TSOutgoingMessage class]];
+        BOOL hasOutgoingBeforeIncomingInteraction = [firstCallOrMessage isKindOfClass:[TSOutgoingMessage class]];
+        if ([firstCallOrMessage isKindOfClass:[TSCall class]]) {
+            TSCall *call = (TSCall *)firstCallOrMessage;
+            hasOutgoingBeforeIncomingInteraction
+                = (call.callType == RPRecentCallTypeOutgoing || call.callType == RPRecentCallTypeOutgoingIncomplete);
+        }
         if (hasOutgoingBeforeIncomingInteraction) {
             // If there is an outgoing message before an incoming message
             // the local user initiated this conversation, don't show a block offer.
@@ -423,17 +446,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // We use these offset to control the ordering of the offers and indicators.
-        const int kUnreadIndicatorOffset = -2;
-        const int kContactOffersOffset = -1;
+        const int kUnreadIndicatorOffset = -1;
 
         // We want the offers to be the first interactions in their
         // conversation's timeline, so we back-date them to slightly before
         // the first message - or at an aribtrary old timestamp if the
         // conversation has no messages.
-        long long startOfConversationTimestamp
-            = (long long)(firstMessage ? firstMessage.timestampForSorting : 1000);
-
-        uint64_t contactOffersTimestamp = (uint64_t)(startOfConversationTimestamp + kContactOffersOffset);
+        uint64_t contactOffersTimestamp = [NSDate ows_millisecondTimeStamp];
 
         // If the contact offers' properties have changed, discard the current
         // one and create a new one.
