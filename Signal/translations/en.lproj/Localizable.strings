@@ -834,9 +834,6 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* notification title. Embeds {{Caller's Name}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
-
 /* No comment provided by engineer. */
 "MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
 

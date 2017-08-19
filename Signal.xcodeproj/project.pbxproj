@@ -1678,7 +1678,6 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CE9F391B1E8142290003EAE8 /* CoreLocation.framework */,
 				455A16DB1F1FEA0000F86704 /* Metal.framework */,
 				455A16DC1F1FEA0000F86704 /* MetalKit.framework */,
 				45847E861E4283C30080EAB3 /* Intents.framework */,
