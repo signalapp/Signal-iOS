@@ -176,7 +176,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // we need to bump this constant.
     //
     // We added a number of database views in v2.13.0.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
+    NSString *kLastVersionWithDatabaseViewChange = @"2.16.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
@@ -462,6 +462,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 DDLogInfo(
                     @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
+                __unused AnyPromise *promise =
+                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                              accountManager:[Environment getCurrent].accountManager
+                                                 preferences:[Environment preferences]];
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.

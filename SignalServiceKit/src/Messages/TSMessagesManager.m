@@ -1141,9 +1141,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread {
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
-      numberOfItems =
-          numberOfItems - [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+        id databaseView = [transaction ext:TSUnreadDatabaseViewExtensionName];
+        OWSAssert(databaseView);
+        numberOfItems = ([databaseView numberOfItemsInAllGroups] - [databaseView numberOfItemsInGroup:thread.uniqueId]);
     }];
 
     return numberOfItems;

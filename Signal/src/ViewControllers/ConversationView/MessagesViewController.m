@@ -91,8 +91,8 @@
 
 // Always load up to 50 messages when user arrives.
 static const int kYapDatabasePageSize = 50;
-// Never show more than 50*50 = 2,500 messages in conversation view at a time.
-static const int kYapDatabaseMaxPageCount = 50;
+// Never show more than 50*500 = 25k messages in conversation view at a time.
+static const int kYapDatabaseMaxPageCount = 500;
 // Never show more than 6*50 = 300 messages in conversation view when user
 // arrives.
 static const int kYapDatabaseMaxInitialPageCount = 6;
@@ -166,6 +166,19 @@ typedef enum : NSUInteger {
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
 @property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+
+// These two properties must be updated in lockstep.
+//
+// * The first (required) step is to update uiDatabaseConnection using beginLongLivedReadTransaction.
+// * The second (required) step is to update messageMappings.
+// * The third (optional) step is to update the messageMappings range using
+//   updateMessageMappingRangeOptions.
+// * The steps must be done in strict order.
+// * If we do any of the steps, we must do all of the required steps.
+// * We can't use messageMappings in between the first and second steps; e.g.
+//   we can't do any layout, since that uses numberOfItemsInSection: and
+//   interactionAtIndexPath: which use the messageMappings.
+// * If we do the third step, we must call resetContentAndLayout afterward.
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
@@ -372,10 +385,10 @@ typedef enum : NSUInteger {
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
-    [self updateMessageMappingRangeOptions];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
     self.page = 0;
 
@@ -1458,21 +1471,19 @@ typedef enum : NSUInteger {
         // We convert large text messages to attachments
         // which are presented as normal text messages.
         const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+        TSOutgoingMessage *message;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
             SignalAttachment *attachment =
                 [SignalAttachment attachmentWithData:[text dataUsingEncoding:NSUTF8StringEncoding]
                                              dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
                                             filename:nil];
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithAttachment:attachment
-                                                                          inThread:self.thread
-                                                                     messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            message =
+                [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
-            [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithText:text
-                                                                    inThread:self.thread
-                                                               messageSender:self.messageSender]
-                                                 .timestampForSorting];
+            message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
         }
+        [self updateLastVisibleTimestamp:message.timestampForSorting];
 
         self.lastMessageSentDate = [NSDate new];
         [self clearUnreadMessagesIndicator];
@@ -1483,6 +1494,9 @@ typedef enum : NSUInteger {
         [self clearDraft];
         [self finishSendingMessage];
         [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+        if (didAddToProfileWhitelist) {
+            [self ensureDynamicInteractions];
+        }
     }
 }
 
@@ -1647,7 +1661,7 @@ typedef enum : NSUInteger {
             break;
         }
         default: {
-            DDLogWarn(@"using default cell constructor for message: %@", message);
+            OWSFail(@"using default cell constructor for message: %@", message);
             cell = (JSQMessagesCollectionViewCell *)[super collectionView:collectionView
                                                    cellForItemAtIndexPath:indexPath];
             break;
@@ -1752,7 +1766,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Adjusting cell label heights
-
 
 /**
  Due to the usage of JSQMessagesViewController, and it non-conformity to Dynamyc Type
@@ -1899,7 +1912,7 @@ typedef enum : NSUInteger {
 
             // Or when the next message is *not* an outgoing sent/delivered message.
             TSOutgoingMessage *nextMessage = [self nextOutgoingMessage:indexPath];
-            if (nextMessage && nextMessage.messageState != TSOutgoingMessageStateSentToService) {
+            if (nextMessage && nextMessage.messageState == TSOutgoingMessageStateUnsent) {
                 [self updateLastDeliveredMessage:message];
                 return result;
             }
@@ -1921,10 +1934,7 @@ typedef enum : NSUInteger {
         }
     } else if (message.messageType == TSIncomingMessageAdapter && [self.thread isKindOfClass:[TSGroupThread class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message.interaction;
-        NSString *_Nonnull name = [self.contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId];
-        NSAttributedString *senderNameString = [[NSAttributedString alloc] initWithString:name];
-
-        return senderNameString;
+        return [self.contactsManager attributedStringForMessageFooterWithPhoneIdentifier:incomingMessage.authorId];
     }
 
     return nil;
@@ -2288,17 +2298,23 @@ typedef enum : NSUInteger {
 
 - (void)updateMessageMappingRangeOptions
 {
-    // The "page" length may have been increased by loading "prev" pages at the
-    // top of the window.
-    NSUInteger pageLength = kYapDatabasePageSize * (self.page + 1);
-    // The "old" length may have been increased by insertions of new messages
+    // The "old" range length may have been increased by insertions of new messages
     // at the bottom of the window.
     NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    NSUInteger newLength = MAX(pageLength, oldLength);
+    // The "page-based" range length may have been increased by loading "prev" pages at the
+    // top of the window.
+    NSUInteger rangeLength;
+    while (YES) {
+        rangeLength = kYapDatabasePageSize * (self.page + 1);
+        if (rangeLength >= oldLength) {
+            break;
+        }
+        self.page = self.page + 1;
+    }
     YapDatabaseViewRangeOptions *rangeOptions =
-        [YapDatabaseViewRangeOptions flexibleRangeWithLength:newLength offset:0 from:YapDatabaseViewEnd];
+        [YapDatabaseViewRangeOptions flexibleRangeWithLength:rangeLength offset:0 from:YapDatabaseViewEnd];
 
-    rangeOptions.maxLength = MAX(newLength, kYapDatabaseRangeMaxLength);
+    rangeOptions.maxLength = MAX(rangeLength, kYapDatabaseRangeMaxLength);
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
@@ -3211,12 +3227,18 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)attachment.data.length,
         [attachment mimeType]);
-    [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithAttachment:attachment
-                                                                  inThread:self.thread
-                                                             messageSender:self.messageSender]
-                                         .timestampForSorting];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message =
+        [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
+    }];
+    [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
+    }
 }
 
 - (NSURL *)videoTempFolder
@@ -3304,6 +3326,18 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // HACK to work around radar #28167779
+    // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
+    // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
+    // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
+    //
+    // NOTE: It's critical we do this before beginLongLivedReadTransaction.
+    //       layoutIfNeeded triggers layout (obviously) which will update our cells using the current mappings
+    //       but loading cells using interactionAtIndexPath: and messageAtIndexPath:, which will return the
+    //       wrong results if the db connection has been updated but the mappings haven't.
+    [self.collectionView layoutIfNeeded];
+    // ENDHACK to work around radar #28167779
+
     // We need to `beginLongLivedReadTransaction` before we update our
     // models in order to jump to the most recent commit.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -3329,13 +3363,6 @@ typedef enum : NSUInteger {
         }];
         return;
     }
-
-    // HACK to work around radar #28167779
-    // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
-    // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
-    // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
-    [self.collectionView layoutIfNeeded];
-    // ENDHACK to work around radar #28167779
 
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges = nil;
@@ -4287,10 +4314,10 @@ typedef enum : NSUInteger {
         // We need to `beginLongLivedReadTransaction` before we update our
         // mapping in order to jump to the most recent commit.
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
-        [self updateMessageMappingRangeOptions];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
+        [self updateMessageMappingRangeOptions];
     }
 
     self.messageAdapterCache = [[NSCache alloc] init];

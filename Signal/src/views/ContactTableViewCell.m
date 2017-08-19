@@ -22,6 +22,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 @interface ContactTableViewCell ()
 
 @property (nonatomic) IBOutlet UILabel *nameLabel;
+@property (nonatomic) IBOutlet UILabel *profileNameLabel;
 @property (nonatomic) IBOutlet UIImageView *avatarView;
 @property (nonatomic, nullable) UILabel *subtitle;
 
@@ -60,19 +61,37 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
+    UIView *nameContainerView = [UIView containerView];
+    [self.contentView addSubview:nameContainerView];
+
     _nameLabel = [UILabel new];
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
-    [self.contentView addSubview:_nameLabel];
+    [nameContainerView addSubview:_nameLabel];
+
+    _profileNameLabel = [UILabel new];
+    _profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _profileNameLabel.font = [UIFont ows_footnoteFont];
+    _profileNameLabel.textColor = [UIColor grayColor];
+    [nameContainerView addSubview:_profileNameLabel];
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinLeadingToSuperView];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
-    [_nameLabel autoVCenterInSuperview];
-    [_nameLabel autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
-    [_nameLabel autoPinTrailingToSuperView];
+    [_nameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [_nameLabel autoPinWidthToSuperview];
+
+    // profileNameLabel can be zero sized, in which case nameLabel essentially occupies the totality of
+    // nameContainerView's frame.
+    [_profileNameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_nameLabel];
+    [_profileNameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [_profileNameLabel autoPinWidthToSuperview];
+
+    [nameContainerView autoVCenterInSuperview];
+    [nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
+    [nameContainerView autoPinTrailingToSuperView];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -87,8 +106,17 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithRecipientId:(NSString *)recipientId
                  contactsManager:(OWSContactsManager *)contactsManager
 {
-    NSAttributedString *displayName = [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
-    NSMutableAttributedString *attributedText = [displayName mutableCopy];
+    self.nameLabel.attributedText =
+        [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+
+    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+        // Don't display profile name when we have a veritas name in system Contacts
+        self.profileNameLabel.text = nil;
+    } else {
+        // Use profile name, if any is available
+        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+    }
+
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
         blockedLabel.textAlignment = NSTextAlignmentRight;
@@ -99,7 +127,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
         self.accessoryView = blockedLabel;
     }
-    self.nameLabel.attributedText = attributedText;
+
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
                                                                       diameter:kContactTableViewCellAvatarSize
                                                                contactsManager:contactsManager] build];

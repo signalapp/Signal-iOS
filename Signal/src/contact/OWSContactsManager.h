@@ -51,11 +51,14 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - Util
 
+- (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+- (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
+- (NSAttributedString *)attributedStringForMessageFooterWithPhoneIdentifier:(NSString *)recipientId;
 
 @end
 

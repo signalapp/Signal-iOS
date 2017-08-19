@@ -1090,6 +1090,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
 
+/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
+"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
+
+/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
+"PROFILE_NAME_LABEL_FORMAT" = "~%@";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
 
@@ -1110,6 +1116,9 @@
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+
+/* Alert title that indicates the user's profile view is being saved. */
+"PROFILE_VIEW_SAVING" = "Saving...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";

@@ -40,6 +40,10 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
+
     return self;
 }
 
@@ -69,6 +73,10 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     _errorType = errorMessageType;
     _recipientId = recipientId;
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
+
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
 
     return self;
 }

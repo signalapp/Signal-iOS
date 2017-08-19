@@ -94,6 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
                                                      maxRangeSize:(int)maxRangeSize;
 
+// This method should be called right _before_ we send a message to a thread,
+// since we want to auto-add contact threads to the profile whitelist if the
+// conversation was initiated by the local user.
+//
+// Returns YES IFF the thread was just added to the profile whitelist.
++ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread;
+
 @end
 
 NS_ASSUME_NONNULL_END
