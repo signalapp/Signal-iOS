@@ -217,7 +217,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) ShareLocationManager *locationManager;
 
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
@@ -299,7 +298,6 @@ typedef enum : NSUInteger {
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _locationManager = [[ShareLocationManager alloc] init];
 
     [self addNotificationListeners];
 }
@@ -1396,7 +1394,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    (void) [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
+    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier];
 }
 
 - (BOOL)canCall
@@ -2994,48 +2992,6 @@ typedef enum : NSUInteger {
     [self tryToSendAttachmentIfApproved:attachment];
 }
 
-#pragma mark - Location Picking
-
-- (void)pickLocation
-{
-    DDLogInfo(@"Requesting location");
-
-    [self.locationManager requestLocationWithCompletionHandler:^(NSString * _Nonnull stringLocation, UIImage * _Nonnull imageOfLocation) {
-
-        if ([Environment.preferences soundInForeground]) {
-            [JSQSystemSoundPlayer jsq_playMessageSentSound];
-        }
-
-        [self updateLastVisibleTimestamp:[ThreadUtil sendMessageWithText:stringLocation
-                                                                inThread:self.thread
-                                                           messageSender:self.messageSender]
-         .timestampForSorting];
-
-        self.lastMessageSentDate = [NSDate new];
-        [self clearUnreadMessagesIndicator];
-        [self finishSendingMessage];
-        [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
-
-        // Send image
-        SignalAttachment *attachment =
-        [SignalAttachment imageAttachmentWithImage:imageOfLocation
-                                           dataUTI:(NSString *)kUTTypeJPEG
-                                          filename:@"LocationSnapshot"];
-        if (!attachment || [attachment hasError]) {
-            DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                      self.tag,
-                      __PRETTY_FUNCTION__,
-                      attachment ? [attachment errorName] : @"Missing data");
-            [self showErrorAlertForAttachment:attachment];
-            DDLogError(@"failed to pick attachment with error");
-        } else {
-            [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
-        }
-
-        DDLogInfo(@"Sent location and message");
-    }];
-}
-
 #pragma mark - UIImagePickerController
 
 /*
@@ -3759,19 +3715,6 @@ typedef enum : NSUInteger {
     OWSAssert(chooseDocumentImage);
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
-
-    // Location picker
-    UIAlertAction *sendLocationAction =
-    [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LOCATION_BUTTON",
-                                                     @"action sheet button title when sending location")
-                             style:UIAlertActionStyleDefault
-                           handler:^(UIAlertAction *_Nonnull action) {
-                               [self pickLocation];
-                           }];
-    UIImage *shareLocationImage = [UIImage imageNamed:@"actionsheet_location_black"];
-    OWSAssert(chooseDocumentImage);
-    [sendLocationAction setValue:shareLocationImage forKey:@"image"];
-    [actionSheetController addAction:sendLocationAction];
 
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
