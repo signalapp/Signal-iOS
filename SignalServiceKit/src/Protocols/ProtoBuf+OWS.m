@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (OWSAES128Key *)localProfileKey
+- (OWSAES256Key *)localProfileKey
 {
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
     return profileManager.localProfileKey;

@@ -10,10 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager ()
 
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAES128Key *> *profileKeys;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAES256Key *> *profileKeys;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
-@property (nonatomic, readonly) OWSAES128Key *localProfileKey;
+@property (nonatomic, readonly) OWSAES256Key *localProfileKey;
 
 @end
 
@@ -36,17 +36,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (OWSAES128Key *)localProfileKey
+- (OWSAES256Key *)localProfileKey
 {
     if (_localProfileKey == nil) {
-        _localProfileKey = [OWSAES128Key generateRandomKey];
+        _localProfileKey = [OWSAES256Key generateRandomKey];
     }
     return _localProfileKey;
 }
 
 - (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
-    OWSAES128Key *key = [OWSAES128Key keyWithData:profileKey];
+    OWSAES256Key *key = [OWSAES256Key keyWithData:profileKey];
     NSAssert(key, @"Unable to build key. Invalid key data?");
     self.profileKeys[recipientId] = key;
 }
