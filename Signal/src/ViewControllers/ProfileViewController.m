@@ -135,6 +135,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // Avatar
 
     UIView *avatarRow = [UIView containerView];
+    avatarRow.userInteractionEnabled = YES;
+    [avatarRow
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
     [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
@@ -487,6 +490,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         [self.nameTextField becomeFirstResponder];
+    }
+}
+
+- (void)avatarRowTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self avatarTapped];
     }
 }
 
