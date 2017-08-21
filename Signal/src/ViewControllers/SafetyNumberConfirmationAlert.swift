@@ -74,8 +74,7 @@ class SafetyNumberConfirmationAlert: NSObject {
         }
         actionSheetController.addAction(showSafetyNumberAction)
 
-        let dismissAction = UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: "generic cancel text"), style: .cancel)
-        actionSheetController.addAction(dismissAction)
+        actionSheetController.addAction(OWSAlerts.cancelAction())
 
         UIApplication.shared.frontmostViewController?.present(actionSheetController, animated: true)
         return true

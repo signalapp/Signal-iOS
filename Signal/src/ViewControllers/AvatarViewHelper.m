@@ -4,6 +4,7 @@
 
 #import "AvatarViewHelper.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "UIUtil.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -32,10 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
         [UIAlertController alertControllerWithTitle:self.delegate.avatarActionSheetTitle
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *takePictureAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")

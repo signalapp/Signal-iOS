@@ -338,10 +338,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                                              message:confirmationMessage
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:nil];
-    [alertController addAction:cancelAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *unlinkAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
@@ -377,12 +374,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                                      [self unlinkDevice:device success:successCallback];
                                                                  }];
                                       [alertController addAction:retryAction];
-
-                                      UIAlertAction *cancelRetryAction =
-                                          [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                                   style:UIAlertActionStyleCancel
-                                                                 handler:nil];
-                                      [alertController addAction:cancelRetryAction];
+                                      [alertController addAction:[OWSAlerts cancelAction]];
 
                                       dispatch_async(dispatch_get_main_queue(), ^{
                                           [self presentViewController:alertController animated:YES completion:nil];

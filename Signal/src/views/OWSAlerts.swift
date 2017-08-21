@@ -39,4 +39,13 @@ import Foundation
         alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: nil))
         UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
     }
+
+    public class func cancelAction() -> UIAlertAction {
+        let action = UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment:"Label for the cancel button in an alert or action sheet."), style: .cancel) { _ in
+            Logger.debug("Cancel item")
+            // Do nothing.
+        }
+        return action
+    }
+
 }

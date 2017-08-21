@@ -784,6 +784,15 @@ typedef enum : NSUInteger {
         [self createBannerWithTitle:blockStateMessage
                         bannerColor:[UIColor ows_destructiveRedColor]
                         tapSelector:@selector(blockBannerViewWasTapped:)];
+        return;
+    }
+
+    if ([ThreadUtil shouldShowGroupProfileBannerInThread:self.thread blockingManager:self.blockingManager]) {
+        [self createBannerWithTitle:
+                  NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
+                      @"Text for banner in group conversation view that offers to share your profile with this group.")
+                        bannerColor:[UIColor ows_reminderDarkYellowColor]
+                        tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
     }
 }
 
@@ -864,6 +873,30 @@ typedef enum : NSUInteger {
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
+}
+
+- (void)groupProfileWhitelistBannerWasTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        return;
+    }
+
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *whitelistAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+                            @"Button to confirm that user wants to share their profile with a user or group.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+                    [self ensureBannerState];
+                }];
+    [alertController addAction:whitelistAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
+
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -2388,10 +2421,7 @@ typedef enum : NSUInteger {
                          message:nil
                   preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
@@ -2430,10 +2460,7 @@ typedef enum : NSUInteger {
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
@@ -2566,10 +2593,7 @@ typedef enum : NSUInteger {
                                                                              message:alertMessage
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [alertController addAction:dismissAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *resetSessionAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
@@ -2601,10 +2625,7 @@ typedef enum : NSUInteger {
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *showSafteyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
@@ -2657,10 +2678,7 @@ typedef enum : NSUInteger {
                                                            [weakSelf callAction:nil];
                                                        }];
     [alertController addAction:callAction];
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [alertController addAction:dismissAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
                                                                             animated:YES
@@ -2687,10 +2705,7 @@ typedef enum : NSUInteger {
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *blockAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
@@ -2762,12 +2777,7 @@ typedef enum : NSUInteger {
                 }];
     [alertController addAction:leaveAction];
 
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction *_Nonnull action){
-                                                             // Do nothing.
-                                                         }];
-    [alertController addAction:cancelAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -3757,10 +3767,7 @@ typedef enum : NSUInteger {
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:nil];
-    [actionSheetController addAction:cancelAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")

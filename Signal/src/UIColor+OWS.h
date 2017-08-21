@@ -14,6 +14,7 @@
 + (UIColor *)ows_darkGrayColor;
 + (UIColor *)ows_yellowColor;
 + (UIColor *)ows_reminderYellowColor;
++ (UIColor *)ows_reminderDarkYellowColor;
 + (UIColor *)ows_greenColor;
 + (UIColor *)ows_redColor;
 + (UIColor *)ows_blackColor;
