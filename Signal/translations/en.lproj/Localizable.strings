@@ -1084,12 +1084,6 @@
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
 
-/* Instructions for how to change the profile avatar. */
-"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
-
-/* Header title for the profile avatar field of the profile view. */
-"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
 
@@ -1097,10 +1091,19 @@
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+
+/* Label for the profile avatar field of the profile view. */
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile affects how you will appear to other users if you are not in their contacts.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Click here to learn more.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
 
 /* Alert title that indicates the user's profile view is being saved. */
 "PROFILE_VIEW_SAVING" = "Saving...";

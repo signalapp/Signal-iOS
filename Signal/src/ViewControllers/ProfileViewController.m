@@ -38,8 +38,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) UIImageView *cameraImageView;
 
-@property (nonatomic) UILabel *avatarLabel;
-
 @property (nonatomic, nullable) UIImage *avatar;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
@@ -105,14 +103,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
     _cameraImageView.tintColor = [UIColor ows_materialBlueColor];
 
-    _avatarLabel = [UILabel new];
-    _avatarLabel.font = [UIFont ows_regularFontWithSize:14.f];
-    _avatarLabel.textColor = [UIColor ows_materialBlueColor];
-    // TODO: Copy.
-    _avatarLabel.text
-        = NSLocalizedString(@"PROFILE_VIEW_AVATAR_INSTRUCTIONS", @"Instructions for how to change the profile avatar.");
-    [_avatarLabel sizeToFit];
-
     [self updateTableContents];
 }
 
@@ -125,71 +115,115 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     __weak ProfileViewController *weakSelf = self;
 
     // Profile Avatar
-    OWSTableSection *avatarSection = [OWSTableSection new];
-    avatarSection.headerTitle = NSLocalizedString(
-        @"PROFILE_VIEW_AVATAR_SECTION_HEADER", @"Header title for the profile avatar field of the profile view.");
-    const CGFloat kAvatarSizePoints = 100.f;
-    const CGFloat kAvatarTopMargin = 10.f;
-    const CGFloat kAvatarBottomMargin = 10.f;
-    const CGFloat kAvatarVSpacing = 10.f;
-    CGFloat avatarCellHeight
-        = round(kAvatarSizePoints + kAvatarTopMargin + kAvatarBottomMargin + kAvatarVSpacing + self.avatarLabel.height);
-    [avatarSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+    OWSTableSection *section = [OWSTableSection new];
+    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+        UILabel *fieldLabel = [UILabel new];
+        fieldLabel.text = NSLocalizedString(
+            @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
+        fieldLabel.textColor = [UIColor blackColor];
+        fieldLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+        [cell.contentView addSubview:fieldLabel];
+        [fieldLabel autoPinLeadingToSuperView];
+        [fieldLabel autoVCenterInSuperview];
+
+        UITextField *nameTextField = weakSelf.nameTextField;
+        nameTextField.textAlignment = NSTextAlignmentRight;
+        nameTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+        [cell.contentView addSubview:nameTextField];
+        [nameTextField autoPinLeadingToTrailingOfView:fieldLabel margin:10.f];
+        [nameTextField autoPinTrailingToSuperView];
+        [nameTextField autoVCenterInSuperview];
+
+        return cell;
+    }
+                         actionBlock:^{
+                             [weakSelf.nameTextField becomeFirstResponder];
+                         }]];
+
+    const CGFloat kAvatarSizePoints = 50.f;
+    const CGFloat kAvatarVMargin = 4.f;
+    CGFloat avatarCellHeight = round(kAvatarSizePoints + kAvatarVMargin * 2);
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+        UILabel *fieldLabel = [UILabel new];
+        fieldLabel.text = NSLocalizedString(
+            @"PROFILE_VIEW_PROFILE_AVATAR_FIELD", @"Label for the profile avatar field of the profile view.");
+        fieldLabel.textColor = [UIColor blackColor];
+        fieldLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+        [cell.contentView addSubview:fieldLabel];
+        [fieldLabel autoPinLeadingToSuperView];
+        [fieldLabel autoVCenterInSuperview];
 
         AvatarImageView *avatarView = weakSelf.avatarView;
         UIImageView *cameraImageView = weakSelf.cameraImageView;
         [cell.contentView addSubview:avatarView];
         [cell.contentView addSubview:cameraImageView];
         [weakSelf updateAvatarView];
-        [avatarView autoHCenterInSuperview];
-        [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarTopMargin];
+        [avatarView autoPinTrailingToSuperView];
+        [avatarView autoPinLeadingToTrailingOfView:fieldLabel margin:10.f];
+
+        [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarVMargin];
         [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
         [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
         [cameraImageView autoPinTrailingToView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
 
-        UILabel *avatarLabel = weakSelf.avatarLabel;
-        [cell.contentView addSubview:avatarLabel];
-        [avatarLabel autoHCenterInSuperview];
-        [avatarLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:kAvatarBottomMargin];
-
-        cell.userInteractionEnabled = YES;
-        [cell
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTapped:)]];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
-                                                 customRowHeight:avatarCellHeight
-                                                     actionBlock:nil]];
-    [contents addSection:avatarSection];
+                         customRowHeight:avatarCellHeight
+                         actionBlock:^{
+                             [weakSelf avatarTapped];
+                         }]];
+    UIFont *footnoteFont = [UIFont ows_footnoteFont];
+    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-    // Profile Name
-    OWSTableSection *nameSection = [OWSTableSection new];
-    nameSection.headerTitle = NSLocalizedString(
-        @"PROFILE_VIEW_NAME_SECTION_HEADER", @"Label for the profile name field of the profile view.");
-    [nameSection
-        addItem:
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell = [UITableViewCell new];
-                    cell.preservesSuperviewLayoutMargins = YES;
-                    cell.contentView.preservesSuperviewLayoutMargins = YES;
+        UILabel *label = [UILabel new];
+        label.textColor = [UIColor ows_darkGrayColor];
+        label.font = footnoteFont;
+        label.textAlignment = NSTextAlignmentCenter;
+        NSMutableAttributedString *text = [NSMutableAttributedString new];
+        [text appendAttributedString:[[NSAttributedString alloc]
+                                         initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION",
+                                                            @"Description of the user profile.")
+                                             attributes:@{}]];
+        [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
+        [text appendAttributedString:[[NSAttributedString alloc]
+                                         initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
+                                                            @"Link to more information about the user profile.")
+                                             attributes:@{
+                                                 NSUnderlineStyleAttributeName :
+                                                     @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+                                                 NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                                             }]];
+        label.attributedText = text;
+        label.numberOfLines = 0;
+        label.lineBreakMode = NSLineBreakByWordWrapping;
+        [cell.contentView addSubview:label];
+        [label autoPinLeadingToSuperView];
+        [label autoPinTrailingToSuperView];
+        [label autoVCenterInSuperview];
 
-                    UITextField *nameTextField = weakSelf.nameTextField;
-                    [cell.contentView addSubview:nameTextField];
-                    [nameTextField autoPinLeadingToSuperView];
-                    [nameTextField autoPinTrailingToSuperView];
-                    [nameTextField autoVCenterInSuperview];
-
-                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                    return cell;
-                }
-                            actionBlock:nil]];
-    [contents addSection:nameSection];
+        return cell;
+    }
+                         customRowHeight:footnoteFont.lineHeight * 5
+                         actionBlock:^{
+                             [weakSelf openProfileInfoURL];
+                         }]];
+    [contents addSection:section];
 
     self.contents = contents;
 }
@@ -232,11 +266,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self presentViewController:controller animated:YES completion:nil];
 }
 
-- (void)avatarTapped:(UIGestureRecognizer *)sender
+- (void)avatarTapped
 {
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self.avatarViewHelper showChangeAvatarUI];
-    }
+    [self.avatarViewHelper showChangeAvatarUI];
 }
 
 - (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
@@ -361,6 +393,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
     OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
+}
+
+- (void)openProfileInfoURL
+{
+    [UIApplication.sharedApplication
+        openURL:[NSURL URLWithString:@"https://support.whispersystems.org/hc/en-us/articles/115001110511"]];
 }
 
 #pragma mark - UITextFieldDelegate
