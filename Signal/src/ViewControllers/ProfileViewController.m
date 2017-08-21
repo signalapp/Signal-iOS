@@ -336,20 +336,24 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                        action:@selector(backOrSkipButtonPressed)];
             break;
     }
-    if (self.hasUnsavedChanges) {
-        // If we have a unsaved changes, right item should be a "save" button.
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                          target:self
-                                                          action:@selector(updatePressed)];
+
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        [self.skipOrSaveButton
+            setTitle:(self.hasUnsavedChanges
+                             ? NSLocalizedString(
+                                   @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
+                             : NSLocalizedString(@"PROFILE_VIEW_SKIP_BUTTON",
+                                   @"Button to skip the profile view in the registration workflow."))forState
+                    :UIControlStateNormal];
+    } else {
+        if (self.hasUnsavedChanges) {
+            // If we have a unsaved changes, right item should be a "save" button.
+            self.navigationItem.rightBarButtonItem =
+                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                              target:self
+                                                              action:@selector(updatePressed)];
+        }
     }
-    [self.skipOrSaveButton
-        setTitle:(self.hasUnsavedChanges
-                         ? NSLocalizedString(
-                               @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
-                         : NSLocalizedString(@"PROFILE_VIEW_SKIP_BUTTON",
-                               @"Button to skip the profile view in the registration workflow."))forState
-                :UIControlStateNormal];
 }
 
 - (void)updatePressed
@@ -496,11 +500,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)skipOrSaveButtonPressed
 {
-    if (self.hasUnsavedChanges) {
-        [self updateProfile];
-    } else {
-        [self profileCompletedOrSkipped];
-    }
+    [self leaveViewCheckingForUnsavedChanges];
 }
 
 #pragma mark - AvatarViewHelperDelegate
