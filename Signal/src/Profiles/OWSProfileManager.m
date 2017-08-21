@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UserProfile : TSYapDatabaseObject
 
 @property (atomic, readonly) NSString *recipientId;
-@property (atomic, nullable) OWSAES128Key *profileKey;
+@property (atomic, nullable) OWSAES256Key *profileKey;
 @property (nonatomic, nullable) NSString *profileName;
 @property (nonatomic, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
@@ -176,7 +176,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(self.localUserProfile);
     if (!self.localUserProfile.profileKey) {
         DDLogInfo(@"%@ Generating local profile key", self.tag);
-        self.localUserProfile.profileKey = [OWSAES128Key generateRandomKey];
+        self.localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
         // Make sure to save on the local db connection for consistency.
         //
         // NOTE: we do an async read/write here to avoid blocking during app launch path.
@@ -184,7 +184,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self.localUserProfile saveWithTransaction:transaction];
         }];
     }
-    OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES128_KeyByteLength);
+    OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
 
     return self;
 }
@@ -259,11 +259,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Local Profile
 
-- (OWSAES128Key *)localProfileKey
+- (OWSAES256Key *)localProfileKey
 {
     @synchronized(self)
     {
-        OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES128_KeyByteLength);
+        OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
 
         return self.localUserProfile.profileKey;
     }
@@ -787,7 +787,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            OWSAES128Key *_Nullable profileKey = [OWSAES128Key keyWithData:profileKeyData];
+            OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
             if (profileKey == nil) {
                 OWSFail(@"Failed to make profile key for key data");
                 return;
@@ -814,7 +814,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-- (nullable OWSAES128Key *)profileKeyForRecipientId:(NSString *)recipientId
+- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -893,7 +893,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 return;
             }
 
-            OWSAES128Key *profileKeyAtStart = userProfile.profileKey;
+            OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
             NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
             NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
@@ -1074,9 +1074,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Profile Encryption
 
-- (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
+- (nullable NSData *)encryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
 {
-    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
+    OWSAssert(profileKey.keyData.length == kAES256_KeyByteLength);
 
     if (!encryptedData) {
         return nil;
@@ -1085,9 +1085,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [Cryptography encryptAESGCMWithData:encryptedData key:profileKey];
 }
 
-- (nullable NSData *)decryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
+- (nullable NSData *)decryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
 {
-    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
+    OWSAssert(profileKey.keyData.length == kAES256_KeyByteLength);
 
     if (!encryptedData) {
         return nil;
@@ -1096,9 +1096,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [Cryptography decryptAESGCMWithData:encryptedData key:profileKey];
 }
 
-- (nullable NSString *)decryptProfileNameData:(nullable NSData *)encryptedData profileKey:(OWSAES128Key *)profileKey
+- (nullable NSString *)decryptProfileNameData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
 {
-    OWSAssert(profileKey.keyData.length == kAES128_KeyByteLength);
+    OWSAssert(profileKey.keyData.length == kAES256_KeyByteLength);
 
     NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKey];
     if (decryptedData.length < 1) {

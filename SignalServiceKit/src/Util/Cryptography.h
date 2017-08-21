@@ -4,10 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const NSUInteger kAES128_KeyByteLength;
+extern const NSUInteger kAES256_KeyByteLength;
 
 /// Key appropriate for use in AES128 crypto
-@interface OWSAES128Key: NSObject <NSSecureCoding>
+@interface OWSAES256Key : NSObject <NSSecureCoding>
 
 /// Generates new secure random key
 - (instancetype)init;
@@ -60,8 +60,8 @@ typedef NS_ENUM(NSInteger, TSMACType) {
                            outKey:(NSData *_Nonnull *_Nullable)outKey
                         outDigest:(NSData *_Nonnull *_Nullable)outDigest;
 
-+ (nullable NSData *)encryptAESGCMWithData:(NSData *)plainTextData key:(OWSAES128Key *)key;
-+ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES128Key *)key;
++ (nullable NSData *)encryptAESGCMWithData:(NSData *)plaintextData key:(OWSAES256Key *)key;
++ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES256Key *)key;
 
 @end
 

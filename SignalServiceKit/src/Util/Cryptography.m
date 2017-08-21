@@ -2,17 +2,12 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <CommonCrypto/CommonCryptor.h>
-#import <CommonCrypto/CommonHMAC.h>
-
-// CommonCryptorSPI.h is a local copy of a private APple header fetched: Fri Aug 11 18:33:25 EDT 2017
-// from https://opensource.apple.com/source/CommonCrypto/CommonCrypto-60074/include/CommonCryptorSPI.h
-// We use it to provide the not-yet-public AES128-GCM cryptor
-#import "CommonCryptorSPI.h"
-
 #import "Cryptography.h"
 #import "NSData+Base64.h"
 #import "NSData+OWSConstantTimeCompare.h"
+#import <CommonCrypto/CommonCryptor.h>
+#import <CommonCrypto/CommonHMAC.h>
+#import <openssl/evp.h>
 
 #define HMAC256_KEY_LENGTH 32
 #define HMAC256_OUTPUT_LENGTH 32
@@ -21,19 +16,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+// Returned by many OpenSSL functions - indicating success
+const int kOpenSSLSuccess = 1;
+
 // length of initialization nonce
-static const NSUInteger kAESGCM128_IVLength = 12;
+static const NSUInteger kAESGCM256_IVLength = 12;
 
-// length of authentication tag for AES128-GCM
-static const NSUInteger kAESGCM128_TagLength = 16;
+// length of authentication tag for AES256-GCM
+static const NSUInteger kAESGCM256_TagLength = 16;
 
-const NSUInteger kAES128_KeyByteLength = 16;
+const NSUInteger kAES256_KeyByteLength = 32;
 
-@implementation OWSAES128Key
+@implementation OWSAES256Key
 
 + (nullable instancetype)keyWithData:(NSData *)data
 {
-    if (data.length != kAES128_KeyByteLength) {
+    if (data.length != kAES256_KeyByteLength) {
         OWSFail(@"Invalid key length for AES128: %lu", (unsigned long)data.length);
         return nil;
     }
@@ -48,7 +47,7 @@ const NSUInteger kAES128_KeyByteLength = 16;
 
 - (instancetype)init
 {
-    return [self initWithData:[Cryptography generateRandomBytes:kAES128_KeyByteLength]];
+    return [self initWithData:[Cryptography generateRandomBytes:kAES256_KeyByteLength]];
 }
 
 - (instancetype)initWithData:(NSData *)data
@@ -78,8 +77,8 @@ const NSUInteger kAES128_KeyByteLength = 16;
     }
     
     NSData *keyData = [aDecoder decodeObjectOfClass:[NSData class] forKey:@"keyData"];
-    if (keyData.length != kAES128_KeyByteLength) {
-        OWSFail(@"Invalid key length for AES128: %lu", (unsigned long)keyData.length);
+    if (keyData.length != kAES256_KeyByteLength) {
+        OWSFail(@"Invalid key length: %lu", (unsigned long)keyData.length);
         return nil;
     }
     
@@ -386,137 +385,164 @@ const NSUInteger kAES128_KeyByteLength = 16;
     return [encryptedAttachmentData copy];
 }
 
-+ (nullable NSData *)encryptAESGCMWithData:(NSData *)plainTextData key:(OWSAES128Key *)key
++ (nullable NSData *)encryptAESGCMWithData:(NSData *)plaintext key:(OWSAES256Key *)key
 {
-    NSData *initializationVector = [Cryptography generateRandomBytes:kAESGCM128_IVLength];
-    uint8_t *cipherTextBytes = malloc(plainTextData.length);
-    if (cipherTextBytes == NULL) {
-        OWSFail(@"%@ Failed to allocate encryptedBytes", self.tag);
-        return nil;
-    }
-    
-    uint8_t *authTagBytes = malloc(kAESGCM128_TagLength);
-    if (authTagBytes == NULL) {
-        free(cipherTextBytes);
-        OWSFail(@"%@ Failed to allocate authTagBytes", self.tag);
-        return nil;
-    }
-    
-    // NOTE: Since `tagLength` is an input parameter, it seems weird that the signature for tagLength is a `size_t*` rather than just a `size_t`.
-    //
-    // I found a vague reference in the Safari repository implying that this may be a bug:
-    // source: https://www.mail-archive.com/webkit-changes@lists.webkit.org/msg114561.html
-    //
-    // Comment was:
-    //     tagLength is actual an input <rdar://problem/30660074>
-    size_t tagLength = kAESGCM128_TagLength;
+    NSData *initializationVector = [Cryptography generateRandomBytes:kAESGCM256_IVLength];
+    NSMutableData *ciphertext = [NSMutableData dataWithLength:plaintext.length];
+    NSMutableData *authTag = [NSMutableData dataWithLength:kAESGCM256_TagLength];
 
-    CCCryptorStatus status
-        = CCCryptorGCM(kCCEncrypt,       // CCOperation op, /* kCCEncrypt, kCCDecrypt */
-            kCCAlgorithmAES128,          // CCAlgorithm alg,
-            key.keyData.bytes,           // const void *key, /* raw key material */
-            key.keyData.length,          // size_t keyLength,
-            initializationVector.bytes,  // const void *iv,
-            initializationVector.length, // size_t ivLen,
-            NULL,                        // const void *aData,
-            0,                           // size_t aDataLen,
-            plainTextData.bytes,         // const void *dataIn,
-            plainTextData.length,        // size_t dataInLength,
-            cipherTextBytes,             // void *dataOut,
-            authTagBytes,                // const void *tag,
-            &tagLength                   // size_t *tagLength)
-            );
-
-    if (status != kCCSuccess) {
-        OWSFail(@"CCCryptorGCM encrypt failed with status: %d", status);
-        free(cipherTextBytes);
-        free(authTagBytes);
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        OWSFail(@"%@ failed to build context while encrypting", self.tag);
         return nil;
     }
-    
-    // build up return value: initializationVector || cipherText || authTag
+
+    // Initialise the encryption operation.
+    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to init encryption", self.tag);
+        return nil;
+    }
+
+    // Set IV length if default 12 bytes (96 bits) is not appropriate
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)initializationVector.length, NULL) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to set IV length", self.tag);
+        return nil;
+    }
+
+    // Initialise key and IV
+    if (EVP_EncryptInit_ex(ctx, NULL, NULL, key.keyData.bytes, initializationVector.bytes) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to set key and iv while encrypting", self.tag);
+        return nil;
+    }
+
+    int bytesEncrypted = 0;
+    // Provide the message to be encrypted, and obtain the encrypted output.
+    // EVP_EncryptUpdate can be called multiple times if necessary
+    if (EVP_EncryptUpdate(ctx, ciphertext.mutableBytes, &bytesEncrypted, plaintext.bytes, (int)plaintext.length)
+        != kOpenSSLSuccess) {
+        OWSFail(@"%@ encryptUpdate failed", self.tag);
+        return nil;
+    }
+    if (bytesEncrypted != plaintext.length) {
+        OWSFail(@"%@ bytesEncrypted != plainTextData.length", self.tag);
+        return nil;
+    }
+
+    int finalizedBytes = 0;
+    // Finalize the encryption. Normally ciphertext bytes may be written at
+    // this stage, but this does not occur in GCM mode
+    if (EVP_EncryptFinal_ex(ctx, ciphertext.mutableBytes + bytesEncrypted, &finalizedBytes) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to finalize encryption", self.tag);
+        return nil;
+    }
+    if (finalizedBytes != 0) {
+        OWSFail(@"%@ Unexpected finalized bytes written", self.tag);
+        return nil;
+    }
+
+    /* Get the tag */
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, kAESGCM256_TagLength, authTag.mutableBytes) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to write tag", self.tag);
+        return nil;
+    }
+
+    /* Clean up */
+    EVP_CIPHER_CTX_free(ctx);
+
+    // build up return value: initializationVector || ciphertext || authTag
     NSMutableData *encryptedData = [initializationVector mutableCopy];
-    [encryptedData appendBytes:cipherTextBytes length:plainTextData.length];
-    [encryptedData appendBytes:authTagBytes length:tagLength];
+    [encryptedData appendData:ciphertext];
+    [encryptedData appendData:authTag];
 
-    free(cipherTextBytes);
-    free(authTagBytes);
-    
     return [encryptedData copy];
 }
 
-+ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES128Key *)key
++ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES256Key *)key
 {
-    OWSAssert(encryptedData.length > kAESGCM128_IVLength + kAESGCM128_TagLength);
-    NSUInteger cipherTextLength = encryptedData.length - kAESGCM128_IVLength - kAESGCM128_TagLength;
-    
-    // encryptedData layout: initializationVector || cipherText || authTag
-    NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, kAESGCM128_IVLength)];
-    NSData *cipherText = [encryptedData subdataWithRange:NSMakeRange(kAESGCM128_IVLength, cipherTextLength)];
+    OWSAssert(encryptedData.length > kAESGCM256_IVLength + kAESGCM256_TagLength);
+    NSUInteger cipherTextLength = encryptedData.length - kAESGCM256_IVLength - kAESGCM256_TagLength;
+
+    // encryptedData layout: initializationVector || ciphertext || authTag
+    NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, kAESGCM256_IVLength)];
+    NSData *ciphertext = [encryptedData subdataWithRange:NSMakeRange(kAESGCM256_IVLength, cipherTextLength)];
     NSData *authTag =
-        [encryptedData subdataWithRange:NSMakeRange(kAESGCM128_IVLength + cipherTextLength, kAESGCM128_TagLength)];
+        [encryptedData subdataWithRange:NSMakeRange(kAESGCM256_IVLength + cipherTextLength, kAESGCM256_TagLength)];
 
     return
-        [self decryptAESGCMWithInitializationVector:initializationVector cipherText:cipherText authTag:authTag key:key];
+        [self decryptAESGCMWithInitializationVector:initializationVector ciphertext:ciphertext authTag:authTag key:key];
 }
 
 + (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
-                                                cipherText:(NSData *)cipherText
+                                                ciphertext:(NSData *)ciphertext
                                                    authTag:(NSData *)authTagFromEncrypt
-                                                       key:(OWSAES128Key *)key
+                                                       key:(OWSAES256Key *)key
 {
-    void *plainTextBytes = malloc(cipherText.length);
-    if (plainTextBytes == NULL) {
-        OWSFail(@"Failed to malloc plainTextBytes");
+    NSMutableData *plaintext = [NSMutableData dataWithLength:ciphertext.length];
+
+    // Create and initialise the context
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+
+    if (!ctx) {
+        OWSFail(@"%@ failed to build context while decrypting", self.tag);
         return nil;
     }
 
-    void *decryptAuthTagBytes = malloc(kAESGCM128_TagLength);
-    if (decryptAuthTagBytes == NULL) {
-        OWSFail(@"Failed to malloc decryptAuthTagBytes");
-        free(plainTextBytes);
+    // Initialise the decryption operation.
+    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to init decryption", self.tag);
         return nil;
     }
 
-    // NOTE: Since `tagLength` is an input parameter, it seems weird that the signature for tagLength is a `size_t*` rather than just a `size_t`.
-    //
-    // I found a vague reference in the Safari repository implying that this may be a bug:
-    // source: https://www.mail-archive.com/webkit-changes@lists.webkit.org/msg114561.html
-    //
-    // Comment was:
-    //     tagLength is actual an input <rdar://problem/30660074>
-    size_t tagLength = kAESGCM128_TagLength;
-
-    CCCryptorStatus status
-        = CCCryptorGCM(kCCDecrypt,       // CCOperation op, /* kCCEncrypt, kCCDecrypt */
-            kCCAlgorithmAES128,          // CCAlgorithm alg,
-            key.keyData.bytes,           // const void *key,	/* raw key material */
-            key.keyData.length,          // size_t keyLength,
-            initializationVector.bytes,  // const void *iv,
-            initializationVector.length, // size_t ivLen,
-            NULL,                        // const void *aData,
-            0,                           // size_t aDataLen,
-            cipherText.bytes,            // const void *dataIn,
-            cipherText.length,           // size_t dataInLength,
-            plainTextBytes,              // void *dataOut,
-            decryptAuthTagBytes,         // const void *tag,
-            &tagLength                   // size_t *tagLength
-            );
-
-    NSData *decryptAuthTag = [NSData dataWithBytesNoCopy:decryptAuthTagBytes length:tagLength freeWhenDone:YES];
-    if (![decryptAuthTag ows_constantTimeIsEqualToData:authTagFromEncrypt]) {
-        OWSFail(@"Auth tags don't match given tag: %@ computed tag: %@", authTagFromEncrypt, decryptAuthTag);
-        free(plainTextBytes);
+    // Set IV length. Not necessary if this is 12 bytes (96 bits)
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, kAESGCM256_IVLength, NULL) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to set key and iv while decrypting", self.tag);
         return nil;
     }
 
-    if (status != kCCSuccess) {
-        OWSFail(@"CCCryptorGCM decrypt failed with status: %d", status);
-        free(plainTextBytes);
+    // Initialise key and IV
+    if (EVP_DecryptInit_ex(ctx, NULL, NULL, key.keyData.bytes, initializationVector.bytes) != kOpenSSLSuccess) {
+        OWSFail(@"%@ failed to init decryption", self.tag);
         return nil;
     }
 
-    return [NSData dataWithBytesNoCopy:plainTextBytes length:cipherText.length freeWhenDone:YES];
+    // Provide the message to be decrypted, and obtain the plaintext output.
+    // EVP_DecryptUpdate can be called multiple times if necessary
+    int decryptedBytes = 0;
+    if (EVP_DecryptUpdate(ctx, plaintext.mutableBytes, &decryptedBytes, ciphertext.bytes, (int)ciphertext.length)
+        != kOpenSSLSuccess) {
+        OWSFail(@"%@ decryptUpdate failed", self.tag);
+        return nil;
+    }
+
+    if (decryptedBytes != ciphertext.length) {
+        OWSFail(@"%@ Failed to decrypt entire ciphertext", self.tag);
+        return nil;
+    }
+
+    // Set expected tag value. Works in OpenSSL 1.0.1d and later
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)authTagFromEncrypt.length, authTagFromEncrypt.bytes)
+        != kOpenSSLSuccess) {
+        OWSFail(@"%@ Failed to set auth tag in decrypt.", self.tag);
+        return nil;
+    }
+
+    // Finalise the decryption. A positive return value indicates success,
+    // anything else is a failure - the plaintext is not trustworthy.
+    int finalBytes = 0;
+    int decryptStatus = EVP_DecryptFinal_ex(ctx, plaintext.bytes + decryptedBytes, &finalBytes);
+
+    // AESGCM doesn't write any final bytes
+    OWSAssert(finalBytes == 0);
+
+    // Clean up
+    EVP_CIPHER_CTX_free(ctx);
+
+    if (decryptStatus > 0) {
+        return [plaintext copy];
+    } else {
+        OWSFail(@"%@ Decrypt verificaiton failed", self.tag);
+        return nil;
+    }
 }
 
 #pragma mark - Logging
