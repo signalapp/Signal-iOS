@@ -505,7 +505,9 @@ const NSUInteger kAES128_KeyByteLength = 16;
 
     NSData *decryptAuthTag = [NSData dataWithBytesNoCopy:decryptAuthTagBytes length:tagLength freeWhenDone:YES];
     if (![decryptAuthTag ows_constantTimeIsEqualToData:authTagFromEncrypt]) {
-        OWSFail(@"Auth tags don't match given tag: %@ computed tag: %@", authTagFromEncrypt, decryptAuthTag);
+        // This should only happen if the user has changed their profile key, which should only
+        // happen currently if they re-register.
+        DDLogError(@"Auth tags don't match given tag: %@ computed tag: %@", authTagFromEncrypt, decryptAuthTag);
         free(plainTextBytes);
         return nil;
     }
