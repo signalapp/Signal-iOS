@@ -416,8 +416,12 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     int bytesEncrypted = 0;
+
     // Provide the message to be encrypted, and obtain the encrypted output.
-    // EVP_EncryptUpdate can be called multiple times if necessary
+    //
+    // If we wanted to save memory, we could encrypt piece-wise from a plaintext iostream -
+    // feeding each chunk to EVP_EncryptUpdate, which can be called multiple times.
+    // For simplicity, we currently encrypt the entire plaintext in one shot.
     if (EVP_EncryptUpdate(ctx, ciphertext.mutableBytes, &bytesEncrypted, plaintext.bytes, (int)plaintext.length)
         != kOpenSSLSuccess) {
         OWSFail(@"%@ encryptUpdate failed", self.tag);
@@ -440,13 +444,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
         return nil;
     }
 
-    /* Get the tag */
+    // Get the tag
     if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, kAESGCM256_TagLength, authTag.mutableBytes) != kOpenSSLSuccess) {
         OWSFail(@"%@ failed to write tag", self.tag);
         return nil;
     }
 
-    /* Clean up */
+    // Clean up
     EVP_CIPHER_CTX_free(ctx);
 
     // build up return value: initializationVector || ciphertext || authTag
@@ -506,7 +510,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     // Provide the message to be decrypted, and obtain the plaintext output.
-    // EVP_DecryptUpdate can be called multiple times if necessary
+    //
+    // If we wanted to save memory, we could decrypt piece-wise from an iostream -
+    // feeding each chunk to EVP_DecryptUpdate, which can be called multiple times.
+    // For simplicity, we currently decrypt the entire ciphertext in one shot.
     int decryptedBytes = 0;
     if (EVP_DecryptUpdate(ctx, plaintext.mutableBytes, &decryptedBytes, ciphertext.bytes, (int)ciphertext.length)
         != kOpenSSLSuccess) {
@@ -520,7 +527,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     // Set expected tag value. Works in OpenSSL 1.0.1d and later
-    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)authTagFromEncrypt.length, authTagFromEncrypt.bytes)
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)authTagFromEncrypt.length, (void *)authTagFromEncrypt.bytes)
         != kOpenSSLSuccess) {
         OWSFail(@"%@ Failed to set auth tag in decrypt.", self.tag);
         return nil;
@@ -529,7 +536,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     // Finalise the decryption. A positive return value indicates success,
     // anything else is a failure - the plaintext is not trustworthy.
     int finalBytes = 0;
-    int decryptStatus = EVP_DecryptFinal_ex(ctx, plaintext.bytes + decryptedBytes, &finalBytes);
+    int decryptStatus = EVP_DecryptFinal_ex(ctx, (unsigned char *)(plaintext.bytes + decryptedBytes), &finalBytes);
 
     // AESGCM doesn't write any final bytes
     OWSAssert(finalBytes == 0);
@@ -542,7 +549,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     } else {
         // This should only happen if the user has changed their profile key, which should only
         // happen currently if they re-register.
-        DDLogError(@"%@ Decrypt verificaiton failed", self.tag);
+        DDLogError(@"%@ Decrypt verification failed", self.tag);
         return nil;
     }
 }
