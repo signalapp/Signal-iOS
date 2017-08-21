@@ -26,6 +26,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
+#import "Release.h"
 #import "SignalsViewController.h"
 #import "TSMessageAdapter.h"
 #import "UIColor+OWS.h"

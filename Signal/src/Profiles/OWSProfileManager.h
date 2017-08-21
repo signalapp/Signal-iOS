@@ -12,7 +12,7 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class TSThread;
-@class OWSAES128Key;
+@class OWSAES256Key;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -26,7 +26,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 #pragma mark - Local Profile
 
 // These two methods should only be called from the main thread.
-- (OWSAES128Key *)localProfileKey;
+- (OWSAES256Key *)localProfileKey;
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
@@ -59,7 +59,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 #pragma mark - Other User's Profiles
 
-- (nullable OWSAES128Key *)profileKeyForRecipientId:(NSString *)recipientId;
+- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 

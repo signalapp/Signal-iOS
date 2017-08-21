@@ -11,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Cryptography (TestingPrivateMethods)
 
 + (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
-                                                cipherText:(NSData *)cipherText
+                                                ciphertext:(NSData *)ciphertext
                                                    authTag:(NSData *)authTagFromEncrypt
-                                                       key:(OWSAES128Key *)key;
+                                                       key:(OWSAES256Key *)key;
 
 @end
 
@@ -134,8 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *plainTextData = [@"Super🔥secret🔥test🔥data🏁🏁" dataUsingEncoding:NSUTF8StringEncoding];
     // Sanity Check
     XCTAssertEqual(39, plainTextData.length);
-    
-    OWSAES128Key *key = [OWSAES128Key new];
+
+    OWSAES256Key *key = [OWSAES256Key new];
     NSData *_Nullable encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
 
     const NSUInteger ivLength = 12;
@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Sanity Check
     XCTAssertEqual(39, plainTextData.length);
 
-    OWSAES128Key *key = [OWSAES128Key new];
+    OWSAES256Key *key = [OWSAES256Key new];
     NSData *_Nullable encryptedData = [Cryptography encryptAESGCMWithData:plainTextData key:key];
 
     const NSUInteger ivLength = 12;
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *authTag = [encryptedData subdataWithRange:NSMakeRange(ivLength + cipherTextLength, tagLength)];
 
     NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithInitializationVector:initializationVector
-                                                                               cipherText:cipherText
+                                                                               ciphertext:cipherText
                                                                                   authTag:authTag
                                                                                       key:key];
 
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     [bogusAuthTag replaceBytesInRange:NSMakeRange(0, 1) withBytes:&flippedByte];
 
     decryptedData = [Cryptography decryptAESGCMWithInitializationVector:initializationVector
-                                                             cipherText:cipherText
+                                                             ciphertext:cipherText
                                                                 authTag:bogusAuthTag
                                                                     key:key];
 

@@ -8,6 +8,7 @@ target 'Signal' do
     pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master'
     #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
     pod 'PureLayout'
+    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod'
     pod 'Reachability'
     pod 'SignalServiceKit',           path: '.'
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
