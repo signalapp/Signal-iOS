@@ -540,7 +540,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
     if (decryptStatus > 0) {
         return [plaintext copy];
     } else {
-        OWSFail(@"%@ Decrypt verificaiton failed", self.tag);
+        // This should only happen if the user has changed their profile key, which should only
+        // happen currently if they re-register.
+        DDLogError(@"%@ Decrypt verificaiton failed", self.tag);
         return nil;
     }
 }
