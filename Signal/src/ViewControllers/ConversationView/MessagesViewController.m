@@ -791,7 +791,7 @@ typedef enum : NSUInteger {
         [self createBannerWithTitle:
                   NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
                       @"Text for banner in group conversation view that offers to share your profile with this group.")
-                        bannerColor:[UIColor ows_reminderYellowColor]
+                        bannerColor:[UIColor ows_reminderDarkYellowColor]
                         tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
     }
 }
