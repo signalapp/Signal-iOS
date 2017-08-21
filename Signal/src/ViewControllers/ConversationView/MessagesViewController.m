@@ -351,7 +351,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert([NSThread isMainThread]);
 
-    NSString *recipientId = notification.userInfo[kNSNotificationName_ProfileRecipientId];
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
         // Reload all cells.
@@ -364,8 +364,8 @@ typedef enum : NSUInteger {
     OWSAssert([NSThread isMainThread]);
 
     // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationName_ProfileRecipientId];
-    NSData *_Nullable groupId = notification.userInfo[kNSNotificationName_ProfileGroupId];
+    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
         [self ensureDynamicInteractions];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {

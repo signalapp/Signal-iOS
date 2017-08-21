@@ -88,8 +88,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
-NSString *const kNSNotificationName_ProfileRecipientId = @"kNSNotificationName_ProfileRecipientId";
-NSString *const kNSNotificationName_ProfileGroupId = @"kNSNotificationName_ProfileGroupId";
+NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
+NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
 
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
@@ -255,7 +255,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     postNotificationName:kNSNotificationName_OtherUsersProfileDidChange
                                   object:nil
                                 userInfo:@{
-                                    kNSNotificationName_ProfileRecipientId : userProfile.recipientId,
+                                    kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
                                 }];
             }
         });
@@ -673,7 +673,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
                                                                 object:nil
                                                               userInfo:@{
-                                                                  kNSNotificationName_ProfileRecipientId : recipientId,
+                                                                  kNSNotificationKey_ProfileRecipientId : recipientId,
                                                               }];
         });
     });
@@ -715,7 +715,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
                                   object:nil
                                 userInfo:@{
-                                    kNSNotificationName_ProfileRecipientId : recipientId,
+                                    kNSNotificationKey_ProfileRecipientId : recipientId,
                                 }];
             }
         });
@@ -754,16 +754,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 return;
             }
 
-            [self.dbConnection setObject:@(1)
-                                  forKey:groupIdKey
-                            inCollection:kOWSProfileManager_GroupWhitelistCollection];
+            [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
             self.groupProfileWhitelistCache[groupIdKey] = @(YES);
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
                                                                     object:nil
                                                                   userInfo:@{
-                                                                      kNSNotificationName_ProfileGroupId : groupId,
+                                                                      kNSNotificationKey_ProfileGroupId : groupId,
                                                                   }];
             });
         }
