@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.titleLabel.frame = titleFrame;
 
     __block CGFloat y = round(self.titleLabel.bottom + self.buttonVSpacing);
-    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, bool isVisible) {
+    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, BOOL isVisible) {
         if (isVisible) {
             button.hidden = NO;
 
