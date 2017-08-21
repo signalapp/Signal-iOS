@@ -337,6 +337,43 @@ typedef enum : NSUInteger {
                                              selector:@selector(cancelReadTimer)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                               object:nil];
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    OWSAssert(recipientId.length > 0);
+    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+        // Reload all cells.
+        [self resetContentAndLayout];
+    }
+}
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // If profile whitelist just changed, we may want to hide a profile whitelist offer.
+    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+        [self ensureDynamicInteractions];
+    } else if (groupId.length > 0 && self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
+            [self ensureDynamicInteractions];
+        }
+    }
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification

@@ -87,6 +87,9 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
+NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
+NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
+NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
 
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
@@ -251,7 +254,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 [[NSNotificationCenter defaultCenter]
                     postNotificationName:kNSNotificationName_OtherUsersProfileDidChange
                                   object:nil
-                                userInfo:nil];
+                                userInfo:@{
+                                    kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                }];
             }
         });
     }
@@ -655,9 +660,22 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
+            // We just consult the lazy cache, not the db.
+            if (self.userProfileWhitelistCache[recipientId]) {
+                return;
+            }
+
             self.userProfileWhitelistCache[recipientId] = @(YES);
             [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
         }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
+                                                                object:nil
+                                                              userInfo:@{
+                                                                  kNSNotificationKey_ProfileRecipientId : recipientId,
+                                                              }];
+        });
     });
 }
 
@@ -666,9 +684,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(recipientIds);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableArray<NSString *> *newRecipientIds = [NSMutableArray new];
+
         @synchronized(self)
         {
-            NSMutableArray<NSString *> *newRecipientIds = [NSMutableArray new];
+            // We just consult the lazy cache, not the db.
             for (NSString *recipientId in recipientIds) {
                 if (!self.userProfileWhitelistCache[recipientId]) {
                     [newRecipientIds addObject:recipientId];
@@ -688,6 +708,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 }
             }];
         }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for (NSString *recipientId in newRecipientIds) {
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
+                                  object:nil
+                                userInfo:@{
+                                    kNSNotificationKey_ProfileRecipientId : recipientId,
+                                }];
+            }
+        });
     });
 }
 
@@ -713,12 +744,28 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(groupId.length > 0);
 
-    @synchronized(self)
-    {
-        NSString *groupIdKey = [groupId hexadecimalString];
-        [self.dbConnection setObject:@(1) forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
-        self.groupProfileWhitelistCache[groupIdKey] = @(YES);
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            NSString *groupIdKey = [groupId hexadecimalString];
+
+            // We just consult the lazy cache, not the db.
+            if (self.groupProfileWhitelistCache[groupIdKey]) {
+                return;
+            }
+
+            [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+            self.groupProfileWhitelistCache[groupIdKey] = @(YES);
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
+                                                                    object:nil
+                                                                  userInfo:@{
+                                                                      kNSNotificationKey_ProfileGroupId : groupId,
+                                                                  }];
+            });
+        }
+    });
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread
