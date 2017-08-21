@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
     hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                        contactId:(NSString *)contactId
+                      recipientId:(NSString *)recipientId
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
 
@@ -29,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
     _hasBlockOffer = hasBlockOffer;
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
-    OWSAssert(contactId.length > 0);
-    _contactId = contactId;
+    OWSAssert(recipientId.length > 0);
+    _recipientId = recipientId;
 
     return self;
 }

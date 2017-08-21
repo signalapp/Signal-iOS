@@ -1849,9 +1849,10 @@ typedef enum : NSUInteger {
         id<OWSMessageData> previousMessage =
             [self messageAtIndexPath:[NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section]];
 
-        // TODO: What about the contact offers?
-        if ([previousMessage.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-            // Always show timestamp between unread indicator and the following interaction
+        if ([previousMessage.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
+            [previousMessage.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+            // Always show timestamp between unread indicator / contacts offers
+            // and the following interaction.
             return YES;
         }
 
@@ -2639,7 +2640,7 @@ typedef enum : NSUInteger {
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.contactId];
+    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.recipientId];
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
                                        @"Title format for action sheet that offers to block an unknown user."
@@ -2660,7 +2661,7 @@ typedef enum : NSUInteger {
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *_Nonnull action) {
                                    DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
-                                   [self.blockingManager addBlockedPhoneNumber:interaction.contactId];
+                                   [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                                    // Delete the offers.
                                    [self.editingDatabaseConnection
                                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4251,8 +4252,6 @@ typedef enum : NSUInteger {
     TSInteraction *interaction = [self interactionAtIndexPath:indexPath];
 
     // Show any top/bottom labels for all but the unread indicator
-    //
-    // TODO: What about the contact offers?
     return !([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]] ||
         [interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 }

@@ -153,22 +153,30 @@ NS_ASSUME_NONNULL_BEGIN
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
         // Find any "dynamic" interactions and safety number changes.
-        NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
+        //
+        // We use different views for performance reasons.
         __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
         __block OWSContactOffersInteraction *existingContactOffers = nil;
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-        // We use different views for performance reasons.
+        // We want to delete legacy and duplicate interactions.
+        NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
+                              // Delete this legacy interactions, which has been superseded by
+                              // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+                              // Delete this legacy interactions, which has been superseded by
+                              // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
+                              // Delete this legacy interactions, which has been superseded by
+                              // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
                               OWSAssert(!existingUnreadIndicator);
@@ -469,7 +477,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                          hasBlockOffer:shouldHaveBlockOffer
                                                  hasAddToContactsOffer:shouldHaveAddToContactsOffer
                                          hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                             contactId:recipientId];
+                                                           recipientId:recipientId];
             [offersMessage saveWithTransaction:transaction];
 
             DDLogInfo(@"%@ Creating contact offers: %@ (%llu)",

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasBlockOffer;
 @property (nonatomic, readonly) BOOL hasAddToContactsOffer;
 @property (nonatomic, readonly) BOOL hasAddToProfileWhitelistOffer;
-@property (nonatomic, readonly) NSString *contactId;
+@property (nonatomic, readonly) NSString *recipientId;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
     hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                        contactId:(NSString *)contactId NS_DESIGNATED_INITIALIZER;
+                      recipientId:(NSString *)recipientId NS_DESIGNATED_INITIALIZER;
 
 @end
 
