@@ -195,8 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.recipientId);
 
     if (!self.contactsManager.supportsContactEditing) {
-        DDLogError(@"%@ Contact editing not supported", self.tag);
-        OWSAssert(NO);
+        OWSFail(@"%@ Contact editing not supported", self.tag);
         return;
     }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId

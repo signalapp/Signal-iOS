@@ -72,7 +72,7 @@ void AssertIsOnSessionStoreQueue()
 {
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSAssert(NO);
+    OWSFail(@"%@ subDevicesSessions is deprecated", self.tag);
     AssertIsOnSessionStoreQueue();
 
     __block NSDictionary *dictionary;
@@ -202,8 +202,7 @@ void AssertIsOnSessionStoreQueue()
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
                                          if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                             OWSAssert(NO);
-                                             DDLogError(
+                                             OWSFail(
                                                  @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
                                              return;
                                          }
@@ -213,8 +212,7 @@ void AssertIsOnSessionStoreQueue()
                                          [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
                                              id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
                                              if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                                 OWSAssert(NO);
-                                                 DDLogError(@"%@ Unexpected type: %@ in collection.",
+                                                 OWSFail(@"%@ Unexpected type: %@ in collection.",
                                                      tag,
                                                      sessionRecordObject);
                                                  return;
@@ -233,6 +231,18 @@ void AssertIsOnSessionStoreQueue()
                                          }];
                                      }];
     }];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

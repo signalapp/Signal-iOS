@@ -5,6 +5,7 @@
 #import "TSMessageAdapter.h"
 #import "AttachmentSharing.h"
 #import "OWSCall.h"
+#import "OWSContactOffersInteraction.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -226,6 +227,8 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.messageType        = TSInfoMessageAdapter;
     } else if ([interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
         adapter.messageType = TSUnreadIndicatorAdapter;
+    } else if ([interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+        adapter.messageType = OWSContactOffersAdapter;
     } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
         adapter.errorMessageType = errorMessage.errorType;
@@ -315,11 +318,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
     NSString *actionString = NSStringFromSelector(action);
-    DDLogError(@"'%@' action unsupported for TSInteraction: uniqueId=%@, mediaType=%@",
+    OWSFail(@"'%@' action unsupported for TSInteraction: uniqueId=%@, mediaType=%@",
         actionString,
         self.interaction.uniqueId,
         [self.mediaItem class]);
-    OWSAssert(NO);
 }
 
 - (TSAttachmentStream *)attachmentStream

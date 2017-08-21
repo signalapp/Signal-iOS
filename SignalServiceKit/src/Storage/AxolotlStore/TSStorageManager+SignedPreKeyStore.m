@@ -165,10 +165,9 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
                                          NSString *_Nonnull key, id _Nonnull signedPreKeyObject, BOOL *_Nonnull stop) {
                                          i++;
                                          if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
-                                             DDLogError(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
+                                             OWSFail(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
                                                  tag,
                                                  signedPreKeyObject);
-                                             OWSAssert(NO);
                                              return;
                                          }
                                          SignedPreKeyRecord *signedPreKeyRecord

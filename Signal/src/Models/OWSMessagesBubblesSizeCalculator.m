@@ -4,6 +4,8 @@
 
 #import "OWSMessagesBubblesSizeCalculator.h"
 #import "OWSCall.h"
+#import "OWSContactOffersCell.h"
+#import "OWSContactOffersInteraction.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "TSGenericAttachmentAdapter.h"
@@ -40,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSSystemMessageCell *referenceSystemMessageCell;
 @property (nonatomic, readonly) OWSUnreadIndicatorCell *referenceUnreadIndicatorCell;
+@property (nonatomic, readonly) OWSContactOffersCell *referenceContactOffersCell;
 
 @end
 
@@ -52,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self = [super init]) {
         _referenceSystemMessageCell = [OWSSystemMessageCell new];
         _referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
+        _referenceContactOffersCell = [OWSContactOffersCell new];
     }
     return self;
 }
@@ -87,6 +91,12 @@ NS_ASSUME_NONNULL_BEGIN
                 TSUnreadIndicatorInteraction *interaction
                     = (TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction;
                 return [self sizeForUnreadIndicator:interaction cacheKey:cacheKey layout:layout];
+            }
+            case OWSContactOffersAdapter: {
+                id cacheKey = [self cacheKeyForMessageData:messageData];
+                OWSContactOffersInteraction *interaction
+                    = (OWSContactOffersInteraction *)((TSMessageAdapter *)messageData).interaction;
+                return [self sizeForContactOffers:interaction cacheKey:cacheKey layout:layout];
             }
             case TSIncomingMessageAdapter:
             case TSOutgoingMessageAdapter:
@@ -150,6 +160,26 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize result = [self.referenceUnreadIndicatorCell bubbleSizeForInteraction:interaction
                                                             collectionViewWidth:layout.collectionView.width];
+
+    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
+
+    return result;
+}
+
+- (CGSize)sizeForContactOffers:(OWSContactOffersInteraction *)interaction
+                      cacheKey:(id)cacheKey
+                        layout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
+    OWSAssert(interaction);
+    OWSAssert(cacheKey);
+
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize result = [self.referenceContactOffersCell bubbleSizeForInteraction:interaction
+                                                          collectionViewWidth:layout.collectionView.width];
 
     [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
 

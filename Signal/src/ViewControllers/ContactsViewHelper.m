@@ -347,9 +347,8 @@ NS_ASSUME_NONNULL_BEGIN
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
 
     if (!self.contactsManager.supportsContactEditing) {
-        DDLogError(@"%@ Contact editing not supported.", self.tag);
         // Should not expose UI that lets the user get here.
-        OWSAssert(NO);
+        OWSFail(@"%@ Contact editing not supported.", self.tag);
         return;
     }
 

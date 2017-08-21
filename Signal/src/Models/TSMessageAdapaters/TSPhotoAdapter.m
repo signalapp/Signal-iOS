@@ -155,8 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Shouldn't get here, as only supported actions should be exposed via canPerformEditingAction
-    DDLogError(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
-    OWSAssert(NO);
+    OWSFail(@"'%@' action unsupported for %@: attachmentId=%@", actionString, self.class, self.attachmentId);
 }
 
 #pragma mark - OWSMessageMediaAdapter

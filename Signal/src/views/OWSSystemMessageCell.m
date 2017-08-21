@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "NSBundle+JSQMessages.h"
 #import "OWSContactsManager.h"
-#import "TSUnreadIndicatorInteraction.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -315,11 +314,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)tap
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssert(self.interaction);
 
-    [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.systemMessageCellDelegate didTapSystemMessageWithInteraction:self.interaction];
+    }
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)longPress

@@ -833,13 +833,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewController
 {
     if (!self.contactsManager.supportsContactEditing) {
-        DDLogError(@"%@ Contact editing not supported", self.tag);
-        OWSAssert(NO);
+        OWSFail(@"%@ Contact editing not supported", self.tag);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        DDLogError(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
-        OWSAssert(NO);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 

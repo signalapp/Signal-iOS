@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class YapDatabaseConnection;
 @class TSThread;
-@class TSUnreadIndicatorInteraction;
 
 @interface ThreadDynamicInteractions : NSObject
 

@@ -329,12 +329,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {
-                DDLogError(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
+                OWSFail(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
                     self.tag,
                     identityKey,
                     [self identityKeyPair].publicKey,
                     recipientId);
-                OWSAssert(NO);
                 return NO;
             }
         }
@@ -348,8 +347,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
             }
             default: {
-                DDLogError(@"%@ unexpected message direction: %ld", self.tag, (long)direction);
-                OWSAssert(NO);
+                OWSFail(@"%@ unexpected message direction: %ld", self.tag, (long)direction);
                 return NO;
             }
         }
