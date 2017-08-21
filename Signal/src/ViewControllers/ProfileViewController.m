@@ -38,7 +38,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) UIImageView *cameraImageView;
 
-@property (nonatomic) UILabel *avatarLabel;
+@property (nonatomic) UIButton *skipOrSaveButton;
 
 @property (nonatomic, nullable) UIImage *avatar;
 
@@ -74,7 +74,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setTranslucent:NO];
     self.title = NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.");
 
@@ -89,109 +88,178 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)createViews
 {
-    _nameTextField = [UITextField new];
-    _nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-    _nameTextField.textColor = [UIColor ows_materialBlueColor];
-    _nameTextField.placeholder = NSLocalizedString(
-        @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
-    _nameTextField.delegate = self;
-    _nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
-    [_nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    self.view.backgroundColor = [UIColor colorWithRGBHex:0xefeff4];
 
-    _avatarView = [AvatarImageView new];
+    UIView *contentView = [UIView containerView];
+    contentView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:contentView];
+    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [contentView autoPinWidthToSuperview];
+
+    const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);
+    NSMutableArray<UIView *> *rows = [NSMutableArray new];
+
+    // Name
+
+    UIView *nameRow = [UIView containerView];
+    nameRow.userInteractionEnabled = YES;
+    [nameRow
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(nameRowTapped:)]];
+    [rows addObject:nameRow];
+
+    UILabel *nameLabel = [UILabel new];
+    nameLabel.text = NSLocalizedString(
+        @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
+    nameLabel.textColor = [UIColor blackColor];
+    nameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    [nameRow addSubview:nameLabel];
+    [nameLabel autoPinLeadingToSuperView];
+    [nameLabel autoPinHeightToSuperviewWithMargin:5.f];
+
+    UITextField *nameTextField = [UITextField new];
+    _nameTextField = nameTextField;
+    nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
+    nameTextField.textColor = [UIColor ows_materialBlueColor];
+    nameTextField.placeholder = NSLocalizedString(
+        @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
+    nameTextField.delegate = self;
+    nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
+    nameTextField.textAlignment = NSTextAlignmentRight;
+    nameTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    [nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    [nameRow addSubview:nameTextField];
+    [nameTextField autoPinLeadingToTrailingOfView:nameLabel margin:10.f];
+    [nameTextField autoPinTrailingToSuperView];
+    [nameTextField autoVCenterInSuperview];
+
+    // Avatar
+
+    UIView *avatarRow = [UIView containerView];
+    avatarRow.userInteractionEnabled = YES;
+    [avatarRow
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
+    [rows addObject:avatarRow];
+
+    UILabel *avatarLabel = [UILabel new];
+    avatarLabel.text = NSLocalizedString(
+        @"PROFILE_VIEW_PROFILE_AVATAR_FIELD", @"Label for the profile avatar field of the profile view.");
+    avatarLabel.textColor = [UIColor blackColor];
+    avatarLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    [avatarRow addSubview:avatarLabel];
+    [avatarLabel autoPinLeadingToSuperView];
+    [avatarLabel autoVCenterInSuperview];
+
+    self.avatarView = [AvatarImageView new];
 
     UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
     cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-    _cameraImageView.tintColor = [UIColor ows_materialBlueColor];
+    self.cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    self.cameraImageView.tintColor = [UIColor ows_materialBlueColor];
 
-    _avatarLabel = [UILabel new];
-    _avatarLabel.font = [UIFont ows_regularFontWithSize:14.f];
-    _avatarLabel.textColor = [UIColor ows_materialBlueColor];
-    // TODO: Copy.
-    _avatarLabel.text
-        = NSLocalizedString(@"PROFILE_VIEW_AVATAR_INSTRUCTIONS", @"Instructions for how to change the profile avatar.");
-    [_avatarLabel sizeToFit];
+    [avatarRow addSubview:self.avatarView];
+    [avatarRow addSubview:self.cameraImageView];
+    [self updateAvatarView];
+    [self.avatarView autoPinTrailingToSuperView];
+    [self.avatarView autoPinLeadingToTrailingOfView:avatarLabel margin:10.f];
+    const CGFloat kAvatarSizePoints = 50.f;
+    const CGFloat kAvatarVMargin = 4.f;
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarVMargin];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:kAvatarVMargin];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
+    [self.cameraImageView autoPinTrailingToView:self.avatarView];
+    [self.cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView];
 
-    [self updateTableContents];
+    // Information
+
+    UIView *infoRow = [UIView containerView];
+    infoRow.userInteractionEnabled = YES;
+    [infoRow
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
+    [rows addObject:infoRow];
+
+    UILabel *infoLabel = [UILabel new];
+    infoLabel.textColor = [UIColor ows_darkGrayColor];
+    infoLabel.font = [UIFont ows_footnoteFont];
+    infoLabel.textAlignment = NSTextAlignmentCenter;
+    NSMutableAttributedString *text = [NSMutableAttributedString new];
+    [text appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION",
+                                                        @"Description of the user profile.")
+                                         attributes:@{}]];
+    [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
+    [text appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
+                                                        @"Link to more information about the user profile.")
+                                         attributes:@{
+                                             NSUnderlineStyleAttributeName :
+                                                 @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+                                             NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                                         }]];
+    infoLabel.attributedText = text;
+    infoLabel.numberOfLines = 0;
+    infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [infoRow addSubview:infoLabel];
+    [infoLabel autoPinLeadingToSuperView];
+    [infoLabel autoPinTrailingToSuperView];
+    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
+    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
+
+    // Big Button
+
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        UIView *buttonRow = [UIView containerView];
+        [rows addObject:buttonRow];
+
+        UIButton *skipOrSaveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.skipOrSaveButton = skipOrSaveButton;
+        skipOrSaveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
+        [skipOrSaveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        skipOrSaveButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
+        [skipOrSaveButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+        [skipOrSaveButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [buttonRow addSubview:skipOrSaveButton];
+        [skipOrSaveButton autoPinLeadingAndTrailingToSuperview];
+        [skipOrSaveButton autoPinHeightToSuperview];
+        [skipOrSaveButton autoSetDimension:ALDimensionHeight toSize:47.f];
+        [skipOrSaveButton addTarget:self
+                             action:@selector(skipOrSaveButtonPressed)
+                   forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    // Row Layout
+
+    UIView *_Nullable lastRow = nil;
+    for (UIView *row in rows) {
+        [contentView addSubview:row];
+        if (lastRow) {
+            [row autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
+        } else {
+            [row autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:15.f];
+        }
+        [row autoPinLeadingToSuperViewWithMargin:18.f];
+        [row autoPinTrailingToSuperViewWithMargin:18.f];
+        lastRow = row;
+
+        if (lastRow == nameRow || lastRow == avatarRow) {
+            UIView *separator = [UIView containerView];
+            separator.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.f];
+            [contentView addSubview:separator];
+            [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
+            [separator autoPinLeadingToSuperViewWithMargin:18.f];
+            [separator autoPinTrailingToSuperViewWithMargin:18.f];
+            [separator autoSetDimension:ALDimensionHeight toSize:1.f];
+            lastRow = separator;
+        }
+    }
+    [lastRow autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
 }
 
-#pragma mark - Table Contents
-
-- (void)updateTableContents
+- (void)viewWillAppear:(BOOL)animated
 {
-    OWSTableContents *contents = [OWSTableContents new];
+    [super viewWillAppear:animated];
 
-    __weak ProfileViewController *weakSelf = self;
-
-    // Profile Avatar
-    OWSTableSection *avatarSection = [OWSTableSection new];
-    avatarSection.headerTitle = NSLocalizedString(
-        @"PROFILE_VIEW_AVATAR_SECTION_HEADER", @"Header title for the profile avatar field of the profile view.");
-    const CGFloat kAvatarSizePoints = 100.f;
-    const CGFloat kAvatarTopMargin = 10.f;
-    const CGFloat kAvatarBottomMargin = 10.f;
-    const CGFloat kAvatarVSpacing = 10.f;
-    CGFloat avatarCellHeight
-        = round(kAvatarSizePoints + kAvatarTopMargin + kAvatarBottomMargin + kAvatarVSpacing + self.avatarLabel.height);
-    [avatarSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [UITableViewCell new];
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-
-        AvatarImageView *avatarView = weakSelf.avatarView;
-        UIImageView *cameraImageView = weakSelf.cameraImageView;
-        [cell.contentView addSubview:avatarView];
-        [cell.contentView addSubview:cameraImageView];
-        [weakSelf updateAvatarView];
-        [avatarView autoHCenterInSuperview];
-        [avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarTopMargin];
-        [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
-        [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
-        [cameraImageView autoPinTrailingToView:avatarView];
-        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
-
-        UILabel *avatarLabel = weakSelf.avatarLabel;
-        [cell.contentView addSubview:avatarLabel];
-        [avatarLabel autoHCenterInSuperview];
-        [avatarLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:kAvatarBottomMargin];
-
-        cell.userInteractionEnabled = YES;
-        [cell
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTapped:)]];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
-    }
-                                                 customRowHeight:avatarCellHeight
-                                                     actionBlock:nil]];
-    [contents addSection:avatarSection];
-
-    // Profile Name
-    OWSTableSection *nameSection = [OWSTableSection new];
-    nameSection.headerTitle = NSLocalizedString(
-        @"PROFILE_VIEW_NAME_SECTION_HEADER", @"Label for the profile name field of the profile view.");
-    [nameSection
-        addItem:
-            [OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell = [UITableViewCell new];
-                    cell.preservesSuperviewLayoutMargins = YES;
-                    cell.contentView.preservesSuperviewLayoutMargins = YES;
-
-                    UITextField *nameTextField = weakSelf.nameTextField;
-                    [cell.contentView addSubview:nameTextField];
-                    [nameTextField autoPinLeadingToSuperView];
-                    [nameTextField autoPinTrailingToSuperView];
-                    [nameTextField autoVCenterInSuperview];
-
-                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                    return cell;
-                }
-                            actionBlock:nil]];
-    [contents addSection:nameSection];
-
-    self.contents = contents;
+    [self.nameTextField becomeFirstResponder];
 }
 
 #pragma mark - Event Handling
@@ -232,11 +300,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self presentViewController:controller animated:YES completion:nil];
 }
 
-- (void)avatarTapped:(UIGestureRecognizer *)sender
+- (void)avatarTapped
 {
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self.avatarViewHelper showChangeAvatarUI];
-    }
+    [self.avatarViewHelper showChangeAvatarUI];
 }
 
 - (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
@@ -273,12 +339,23 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                        action:@selector(backOrSkipButtonPressed)];
             break;
     }
-    if (self.hasUnsavedChanges) {
-        // If we have a unsaved changes, right item should be a "save" button.
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                          target:self
-                                                          action:@selector(updatePressed)];
+
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        [self.skipOrSaveButton
+            setTitle:(self.hasUnsavedChanges
+                             ? NSLocalizedString(
+                                   @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
+                             : NSLocalizedString(@"PROFILE_VIEW_SKIP_BUTTON",
+                                   @"Button to skip the profile view in the registration workflow."))forState
+                    :UIControlStateNormal];
+    } else {
+        if (self.hasUnsavedChanges) {
+            // If we have a unsaved changes, right item should be a "save" button.
+            self.navigationItem.rightBarButtonItem =
+                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                              target:self
+                                                              action:@selector(updatePressed)];
+        }
     }
 }
 
@@ -407,6 +484,33 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
     self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
     self.cameraImageView.hidden = self.avatar != nil;
+}
+
+- (void)nameRowTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self.nameTextField becomeFirstResponder];
+    }
+}
+
+- (void)avatarRowTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self avatarTapped];
+    }
+}
+
+- (void)infoRowTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [UIApplication.sharedApplication
+            openURL:[NSURL URLWithString:@"https://support.whispersystems.org/hc/en-us/articles/115001110511"]];
+    }
+}
+
+- (void)skipOrSaveButtonPressed
+{
+    [self leaveViewCheckingForUnsavedChanges];
 }
 
 #pragma mark - AvatarViewHelperDelegate
