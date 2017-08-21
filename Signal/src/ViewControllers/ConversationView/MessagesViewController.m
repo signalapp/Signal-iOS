@@ -884,7 +884,7 @@ typedef enum : NSUInteger {
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *leaveAction = [UIAlertAction
+    UIAlertAction *whitelistAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
                             @"Button to confirm that user wants to share their profile with a user or group.")
                   style:UIAlertActionStyleDestructive
@@ -893,7 +893,7 @@ typedef enum : NSUInteger {
 
                     [self ensureBannerState];
                 }];
-    [alertController addAction:leaveAction];
+    [alertController addAction:whitelistAction];
     [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
