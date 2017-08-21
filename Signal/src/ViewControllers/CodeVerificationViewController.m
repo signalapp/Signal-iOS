@@ -3,10 +3,8 @@
 //
 
 #import "CodeVerificationViewController.h"
-#import "AppDelegate.h"
+#import "ProfileViewController.h"
 #import "Signal-Swift.h"
-#import "SignalsNavigationController.h"
-#import "SignalsViewController.h"
 #import "StringUtil.h"
 #import "UIViewController+OWS.h"
 #import <PromiseKit/AnyPromise.h>
@@ -269,14 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.tag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
-
-                SignalsViewController *homeView = [SignalsViewController new];
-                homeView.newlyRegisteredUser = YES;
-                SignalsNavigationController *navigationController =
-                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-                AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                appDelegate.window.rootViewController = navigationController;
-                OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
+                [weakSelf vericationWasCompleted];
             });
         })
         .catch(^(NSError *_Nonnull error) {
@@ -290,6 +281,10 @@ NS_ASSUME_NONNULL_BEGIN
         });
 }
 
+- (void)vericationWasCompleted
+{
+    [ProfileViewController presentForRegistration:self.navigationController];
+}
 
 - (void)presentAlertWithVerificationError:(NSError *)error
 {

@@ -827,10 +827,7 @@ NS_ASSUME_NONNULL_BEGIN
     updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
     updateGroupViewController.thread = (TSGroupThread *)self.thread;
     updateGroupViewController.mode = mode;
-
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:updateGroupViewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [self.navigationController pushViewController:updateGroupViewController animated:YES];
 }
 
 - (void)presentContactViewController

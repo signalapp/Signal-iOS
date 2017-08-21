@@ -2,8 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "OWSNavigationController.h"
 
-@interface SignalsNavigationController : UINavigationController
+@interface SignalsNavigationController : OWSNavigationController
 
 @end

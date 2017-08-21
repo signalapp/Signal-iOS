@@ -316,8 +316,7 @@
 
 - (void)showProfile
 {
-    ProfileViewController *vc = [[ProfileViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
+    [ProfileViewController presentForAppSettings:self.navigationController];
 }
 
 - (void)showAdvanced
