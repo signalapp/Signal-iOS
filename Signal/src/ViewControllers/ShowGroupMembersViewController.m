@@ -227,11 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [weakSelf resetAllNoLongerVerified];
                 }];
     [actionSheetController addAction:verifyAction];
-
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:nil];
-    [actionSheetController addAction:cancelAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
@@ -390,10 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              }]];
     }
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }

@@ -249,12 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   }]];
     }
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:^(UIAlertAction *action) {
-                                                              cancelBlock();
-                                                          }];
-    [alertController addAction:dismissAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [viewController presentViewController:alertController animated:YES completion:nil];
 

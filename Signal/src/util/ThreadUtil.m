@@ -422,7 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (!hasUnwhitelistedMember) {
                 // Don't show offer in group thread if all members are already individually
                 // whitelisted.
-                hasUnwhitelistedMember = YES;
+                shouldHaveAddToProfileWhitelistOffer = NO;
             }
         }
 
@@ -529,6 +529,35 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return result;
+}
+
++ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager
+{
+    OWSAssert(thread);
+    OWSAssert(blockingManager);
+
+    if (!thread.isGroupThread) {
+        return NO;
+    }
+    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
+        return NO;
+    }
+    if (![OWSProfileManager.sharedManager hasLocalProfile]) {
+        return NO;
+    }
+    BOOL hasUnwhitelistedMember = NO;
+    NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
+    for (NSString *recipientId in thread.recipientIdentifiers) {
+        if (![blockedPhoneNumbers containsObject:recipientId]
+            && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:recipientId]) {
+            hasUnwhitelistedMember = YES;
+            break;
+        }
+    }
+    if (!hasUnwhitelistedMember) {
+        return NO;
+    }
+    return YES;
 }
 
 + (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread

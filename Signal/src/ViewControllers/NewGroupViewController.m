@@ -572,9 +572,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                          handler:^(UIAlertAction *action) {
                                              [self.navigationController popViewControllerAnimated:YES];
                                          }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                   style:UIAlertActionStyleCancel
-                                                 handler:nil]];
+    [controller addAction:[OWSAlerts cancelAction]];
     [self presentViewController:controller animated:YES completion:nil];
 }
 

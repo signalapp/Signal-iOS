@@ -354,9 +354,7 @@
                                                       handler:^(UIAlertAction *action) {
                                                           [self proceedToUnregistration];
                                                       }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                        style:UIAlertActionStyleCancel
-                                                      handler:nil]];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }

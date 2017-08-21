@@ -294,9 +294,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                          handler:^(UIAlertAction *action) {
                                              [self profileCompletedOrSkipped];
                                          }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                                   style:UIAlertActionStyleCancel
-                                                 handler:nil]];
+    [controller addAction:[OWSAlerts cancelAction]];
     [self presentViewController:controller animated:YES completion:nil];
 }
 

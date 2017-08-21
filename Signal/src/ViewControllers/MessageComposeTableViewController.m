@@ -516,12 +516,6 @@ NS_ASSUME_NONNULL_BEGIN
                                             message:confirmMessage
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction *action) {
-                                                             DDLogDebug(@"Cancel action");
-                                                         }];
-
     UIAlertAction *okAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"OK", @"")
                   style:UIAlertActionStyleDefault
@@ -545,7 +539,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                 }];
 
-    [alertController addAction:cancelAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
     [alertController addAction:okAction];
     self.searchBar.text = @"";
 

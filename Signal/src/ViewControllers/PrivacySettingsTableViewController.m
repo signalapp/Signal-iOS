@@ -116,10 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         @"Alert message before user confirms clearing history")
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [alertController addAction:dismissAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *deleteAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")

@@ -774,6 +774,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showShareProfileAlert
 {
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
@@ -785,14 +787,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [self shareProfile];
                 }];
     [alertController addAction:leaveAction];
-
-    UIAlertAction *cancelAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                  style:UIAlertActionStyleCancel
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
-                }];
-    [alertController addAction:cancelAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -872,6 +867,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didTapLeaveGroup
 {
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
                                             message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")
@@ -884,14 +881,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [self leaveGroup];
                 }];
     [alertController addAction:leaveAction];
-
-    UIAlertAction *cancelAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                  style:UIAlertActionStyleCancel
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
-                }];
-    [alertController addAction:cancelAction];
+    [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -1114,10 +1104,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              }]];
     }
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
-                                                            style:UIAlertActionStyleCancel
-                                                          handler:nil];
-    [actionSheetController addAction:dismissAction];
+    [actionSheetController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
