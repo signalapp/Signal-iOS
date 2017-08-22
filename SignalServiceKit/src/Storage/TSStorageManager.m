@@ -33,6 +33,91 @@ static const NSString *const databaseName = @"Signal.sqlite";
 static NSString *keychainService          = @"TSKeyChainService";
 static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
+static BOOL isDatabaseInitializedFlag = NO;
+
+NSObject *isDatabaseInitializedFlagLock()
+{
+    static NSObject *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [NSObject new];
+    });
+    return instance;
+}
+
+BOOL isDatabaseInitialized()
+{
+    @synchronized(isDatabaseInitializedFlagLock())
+    {
+        return isDatabaseInitializedFlag;
+    }
+}
+
+void setDatabaseInitialized()
+{
+    @synchronized(isDatabaseInitializedFlagLock())
+    {
+        isDatabaseInitializedFlag = YES;
+    }
+}
+
+#pragma mark -
+
+@interface YapDatabaseConnection ()
+
+- (id)initWithDatabase:(YapDatabase *)inDatabase;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabaseConnection : YapDatabaseConnection
+
+@end
+
+#pragma mark -
+
+@implementation OWSDatabaseConnection
+
+- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+{
+    OWSAssert(isDatabaseInitialized());
+
+    [super readWriteWithBlock:block];
+}
+
+@end
+
+#pragma mark -
+
+@interface YapDatabase ()
+
+- (void)addConnection:(YapDatabaseConnection *)connection;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabase : YapDatabase
+
+@end
+
+#pragma mark -
+
+@implementation OWSDatabase
+
+- (YapDatabaseConnection *)newConnection
+{
+    YapDatabaseConnection *connection = [[OWSDatabaseConnection alloc] initWithDatabase:self];
+
+    [self addConnection:connection];
+    return connection;
+}
+
+@end
+
+#pragma mark -
+
 @interface TSStorageManager ()
 
 @property (nullable, atomic) YapDatabase *database;
@@ -152,10 +237,18 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         return databasePassword;
     };
 
+#ifdef DEBUG
+    _database = [[OWSDatabase alloc] initWithPath:[self dbPath]
+                                       serializer:NULL
+                                     deserializer:[[self class] logOnFailureDeserializer]
+                                          options:options];
+#else
     _database = [[YapDatabase alloc] initWithPath:[self dbPath]
                                        serializer:NULL
                                      deserializer:[[self class] logOnFailureDeserializer]
                                           options:options];
+#endif
+
     if (!_database) {
         return NO;
     }
@@ -197,6 +290,8 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
+
+    setDatabaseInitialized();
 
     // Run the blocking migrations.
     //
