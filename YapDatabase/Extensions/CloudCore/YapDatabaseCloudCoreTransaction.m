@@ -55,6 +55,10 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 {
 	YDBLogAutoTrace();
 	
+	BOOL needsCreateTables = NO;
+	BOOL needsMigrateTables = NO;
+	BOOL needsPopulateTables = NO;
+	
 	// Capture NEW values
 	//
 	// classVersion - the internal version number of YapDatabaseView implementation
@@ -77,40 +81,51 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	{
 		// First time registration
 		
-		if (![self createTables]) return NO;
-		if (![self populateTables]) return NO;
-		
-		[self setIntValue:classVersion forExtensionKey:ext_key_classVersion persistent:YES];
-		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
+		needsCreateTables = YES;
+		needsPopulateTables = YES;
 	}
 	else if (oldClassVersion != classVersion)
 	{
 		// Upgrading from older codebase
-		//
-		// Reserved for potential future use.
-		// Code would likely need to do something similar to the following:
-		//
-		// - migrateTables
-		// - restorePreviousOperations
-		// - populateTables
 		
-		NSAssert(NO, @"Attempting invalid upgrade path !");
-		return NO;
+		needsMigrateTables = YES;
 	}
-	else if (![versionTag isEqualToString:oldVersionTag])
+	
+	if (hasOldClassVersion && ![versionTag isEqualToString:oldVersionTag])
 	{
 		// Handle user-indicated change
 		
-		if (![self restorePreviousOperations]) return NO;
-		if (![self populateTables]) return NO;
-		
-		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
+		needsPopulateTables = YES;
 	}
 	else
 	{
 		// Restoring an up-to-date extension from a previous run.
+	}
+	
+	// We have all the information we need.
+	// Now just execute the plan.
+	
+	if (needsCreateTables || needsMigrateTables)
+	{
+		if (needsCreateTables)
+		{
+			if (![self createTables]) return NO;
+		}
+		else
+		{
+			if (![self migrateTables]) return NO;
+		}
 		
-		if (![self restorePreviousOperations]) return NO;
+		[self setIntValue:classVersion forExtensionKey:ext_key_classVersion persistent:YES];
+	}
+	
+	if (![self restorePreviousOperations]) return NO;
+	
+	if (needsPopulateTables)
+	{
+		if (![self populateTables]) return NO;
+		
+		[self setStringValue:versionTag forExtensionKey:ext_key_versionTag persistent:YES];
 	}
 	
 	return YES;
@@ -147,7 +162,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	
 	int status;
 	
-	// Pipeline Table
+	// CREATE: Pipeline Table
 	//
 	// | rowid | name |
 	
@@ -168,9 +183,9 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		return NO;
 	}
 	
-	// Queue Table
+	// CREATE: Queue Table
 	//
-	// | rowid | pipelineID | graphID | prevGraphID | operation |
+	// | rowid | pipelineID | graphID | operation |
 	
 	YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], queueTableName);
 	
@@ -178,8 +193,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	  @"CREATE TABLE IF NOT EXISTS \"%@\""
 	  @" (\"rowid\" INTEGER PRIMARY KEY,"
 	  @"  \"pipelineID\" INTEGER,"         // Foreign key for pipeline table (may be null)
-	  @"  \"graphID\" BLOB NOT NULL,"      // UUID in raw form (128 bits)
-	  @"  \"prevGraphID\" BLOB,"           // UUID in raw form (128 bits)
+	  @"  \"graphID\" INTEGER NOT NULL,"   // Graph order (uint64_t)
 	  @"  \"operation\" BLOB"              // Serialized operation
 	  @" );", queueTableName];
 	
@@ -194,7 +208,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	
 	if (parentConnection->parent->options.enableTagSupport)
 	{
-		// Tag Table
+		// CREATE: Tag Table
 		//
 		// | key | identifier | tag |
 		
@@ -220,7 +234,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	
 	if (parentConnection->parent->options.enableAttachDetachSupport)
 	{
-		// Mapping Table
+		// CREATE: Mapping Table
 		//
 		// | database_rowid | cloudURI |
 		//
@@ -273,8 +287,290 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	return YES;
 }
 
+- (BOOL)migrateTables
+{
+	YDBLogAutoTrace();
+	
+	sqlite3 *db = databaseTransaction->connection->db;
+	
+	NSString *old_queueTableName = [parentConnection->parent queueV1TableName];
+	NSString *new_queueTableName = [parentConnection->parent queueTableName];
+	
+	int status;
+	
+	// STEP 1 of 5
+	//
+	// CREATE: (New) Queue Table
+	//
+	// | rowid | pipelineID | graphID | operation |
+	{
+		YDBLogVerbose(@"Creating CloudCore table for registeredName(%@): %@", [self registeredName], new_queueTableName);
+		
+		NSString *createQueueTable = [NSString stringWithFormat:
+		  @"CREATE TABLE IF NOT EXISTS \"%@\""
+		  @" (\"rowid\" INTEGER PRIMARY KEY,"
+		  @"  \"pipelineID\" INTEGER,"         // Foreign key for pipeline table (may be null)
+		  @"  \"graphID\" INTEGER NOT NULL,"   // Graph order (uint64_t)
+		  @"  \"operation\" BLOB"              // Serialized operation
+		  @" );", new_queueTableName];
+		
+		YDBLogVerbose(@"%@", createQueueTable);
+		status = sqlite3_exec(db, [createQueueTable UTF8String], NULL, NULL, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@ - Failed creating table (%@): %d %s",
+			            THIS_METHOD, new_queueTableName, status, sqlite3_errmsg(db));
+			return NO;
+		}
+	}
+	
+	// STEP 2 of 5
+	//
+	// - Enumerate the old_queueTable
+	// - Parse graphOrder information
+	
+	NSMutableDictionary *old_table = [NSMutableDictionary dictionary];
+	
+	NSString *const key_pipelineID = @"pipelineID";
+	NSString *const key_graphUUID  = @"graphUUID";
+	NSString *const key_operation  = @"operation";
+	
+	NSMutableDictionary *graphOrderPerPipeline = [NSMutableDictionary dictionary];
+	NSMutableDictionary *operationCountPerGraph = [NSMutableDictionary dictionary];
+	
+	{
+		sqlite3_stmt *statement;
+		
+		NSString *enumerate = [NSString stringWithFormat:
+		  @"SELECT * FROM \"%@\";", old_queueTableName];
+		
+		int const column_idx_rowid       = SQLITE_COLUMN_START +  0;
+		int const column_idx_pipelineID  = SQLITE_COLUMN_START +  1; // INTEGER
+		int const column_idx_graphID     = SQLITE_COLUMN_START +  2; // BLOB NOT NULL (UUID in raw form)
+		int const column_idx_prevGraphID = SQLITE_COLUMN_START +  3; // BLOB          (UUID in raw form)
+		int const column_idx_operation   = SQLITE_COLUMN_START +  4; // BLOB
+		
+		status = sqlite3_prepare_v2(db, [enumerate UTF8String], -1, &statement, NULL);
+		if (status != SQLITE_OK)
+		{
+			YDBLogError(@"%@: Error creating prepared statement (B): %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+			return NO;
+		}
+		
+		while ((status = sqlite3_step(statement)) == SQLITE_ROW)
+		{
+			// - Extract rowid
+			
+			int64_t rowid = sqlite3_column_int64(statement, column_idx_rowid);
+			
+			// - Extract pipeline information
+			
+			id pipelineID = nil;
+			
+			int column_type = sqlite3_column_type(statement, column_idx_pipelineID);
+			if (column_type == SQLITE_NULL)
+			{
+				pipelineID = YapDatabaseCloudCoreDefaultPipelineName;
+			}
+			else
+			{
+				int64_t pipelineRowid = sqlite3_column_int64(statement, column_idx_pipelineID);
+				pipelineID = @(pipelineRowid);
+			}
+			
+			// - Extract graphUUID & prevGraphUUID information
+			// - Add to graphOrderPerPipeline
+			
+			NSUUID *graphUUID = nil;
+			{
+				int blobSize = sqlite3_column_bytes(statement, column_idx_graphID);
+				if (blobSize == sizeof(uuid_t))
+				{
+					const void *blob = sqlite3_column_blob(statement, column_idx_graphID);
+					graphUUID = [[NSUUID alloc] initWithUUIDBytes:(const unsigned char *)blob];
+				}
+				else
+				{
+					NSAssert(NO, @"Invalid UUID blobSize: graphUUID");
+				}
+			}
+			
+			NSUUID *prevGraphUUID = nil;
+			{
+				int blobSize = sqlite3_column_bytes(statement, column_idx_prevGraphID);
+				if (blobSize == sizeof(uuid_t))
+				{
+					const void *blob = sqlite3_column_blob(statement, column_idx_prevGraphID);
+					prevGraphUUID = [[NSUUID alloc] initWithUUIDBytes:(const unsigned char *)blob];
+				}
+				else if (blobSize > 0)
+				{
+					NSAssert(NO, @"Invalid UUID blobSize: prevGraphUUID");
+				}
+			}
+			
+			// Extract operation info
+			
+			const void *blob = sqlite3_column_blob(statement, column_idx_operation);
+			int blobSize = sqlite3_column_bytes(statement, column_idx_operation);
+			
+			NSData *operationBlob = [NSData dataWithBytes:(void *)blob length:blobSize];
+			
+			// Store row information for migration
+			
+			old_table[@(rowid)] = @{
+				key_pipelineID : pipelineID,
+				key_graphUUID  : graphUUID,
+				key_operation  : operationBlob
+			};
+			
+			// Store graph information for parsing
+			
+			NSMutableDictionary *graphOrder = graphOrderPerPipeline[pipelineID];
+			if (graphOrder == nil)
+			{
+				graphOrder = graphOrderPerPipeline[pipelineID] = [NSMutableDictionary dictionary];
+			}
+			
+			if (prevGraphUUID)
+				graphOrder[prevGraphUUID] = graphUUID;
+			else
+				graphOrder[[NSNull null]] = graphUUID;
+			
+			NSNumber *count = operationCountPerGraph[graphUUID];
+			if (count == nil)
+			{
+				operationCountPerGraph[graphUUID] = @(1);
+			}
+			else
+			{
+				operationCountPerGraph[graphUUID] = @(count.unsignedLongLongValue + 1);
+			}
+		}
+		
+		if (status != SQLITE_DONE)
+		{
+			YDBLogError(@"%@: Error executing statement (A): %d %s", THIS_METHOD, status, sqlite3_errmsg(db));
+		}
+		
+		sqlite3_finalize(statement);
+		statement = NULL;
+	}
+	
+	// STEP 3 of 5
+	//
+	// Order the graphs (per pipeline)
+	
+	NSMutableDictionary *sortedGraphsPerPipeline = [NSMutableDictionary dictionary];
+	
+	[graphOrderPerPipeline enumerateKeysAndObjectsUsingBlock:
+	    ^(NSString *pipelineName, NSMutableDictionary *graphOrder, BOOL *stop)
+	{
+		__block NSUUID *oldestGraphUUID = nil;
+		
+		[graphOrder enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+			
+			// key           -> value
+			// prevGraphUUID -> graphUUID
+			
+			__unsafe_unretained id prevGraphUUID = key;
+			__unsafe_unretained NSUUID *graphUUID = (NSUUID *)value;
+			
+			if (prevGraphUUID == [NSNull null])
+			{
+				oldestGraphUUID = graphUUID;
+				*stop = YES;
+			}
+			else
+			{
+				NSNumber *operationCount = operationCountPerGraph[prevGraphUUID];
+				if (operationCount == nil)
+				{
+					// No operations for the referenced prevGraphUUID.
+					// This is because we finished that graph, and thus deleted all its operations.
+					
+					oldestGraphUUID = graphUUID;
+					*stop = YES;
+				}
+			}
+		}];
+		
+		NSMutableDictionary *sortedGraphs = [NSMutableDictionary dictionaryWithCapacity:[graphOrder count]];
+		NSUInteger index = 0;
+		
+		NSUUID *graphUUID = oldestGraphUUID;
+		while (graphUUID)
+		{
+			sortedGraphs[graphUUID] = @(index);
+			
+			graphUUID = graphOrder[graphUUID];
+			index++;
+		}
+		
+		sortedGraphsPerPipeline[pipelineName] = sortedGraphs;
+	}];
+	
+	// Step 4 of 5
+	//
+	// Populate the new_queueTable
+	
+	{
+		int status;
+		
+		sqlite3_stmt *statement = [parentConnection queueTable_insertStatement];
+		
+		int const bind_idx_pipelineID    = SQLITE_BIND_START + 0;  // INTEGER
+		int const bind_idx_graphID       = SQLITE_BIND_START + 1;  // INTEGER NOT NULL
+		int const bind_idx_operation     = SQLITE_BIND_START + 2;  // BLOB
+		
+		for (NSDictionary *old_row in [old_table objectEnumerator])
+		{
+			id pipelineID         = old_row[key_pipelineID];
+			NSUUID *graphUUID     = old_row[key_graphUUID];
+			NSData *operationBlob = old_row[key_operation];
+			
+			NSNumber *graphID = sortedGraphsPerPipeline[pipelineID][graphUUID];
+			
+			if ([pipelineID isKindOfClass:[NSNumber class]])
+			{
+				sqlite3_bind_int64(statement, bind_idx_pipelineID, (int64_t)[pipelineID longLongValue]);
+			}
+			
+			sqlite3_bind_int64(statement, bind_idx_graphID, (int64_t)[graphID unsignedLongLongValue]);
+			
+			sqlite3_bind_blob(statement, bind_idx_operation,
+			                  operationBlob.bytes, (int)operationBlob.length, SQLITE_STATIC);
+	
+			int status = sqlite3_step(statement);
+			if (status != SQLITE_DONE)
+			{
+				YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
+								status, sqlite3_errmsg(databaseTransaction->connection->db));
+			}
+			
+			sqlite3_clear_bindings(statement);
+			sqlite3_reset(statement);
+		}
+	}
+	
+	// Step 5 of 5
+	//
+	// Delete the old_queueTable
+	
+	NSString *dropTable = [NSString stringWithFormat:@"DROP TABLE IF EXISTS \"%@\";", old_queueTableName];
+	
+	status = sqlite3_exec(db, [dropTable UTF8String], NULL, NULL, NULL);
+	if (status != SQLITE_OK)
+	{
+		YDBLogError(@"%@ - Failed dropping table (%@): %d %s",
+		            THIS_METHOD, old_queueTableName, status, sqlite3_errmsg(db));
+	}
+	
+	return YES;
+}
+
 /**
- * Restores
+ * Restores all operations by loading them into memory, and sending to the associated pipeline(s).
 **/
 - (BOOL)restorePreviousOperations
 {
@@ -283,7 +579,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	NSMutableDictionary *rowidToPipelineName = [NSMutableDictionary dictionary];
 	NSMutableDictionary *sortedGraphsPerPipeline = [NSMutableDictionary dictionary];
 	
-	// Step 1 of 7:
+	// Step 1 of 6:
 	//
 	// Read pipeline table
 	{
@@ -326,7 +622,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		statement = NULL;
 	}
 	
-	// Step 2 of 7:
+	// Step 2 of 6:
 	//
 	// Update pipeline table
 	{
@@ -408,18 +704,17 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		}
 	}
 	
-	// Step 3 of 7:
+	// Step 3 of 6:
 	//
 	// Set pipeline.rowid properties
 	
 	[parentConnection->parent restorePipelineRowids:rowidToPipelineName];
 	
-	// Step 4 of 7:
+	// Step 4 of 6:
 	//
 	// Read queue table
 	
-	NSMutableDictionary *graphOrderPerPipeline = [NSMutableDictionary dictionary];
-	NSMutableDictionary *operationsPerPipeline = [NSMutableDictionary dictionary];
+	NSMutableDictionary *operations = [NSMutableDictionary dictionary];
 	
 	{
 		sqlite3_stmt *statement;
@@ -429,9 +724,8 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		
 		int const column_idx_rowid       = SQLITE_COLUMN_START +  0; // INTEGER PRIMARY KEY
 		int const column_idx_pipelineID  = SQLITE_COLUMN_START +  1; // INTEGER
-		int const column_idx_graphID     = SQLITE_COLUMN_START +  2; // BLOB NOT NULL        (UUID in raw form)
-		int const column_idx_prevGraphID = SQLITE_COLUMN_START +  3; // BLOB                 (UUID in raw form)
-		int const column_idx_operation   = SQLITE_COLUMN_START +  4; // BLOB
+		int const column_idx_graphID     = SQLITE_COLUMN_START +  2; // INTEGER NOT NULL
+		int const column_idx_operation   = SQLITE_COLUMN_START +  3; // BLOB
 		
 		status = sqlite3_prepare_v2(db, [enumerate UTF8String], -1, &statement, NULL);
 		if (status != SQLITE_OK)
@@ -463,48 +757,9 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 				pipelineName = YapDatabaseCloudCoreDefaultPipelineName;
 			}
 			
-			// - Extract graphUUID information
-			// - Add to graphOrderPerPipeline
+			// - Extract graph order information
 			
-			NSUUID *graphUUID = nil;
-			{
-				int blobSize = sqlite3_column_bytes(statement, column_idx_graphID);
-				if (blobSize == sizeof(uuid_t))
-				{
-					const void *blob = sqlite3_column_blob(statement, column_idx_graphID);
-					graphUUID = [[NSUUID alloc] initWithUUIDBytes:(const unsigned char *)blob];
-				}
-				else
-				{
-					NSAssert(NO, @"Invalid UUID blobSize: graphUUID");
-				}
-			}
-			
-			NSUUID *prevGraphUUID = nil;
-			{
-				int blobSize = sqlite3_column_bytes(statement, column_idx_prevGraphID);
-				if (blobSize == sizeof(uuid_t))
-				{
-					const void *blob = sqlite3_column_blob(statement, column_idx_prevGraphID);
-					prevGraphUUID = [[NSUUID alloc] initWithUUIDBytes:(const unsigned char *)blob];
-				}
-				else if (blobSize > 0)
-				{
-					NSAssert(NO, @"Invalid UUID blobSize: prevGraphUUID");
-				}
-			}
-			
-			NSMutableDictionary *graphOrder = graphOrderPerPipeline[pipelineName];
-			if (graphOrder == nil)
-			{
-				graphOrder = [NSMutableDictionary dictionary];
-				graphOrderPerPipeline[pipelineName] = graphOrder;
-			}
-			
-			if (prevGraphUUID)
-				graphOrder[prevGraphUUID] = graphUUID;
-			else
-				graphOrder[[NSNull null]] = graphUUID;
+			uint64_t graphID = (uint64_t)sqlite3_column_int64(statement, column_idx_graphID);
 			
 			// - Extract operation information
 			// - Create operation instance
@@ -521,22 +776,19 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 			
 			// - Add to operationsPerPipeline
 			
-			NSMutableDictionary *operationsPerGraph = operationsPerPipeline[pipelineName];
+			NSMutableDictionary *operationsPerPipeline = operations[pipelineName];
+			if (operationsPerPipeline == nil)
+			{
+				operationsPerPipeline = operations[pipelineName] = [NSMutableDictionary dictionary];
+			}
 			
+			NSMutableArray *operationsPerGraph = operationsPerPipeline[@(graphID)];
 			if (operationsPerGraph == nil)
 			{
-				operationsPerGraph = [NSMutableDictionary dictionary];
-				operationsPerPipeline[pipelineName] = operationsPerGraph;
+				operationsPerGraph = operationsPerPipeline[@(graphID)] = [NSMutableArray array];
 			}
 			
-			NSMutableArray *operations = operationsPerGraph[graphUUID];
-			if (operations == nil)
-			{
-				operations = [NSMutableArray array];
-				operationsPerGraph[graphUUID] = operations;
-			}
-			
-			[operations addObject:operation];
+			[operationsPerGraph addObject:operation];
 		}
 		
 		if (status != SQLITE_DONE)
@@ -548,82 +800,37 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		statement = NULL;
 	}
 	
-	// Step 5 of 7:
+	// Step 5 of 6:
 	//
-	// Order the graphs (per pipeline)
+	// Create the graphs (per pipeline)
 	
-	// NSMutableDictionary *graphOrderPerPipeline = [NSMutableDictionary dictionary];
-	// NSMutableDictionary *operationsPerPipeline = [NSMutableDictionary dictionary];
-	
-	[graphOrderPerPipeline enumerateKeysAndObjectsUsingBlock:
-	    ^(NSString *pipelineName, NSMutableDictionary *graphOrder, BOOL *stop)
+	for (NSString *pipelineName in operations)
 	{
-		NSMutableDictionary *operationsPerGraph = operationsPerPipeline[pipelineName];
+		NSDictionary *operationsPerPipeline = operations[pipelineName];
 		
-		__block NSUUID *oldestGraphUUID = nil;
+		// key   : @(graphID) (uint64_t)
+		// value : @[operation, ...]
 		
-		[graphOrder enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-			
-			// key           -> value
-			// prevGraphUUID -> graphUUID
-			
-			__unsafe_unretained id prevGraphUUID = key;
-			__unsafe_unretained id graphUUID = value;
-			
-			if (prevGraphUUID == [NSNull null])
-			{
-				oldestGraphUUID = (NSUUID *)graphUUID;
-				*stop = YES;
-			}
-			else
-			{
-				if (operationsPerGraph[prevGraphUUID] == nil)
-				{
-					// No operations for the referenced prevGraphUUID.
-					// This is because we finished that graph, and thus deleted all its operations.
-					
-					oldestGraphUUID = (NSUUID *)graphUUID;
-					*stop = YES;
-				}
-			}
-		}];
+		NSArray *sortedGraphIDs = [[operationsPerPipeline allKeys] sortedArrayUsingSelector:@selector(compare:)];
 		
-		NSMutableArray *sortedGraphs = [NSMutableArray arrayWithCapacity:[graphOrder count]];
+		NSMutableArray *sortedGraphs = [NSMutableArray arrayWithCapacity:[sortedGraphIDs count]];
 		
-		NSUUID *graphUUID = oldestGraphUUID;
-		while (graphUUID)
+		for (NSNumber *graphID in sortedGraphIDs)
 		{
-			NSArray *operations = operationsPerGraph[graphUUID];
+			NSArray<YapDatabaseCloudCoreOperation *> *operationsPerGraph = operationsPerPipeline[graphID];
 			
 			YapDatabaseCloudCoreGraph *graph =
-			  [[YapDatabaseCloudCoreGraph alloc] initWithUUID:graphUUID operations:operations];
+			  [[YapDatabaseCloudCoreGraph alloc] initWithPersistentOrder:[graphID unsignedLongLongValue]
+			                                                  operations:operationsPerGraph];
 			
 			[sortedGraphs addObject:graph];
-			
-			graphUUID = graphOrder[graphUUID];
 		}
 		
 		sortedGraphsPerPipeline[pipelineName] = sortedGraphs;
-	}];
+	}
 	
-	// Step 6 of 7:
-	//
-	// Restore each operation using the handler
-/*
-	[sortedGraphsPerPipeline enumerateKeysAndObjectsUsingBlock:
-	    ^(NSString *pipelineName, NSArray *sortedGraphs, BOOL *stop)
-	{
-		for (YapDatabaseCloudCoreGraph *graph in sortedGraphs)
-		{
-			for (YapDatabaseCloudCoreOperation *operation in graph.operations)
-			{
-				// Maybe add subclass hook here ?
-			}
-		}
-	}];
-*/
 	
-	// Step 7 of 7:
+	// Step 6 of 6:
 	//
 	// Send operations off to pipeline(s)
 	
@@ -876,8 +1083,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (void)queueTable_insertOperations:(NSArray *)operations
-                      withGraphUUID:(NSUUID *)graphUUID
-                      prevGraphUUID:(NSUUID *)prevGraphUUID
+                        withGraphID:(uint64_t)graphID
                            pipeline:(YapDatabaseCloudCorePipeline *)pipeline
 {
 	YDBLogAutoTrace();
@@ -892,25 +1098,15 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	// INSERT INTO "queueTableName"
 	//   ("pipelineID",
 	//    "graphID",
-	//    "prevGraphID",
 	//    "operation")
 	//   VALUES (?, ?, ?, ?);
 	
 	int const bind_idx_pipelineID     = SQLITE_BIND_START + 0; // INTEGER
-	int const bind_idx_graphID        = SQLITE_BIND_START + 1; // BLOB NOT NULL
-	int const bind_idx_prevGraphID    = SQLITE_BIND_START + 2; // BLOB
-	int const bind_idx_operation      = SQLITE_BIND_START + 3; // BLOB
+	int const bind_idx_graphID        = SQLITE_BIND_START + 1; // INTEGER NOT NULL
+	int const bind_idx_operation      = SQLITE_BIND_START + 2; // BLOB
 	
 	
 	BOOL needsBindPipelineRowid = ![pipeline.name isEqualToString:YapDatabaseCloudCoreDefaultPipelineName];
-	
-	NSAssert(sizeof(uuid_t) == 16, @"C is hard ???");
-	
-	uuid_t graphID;
-	[graphUUID getUUIDBytes:graphID];
-	
-	uuid_t prevGraphID;
-	[prevGraphUUID getUUIDBytes:prevGraphID];
 	
 	for (YapDatabaseCloudCoreOperation *operation in operations)
 	{
@@ -923,13 +1119,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		
 		// graphID
 		
-		sqlite3_bind_blob(statement, bind_idx_graphID, graphID, sizeof(uuid_t), SQLITE_STATIC);
-		
-		// prevGraphID
-		
-		if (prevGraphUUID) {
-			sqlite3_bind_blob(statement, bind_idx_prevGraphID, prevGraphID, sizeof(uuid_t), SQLITE_STATIC);
-		}
+		sqlite3_bind_int64(statement, bind_idx_graphID, graphID);
 		
 		// operation
 		
@@ -3156,18 +3346,15 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	[processedAddedOps enumerateKeysAndObjectsUsingBlock:
 	    ^(NSString *pipelineName, NSArray *operations, BOOL *stop)
 	{
-		NSUUID *graphUUID = [NSUUID UUID];
-		
 		YapDatabaseCloudCorePipeline *pipeline = [parentConnection->parent pipelineWithName:pipelineName];
-		NSUUID *prevGraphUUID = [[pipeline lastGraph] uuid];
+		uint64_t *nextGraphID = [pipeline nextGraphID];
 		
 		[self queueTable_insertOperations:operations
-		                    withGraphUUID:graphUUID
-		                    prevGraphUUID:prevGraphUUID
+		                      withGraphID:nextGraphID
 		                         pipeline:pipeline];
 		
 		YapDatabaseCloudCoreGraph *graph =
-		  [[YapDatabaseCloudCoreGraph alloc] initWithUUID:graphUUID operations:operations];
+		  [[YapDatabaseCloudCoreGraph alloc] initWithPersistentOrder:nextGraphID operations:operations];
 		
 		[parentConnection->graphs_added setObject:graph forKey:pipelineName];
 	}];
@@ -3177,16 +3364,13 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		NSDictionary *graphs = parentConnection->operations_inserted[pipeline.name];
 		
 		[graphs enumerateKeysAndObjectsUsingBlock:
-		  ^(NSNumber *graphIdx, NSArray<YapDatabaseCloudCoreOperation *> *insertedOps, BOOL *stop)
+		  ^(NSNumber *idx, NSArray<YapDatabaseCloudCoreOperation *> *insertedOps, BOOL *stop)
 		{
-			NSUUID *graphUUID = nil;
-			NSUUID *prevGraphUUID = nil;
-			
-			[pipeline getGraphUUID:&graphUUID prevGraphUUID:&prevGraphUUID forGraphIdx:graphIdx.unsignedIntegerValue];
+			uint64_t graphID = 0;
+			[pipeline getGraphID:&graphID forIndex:idx];
 			
 			[self queueTable_insertOperations:insertedOps
-			                    withGraphUUID:graphUUID
-			                    prevGraphUUID:prevGraphUUID
+			                      withGraphID:graphID
 			                         pipeline:pipeline];
 		}];
 	}

@@ -9,15 +9,16 @@
 
 @implementation YapDatabaseCloudCoreGraph
 
-@synthesize uuid = uuid;
+@synthesize persistentOrder = persistentOrder;
 @synthesize operations = operations;
 @synthesize pipeline = pipeline;
 
-- (instancetype)initWithUUID:(NSUUID *)inUUID operations:(NSArray<YapDatabaseCloudCoreOperation *> *)inOperations
+- (instancetype)initWithPersistentOrder:(uint64_t)inPersistentOrder
+                             operations:(NSArray<YapDatabaseCloudCoreOperation *> *)inOperations
 {
 	if ((self = [super init]))
 	{
-		uuid = inUUID ? inUUID : [NSUUID UUID];
+		persistentOrder = inPersistentOrder;
 		
 		operations = [[self class] sortOperationsByPriority:inOperations];
 	

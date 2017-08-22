@@ -231,25 +231,17 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	return graphOperations;
 }
 
-- (void)getGraphUUID:(NSUUID **)outGraphUUID
-       prevGraphUUID:(NSUUID **)outPrevGraphUUID
-         forGraphIdx:(NSUInteger)graphIdx
+- (BOOL)getGraphID:(uint64_t *)graphIdPtr forIndex:(NSUInteger)idx
 {
-	__block NSUUID *graphUUID = nil;
-	__block NSUUID *prevGraphUUID = nil;
+	__block BOOL found = NO;
+	__block uint64_t graphID = 0;
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		if (graphIdx < graphs.count)
+		if (idx <= graphs.count)
 		{
-			YapDatabaseCloudCoreGraph *graph = graphs[graphIdx];
-			graphUUID = graph.uuid;
-			
-			if (graphIdx > 0)
-			{
-				YapDatabaseCloudCoreGraph *prevGraph = graphs[graphIdx - 1];
-				prevGraphUUID = prevGraph.uuid;
-			}
+			found = YES;
+			graphID = graphs[idx].persistentOrder;
 		}
 	}};
 	
@@ -258,8 +250,29 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	else
 		dispatch_sync(queue, block);
 	
-	if (outGraphUUID) *outGraphUUID = graphUUID;
-	if (outPrevGraphUUID) *outPrevGraphUUID = prevGraphUUID;
+	if (graphIdPtr) *graphIdPtr = graphID;
+	return found;
+}
+
+- (uint64_t)nextGraphID
+{
+	__block uint64_t nextGraphID = 0;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		YapDatabaseCloudCoreGraph *lastGraph = [graphs lastObject];
+		if (lastGraph)
+		{
+			nextGraphID = lastGraph.persistentOrder + 1;
+		}
+	}};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return nextGraphID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -323,6 +336,46 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 		block();
 	else
 		dispatch_sync(queue, block);
+}
+
+- (BOOL)_setStatus:(YDBCloudCoreOperationStatus)status forOperationUUID:(NSUUID *)uuid
+{
+	__block BOOL allowed = YES;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		NSMutableDictionary *opInfo = ephemeralInfo[uuid];
+		if (opInfo == nil)
+		{
+			opInfo = [NSMutableDictionary dictionaryWithSharedKeySet:ephemeralInfoSharedKeySet];
+			ephemeralInfo[uuid] = opInfo;
+		}
+		
+		NSNumber *existing = opInfo[YDBCloudCore_EphemeralKey_Status];
+		if (existing)
+		{
+			YDBCloudCoreOperationStatus existingStatus = (YDBCloudCoreOperationStatus)[existing integerValue];
+			
+			if (existingStatus == YDBCloudOperationStatus_Completed ||
+			    existingStatus == YDBCloudOperationStatus_Skipped)
+			{
+				// Cannot change status after its been marked completed or skipped
+				allowed = NO;
+			}
+		}
+		
+		if (allowed)
+		{
+			opInfo[YDBCloudCore_EphemeralKey_Status] = @(status);
+		}
+	}};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return allowed;
 }
 
 /**
@@ -401,11 +454,10 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[self _setEphemeralInfo:@(YDBCloudOperationStatus_Started)
-		                 forKey:YDBCloudCore_EphemeralKey_Status
-		          operationUUID:opUUID];
-		
-		[startedOpUUIDs addObject:opUUID];
+		if ([self _setStatus:YDBCloudOperationStatus_Started forOperationUUID:opUUID])
+		{
+			[startedOpUUIDs addObject:opUUID];
+		}
 	}};
 	
 	if (dispatch_get_specific(IsOnQueueKey))
@@ -425,12 +477,12 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[self _setEphemeralInfo:@(YDBCloudOperationStatus_Pending)
-		                 forKey:YDBCloudCore_EphemeralKey_Status
-		          operationUUID:opUUID];
-		
-		[startedOpUUIDs removeObject:opUUID];
-		[self startNextOperationIfPossible];
+		BOOL changed = [self _setStatus:YDBCloudOperationStatus_Pending forOperationUUID:opUUID];
+		if (changed)
+		{
+			[startedOpUUIDs removeObject:opUUID];
+			[self startNextOperationIfPossible];
+		}
 	}};
 	
 	if (dispatch_get_specific(IsOnQueueKey))
@@ -455,17 +507,17 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	
 	dispatch_block_t block = ^{ @autoreleasepool {
 		
-		[self _setEphemeralInfo:@(YDBCloudOperationStatus_Pending)
-		                 forKey:YDBCloudCore_EphemeralKey_Status
-		          operationUUID:opUUID];
-		
-		[self _setEphemeralInfo:hold
-		                 forKey:YDBCloudCore_EphemeralKey_Hold
-		          operationUUID:opUUID];
-		
-		[startedOpUUIDs removeObject:opUUID];
-		[self updateHoldTimer];
-		[self startNextOperationIfPossible];
+		BOOL changed = [self _setStatus:YDBCloudOperationStatus_Pending forOperationUUID:opUUID];
+		if (changed)
+		{
+			[self _setEphemeralInfo:hold
+			                 forKey:YDBCloudCore_EphemeralKey_Hold
+			          operationUUID:opUUID];
+			
+			[startedOpUUIDs removeObject:opUUID];
+			[self updateHoldTimer];
+			[self startNextOperationIfPossible];
+		}
 	}};
 	
 	if (dispatch_get_specific(IsOnQueueKey))
@@ -854,9 +906,9 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 				NSNumber *pendingStatus = operation.pendingStatus;
 				if (pendingStatus)
 				{
-					[self _setEphemeralInfo:pendingStatus
-					                 forKey:YDBCloudCore_EphemeralKey_Status
-					          operationUUID:operation.uuid];
+					YDBCloudCoreOperationStatus status = (YDBCloudCoreOperationStatus)[pendingStatus integerValue];
+					
+					[self _setStatus:status forOperationUUID:operation.uuid];
 				}
 				
 				[operation clearTransactionVariables];
@@ -880,23 +932,6 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 		block();
 	else
 		dispatch_sync(queue, block);
-}
-
-- (YapDatabaseCloudCoreGraph *)lastGraph
-{
-	__block YapDatabaseCloudCoreGraph *graph = nil;
-	
-	dispatch_block_t block = ^{ @autoreleasepool {
-		
-		graph = [graphs lastObject];
-	}};
-	
-	if (dispatch_get_specific(IsOnQueueKey))
-		block();
-	else
-		dispatch_sync(queue, block);
-	
-	return graph;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -997,9 +1032,7 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 		
 		do {
 			
-			[self _setEphemeralInfo:@(YDBCloudOperationStatus_Started)
-			                 forKey:YDBCloudCore_EphemeralKey_Status
-			          operationUUID:nextOp.uuid];
+			[self _setStatus:YDBCloudOperationStatus_Started forOperationUUID:nextOp.uuid];
 			
 			YapDatabaseCloudCoreOperation *opToStart = nextOp;
 			dispatch_async(globalQueue, ^{ @autoreleasepool {

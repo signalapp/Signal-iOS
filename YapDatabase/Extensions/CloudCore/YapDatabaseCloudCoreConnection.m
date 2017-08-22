@@ -473,11 +473,10 @@
  * CREATE TABLE IF NOT EXISTS "queueTableName"
  *  ("rowid" INTEGER PRIMARY KEY,
  *   "pipelineID" INTEGER,
- *   "graphID" BLOB NOT NULL,
- *   "prevGraphID" BLOB,
+ *   "graphID" INTEGER NOT NULL,
  *   "operation" BLOB
  *  );
-*/
+**/
 
 - (sqlite3_stmt *)queueTable_insertStatement
 {
@@ -486,8 +485,8 @@
 	{
 		NSString *string = [NSString stringWithFormat:
 		  @"INSERT INTO \"%@\""
-		  @" (\"pipelineID\", \"graphID\", \"prevGraphID\", \"operation\")"
-		  @" VALUES (?, ?, ?, ?);",
+		  @" (\"pipelineID\", \"graphID\", \"operation\")"
+		  @" VALUES (?, ?, ?);",
 		  [parent queueTableName]];
 		
 		[self prepareStatement:statement withString:string caller:_cmd];

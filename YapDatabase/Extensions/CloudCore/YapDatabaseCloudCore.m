@@ -62,6 +62,7 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 	
 	NSArray *tableNames = @[
 	  [self pipelineTableNameForRegisteredName:registeredName],
+	  [self queueV1TableNameForRegisteredName:registeredName],
 	  [self queueTableNameForRegisteredName:registeredName],
 	  [self mappingTableNameForRegisteredName:registeredName],
 	  [self tagTableNameForRegisteredName:registeredName]
@@ -85,9 +86,14 @@ NSString *const YapDatabaseCloudCoreDefaultPipelineName = @"default";
 	return [NSString stringWithFormat:@"cloudcore_pipeline_%@", registeredName];
 }
 
-+ (NSString *)queueTableNameForRegisteredName:(NSString *)registeredName
++ (NSString *)queueV1TableNameForRegisteredName:(NSString *)registeredName
 {
 	return [NSString stringWithFormat:@"cloudcore_queue_%@", registeredName];
+}
+
++ (NSString *)queueTableNameForRegisteredName:(NSString *)registeredName
+{
+	return [NSString stringWithFormat:@"cloudcore_queue2_%@", registeredName];
 }
 
 + (NSString *)tagTableNameForRegisteredName:(NSString *)registeredName
@@ -196,6 +202,11 @@ withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 - (NSString *)pipelineTableName
 {
 	return [[self class] pipelineTableNameForRegisteredName:self.registeredName];
+}
+
+- (NSString *)queueV1TableName
+{
+	return [[self class] queueV1TableNameForRegisteredName:self.registeredName];
 }
 
 - (NSString *)queueTableName
