@@ -113,6 +113,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(identityStateDidChange:)
                                                  name:kNSNotificationName_IdentityStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
 }
 
 - (NSString *)threadName
@@ -1127,6 +1131,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     [self updateTableContents];
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    OWSAssert(recipientId.length > 0);
+
+    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
+        [self.thread.contactIdentifier isEqualToString:recipientId]) {
+        [self updateTableContents];
+    }
 }
 
 #pragma mark - Logging

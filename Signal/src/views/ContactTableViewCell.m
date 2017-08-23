@@ -27,6 +27,9 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 @property (nonatomic) UILabel *subtitle;
 @property (nonatomic) UIView *nameContainerView;
 
+@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) NSString *recipientId;
+
 @end
 
 @implementation ContactTableViewCell
@@ -115,16 +118,17 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithRecipientId:(NSString *)recipientId
                  contactsManager:(OWSContactsManager *)contactsManager
 {
+    self.recipientId = recipientId;
+    self.contactsManager = contactsManager;
+
     self.nameLabel.attributedText =
         [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
 
-    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
-    } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [self updateProfileName];
 
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
@@ -148,6 +152,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(thread);
+    self.contactsManager = contactsManager;
 
     NSString *threadName = thread.name;
     if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
@@ -161,6 +166,13 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
                                                        }];
     self.nameLabel.attributedText = attributedText;
 
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(otherUsersProfileDidChange:)
+                                                     name:kNSNotificationName_OtherUsersProfileDidChange
+                                                   object:nil];
+        [self updateProfileName];
+    }
     self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
                                                          diameter:kContactTableViewCellAvatarSize
                                                   contactsManager:contactsManager];
@@ -185,13 +197,66 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     return [text copy];
 }
 
+
+- (void)updateProfileName
+{
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        self.profileNameLabel.text = nil;
+        return;
+    }
+
+    NSString *recipientId = self.recipientId;
+    if (recipientId.length == 0) {
+        OWSFail(@"%@ recipientId should not be nil", self.logTag);
+        self.profileNameLabel.text = nil;
+        return;
+    }
+
+    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+        // Don't display profile name when we have a veritas name in system Contacts
+        self.profileNameLabel.text = nil;
+    } else {
+        // Use profile name, if any is available
+        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+    }
+}
+
 - (void)prepareForReuse
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     self.accessoryMessage = nil;
     self.accessoryView = nil;
     self.accessoryType = UITableViewCellAccessoryNone;
-    [self.subtitle removeFromSuperview];
-    self.subtitle = nil;
+    self.nameLabel.text = nil;
+    self.subtitle.text = nil;
+    self.profileNameLabel.text = nil;
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    OWSAssert(recipientId.length > 0);
+
+    if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {
+        [self updateProfileName];
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end
