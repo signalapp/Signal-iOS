@@ -112,6 +112,12 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
+typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
+    // This mode should only be used when initially configuring the range,
+    // since we want the range to monotonically grow after that.
+    MessagesRangeSizeMode_Truncate,
+    MessagesRangeSizeMode_Normal
+};
 @protocol OWSMessagesCollectionViewFlowLayoutDelegate <NSObject>
 
 // Returns YES for all but the unread indicator
@@ -424,7 +430,7 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-    [self updateMessageMappingRangeOptions];
+    [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Truncate];
     [self updateShouldObserveDBModifications];
     self.page = 0;
 
@@ -640,6 +646,25 @@ typedef enum : NSUInteger {
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
+    __block TSUnreadIndicatorInteraction *_Nullable unreadIndicator = nil;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
+            enumerateRowsInGroup:self.thread.uniqueId
+                      usingBlock:^(
+                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+
+                          if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                              unreadIndicator = (TSUnreadIndicatorInteraction *)object;
+                              *stop = YES;
+                          }
+                      }];
+    }];
+
+    if (!unreadIndicator) {
+        return nil;
+    }
+
+    // TODO: We could do binary search.
     int numberOfMessages = (int)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
     for (int i = 0; i < numberOfMessages; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -2388,17 +2413,24 @@ typedef enum : NSUInteger {
     [self setShowLoadEarlierMessagesHeader:[self shouldShowLoadEarlierMessages]];
 }
 
-- (void)updateMessageMappingRangeOptions
+- (void)updateMessageMappingRangeOptions:(MessagesRangeSizeMode)mode
 {
     // The "old" range length may have been increased by insertions of new messages
     // at the bottom of the window.
     NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+
+    NSUInteger targetLength = oldLength;
+    if (mode == MessagesRangeSizeMode_Truncate) {
+        // During the initial configuration of the view, we want to truncate the
+        targetLength = MIN(targetLength, (NSUInteger)(kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount));
+    }
+
     // The "page-based" range length may have been increased by loading "prev" pages at the
     // top of the window.
     NSUInteger rangeLength;
     while (YES) {
         rangeLength = kYapDatabasePageSize * (self.page + 1);
-        if (rangeLength >= oldLength) {
+        if (rangeLength >= targetLength) {
             break;
         }
         self.page = self.page + 1;
@@ -3425,7 +3457,7 @@ typedef enum : NSUInteger {
         // range that are not within the current mapping's contents.  We
         // may need to extend the mapping's contents to reflect the current
         // range.
-        [self updateMessageMappingRangeOptions];
+        [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Normal];
         [self resetContentAndLayout];
         return;
     }
@@ -4350,7 +4382,7 @@ typedef enum : NSUInteger {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
-        [self updateMessageMappingRangeOptions];
+        [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Normal];
     }
 
     self.messageAdapterCache = [[NSCache alloc] init];
