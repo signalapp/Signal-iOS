@@ -38,7 +38,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) UIImageView *cameraImageView;
 
-@property (nonatomic) UIButton *skipOrSaveButton;
+@property (nonatomic) UIButton *saveButton;
 
 @property (nonatomic, nullable) UIImage *avatar;
 
@@ -207,24 +207,25 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Big Button
 
-    if (self.profileViewMode == ProfileViewMode_Registration) {
+    if (self.profileViewMode == ProfileViewMode_Registration || self.profileViewMode == ProfileViewMode_UpgradeOrNag) {
         UIView *buttonRow = [UIView containerView];
         [rows addObject:buttonRow];
 
-        UIButton *skipOrSaveButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.skipOrSaveButton = skipOrSaveButton;
-        skipOrSaveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
-        [skipOrSaveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        skipOrSaveButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
-        [skipOrSaveButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
-        [skipOrSaveButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-        [buttonRow addSubview:skipOrSaveButton];
-        [skipOrSaveButton autoPinLeadingAndTrailingToSuperview];
-        [skipOrSaveButton autoPinHeightToSuperview];
-        [skipOrSaveButton autoSetDimension:ALDimensionHeight toSize:47.f];
-        [skipOrSaveButton addTarget:self
-                             action:@selector(skipOrSaveButtonPressed)
-                   forControlEvents:UIControlEventTouchUpInside];
+        UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.saveButton = saveButton;
+        saveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
+        [saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        saveButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
+        [saveButton setTitle:NSLocalizedString(
+                                 @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
+                    forState:UIControlStateNormal];
+        [saveButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+        [saveButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [buttonRow addSubview:saveButton];
+        [saveButton autoPinLeadingAndTrailingToSuperview];
+        [saveButton autoPinHeightToSuperview];
+        [saveButton autoSetDimension:ALDimensionHeight toSize:47.f];
+        [saveButton addTarget:self action:@selector(saveButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     }
 
     // Row Layout
@@ -322,15 +323,25 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // context.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
+            if (self.hasUnsavedChanges) {
+                // If we have a unsaved changes, right item should be a "save" button.
+                self.navigationItem.rightBarButtonItem =
+                    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                  target:self
+                                                                  action:@selector(updatePressed)];
+            } else {
+                self.navigationItem.rightBarButtonItem = nil;
+            }
             break;
         case ProfileViewMode_UpgradeOrNag:
             self.navigationItem.leftBarButtonItem =
-                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                               target:self
                                                               action:@selector(backOrSkipButtonPressed)];
             break;
         case ProfileViewMode_Registration:
-            self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+            self.navigationItem.hidesBackButton = YES;
+            self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                 initWithTitle:NSLocalizedString(@"NAVIGATION_ITEM_SKIP_BUTTON", @"A button to skip a view.")
                         style:UIBarButtonItemStylePlain
                        target:self
@@ -338,22 +349,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             break;
     }
 
-    if (self.profileViewMode == ProfileViewMode_Registration) {
-        [self.skipOrSaveButton
-            setTitle:(self.hasUnsavedChanges
-                             ? NSLocalizedString(
-                                   @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
-                             : NSLocalizedString(@"PROFILE_VIEW_SKIP_BUTTON",
-                                   @"Button to skip the profile view in the registration workflow."))forState
-                    :UIControlStateNormal];
+    // The save button is only used in "registration" and "upgrade or nag" modes.
+    if (self.hasUnsavedChanges) {
+        self.saveButton.enabled = YES;
+        self.saveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
     } else {
-        if (self.hasUnsavedChanges) {
-            // If we have a unsaved changes, right item should be a "save" button.
-            self.navigationItem.rightBarButtonItem =
-                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                              target:self
-                                                              action:@selector(updatePressed)];
-        }
+        self.saveButton.enabled = NO;
+        self.saveButton.backgroundColor =
+            [[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor] alpha:0.5f];
     }
 }
 
@@ -506,9 +509,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 }
 
-- (void)skipOrSaveButtonPressed
+- (void)saveButtonPressed
 {
-    [self leaveViewCheckingForUnsavedChanges];
+    [self updatePressed];
 }
 
 #pragma mark - AvatarViewHelperDelegate
