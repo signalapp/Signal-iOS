@@ -340,6 +340,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                               action:@selector(backOrSkipButtonPressed)];
             break;
         case ProfileViewMode_Registration:
+            self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                 initWithTitle:NSLocalizedString(@"NAVIGATION_ITEM_SKIP_BUTTON", @"A button to skip a view.")
                         style:UIBarButtonItemStylePlain
