@@ -437,6 +437,8 @@ typedef enum : NSUInteger {
 
         // We'd like to include at least N seen messages, if possible,
         // to give the user the context of where they left off the conversation.
+        //
+        // TODO: Is this still necessary?
         const int kPreferredSeenMessageCount = 1;
         self.page = (NSUInteger)MAX(0,
             MIN(kYapDatabaseMaxInitialPageCount - 1,
