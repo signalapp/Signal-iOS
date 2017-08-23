@@ -1118,17 +1118,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)setNavigationTitle
 {
-    NSString *navTitle = self.thread.name;
-    if (self.isGroupConversation && [navTitle length] == 0) {
-        navTitle = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    NSAttributedString *name;
+    if (self.thread.isGroupThread) {
+        if (self.thread.name.length == 0) {
+            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+        } else {
+            name = [[NSAttributedString alloc] initWithString:self.thread.name];
+        }
+    } else {
+        name = [self.contactsManager attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
+                                                                            primaryFont:self.navigationBarTitleLabel.font
+                                                                          secondaryFont:[UIFont ows_footnoteFont]];
     }
     self.title = nil;
 
-    if ([navTitle isEqualToString:self.navigationBarTitleLabel.text]) {
+    if ([name isEqual:self.navigationBarTitleLabel.attributedText]) {
         return;
     }
 
-    self.navigationBarTitleLabel.text = navTitle;
+    self.navigationBarTitleLabel.attributedText = name;
 
     // Changing the title requires relayout of the nav bar contents.
     OWSDisappearingMessagesConfiguration *configuration =

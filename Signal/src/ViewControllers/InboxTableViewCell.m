@@ -76,6 +76,7 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
     [self.contentView addSubview:self.nameLabel];
     [self.nameLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
     [self.nameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView];
@@ -162,11 +163,7 @@ const NSUInteger kAvatarViewDiameter = 52;
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
-
-    NSString *name = thread.name;
-    if (name.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
-        name = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
-    }
+    
     self.threadId = thread.uniqueId;
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
@@ -206,18 +203,28 @@ const NSUInteger kAvatarViewDiameter = 52;
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
-    self.nameLabel.text = name;
+    NSAttributedString *name;
+    if (thread.isGroupThread) {
+        if (thread.name.length == 0) {
+            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+        } else {
+            name = [[NSAttributedString alloc] initWithString:thread.name];
+        }
+    } else {
+        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
+                                                                            primaryFont:self.nameLabel.font
+                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+    }
+    
+    self.nameLabel.attributedText = name;
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
     self.avatarView.image = nil;
 
     self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
 
-    if (thread.hasUnreadMessages) {
-        [self updateCellForUnreadMessage];
-    } else {
-        [self updateCellForReadMessage];
-    }
+    _timeLabel.textColor =  thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] :  [UIColor ows_darkGrayColor];
+    
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
         self.unreadLabel.hidden = NO;
@@ -229,18 +236,6 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.avatarView.image =
         [OWSAvatarBuilder buildImageForThread:thread diameter:kAvatarViewDiameter contactsManager:contactsManager];
-}
-
-- (void)updateCellForUnreadMessage {
-    _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
-    _nameLabel.textColor    = [UIColor ows_blackColor];
-    _timeLabel.textColor    = [UIColor ows_materialBlueColor];
-}
-
-- (void)updateCellForReadMessage {
-    _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
-    _nameLabel.textColor    = [UIColor ows_blackColor];
-    _timeLabel.textColor    = [UIColor ows_darkGrayColor];
 }
 
 #pragma mark - Date formatting

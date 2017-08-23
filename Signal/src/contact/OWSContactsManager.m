@@ -550,6 +550,38 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     return [[NSAttributedString alloc] initWithString:recipientId];
 }
 
+- (NSAttributedString *)attributedStringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
+                                                                    primaryFont:(UIFont *)primaryFont
+                                                                  secondaryFont:(UIFont *)secondaryFont
+{
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    if (savedContactName.length > 0) {
+        return [[NSAttributedString alloc] initWithString:savedContactName];
+    }
+    
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    if (profileName.length > 0) {
+        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
+                                                                 @"Label text combining the phone number and profile name separated by a simple demarcation character. "
+                                                                 @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
+                                                                 @"with {{profile name}}");
+        
+        NSString *numberAndProfileName =
+            [NSString stringWithFormat:numberAndProfileNameFormat, recipientId, profileName];
+       
+        NSRange recipientIdRange = [numberAndProfileName rangeOfString:recipientId];
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:numberAndProfileName
+                                                                                             attributes:@{ NSFontAttributeName: secondaryFont }];
+        [attributedString addAttribute:NSFontAttributeName value:primaryFont range:recipientIdRange];
+        
+        return [attributedString copy];
+    }
+    
+    // else fall back to recipient id
+    return [[NSAttributedString alloc] initWithString:recipientId];
+}
+
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
