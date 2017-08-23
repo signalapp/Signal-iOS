@@ -672,8 +672,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            // We just consult the lazy cache, not the db.
-            if (self.userProfileWhitelistCache[recipientId]) {
+            if ([self isUserInProfileWhitelist:recipientId]) {
                 return;
             }
 
@@ -700,9 +699,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         @synchronized(self)
         {
-            // We just consult the lazy cache, not the db.
             for (NSString *recipientId in recipientIds) {
-                if (!self.userProfileWhitelistCache[recipientId]) {
+                if (![self isUserInProfileWhitelist:recipientId]) {
                     [newRecipientIds addObject:recipientId];
                 }
             }
