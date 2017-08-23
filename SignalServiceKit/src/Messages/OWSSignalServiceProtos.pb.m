@@ -1006,6 +1006,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 
 @interface OWSSignalServiceProtosNullMessage ()
 @property (strong) NSData* padding;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosNullMessage
@@ -1017,9 +1018,17 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   hasPadding_ = !!_value_;
 }
 @synthesize padding;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.padding = [NSData data];
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -1042,6 +1051,9 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
   if (self.hasPadding) {
     [output writeData:1 value:self.padding];
   }
+  if (self.hasProfileKey) {
+    [output writeData:2 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1053,6 +1065,9 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
   size_ = 0;
   if (self.hasPadding) {
     size_ += computeDataSize(1, self.padding);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(2, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1092,11 +1107,17 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
   if (self.hasPadding) {
     [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
   if (self.hasPadding) {
     [dictionary setObject: self.padding forKey: @"padding"];
+  }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1111,12 +1132,17 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
   return
       self.hasPadding == otherMessage.hasPadding &&
       (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
   if (self.hasPadding) {
     hashCode = hashCode * 31 + [self.padding hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1164,6 +1190,9 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
   if (other.hasPadding) {
     [self setPadding:other.padding];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1189,6 +1218,10 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
         [self setPadding:[input readData]];
         break;
       }
+      case 18: {
+        [self setProfileKey:[input readData]];
+        break;
+      }
     }
   }
 }
@@ -1206,6 +1239,22 @@ static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessa
 - (OWSSignalServiceProtosNullMessageBuilder*) clearPadding {
   resultNullMessage.hasPadding = NO;
   resultNullMessage.padding = [NSData data];
+  return self;
+}
+- (BOOL) hasProfileKey {
+  return resultNullMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultNullMessage.profileKey;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) setProfileKey:(NSData*) value {
+  resultNullMessage.hasProfileKey = YES;
+  resultNullMessage.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) clearProfileKey {
+  resultNullMessage.hasProfileKey = NO;
+  resultNullMessage.profileKey = [NSData data];
   return self;
 }
 @end

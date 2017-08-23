@@ -38,7 +38,8 @@ message Content {
 }
 
 message NullMessage {
-  optional bytes padding = 1;
+  optional bytes padding    = 1;
+  optional bytes profileKey = 2;
 }
 
 message Verified {
