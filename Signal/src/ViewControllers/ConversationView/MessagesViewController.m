@@ -2422,6 +2422,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSUInteger targetLength = oldLength;
     if (mode == MessagesRangeSizeMode_Truncate) {
         // During the initial configuration of the view, we want to truncate the
+        // range size.
         targetLength = MIN(targetLength, (NSUInteger)(kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount));
     }
 
