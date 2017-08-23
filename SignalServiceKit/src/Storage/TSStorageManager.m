@@ -33,6 +33,106 @@ static const NSString *const databaseName = @"Signal.sqlite";
 static NSString *keychainService          = @"TSKeyChainService";
 static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
+#pragma mark -
+
+// This flag is only used in DEBUG builds.
+static BOOL isDatabaseInitializedFlag = NO;
+
+NSObject *isDatabaseInitializedFlagLock()
+{
+    static NSObject *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [NSObject new];
+    });
+    return instance;
+}
+
+BOOL isDatabaseInitialized()
+{
+    @synchronized(isDatabaseInitializedFlagLock())
+    {
+        return isDatabaseInitializedFlag;
+    }
+}
+
+void setDatabaseInitialized()
+{
+    @synchronized(isDatabaseInitializedFlagLock())
+    {
+        isDatabaseInitializedFlag = YES;
+    }
+}
+
+#pragma mark -
+
+@interface YapDatabaseConnection ()
+
+- (id)initWithDatabase:(YapDatabase *)inDatabase;
+
+@end
+
+#pragma mark -
+
+// This class is only used in DEBUG builds.
+@interface OWSDatabaseConnection : YapDatabaseConnection
+
+@end
+
+#pragma mark -
+
+@implementation OWSDatabaseConnection
+
+// This clobbers the superclass implementation to include an assert which
+// ensures that the database is in a ready state before creating write transactions.
+//
+// Creating write transactions before the _sync_ database views are registered
+// causes YapDatabase to rebuild all of our database views, which is catastrophic.
+// We're not sure why, but it causes YDB's "view version" checks to fail.
+- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+{
+    OWSAssert(isDatabaseInitialized());
+
+    [super readWriteWithBlock:block];
+}
+
+@end
+
+#pragma mark -
+
+// This class is only used in DEBUG builds.
+@interface YapDatabase ()
+
+- (void)addConnection:(YapDatabaseConnection *)connection;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabase : YapDatabase
+
+@end
+
+#pragma mark -
+
+@implementation OWSDatabase
+
+// This clobbers the superclass implementation to include asserts which
+// ensure that the database is in a ready state before creating write transactions.
+//
+// See comments in OWSDatabaseConnection.
+- (YapDatabaseConnection *)newConnection
+{
+    YapDatabaseConnection *connection = [[OWSDatabaseConnection alloc] initWithDatabase:self];
+
+    [self addConnection:connection];
+    return connection;
+}
+
+@end
+
+#pragma mark -
+
 @interface TSStorageManager ()
 
 @property (nullable, atomic) YapDatabase *database;
@@ -152,10 +252,18 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
         return databasePassword;
     };
 
+#ifdef DEBUG
+    _database = [[OWSDatabase alloc] initWithPath:[self dbPath]
+                                       serializer:NULL
+                                     deserializer:[[self class] logOnFailureDeserializer]
+                                          options:options];
+#else
     _database = [[YapDatabase alloc] initWithPath:[self dbPath]
                                        serializer:NULL
                                      deserializer:[[self class] logOnFailureDeserializer]
                                           options:options];
+#endif
+
     if (!_database) {
         return NO;
     }
@@ -197,6 +305,14 @@ static NSString *keychainDBPassAccount    = @"TSDatabasePass";
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
+
+    // See comments on OWSDatabaseConnection.
+    //
+    // In the absence of finding documentation that can shed light on the issue we've been
+    // seeing, this issue only seems to affect sync and not async registrations.  We've always
+    // been opening write transactions before the async registrations complete without negative
+    // consequences.
+    setDatabaseInitialized();
 
     // Run the blocking migrations.
     //
