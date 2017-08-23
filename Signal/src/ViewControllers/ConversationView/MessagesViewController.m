@@ -664,16 +664,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return nil;
     }
 
-    // TODO: We could do binary search.
-    int numberOfMessages = (int)[self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    for (int i = 0; i < numberOfMessages; i++) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        id<OWSMessageData> message = [self messageAtIndexPath:indexPath];
-        if (message.messageType == TSUnreadIndicatorAdapter) {
-            return indexPath;
-        }
-    }
-    return nil;
+    __block NSIndexPath *indexPath;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+        OWSAssert(viewTransaction);
+        indexPath = [viewTransaction indexPathForKey:unreadIndicator.uniqueId
+                                        inCollection:[TSInteraction collection]
+                                        withMappings:self.messageMappings];
+    }];
+
+    return indexPath;
 }
 
 - (void)scrollToDefaultPosition
