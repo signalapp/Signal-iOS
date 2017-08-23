@@ -383,6 +383,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
             [self ensureDynamicInteractions];
+            [self ensureBannerState];
         }
     }
 }
@@ -825,6 +826,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                       @"Text for banner in group conversation view that offers to share your profile with this group.")
                         bannerColor:[UIColor ows_reminderDarkYellowColor]
                         tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
+        return;
     }
 }
 

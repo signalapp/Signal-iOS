@@ -775,7 +775,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             NSString *groupIdKey = [groupId hexadecimalString];
 
             // We just consult the lazy cache, not the db.
-            if (self.groupProfileWhitelistCache[groupIdKey]) {
+            if ([self isGroupIdInProfileWhitelist:groupId]) {
                 return;
             }
 
