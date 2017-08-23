@@ -33,6 +33,9 @@ static const NSString *const databaseName = @"Signal.sqlite";
 static NSString *keychainService          = @"TSKeyChainService";
 static NSString *keychainDBPassAccount    = @"TSDatabasePass";
 
+#pragma mark -
+
+// This flag is only used in DEBUG builds.
 static BOOL isDatabaseInitializedFlag = NO;
 
 NSObject *isDatabaseInitializedFlagLock()
@@ -71,6 +74,7 @@ void setDatabaseInitialized()
 
 #pragma mark -
 
+// This class is only used in DEBUG builds.
 @interface OWSDatabaseConnection : YapDatabaseConnection
 
 @end
@@ -79,6 +83,12 @@ void setDatabaseInitialized()
 
 @implementation OWSDatabaseConnection
 
+// This clobbers the superclass implementation to include an assert which
+// ensures that the database is in a ready state before creating write transactions.
+//
+// Creating write transactions before the _sync_ database views are registered
+// causes YapDatabase to rebuild all of our database views, which is catastrophic.
+// We're not sure why, but it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     OWSAssert(isDatabaseInitialized());
@@ -90,6 +100,7 @@ void setDatabaseInitialized()
 
 #pragma mark -
 
+// This class is only used in DEBUG builds.
 @interface YapDatabase ()
 
 - (void)addConnection:(YapDatabaseConnection *)connection;
@@ -106,6 +117,10 @@ void setDatabaseInitialized()
 
 @implementation OWSDatabase
 
+// This clobbers the superclass implementation to include asserts which
+// ensure that the database is in a ready state before creating write transactions.
+//
+// See comments in OWSDatabaseConnection.
 - (YapDatabaseConnection *)newConnection
 {
     YapDatabaseConnection *connection = [[OWSDatabaseConnection alloc] initWithDatabase:self];
@@ -291,6 +306,12 @@ void setDatabaseInitialized()
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
 
+    // See comments on OWSDatabaseConnection.
+    //
+    // In the absence of finding documentation that can shed light on the issue we've been
+    // seeing, this issue only seems to affect sync and not async registrations.  We've always
+    // been opening write transactions before the async registrations complete without negative
+    // consequences.
     setDatabaseInitialized();
 
     // Run the blocking migrations.
