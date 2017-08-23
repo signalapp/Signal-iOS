@@ -31,7 +31,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
-@property (nonatomic) NSString *threadId;
+@property (nonatomic) TSThread *thread;
+@property (nonatomic) OWSContactsManager *contactsManager;
 
 @end
 
@@ -158,13 +159,15 @@ const NSUInteger kAvatarViewDiameter = 52;
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
 
+    self.thread = thread;
+    self.contactsManager = contactsManager;
+    
     BOOL isBlocked = NO;
     if (!thread.isGroupThread) {
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
-
-    self.threadId = thread.uniqueId;
+    
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
@@ -203,20 +206,13 @@ const NSUInteger kAvatarViewDiameter = 52;
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
-    NSAttributedString *name;
-    if (thread.isGroupThread) {
-        if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
-        } else {
-            name = [[NSAttributedString alloc] initWithString:thread.name];
-        }
-    } else {
-        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
-                                                                            primaryFont:self.nameLabel.font
-                                                                          secondaryFont:[UIFont ows_footnoteFont]];
-    }
-
-    self.nameLabel.attributedText = name;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [self updateNameLabel];
+    
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
     self.avatarView.image = nil;
@@ -266,7 +262,76 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 - (void)prepareForReuse
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super prepareForReuse];
+}
+
+#pragma mark - Name
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+    
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    if (recipientId.length == 0) {
+        return;
+    }
+    
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return;
+    }
+
+    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
+        return;
+    }
+    
+    [self updateNameLabel];
+}
+
+-(void)updateNameLabel
+{
+    AssertIsOnMainThread();
+    
+    TSThread *thread = self.thread;
+    if (thread == nil) {
+        OWSFail(@"%@ thread should not be nil", self.logTag);
+        self.nameLabel.attributedText = nil;
+        return;
+    }
+    
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contacts manager should not be nil", self.logTag);
+        self.nameLabel.attributedText = nil;
+        return;
+    }
+    
+    NSAttributedString *name;
+    if (thread.isGroupThread) {
+        if (thread.name.length == 0) {
+            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+        } else {
+            name = [[NSAttributedString alloc] initWithString:thread.name];
+        }
+    } else {
+        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
+                                                                            primaryFont:self.nameLabel.font
+                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+    }
+    
+    self.nameLabel.attributedText = name;
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end

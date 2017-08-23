@@ -360,6 +360,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+        if ([self.thread isKindOfClass:[TSContactThread class]]) {
+            // update title with profile name
+            [self setNavigationTitle];
+        }
+        
         // Reload all cells.
         [self resetContentAndLayout];
     }
