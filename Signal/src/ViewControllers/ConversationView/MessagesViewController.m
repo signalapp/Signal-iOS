@@ -1126,9 +1126,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
     } else {
-        name = [self.contactsManager attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
-                                                                            primaryFont:self.navigationBarTitleLabel.font
-                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+        name = [self.contactsManager
+            attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
+                                                        primaryFont:self.navigationBarTitleLabel.font
+                                                      secondaryFont:[UIFont ows_footnoteFont]];
     }
     self.title = nil;
 

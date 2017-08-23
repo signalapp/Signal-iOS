@@ -163,7 +163,7 @@ const NSUInteger kAvatarViewDiameter = 52;
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
-    
+
     self.threadId = thread.uniqueId;
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
@@ -215,7 +215,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                                             primaryFont:self.nameLabel.font
                                                                           secondaryFont:[UIFont ows_footnoteFont]];
     }
-    
+
     self.nameLabel.attributedText = name;
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
@@ -223,8 +223,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
 
-    _timeLabel.textColor =  thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] :  [UIColor ows_darkGrayColor];
-    
+    _timeLabel.textColor = thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
         self.unreadLabel.hidden = NO;

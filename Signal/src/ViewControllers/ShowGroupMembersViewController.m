@@ -193,7 +193,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (isVerified) {
-                [cell addVerifiedSubtitle];
+                cell.subtitle.attributedText = cell.verifiedSubtitle;
+            } else {
+                cell.subtitle.attributedText = nil;
             }
 
             return cell;

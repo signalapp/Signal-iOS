@@ -21,10 +21,11 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 @interface ContactTableViewCell ()
 
-@property (nonatomic) IBOutlet UILabel *nameLabel;
-@property (nonatomic) IBOutlet UILabel *profileNameLabel;
-@property (nonatomic) IBOutlet UIImageView *avatarView;
-@property (nonatomic, nullable) UILabel *subtitle;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *profileNameLabel;
+@property (nonatomic) UIImageView *avatarView;
+@property (nonatomic) UILabel *subtitle;
+@property (nonatomic) UIView *nameContainerView;
 
 @end
 
@@ -61,19 +62,24 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
-    UIView *nameContainerView = [UIView containerView];
-    [self.contentView addSubview:nameContainerView];
+    _nameContainerView = [UIView containerView];
+    [self.contentView addSubview:_nameContainerView];
 
     _nameLabel = [UILabel new];
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
-    [nameContainerView addSubview:_nameLabel];
+    [_nameContainerView addSubview:_nameLabel];
 
     _profileNameLabel = [UILabel new];
     _profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _profileNameLabel.font = [UIFont ows_footnoteFont];
     _profileNameLabel.textColor = [UIColor grayColor];
-    [nameContainerView addSubview:_profileNameLabel];
+    [_nameContainerView addSubview:_profileNameLabel];
+
+    _subtitle = [UILabel new];
+    _subtitle.font = [UIFont ows_footnoteFont];
+    _subtitle.textColor = [UIColor ows_darkGrayColor];
+    [_nameContainerView addSubview:self.subtitle];
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinLeadingToSuperView];
@@ -86,12 +92,15 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     // profileNameLabel can be zero sized, in which case nameLabel essentially occupies the totality of
     // nameContainerView's frame.
     [_profileNameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_nameLabel];
-    [_profileNameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [_profileNameLabel autoPinWidthToSuperview];
 
-    [nameContainerView autoVCenterInSuperview];
-    [nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
-    [nameContainerView autoPinTrailingToSuperView];
+    [_subtitle autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_profileNameLabel];
+    [_subtitle autoPinWidthToSuperview];
+    [_subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    [_nameContainerView autoVCenterInSuperview];
+    [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
+    [_nameContainerView autoPinTrailingToSuperView];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -160,30 +169,20 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     [self layoutSubviews];
 }
 
-- (void)addVerifiedSubtitle
+- (NSAttributedString *)verifiedSubtitle
 {
-    [self.subtitle removeFromSuperview];
-
-    const CGFloat kSubtitlePointSize = 10.f;
     NSMutableAttributedString *text = [NSMutableAttributedString new];
     // "checkmark"
     [text appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:@"\uf00c "
                                          attributes:@{
-                                             NSFontAttributeName : [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                             NSFontAttributeName :
+                                                 [UIFont ows_fontAwesomeFont:self.subtitle.font.pointSize],
                                          }]];
     [text appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                                         @"Badge indicating that the user is verified.")]];
-    self.subtitle = [UILabel new];
-    self.subtitle.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    self.subtitle.textColor = [UIColor ows_darkGrayColor];
-    self.subtitle.attributedText = text;
-    [self.subtitle sizeToFit];
-    [self.contentView addSubview:self.subtitle];
-    [self.subtitle autoPinLeadingToView:self.nameLabel];
-    [self.subtitle autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.nameLabel];
-    [self.subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    return [text copy];
 }
 
 - (void)prepareForReuse

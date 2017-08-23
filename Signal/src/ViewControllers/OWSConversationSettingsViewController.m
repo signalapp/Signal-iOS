@@ -670,6 +670,11 @@ NS_ASSUME_NONNULL_BEGIN
                 initWithString:[PhoneNumber
                                    bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
             addSubtitle(subtitle);
+        } else {
+            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
+            if (profileName) {
+                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
+            }
         }
 
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
