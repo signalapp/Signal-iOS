@@ -106,7 +106,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 
 // This property can be accessed on any thread, while synchronized on self.
-@property (atomic, nullable) UserProfile *localUserProfile;
+@property (nonatomic, readonly) UserProfile *localUserProfile;
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, nullable) UIImage *localCachedAvatarImage;
 
@@ -129,6 +129,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 // Access to most state should happen while synchronized on the profile manager.
 // Writes should happen off the main thread, wherever possible.
 @implementation OWSProfileManager
+
+@synthesize localUserProfile = _localUserProfile;
 
 + (instancetype)sharedManager
 {
@@ -174,20 +176,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     _currentAvatarDownloads = [NSMutableSet new];
 
     OWSSingletonAssert();
-
-    self.localUserProfile = [self getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId];
-    OWSAssert(self.localUserProfile);
-    if (!self.localUserProfile.profileKey) {
-        DDLogInfo(@"%@ Generating local profile key", self.tag);
-        self.localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
-        // Make sure to save on the local db connection for consistency.
-        //
-        // NOTE: we do an async read/write here to avoid blocking during app launch path.
-        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self.localUserProfile saveWithTransaction:transaction];
-        }];
-    }
-    OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
 
     return self;
 }
@@ -263,6 +251,30 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 #pragma mark - Local Profile
+
+- (UserProfile *)localUserProfile
+{
+    @synchronized(self)
+    {
+        if (_localUserProfile == nil) {
+            // Make sure to read on the local db connection for consistency.
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                _localUserProfile = [UserProfile fetchObjectWithUniqueID:kLocalProfileUniqueId transaction:transaction];
+            }];
+
+            if (_localUserProfile == nil) {
+                DDLogInfo(@"%@ Building local profile.", self.tag);
+                _localUserProfile = [[UserProfile alloc] initWithRecipientId:kLocalProfileUniqueId];
+                _localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    [_localUserProfile saveWithTransaction:transaction];
+                }];
+            }
+        }
+
+        return _localUserProfile;
+    }
+}
 
 - (OWSAES256Key *)localProfileKey
 {
