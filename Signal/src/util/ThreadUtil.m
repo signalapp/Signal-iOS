@@ -5,6 +5,7 @@
 #import "ThreadUtil.h"
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
+#import "OWSOutgoingNullMessage.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "TSUnreadIndicatorInteraction.h"
@@ -127,6 +128,33 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
     return message;
+}
+
++ (void)sendNullMessageInThread:(TSThread *)thread
+                  messageSender:(OWSMessageSender *)messageSender
+                        success:(void (^_Nullable)())successHandler
+                        failure:(void (^_Nullable)(NSError *error))failureHandler;
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(thread);
+    OWSAssert(messageSender);
+
+    // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
+    // subsequently
+    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithThread:thread];
+    [messageSender sendMessage:nullMessage
+        success:^{
+            DDLogInfo(@"%@ Successfully sent NullMessage", self.tag);
+            if (successHandler) {
+                successHandler();
+            }
+        }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
+            if (failureHandler) {
+                failureHandler(error);
+            }
+        }];
 }
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread

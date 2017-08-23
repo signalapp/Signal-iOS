@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage;
 
+- (instancetype)initWithThread:(TSThread *)thread;
+
 @end
 
 NS_ASSUME_NONNULL_END

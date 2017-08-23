@@ -67,6 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors;
 
++ (void)sendNullMessageInThread:(TSThread *)thread
+                  messageSender:(OWSMessageSender *)messageSender
+                        success:(void (^_Nullable)())successHandler
+                        failure:(void (^_Nullable)(NSError *error))failureHandler;
+
 // This method will create and/or remove any offers and indicators
 // necessary for this thread.  This includes:
 //

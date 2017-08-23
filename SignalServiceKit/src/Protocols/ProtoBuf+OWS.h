@@ -36,4 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
+@interface OWSSignalServiceProtosNullMessageBuilder (OWS)
+
+- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId;
+
+@end
+
 NS_ASSUME_NONNULL_END

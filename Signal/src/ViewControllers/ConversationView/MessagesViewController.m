@@ -916,9 +916,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             @"Button to confirm that user wants to share their profile with a user or group.")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
-                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
-
-                    [self ensureBannerState];
+                    [self addThreadToProfileWhitelist];
                 }];
     [alertController addAction:whitelistAction];
     [alertController addAction:[OWSAlerts cancelAction]];
@@ -962,6 +960,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
         [self presentViewController:actionSheetController animated:YES completion:nil];
     }
+}
+
+- (void)addThreadToProfileWhitelist
+{
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+    [ThreadUtil sendNullMessageInThread:self.thread messageSender:self.messageSender success:nil failure:nil];
+
+    [self ensureBannerState];
 }
 
 - (void)resetVerificationStateToDefault
@@ -2801,7 +2808,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             @"Button to confirm that user wants to share their profile with a user or group.")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
-                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+                    [self addThreadToProfileWhitelist];
 
                     // Delete the offers.
                     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

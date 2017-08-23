@@ -15,6 +15,7 @@
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
+#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -795,6 +796,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)shareProfile
 {
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
+
+    [ThreadUtil sendNullMessageInThread:self.thread messageSender:self.messageSender success:nil failure:nil];
 
     [self updateTableContents];
 }

@@ -5,15 +5,17 @@
 #import "OWSOutgoingNullMessage.h"
 #import "Cryptography.h"
 #import "NSDate+millisecondTimeStamp.h"
-#import "TSContactThread.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
+#import "ProtoBuf+OWS.h"
+#import "SignalRecipient.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingNullMessage ()
 
-@property (nonatomic, readonly) OWSVerificationStateSyncMessage *verificationStateSyncMessage;
+@property (nonatomic, readonly, nullable) OWSVerificationStateSyncMessage *verificationStateSyncMessage;
 
 @end
 
@@ -33,6 +35,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithThread:(TSThread *)thread
+{
+    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    if (!self) {
+        return self;
+    }
+
+    _verificationStateSyncMessage = nil;
+
+    return self;
+}
+
 #pragma mark - override TSOutgoingMessage
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
@@ -40,21 +54,28 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
 
-    NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
+    // Null messages triggered by verification should use padding so that they
+    // are indistinguishable from typical text/attachment messages.
+    if (self.verificationStateSyncMessage) {
+        NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 
-    OWSAssert(self.verificationStateSyncMessage.paddingBytesLength > 0);
+        OWSAssert(self.verificationStateSyncMessage.paddingBytesLength > 0);
 
-    // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
-    // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
-    // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
-    // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
-    // verification sync which is ~1-512 bytes larger then that.
-    contentLength += self.verificationStateSyncMessage.paddingBytesLength;
+        // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so
+        // that the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage.
+        // We pad the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be
+        // *additionally* padded by the superclass while being sent. The end result is we send a NullMessage of a
+        // non-distinct size, and a verification sync which is ~1-512 bytes larger then that.
+        contentLength += self.verificationStateSyncMessage.paddingBytesLength;
 
-    OWSAssert(contentLength > 0)
-    
-    nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
-    
+        OWSAssert(contentLength > 0)
+
+            nullMessageBuilder.padding
+            = [Cryptography generateRandomBytes:contentLength];
+    }
+
+    [nullMessageBuilder addLocalProfileKeyIfNecessary:self.thread recipientId:recipient.recipientId];
+
     contentBuilder.nullMessage = [nullMessageBuilder build];
 
     return [contentBuilder build].data;
