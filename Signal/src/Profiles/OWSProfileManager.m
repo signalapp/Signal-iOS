@@ -663,6 +663,21 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
     });
 }
+
+- (void)regenerateLocalProfile
+{
+    @synchronized(self)
+    {
+        _localUserProfile = nil;
+        DDLogWarn(@"%@ Removing local user profile", self.tag);
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [transaction removeObjectForKey:kLocalProfileUniqueId inCollection:[UserProfile collection]];
+        }];
+
+        // rebuild localUserProfile
+        OWSAssert(self.localUserProfile);
+    }
+}
 #endif
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
