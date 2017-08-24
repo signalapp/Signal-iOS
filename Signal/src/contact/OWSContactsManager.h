@@ -11,6 +11,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class UIFont;
 @class SignalAccount;
+@class ImageCache;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
@@ -23,7 +24,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - Accessors
 
-@property (nonnull, readonly) NSCache<NSString *, UIImage *> *avatarCache;
+@property (nonnull, readonly) ImageCache *avatarCache;
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 

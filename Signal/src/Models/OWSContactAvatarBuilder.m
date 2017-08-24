@@ -4,6 +4,7 @@
 
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "Signal-Swift.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSThread.h"
@@ -76,8 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)buildDefaultImage
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"signalId:%@:diamater:%lu", self.signalId, (unsigned long)self.diameter];
-    UIImage *cachedAvatar = [self.contactsManager.avatarCache objectForKey:cacheKey];
+    UIImage *cachedAvatar =
+        [self.contactsManager.avatarCache imageForKey:self.signalId diameter:(CGFloat)self.diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -115,7 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        textColor:[UIColor whiteColor]
                                                                             font:[UIFont ows_boldFontWithSize:fontSize]
                                                                         diameter:self.diameter] avatarImage];
-    [self.contactsManager.avatarCache setObject:image forKey:cacheKey];
+
+    [self.contactsManager.avatarCache setImage:image forKey:self.signalId diameter:self.diameter];
     return image;
 }
 

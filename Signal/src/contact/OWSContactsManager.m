@@ -50,7 +50,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     }
 
     // TODO: We need to configure the limits of this cache.
-    _avatarCache = [NSCache new];
+    _avatarCache = [ImageCache new];
     _allContacts = @[];
     _signalAccountMap = @{};
     _signalAccounts = @[];
@@ -151,7 +151,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
 
-    [self clearAvatarCacheForRecipientId:recipientId];
+    [self.avatarCache removeAllImagesForKey:recipientId];
 }
 
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts
@@ -172,7 +172,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
 
-            [self.avatarCache removeAllObjects];
+            [self.avatarCache removeAllImages];
 
             [self intersectContacts];
 
@@ -181,11 +181,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             [self updateCachedDisplayNames];
         });
     });
-}
-
-- (void)clearAvatarCacheForRecipientId:(NSString *)recipientId
-{
-    [self.avatarCache removeObjectForKey:recipientId];
 }
 
 - (void)updateSignalAccounts
