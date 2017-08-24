@@ -17,6 +17,7 @@
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
+#import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -67,6 +68,18 @@ NS_ASSUME_NONNULL_BEGIN
                                          [[OWSProfileManager sharedManager] regenerateLocalProfile];
                                      }]];
 #endif
+    [items addObject:[OWSTableItem itemWithTitle:@"Send profile key message."
+                                     actionBlock:^{
+                                         OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+                                         
+                                         [[Environment getCurrent].messageSender sendMessage:message
+                                                                                     success:^{
+                                                                                         DDLogInfo(@"Successfully sent profile key message to thread: %@", thread);
+                                                                                     }
+                                                                                     failure:^(NSError * _Nonnull error) {
+                                                                                         OWSFail(@"Failed to send prifle key message to thread: %@", thread);
+                                                                                     }];
+                                     }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];

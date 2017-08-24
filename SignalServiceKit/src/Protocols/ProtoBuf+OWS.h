@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSignalServiceProtosDataMessageBuilder (OWS)
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId;
+- (void)addLocalProfileKey;
 
 @end
 
