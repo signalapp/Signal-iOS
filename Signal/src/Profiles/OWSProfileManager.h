@@ -45,6 +45,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                        success:(void (^)())successBlock
                        failure:(void (^)())failureBlock;
 
+- (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
+
 #pragma mark - Profile Whitelist
 
 #ifdef DEBUG

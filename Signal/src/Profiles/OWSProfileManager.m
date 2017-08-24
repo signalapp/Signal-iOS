@@ -1198,6 +1198,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [self encryptProfileData:data profileKey:self.localProfileKey];
 }
 
+- (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
+    return nameData.length > kOWSProfileManager_NameDataLength;
+}
+
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];

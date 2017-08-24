@@ -369,6 +369,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     __weak ProfileViewController *weakSelf = self;
 
+    NSString *normalizedProfileName = [self normalizedProfileName];
+    if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
+                              message:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
+                                          @"Error message shown when user tries to update profile with a profile name "
+                                          @"that is too long.")];
+        return;
+    }
+
     // Show an activity indicator to block the UI during the profile upload.
     UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVING",
@@ -379,7 +388,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self presentViewController:alertController
                        animated:YES
                      completion:^{
-                         [OWSProfileManager.sharedManager updateLocalProfileName:[self normalizedProfileName]
+                         [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
                              avatarImage:self.avatar
                              success:^{
                                  [alertController dismissViewControllerAnimated:NO
