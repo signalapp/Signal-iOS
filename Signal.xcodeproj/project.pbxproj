@@ -33,6 +33,8 @@
 		3453D8EA1EC0D4ED003F9E6F /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
 		3456710A1E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */; };
+		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
+		346B66331F4F08FD00E5122F /* IMG_4187.PNG in Resources */ = {isa = PBXBuildFile; fileRef = 346B66321F4F08FD00E5122F /* IMG_4187.PNG */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
 		348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
@@ -439,6 +441,8 @@
 		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
 		345671081E8A9F5D006EE662 /* TSGenericAttachmentAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGenericAttachmentAdapter.h; sourceTree = "<group>"; };
 		345671091E8A9F5D006EE662 /* TSGenericAttachmentAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGenericAttachmentAdapter.m; sourceTree = "<group>"; };
+		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
+		346B66321F4F08FD00E5122F /* IMG_4187.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IMG_4187.PNG; sourceTree = "<group>"; };
 		3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		3472229D1EB22FFE00E53955 /* AddToGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToGroupViewController.h; sourceTree = "<group>"; };
@@ -1000,6 +1004,7 @@
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				34B3F8401E8DF1700035BE1A /* CountryCodeViewController.h */,
 				34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */,
+				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				3497DBED1ECE2E4700DB2605 /* DomainFrontingCountryViewController.h */,
 				3497DBEE1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m */,
@@ -1555,6 +1560,7 @@
 				AD83FF381A73426500B5C81A /* audio_pause_button_blue.png */,
 				AD83FF391A73426500B5C81A /* audio_pause_button_blue@2x.png */,
 				AD83FF3A1A73426500B5C81A /* audio_play_button_blue@2x.png */,
+				346B66321F4F08FD00E5122F /* IMG_4187.PNG */,
 				AD83FF3B1A73426500B5C81A /* audio_play_button.png */,
 				AD83FF3C1A73426500B5C81A /* audio_play_button@2x.png */,
 				AD83FF3D1A73426500B5C81A /* audio_pause_button.png */,
@@ -1974,6 +1980,7 @@
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
+				346B66331F4F08FD00E5122F /* IMG_4187.PNG in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				AD41D7B51A6F6F0600241130 /* play_button.png in Resources */,
@@ -2372,6 +2379,7 @@
 				34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */,
 				34B3F8941E8DF1710035BE1A /* SignalsViewController.m in Sources */,
 				34E8BF381EE9E2FD00F5F4CA /* FingerprintViewScanController.m in Sources */,
+				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				76EB058818170B33006006FC /* PropertyListPreferences.m in Sources */,
 				34330A611E788EA900DF2FB9 /* AttachmentUploadView.m in Sources */,
 				34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */,
@@ -2564,7 +2572,11 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"SSK_BUILDING_FOR_TESTS=1",
+				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

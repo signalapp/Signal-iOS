@@ -98,6 +98,28 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)showCropScaleUI
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(self.delegate);
+
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+        picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+        [self.delegate.fromViewController presentViewController:picker
+                                                       animated:YES
+                                                     completion:[UIUtil modalCompletionBlock]];
+    }
+}
+//// We resize the avatar to fill a 210x210 square.
+////
+//// See: GroupCreateActivity.java in Signal-Android.java.
+// UIImage *resizedAvatar = [rawAvatar resizedImageToFillPixelSize:CGSizeMake(210, 210)];
+//[self.delegate avatarDidChange:resizedAvatar];
+
 /*
  *  Dismissing UIImagePickerController
  */
@@ -121,11 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
 
     if (rawAvatar) {
-        // We resize the avatar to fill a 210x210 square.
-        //
-        // See: GroupCreateActivity.java in Signal-Android.java.
-        UIImage *resizedAvatar = [rawAvatar resizedImageToFillPixelSize:CGSizeMake(210, 210)];
-        [self.delegate avatarDidChange:resizedAvatar];
+        //        [self showCropScaleUI:rawAvatar];
     }
 
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];

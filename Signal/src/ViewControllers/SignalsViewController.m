@@ -271,6 +271,17 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIImage *srcDmage = [UIImage imageNamed:@"IMG_4187.PNG"];
+        OWSAssert(srcDmage);
+        CropScaleImageViewController *vc =
+            [[CropScaleImageViewController alloc] initWithSrcImage:srcDmage
+                                                 successCompletion:^(UIImage *_Nonnull dstImage){
+                                                 }];
+        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
+        [self presentTopLevelModalViewController:navigationController animateDismissal:NO animatePresentation:YES];
+    });
 }
 
 - (void)updateBarButtonItems {
