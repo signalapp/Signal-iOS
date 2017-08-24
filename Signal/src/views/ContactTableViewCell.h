@@ -22,6 +22,7 @@ extern NSString *const kContactsTable_CellReuseIdentifier;
 @interface ContactTableViewCell : UITableViewCell
 
 @property (nonatomic, nullable) NSString *accessoryMessage;
+@property (nonatomic, readonly) UILabel *subtitle;
 
 + (nullable NSString *)reuseIdentifier;
 
@@ -33,7 +34,7 @@ extern NSString *const kContactsTable_CellReuseIdentifier;
 
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 
-- (void)addVerifiedSubtitle;
+- (NSAttributedString *)verifiedSubtitle;
 
 @end
 

@@ -21,10 +21,14 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
 @interface ContactTableViewCell ()
 
-@property (nonatomic) IBOutlet UILabel *nameLabel;
-@property (nonatomic) IBOutlet UILabel *profileNameLabel;
-@property (nonatomic) IBOutlet UIImageView *avatarView;
-@property (nonatomic, nullable) UILabel *subtitle;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *profileNameLabel;
+@property (nonatomic) UIImageView *avatarView;
+@property (nonatomic) UILabel *subtitle;
+@property (nonatomic) UIView *nameContainerView;
+
+@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) NSString *recipientId;
 
 @end
 
@@ -61,19 +65,24 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 
-    UIView *nameContainerView = [UIView containerView];
-    [self.contentView addSubview:nameContainerView];
+    _nameContainerView = [UIView containerView];
+    [self.contentView addSubview:_nameContainerView];
 
     _nameLabel = [UILabel new];
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
-    [nameContainerView addSubview:_nameLabel];
+    [_nameContainerView addSubview:_nameLabel];
 
     _profileNameLabel = [UILabel new];
     _profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     _profileNameLabel.font = [UIFont ows_footnoteFont];
     _profileNameLabel.textColor = [UIColor grayColor];
-    [nameContainerView addSubview:_profileNameLabel];
+    [_nameContainerView addSubview:_profileNameLabel];
+
+    _subtitle = [UILabel new];
+    _subtitle.font = [UIFont ows_footnoteFont];
+    _subtitle.textColor = [UIColor ows_darkGrayColor];
+    [_nameContainerView addSubview:self.subtitle];
 
     [_avatarView autoVCenterInSuperview];
     [_avatarView autoPinLeadingToSuperView];
@@ -86,12 +95,15 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     // profileNameLabel can be zero sized, in which case nameLabel essentially occupies the totality of
     // nameContainerView's frame.
     [_profileNameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_nameLabel];
-    [_profileNameLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [_profileNameLabel autoPinWidthToSuperview];
 
-    [nameContainerView autoVCenterInSuperview];
-    [nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
-    [nameContainerView autoPinTrailingToSuperView];
+    [_subtitle autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_profileNameLabel];
+    [_subtitle autoPinWidthToSuperview];
+    [_subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    [_nameContainerView autoVCenterInSuperview];
+    [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
+    [_nameContainerView autoPinTrailingToSuperView];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -106,16 +118,17 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithRecipientId:(NSString *)recipientId
                  contactsManager:(OWSContactsManager *)contactsManager
 {
+    self.recipientId = recipientId;
+    self.contactsManager = contactsManager;
+
     self.nameLabel.attributedText =
         [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
 
-    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
-    } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [self updateProfileName];
 
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
@@ -139,6 +152,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(thread);
+    self.contactsManager = contactsManager;
 
     NSString *threadName = thread.name;
     if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
@@ -152,6 +166,13 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
                                                        }];
     self.nameLabel.attributedText = attributedText;
 
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(otherUsersProfileDidChange:)
+                                                     name:kNSNotificationName_OtherUsersProfileDidChange
+                                                   object:nil];
+        [self updateProfileName];
+    }
     self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
                                                          diameter:kContactTableViewCellAvatarSize
                                                   contactsManager:contactsManager];
@@ -160,39 +181,84 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     [self layoutSubviews];
 }
 
-- (void)addVerifiedSubtitle
+- (NSAttributedString *)verifiedSubtitle
 {
-    [self.subtitle removeFromSuperview];
-
-    const CGFloat kSubtitlePointSize = 10.f;
     NSMutableAttributedString *text = [NSMutableAttributedString new];
     // "checkmark"
     [text appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:@"\uf00c "
                                          attributes:@{
-                                             NSFontAttributeName : [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+                                             NSFontAttributeName :
+                                                 [UIFont ows_fontAwesomeFont:self.subtitle.font.pointSize],
                                          }]];
     [text appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                                         @"Badge indicating that the user is verified.")]];
-    self.subtitle = [UILabel new];
-    self.subtitle.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    self.subtitle.textColor = [UIColor ows_darkGrayColor];
-    self.subtitle.attributedText = text;
-    [self.subtitle sizeToFit];
-    [self.contentView addSubview:self.subtitle];
-    [self.subtitle autoPinLeadingToView:self.nameLabel];
-    [self.subtitle autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.nameLabel];
-    [self.subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    return [text copy];
+}
+
+
+- (void)updateProfileName
+{
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        self.profileNameLabel.text = nil;
+        return;
+    }
+
+    NSString *recipientId = self.recipientId;
+    if (recipientId.length == 0) {
+        OWSFail(@"%@ recipientId should not be nil", self.logTag);
+        self.profileNameLabel.text = nil;
+        return;
+    }
+
+    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+        // Don't display profile name when we have a veritas name in system Contacts
+        self.profileNameLabel.text = nil;
+    } else {
+        // Use profile name, if any is available
+        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+    }
+
+    [self.profileNameLabel setNeedsLayout];
 }
 
 - (void)prepareForReuse
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     self.accessoryMessage = nil;
     self.accessoryView = nil;
     self.accessoryType = UITableViewCellAccessoryNone;
-    [self.subtitle removeFromSuperview];
-    self.subtitle = nil;
+    self.nameLabel.text = nil;
+    self.subtitle.text = nil;
+    self.profileNameLabel.text = nil;
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    OWSAssert(recipientId.length > 0);
+
+    if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {
+        [self updateProfileName];
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end

@@ -31,7 +31,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
-@property (nonatomic) NSString *threadId;
+@property (nonatomic) TSThread *thread;
+@property (nonatomic) OWSContactsManager *contactsManager;
 
 @end
 
@@ -76,6 +77,7 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
     [self.contentView addSubview:self.nameLabel];
     [self.nameLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
     [self.nameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView];
@@ -157,17 +159,15 @@ const NSUInteger kAvatarViewDiameter = 52;
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
 
+    self.thread = thread;
+    self.contactsManager = contactsManager;
+    
     BOOL isBlocked = NO;
     if (!thread.isGroupThread) {
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
-
-    NSString *name = thread.name;
-    if (name.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
-        name = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
-    }
-    self.threadId = thread.uniqueId;
+    
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
@@ -206,18 +206,21 @@ const NSUInteger kAvatarViewDiameter = 52;
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
 
-    self.nameLabel.text = name;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [self updateNameLabel];
+    
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
     self.avatarView.image = nil;
 
     self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
 
-    if (thread.hasUnreadMessages) {
-        [self updateCellForUnreadMessage];
-    } else {
-        [self updateCellForReadMessage];
-    }
+    _timeLabel.textColor = thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
         self.unreadLabel.hidden = NO;
@@ -229,18 +232,6 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.avatarView.image =
         [OWSAvatarBuilder buildImageForThread:thread diameter:kAvatarViewDiameter contactsManager:contactsManager];
-}
-
-- (void)updateCellForUnreadMessage {
-    _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
-    _nameLabel.textColor    = [UIColor ows_blackColor];
-    _timeLabel.textColor    = [UIColor ows_materialBlueColor];
-}
-
-- (void)updateCellForReadMessage {
-    _nameLabel.font         = [UIFont ows_boldFontWithSize:14.0f];
-    _nameLabel.textColor    = [UIColor ows_blackColor];
-    _timeLabel.textColor    = [UIColor ows_darkGrayColor];
 }
 
 #pragma mark - Date formatting
@@ -271,7 +262,76 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 - (void)prepareForReuse
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super prepareForReuse];
+}
+
+#pragma mark - Name
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+    
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    if (recipientId.length == 0) {
+        return;
+    }
+    
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return;
+    }
+
+    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
+        return;
+    }
+    
+    [self updateNameLabel];
+}
+
+-(void)updateNameLabel
+{
+    AssertIsOnMainThread();
+    
+    TSThread *thread = self.thread;
+    if (thread == nil) {
+        OWSFail(@"%@ thread should not be nil", self.logTag);
+        self.nameLabel.attributedText = nil;
+        return;
+    }
+    
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contacts manager should not be nil", self.logTag);
+        self.nameLabel.attributedText = nil;
+        return;
+    }
+    
+    NSAttributedString *name;
+    if (thread.isGroupThread) {
+        if (thread.name.length == 0) {
+            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+        } else {
+            name = [[NSAttributedString alloc] initWithString:thread.name];
+        }
+    } else {
+        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
+                                                                            primaryFont:self.nameLabel.font
+                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+    }
+    
+    self.nameLabel.attributedText = name;
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end
