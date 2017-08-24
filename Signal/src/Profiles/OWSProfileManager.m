@@ -850,11 +850,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(contactRecipientIds);
 
-    // TODO: The persisted whitelist could either be:
-    //
-    // * Just users manually added to the whitelist.
-    // * Also include users auto-added by, for example, being in the user's
-    //   contacts or when the user initiates a 1:1 conversation with them, etc.
     [self addUsersToProfileWhitelist:contactRecipientIds];
 }
 
