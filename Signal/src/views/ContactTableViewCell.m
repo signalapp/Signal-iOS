@@ -221,6 +221,8 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
         // Use profile name, if any is available
         self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
     }
+
+    [self.profileNameLabel setNeedsLayout];
 }
 
 - (void)prepareForReuse
