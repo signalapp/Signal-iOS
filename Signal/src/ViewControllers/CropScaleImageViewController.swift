@@ -335,7 +335,7 @@ class CropScaleImageViewController: OWSViewController {
                 let srcCropSizeAfterScalePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
                                                          height:srcDefaultCropSizePoints.height / imageScale)
                 // Since the translation state reflects the "upper left" corner of the crop region, we need to
-                // adjust the translation when scaling.
+                // adjust the translation when scaling to preserve the "center" of the crop region.
                 srcTranslation.x += (srcCropSizeBeforeScalePoints.width - srcCropSizeAfterScalePoints.width) * 0.5
                 srcTranslation.y += (srcCropSizeBeforeScalePoints.height - srcCropSizeAfterScalePoints.height) * 0.5
 
