@@ -56,7 +56,14 @@ class CropScaleImageViewController: OWSViewController {
     var dashedBorderLayer: CAShapeLayer?
 
     // In width/height.
-    let dstAspectRatio: CGFloat = 1.0
+    //
+    // TODO: We could make this a parameter.
+    var dstSizePixels: CGSize {
+        return CGSize(width:210, height:210)
+    }
+    var dstAspectRatio: CGFloat {
+        return dstSizePixels.width / dstSizePixels.height
+    }
 
     // The size of the src image in points.
     var srcImageSizePoints: CGSize = CGSize.zero
@@ -90,7 +97,8 @@ class CropScaleImageViewController: OWSViewController {
     }
 
     required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
-        self.srcImage = srcImage
+        // normalized() can be slightly expensive but in practice this is fine.
+        self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion
         super.init(nibName: nil, bundle: nil)
 
@@ -283,13 +291,7 @@ class CropScaleImageViewController: OWSViewController {
         srcTranslation = CGPoint(x: max(minSrcTranslationPoints.x, min(maxSrcTranslationPoints.x, srcTranslation.x)),
                                  y: max(minSrcTranslationPoints.y, min(maxSrcTranslationPoints.y, srcTranslation.y)))
 
-        let srcToViewRatio = viewSizePoints.width / srcCropSizePoints.width
-
-        let imageViewFrame = CGRect(origin: CGPoint(x:srcTranslation.x * -srcToViewRatio,
-                                                    y:srcTranslation.y * -srcToViewRatio),
-                                    size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
-                                                 height:srcImageSizePoints.height * +srcToViewRatio
-        ))
+        let imageViewFrame = imageRenderRect(forDstSize:viewSizePoints)
 
         // Disable implicit animations.
         CATransaction.begin()
@@ -299,6 +301,20 @@ class CropScaleImageViewController: OWSViewController {
 
         dashedBorderLayer.frame = imageView.bounds
         dashedBorderLayer.path = UIBezierPath(rect: imageView.bounds).cgPath
+    }
+
+    private func imageRenderRect(forDstSize dstSize: CGSize) -> CGRect {
+
+        let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                       height:srcDefaultCropSizePoints.height / imageScale)
+
+        let srcToViewRatio = dstSize.width / srcCropSizePoints.width
+
+        return CGRect(origin: CGPoint(x:srcTranslation.x * -srcToViewRatio,
+                                                    y:srcTranslation.y * -srcToViewRatio),
+                                    size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
+                                                 height:srcImageSizePoints.height * +srcToViewRatio
+        ))
     }
 
     var srcTranslationAtPinchStart: CGPoint = CGPoint.zero
@@ -458,9 +474,28 @@ class CropScaleImageViewController: OWSViewController {
     func donePressed(sender: UIButton) {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
-            // TODO:
-            let dstImage = self.srcImage
+            guard let dstImage = self.generateDstImage() else {
+                return
+            }
             successCompletion?(dstImage)
         })
+    }
+
+    // MARK: - Output
+
+    func generateDstImage() -> UIImage? {
+        let hasAlpha = false
+        let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
+        UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
+
+        let imageViewFrame = imageRenderRect(forDstSize:dstSizePixels)
+        srcImage.draw(in:imageViewFrame)
+
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        if scaledImage == nil {
+            Logger.error("\(TAG) could not generate dst image.")
+        }
+        UIGraphicsEndImageContext()
+        return scaledImage
     }
 }
