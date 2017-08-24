@@ -62,6 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [OWSProfileManager.sharedManager logProfileWhitelist];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Regenerate Profile/ProfileKey"
+                                     actionBlock:^{
+                                         [[OWSProfileManager sharedManager] regenerateLocalProfile];
+                                     }]];
 #endif
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
