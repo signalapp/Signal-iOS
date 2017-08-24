@@ -48,7 +48,14 @@ NS_ASSUME_NONNULL_BEGIN
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager
 {
-    NSString *name = [contactsManager displayNameForPhoneIdentifier:signalId];
+    // Name for avatar initialis.
+    NSString *_Nullable name = [contactsManager nameFromSystemContactsForRecipientId:signalId];
+    if (name.length == 0) {
+        name = [contactsManager profileNameForRecipientId:signalId];
+    }
+    if (name.length == 0) {
+        name = signalId;
+    }
     return [self initWithContactId:signalId name:name diameter:diameter contactsManager:contactsManager];
 }
 

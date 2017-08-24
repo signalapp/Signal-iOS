@@ -243,6 +243,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
         [VersionMigrations runSafeBlockingMigrations];
     }];
+    [[Environment getCurrent].contactsManager startObserving];
 
     self.incomingMessageReadObserver =
         [[OWSIncomingMessageReadObserver alloc] initWithMessageSender:[Environment getCurrent].messageSender];
