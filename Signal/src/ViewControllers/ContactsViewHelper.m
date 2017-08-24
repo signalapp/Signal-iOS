@@ -413,7 +413,6 @@ NS_ASSUME_NONNULL_BEGIN
         newContact.phoneNumbers = @[ labeledPhoneNumber ];
 
         newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
-        newContact.imageData = [self.profileManager profileAvatarDataForRecipientId:recipientId];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }
