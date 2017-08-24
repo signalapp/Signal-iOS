@@ -50,22 +50,32 @@ class CropScaleImageViewController: OWSViewController {
 
     var imageView: UIView?
 
+    // We use a CALayer to render the image for performance reasons.
     var imageLayer: CALayer?
 
     var dashedBorderLayer: CAShapeLayer?
 
     // In width/height.
-    let targetAspectRatio: CGFloat = 1.0
+    let dstAspectRatio: CGFloat = 1.0
 
+    // The size of the src image in points.
     var srcImageSizePoints: CGSize = CGSize.zero
-    var unitDefaultCropSizePoints: CGSize = CGSize.zero
+    // The size of the default crop region, which is the
+    // largest crop region with the correct dst aspect ratio
+    // that fits in the src image's aspect ratio,
+    // in src image point coordinates.
+    var srcDefaultCropSizePoints: CGSize = CGSize.zero
 
     // N = Scaled, zoomed in.
     let kMaxImageScale: CGFloat = 4.0
     // 1.0 = Unscaled, cropped to fill crop rect.
     let kMinImageScale: CGFloat = 1.0
+    // This represents the current scaling of the src image.
     var imageScale: CGFloat = 1.0
 
+    // This represents the current translation from the
+    // upper-left corner of the src image to the upper-left
+    // corner of the crop region in src image point coordinates.
     var srcTranslation: CGPoint = CGPoint.zero
 
     // MARK: Initializers
@@ -91,36 +101,31 @@ class CropScaleImageViewController: OWSViewController {
 
     private func configureCropAndScale() {
         // Size of bounding box that reflects the target aspect ratio, whose longer side = 1.
-        let unitSquareHeight: CGFloat = (targetAspectRatio >= 1.0 ? 1.0 : 1.0 / targetAspectRatio)
-        let unitSquareWidth: CGFloat = (targetAspectRatio >= 1.0 ? targetAspectRatio * unitSquareHeight : 1.0)
+        let unitSquareHeight: CGFloat = (dstAspectRatio >= 1.0 ? 1.0 : 1.0 / dstAspectRatio)
+        let unitSquareWidth: CGFloat = (dstAspectRatio >= 1.0 ? dstAspectRatio * unitSquareHeight : 1.0)
         let unitSquareSize = CGSize(width: unitSquareWidth, height: unitSquareHeight)
 
-        let imageSizePoints = srcImage.size
+        srcImageSizePoints = srcImage.size
         guard
-            (imageSizePoints.width > 0 && imageSizePoints.height > 0) else {
+            (srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0) else {
                 return
         }
-        self.srcImageSizePoints = imageSizePoints
-
-        Logger.error("----")
-        Logger.error("imageSizePoints: \(imageSizePoints)")
-        Logger.error("unitSquareWidth: \(unitSquareWidth)")
-        Logger.error("unitSquareHeight: \(unitSquareHeight)")
 
         // Default
 
-        // The "default" (no scaling, no translation) crop frame, expressed in 
+        // The "default" (no scaling, no translation) crop frame, expressed in
         // srcImage's coordinate system.
-        unitDefaultCropSizePoints = defaultCropSizePoints(dstSizePoints:unitSquareSize)
-        assert(imageSizePoints.width >= unitDefaultCropSizePoints.width)
-        assert(imageSizePoints.height >= unitDefaultCropSizePoints.height)
+        srcDefaultCropSizePoints = defaultCropSizePoints(dstSizePoints:unitSquareSize)
+        assert(srcImageSizePoints.width >= srcDefaultCropSizePoints.width)
+        assert(srcImageSizePoints.height >= srcDefaultCropSizePoints.height)
 
-        Logger.error("unitDefaultCropSizePoints: \(unitDefaultCropSizePoints)")
-        srcTranslation = CGPoint(x:(imageSizePoints.width - unitDefaultCropSizePoints.width) * 0.5,
-                                        y:(imageSizePoints.height - unitDefaultCropSizePoints.height) * 0.5)
-        Logger.error("srcTranslation: \(srcTranslation)")
+        // By default, center the crop region in the src image.
+        srcTranslation = CGPoint(x:(srcImageSizePoints.width - srcDefaultCropSizePoints.width) * 0.5,
+                                 y:(srcImageSizePoints.height - srcDefaultCropSizePoints.height) * 0.5)
     }
 
+    // Given a dst size, find the size of the largest crop region
+    // that fits in the src image.
     private func defaultCropSizePoints(dstSizePoints: CGSize) -> (CGSize) {
         assert(srcImageSizePoints.width > 0)
         assert(srcImageSizePoints.height > 0)
@@ -186,14 +191,18 @@ class CropScaleImageViewController: OWSViewController {
         let dashedBorderLayer = CAShapeLayer()
         self.dashedBorderLayer = dashedBorderLayer
         dashedBorderLayer.strokeColor = UIColor.ows_materialBlue().cgColor
-        dashedBorderLayer.lineDashPattern = [6, 6]
-        dashedBorderLayer.lineWidth = 2
+        dashedBorderLayer.lineDashPattern = [10, 10]
+        dashedBorderLayer.lineWidth = 4
         dashedBorderLayer.fillColor = nil
         imageView.layer.addSublayer(dashedBorderLayer)
 
         contentView.isUserInteractionEnabled = true
         contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(sender:))))
         contentView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:))))
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(sender:)))
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.numberOfTouchesRequired = 1
+        contentView.addGestureRecognizer(doubleTap)
     }
 
     override func viewDidLayoutSubviews() {
@@ -227,7 +236,7 @@ class CropScaleImageViewController: OWSViewController {
         }
 
         let defaultCropOriginPoints = CGPoint(x: (imageSizePoints.width - defaultCropSizePoints.width) * 0.5,
-                                         y: (imageSizePoints.height - defaultCropSizePoints.height) * 0.5)
+                                              y: (imageSizePoints.height - defaultCropSizePoints.height) * 0.5)
         assert(defaultCropOriginPoints.x >= 0)
         assert(defaultCropOriginPoints.y >= 0)
         assert(defaultCropOriginPoints.x <= imageSizePoints.width - defaultCropSizePoints.width)
@@ -235,6 +244,7 @@ class CropScaleImageViewController: OWSViewController {
         return CGRect(origin:defaultCropOriginPoints, size:defaultCropSizePoints)
     }
 
+    // Updates the image view _AND_ normalizes the current scale/translate state.
     private func updateImageLayout() {
         guard let imageView = self.imageView else {
             return
@@ -248,7 +258,7 @@ class CropScaleImageViewController: OWSViewController {
         guard srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0 else {
             return
         }
-        guard unitDefaultCropSizePoints.width > 0 && unitDefaultCropSizePoints.height > 0 else {
+        guard srcDefaultCropSizePoints.width > 0 && srcDefaultCropSizePoints.height > 0 else {
             return
         }
 
@@ -258,41 +268,28 @@ class CropScaleImageViewController: OWSViewController {
                 return
         }
 
-        Logger.error("----")
-        Logger.error("srcImageSizePoints: \(srcImageSizePoints)")
-        Logger.error("viewSizePoints: \(viewSizePoints)")
-
-        Logger.error("imageScale: \(imageScale)")
+        // Normalize the scaling property.
         imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale))
-        Logger.error("imageScale (normalized): \(imageScale)")
 
-        let srcCropSizePoints = CGSize(width:unitDefaultCropSizePoints.width / imageScale,
-                                       height:unitDefaultCropSizePoints.height / imageScale)
-
-        Logger.error("srcCropSizePoints: \(srcCropSizePoints)")
+        let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                       height:srcDefaultCropSizePoints.height / imageScale)
 
         let minSrcTranslationPoints = CGPoint.zero
         let maxSrcTranslationPoints = CGPoint(x:srcImageSizePoints.width - srcCropSizePoints.width,
                                               y:srcImageSizePoints.height - srcCropSizePoints.height
-                                              )
+        )
 
-        Logger.error("minSrcTranslationPoints: \(minSrcTranslationPoints)")
-        Logger.error("maxSrcTranslationPoints: \(maxSrcTranslationPoints)")
-
-        Logger.error("srcTranslation: \(srcTranslation)")
+        // Normalize the translation property.
         srcTranslation = CGPoint(x: max(minSrcTranslationPoints.x, min(maxSrcTranslationPoints.x, srcTranslation.x)),
-                                               y: max(minSrcTranslationPoints.y, min(maxSrcTranslationPoints.y, srcTranslation.y)))
-        Logger.error("srcTranslation (normalized): \(srcTranslation)")
+                                 y: max(minSrcTranslationPoints.y, min(maxSrcTranslationPoints.y, srcTranslation.y)))
 
         let srcToViewRatio = viewSizePoints.width / srcCropSizePoints.width
-        Logger.error("srcToViewRatio: \(srcToViewRatio)")
 
         let imageViewFrame = CGRect(origin: CGPoint(x:srcTranslation.x * -srcToViewRatio,
                                                     y:srcTranslation.y * -srcToViewRatio),
                                     size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
                                                  height:srcImageSizePoints.height * +srcToViewRatio
-                                                 ))
-        Logger.error("imageViewFrame: \(imageViewFrame)")
+        ))
 
         // Disable implicit animations.
         CATransaction.begin()
@@ -310,7 +307,6 @@ class CropScaleImageViewController: OWSViewController {
     var lastPinchScale: CGFloat = 1.0
 
     func handlePinch(sender: UIPinchGestureRecognizer) {
-        Logger.error("pinch scale: \(sender.scale)")
         switch (sender.state) {
         case .possible:
             break
@@ -327,44 +323,31 @@ class CropScaleImageViewController: OWSViewController {
                 return
             }
 
-            Logger.error("--- pinch")
-
             if sender.numberOfTouches > 1 {
                 let location =
                     sender.location(in: sender.view)
                 let scaleDiff = sender.scale / lastPinchScale
-                Logger.error("scaling \(lastPinchScale) \(sender.scale) -> \(scaleDiff)")
 
-                // Update the scaling
-                let srcCropSizeBeforeScalePoints = CGSize(width:unitDefaultCropSizePoints.width / imageScale,
-                                                          height:unitDefaultCropSizePoints.height / imageScale)
+                // Update scaling.
+                let srcCropSizeBeforeScalePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                                          height:srcDefaultCropSizePoints.height / imageScale)
                 imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale * scaleDiff))
-                let srcCropSizeAfterScalePoints = CGSize(width:unitDefaultCropSizePoints.width / imageScale,
-                                                         height:unitDefaultCropSizePoints.height / imageScale)
+                let srcCropSizeAfterScalePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                                         height:srcDefaultCropSizePoints.height / imageScale)
                 // Since the translation state reflects the "upper left" corner of the crop region, we need to
                 // adjust the translation when scaling.
                 srcTranslation.x += (srcCropSizeBeforeScalePoints.width - srcCropSizeAfterScalePoints.width) * 0.5
                 srcTranslation.y += (srcCropSizeBeforeScalePoints.height - srcCropSizeAfterScalePoints.height) * 0.5
 
-                // Update translation
-
+                // Update translation.
                 let viewSizePoints = imageView.frame.size
-                Logger.error("viewSizePoints: \(viewSizePoints)")
-                let srcCropSizePoints = CGSize(width:unitDefaultCropSizePoints.width / imageScale,
-                                               height:unitDefaultCropSizePoints.height / imageScale)
-                Logger.error("srcCropSizePoints: \(srcCropSizePoints)")
+                let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                               height:srcDefaultCropSizePoints.height / imageScale)
 
-                let srcToViewRatio = viewSizePoints.width / srcCropSizePoints.width
-                Logger.error("srcToViewRatio: \(srcToViewRatio)")
-                let viewToSrcRatio = 1 / srcToViewRatio
-                Logger.error("viewToSrcRatio: \(viewToSrcRatio)")
+                let viewToSrcRatio = srcCropSizePoints.width / viewSizePoints.width
 
                 let gestureTranslation = CGPoint(x:location.x - lastPinchLocation.x,
                                                  y:location.y - lastPinchLocation.y)
-
-                Logger.error("location: \(location)")
-                Logger.error("lastPinchLocation: \(lastPinchLocation)")
-                Logger.error("gestureTranslation: \(gestureTranslation)")
 
                 srcTranslation = CGPoint(x:srcTranslation.x + gestureTranslation.x * -viewToSrcRatio,
                                          y:srcTranslation.y + gestureTranslation.y * -viewToSrcRatio)
@@ -396,21 +379,15 @@ class CropScaleImageViewController: OWSViewController {
                 return
             }
             let viewSizePoints = imageView.frame.size
-            Logger.error("viewSizePoints: \(viewSizePoints)")
-            let srcCropSizePoints = CGSize(width:unitDefaultCropSizePoints.width / imageScale,
-                                           height:unitDefaultCropSizePoints.height / imageScale)
-            Logger.error("srcCropSizePoints: \(srcCropSizePoints)")
+            let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
+                                           height:srcDefaultCropSizePoints.height / imageScale)
 
-            let srcToViewRatio = viewSizePoints.width / srcCropSizePoints.width
-            Logger.error("srcToViewRatio: \(srcToViewRatio)")
-            let viewToSrcRatio = 1 / srcToViewRatio
-            Logger.error("viewToSrcRatio: \(viewToSrcRatio)")
+            let viewToSrcRatio = srcCropSizePoints.width / viewSizePoints.width
 
             let gestureTranslation =
                 sender.translation(in: sender.view)
 
-            Logger.error("gestureTranslation: \(gestureTranslation)")
-
+            // Update translation.
             srcTranslation = CGPoint(x:srcTranslationAtPanStart.x + gestureTranslation.x * -viewToSrcRatio,
                                      y:srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
             break
@@ -418,6 +395,16 @@ class CropScaleImageViewController: OWSViewController {
             srcTranslation
                 = srcTranslationAtPanStart
             break
+        }
+
+        updateImageLayout()
+    }
+
+    func handleDoubleTap(sender: UIPanGestureRecognizer) {
+        if (sender.state == .recognized) {
+            if imageScale > 1.5 {
+                imageScale = kMinImageScale
+            }
         }
 
         updateImageLayout()
@@ -471,7 +458,7 @@ class CropScaleImageViewController: OWSViewController {
     func donePressed(sender: UIButton) {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
-            // TODO
+            // TODO:
             let dstImage = self.srcImage
             successCompletion?(dstImage)
         })
