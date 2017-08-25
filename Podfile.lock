@@ -139,7 +139,7 @@ CHECKOUT OPTIONS:
     :commit: 6e9d5e8c3dc87e397b4b7485172507b0990a22dd
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
-    :commit: 8c10f920bb566fe1051f92abd360a2e3d5530e00
+    :commit: 9e452ee59cbcebf2c67f0dc499988b6725de776e
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   OpenSSL:
     :commit: b2d3c149102032a09aefbfb470885db4aa83efad
