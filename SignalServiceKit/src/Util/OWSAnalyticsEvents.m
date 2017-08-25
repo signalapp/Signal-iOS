@@ -422,6 +422,46 @@ NS_ASSUME_NONNULL_BEGIN
     return @"prekeys_deleted_old_unaccepted_signed_prekey";
 }
 
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidAcl
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_acl";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidAlgorithm
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_algorithm";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidCredential
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_credential";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidDate
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_date";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidKey
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_key";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidPolicy
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_policy";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidResponse
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_response";
+}
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidSignature
+{
+    return @"profile_manager_error_avatar_upload_form_invalid_signature";
+}
+
 + (NSString *)registrationBegan
 {
     return @"registration_began";

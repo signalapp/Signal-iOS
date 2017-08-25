@@ -492,7 +492,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             success:^(NSURLSessionDataTask *task, id formResponseObject) {
 
                 if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_response");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidResponse]);
                     failureBlock();
                     return;
                 }
@@ -501,43 +501,43 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
                 NSString *formAcl = responseMap[@"acl"];
                 if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_acl");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAcl]);
                     failureBlock();
                     return;
                 }
                 NSString *formKey = responseMap[@"key"];
                 if (![formKey isKindOfClass:[NSString class]] || formKey.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_key");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidKey]);
                     failureBlock();
                     return;
                 }
                 NSString *formPolicy = responseMap[@"policy"];
                 if (![formPolicy isKindOfClass:[NSString class]] || formPolicy.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_policy");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidPolicy]);
                     failureBlock();
                     return;
                 }
                 NSString *formAlgorithm = responseMap[@"algorithm"];
                 if (![formAlgorithm isKindOfClass:[NSString class]] || formAlgorithm.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_algorithm");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAlgorithm]);
                     failureBlock();
                     return;
                 }
                 NSString *formCredential = responseMap[@"credential"];
                 if (![formCredential isKindOfClass:[NSString class]] || formCredential.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_credential");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidCredential]);
                     failureBlock();
                     return;
                 }
                 NSString *formDate = responseMap[@"date"];
                 if (![formDate isKindOfClass:[NSString class]] || formDate.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_date");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidDate]);
                     failureBlock();
                     return;
                 }
                 NSString *formSignature = responseMap[@"signature"];
                 if (![formSignature isKindOfClass:[NSString class]] || formSignature.length < 1) {
-                    OWSProdFail(@"profile_manager_error_avatar_upload_form_invalid_signature");
+                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidSignature]);
                     failureBlock();
                     return;
                 }
