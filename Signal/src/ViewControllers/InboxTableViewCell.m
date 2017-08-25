@@ -212,10 +212,10 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
                                                object:nil];
     [self updateNameLabel];
-    
+    [self updateAvatarView];
+
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
-    self.avatarView.image = nil;
 
     self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
 
@@ -229,11 +229,27 @@ const NSUInteger kAvatarViewDiameter = 52;
         self.unreadBadge.hidden = YES;
         self.unreadLabel.hidden = YES;
     }
+}
+
+- (void)updateAvatarView
+{
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        self.avatarView.image = nil;
+        return;
+    }
+
+    TSThread *thread = self.thread;
+    if (thread == nil) {
+        OWSFail(@"%@ thread should not be nil", self.logTag);
+        self.avatarView.image = nil;
+        return;
+    }
 
     self.avatarView.image =
         [OWSAvatarBuilder buildImageForThread:thread diameter:kAvatarViewDiameter contactsManager:contactsManager];
 }
-
 #pragma mark - Date formatting
 
 - (NSAttributedString *)dateAttributedString:(NSDate *)date {
@@ -286,6 +302,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     }
     
     [self updateNameLabel];
+    [self updateAvatarView];
 }
 
 -(void)updateNameLabel

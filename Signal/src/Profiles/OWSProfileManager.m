@@ -86,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
+NSString *const kNSNotificationName_OtherUsersProfileWillChange = @"kNSNotificationName_OtherUsersProfileWillChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
 NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
@@ -239,6 +240,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                                     object:nil
                                                                   userInfo:nil];
             } else {
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationName:kNSNotificationName_OtherUsersProfileWillChange
+                                  object:nil
+                                userInfo:@{
+                                    kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                }];
                 [[NSNotificationCenter defaultCenter]
                     postNotificationName:kNSNotificationName_OtherUsersProfileDidChange
                                   object:nil

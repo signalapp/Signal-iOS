@@ -129,6 +129,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
                                                object:nil];
     [self updateProfileName];
+    [self updateAvatar];
 
     if (self.accessoryMessage) {
         UILabel *blockedLabel = [[UILabel alloc] init];
@@ -140,10 +141,6 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
         self.accessoryView = blockedLabel;
     }
-
-    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
-                                                                      diameter:kContactTableViewCellAvatarSize
-                                                               contactsManager:contactsManager] build];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -197,7 +194,26 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     return [text copy];
 }
 
+- (void)updateAvatar
+{
+    OWSContactsManager *contactsManager = self.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        self.avatarView.image = nil;
+        return;
+    }
 
+    NSString *recipientId = self.recipientId;
+    if (recipientId.length == 0) {
+        OWSFail(@"%@ recipientId should not be nil", self.logTag);
+        self.avatarView.image = nil;
+        return;
+    }
+
+    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
+                                                                      diameter:kContactTableViewCellAvatarSize
+                                                               contactsManager:contactsManager] build];
+}
 - (void)updateProfileName
 {
     OWSContactsManager *contactsManager = self.contactsManager;
@@ -246,6 +262,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
     if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {
         [self updateProfileName];
+        [self updateAvatar];
     }
 }
 

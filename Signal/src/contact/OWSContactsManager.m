@@ -139,12 +139,12 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 - (void)startObserving
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                             selector:@selector(otherUsersProfileWillChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileWillChange
                                                object:nil];
 }
 
-- (void)otherUsersProfileDidChange:(NSNotification *)notification
+- (void)otherUsersProfileWillChange:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
 

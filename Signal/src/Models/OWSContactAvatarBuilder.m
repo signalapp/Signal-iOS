@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager
 {
-    // Name for avatar initialis.
+    // Name for avatar initials.
     NSString *_Nullable name = [contactsManager nameFromSystemContactsForRecipientId:signalId];
     if (name.length == 0) {
         name = [contactsManager profileNameForRecipientId:signalId];
